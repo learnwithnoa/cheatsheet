@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Cheat Sheet · Teacher view</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@700&family=Nunito:wght@400;600;800;900&family=Space+Mono&display=swap">
+<style>
+:root{--bg:#0A1424;--surface:#111E33;--surface-2:#0E1A2D;--line:#22385A;--ink:#E6EEF8;--muted:#9DB1CA;--royal:#8FB0FF;--green:#5AD394;--green-soft:#123726;--red:#F08A82;--sky:#16304F;
+--gloss:linear-gradient(180deg,#4EA8F5 0%,#1E73D0 50%,#173C9E 100%);--display:"Sour Gummy","Nunito",system-ui,sans-serif;--body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Space Mono",ui-monospace,monospace;color-scheme:dark}
+:root[data-theme="light"]{--bg:#EEF5FC;--surface:#fff;--surface-2:#F5F9FE;--line:#D6E3F2;--ink:#0F2341;--muted:#52667F;--royal:#1D4ED8;--green:#1F9D5C;--green-soft:#D9F5E4;--red:#C2413A;--sky:#D7EAFC;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.5 var(--body)}
+header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px}
+.brand{text-decoration:none;display:flex;flex-direction:column;line-height:1.1}
+.brand small{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.brand span{font:700 22px var(--display);background:var(--gloss);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--green-soft);color:var(--green)}
+.sp{flex:1}
+button,.btn{font:800 14px var(--body);border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+button:hover,.btn:hover{border-color:var(--royal)}
+.primary{border:0;color:#fff;background:linear-gradient(180deg,#4FD18B 0%,#1F9D5C 55%,#167A47 100%)}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+h1{font:700 34px var(--display);margin:4px 0 4px}
+h2{font:700 22px var(--display);margin:22px 0 10px}
+.lede{color:var(--muted);margin:0 0 18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.center{max-width:520px;margin:60px auto;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 220px);overflow:auto;padding-right:4px}
+@media (max-width:860px){.list{max-height:none}}
+.stu{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.stu:hover{border-color:var(--royal)}
+.stu[aria-current="true"]{border-color:var(--green);background:var(--green-soft)}
+.stu b{font-weight:900}
+.stu .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stu .meta{font:12px var(--mono);color:var(--muted)}
+input[type=search]{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;margin-bottom:10px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:8px 14px}
+.stat b{display:block;font:700 24px var(--display)}
+.stat span{font-size:13px;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th{font:700 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);position:sticky;top:0}
+td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{font-weight:800}
+td.d{font:12px var(--mono);color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.note .when{font-weight:900;color:var(--green);margin-bottom:4px}
+.note .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.chip{display:inline-block;font-size:13px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin:0 6px 6px 0}
+.err{color:var(--red);font-weight:800}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-weight:800;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="top">
+  <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
+  <span class="tag">Teacher view</span>
+  <div class="sp"></div>
+  <button id="themeBtn" type="button" aria-label="Switch theme">☀</button>
+  <button id="outBtn" type="button" hidden>Sign out</button>
+</div></header>
+
+<main>
+  <section id="vSign" class="card center" hidden>
+    <h1>Teacher view</h1>
+    <p class="lede">Sign in with your Learn with Noa Google account to see your students' words and notes.</p>
+    <button class="primary" id="inBtn" type="button">Sign in with Google</button>
+    <p class="err" id="signErr" hidden></p>
+  </section>
+
+  <section id="vDenied" class="card center" hidden>
+    <h1>This page is only for Noa</h1>
+    <p class="lede">You're signed in as <b id="deniedWho"></b>. Your own words and notes are on the <a href="./" style="color:var(--royal)">Cheat Sheet</a>.</p>
+  </section>
+
+  <section id="vMain" hidden>
+    <h1>Your students</h1>
+    <p class="lede" id="summary">Loading…</p>
+    <div class="layout">
+      <div>
+        <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search students">
+        <div class="row" style="margin-bottom:10px"><button type="button" id="reload">↻ Refresh</button><span class="muted" id="loadedAt" style="font-size:13px"></span></div>
+        <div class="list" id="list"></div>
+      </div>
+      <div id="detail" class="card"><p class="muted">Pick a student on the left to see their words and notes.</p></div>
+    </div>
+  </section>
+
+  <p class="err" id="loadErr" hidden></p>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
+  getFirestore, collection, getDocs } from "./fb.js?v=12.19.0";
+
+const TEACHER = "learnwithnoa@gmail.com";
+const app = initializeApp({
+  apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
+  authDomain: "learnwithnoa-cheatsheet.firebaseapp.com",
+  projectId: "learnwithnoa-cheatsheet",
+  storageBucket: "learnwithnoa-cheatsheet.firebasestorage.app",
+  messagingSenderId: "619847241160",
+  appId: "1:619847241160:web:d66edc58b7b143b9ab04fd"
+});
+const auth = getAuth(app), db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const views = ["vSign", "vDenied", "vMain"];
+const showView = v => views.forEach(id => $(id).hidden = id !== v);
+function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
+
+/* theme (same setting as the Cheat Sheet) */
+let theme = "dark"; try { theme = localStorage.getItem("ncs-theme") || "dark"; } catch (e) {}
+const applyTheme = () => { document.documentElement.dataset.theme = theme; $("themeBtn").textContent = theme === "dark" ? "☀" : "☾"; };
+applyTheme();
+$("themeBtn").onclick = () => { theme = theme === "dark" ? "light" : "dark"; try { localStorage.setItem("ncs-theme", theme); } catch (e) {} applyTheme(); };
+
+$("inBtn").onclick = async () => {
+  const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, p); }
+  catch (e) { if (e && e.code === "auth/popup-blocked") await signInWithRedirect(auth, p); else if (e && e.code !== "auth/popup-closed-by-user") { $("signErr").hidden = false; $("signErr").textContent = "Sign-in didn't work. Try again."; } }
+};
+$("outBtn").onclick = () => signOut(auth);
+
+const fmtDate = t => t ? new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+const fmtLong = t => t ? new Date(t).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "";
+const ago = t => { if (!t) return "never"; const d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? "today" : d === 1 ? "yesterday" : d + " days ago"; };
+const parse = (s, d) => { try { const v = JSON.parse(s); return v ?? d; } catch (e) { return d; } };
+
+let students = [], current = null;
+
+async function load() {
+  $("summary").textContent = "Loading…"; $("loadErr").hidden = true;
+  try {
+    const snap = await getDocs(collection(db, "users"));
+    const list = [];
+    await Promise.all(snap.docs.map(async d => {
+      const p = d.data() || {};
+      const ds = await getDocs(collection(db, "users", d.id, "data"));
+      const data = {};
+      ds.forEach(x => { const v = x.data(); if (!v.deleted && typeof v.json === "string") data[x.id] = v.json; });
+      list.push({
+        uid: d.id, name: p.name || "(no name)", email: p.email || "",
+        lastSeen: p.lastSeen && p.lastSeen.toMillis ? p.lastSeen.toMillis() : 0,
+        words: parse(data["ncs-words"], []).filter(w => w && w.w),
+        notes: parse(data["ncs-classnotes"], []).filter(n => n && n.text),
+        draft: parse(data["ncs-freenotes"], ""),
+        stars: parse(data["ncs-stars"], []),
+        sheet: parse(data["ncs-sheet"], "")
+      });
+    }));
+    list.sort((a, b) => b.lastSeen - a.lastSeen);
+    students = list.filter(s => s.email.toLowerCase() !== TEACHER);
+    const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
+    $("summary").textContent = students.length + (students.length === 1 ? " student has" : " students have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
+    $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    renderList();
+    if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
+  } catch (e) {
+    console.warn(e);
+    $("summary").textContent = "";
+    $("loadErr").hidden = false;
+    $("loadErr").textContent = /permission/i.test(String(e && (e.code || e.message))) ?
+      "Firebase said no. The teacher rule isn't in the Firestore rules yet (Firestore Database → Rules)." :
+      "Couldn't load the students. Check your connection and press Refresh.";
+  }
+}
+$("reload").onclick = load;
+
+function renderList() {
+  const q = $("q").value.trim().toLowerCase();
+  const shown = students.filter(s => !q || (s.name + " " + s.email).toLowerCase().includes(q));
+  $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
+      <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
+      <span class="meta">${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
+    : `<p class="muted">${students.length ? "No match." : "No students have signed in yet."}</p>`;
+}
+$("q").oninput = renderList;
+$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); };
+
+function renderDetail(s) {
+  if (!s) return;
+  const words = [...s.words].sort((a, b) => (b.t || 0) - (a.t || 0));
+  const notes = [...s.notes].sort((a, b) => (b.t || 0) - (a.t || 0));
+  $("detail").innerHTML = `
+    <h2 style="margin-top:0">${esc(s.name)}</h2>
+    <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
+    <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
+    ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
+    <h2>Words</h2>
+    ${words.length ? `<div class="row" style="margin-bottom:10px"><button type="button" id="cpW">Copy words (for a sheet)</button></div>
+      <div class="tbl"><table><thead><tr><th>Word</th><th>Spanish</th><th>Example</th><th>Added</th></tr></thead><tbody>
+      ${words.map(w => `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}</td><td class="d">${fmtDate(w.t)}</td></tr>`).join("")}
+      </tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}
+    <h2>Class notes</h2>
+    ${notes.length ? notes.map(n => `<div class="note"><div class="when">${fmtLong(n.t)}</div><div class="txt">${esc(n.text)}</div></div>`).join("") : `<p class="muted">No class notes saved yet.</p>`}
+    ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
+    ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
+  const cp = $("cpW");
+  if (cp) cp.onclick = async () => {
+    const clean = v => String(v || "").replace(/[\t\n\r]+/g, " ").trim();
+    const tsv = words.map(w => [clean(w.w), clean(w.m), clean(w.e)].join("\t")).join("\n");
+    try { await navigator.clipboard.writeText(tsv); toast("Copied " + words.length + " words. Paste them into a sheet."); } catch (e) { toast("Couldn't copy. Select the table and copy it."); }
+  };
+}
+
+onAuthStateChanged(auth, u => {
+  $("outBtn").hidden = !u;
+  if (!u) { showView("vSign"); return; }
+  if ((u.email || "").toLowerCase() !== TEACHER) { $("deniedWho").textContent = u.email || u.displayName || "another account"; showView("vDenied"); return; }
+  showView("vMain"); load();
+});
+</script>
+</body>
+</html>
