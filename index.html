@@ -526,6 +526,21 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 .auth-who{margin:0;font-weight:800;overflow-wrap:anywhere}
 .auth-status{margin:0;font-size:13.5px;color:var(--muted)}
 @media (max-width:700px){.auth-panel{position:fixed}}
+.tr-ico{font-size:13px;line-height:14px}
+.today{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;margin:0 0 18px}
+@media (max-width:760px){.today{grid-template-columns:minmax(0,1fr)}}
+.today .card{display:flex;flex-direction:column;gap:6px}
+.td-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.td-tag{background:var(--green-soft);color:var(--green)}
+.td-tag2{align-self:flex-start;background:color-mix(in srgb,#F5B800 18%,var(--surface));color:#A87700}
+:root[data-theme="dark"] .td-tag2{color:#F5C842}
+.tw-row{display:flex;align-items:center;gap:10px;margin-top:4px}
+.tw-w{font-family:var(--display);font-weight:700;font-size:30px;line-height:1.1;color:var(--ink)}
+.tw-m{color:var(--green);font-weight:800}
+.tw-ex{color:var(--muted);font-style:italic}
+.today .note-actions{margin-top:6px}
+.today-thought{background:linear-gradient(160deg,color-mix(in srgb,#F5B800 9%,var(--surface)),var(--surface))}
+.tt{margin:6px 0 0;font-family:var(--display);font-size:21px;line-height:1.35;color:var(--ink)}
 </style>
 
 <header class="top">
@@ -570,8 +585,6 @@ body:not([data-auth="in"]) .when-in{display:none!important}
       </div>
     </div>
     <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
-    <a class="pill-btn pill-green" href="#notes" data-go="notes">Home</a>
-    <a class="hdr-link" href="#translate" data-go="translate">Translator</a>
   </div>
 </header>
 
@@ -581,12 +594,12 @@ body:not([data-auth="in"]) .when-in{display:none!important}
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
+      <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup"><h4>Start here</h4>
       <button class="navbtn" data-go="tenses">Verb tenses</button>
       <button class="navbtn" data-go="verbs">Irregular verbs</button>
-      <button class="navbtn" data-go="translate">Translator</button>
       <button class="navbtn" data-go="be">Verb to be</button>
       <button class="navbtn" data-go="mistakes">Common mistakes</button>
     </div>
@@ -680,7 +693,20 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <!-- ============ HOME ============ -->
 <section class="view" id="v-notes" hidden>
   <h1>Your <em>home</em></h1>
-  <p class="lede">Your class notes and new words, all in one place.</p>
+  <p class="lede">Your word of the day, class notes and new words, all in one place.</p>
+  <div class="today" id="todayBox">
+    <div class="card today-word">
+      <div class="td-top"><span class="tag td-tag">Word of the day</span><span class="count" id="tdDate"></span></div>
+      <div class="tw-row"><span class="tw-w" id="twWord"></span><button class="say" type="button" id="twSay" aria-label="Hear it">🔊</button></div>
+      <div class="tw-m" id="twMean"></div>
+      <div class="tw-ex" id="twEx"></div>
+      <div class="note-actions"><button class="pill-btn pill-green" type="button" id="twSave">+ Save to my words</button></div>
+    </div>
+    <div class="card today-thought">
+      <span class="tag td-tag2">Thought for today</span>
+      <p class="tt" id="ttText"></p>
+    </div>
+  </div>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your words, class notes and starred sections sync automatically to any device where you sign in.</div></div>
   <div class="store-info dismissible when-out">
     <span class="store-ico" aria-hidden="true">!</span>
@@ -2112,6 +2138,104 @@ document.getElementById("trSave").addEventListener("click",()=>{
   if(dir==="es-en") openQA(okOut,inp,""); else openQA(inp,okOut,"");
 });
 
+/* ---------------- today: word of the day + thought for today ---------------- */
+(function(){
+const WOTD=[
+ ["figure out","entender, resolver","It took me a while to figure out how the app works."],
+ ["look forward to","esperar con ganas","I'm really looking forward to the weekend."],
+ ["get used to","acostumbrarse a","I'm getting used to speaking English at work."],
+ ["catch up","ponerse al día","Let's grab a coffee and catch up."],
+ ["run out of","quedarse sin","We ran out of time before the last question."],
+ ["come up with","ocurrírsele, idear","She came up with a great idea for the project."],
+ ["point out","señalar, hacer notar","He pointed out a small mistake in my email."],
+ ["deal with","lidiar con, encargarse de","I'll deal with the client tomorrow morning."],
+ ["give up","rendirse, dejar de","Don't give up, you're improving every week."],
+ ["turn out","resultar","The meeting turned out to be really useful."],
+ ["by the way","por cierto","By the way, did you finish the report?"],
+ ["to be honest","la verdad, siendo honesto","To be honest, I didn't understand the question."],
+ ["it depends","depende","It depends on how much time we have."],
+ ["make sense","tener sentido","Does that make sense to you?"],
+ ["on the other hand","por otro lado","It's cheap. On the other hand, it's very far."],
+ ["worth it","vale la pena","The trip was long, but it was worth it."],
+ ["a piece of cake","pan comido","The first exercise was a piece of cake."],
+ ["take it easy","tómatelo con calma","Take it easy, we still have time."],
+ ["keep in mind","tener en cuenta","Keep in mind that the store closes at six."],
+ ["in the meantime","mientras tanto","The food will take a while. In the meantime, let's talk."],
+ ["actually","en realidad (no \"actualmente\")","I thought it was hard, but it's actually easy."],
+ ["eventually","finalmente, con el tiempo","Eventually, you'll stop translating in your head."],
+ ["struggle","costarle a uno, tener dificultades","I struggle to understand fast speakers."],
+ ["improve","mejorar","My listening has improved a lot this month."],
+ ["be about to","estar a punto de","I was about to call you."],
+ ["show up","aparecer, llegar","Only three people showed up to the meeting."],
+ ["find out","averiguar, enterarse","I found out that the class was cancelled."],
+ ["set up","organizar, configurar","Can you set up a meeting for Friday?"],
+ ["put off","posponer","Stop putting off your homework!"],
+ ["bring up","sacar un tema","She brought up an interesting point."],
+ ["get along with","llevarse bien con","I get along really well with my coworkers."],
+ ["hang out","juntarse, pasar el rato","We usually hang out on Saturdays."],
+ ["work out","resultar bien / hacer ejercicio","Don't worry, everything will work out."],
+ ["sort of","más o menos, como que","I sort of understand, but not completely."],
+ ["no wonder","con razón","You didn't sleep? No wonder you're tired."],
+ ["I'm into","me gusta, me interesa","I'm really into podcasts lately."],
+ ["out of the blue","de la nada","He called me out of the blue."],
+ ["on purpose","a propósito","Sorry, I didn't do it on purpose."],
+ ["get the hang of","agarrarle la mano","You'll get the hang of it soon."],
+ ["feel like","tener ganas de","I don't feel like cooking tonight."],
+ ["mind","molestar, importar","Do you mind if I open the window?"],
+ ["used to","solía","I used to be afraid of speaking English."]
+];
+const THOUGHTS=[
+ "Mistakes are proof that you're trying. Make a few today.",
+ "You don't need to be fluent to start. You need to start to be fluent.",
+ "Slow progress is still progress. Look back a month, not a day.",
+ "Speak before you feel ready. Ready usually shows up later.",
+ "Notice one new word today. Just one. That's how a language grows.",
+ "Take a breath before you answer. The words come easier when you're calm.",
+ "Nobody is grading your accent in real conversations. They're listening to you.",
+ "Compare yourself to who you were last month, not to anyone else.",
+ "You control the effort, not the speed. Focus on what you control.",
+ "Some days English feels easy, some days it doesn't. Both days count.",
+ "Curiosity beats perfection. Ask the question, even with mistakes.",
+ "Listening is a skill too. Today, listen like you're collecting words.",
+ "Small daily practice beats one big weekend effort.",
+ "When you get stuck, describe it with simpler words. That's real fluency.",
+ "Be patient with yourself the way you'd be patient with a friend.",
+ "Every conversation in English is practice, even the awkward ones.",
+ "You've already learned harder things than this. You can do it again.",
+ "The goal isn't zero mistakes. It's being understood.",
+ "Rest is part of learning. Your brain keeps working while you sleep.",
+ "Today, say one thing in English that you'd usually say in Spanish.",
+ "Confidence isn't the start of speaking. It's the result of it.",
+ "What you practice grows. Choose to practice speaking, not just studying.",
+ "Feeling uncomfortable means you're learning something new.",
+ "One podcast, one chapter, one conversation. That's enough for today.",
+ "You don't have to understand every word to understand the message.",
+ "Celebrate a small win today: a word you remembered, a sentence that flowed.",
+ "Worry about what's in your control: your routine, your attention, your effort.",
+ "A pause while you think is normal. Native speakers pause too.",
+ "Learning a language is a long walk, not a race. Enjoy the view.",
+ "Repeat out loud what you hear. Your mouth needs practice too.",
+ "If it feels hard, that's where the growth is.",
+ "Be present in this class. The next one can wait.",
+ "Your future self will thank you for the five minutes you practice today.",
+ "Write down one thing you learned this week. It's more than you think.",
+ "Progress hides in routines. Keep showing up.",
+ "Laugh at your mistakes. They make the best stories.",
+ "Kindness to yourself is not laziness. It's how you keep going."
+];
+const now=new Date(), day=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/864e5);
+const w=WOTD[day%WOTD.length], th=THOUGHTS[day%THOUGHTS.length];
+const box=document.getElementById("todayBox"); if(!box) return;
+document.getElementById("tdDate").textContent=now.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+document.getElementById("twWord").textContent=w[0];
+document.getElementById("twMean").textContent=w[1];
+document.getElementById("twEx").textContent="“"+w[2]+"”";
+document.getElementById("ttText").textContent=th;
+const sb=document.getElementById("twSay");
+if(typeof canSpeak!=="undefined" && canSpeak){ sb.addEventListener("click",()=>say(w[0]+". "+w[2],sb)); } else sb.hidden=true;
+document.getElementById("twSave").addEventListener("click",()=>addWord(w[0],w[1],w[2]));
+})();
+
 /* flashcards: practice my words (missed cards come back sooner) */
 let fcOrder=[], fcIdx=0, fcFlipped=false, fcSpanishFirst=false;
 let fcStats=LS.get("ncs-fc",{});
@@ -2839,6 +2963,11 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-today", date:"October 29, 2026", title:"Something new every day ☀️", items:[
+    ["📖","Word of the day","a useful word or expression on your Home page every day, with an example. Tap <b>+ Save to my words</b> to keep it.","notes"],
+    ["🌱","Thought for today","a short daily reminder about patience, progress and learning at your own pace.","notes"],
+    ["⇄","Translator, pinned","it now sits in the green menu with Home, My class notes and My words.","translate"]
+  ]},
   {id:"2026-translate", date:"October 29, 2026", title:"Translate right on the page 🌎", items:[
     ["🌎","Translate here","write a word or sentence in the Translator and get a natural translation right on the page, no new tab needed.","translate"],
     ["↗️","Backups still there","Google Translate and DeepL are one tap away if you want a second opinion.",null]
