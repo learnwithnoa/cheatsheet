@@ -541,6 +541,8 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 .today .note-actions{margin-top:6px}
 .today-thought{background:linear-gradient(160deg,color-mix(in srgb,#F5B800 9%,var(--surface)),var(--surface))}
 .tt{margin:6px 0 0;font-family:var(--display);font-size:21px;line-height:1.35;color:var(--ink)}
+.tw-watch{font-size:14px;color:var(--ink);background:color-mix(in srgb,#F5B800 14%,var(--surface));border-left:3px solid #E0A100;border-radius:0 8px 8px 0;padding:6px 10px}
+.tw-watch::before{content:"⚠ Watch out: ";font-weight:800}
 </style>
 
 <header class="top">
@@ -700,6 +702,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
       <div class="tw-row"><span class="tw-w" id="twWord"></span><button class="say" type="button" id="twSay" aria-label="Hear it">🔊</button></div>
       <div class="tw-m" id="twMean"></div>
       <div class="tw-ex" id="twEx"></div>
+      <div class="tw-watch" id="twWatch" hidden></div>
       <div class="note-actions"><button class="pill-btn pill-green" type="button" id="twSave">+ Save to my words</button></div>
     </div>
     <div class="card today-thought">
@@ -2223,17 +2226,47 @@ const THOUGHTS=[
  "Laugh at your mistakes. They make the best stories.",
  "Kindness to yourself is not laziness. It's how you keep going."
 ];
-const now=new Date(), day=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/864e5);
-const w=WOTD[day%WOTD.length], th=THOUGHTS[day%THOUGHTS.length];
+const SHEET="1GloP5CoJPf7T_tFnVV9lkIqLJvKnJ4bBPgnCtDrxKHc";
+const now=new Date(), pad=n=>String(n).padStart(2,"0");
+const today=now.getFullYear()+"-"+pad(now.getMonth()+1)+"-"+pad(now.getDate());
+const day=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/864e5);
 const box=document.getElementById("todayBox"); if(!box) return;
 document.getElementById("tdDate").textContent=now.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
-document.getElementById("twWord").textContent=w[0];
-document.getElementById("twMean").textContent=w[1];
-document.getElementById("twEx").textContent="“"+w[2]+"”";
-document.getElementById("ttText").textContent=th;
+let cur=null;
+function show(w,th){
+  if(w&&w[0]){ cur=w; document.getElementById("twWord").textContent=w[0]; document.getElementById("twMean").textContent=w[1]||""; document.getElementById("twEx").textContent=w[2]?"“"+w[2]+"”":"";
+    const wo=document.getElementById("twWatch"); wo.textContent=w[3]||""; wo.hidden=!w[3]; }
+  if(th) document.getElementById("ttText").textContent=th;
+}
+// read today's row from Noa's Google Sheet (JSONP, so no CORS issues)
+function sheetRow(tab,cols){
+  return new Promise((res,rej)=>{
+    const cb="__csDaily"+tab+Date.now(); const sc=document.createElement("script");
+    const t=setTimeout(()=>{ cleanup(); rej(new Error("timeout")); },7000);
+    function cleanup(){ clearTimeout(t); try{ delete window[cb]; }catch(e){ window[cb]=undefined; } sc.remove(); }
+    window[cb]=r=>{ cleanup(); try{ const row=r&&r.status==="ok"&&r.table.rows[0]; if(!row) return rej(new Error("no row")); res(row.c.map(c=>c&&c.v!=null?String(c.v):"")); }catch(e){ rej(e); } };
+    sc.onerror=()=>{ cleanup(); rej(new Error("load")); };
+    sc.src="https://docs.google.com/spreadsheets/d/"+SHEET+"/gviz/tq?tqx=responseHandler:"+cb+"&headers=1&sheet="+tab+"&tq="+encodeURIComponent("select "+cols+" where A = '"+today+"'");
+    document.head.appendChild(sc);
+  });
+}
+const CK="csdaily-"+today;
+let cached=null; try{ cached=JSON.parse(localStorage.getItem(CK)||"null"); }catch(e){}
+if(cached&&cached.w&&cached.t){ show(cached.w,cached.t); }
+else {
+  show(WOTD[day%WOTD.length],THOUGHTS[day%THOUGHTS.length]); // placeholder while loading
+  (async()=>{
+    let w=null,t=null;
+    try{ w=await sheetRow("Words","B,C,D,E"); }catch(e){}
+    try{ const r=await sheetRow("Thoughts","B"); t=r[0]; }catch(e){}
+    if(!w||!t){ try{ const b=await (await fetch("daily-bank.json",{cache:"no-cache"})).json(); w=w||b.w[today]; t=t||b.t[today]; }catch(e){} }
+    if(w||t) show(w,t);
+    if(w&&t){ try{ Object.keys(localStorage).filter(k=>k.startsWith("csdaily-")).forEach(k=>localStorage.removeItem(k)); localStorage.setItem(CK,JSON.stringify({w,t})); }catch(e){} }
+  })();
+}
 const sb=document.getElementById("twSay");
-if(typeof canSpeak!=="undefined" && canSpeak){ sb.addEventListener("click",()=>say(w[0]+". "+w[2],sb)); } else sb.hidden=true;
-document.getElementById("twSave").addEventListener("click",()=>addWord(w[0],w[1],w[2]));
+if(typeof canSpeak!=="undefined" && canSpeak){ sb.addEventListener("click",()=>{ if(cur) say(cur[0]+". "+(cur[2]||""),sb); }); } else sb.hidden=true;
+document.getElementById("twSave").addEventListener("click",()=>{ if(cur) addWord(cur[0],cur[1],cur[2]); });
 })();
 
 /* flashcards: practice my words (missed cards come back sooner) */
