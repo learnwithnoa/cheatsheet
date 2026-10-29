@@ -70,6 +70,9 @@ tr:last-child td{border-bottom:0}
 .ib:hover{color:var(--ink);border-color:var(--line)}
 .ib.del:hover,.ib.sure{color:#fff;background:#C2413A;border-color:#C2413A}
 td.act{white-space:nowrap;text-align:right}
+.sortb{all:unset;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.sortb:hover{color:var(--ink)}
+.sortb:focus-visible{outline:2px solid var(--royal);border-radius:4px}
 .note .nh{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .by{font:11px var(--mono);color:var(--muted)}
 .hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
@@ -221,10 +224,14 @@ async function guarded(s, key, fn, msg) {
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the edit rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
 let editW = null, editN = null;
+let tSort = { k: "t", d: -1 }; // newest first
 
 function renderDetail(s) {
   if (!s) return;
-  const words = [...s.words].sort((a, b) => (b.t || 0) - (a.t || 0));
+  const wk = v => String(v || "").toLowerCase().replace(/^(to|a|an|the)\s+/, "").trim();
+  const words = [...s.words].sort((a, b) => tSort.k === "t" ? ((a.t || 0) - (b.t || 0)) * tSort.d
+    : wk(a[tSort.k]).localeCompare(wk(b[tSort.k]), "en", { sensitivity: "base" }) * tSort.d);
+  const th = (k, label) => `<th><button class="sortb" type="button" data-tsort="${k}" aria-label="Sort by ${label}">${label}${tSort.k === k ? (tSort.d > 0 ? " ▲" : " ▼") : ""}</button></th>`;
   const notes = [...s.notes].sort((a, b) => (b.t || 0) - (a.t || 0));
   const wRow = w => editW === w.id ?
     `<tr class="ed"><td><input id="ew" value="${esc(w.w)}"></td><td><input id="em" value="${esc(w.m)}"></td><td><input id="ee" value="${esc(w.e)}"></td><td class="d">${fmtDate(w.t)}</td>
@@ -245,7 +252,7 @@ function renderDetail(s) {
     <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Cheat Sheet the next time they open it or come back to the tab.</p>
     <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><button class="primary" type="submit">+ Add</button></form>
     ${words.length ? `<div class="row" style="margin-bottom:10px"><button type="button" id="cpW">Copy words (for a sheet)</button></div>
-      <div class="tbl"><table><thead><tr><th>Word</th><th>Spanish</th><th>Example</th><th>Added</th><th></th></tr></thead><tbody>
+      <div class="tbl"><table><thead><tr>${th("w","Word")}${th("m","Spanish")}${th("e","Example")}${th("t","Added")}<th></th></tr></thead><tbody>
       ${words.map(wRow).join("")}</tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}
     <h2>Class notes</h2>
     <div class="addn"><textarea id="an" placeholder="Write a class note for them (it's saved with today's date)…" aria-label="New class note"></textarea><div><button class="primary" id="addN" type="button">+ Add note</button></div></div>
@@ -281,6 +288,7 @@ $("detail").addEventListener("click", e => {
   const s = students.find(x => x.uid === current); if (!s) return;
   const t = e.target.closest("button"); if (!t) return;
   const d = t.dataset;
+  if (d.tsort) { const k = d.tsort; tSort = tSort.k === k ? { k, d: -tSort.d } : { k, d: k === "t" ? -1 : 1 }; renderDetail(s); return; }
   if (d.wedit) { editW = d.wedit; renderDetail(s); const i = $("ew"); if (i) i.focus(); }
   else if ("wcancel" in d) { editW = null; renderDetail(s); }
   else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(); if (!w) return; editW = null;

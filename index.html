@@ -572,6 +572,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   :root[data-theme="unicorn"] .top::after{background-size:200% 100%;animation:uniShift 8s linear infinite}
   @keyframes uniShift{from{background-position:0 0}to{background-position:200% 0}}
 }
+.w-sort{font:700 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
 </style>
 
 <header class="top">
@@ -850,6 +851,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     <h2 style="margin:0">My words <span class="count" id="wCount"></span></h2>
     <div class="list-tools">
       <input id="wSearch" type="search" placeholder="Search my words…" aria-label="Search my words" autocomplete="off">
+      <select id="wSort" class="w-sort" aria-label="Sort my words"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">A → Z</option><option value="za">Z → A</option></select>
       <button class="pill-btn" type="button" id="copyNew">Copy new words</button>
       <button class="swap" type="button" id="copyAll">Copy all</button>
       <button class="swap danger" type="button" id="delAll">Delete all</button>
@@ -2023,8 +2025,15 @@ renderSheet();
 /* words */
 const wList=document.getElementById("wordList"), wSearch=document.getElementById("wSearch"), wCount=document.getElementById("wCount"), copyNewBtn=document.getElementById("copyNew");
 const fmtDate=t=>{ const d=new Date(t); return d.toLocaleDateString("en-US",{month:"short",day:"numeric"}); };
+let wSortMode="new"; try{ wSortMode=localStorage.getItem("cs-wsort")||"new"; }catch(e){}
+const wKey=x=>String(x.w||"").toLowerCase().replace(/^(to|a|an|the)\s+/,"").trim();
+function sortWords(l){
+  if(wSortMode==="old") return l.sort((a,b)=>(a.t||0)-(b.t||0));
+  if(wSortMode==="az"||wSortMode==="za"){ l.sort((a,b)=>wKey(a).localeCompare(wKey(b),"en",{sensitivity:"base"})); return wSortMode==="za"?l.reverse():l; }
+  return l.sort((a,b)=>(b.t||0)-(a.t||0));
+}
 function renderWords(){
-  const list=allWords().slice().sort((a,b)=>b.t-a.t);
+  const list=sortWords(allWords().slice());
   const q=norm(wSearch.value.trim());
   const shown=list.filter(x=>!q||[x.w,x.m,x.e].some(s=>norm(s||"").includes(q)));
   const newCount=words.filter(isPending).length + (showSamples()?SAMPLE.length:0);
@@ -2299,6 +2308,7 @@ if(typeof canSpeak!=="undefined" && canSpeak){ sb.addEventListener("click",()=>{
 document.getElementById("twSave").addEventListener("click",()=>{ if(cur) addWord(cur[0],cur[1],cur[2]); });
 })();
 
+(function(){ const s=document.getElementById("wSort"); if(!s) return; s.value=wSortMode; s.addEventListener("change",()=>{ wSortMode=s.value; try{ localStorage.setItem("cs-wsort",wSortMode); }catch(e){} renderWords(); }); })();
 /* flashcards: practice my words (missed cards come back sooner) */
 let fcOrder=[], fcIdx=0, fcFlipped=false, fcSpanishFirst=false;
 let fcStats=LS.get("ncs-fc",{});
