@@ -2478,6 +2478,18 @@ document.addEventListener("click",e=>{
 });
 renderStars();
 bkRender();
+(function(){
+  const h=location.hash||"";
+  if(!h.startsWith("#import=")) return;
+  const code=decodeURIComponent(h.slice(8));
+  try{ history.replaceState(null,"",location.pathname); }catch(e){}
+  try{ localStorage.removeItem("ncs-sync-uid"); }catch(e){}   // next sign-in merges instead of overwriting
+  const inp=document.getElementById("bkIn"); inp.value=code;
+  document.getElementById("bkRestore").click();
+  const msg=document.getElementById("bkMsg").textContent;
+  go("notes");
+  setTimeout(()=>toast(msg.indexOf("Restored")>-1 ? "Your notes moved here! Sign in (top right) to save them in the cloud." : "Couldn't move your notes. Try the Back up & move page."),300);
+})();
 
 /* ---------------- study music (generated live with Web Audio) ---------------- */
 (function(){
