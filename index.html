@@ -27,7 +27,7 @@
   --mono:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   --shadow:0 1px 2px rgba(15,35,65,.06),0 6px 18px rgba(30,140,240,.08);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="unicorn"]){
   --bg:#0A1424; --surface:#111E33; --surface-2:#0E1A2D; --line:#22385A;
   --ink:#E6EEF8; --muted:#9DB1CA;
   --royal:#8FB0FF; --bright:#5DB6FF; --sky:#16304F; --green:#5AD394; --green-soft:#123726; --red:#F08A82; --red-soft:#3A1B1A;
@@ -543,6 +543,35 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 .tt{margin:6px 0 0;font-family:var(--display);font-size:21px;line-height:1.35;color:var(--ink)}
 .tw-watch{font-size:14px;color:var(--ink);background:color-mix(in srgb,#F5B800 14%,var(--surface));border-left:3px solid #E0A100;border-radius:0 8px 8px 0;padding:6px 10px}
 .tw-watch::before{content:"⚠ Watch out: ";font-weight:800}
+/* ---------- 🦄 unicorn mode: bright, rainbowy, still readable ---------- */
+:root[data-theme="unicorn"]{
+  --bg:#FFF6FC; --surface:#FFFFFF; --surface-2:#FFF4FB; --line:#F2C6EA;
+  --ink:#341043; --muted:#714A80;
+  --royal:#8A2BC9; --bright:#E0418F; --sky:#FBE3F5; --green:#0E9466; --green-soft:#DAF7EA; --red:#CF2A57; --red-soft:#FFE0EA;
+  --gloss:linear-gradient(90deg,#F43F7A 0%,#F97316 18%,#EAB308 34%,#22C55E 50%,#0EA5E9 66%,#8B5CF6 83%,#EC4899 100%);
+  --shadow:0 1px 2px rgba(138,43,201,.08),0 8px 22px rgba(236,72,153,.12);
+  color-scheme:light}
+:root[data-theme="unicorn"] body{
+  background:linear-gradient(135deg,#FFE3EE 0%,#FFF0DA 18%,#FFFAD2 34%,#E2FAE6 50%,#DDF2FF 66%,#ECE4FF 83%,#FFE3F4 100%) fixed}
+:root[data-theme="unicorn"] .top{background:rgba(255,255,255,.88);backdrop-filter:blur(8px)}
+:root[data-theme="unicorn"] .top::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--gloss)}
+:root[data-theme="unicorn"] .top{position:sticky}
+:root[data-theme="unicorn"] nav.side{background:transparent}
+@media (max-width:900px){:root[data-theme="unicorn"] nav.side{background:rgba(255,246,252,.92);backdrop-filter:blur(8px)}}
+/* rainbow text gets darker colors so it stays readable */
+:root[data-theme="unicorn"] .brand span,:root[data-theme="unicorn"] .view h1 em,:root[data-theme="unicorn"] .welcome h2 em,:root[data-theme="unicorn"] .quiz-verb{
+  background:linear-gradient(90deg,#D61F5C,#E0590B,#B58105,#15913F,#0272B0,#6D28D9,#C2186F);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* white text on the rainbow needs a little shadow */
+:root[data-theme="unicorn"] .pill-btn:not(.pill-green),:root[data-theme="unicorn"] .navbtn[aria-current="true"]:not(.cn-nav):not(.notes-nav),:root[data-theme="unicorn"] .time-label{text-shadow:0 1px 2px rgba(60,10,70,.55)}
+:root[data-theme="unicorn"] .card{border-color:#F5CDEB}
+:root[data-theme="unicorn"] .theme-btn,:root[data-theme="unicorn"] .search input{background:#fff}
+:root[data-theme="unicorn"] .td-tag2{color:#9A6400}
+:root[data-theme="unicorn"] .today-word{background:linear-gradient(160deg,#F0FFF7,#fff 60%)}
+:root[data-theme="unicorn"] .today-thought{background:linear-gradient(160deg,#FFF6D8,#FFEFFA)}
+@media (prefers-reduced-motion:no-preference){
+  :root[data-theme="unicorn"] .top::after{background-size:200% 100%;animation:uniShift 8s linear infinite}
+  @keyframes uniShift{from{background-position:0 0}to{background-position:200% 0}}
+}
 </style>
 
 <header class="top">
@@ -2536,14 +2565,19 @@ renderWords();
 
 /* ---------------- theme ---------------- */
 const themeBtn=document.getElementById("themeBtn");
+const THEMES=["dark","light","unicorn"], TNEXT={dark:["☀","Light","light mode"],light:["🦄","Unicorn","unicorn mode"],unicorn:["☾","Dark","dark mode"]};
 function paintThemeBtn(){
-  const dark=document.documentElement.getAttribute("data-theme")!=="light";
-  document.getElementById("themeIcon").textContent= dark?"☀":"☾";
-  document.getElementById("themeTxt").textContent= dark?"Light":"Dark";
-  themeBtn.setAttribute("aria-label", dark?"Switch to light mode":"Switch to dark mode");
+  const cur=THEMES.includes(document.documentElement.getAttribute("data-theme"))?document.documentElement.getAttribute("data-theme"):"dark";
+  const n=TNEXT[cur];
+  document.getElementById("themeIcon").textContent=n[0];
+  document.getElementById("themeTxt").textContent=n[1];
+  themeBtn.setAttribute("aria-label","Switch to "+n[2]);
+  themeBtn.title="Switch to "+n[2];
 }
 themeBtn.addEventListener("click",()=>{
-  const next=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+  const cur=document.documentElement.getAttribute("data-theme");
+  const next=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length]||"light";
+  if(next==="unicorn") setTimeout(()=>toast("🦄 Unicorn mode!"),50);
   document.documentElement.setAttribute("data-theme",next);
   chosenTheme=next;
   try{localStorage.setItem("ncs-theme",next);}catch(e){}
@@ -2997,6 +3031,9 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-unicorn", date:"October 29, 2026", title:"Unicorn mode 🦄", items:[
+    ["🌈","A third look","tap the theme button at the top (next to Music) to switch between dark, light and a bright rainbow <b>Unicorn</b> mode.",null]
+  ]},
   {id:"2026-today", date:"October 29, 2026", title:"Something new every day ☀️", items:[
     ["📖","Word of the day","a useful word or expression on your Home page every day, with an example. Tap <b>+ Save to my words</b> to keep it.","notes"],
     ["🌱","Thought for today","a short daily reminder about patience, progress and learning at your own pace.","notes"],
