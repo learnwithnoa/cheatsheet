@@ -61,6 +61,19 @@ tr:last-child td{border-bottom:0}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-weight:800;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 [hidden]{display:none!important}
+.ed input,.ed textarea,.addf input,.addn textarea{width:100%;font:600 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px}
+.addf{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;margin-bottom:10px;align-items:center}
+@media (max-width:700px){.addf{grid-template-columns:1fr}}
+.addn{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.addn textarea,.note textarea{min-height:110px;resize:vertical}
+.ib{all:unset;cursor:pointer;font:700 12px var(--mono);color:var(--muted);padding:3px 8px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+.ib:hover{color:var(--ink);border-color:var(--line)}
+.ib.del:hover,.ib.sure{color:#fff;background:#C2413A;border-color:#C2413A}
+td.act{white-space:nowrap;text-align:right}
+.note .nh{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.by{font:11px var(--mono);color:var(--muted)}
+.hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
+
 </style>
 </head>
 <body>
@@ -104,7 +117,7 @@ tr:last-child td{border-bottom:0}
 
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
-  getFirestore, collection, getDocs } from "./fb.js?v=12.19.0";
+  getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0";
 
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
@@ -191,22 +204,52 @@ function renderList() {
 $("q").oninput = renderList;
 $("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); };
 
+/* ---------- editing (writes go straight to the student's account) ---------- */
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+async function change(s, key, fn) {
+  // read the latest copy first so we don't overwrite something the student just saved
+  const ref = doc(db, "users", s.uid, "data", key);
+  const snap = await getDoc(ref);
+  const cur = snap.exists() && !snap.data().deleted ? parse(snap.data().json, []) : [];
+  const next = fn(Array.isArray(cur) ? cur : []);
+  await setDoc(ref, { json: JSON.stringify(next), deleted: false, at: serverTimestamp() });
+  if (key === "ncs-words") s.words = next.filter(w => w && w.w); else s.notes = next.filter(n => n && n.text);
+  renderList(); renderDetail(s);
+}
+async function guarded(s, key, fn, msg) {
+  try { await change(s, key, fn); toast(msg); }
+  catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the edit rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
+}
+let editW = null, editN = null;
+
 function renderDetail(s) {
   if (!s) return;
   const words = [...s.words].sort((a, b) => (b.t || 0) - (a.t || 0));
   const notes = [...s.notes].sort((a, b) => (b.t || 0) - (a.t || 0));
+  const wRow = w => editW === w.id ?
+    `<tr class="ed"><td><input id="ew" value="${esc(w.w)}"></td><td><input id="em" value="${esc(w.m)}"></td><td><input id="ee" value="${esc(w.e)}"></td><td class="d">${fmtDate(w.t)}</td>
+      <td class="act"><button class="ib" data-wsave="${esc(w.id)}" type="button">Save</button><button class="ib" data-wcancel type="button">Cancel</button></td></tr>` :
+    `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}</td><td class="d">${fmtDate(w.t)}${w.by === "teacher" ? `<div class="by">added by you</div>` : ""}</td>
+      <td class="act"><button class="ib" data-wedit="${esc(w.id)}" type="button">Edit</button><button class="ib del" data-wdel="${esc(w.id)}" type="button">Delete</button></td></tr>`;
+  const nCard = n => editN === n.id ?
+    `<div class="note ed"><div class="when">${fmtLong(n.t)}</div><textarea id="en">${esc(n.text)}</textarea>
+      <div class="row" style="margin-top:8px"><button class="primary" data-nsave="${esc(n.id)}" type="button">Save note</button><button data-ncancel type="button">Cancel</button></div></div>` :
+    `<div class="note"><div class="nh"><div class="when">${fmtLong(n.t)}</div><div><button class="ib" data-nedit="${esc(n.id)}" type="button">Edit</button><button class="ib del" data-ndel="${esc(n.id)}" type="button">Delete</button></div></div>
+      ${n.by === "teacher" ? `<div class="by">written by you</div>` : ""}<div class="txt">${esc(n.text)}</div></div>`;
   $("detail").innerHTML = `
     <h2 style="margin-top:0">${esc(s.name)}</h2>
     <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
     ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
     <h2>Words</h2>
+    <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Cheat Sheet the next time they open it or come back to the tab.</p>
+    <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><button class="primary" type="submit">+ Add</button></form>
     ${words.length ? `<div class="row" style="margin-bottom:10px"><button type="button" id="cpW">Copy words (for a sheet)</button></div>
-      <div class="tbl"><table><thead><tr><th>Word</th><th>Spanish</th><th>Example</th><th>Added</th></tr></thead><tbody>
-      ${words.map(w => `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}</td><td class="d">${fmtDate(w.t)}</td></tr>`).join("")}
-      </tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}
+      <div class="tbl"><table><thead><tr><th>Word</th><th>Spanish</th><th>Example</th><th>Added</th><th></th></tr></thead><tbody>
+      ${words.map(wRow).join("")}</tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}
     <h2>Class notes</h2>
-    ${notes.length ? notes.map(n => `<div class="note"><div class="when">${fmtLong(n.t)}</div><div class="txt">${esc(n.text)}</div></div>`).join("") : `<p class="muted">No class notes saved yet.</p>`}
+    <div class="addn"><textarea id="an" placeholder="Write a class note for them (it's saved with today's date)…" aria-label="New class note"></textarea><div><button class="primary" id="addN" type="button">+ Add note</button></div></div>
+    ${notes.length ? notes.map(nCard).join("") : `<p class="muted">No class notes saved yet.</p>`}
     ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
     ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
   const cp = $("cpW");
@@ -215,7 +258,41 @@ function renderDetail(s) {
     const tsv = words.map(w => [clean(w.w), clean(w.m), clean(w.e)].join("\t")).join("\n");
     try { await navigator.clipboard.writeText(tsv); toast("Copied " + words.length + " words. Paste them into a sheet."); } catch (e) { toast("Couldn't copy. Select the table and copy it."); }
   };
+  $("addW").onsubmit = e => {
+    e.preventDefault();
+    const w = $("aw").value.trim(), m = $("am").value.trim(), ex = $("ae").value.trim(); if (!w) { $("aw").focus(); return; }
+    guarded(s, "ncs-words", list => list.some(x => x && String(x.w).trim().toLowerCase() === w.toLowerCase()) ? list : list.concat([{ id: newId(), w, m, e: ex, t: Date.now(), by: "teacher" }]), "Word added");
+  };
+  $("addN").onclick = () => {
+    const text = $("an").value.trim(); if (!text) { $("an").focus(); return; }
+    guarded(s, "ncs-classnotes", list => list.concat([{ id: newId(), t: Date.now(), text, by: "teacher" }]), "Note added");
+  };
 }
+
+/* row buttons */
+let sureT = null;
+function confirmTwice(btn, go) {
+  if (btn.classList.contains("sure")) { clearTimeout(sureT); go(); return; }
+  document.querySelectorAll(".ib.sure").forEach(b => { b.classList.remove("sure"); b.textContent = "Delete"; });
+  btn.classList.add("sure"); btn.textContent = "Sure?";
+  sureT = setTimeout(() => { btn.classList.remove("sure"); btn.textContent = "Delete"; }, 3000);
+}
+$("detail").addEventListener("click", e => {
+  const s = students.find(x => x.uid === current); if (!s) return;
+  const t = e.target.closest("button"); if (!t) return;
+  const d = t.dataset;
+  if (d.wedit) { editW = d.wedit; renderDetail(s); const i = $("ew"); if (i) i.focus(); }
+  else if ("wcancel" in d) { editW = null; renderDetail(s); }
+  else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(); if (!w) return; editW = null;
+    guarded(s, "ncs-words", list => list.map(x => x && x.id === id ? { ...x, w, m, e: ex } : x), "Word updated"); }
+  else if (d.wdel) confirmTwice(t, () => guarded(s, "ncs-words", list => list.filter(x => !(x && x.id === d.wdel)), "Word deleted"));
+  else if (d.nedit) { editN = d.nedit; renderDetail(s); const i = $("en"); if (i) i.focus(); }
+  else if ("ncancel" in d) { editN = null; renderDetail(s); }
+  else if (d.nsave) { const id = d.nsave, text = $("en").value.trim(); if (!text) return; editN = null;
+    guarded(s, "ncs-classnotes", list => list.map(x => x && x.id === id ? { ...x, text } : x), "Note updated"); }
+  else if (d.ndel) confirmTwice(t, () => guarded(s, "ncs-classnotes", list => list.filter(x => !(x && x.id === d.ndel)), "Note deleted"));
+});
+$("list").addEventListener("click", () => { editW = null; editN = null; }, true);
 
 onAuthStateChanged(auth, u => {
   $("outBtn").hidden = !u;
