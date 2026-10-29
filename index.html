@@ -502,6 +502,7 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 #v-words .page-slot{margin-bottom:18px}
 #v-classnotes .page-slot{margin-bottom:22px}
 
+.move-alt{flex-basis:100%;margin:0;font-size:13.5px;color:var(--muted)}
 
 /* ---------- cloud sync ---------- */
 .wl-warn.wl-sign{border-color:color-mix(in srgb,var(--green) 45%,transparent);background:var(--green-soft)}
@@ -977,6 +978,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     </div>
     <div class="card bk-card"><span class="tag" style="background:var(--green-soft);color:var(--green)">step 2 · on the other device</span>
       <h3>Paste it here</h3>
+      <p class="fb-help" style="margin:0"><b>Coming from the old Cheat Sheet?</b> Paste what you copied with <b>Copy my notes</b> there.</p>
       <p class="fb-help" style="margin:0">Open the Cheat Sheet on the other device, come to this page (<b>Back up or move your notes</b>, at the bottom of any page) and paste the code.</p>
       <label for="bkIn" class="sr">Paste your backup code</label>
       <textarea id="bkIn" spellcheck="false" placeholder="Paste your backup code here"></textarea>
@@ -2476,7 +2478,9 @@ bkRender();
 (function(){
   const h=location.hash||"";
   if(!h.startsWith("#import=")) return;
-  const code=decodeURIComponent(h.slice(8));
+  let code=h.slice(8);
+  for(let i=0;i<3 && /%[0-9A-Fa-f]{2}/.test(code);i++){ try{ code=decodeURIComponent(code); }catch(e){ break; } }
+  code=code.replace(/ /g,"+");   // some apps turn + into spaces
   try{ history.replaceState(null,"",location.pathname); }catch(e){}
   try{ localStorage.removeItem("ncs-sync-uid"); }catch(e){}   // next sign-in merges instead of overwriting
   const inp=document.getElementById("bkIn"); inp.value=code;
