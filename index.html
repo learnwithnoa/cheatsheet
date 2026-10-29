@@ -563,7 +563,8 @@ body:not([data-auth="in"]) .when-in{display:none!important}
         </div>
         <label class="vol" for="musicVol"><span class="vol-lbl">Volume</span><span aria-hidden="true">🔈</span><input type="range" id="musicVol" min="0" max="100" value="45"><span aria-hidden="true">🔊</span></label>
         <label class="vol bal" for="musicBal" id="balRow" hidden><span class="vol-lbl">Mix</span><span class="bal-end">Music</span><input type="range" id="musicBal" min="0" max="100" value="40" aria-valuetext="40% rain"><span class="bal-end">Rain</span></label>
-        <p class="music-note"><b>Brown noise</b> is a deep, steady sound that blocks out distractions. Everything here is made live in your browser, so it never repeats the same way and never has ads. It keeps playing while you move around the Cheat Sheet. Want real tracks? <a href="https://www.youtube.com/@LofiGirl" target="_blank" rel="noopener">Lofi Girl on YouTube ↗</a></p>
+        <p class="music-note" id="mnBrown" hidden><b>Brown noise</b> is a deep, steady sound that blocks out distractions.</p>
+        <p class="music-note" id="mnLofi" hidden>Want real tracks? <a href="https://www.youtube.com/@LofiGirl" target="_blank" rel="noopener">Lofi Girl on YouTube ↗</a></p>
       </div>
     </div>
     <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
@@ -2647,6 +2648,8 @@ bkRender();
     document.getElementById("mpTxt").textContent= playing?"Pause":"Play";
     btn.classList.toggle("on",playing);
     balRow.hidden= mode!=="both";
+    document.getElementById("mnBrown").hidden= mode!=="brown";
+    document.getElementById("mnLofi").hidden= !(mode==="lofi"||mode==="both");
     document.querySelectorAll("[data-mm]").forEach(b=>{ const on=b.dataset.mm===mode; b.setAttribute("aria-checked",on); b.setAttribute("aria-pressed",on); });
   }
   async function play(){
