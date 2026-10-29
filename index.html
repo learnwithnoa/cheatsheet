@@ -675,7 +675,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-notes" hidden>
   <h1>Your <em>home</em></h1>
   <p class="lede">Your class notes and new words, all in one place.</p>
-  <div class="sync-info when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your words, class notes and starred sections sync automatically to any device where you sign in.</div></div>
+  <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your words, class notes and starred sections sync automatically to any device where you sign in.</div></div>
   <div class="store-info dismissible when-out">
     <span class="store-ico" aria-hidden="true">!</span>
     <div><b>You're not signed in.</b> For now, your words and class notes are only saved in this browser. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to save them to your account and see them on any device.</div>
@@ -744,7 +744,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <!-- ============ MY WORDS ============ -->
 <section class="view" id="v-words" hidden>
   <h1>My <em>words</em></h1>
-  <p class="lede">Every word you save, newest first. Practice them with flashcards, import a list you already have, or copy them to your sheet.</p>
+  <p class="lede">Every word you save, newest first. Practice them with flashcards or import a list you already have.</p>
   <div class="note-actions" style="margin-bottom:14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">Import a list of words</button><button class="swap" type="button" data-go="quiz">Practice with flashcards →</button></div>
   <div id="slotAwPage" class="page-slot"></div>
   <div class="card import-card" id="importCard" hidden>
@@ -765,8 +765,8 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   </div>
   <div class="card sheet-card" style="margin-bottom:18px">
     <div id="sheetEmpty">
-      <h3>Link where you keep your vocabulary</h3>
-      <p class="sheet-help"><b>Private 1:1 students:</b> open your <b>English Journey</b> Google Sheet in your Drive folder, copy the link from the address bar and paste it here.<br><b>Club members:</b> paste the link to any doc or note where you keep your words, like a Google Doc or a Google Keep note.<br>You only do this once.</p>
+      <h3>Link your English Journey sheet <span class="opt">(1:1 students)</span></h3>
+      <p class="sheet-help">Open your <b>English Journey</b> Google Sheet in your Drive folder, copy the link from the address bar and paste it here, so your sheet is always one click away. You only do this once.</p>
       <form id="sheetForm" class="row-form" novalidate>
         <label for="sheetIn" class="sr">Google Sheets link</label>
         <input id="sheetIn" type="url" placeholder="https://docs.google.com/…" autocomplete="off" spellcheck="false">
@@ -794,7 +794,6 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     <p id="delAllTxt"><b>Delete all your words?</b> This can't be undone. If you want to keep them, copy them first.</p>
     <div class="note-actions"><button class="swap" type="button" id="delAllCopy">Copy all first</button><button class="pill-btn danger-btn" type="button" id="delAllYes">Yes, delete all</button><button class="swap" type="button" id="delAllNo">Cancel</button></div>
   </div>
-  <p class="copy-help dismissible"><b>1:1 students:</b> copy, open your sheet, click the first empty cell in the English word column of your vocabulary tab and paste (Ctrl+V / ⌘V). Each word fills its own row. <b>Club members:</b> paste wherever you keep your words.</p>
   <div id="wordList" class="word-list"></div>
 </section>
 
@@ -802,7 +801,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-classnotes" hidden>
   <h1>My class <em>notes</em></h1>
   <p class="lede">Write today's notes here or on your Home page. Every note you save shows up below, newest first.</p>
-  <div class="sync-info when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
+  <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
   <div class="store-info dismissible when-out">
     <span class="store-ico" aria-hidden="true">!</span>
     <div><b>You're not signed in.</b> For now, these notes are only saved in this browser. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to save them to your account and see them on any device.</div>
@@ -2047,6 +2046,7 @@ document.getElementById("copyAll").addEventListener("click",()=>doCopy(false));
 
 /* copy nudge */
 function nudgeState(){
+  return null; // copy-to-sheet reminder retired: words save to the Google account now
   const pending=showSamples()?SAMPLE:words.filter(isPending);
   if(!pending.length) return null;
   const oldest=Math.min(...pending.map(x=>x.t));
