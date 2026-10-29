@@ -505,6 +505,8 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 .move-alt{flex-basis:100%;margin:0;font-size:13.5px;color:var(--muted)}
 
 /* ---------- cloud sync ---------- */
+#wNavCount:not(:empty){background:color-mix(in srgb,var(--green) 22%,transparent);color:var(--green);border-radius:999px;padding:1px 8px;font:800 12px var(--body);min-width:22px;text-align:center}
+.cn-nav[aria-current="true"] #wNavCount{background:rgba(255,255,255,.25);color:#fff}
 .wl-warn.wl-sign{border-color:color-mix(in srgb,var(--green) 45%,transparent);background:var(--green-soft)}
 .wl-warn.wl-sign h3{color:var(--green)}
 @media (max-width:480px){.top-in > .pill-btn[data-go="notes"]{display:none}.brand span{white-space:nowrap;font-size:19px}.top-in{gap:8px}}
@@ -574,7 +576,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   <nav class="side" aria-label="Sections">
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
-      <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span class="cn-count" id="cnNavCount"></span></button>
+      <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
