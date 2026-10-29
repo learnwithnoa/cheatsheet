@@ -505,6 +505,8 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 .move-alt{flex-basis:100%;margin:0;font-size:13.5px;color:var(--muted)}
 
 /* ---------- cloud sync ---------- */
+a.brand{text-decoration:none;color:inherit;border-radius:8px}
+a.brand:hover span{filter:brightness(1.15)}
 #wNavCount:not(:empty){background:color-mix(in srgb,var(--green) 22%,transparent);color:var(--green);border-radius:999px;padding:1px 8px;font:800 12px var(--body);min-width:22px;text-align:center}
 .cn-nav[aria-current="true"] #wNavCount{background:rgba(255,255,255,.25);color:#fff}
 .wl-warn.wl-sign{border-color:color-mix(in srgb,var(--green) 45%,transparent);background:var(--green-soft)}
@@ -528,7 +530,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 
 <header class="top">
   <div class="top-in">
-    <div class="brand"><small>Learn with Noa</small><span>Cheat Sheet</span></div>
+    <a class="brand" href="#notes" data-go="notes" aria-label="Cheat Sheet, go to Home"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
     <div class="search" id="searchWrap" role="search">
       <label for="gSearch" class="sr">Search the cheat sheet</label>
       <span class="search-ico" aria-hidden="true"></span>
