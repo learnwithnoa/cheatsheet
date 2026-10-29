@@ -821,7 +821,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <!-- ============ TRANSLATOR ============ -->
 <section class="view" id="v-translate" hidden>
   <h1>Quick <em>translator</em></h1>
-  <p class="lede">Write a word or sentence and open it in your favorite translator with one tap. For single words, WordReference gives you examples and every meaning.</p>
+  <p class="lede">Write a word or sentence and tap <b>Translate here</b>, or open it in Google Translate or DeepL. For single words, WordReference gives you examples and every meaning.</p>
   <div class="tr">
     <div class="card">
       <div class="dir"><strong id="fromLbl">Español</strong><span aria-hidden="true">→</span><strong id="toLbl">English</strong><button class="swap" id="swapBtn" type="button">Swap ⇄</button></div>
@@ -1741,7 +1741,8 @@ document.getElementById("swapBtn").addEventListener("click",()=>{dir= dir==="es-
 updateLinks();
 
 let sample=null, ctrl=null;
-(async()=>{ try{ if(window.claude && window.claude.use){ const s=await window.claude.use("sample"); if(s){ sample=s; trBtn.hidden=false; outCard.hidden=false; } } }catch(e){} })();
+function useCsSample(){ if(!sample && window.__csSample){ sample=window.__csSample; trBtn.hidden=false; outCard.hidden=false; } }
+window.addEventListener("cs-sample-ready",useCsSample); useCsSample();
 trBtn.addEventListener("click",async()=>{
   const t=trIn.value.trim(); if(!t||!sample) { trIn.focus(); return; }
   const [sl,tl]=dir.split("-"); const from= sl==="es"?"Spanish (Chilean)":"English", to= tl==="es"?"Chilean Spanish":"natural, everyday English";
@@ -1752,8 +1753,7 @@ trBtn.addEventListener("click",async()=>{
     const r=await sample(prompt,{modelTier:"quick",signal:ctrl.signal,onText:({text})=>{trOut.textContent=text;}});
     trOut.textContent=r.text;
   }catch(e){
-    if(e&&e.code==="not_granted"){ trBtn.hidden=true; outCard.hidden=true; }
-    else if(e&&e.code==="rate_limited"){ trOut.textContent="Too many translations in a row. Use Google Translate or DeepL for now."; }
+    if(e&&e.code==="rate_limited"){ trOut.textContent="Too many translations in a row. Use Google Translate or DeepL for now."; }
     else if(!(e&&e.name==="AbortError")){ trOut.textContent="That didn't work. Use Google Translate or DeepL below."; }
   }finally{ trBtn.disabled=false; }
 });
@@ -2832,6 +2832,10 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-translate", date:"October 29, 2026", title:"Translate right on the page 🌎", items:[
+    ["🌎","Translate here","write a word or sentence in the Translator and get a natural translation right on the page, no new tab needed.","translate"],
+    ["↗️","Backups still there","Google Translate and DeepL are one tap away if you want a second opinion.",null]
+  ]},
   {id:"2026-cloud", date:"October 29, 2026", title:"Your notes, now in the cloud ☁️", items:[
     ["☁️","Sign in with Google","tap <b>Sign in</b> at the top right and your words, class notes, stars and flashcard progress save to your Google account.",null],
     ["📱","On every device","sign in on your phone or another computer and everything is there. No more copying or backup codes.",null],
@@ -2886,9 +2890,9 @@ else if(LS.get("ncs-seen-version","")!==CL_LATEST) setTimeout(openWN,500);
    Every "ncs-*" key in localStorage is mirrored to users/{uid}/data/{key}.
    First sign-in on a device: local + cloud are merged (nothing lost).
    After that: the cloud is the source of truth, local edits are pushed right away. */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
+  getFirestore, collection, getDocs, doc, setDoc, serverTimestamp,
+  initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -2899,6 +2903,9 @@ const firebaseConfig = {
   appId: "1:619847241160:web:d66edc58b7b143b9ab04fd"
 };
 const app = initializeApp(firebaseConfig);
+/* App Check (Fraud Defense key): only this website may use the translator */
+try { initializeAppCheck(app, { provider: new ReCaptchaEnterpriseProvider("6Lf_6wUuAAAAABPRQ2tI35UPj2oKPzo5P1wSfqjT"), isTokenAutoRefreshEnabled: true }); }
+catch (e) { console.warn("App Check not started", e); }
 const auth = getAuth(app);
 const db = getFirestore(app);
 
@@ -3061,6 +3068,43 @@ onAuthStateChanged(auth, u => {
   renderUser();
   if (u) syncDown();
 });
+
+/* ---------- translator (Gemini via Firebase AI Logic, free tier) ----------
+   Same shape as the Claude page's sample(): sample(prompt,{onText}) -> {text} */
+const MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
+let ai = null;
+try { ai = getAI(app, { backend: new GoogleAIBackend() }); } catch (e) { console.warn("AI Logic not available", e); }
+async function geminiSample(prompt, opts = {}) {
+  let lastErr;
+  for (const name of MODELS) {
+    try {
+      const model = getGenerativeModel(ai, { model: name, generationConfig: { temperature: 0.2 } });
+      const res = await model.generateContentStream(prompt);
+      let text = "";
+      for await (const chunk of res.stream) {
+        if (opts.signal && opts.signal.aborted) { const err = new Error("aborted"); err.name = "AbortError"; throw err; }
+        text += chunk.text() || "";
+        if (opts.onText) opts.onText({ text });
+      }
+      return { text: text.trim() };
+    } catch (e) {
+      if (e && e.name === "AbortError") throw e;
+      lastErr = e;
+      const msg = String((e && (e.message || e.code)) || "");
+      if (/429|quota|exhaust|rate/i.test(msg)) { const err = new Error("rate limited"); err.code = "rate_limited"; throw err; }
+      if (!/not found|404|unsupported|not supported/i.test(msg)) break;   // only try the next model if this one doesn't exist
+    }
+  }
+  console.warn("Translator failed", lastErr);
+  throw lastErr || new Error("failed");
+}
+function withTimeout(prompt, opts = {}) {
+  return Promise.race([
+    geminiSample(prompt, opts),
+    new Promise((_, rej) => setTimeout(() => { const e = new Error("timeout"); e.code = "timeout"; rej(e); }, 20000))
+  ]);
+}
+if (ai) { window.__csSample = withTimeout; window.dispatchEvent(new Event("cs-sample-ready")); }
 
 </script>
 </body>
