@@ -502,7 +502,11 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 #v-words .page-slot{margin-bottom:18px}
 #v-classnotes .page-slot{margin-bottom:22px}
 
+
 /* ---------- cloud sync ---------- */
+.wl-warn.wl-sign{border-color:color-mix(in srgb,var(--green) 45%,transparent);background:var(--green-soft)}
+.wl-warn.wl-sign h3{color:var(--green)}
+@media (max-width:480px){.top-in > .pill-btn[data-go="notes"]{display:none}.brand span{white-space:nowrap;font-size:19px}.top-in{gap:8px}}
 body[data-auth="in"] .when-out{display:none!important}
 body:not([data-auth="in"]) .when-in{display:none!important}
 .sync-info{display:flex;gap:10px;align-items:flex-start;background:var(--green-soft);border:1px solid color-mix(in srgb,var(--green) 40%,transparent);border-radius:12px;padding:10px 14px;margin:-6px 0 18px;max-width:80ch;font-size:14.5px}
@@ -618,7 +622,6 @@ body:not([data-auth="in"]) .when-in{display:none!important}
       <button class="navbtn" data-go="basics">Sentence basics</button>
     </div>
     <div class="navgroup"><h4>Help</h4>
-      <button class="navbtn" data-go="backup">Back up &amp; move</button>
       <button class="navbtn fb-nav" data-go="feedback">Send feedback</button>
     </div>
   </nav>
@@ -671,15 +674,15 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <!-- ============ HOME ============ -->
 <section class="view" id="v-notes" hidden>
   <h1>Your <em>home</em></h1>
-  <p class="lede">Your class notes and new words, all in one place.<span class="when-out"> Copy your words somewhere safe once a week.</span></p>
+  <p class="lede">Your class notes and new words, all in one place.</p>
   <div class="sync-info when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your words, class notes and starred sections sync automatically to any device where you sign in.</div></div>
   <div class="store-info dismissible when-out">
     <span class="store-ico" aria-hidden="true">!</span>
-    <div><button class="foot-link" type="button" data-signin>Sign in with Google</button> to save everything in the cloud and see it on any device. Without signing in: <b>your words and class notes are saved only in this browser, on this device.</b> Not in the cloud: they won't appear on your phone or another computer, and clearing your browsing data or using a private window erases them. <button class="foot-link" type="button" data-go="backup">Back up or move them</button> · <button class="foot-link" type="button" data-welcome>How saving works</button></div>
+    <div><b>You're not signed in.</b> For now, your words and class notes are only saved in this browser. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to save them to your account and see them on any device.</div>
   </div>
   <div class="nudge when-out" id="nudge" hidden>
     <button class="tip-x" type="button" id="nudgeX" aria-label="Hide this reminder">×</button>
-    <div><b id="nudgeTxt">You have words that aren't in your sheet yet.</b><span>They only live in this browser. Copy them to your sheet or notes now so you never lose them.</span></div>
+    <div><b id="nudgeTxt">You have words that aren't in your sheet yet.</b><span>Copy them to your sheet now. Tip: sign in (top right) so your words are also saved to your account.</span></div>
     <button class="pill-btn pill-green" type="button" id="nudgeCopy">Copy them</button>
   </div>
 
@@ -689,7 +692,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     <div class="cn-top"><label for="freeNotes" class="cn-date" id="cnToday">Today</label><span class="count" id="freeSaved">Your draft is kept until you save it</span></div>
     <textarea id="freeNotes" placeholder="Write your notes for today's class: corrections, things to practice, questions for next class…"></textarea>
     <div class="note-actions"><button class="pill-btn pill-green" type="button" id="cnSave">Save note</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
-    <p class="cn-warn dismissible when-out">Saved notes go to <b>My class notes</b>, sorted by date. Like your words, they're saved <b>only in this browser</b> (not in the cloud), so copy them to a Google Doc or your notes app every so often.</p>
+    <p class="cn-warn dismissible when-out">Saved notes go to <b>My class notes</b>, sorted by date. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to keep them in your account. Until then, they're only saved in this browser.</p>
   </div>
   </div></div>
 
@@ -741,7 +744,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <!-- ============ MY WORDS ============ -->
 <section class="view" id="v-words" hidden>
   <h1>My <em>words</em></h1>
-  <p class="lede">Every word you save, newest first. Copy them to your sheet once a week, import a list you already have, or practice them with flashcards.</p>
+  <p class="lede">Every word you save, newest first. Practice them with flashcards, import a list you already have, or copy them to your sheet.</p>
   <div class="note-actions" style="margin-bottom:14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">Import a list of words</button><button class="swap" type="button" data-go="quiz">Practice with flashcards →</button></div>
   <div id="slotAwPage" class="page-slot"></div>
   <div class="card import-card" id="importCard" hidden>
@@ -802,7 +805,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   <div class="sync-info when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
   <div class="store-info dismissible when-out">
     <span class="store-ico" aria-hidden="true">!</span>
-    <div><b>These notes are saved only in this browser, on this device</b> (<button class="foot-link" type="button" data-signin>Sign in with Google</button> to save them in the cloud instead.) They are not in the cloud: they won't appear on your phone or another computer, and clearing your browsing data or using a private window erases them. Use <b>Copy all notes</b> and paste them into a Google Doc (1:1 students: keep it in your Drive folder), Google Keep or your phone's notes app.</div>
+    <div><b>You're not signed in.</b> For now, these notes are only saved in this browser. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to save them to your account and see them on any device.</div>
   </div>
   <div id="slotCnPage" class="page-slot"></div>
   <div class="list-head" style="margin-top:6px">
@@ -975,7 +978,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     </div>
     <div class="card bk-card"><span class="tag" style="background:var(--green-soft);color:var(--green)">step 2 · on the other device</span>
       <h3>Paste it here</h3>
-      <p class="fb-help" style="margin:0">Open the Cheat Sheet on the other device, come to this page (Help → Back up &amp; move) and paste the code.</p>
+      <p class="fb-help" style="margin:0">Open the Cheat Sheet on the other device, come to this page (<b>Back up or move your notes</b>, at the bottom of any page) and paste the code.</p>
       <label for="bkIn" class="sr">Paste your backup code</label>
       <textarea id="bkIn" spellcheck="false" placeholder="Paste your backup code here"></textarea>
       <button class="pill-btn pill-green" type="button" id="bkRestore">Restore</button>
@@ -1517,23 +1520,15 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   <h2 id="wlTitle">Welcome to your <em>Cheat Sheet</em></h2>
   <p class="wl-lede">Keep this tab open during class and use it whenever you need it. Bookmark it now (<b>Ctrl+D</b> or <b>⌘D</b>) so it's always one click away.</p>
   <ul class="wl-list">
-    <li><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>Sign in with Google</b> (top right) so your words and notes save in the cloud and follow you to any device. <button class="foot-link" type="button" data-signin>Sign in now</button></div></li>
+    <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, class notes and stars save to your Google account automatically, on every device where you sign in.</div></li>
     <li><span class="wl-ico" aria-hidden="true">🔍</span><div><b>Search everything</b> with the box at the top. Press <kbd>/</kbd> to jump to it.</div></li>
     <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save new words</b> with the green <b>+ word</b> button (it's on every section) or on your <b>Home</b> page.</div></li>
     <li><span class="wl-ico wl-star" aria-hidden="true">★</span><div><b>Star the sections you use most.</b> They move to the top of the menu.</div></li>
   </ul>
-  <div class="wl-warn when-out">
-    <h3>Important: where your notes are saved</h3>
-    <p>Your words, class notes and starred sections are saved <b>only in this browser, on this device</b>. They are <b>not</b> saved in the cloud, so:</p>
-    <ul>
-      <li>They <b>won't show up on your phone</b>, another computer or another browser.</li>
-      <li>They <b>disappear</b> if you clear your browsing data or use a private/incognito window.</li>
-    </ul>
-    <p>To move everything to another device, use the <b>Back up &amp; move</b> page in the menu. And <b>copy your words somewhere safe yourself</b>, at least once a week:</p>
-    <ul>
-      <li><b>Private 1:1 students:</b> paste your words into the vocabulary tab of your <b>English Journey</b> Google Sheet in your Drive folder (the Copy buttons on your Home page format them for you), and your class notes into a Google Doc in the same folder.</li>
-      <li><b>Club members:</b> paste your words and class notes anywhere you like, such as Google Keep, your phone's notes app or a Google Doc.</li>
-    </ul>
+  <div class="wl-warn wl-sign when-out">
+    <h3>Sign in so you never lose your notes</h3>
+    <p>You're not signed in yet, so for now your words, class notes and starred sections are only saved <b>in this browser, on this device</b>. Clearing your browsing data or using a private window erases them.</p>
+    <p><button class="foot-link" type="button" data-signin>Sign in with Google</button> (top right) and everything saves to your account automatically. Sign in with the same account on your phone or computer and it's all there.</p>
   </div>
   <div class="note-actions"><button class="pill-btn" type="button" id="wlOk">Got it</button><button class="swap" type="button" data-go="notes" id="wlNotes">Take me to Home</button></div>
 </section>
