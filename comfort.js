@@ -33,12 +33,13 @@
   }
 
   /* ---------- theme ---------- */
-  const THEME_LIST = [["dark", "☾", "Dark"], ["light", "☀", "Light"], ["soft", "🌿", "Soft"], ["unicorn", "🦄", "Unicorn"]];
+  const THEME_LIST = [["dark", "☾", "Dark"], ["light", "☀", "Light"], ["sepia", "📖", "Sepia"], ["unicorn", "🦄", "Unicorn"]];
   function curTheme() { return root.getAttribute("data-theme") || "dark"; }
+  function sepiaFont() { if (curTheme() === "sepia" && !document.querySelector('link[data-csfontlink="literata"]')) { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&display=swap"; l.dataset.csfontlink = "literata"; document.head.appendChild(l); } }
   function setTheme(t) {
     if (typeof window.csSetTheme === "function") window.csSetTheme(t);
     else { root.setAttribute("data-theme", t); try { localStorage.setItem("ncs-theme", t); } catch (e) {} }
-    paintPanel();
+    paintPanel(); sepiaFont();
     window.dispatchEvent(new Event("cs-theme"));
   }
 
@@ -333,6 +334,7 @@
   new MutationObserver(paintPanel).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
   function init() {
+    sepiaFont();
     buildPanel(); addReadButtons(); applyAll();
     if (tRun) { clearInterval(tInt); tInt = setInterval(tTick, 1000); tTick(); }
   }

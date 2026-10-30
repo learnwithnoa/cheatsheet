@@ -6,14 +6,14 @@
 <meta name="description" content="Your English Cheat Sheet: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<link rel="stylesheet" href="comfort.css?v=2">
+<link rel="stylesheet" href="comfort.css?v=3">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=2" defer></script>
+<script src="comfort.js?v=3" defer></script>
 </head>
 <body data-auth="out">
 <script>try{if(localStorage.getItem("ncs-sync-uid"))document.body.dataset.auth="in";}catch(e){}</script>
 <title>Cheat Sheet</title>
-<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
+<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft"){t="sepia";localStorage.setItem("ncs-theme",t);}}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,7 @@
   --mono:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   --shadow:0 1px 2px rgba(15,35,65,.06),0 6px 18px rgba(30,140,240,.08);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="unicorn"]){
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="unicorn"]):not([data-theme="sepia"]){
   --bg:#0A1424; --surface:#111E33; --surface-2:#0E1A2D; --line:#22385A;
   --ink:#E6EEF8; --muted:#9DB1CA;
   --royal:#8FB0FF; --bright:#5DB6FF; --sky:#16304F; --green:#5AD394; --green-soft:#123726; --red:#F08A82; --red-soft:#3A1B1A;
@@ -576,6 +576,17 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   @keyframes uniShift{from{background-position:0 0}to{background-position:200% 0}}
 }
 .w-sort{font:700 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+
+.wl-top{display:flex;justify-content:space-between;align-items:center;margin:-6px -6px -4px 0}
+.wl-count{font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.wl-step{display:flex;flex-direction:column;gap:12px}
+.wl-step h2:focus{outline:none}
+.wl-tip{margin:0;font-size:14.5px;color:var(--muted)}
+.wl-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:12px}
+.wl-dots{display:flex;gap:7px}
+.wl-dots i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+.wl-dots i.on{background:var(--royal);width:22px;border-radius:999px}
+.wl-btns{margin-left:auto}
 </style>
 
 <header class="top">
@@ -1619,20 +1630,63 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 </section>
 <div class="qa-backdrop wl-backdrop" id="wlBackdrop" hidden></div>
 <section class="welcome card" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlTitle" hidden>
-  <h2 id="wlTitle">Welcome to your <em>Cheat Sheet</em></h2>
-  <p class="wl-lede">Keep this tab open during class and use it whenever you need it. Bookmark it now (<b>Ctrl+D</b> or <b>⌘D</b>) so it's always one click away.</p>
-  <ul class="wl-list">
-    <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, class notes and stars save to your Google account automatically, on every device where you sign in.</div></li>
-    <li><span class="wl-ico" aria-hidden="true">🔍</span><div><b>Search everything</b> with the box at the top. Press <kbd>/</kbd> to jump to it.</div></li>
-    <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save new words</b> with the green <b>+ word</b> button (it's on every section) or on your <b>Home</b> page.</div></li>
-    <li><span class="wl-ico wl-star" aria-hidden="true">★</span><div><b>Star the sections you use most.</b> They move to the top of the menu.</div></li>
-  </ul>
-  <div class="wl-warn wl-sign when-out">
-    <h3>Sign in so you never lose your notes</h3>
-    <p>You're not signed in yet, so for now your words, class notes and starred sections are only saved <b>in this browser, on this device</b>. Clearing your browsing data or using a private window erases them.</p>
-    <p><button class="foot-link" type="button" data-signin>Sign in with Google</button> (top right) and everything saves to your account automatically. Sign in with the same account on your phone or computer and it's all there.</p>
+  <div class="wl-top"><span class="wl-count" id="wlCount">1 of 4</span><button class="qa-x" type="button" id="wlSkip" aria-label="Close the tour">×</button></div>
+
+  <div class="wl-step" data-step="0">
+    <h2 id="wlTitle">Welcome to your <em>Cheat Sheet</em> 👋</h2>
+    <p class="wl-lede">This is your English companion from <b>Learn with Noa</b>. It does two jobs:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">📚</span><div><b>A quick reference while you speak.</b> Verb tenses, irregular verbs, grammar, phrases for when you're stuck… all short, clear and with Spanish where it helps.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">📝</span><div><b>Your own English notebook.</b> Save new words and class notes here, practice them with flashcards, and find them again anytime.</div></li>
+    </ul>
+    <p class="wl-tip">💡 Bookmark it now (<b>Ctrl+D</b> or <b>⌘D</b>) so it's always one click away.</p>
   </div>
-  <div class="note-actions"><button class="pill-btn" type="button" id="wlOk">Got it</button><button class="swap" type="button" data-go="notes" id="wlNotes">Take me to Home</button></div>
+
+  <div class="wl-step" data-step="1" hidden>
+    <h2>During <em>class</em> 🎧</h2>
+    <p class="wl-lede">Keep this tab open next to Zoom. When you need something, it's right here:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">🔍</span><div><b>Search everything</b> with the box at the top. Press <kbd>/</kbd> to jump to it. Try “since” or “make”.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🆘</span><div><b>Stuck?</b> Open <b>I'm stuck!</b> in the menu for phrases that keep you talking in English.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⇄</span><div><b>Translator</b> is pinned in the green menu, for the word you just can't find.</div></li>
+      <li><span class="wl-ico wl-star" aria-hidden="true">★</span><div><b>Star the pages you use most.</b> They move to the top of the menu.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-step" data-step="2" hidden>
+    <h2>After <em>class</em> 📝</h2>
+    <p class="wl-lede">Five minutes here after each class makes a big difference:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save new words</b> with the green <b>+ word</b> button. It's on every page.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">✎</span><div><b>Write your class notes</b> on your <b>Home</b> page: corrections, things to practice, questions for next time.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice your words</b> with flashcards. The ones you miss come back sooner.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">☀</span><div><b>Check your Home page</b> for a new word of the day and a thought for today.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-step" data-step="3" hidden>
+    <h2>Make it <em>yours</em> ⚙️</h2>
+    <ul class="wl-list">
+      <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes and settings save to your Google account and follow you to every device.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (top right): bigger text, easier fonts, calm mode, focus mode, a study timer, and four looks, including Sepia and 🦄 Unicorn.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music</b>: lo-fi, rain, piano or brown noise while you study.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Something missing?</b> Use “Tell Noa” at the bottom of any page.</div></li>
+    </ul>
+    <div class="wl-warn wl-sign when-out">
+      <h3>Sign in so you never lose your notes</h3>
+      <p>Until you sign in, your words and notes are only saved <b>in this browser, on this device</b>. <button class="foot-link" type="button" data-signin>Sign in with Google</button> and everything saves to your account, on your phone and computer.</p>
+    </div>
+  </div>
+
+  <div class="wl-nav">
+    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="note-actions wl-btns">
+      <button class="swap" type="button" id="wlBack" hidden>← Back</button>
+      <button class="pill-btn" type="button" id="wlNext">Next →</button>
+      <button class="swap" type="button" data-go="notes" id="wlNotes" hidden>Take me to Home</button>
+      <button class="pill-btn" type="button" id="wlOk" hidden>Let's go!</button>
+    </div>
+  </div>
 </section>
 <form class="qa card" id="qa" role="dialog" aria-modal="true" aria-labelledby="qaTitle" hidden autocomplete="off">
   <div class="qa-top"><h3 id="qaTitle">Save a word</h3><button class="qa-x" type="button" id="qaClose" aria-label="Close">×</button></div>
@@ -2611,7 +2665,7 @@ renderWords();
 
 /* ---------------- theme ---------------- */
 const themeBtn=document.getElementById("themeBtn");
-const THEMES=["dark","light","soft","unicorn"], TNEXT={dark:["☀","Light","light mode"],light:["🌿","Soft","soft mode"],soft:["🦄","Unicorn","unicorn mode"],unicorn:["☾","Dark","dark mode"]};
+const THEMES=["dark","light","sepia","unicorn"], TNEXT={dark:["☀","Light","light mode"],light:["📖","Sepia","sepia mode"],sepia:["🦄","Unicorn","unicorn mode"],unicorn:["☾","Dark","dark mode"]};
 function paintThemeBtn(){
   const cur=THEMES.includes(document.documentElement.getAttribute("data-theme"))?document.documentElement.getAttribute("data-theme"):"dark";
   const n=TNEXT[cur];
@@ -2631,7 +2685,7 @@ themeBtn.addEventListener("click",()=>{
 });
 let chosenTheme="dark";
 window.csSetTheme=t=>{ chosenTheme=t; try{localStorage.setItem("ncs-theme",t);}catch(e){} document.documentElement.setAttribute("data-theme",t); paintThemeBtn(); if(t==="unicorn") toast("🦄 Unicorn mode!"); };
-try{chosenTheme=localStorage.getItem("ncs-theme")||"dark";}catch(e){}
+try{chosenTheme=localStorage.getItem("ncs-theme")||"dark"; if(chosenTheme==="soft") chosenTheme="sepia";}catch(e){}
 /* keep the student's pick even if the viewer sets its own theme on load */
 new MutationObserver(()=>{
   if(document.documentElement.getAttribute("data-theme")!==chosenTheme) document.documentElement.setAttribute("data-theme",chosenTheme);
@@ -3066,7 +3120,20 @@ document.addEventListener("keydown",e=>{
 /* ---------------- welcome card ---------------- */
 const wl=document.getElementById("welcome"), wlBd=document.getElementById("wlBackdrop");
 let wlReturn=null;
-function openWelcome(){ wlReturn=document.activeElement; wl.hidden=false; wlBd.hidden=false; setTimeout(()=>document.getElementById("wlOk").focus(),30); }
+let wlAt=0;
+function wlShow(i){ const steps=wl.querySelectorAll(".wl-step"); wlAt=Math.max(0,Math.min(steps.length-1,i));
+  steps.forEach((st,k)=>st.hidden=k!==wlAt); const last=wlAt===steps.length-1;
+  document.getElementById("wlCount").textContent=(wlAt+1)+" of "+steps.length;
+  document.querySelectorAll("#wlDots i").forEach((d,k)=>d.classList.toggle("on",k===wlAt));
+  document.getElementById("wlBack").hidden=wlAt===0; document.getElementById("wlNext").hidden=last;
+  document.getElementById("wlOk").hidden=!last; document.getElementById("wlNotes").hidden=!last;
+  wl.scrollTop=0; const h=steps[wlAt].querySelector("h2"); if(h){ h.setAttribute("tabindex","-1"); }
+  setTimeout(()=>document.getElementById(last?"wlOk":"wlNext").focus(),30); }
+function openWelcome(){ wlReturn=document.activeElement; wl.hidden=false; wlBd.hidden=false; wlShow(0); }
+document.getElementById("wlNext").addEventListener("click",()=>wlShow(wlAt+1));
+document.getElementById("wlBack").addEventListener("click",()=>wlShow(wlAt-1));
+document.getElementById("wlSkip").addEventListener("click",()=>closeWelcome());
+wl.addEventListener("keydown",e=>{ if(e.key==="ArrowRight"&&wlAt<3) wlShow(wlAt+1); if(e.key==="ArrowLeft"&&wlAt>0) wlShow(wlAt-1); });
 function closeWelcome(){ wl.hidden=true; wlBd.hidden=true; LS.set("ncs-welcomed",1); if(wlReturn&&wlReturn.focus&&wlReturn!==document.body) wlReturn.focus(); }
 document.getElementById("wlOk").addEventListener("click",closeWelcome);
 document.getElementById("wlNotes").addEventListener("click",()=>{ closeWelcome(); });
@@ -3081,7 +3148,7 @@ const CHANGELOG=[
   {id:"2026-comfort", date:"October 30, 2026", title:"Make it comfortable for you ⚙️", items:[
     ["⚙","Reading &amp; comfort settings","tap <b>Settings</b> at the top: bigger text, easier-to-read fonts, more space, bionic reading and a reading ruler.",null],
     ["🎯","Focus mode &amp; study timer","hide everything except the page you're on, and time your study sessions with a gentle chime.",null],
-    ["🌿","Calm mode &amp; Soft look","no animations, softer colors and no pop-ups. Plus a new warm, low-contrast <b>Soft</b> theme.",null],
+    ["📖","Calm mode &amp; Sepia","no animations, softer colors and no pop-ups. Plus a new <b>Sepia</b> look, like reading on a Kindle.",null],
     ["🔊","Listen &amp; In short","a 🔊 Listen button reads any page aloud, and grammar pages start with a one-line summary.","perfect"]
   ]},
   {id:"2026-unicorn", date:"October 29, 2026", title:"Unicorn mode 🦄", items:[

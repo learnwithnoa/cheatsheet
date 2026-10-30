@@ -78,11 +78,11 @@ td.act{white-space:nowrap;text-align:right}
 .hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
 
 </style>
-<link rel="stylesheet" href="comfort.css?v=2">
-<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
+<link rel="stylesheet" href="comfort.css?v=3">
+<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=2" defer></script>
+<script src="comfort.js?v=3" defer></script>
 </head>
 <body>
 <header><div class="top">

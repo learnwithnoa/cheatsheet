@@ -1,15 +1,20 @@
 /* ===== Cheat Sheet · Reading & comfort settings (shared by the Cheat Sheet and the teacher view) ===== */
 
 /* --- themes that both pages share --- */
-:root[data-theme="soft"]{
-  --bg:#F3EEE6; --surface:#FBF8F3; --surface-2:#F6F1E9; --line:#E2D8CA;
-  --ink:#2F2A25; --muted:#665E55;
-  --royal:#3F5F8A; --bright:#5C7FAF; --sky:#E7ECF1; --green:#3D7655; --green-soft:#E2EEE5; --red:#A5463C; --red-soft:#F5E1DD;
-  --gloss:linear-gradient(180deg,#7090BA 0%,#56769F 100%);
-  --shadow:0 1px 2px rgba(60,45,30,.05),0 6px 18px rgba(60,45,30,.06);
+:root[data-theme="sepia"]{
+  --bg:#F4ECD8; --surface:#FBF5E6; --surface-2:#F7EEDA; --line:#E2D3B3;
+  --ink:#4A3826; --muted:#7A6449;
+  --royal:#8B5A2B; --bright:#A9743E; --sky:#EFE2C4; --green:#5C7A35; --green-soft:#E8EBD0; --red:#A3432C; --red-soft:#F3DDCF;
+  --gloss:linear-gradient(180deg,#A97C4B 0%,#86602F 100%);
+  --shadow:0 1px 2px rgba(90,60,20,.06),0 6px 18px rgba(90,60,20,.07);
   color-scheme:light}
-:root[data-theme="soft"] .pill-green,:root[data-theme="soft"] .primary,:root[data-theme="soft"] .fab,:root[data-theme="soft"] .music-play{background:linear-gradient(180deg,#5E9775 0%,#3D7655 100%)}
-:root[data-theme="soft"] .notes-nav[aria-current="true"],:root[data-theme="soft"] .cn-nav[aria-current="true"]{background:linear-gradient(180deg,#5E9775 0%,#3D7655 100%)}
+/* Kindle feel: a book font, unless the student picked one in Settings */
+:root[data-theme="sepia"]:not(.cs-font-atkinson):not(.cs-font-lexend){--body:"Literata",Georgia,"Iowan Old Style","Palatino Linotype",serif;--display:"Literata",Georgia,serif}
+:root[data-theme="sepia"]:not(.cs-font-atkinson):not(.cs-font-lexend) body{font-family:"Literata",Georgia,"Iowan Old Style","Palatino Linotype",serif}
+:root[data-theme="sepia"] .pill-green,:root[data-theme="sepia"] .primary,:root[data-theme="sepia"] .fab,:root[data-theme="sepia"] .music-play{background:linear-gradient(180deg,#7C9A4E 0%,#5C7A35 100%)}
+:root[data-theme="sepia"] .notes-nav[aria-current="true"],:root[data-theme="sepia"] .cn-nav[aria-current="true"]{background:linear-gradient(180deg,#7C9A4E 0%,#5C7A35 100%)}
+:root[data-theme="sepia"] .brand span,:root[data-theme="sepia"] .view h1 em,:root[data-theme="sepia"] .welcome h2 em{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#8B5A2B}
+:root[data-theme="sepia"] .td-tag2{color:#7A5310}
 :root[data-theme="unicorn"]{
   --bg:#FFF6FC; --surface:#FFFFFF; --surface-2:#FFF4FB; --line:#F2C6EA;
   --ink:#341043; --muted:#714A80;
