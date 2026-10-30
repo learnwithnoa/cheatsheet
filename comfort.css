@@ -9,8 +9,8 @@
   --shadow:0 1px 2px rgba(90,60,20,.06),0 6px 18px rgba(90,60,20,.07);
   color-scheme:light}
 /* Kindle feel: a book font, unless the student picked one in Settings */
-:root[data-theme="sepia"]:not(.cs-font-atkinson):not(.cs-font-lexend){--body:"Literata",Georgia,"Iowan Old Style","Palatino Linotype",serif;--display:"Literata",Georgia,serif}
-:root[data-theme="sepia"]:not(.cs-font-atkinson):not(.cs-font-lexend) body{font-family:"Literata",Georgia,"Iowan Old Style","Palatino Linotype",serif}
+:root[data-theme="sepia"]:not(.cs-font-atkinson):not(.cs-font-classic){--body:"Literata",Georgia,"Iowan Old Style","Palatino Linotype",serif;--display:"Literata",Georgia,serif}
+:root[data-theme="sepia"]:not(.cs-font-atkinson):not(.cs-font-classic) body{font-family:"Literata",Georgia,"Iowan Old Style","Palatino Linotype",serif}
 :root[data-theme="sepia"] .pill-green,:root[data-theme="sepia"] .primary,:root[data-theme="sepia"] .fab,:root[data-theme="sepia"] .music-play{background:linear-gradient(180deg,#7C9A4E 0%,#5C7A35 100%)}
 :root[data-theme="sepia"] .notes-nav[aria-current="true"],:root[data-theme="sepia"] .cn-nav[aria-current="true"]{background:linear-gradient(180deg,#7C9A4E 0%,#5C7A35 100%)}
 :root[data-theme="sepia"] .brand span,:root[data-theme="sepia"] .view h1 em,:root[data-theme="sepia"] .welcome h2 em{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#8B5A2B}
@@ -29,9 +29,9 @@ body{zoom:var(--cs-zoom,1)}
 
 /* --- readable fonts --- */
 html.cs-font-atkinson{--body:"Atkinson Hyperlegible",system-ui,sans-serif;--display:"Atkinson Hyperlegible",system-ui,sans-serif}
-html.cs-font-lexend{--body:"Lexend",system-ui,sans-serif;--display:"Lexend",system-ui,sans-serif}
+html.cs-font-classic{--body:"Nunito",system-ui,sans-serif}
 html.cs-font-atkinson body,html.cs-font-atkinson input,html.cs-font-atkinson textarea,html.cs-font-atkinson button{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
-html.cs-font-lexend body,html.cs-font-lexend input,html.cs-font-lexend textarea,html.cs-font-lexend button{font-family:"Lexend",system-ui,sans-serif}
+html.cs-font-classic body,html.cs-font-classic input,html.cs-font-classic textarea,html.cs-font-classic button{font-family:"Nunito",system-ui,sans-serif}
 
 /* --- more space --- */
 html.cs-space body{line-height:1.85;letter-spacing:.015em;word-spacing:.08em}

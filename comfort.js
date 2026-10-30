@@ -9,6 +9,7 @@
   const isMain = !!document.getElementById("v-notes");
   let S = Object.assign({}, DEF);
   try { S = Object.assign({}, DEF, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+  if (S.font === "lexend") S.font = "default"; // Lexend is the default now
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -25,7 +26,7 @@
   /* ---------- fonts (loaded only when chosen) ---------- */
   const FONTS = {
     atkinson: "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap",
-    lexend: "https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap"
+    classic: "https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,800;0,900;1,600&display=swap"
   };
   function loadFont(f) {
     if (!FONTS[f] || document.querySelector('link[data-csfontlink="' + f + '"]')) return;
@@ -205,7 +206,7 @@
   function addReadButtons() {
     if (!isMain || !canSpeak) return;
     document.querySelectorAll("main section.view").forEach(v => {
-      if (v.querySelector(".cs-read") || ["v-feedback", "v-backup", "v-changelog"].includes(v.id)) return;
+      if (v.querySelector(".cs-read") || ["v-feedback", "v-backup", "v-changelog", "v-notes", "v-words", "v-translate", "v-quiz"].includes(v.id)) return;
       const btn = document.createElement("button"); btn.type = "button"; btn.className = "cs-read"; btn.innerHTML = "🔊 Listen";
       btn.title = "Read this page aloud (or select some text first to hear just that part)";
       btn.setAttribute("aria-label", "Read this page aloud");
@@ -253,7 +254,7 @@
   /* ---------- apply everything ---------- */
   function applyAll() {
     root.style.setProperty("--cs-zoom", String(S.size));
-    root.classList.remove("cs-font-atkinson", "cs-font-lexend");
+    root.classList.remove("cs-font-atkinson", "cs-font-lexend", "cs-font-classic");
     if (S.font !== "default") { loadFont(S.font); root.classList.add("cs-font-" + S.font); }
     root.classList.toggle("cs-space", !!S.space);
     root.classList.toggle("cs-no-inshort", !S.inshort);
@@ -273,8 +274,8 @@
         <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>
         <div class="cs-sec"><h4>Reading</h4>
           <div class="cs-size"><button type="button" id="csSmaller" aria-label="Smaller text">A−</button><span id="csSizeTxt">100%</span><button type="button" id="csBigger" aria-label="Bigger text">A+</button></div>
-          <div class="cs-seg three" id="csFonts"><button type="button" data-csfont="default">Default</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="lexend" style="font-family:'Lexend',sans-serif">Lexend</button></div>
-          <small style="color:var(--muted);font-size:12.5px;margin-top:-2px">Atkinson Hyperlegible and Lexend are fonts designed to be easier to read.</small>
+          <div class="cs-seg three" id="csFonts"><button type="button" data-csfont="default" style="font-family:'Lexend',sans-serif">Lexend</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="classic" style="font-family:'Nunito',sans-serif">Classic</button></div>
+          <small style="color:var(--muted);font-size:12.5px;margin-top:-2px">Lexend (the default) and Atkinson Hyperlegible were designed to be easier to read. Classic is the Cheat Sheet's original font.</small>
           ${tog("csSpace", "More space", "Extra room between lines, words and paragraphs.")}
           ${tog("csBionic", "Bionic reading", "Bolds the start of each word. Some people find it easier to read; try it and see.")}
           ${tog("csRulerT", "Reading ruler", "A highlighted band that follows your mouse or finger, to keep your place.")}
@@ -296,7 +297,7 @@
           <small style="color:var(--muted);font-size:12.5px">${isMain ? "Signed in? These settings follow you to your other devices." : "Saved in this browser."}</small></div>
       </div>`;
     const btn = $("csBtn"), panel = $("csPanel");
-    const open = o => { panel.hidden = !o; btn.setAttribute("aria-expanded", String(o)); if (o) { paintPanel(); loadFont("atkinson"); loadFont("lexend"); } };
+    const open = o => { panel.hidden = !o; btn.setAttribute("aria-expanded", String(o)); if (o) { paintPanel(); loadFont("atkinson"); loadFont("classic"); } };
     btn.onclick = () => open(panel.hidden);
     $("csClose").onclick = () => { open(false); btn.focus(); };
     panel.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); btn.focus(); } });
