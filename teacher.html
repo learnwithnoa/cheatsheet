@@ -78,13 +78,18 @@ td.act{white-space:nowrap;text-align:right}
 .hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
 
 </style>
+<link rel="stylesheet" href="comfort.css?v=1">
+<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
+
+<script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
+<script src="comfort.js?v=1" defer></script>
 </head>
 <body>
 <header><div class="top">
   <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
   <span class="tag">Teacher view</span>
   <div class="sp"></div>
-  <button id="themeBtn" type="button" aria-label="Switch theme">☀</button>
+  <div class="cs-wrap" id="csWrap"></div>
   <button id="outBtn" type="button" hidden>Sign out</button>
 </div></header>
 
@@ -137,12 +142,6 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
 const views = ["vSign", "vDenied", "vMain"];
 const showView = v => views.forEach(id => $(id).hidden = id !== v);
 function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
-
-/* theme (same setting as the Cheat Sheet) */
-let theme = "dark"; try { theme = localStorage.getItem("ncs-theme") || "dark"; } catch (e) {}
-const applyTheme = () => { document.documentElement.dataset.theme = theme; $("themeBtn").textContent = theme === "dark" ? "☀" : "☾"; };
-applyTheme();
-$("themeBtn").onclick = () => { theme = theme === "dark" ? "light" : "dark"; try { localStorage.setItem("ncs-theme", theme); } catch (e) {} applyTheme(); };
 
 $("inBtn").onclick = async () => {
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });

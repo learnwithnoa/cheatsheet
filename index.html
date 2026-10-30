@@ -6,6 +6,9 @@
 <meta name="description" content="Your English Cheat Sheet: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="comfort.css?v=1">
+<script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
+<script src="comfort.js?v=1" defer></script>
 </head>
 <body data-auth="out">
 <script>try{if(localStorage.getItem("ncs-sync-uid"))document.body.dataset.auth="in";}catch(e){}</script>
@@ -617,7 +620,9 @@ body:not([data-auth="in"]) .when-in{display:none!important}
         <p class="music-note" id="mnLofi" hidden>Want real tracks? <a href="https://www.youtube.com/@LofiGirl" target="_blank" rel="noopener">Lofi Girl on YouTube ↗</a></p>
       </div>
     </div>
-    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
+    <button id="csTimerChip" type="button" hidden aria-label="Study timer"></button>
+    <div class="cs-wrap" id="csWrap"></div>
+    <button class="theme-btn cs-hide-phone" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
   </div>
 </header>
 
@@ -684,6 +689,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-tenses">
   <h1>Verb <em>tenses</em></h1>
   <p class="lede">Type any verb and pick a subject. All 12 tenses update for you, with the affirmative (+), negative (−) and question (?) forms.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>Simple</b> = facts and habits · <b>continuous</b> (be + -ing) = in progress · <b>perfect</b> (have + participle) = connected to a later moment.</div></div>
   <div class="conj">
     <div class="field"><label for="verbIn">Verb</label><input id="verbIn" type="text" value="walk" autocomplete="off" spellcheck="false" aria-describedby="verbHint"></div>
     <div class="field"><label for="subjIn">Subject</label>
@@ -699,6 +705,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-verbs" hidden>
   <h1>Irregular <em>verbs</em></h1>
   <p class="lede">Search in English or Spanish. Tap <span class="mono">see tenses</span> to see a verb in all 12 tenses.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Most verbs just add <b>-ed</b>. Irregular ones change: go → <b>went</b> → <b>gone</b>. Column 2 is the past (I went), column 3 goes after have (I've gone).</div></div>
   <div class="verb-tools">
     <input id="verbSearch" type="search" placeholder="Search: buy, comprar, brought…" autocomplete="off" spellcheck="false" aria-label="Search irregular verbs">
     <span class="count" id="verbCount"></span>
@@ -913,6 +920,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-mistakes" hidden>
   <h1>Common <em>mistakes</em></h1>
   <p class="lede">The mistakes Spanish speakers make most often, and how to fix them. Everyone makes these, so don't worry. Just try to notice them.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>The big ones: <b>I'm 30</b> (not "I have 30"), <b>I agree</b> (not "I'm agree"), <b>explain to me</b> (not "explain me"). Notice them, don't panic.</div></div>
   <div class="verb-tools"><input id="misSearch" type="search" placeholder="Search: agree, years, explain…" autocomplete="off" aria-label="Search common mistakes"><span class="count" id="misCount"></span></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th>Don't say</th><th>Say</th><th>Why</th></tr></thead>
@@ -923,6 +931,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-place" hidden>
   <h1>Prepositions of <em>place</em></h1>
   <p class="lede">For places, think of <b>in</b> as inside a space, <b>on</b> as on a surface or a line, and <b>at</b> as a point on the map. For movement, the preposition shows the direction.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>in</b> = inside a space · <b>on</b> = on a surface or a line · <b>at</b> = a point, or where something happens.</div></div>
   <div class="pie">
     <div class="card"><h3>in</h3><p style="margin:0 0 6px"><b>inside a space, an area</b></p><p style="margin:0">in the box · in the kitchen · in Santiago · in Chile · in the car · in a taxi · in the photo · in bed</p></div>
     <div class="card"><h3>on</h3><p style="margin:0 0 6px"><b>a surface, a line, public transport</b></p><p style="margin:0">on the table · on the wall · on the floor · on the 3rd floor · on the bus / train / plane · on Main Street <span class="es">(US)</span> · on the coast</p></div>
@@ -961,6 +970,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-usedto" hidden>
   <h1><em>Used to</em>, be used to, get used to</h1>
   <p class="lede">They look almost the same, but they mean three different things. The trick: after <b>be used to</b> and <b>get used to</b> comes a noun or verb + -ing.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>used to + verb</b> = past habit (solía) · <b>be used to + -ing</b> = it's normal for you · <b>get used to + -ing</b> = it's becoming normal.</div></div>
   <div class="grid">
     <div class="card"><span class="tag">used to + verb</span><h3 style="margin-top:10px">Past habits that stopped</h3><p style="margin:0 0 6px"><span class="es">solía, antes…</span></p><ul class="clean"><li>I <b>used to smoke</b>. (not anymore)</li><li>We <b>used to live</b> in Temuco.</li><li>I <b>didn't use to</b> like coffee.</li><li><b>Did</b> you <b>use to</b> play football?</li></ul></div>
     <div class="card"><span class="tag">be used to + noun / -ing</span><h3 style="margin-top:10px">It's normal for you</h3><p style="margin:0 0 6px"><span class="es">estar acostumbrado a</span></p><ul class="clean"><li>I'<b>m used to waking up</b> early.</li><li>She'<b>s used to the cold</b>.</li><li>I'<b>m not used to</b> driving on the left.</li></ul></div>
@@ -974,6 +984,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-passive" hidden>
   <h1>Passive <em>voice</em></h1>
   <p class="lede">Use the passive when the action matters more than who did it, or when you don't know who did it. <b>Structure: be + past participle.</b> Only the verb <i>be</i> changes tense.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>be + past participle</b>. Use it when the action matters more than who did it: <i>My phone was stolen.</i></div></div>
   <div class="grid two" style="margin-bottom:14px">
     <div class="card"><span class="tag">active</span><p style="margin:10px 0 0;font-size:17px">Someone <b>stole</b> my phone.</p></div>
     <div class="card"><span class="tag" style="background:var(--green-soft);color:var(--green)">passive</span><p style="margin:10px 0 0;font-size:17px">My phone <b>was stolen</b>.</p></div>
@@ -1000,6 +1011,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-reported" hidden>
   <h1>Reported <em>speech</em></h1>
   <p class="lede">How to tell someone what another person said. Usually the verb moves one step back into the past.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Move the verb one step back: "I <b>am</b> tired" → She said she <b>was</b> tired. <b>Say</b> something · <b>tell</b> someone something.</div></div>
   <div class="grid two" style="margin-bottom:14px">
     <div class="card"><span class="tag">direct</span><p style="margin:10px 0 0;font-size:17px">"I <b>am</b> tired," she said.</p></div>
     <div class="card"><span class="tag" style="background:var(--green-soft);color:var(--green)">reported</span><p style="margin:10px 0 0;font-size:17px">She said (that) she <b>was</b> tired.</p></div>
@@ -1066,6 +1078,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-be" hidden>
   <h1>The verb <em>to be</em></h1>
   <p class="lede">One verb, two meanings in Spanish: <b>ser</b> and <b>estar</b>. Use it for identity, feelings, location, age and descriptions.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>be</b> = ser and estar. Use it for age and feelings too: <b>I'm 30</b>, <b>I'm hungry</b> (not "I have").</div></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th>Subject</th><th>Present</th><th>Past</th><th>Future</th></tr></thead>
     <tbody>
@@ -1088,6 +1101,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-modals" hidden>
   <h1>Modal <em>verbs</em></h1>
   <p class="lede">Modal + base verb. No <b>to</b>, no <b>-s</b>, no <b>-ed</b>: <span class="ok">she can swim</span> · <span class="no">she cans swim</span> · <span class="no">she can to swim</span></p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Modal + base verb, with no <i>to</i>, <i>-s</i> or <i>-ed</i>: <b>She can swim.</b> can = ability · should = advice · must = obligation · might = maybe.</div></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th>Modal</th><th>Use it for</th><th>Example</th><th>Español</th></tr></thead>
     <tbody>
@@ -1119,6 +1133,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-domake" hidden>
   <h1><em>Do</em> vs <em>make</em></h1>
   <p class="lede">Both mean <b>hacer</b>. The quick rule: <b>do</b> is for activities and tasks; <b>make</b> is for creating or producing something. Then there are collocations you just learn.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>do</b> = activities and tasks (do homework) · <b>make</b> = create or produce something (make dinner, make a decision).</div></div>
   <div class="grid two">
     <div class="card">
       <span class="tag">do</span>
@@ -1143,6 +1158,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-time" hidden>
   <h1><em>In, on, at</em> for time</h1>
   <p class="lede">Think of it as big → medium → small. <b>In</b> for long periods, <b>on</b> for days, <b>at</b> for exact moments.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>in</b> = long periods (in May) · <b>on</b> = days and dates (on Monday) · <b>at</b> = exact times (at 3:00). Nothing before next, last, this or every.</div></div>
   <div class="pie">
     <div class="card"><h3>in</h3><p style="margin:0 0 6px"><b>months, years, seasons, parts of the day</b></p><p style="margin:0">in October · in 2026 · in summer · in the morning · in the afternoon · in the evening · in two weeks</p></div>
     <div class="card"><h3>on</h3><p style="margin:0 0 6px"><b>days and dates</b></p><p style="margin:0">on Monday · on Mondays · on March 28th · on my birthday · on Christmas Day · on the weekend <span class="es">(US)</span></p></div>
@@ -1155,6 +1171,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-tofor" hidden>
   <h1><em>To</em> vs <em>for</em></h1>
   <p class="lede">Both can be <b>para</b> or <b>a</b> in Spanish, which is why they're confusing. Here's when you use each one.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>to</b> = destination, who receives it, purpose + verb (I'm here <b>to learn</b>) · <b>for</b> = benefit, duration, purpose + noun (<b>for dinner</b>).</div></div>
   <div class="grid two">
     <div class="card"><span class="tag">to</span>
       <ul class="clean" style="margin-top:10px">
@@ -1181,6 +1198,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-pronouns" hidden>
   <h1><em>Pronouns</em></h1>
   <p class="lede">Read each row left to right: same person, different job in the sentence.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Same person, different job: <b>I · me · my · mine · myself</b>. Don't mix up your/you're, its/it's, their/they're.</div></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th>Subject<br>(before the verb)</th><th>Object<br>(after verb / prep.)</th><th>Possessive adj.<br>(+ noun)</th><th>Possessive pronoun<br>(alone)</th><th>Reflexive</th></tr></thead>
     <tbody>
@@ -1211,6 +1229,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-quantity" hidden>
   <h1>Countable, uncountable &amp; <em>quantifiers</em></h1>
   <p class="lede">First ask: can I count it? <i>One apple, two apples</i> = countable. <i>Water, information, advice, money</i> = uncountable (always singular).</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Can you count it? <b>Countable</b> → many, a few. <b>Uncountable</b> (water, advice, money) → much, a little. <b>A lot of</b> works for both.</div></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th></th><th>Countable (books)</th><th>Uncountable (water)</th><th>Where</th></tr></thead>
     <tbody>
@@ -1231,6 +1250,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-frequency" hidden>
   <h1>Adverbs of <em>frequency</em></h1>
   <p class="lede">How often do you do it?</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>always, usually, often, never go <b>before the main verb</b> but <b>after be</b>: I always study · He is always late.</div></div>
   <div class="card scale" id="freqScale"></div>
   <h2>Where it goes</h2>
   <div class="grid two">
@@ -1244,6 +1264,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-conversation" hidden>
   <h1>Keep the <em>conversation</em> going</h1>
   <p class="lede">A conversation is not a job interview. Answer, add a little extra, and ask something back. <span class="es">Conectar es más importante que responder perfecto.</span></p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>Answer</b>, <b>add a little extra</b>, then <b>ask something back</b>. That's the whole trick.</div></div>
   <div class="grid">
     <div class="card"><h3>React</h3><p style="margin:0">Really? · That's cool! · Oh wow! · I see. · No way! · Sounds fun! · Are you serious? · That must have been amazing! · Oh, I didn't know that!</p></div>
     <div class="card"><h3>Ask back</h3><p style="margin:0">What about you? · How was it? · And then what happened? · Who did you go with? · How long have you been doing that? · Would you recommend it? · What's your favorite part about it?</p></div>
@@ -1262,6 +1283,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-linking" hidden>
   <h1>Linking <em>words</em></h1>
   <p class="lede">The ones you'll actually use, grouped by what they do. Start with the first two of each group.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Learn one or two from each group and actually use them. With <b>however</b> or <b>therefore</b>: period or semicolon before, comma after.</div></div>
   <div class="grid" id="linkGrid"></div>
   <div class="note dismissible"><b>Punctuation tip:</b> with <i>however, therefore, moreover</i> use a period or semicolon before and a comma after: <i>I was tired; however, I went to class.</i></div>
 </section>
@@ -1270,6 +1292,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-false" hidden>
   <h1>False <em>friends</em></h1>
   <p class="lede">They look like Spanish words. They are not.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>They look like Spanish but mean something else: <b>actually</b> ≠ actualmente · <b>embarrassed</b> ≠ embarazada · <b>library</b> ≠ librería.</div></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th>English</th><th>Really means</th><th>Not</th><th>For that, say</th></tr></thead>
     <tbody id="ffBody"></tbody></table></div>
@@ -1279,6 +1302,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-basics" hidden>
   <h1>Sentence <em>basics</em></h1>
   <p class="lede">English is strict about word order. Spanish lets you move things around; English mostly doesn't.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>English always needs a subject and likes the order <b>Subject + Verb + Object</b>: <i>It's raining · She reads a book.</i></div></div>
   <div class="card" style="margin-bottom:14px"><h3>Subject + verb + object</h3><p style="margin:0;font-size:18px"><span class="tag">S</span> <b>She</b> &nbsp;<span class="tag">V</span> <b>reads</b> &nbsp;<span class="tag">O</span> <b>a book</b>.</p>
     <p class="es" style="margin:8px 0 0">Siempre necesitas sujeto: <span class="ok">It's raining</span> · <span class="no">Is raining</span></p></div>
   <h2>Parts of speech</h2>
@@ -1313,6 +1337,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-summary" hidden>
   <h1>Summary <em>helper</em></h1>
   <p class="lede">Use this when you tell me about the podcast, video or story you listened to or read. Go in this order and you'll never get lost.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>What it was</b> → <b>main idea</b> → <b>2–3 details</b> → <b>your reaction</b> → <b>what you didn't get</b>.</div></div>
   <div class="grid">
     <div class="card"><span class="tag">1 · what</span><h3 style="margin-top:8px">Say what it was</h3><ul class="clean"><li>I listened to an episode of <i>…</i> about…</li><li>I read a story called <i>…</i></li><li>It's a podcast where two people talk about…</li></ul></div>
     <div class="card"><span class="tag">2 · main idea</span><h3 style="margin-top:8px">Give the big picture</h3><ul class="clean"><li>It's basically about…</li><li>The main point was that…</li><li>In short, they were talking about…</li></ul></div>
@@ -1329,6 +1354,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-stuck" hidden>
   <h1>I'm <em>stuck!</em></h1>
   <p class="lede">Don't switch to Spanish. Use one of these and keep going. <span class="es">Quedarse pegado es normal; lo importante es salir en inglés.</span></p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Stay in English: <b>describe it</b> (It's a kind of…), <b>buy time</b> (Let me think…) or <b>ask</b> (How do you say…?).</div></div>
   <div class="grid">
     <div class="card"><h3>You don't know a word</h3><ul class="clean"><li>How do you say <i>…</i> in English?</li><li>What's the word for…?</li><li>I don't know the word, but…</li></ul></div>
     <div class="card"><h3>Explain it another way</h3><ul class="clean"><li>It's a kind of…</li><li>It's something you use to…</li><li>It's like a…, but…</li><li>It's the opposite of…</li><li>It's a person who…</li></ul></div>
@@ -1344,6 +1370,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-opinions" hidden>
   <h1>Giving <em>opinions</em></h1>
   <p class="lede">Ways to say what you think, agree, and disagree without sounding rude.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>I think…</b> · <b>I see your point, but…</b> · <b>I'm not sure about that.</b> Disagree with the idea, not the person.</div></div>
   <div class="grid">
     <div class="card"><h3>Give your opinion</h3><ul class="clean"><li>I think…</li><li>In my opinion, …</li><li>Personally, I feel that…</li><li>For me, …</li><li>If you ask me, …</li></ul></div>
     <div class="card"><h3>Agree</h3><ul class="clean"><li>I totally agree.</li><li>Exactly!</li><li>That's a good point.</li><li>I feel the same way.</li><li>Same here.</li></ul></div>
@@ -1359,6 +1386,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-conditionals" hidden>
   <h1><em>Conditionals</em></h1>
   <p class="lede">Pick an example or write your own. The four conditionals update below so you can compare them side by side.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>If + present, will</b> = real future · <b>If + past, would</b> = imaginary · <b>If + had done, would have</b> = past that didn't happen. Never <i>will</i> or <i>would</i> in the if part.</div></div>
   <div class="conj">
     <div class="field"><label>Examples</label><div class="chips" id="condPresets"></div></div>
   </div>
@@ -1381,6 +1409,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-perfect" hidden>
   <h1>Present perfect vs <em>past simple</em></h1>
   <p class="lede">The question to ask yourself: <b>do I say (or know) when it happened?</b> If yes, past simple. If it's about your life until now, present perfect.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Do you say <b>when</b>? → past simple (I went <b>last year</b>). Life until now, no time → present perfect (I've been there <b>twice</b>).</div></div>
   <div class="grid two">
     <div class="card"><span class="tag">past simple · I went</span>
       <h3 style="margin-top:10px">Finished time</h3>
@@ -1401,6 +1430,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-gerund" hidden>
   <h1><em>-ing</em> or <em>to</em>?</h1>
   <p class="lede">When one verb comes after another, the second one takes one of two forms: the <b>gerund</b> (verb + -ing) or the <b>infinitive</b> (to + verb). Which one depends on the first verb.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>-ing</b> after prepositions and verbs like enjoy, avoid, finish · <b>to + verb</b> after want, need, decide, hope.</div></div>
   <div class="grid two" style="margin-bottom:14px">
     <div class="card"><span class="tag">gerund · verb + -ing</span>
       <h3 style="margin-top:10px">What it is</h3>
@@ -1438,6 +1468,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-phrasal" hidden>
   <h1>Phrasal <em>verbs</em></h1>
   <p class="lede">Verb + a small word = a new meaning. These are the ones you'll hear every day. Search in English or Spanish.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Verb + small word = a new meaning. Learn them as one word: <b>look for</b> = buscar · <b>find out</b> = averiguar.</div></div>
   <div class="verb-tools"><input id="phSearch" type="search" placeholder="Search: give up, rendirse, look…" autocomplete="off" aria-label="Search phrasal verbs"><span class="count" id="phCount"></span></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th>Phrasal verb</th><th>Español</th><th>Example</th><th></th></tr></thead>
@@ -1448,6 +1479,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-compare" hidden>
   <h1>Comparatives &amp; <em>superlatives</em></h1>
   <p class="lede">Comparative = comparing two things (<i>bigger than</i>). Superlative = the top one of a group (<i>the biggest</i>).</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Short adjectives: <b>-er / the -est</b> (cheaper, the cheapest). Long ones: <b>more / the most</b>. good → better → the best.</div></div>
   <div class="tbl-wrap"><table>
     <thead><tr><th>Adjective</th><th>Rule</th><th>Comparative</th><th>Superlative</th></tr></thead>
     <tbody>
@@ -1478,6 +1510,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-pronunciation" hidden>
   <h1><em>Pronunciation</em></h1>
   <p class="lede" id="pronLede">Words that trick almost everyone. Tap 🔊 to hear them. The <b>bold</b> part is the stressed syllable.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>The <b>stressed syllable</b> is the loudest one. Get the stress right and people understand you, accent and all.</div></div>
   <h2>Tricky words</h2>
   <div class="grid" id="trickyGrid"></div>
   <h2>Silent letters</h2>
@@ -1491,6 +1524,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-numbers" hidden>
   <h1>Numbers, dates &amp; <em>money</em></h1>
   <p class="lede">English uses dots and commas the opposite way from Chile. This trips people up in meetings all the time.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>English uses a <b>point</b> for decimals and <b>commas</b> for thousands: 1.5 = one point five · 10,000 = ten thousand.</div></div>
   <div class="grid two">
     <div class="card"><h3>Decimals and thousands</h3>
       <ul class="clean"><li><b>1.5</b> = one point five <span class="es">(en Chile: 1,5)</span></li><li><b>10,000</b> = ten thousand <span class="es">(en Chile: 10.000)</span></li><li><b>2,500,000</b> = two point five million / two million five hundred thousand</li><li><b>0.25</b> = zero point two five</li></ul></div>
@@ -1513,6 +1547,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 <section class="view" id="v-email" hidden>
   <h1>Emails &amp; <em>meetings</em></h1>
   <p class="lede">Copy-paste-ready phrases for work. Neutral and professional, not stiff.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div>Start friendly, say <b>why you're writing</b>, ask <b>clearly</b>, and close with a <b>next step</b>.</div></div>
   <h2>Emails</h2>
   <div class="grid">
     <div class="card"><h3>Start</h3><ul class="clean"><li>Hi Sarah,</li><li>Dear Mr. Smith, <span class="es">(formal)</span></li><li>I hope you're doing well.</li><li>Thanks for your email.</li><li>I'm writing to…</li></ul></div>
@@ -2575,7 +2610,7 @@ renderWords();
 
 /* ---------------- theme ---------------- */
 const themeBtn=document.getElementById("themeBtn");
-const THEMES=["dark","light","unicorn"], TNEXT={dark:["☀","Light","light mode"],light:["🦄","Unicorn","unicorn mode"],unicorn:["☾","Dark","dark mode"]};
+const THEMES=["dark","light","soft","unicorn"], TNEXT={dark:["☀","Light","light mode"],light:["🌿","Soft","soft mode"],soft:["🦄","Unicorn","unicorn mode"],unicorn:["☾","Dark","dark mode"]};
 function paintThemeBtn(){
   const cur=THEMES.includes(document.documentElement.getAttribute("data-theme"))?document.documentElement.getAttribute("data-theme"):"dark";
   const n=TNEXT[cur];
@@ -2594,6 +2629,7 @@ themeBtn.addEventListener("click",()=>{
   paintThemeBtn();
 });
 let chosenTheme="dark";
+window.csSetTheme=t=>{ chosenTheme=t; try{localStorage.setItem("ncs-theme",t);}catch(e){} document.documentElement.setAttribute("data-theme",t); paintThemeBtn(); if(t==="unicorn") toast("🦄 Unicorn mode!"); };
 try{chosenTheme=localStorage.getItem("ncs-theme")||"dark";}catch(e){}
 /* keep the student's pick even if the viewer sets its own theme on load */
 new MutationObserver(()=>{
@@ -3041,6 +3077,12 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-comfort", date:"October 30, 2026", title:"Make it comfortable for you ⚙️", items:[
+    ["⚙","Reading &amp; comfort settings","tap <b>Settings</b> at the top: bigger text, easier-to-read fonts, more space, bionic reading and a reading ruler.",null],
+    ["🎯","Focus mode &amp; study timer","hide everything except the page you're on, and time your study sessions with a gentle chime.",null],
+    ["🌿","Calm mode &amp; Soft look","no animations, softer colors and no pop-ups. Plus a new warm, low-contrast <b>Soft</b> theme.",null],
+    ["🔊","Listen &amp; In short","a 🔊 Listen button reads any page aloud, and grammar pages start with a one-line summary.","perfect"]
+  ]},
   {id:"2026-unicorn", date:"October 29, 2026", title:"Unicorn mode 🦄", items:[
     ["🌈","A third look","tap the theme button at the top (next to Music) to switch between dark, light and a bright rainbow <b>Unicorn</b> mode.",null]
   ]},
@@ -3098,7 +3140,11 @@ wn.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); clo
 wn.addEventListener("click",e=>{ if(e.target.closest("[data-go],[data-openmusic]")) closeWN(); });
 document.addEventListener("click",e=>{ if(e.target.closest("[data-openmusic]")){ const b=document.getElementById("musicBtn"); if(document.getElementById("musicPanel").hidden) setTimeout(()=>b.click(),0); } });
 if(!LS.get("ncs-welcomed",0)) LS.set("ncs-seen-version",CL_LATEST);
-else if(LS.get("ncs-seen-version","")!==CL_LATEST) setTimeout(openWN,500);
+else if(LS.get("ncs-seen-version","")!==CL_LATEST){
+  if(document.documentElement.classList.contains("cs-calm")){ const f=document.querySelector('footer [data-go="changelog"]'); if(f) f.classList.add("cs-new"); }
+  else setTimeout(openWN,500);
+}
+document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"]')){ LS.set("ncs-seen-version",CL_LATEST); document.querySelectorAll(".cs-new").forEach(x=>x.classList.remove("cs-new")); } });
 })();
 </script>
 
@@ -3127,7 +3173,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const LOCAL_ONLY = new Set(["ncs-sync-uid", "ncs-theme"]);
-const KEEP_ON_SIGNOUT = new Set(["ncs-theme", "ncs-welcomed", "ncs-seen-version", "ncs-music-mode", "ncs-music-vol", "ncs-music-bal"]);
+const KEEP_ON_SIGNOUT = new Set(["ncs-comfort", "ncs-theme", "ncs-welcomed", "ncs-seen-version", "ncs-music-mode", "ncs-music-vol", "ncs-music-bal"]);
 const isSynced = k => typeof k === "string" && k.startsWith("ncs-") && !LOCAL_ONLY.has(k);
 let user = null, ready = false, timer = null;
 const pending = new Set();
