@@ -6,9 +6,9 @@
 <meta name="description" content="Your English Cheat Sheet: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<link rel="stylesheet" href="comfort.css?v=1">
+<link rel="stylesheet" href="comfort.css?v=2">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=1" defer></script>
+<script src="comfort.js?v=2" defer></script>
 </head>
 <body data-auth="out">
 <script>try{if(localStorage.getItem("ncs-sync-uid"))document.body.dataset.auth="in";}catch(e){}</script>
@@ -1956,6 +1956,7 @@ function pickVoice(){ if(!canSpeak) return; const vs=speechSynthesis.getVoices()
 if(canSpeak){ pickVoice(); try{ speechSynthesis.addEventListener("voiceschanged",pickVoice); }catch(e){} }
 function say(text,btn){
   if(!canSpeak) return;
+  if(window.csSpeak){ document.querySelectorAll(".say.playing").forEach(x=>x.classList.remove("playing")); if(btn) btn.classList.add("playing"); window.csSpeak(text,{rate:.85,onend:()=>{ if(btn) btn.classList.remove("playing"); }}); return; }
   try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=.85; if(enVoice) u.voice=enVoice;

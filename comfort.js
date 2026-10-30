@@ -131,17 +131,58 @@
   }
 
   /* ---------- read aloud (Cheat Sheet only) ---------- */
-  let speaking = null, enVoice = null;
-  const canSpeak = "speechSynthesis" in window;
-  function pickVoice() { try { const v = speechSynthesis.getVoices(); enVoice = v.find(x => /en[-_]US/i.test(x.lang) && /Samantha|Google|Natural|Aria|Jenny/i.test(x.name)) || v.find(x => /en[-_]US/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; } catch (e) {} }
-  if (canSpeak) { pickVoice(); try { speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {} }
+  let speaking = null;
+  const canSpeak = "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
+  function voices() { try { return speechSynthesis.getVoices() || []; } catch (e) { return []; } }
+  function bestVoice() {
+    const v = voices(), us = v.filter(x => /^en[-_]US/i.test(x.lang)), en = v.filter(x => /^en/i.test(x.lang));
+    // voices that live on the device are much more reliable than online ones
+    return us.find(x => x.localService) || en.find(x => x.localService) || us[0] || en[0] || null;
+  }
+  if (canSpeak) { try { voices(); speechSynthesis.addEventListener("voiceschanged", voices); } catch (e) {} }
+  let speakId = 0;
+  /* Speak text reliably: waits a moment after cancelling (Chrome drops speech started right after cancel),
+     un-pauses a stuck engine, and retries with the default voice if the chosen one stays silent. */
+  function csSpeak(text, o) {
+    o = o || {};
+    if (!canSpeak || !text) { o.onend && o.onend(); return false; }
+    const synth = speechSynthesis, id = ++speakId;
+    const busy = synth.speaking || synth.pending;
+    try { synth.cancel(); } catch (e) {}
+    const go = (withVoice, tries) => {
+      if (id !== speakId) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = o.rate || .9;
+      const v = withVoice ? bestVoice() : null; if (v) u.voice = v;
+      let started = false, done = false;
+      const finish = () => { if (done) return; done = true; if (id === speakId) o.onend && o.onend(); };
+      u.onstart = () => { started = true; };
+      u.onend = finish;
+      u.onerror = e => {
+        if (id !== speakId || e.error === "interrupted" || e.error === "canceled") return finish();
+        if (!started && tries < 1) { done = true; go(false, tries + 1); } else finish();
+      };
+      try { synth.resume(); } catch (e) {}
+      synth.speak(u);
+      setTimeout(() => {
+        if (id !== speakId || started || done || synth.speaking) return;
+        done = true; try { synth.cancel(); } catch (e) {}
+        if (tries < 1) setTimeout(() => go(false, tries + 1), 80);
+        else { (o.onfail || o.onend || (() => {}))(); toast(voices().length ? "The voice isn't playing. Check your volume, or try Chrome or Safari." : "Your browser doesn't have a voice for reading aloud. Try Chrome, Safari or Edge."); }
+      }, 1300);
+    };
+    setTimeout(() => go(true, 0), busy ? 150 : 40);
+    return true;
+  }
+  window.csSpeak = csSpeak;
+  window.csStopSpeaking = () => { speakId++; try { speechSynthesis.cancel(); } catch (e) {} };
   function textOf(view) {
     const clone = view.cloneNode(true);
     clone.querySelectorAll("button,input,select,textarea,script,style,.es,.no-read,.tip-x,.star-btn,.cs-read-row,[hidden],svg").forEach(n => n.remove());
     clone.querySelectorAll("td,th,li,p,h1,h2,h3,div").forEach(n => n.append(". "));
     return clone.textContent.replace(/\s+/g, " ").replace(/(\.\s*){2,}/g, ". ").replace(/\s+\./g, ".").trim();
   }
-  function stopReading() { if (!canSpeak) return; try { speechSynthesis.cancel(); } catch (e) {} if (speaking) { speaking.classList.remove("on"); speaking.innerHTML = "🔊 Listen"; speaking = null; } }
+  function stopReading() { if (speaking) { window.csStopSpeaking(); speaking.classList.remove("on"); speaking.innerHTML = "🔊 Listen"; speaking = null; } }
   function readAloud(btn, view) {
     if (speaking === btn) { stopReading(); return; }
     stopReading();
@@ -152,11 +193,13 @@
     const chunks = []; let cur = "";
     parts.forEach(p => { if ((cur + p).length > 220) { if (cur) chunks.push(cur); cur = p; } else cur += p; }); if (cur) chunks.push(cur);
     speaking = btn; btn.classList.add("on"); btn.innerHTML = "■ Stop";
-    chunks.forEach((c, i) => {
-      const u = new SpeechSynthesisUtterance(c); u.lang = "en-US"; u.rate = .9; if (enVoice) u.voice = enVoice;
-      if (i === chunks.length - 1) u.onend = () => { if (speaking === btn) stopReading(); };
-      speechSynthesis.speak(u);
-    });
+    let i = 0;
+    const next = () => {
+      if (speaking !== btn) return;
+      if (i >= chunks.length) { stopReading(); return; }
+      csSpeak(chunks[i++], { rate: .9, onend: next, onfail: stopReading });
+    };
+    next();
   }
   function addReadButtons() {
     if (!isMain || !canSpeak) return;
