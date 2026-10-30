@@ -29,7 +29,7 @@ body{zoom:var(--cs-zoom,1)}
 
 /* --- readable fonts --- */
 html.cs-font-atkinson{--body:"Atkinson Hyperlegible",system-ui,sans-serif;--display:"Atkinson Hyperlegible",system-ui,sans-serif}
-html.cs-font-classic{--body:"Nunito",system-ui,sans-serif}
+html.cs-font-classic{--body:"Nunito",system-ui,sans-serif;--display:"Nunito",system-ui,sans-serif}
 html.cs-font-atkinson body,html.cs-font-atkinson input,html.cs-font-atkinson textarea,html.cs-font-atkinson button{font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
 html.cs-font-classic body,html.cs-font-classic input,html.cs-font-classic textarea,html.cs-font-classic button{font-family:"Nunito",system-ui,sans-serif}
 

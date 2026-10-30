@@ -17,7 +17,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@500;700&family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
 <style>
 /* Layout: sticky glossy header, side nav (chip strip on narrow windows), one reference view at a time — built to sit next to Zoom */
 :root{
@@ -25,7 +25,7 @@
   --ink:#0F2341; --muted:#52667F;
   --royal:#1D4ED8; --bright:#1E8CF0; --sky:#D7EAFC; --green:#1F9D5C; --green-soft:#D9F5E4; --red:#C2413A; --red-soft:#FBE3E1;
   --gloss:linear-gradient(180deg,#5FB4FF 0%,#1E8CF0 48%,#1D4ED8 100%);
-  --display:"Sour Gummy","Nunito","Trebuchet MS",system-ui,sans-serif;
+  --display:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
   --body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   --shadow:0 1px 2px rgba(15,35,65,.06),0 6px 18px rgba(30,140,240,.08);
@@ -601,18 +601,6 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     </div>
     <div class="spacer"></div>
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
-    <div class="music-wrap auth-wrap">
-      <button class="theme-btn auth-btn" id="authBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="authPanel"><span class="g-ico" id="authIco" aria-hidden="true">G</span><span class="theme-txt" id="authTxt">Sign in</span></button>
-      <div class="music-panel card auth-panel" id="authPanel" role="dialog" aria-label="Your account" hidden>
-        <div class="qa-top"><h3>Your account</h3><button class="qa-x" type="button" id="authClose" aria-label="Close">×</button></div>
-        <p class="auth-who" id="authWho"></p>
-        <p class="auth-status" id="authStatus"></p>
-        <p class="music-note">Your words, class notes, stars and flashcard progress save to your Google account automatically. Sign in with the same account on your phone or another computer to see them there.</p>
-        <a class="swap" id="teacherLink" href="teacher.html" hidden style="text-decoration:none;align-self:flex-start">📋 Teacher view →</a>
-        <div id="authOutBox"><button class="swap" type="button" id="authOut">Sign out</button></div>
-        <div class="confirm-bar" id="authOutConfirm" hidden><p><b>Sign out?</b> Your notes stay safe in your Google account. They'll be removed from this device until you sign in again.</p><div class="note-actions"><button class="pill-btn" type="button" id="authOutYes">Sign out</button><button class="swap" type="button" id="authOutNo">Cancel</button></div></div>
-      </div>
-    </div>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
@@ -632,8 +620,20 @@ body:not([data-auth="in"]) .when-in{display:none!important}
       </div>
     </div>
     <button id="csTimerChip" type="button" hidden aria-label="Study timer"></button>
-    <div class="cs-wrap" id="csWrap"></div>
     <button class="theme-btn cs-hide-phone" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
+    <div class="cs-wrap" id="csWrap"></div>
+    <div class="music-wrap auth-wrap">
+      <button class="theme-btn auth-btn" id="authBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="authPanel"><span class="g-ico" id="authIco" aria-hidden="true">G</span><span class="theme-txt" id="authTxt">Sign in</span></button>
+      <div class="music-panel card auth-panel" id="authPanel" role="dialog" aria-label="Your account" hidden>
+        <div class="qa-top"><h3>Your account</h3><button class="qa-x" type="button" id="authClose" aria-label="Close">×</button></div>
+        <p class="auth-who" id="authWho"></p>
+        <p class="auth-status" id="authStatus"></p>
+        <p class="music-note">Your words, class notes, stars and flashcard progress save to your Google account automatically. Sign in with the same account on your phone or another computer to see them there.</p>
+        <a class="swap" id="teacherLink" href="teacher.html" hidden style="text-decoration:none;align-self:flex-start">📋 Teacher view →</a>
+        <div id="authOutBox"><button class="swap" type="button" id="authOut">Sign out</button></div>
+        <div class="confirm-bar" id="authOutConfirm" hidden><p><b>Sign out?</b> Your notes stay safe in your Google account. They'll be removed from this device until you sign in again.</p><div class="note-actions"><button class="pill-btn" type="button" id="authOutYes">Sign out</button><button class="swap" type="button" id="authOutNo">Cancel</button></div></div>
+      </div>
+    </div>
   </div>
 </header>
 
