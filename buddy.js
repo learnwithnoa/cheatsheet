@@ -245,6 +245,12 @@ axolotl:{name:"Axolotl",sub:"always smiling",
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
     try { window.__csOnSet && window.__csOnSet(KEY); } catch (e) {}
+    try { publishPark(); } catch (e) {}
+  }
+  function publishPark() {
+    const P = window.__csPark; if (!P || !P.signedIn()) return;
+    if (S.on !== true || !S.a) { P.publish({ on: false }); return; }
+    P.publish({ on: true, a: S.a, c: S.c | 0, n: String(S.n || "").slice(0, 16), head: S.head || null, face: S.face || null, neck: S.neck || null, lvl: typeof level === "function" ? level() : 1, shiny: !!(S.shiny && S.mw >= 400) });
   }
   function counts() {
     let words = 0, learned = 0;
@@ -353,7 +359,7 @@ axolotl:{name:"Axolotl",sub:"always smiling",
     opts = opts || {};
     const toys = ITEMS.filter(i => i.slot === "toy" && isOpen(i)).map(i => i.id);
     const room = opts.room !== undefined ? opts.room : S.room;
-    return `<svg class="bd-stage-svg" viewBox="0 0 40 26" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}${rects(drawPet(opts), 10, 0)}${opts.plain ? "" : gardenSVG()}</svg>`;
+    return `<svg class="bd-stage-svg" viewBox="0 0 40 26" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}<g class="bd-stg-pet" id="${opts.plain ? "" : "bdStgPet"}">${rects(drawPet(opts), 10, 0)}</g>${opts.plain ? "" : gardenSVG()}</svg>`;
   }
 
   /* ---------- styles ---------- */
@@ -399,6 +405,13 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-x{all:unset;cursor:pointer;font-size:24px;line-height:1;padding:2px 8px;border-radius:8px;color:var(--muted,#777)}
 .bd-x:focus-visible{outline:3px solid var(--bright,#5BD38E)}
 .bd-stage{margin:12px auto 10px;max-width:340px;border-radius:14px;overflow:hidden;border:1.5px solid var(--line,#ddd);position:relative;--bd-sky:color-mix(in srgb,var(--green,#2E8B57) 8%,var(--surface,#fff));--bd-grass:color-mix(in srgb,var(--green,#2E8B57) 30%,var(--surface,#fff));--bd-grass2:color-mix(in srgb,var(--green,#2E8B57) 45%,var(--surface,#fff))}
+.bd-stage .bd-stg-pet{animation:bdBobS 1.6s steps(1) infinite}
+@keyframes bdBobS{0%,100%{transform:translateY(0)}50%{transform:translateY(-.6px)}}
+.bd-stage.hop .bd-stg-pet{animation:bdHopS .45s steps(2) 2}
+@keyframes bdHopS{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+.bd-stage .bd-fx{font-size:22px}
+html.cs-calm .bd-stage .bd-stg-pet{animation:none}
+.bd-sw button.locked{opacity:.45;font-size:11px;line-height:1;cursor:not-allowed}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer}
 .bd-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .bd-name input{font:800 17px var(--body,sans-serif);color:var(--ink,#222);background:transparent;border:1.5px dashed var(--line,#ddd);border-radius:10px;padding:5px 9px;width:12ch;min-width:0}
@@ -498,12 +511,14 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   /* ---------- friendship ---------- */
   const LV = [0, 20, 50, 100, 170, 260, 380, 530, 720, 950];
   const LV_WHAT = ["Blinks, bounces and naps", "Yawns and stretches", "Dances when you save a word", "Looks around curiously", "Watches butterflies 🦋", "Plays with its ball ⚽", "Hums along to your music 🎵", "Reads its book during the study timer 📖", "Spins and does happy jumps", "Best friends 💛"];
-  const level = () => { const p = S.fp | 0; let l = 1; LV.forEach((t, i) => { if (p >= t) l = i + 1; }); return l; };
+  if (S.fp != null && !S.fpm) { S.fpm = {}; S.fpm[S.a && SP[S.a] ? S.a : "max"] = S.fp | 0; }
+  const fpOf = a => (S.fpm && S.fpm[a || animal()]) | 0;
+  const lvlOf = p => { let l = 1; LV.forEach((t, i) => { if (p >= t) l = i + 1; }); return l; };
+  const level = a => lvlOf(fpOf(a));
   function addFP(n) {
-    const before = level(); S.fp = (S.fp | 0) + n; save();
-    const after = level();
-    if (after > before) setTimeout(() => { hop(); fx(["💛", "✨", "💛"]); say(`💛 Friendship level <b>${after}</b>! New: ${esc(LV_WHAT[after - 1])}.`, `<button class="bd-b" type="button" data-bd="open">See ${esc(nameOf())}</button>`, 8000); if (!modal.hidden) renderModal(); }, 1300);
-    else if (!modal.hidden) renderModal();
+    const a = animal(), before = level(a); if (!S.fpm) S.fpm = {}; S.fpm[a] = fpOf(a) + n; save();
+    const after = level(a);
+    if (after > before) setTimeout(() => { hop(); fx(["💛", "✨", "💛"]); say(`💛 Friendship level <b>${after}</b> with ${esc(nameOf())}! New: ${esc(LV_WHAT[after - 1])}.`, `<button class="bd-b" type="button" data-bd="open">See ${esc(nameOf())}</button>`, 8000); if (!modal.hidden) { renderModal(); stageReact(["💛", "✨", "💛"]); } }, 1300);
   }
   const IDIOMS = [["a piece of cake", "muy fácil 🍰"], ["break the ice", "romper el hielo 🧊"], ["hit the books", "ponerse a estudiar 📚"], ["under the weather", "medio enfermo 🤒"], ["call it a day", "dar por terminado el día"], ["on the same page", "estar de acuerdo"], ["get the hang of it", "agarrarle la mano"], ["once in a blue moon", "muy de vez en cuando 🌙"], ["cost an arm and a leg", "costar un ojo de la cara"], ["take it easy", "tomárselo con calma"], ["better late than never", "más vale tarde que nunca"], ["practice makes perfect", "la práctica hace al maestro"]];
   function chatLine() {
@@ -554,7 +569,20 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     hop(); fx(["💛", "🩷", "💛"]);
     if (!S.pd || S.pd[0] !== today()) S.pd = [today(), 0];
     if (S.pd[1] < 10) { S.pd[1]++; addFP(1); }
+    refreshPanel(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.m === "pet" ? '[data-m="pet"]' : null, ["💛", "🩷", "💛"]);
     say(Math.random() < .35 ? "" : chatLine(), menuActs(), 6500);
+  }
+  function paintStagePet(blink) { const g = document.getElementById("bdStgPet"); if (g && !modal.hidden) g.innerHTML = rects(drawPet({ blink }), 10, 0); }
+  function stageReact(em) {
+    const st = document.getElementById("bdStage"); if (!st || modal.hidden) return;
+    st.classList.remove("hop"); void st.offsetWidth; st.classList.add("hop"); setTimeout(() => st.classList.remove("hop"), 1000);
+    (em || []).forEach((ch, i) => { const s = document.createElement("span"); s.className = "bd-fx"; s.textContent = ch; s.style.left = (38 + i * 10) + "%"; s.style.top = "18%"; s.style.animationDelay = (i * .13) + "s"; st.appendChild(s); setTimeout(() => s.remove(), 1500); });
+  }
+  function refreshPanel(focusSel, em) {
+    if (modal.hidden || mode !== "main") return;
+    const sc = modal.scrollTop; renderModal(); modal.scrollTop = sc;
+    const f = focusSel && modal.querySelector(focusSel); if (f) f.focus();
+    stageReact(em);
   }
   function feed() {
     if (S.fd && S.fd[0] === today() && S.fd[1] >= FEED_PER_DAY) { say("I'm full! 😋 Let's study instead.", "", 3500); return; }
@@ -562,7 +590,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     S.t -= 1; S.fd = [today(), (S.fd && S.fd[0] === today() ? S.fd[1] : 0) + 1]; addFP(3);
     hop(); fx(["🍪", "😋", "💛"]);
     say(["Nom nom! 😋", "Yum, thank you!", "Delicious 🍪", "*happy crunching*"][Math.floor(Math.random() * 4)], menuActs(), 4000);
-    if (!modal.hidden) renderModal();
+    refreshPanel('[data-m="feed"]', ["🍪", "😋", "💛"]);
   }
   function setMin(v) { S.min = !!v; save(); hideBub(); visible(); if (!v) { petBtn.focus(); hop(); } else mini.focus(); }
 
@@ -594,11 +622,13 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (e.key === "Tab") { const f = [...modal.querySelectorAll("button:not([disabled]),input,[tabindex='0']")].filter(x => x.offsetParent); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
   });
   function animalGrid(sel) {
-    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}</button>`).join("")}</div>`;
+    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>`;
   }
+  const COLOR_AT = [0, 0, 10, 20, 35];
+  const colorOpen = i => counts().words >= (COLOR_AT[i] || 0);
   function swatches(id, sel) {
-    const d = SP[id];
-    return `<div class="bd-sw" role="group" aria-label="Choose a color">${d.colors.map(([n, p], i) => `<button type="button" data-col="${i}" aria-pressed="${i === sel}" aria-label="${esc(n)}" title="${esc(n)}" style="background:${id === "unicorn" ? (p.b || p.r || d.p.r) : (p.b || d.p.b)}"></button>`).join("")}<span>${esc((d.colors[sel] || d.colors[0])[0])}</span></div>`;
+    const d = SP[id], next = d.colors.findIndex((x, i) => !colorOpen(i));
+    return `<div class="bd-sw" role="group" aria-label="Choose a color">${d.colors.map(([n, p], i) => { const open = colorOpen(i); return `<button type="button" data-col="${i}" aria-pressed="${i === sel}" aria-label="${esc(n)}${open ? "" : ", unlocks at " + COLOR_AT[i] + " words"}" title="${esc(n)}${open ? "" : " · unlocks at " + COLOR_AT[i] + " words"}" ${open ? "" : 'aria-disabled="true" class="locked"'} style="background:${id === "unicorn" ? (p.b || p.r || d.p.r) : (p.b || d.p.b)}">${open ? "" : "🔒"}</button>`; }).join("")}<span>${esc((d.colors[sel] || d.colors[0])[0])}${next > 0 ? ` · next color at ${COLOR_AT[next]} words` : ""}</span></div>`;
   }
   function renderModal() {
     if (mode === "adopt") {
@@ -628,7 +658,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       <div class="bd-row" style="margin-top:10px"><button class="bd-b go" type="button" data-m="feed">🍪 Feed</button><button class="bd-b" type="button" data-m="pet">🤚 Pet</button></div>
       <p class="bd-small">Earn treats: <b>+1</b> for each new word you save, <b>+3</b> for each flashcard round you finish (up to ${MAXT}). Your buddy eats up to ${FEED_PER_DAY} treats a day.</p>
       <h4>Friendship</h4>
-      ${(() => { const l = level(), p = S.fp | 0, nxt = LV[l]; return `<div class="bd-prog"><span class="bd-hearts" aria-label="Friendship level ${l} of 10">${"💛".repeat(l)}<span style="opacity:.25">${"🤍".repeat(10 - l)}</span></span> <b>Level ${l}</b>${l >= 10 ? " · best friends!" : ""}</div>${nxt ? `<div class="bd-bar" aria-hidden="true"><i style="width:${Math.max(4, Math.round((p - LV[l - 1]) / (nxt - LV[l - 1]) * 100))}%"></i></div><div class="bd-small" style="margin:0">Next: <b>${esc(LV_WHAT[l])}</b></div>` : ""}<p class="bd-small">Friendship grows when you feed your buddy (<b>+3</b>), pet it (<b>+1</b>, up to 10 a day) and visit (<b>+2</b> a day). New levels unlock new things it does on its own, and it starts sharing little English tips.</p>`; })()}
+      ${(() => { const l = level(), p = fpOf(), nxt = LV[l]; return `<div class="bd-prog"><span class="bd-hearts" aria-label="Friendship level ${l} of 10">${"💛".repeat(l)}<span style="opacity:.25">${"🤍".repeat(10 - l)}</span></span> <b>Level ${l}</b>${l >= 10 ? " · best friends!" : ""}</div>${nxt ? `<div class="bd-bar" aria-hidden="true"><i style="width:${Math.max(4, Math.round((p - LV[l - 1]) / (nxt - LV[l - 1]) * 100))}%"></i></div><div class="bd-small" style="margin:0">Next: <b>${esc(LV_WHAT[l])}</b></div>` : ""}<p class="bd-small">Friendship grows when you feed your buddy (<b>+3</b>), pet it (<b>+1</b>, up to 10 a day) and visit (<b>+2</b> a day). New levels unlock new things it does on its own, and it starts sharing little English tips.</p>`; })()}
       <h4>Your progress</h4>
       <div class="bd-prog"><b>${c.words}</b> ${c.words === 1 ? "word" : "words"} saved${nextW ? ` · next: ${nextW.ico} <b>${esc(nextW.name)}</b> at ${nextW.w}` : " · everything unlocked! 🎉"}</div>
       ${nextW ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.words, prevW ? prevW.w : 0, nextW.w)}%"></i></div>` : ""}
@@ -651,6 +681,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (mode === "adopt") {
       const nin = $("bdNameIn"); if (nin) draft.n = nin.value;
       if (pick) { draft.a = pick.dataset.pick; draft.c = 0; renderModal(); modal.querySelector(`[data-pick="${draft.a}"]`).focus(); return; }
+      if (col && !colorOpen(+col.dataset.col)) { say("🔒 This color unlocks at " + COLOR_AT[+col.dataset.col] + " saved words.", "", 3000); return; }
       if (col) { draft.c = +col.dataset.col; renderModal(); modal.querySelector(`[data-col="${draft.c}"]`).focus(); return; }
       if (m && m.dataset.m === "adopt") {
         S.on = true; S.hi = today(); S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
@@ -664,6 +695,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       return;
     }
     if (pick) { S.a = pick.dataset.pick; S.c = 0; save(); renderModal(); paintPet(); modal.querySelector(`[data-pick="${S.a}"]`).focus(); return; }
+    if (col && !colorOpen(+col.dataset.col)) { toastMsg("🔒 This color unlocks at " + COLOR_AT[+col.dataset.col] + " saved words."); return; }
     if (col) { S.c = +col.dataset.col; save(); renderModal(); paintPet(); modal.querySelector(`[data-col="${S.c}"]`).focus(); return; }
     if (w && !w.disabled) { const slot = w.dataset.wear; S[slot] = w.dataset.item || null; save(); renderModal(); paintPet(); const f = modal.querySelector(`[data-wear="${slot}"][data-item="${w.dataset.item}"]`); if (f) f.focus(); return; }
     if (e.target.closest("#bdStage")) { petIt(); return; }
@@ -744,7 +776,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   setInterval(() => {
     if (S.on !== true || root.hidden || document.hidden) return;
     if (!sleeping && Date.now() - lastAct > 3 * 60 * 1000) { sleeping = true; paintPet(); return; }
-    if (!sleeping && !document.documentElement.classList.contains("cs-calm") && Math.random() < .35) { blinkOn = true; paintPet(); setTimeout(() => { blinkOn = false; paintPet(); }, 180); }
+    if (!sleeping && !document.documentElement.classList.contains("cs-calm") && Math.random() < .35) { blinkOn = true; paintPet(); paintStagePet(true); setTimeout(() => { blinkOn = false; paintPet(); paintStagePet(false); }, 180); }
   }, 2500);
   setInterval(checkWords, 1500);
 
@@ -777,5 +809,43 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   window.addEventListener("storage", e => { if (e.key === KEY) { S = load(); visible(); if (!modal.hidden) renderModal(); } });
 
-  window.csBuddy = { get state() { return S; }, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
+  /* ---------- buddy park ---------- */
+  const DECO = [["🌳", 3, 16], ["🌲", 90, 18], ["🌳", 2, 70], ["🌲", 92, 74], ["🌷", 24, 92], ["🌼", 70, 93], ["🌻", 47, 95], ["☁️", 20, 3], ["☁️", 72, 5], ["🌼", 12, 44], ["🌷", 86, 46]]
+    .map(([e, x, y]) => `<span class="park-deco" style="left:${x}%;top:${y}%" aria-hidden="true">${e}</span>`).join("");
+  let parkBusy = false;
+  function palFor(x) { const d = SP[x.a]; return Object.assign({}, d.p, (d.colors[x.c | 0] || d.colors[0])[1]); }
+  async function renderPark() {
+    const el = $("parkArea"), v = $("v-park"); if (!el || !v || v.hidden || parkBusy) return;
+    const msg = h => { el.innerHTML = DECO + `<div class="park-msg"><div>${h}</div></div>`; };
+    const P = window.__csPark;
+    if (!P) { msg("Opening the park gates… 🌳"); setTimeout(renderPark, 1500); return; }
+    if (!P.signedIn()) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses the Cheat Sheet: club members in the middle, private students around the edges.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
+    parkBusy = true; msg("Opening the park gates… 🌳");
+    let list = [];
+    try { list = await P.list(); }
+    catch (e) { parkBusy = false; msg(/permission/i.test(String(e && (e.code || e.message))) ? "The park isn't open yet. Check back soon! 🌳" : `Couldn't load the park. <button class="bd-b" type="button" data-park="retry">Try again</button>`); return; }
+    parkBusy = false;
+    const mine = list.find(x => x.me);
+    list = list.filter(x => !x.me && x.on && SP[x.a] && !(x.role && x.role.hidden));
+    if (S.on === true && S.a) list.push({ me: true, a: S.a, c: S.c | 0, n: S.n, head: S.head, face: S.face, neck: S.neck, lvl: level(), role: mine ? mine.role : {}, first: "" });
+    if (!list.length) { msg(`The park is empty right now. <b>Adopt a buddy</b> to be the first one here! 🥚<br><button class="bd-b go" type="button" data-park="adopt" style="margin-top:10px">Adopt a buddy</button>`); return; }
+    const club = list.filter(x => !(x.role && x.role.club === false)), priv = list.filter(x => x.role && x.role.club === false);
+    const pos = [];
+    club.forEach((x, i) => { const n = club.length; if (n === 1) { pos.push([x, 50, 54]); return; } const inner = n > 7 && i % 2; const ang = i / n * Math.PI * 2 - Math.PI / 2; const r = inner ? .45 : 1; pos.push([x, 50 + Math.cos(ang) * 17 * r, 55 + Math.sin(ang) * 15 * r]); });
+    priv.forEach((x, i) => { const n = priv.length; const ang = (i + .5) / n * Math.PI * 2 - Math.PI / 2; pos.push([x, Math.max(9, Math.min(91, 50 + Math.cos(ang) * 39)), Math.max(24, Math.min(84, 55 + Math.sin(ang) * 30))]); });
+    el.innerHTML = DECO + pos.map(([x, l, t]) => {
+      const bn = (x.n && String(x.n).trim()) || SP[x.a].name, owner = x.me ? "You" : (x.first ? x.first + "'s" : "");
+      return `<button class="park-b${x.me ? " me" : ""}" type="button" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, friendship level ${x.lvl | 0 || 1}">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}<span class="pn">${esc(bn)}</span>${owner ? `<span class="po">${esc(owner)}${x.lvl > 1 ? " · 💛" + (x.lvl | 0) : ""}</span>` : ""}</button>`;
+    }).join("");
+  }
+  document.addEventListener("click", e => {
+    const pb = e.target.closest(".park-b");
+    if (pb) { pb.classList.remove("hop"); void pb.offsetWidth; pb.classList.add("hop"); ["💛", "👋", "💛"].forEach((ch, i) => { const s = document.createElement("span"); s.className = "park-fx"; s.textContent = ch; s.style.left = (pb.offsetLeft - 20 + i * 16) + "px"; s.style.top = (pb.offsetTop - 50) + "px"; s.style.animationDelay = i * .12 + "s"; pb.parentNode.appendChild(s); setTimeout(() => s.remove(), 1500); }); return; }
+    const a = e.target.closest("[data-park]"); if (!a) return;
+    if (a.dataset.park === "signin" && window.csSignIn) window.csSignIn(); else if (a.dataset.park === "retry") renderPark(); else if (a.dataset.park === "adopt") openModal("adopt");
+  });
+  (function watchPark() { const v = $("v-park"); if (!v) return; new MutationObserver(() => { if (!v.hidden) renderPark(); }).observe(v, { attributes: true, attributeFilter: ["hidden"] }); if (!v.hidden) renderPark(); })();
+  window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); } renderPark(); });
+
+  window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();

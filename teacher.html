@@ -77,6 +77,9 @@ td.act{white-space:nowrap;text-align:right}
 .by{font:11px var(--mono);color:var(--muted)}
 .hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
 
+.parkbox{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0}
+.seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
+.seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 </style>
 <link rel="stylesheet" href="comfort.css?v=5">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -161,6 +164,8 @@ async function load() {
   $("summary").textContent = "Loading…"; $("loadErr").hidden = true;
   try {
     const snap = await getDocs(collection(db, "users"));
+    const roles = {};
+    try { (await getDocs(collection(db, "roles"))).forEach(d => { roles[d.id] = d.data() || {}; }); } catch (e) { console.warn("roles", e); }
     const list = [];
     await Promise.all(snap.docs.map(async d => {
       const p = d.data() || {};
@@ -174,7 +179,9 @@ async function load() {
         notes: parse(data["ncs-classnotes"], []).filter(n => n && n.text),
         draft: parse(data["ncs-freenotes"], ""),
         stars: parse(data["ncs-stars"], []),
-        sheet: parse(data["ncs-sheet"], "")
+        sheet: parse(data["ncs-sheet"], ""),
+        buddy: parse(data["ncs-buddy"], null),
+        role: roles[d.id] || {}
       });
     }));
     list.sort((a, b) => b.lastSeen - a.lastSeen);
@@ -200,7 +207,7 @@ function renderList() {
   const shown = students.filter(s => !q || (s.name + " " + s.email).toLowerCase().includes(q));
   $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
       <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
-      <span class="meta">${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
+      <span class="meta">${s.role.club === false ? "🌳 Private" : "🌼 Club"} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
     : `<p class="muted">${students.length ? "No match." : "No students have signed in yet."}</p>`;
 }
 $("q").oninput = renderList;
@@ -222,6 +229,10 @@ async function guarded(s, key, fn, msg) {
   try { await change(s, key, fn); toast(msg); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the edit rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
+async function saveRole(s, patch) {
+  try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved for the Buddy park"); }
+  catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
+}
 let editW = null, editN = null;
 let tSort = { k: "t", d: -1 }; // newest first
 
@@ -233,9 +244,9 @@ function renderDetail(s) {
   const th = (k, label) => `<th><button class="sortb" type="button" data-tsort="${k}" aria-label="Sort by ${label}">${label}${tSort.k === k ? (tSort.d > 0 ? " ▲" : " ▼") : ""}</button></th>`;
   const notes = [...s.notes].sort((a, b) => (b.t || 0) - (a.t || 0));
   const wRow = w => editW === w.id ?
-    `<tr class="ed"><td><input id="ew" value="${esc(w.w)}"></td><td><input id="em" value="${esc(w.m)}"></td><td><input id="ee" value="${esc(w.e)}"></td><td class="d">${fmtDate(w.t)}</td>
+    `<tr class="ed"><td><input id="ew" value="${esc(w.w)}"></td><td><input id="em" value="${esc(w.m)}"></td><td><input id="ee" value="${esc(w.e)}"></td><td><input id="enn" value="${esc(w.n || "")}"></td><td class="d">${fmtDate(w.t)}</td>
       <td class="act"><button class="ib" data-wsave="${esc(w.id)}" type="button">Save</button><button class="ib" data-wcancel type="button">Cancel</button></td></tr>` :
-    `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}</td><td class="d">${fmtDate(w.t)}${w.by === "teacher" ? `<div class="by">added by you</div>` : ""}</td>
+    `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}</td><td>${esc(w.n || "")}</td><td class="d">${fmtDate(w.t)}${w.by === "teacher" ? `<div class="by">added by you</div>` : ""}</td>
       <td class="act"><button class="ib" data-wedit="${esc(w.id)}" type="button">Edit</button><button class="ib del" data-wdel="${esc(w.id)}" type="button">Delete</button></td></tr>`;
   const nCard = n => editN === n.id ?
     `<div class="note ed"><div class="when">${fmtLong(n.t)}</div><textarea id="en">${esc(n.text)}</textarea>
@@ -247,27 +258,31 @@ function renderDetail(s) {
     <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
     ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
+    <div class="parkbox"><b>Buddy park</b>${s.buddy && s.buddy.on ? ` <span class="muted">· their buddy: ${esc(s.buddy.n || s.buddy.a || "")}</span>` : ` <span class="muted">· no buddy yet</span>`}
+      <div class="row" style="margin-top:8px"><button type="button" class="seg" data-role="club" aria-pressed="${s.role.club !== false}">🌼 Club member (middle)</button><button type="button" class="seg" data-role="private" aria-pressed="${s.role.club === false}">🌳 Private student (edges)</button></div>
+      <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
     <h2>Words</h2>
     <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Cheat Sheet the next time they open it or come back to the tab.</p>
-    <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><button class="primary" type="submit">+ Add</button></form>
+    <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><input id="an2" placeholder="Notes (optional)" aria-label="Notes"><button class="primary" type="submit">+ Add</button></form>
     ${words.length ? `<div class="row" style="margin-bottom:10px"><button type="button" id="cpW">Copy words (for a sheet)</button></div>
-      <div class="tbl"><table><thead><tr>${th("w","Word")}${th("m","Spanish")}${th("e","Example")}${th("t","Added")}<th></th></tr></thead><tbody>
+      <div class="tbl"><table><thead><tr>${th("w","Word")}${th("m","Spanish")}${th("e","Example")}${th("n","Notes")}${th("t","Added")}<th></th></tr></thead><tbody>
       ${words.map(wRow).join("")}</tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}
     <h2>Class notes</h2>
     <div class="addn"><textarea id="an" placeholder="Write a class note for them (it's saved with today's date)…" aria-label="New class note"></textarea><div><button class="primary" id="addN" type="button">+ Add note</button></div></div>
     ${notes.length ? notes.map(nCard).join("") : `<p class="muted">No class notes saved yet.</p>`}
     ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
     ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
+  const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });
   const cp = $("cpW");
   if (cp) cp.onclick = async () => {
     const clean = v => String(v || "").replace(/[\t\n\r]+/g, " ").trim();
-    const tsv = words.map(w => [clean(w.w), clean(w.m), clean(w.e)].join("\t")).join("\n");
+    const tsv = words.map(w => [clean(w.w), clean(w.m), clean(w.e), clean(w.n)].join("\t")).join("\n");
     try { await navigator.clipboard.writeText(tsv); toast("Copied " + words.length + " words. Paste them into a sheet."); } catch (e) { toast("Couldn't copy. Select the table and copy it."); }
   };
   $("addW").onsubmit = e => {
     e.preventDefault();
-    const w = $("aw").value.trim(), m = $("am").value.trim(), ex = $("ae").value.trim(); if (!w) { $("aw").focus(); return; }
-    guarded(s, "ncs-words", list => list.some(x => x && String(x.w).trim().toLowerCase() === w.toLowerCase()) ? list : list.concat([{ id: newId(), w, m, e: ex, t: Date.now(), by: "teacher" }]), "Word added");
+    const w = $("aw").value.trim(), m = $("am").value.trim(), ex = $("ae").value.trim(), nn = $("an2").value.trim(); if (!w) { $("aw").focus(); return; }
+    guarded(s, "ncs-words", list => list.some(x => x && String(x.w).trim().toLowerCase() === w.toLowerCase()) ? list : list.concat([Object.assign({ id: newId(), w, m, e: ex, t: Date.now(), by: "teacher" }, nn ? { n: nn } : {})]), "Word added");
   };
   $("addN").onclick = () => {
     const text = $("an").value.trim(); if (!text) { $("an").focus(); return; }
@@ -290,8 +305,9 @@ $("detail").addEventListener("click", e => {
   if (d.tsort) { const k = d.tsort; tSort = tSort.k === k ? { k, d: -tSort.d } : { k, d: k === "t" ? -1 : 1 }; renderDetail(s); return; }
   if (d.wedit) { editW = d.wedit; renderDetail(s); const i = $("ew"); if (i) i.focus(); }
   else if ("wcancel" in d) { editW = null; renderDetail(s); }
-  else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(); if (!w) return; editW = null;
-    guarded(s, "ncs-words", list => list.map(x => x && x.id === id ? { ...x, w, m, e: ex } : x), "Word updated"); }
+  else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(), nn = $("enn").value.trim(); if (!w) return; editW = null;
+    guarded(s, "ncs-words", list => list.map(x => { if (!(x && x.id === id)) return x; const y = { ...x, w, m, e: ex }; if (nn) y.n = nn; else delete y.n; return y; }), "Word updated"); }
+  else if (d.role) { const club = d.role === "club"; saveRole(s, { club }); }
   else if (d.wdel) confirmTwice(t, () => guarded(s, "ncs-words", list => list.filter(x => !(x && x.id === d.wdel)), "Word deleted"));
   else if (d.nedit) { editN = d.nedit; renderDetail(s); const i = $("en"); if (i) i.focus(); }
   else if ("ncancel" in d) { editN = null; renderDetail(s); }

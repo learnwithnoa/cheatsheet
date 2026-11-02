@@ -601,6 +601,40 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 .wcard.picked{border-color:var(--green);background:color-mix(in srgb,var(--green) 8%,var(--surface))}
 .w-chk{width:22px;height:22px;margin:4px 6px 0 2px;accent-color:var(--green);pointer-events:none}
 #wSelBtn[aria-pressed="true"]{border-color:var(--green);color:var(--green)}
+
+.wcard .wn{font-size:14px;color:var(--ink);background:color-mix(in srgb,var(--green) 9%,var(--surface));border-radius:8px;padding:4px 8px;margin-top:5px;display:inline-block}
+.fc-note{display:block;margin-top:8px;font-size:14px;color:var(--muted)}
+.tt-row{display:flex;justify-content:flex-end;margin-top:10px}
+.tt-love{position:relative;font:800 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tt-love:hover{border-color:#E0A100}
+.tt-love[aria-pressed="true"]{background:color-mix(in srgb,#F5B800 18%,var(--surface));border-color:#E0A100}
+.tt-love .tt-ico{display:inline-block}
+.tt-love.pop .tt-ico{animation:ttPop .6s ease-out}
+@keyframes ttPop{0%{transform:scale(1)}40%{transform:scale(1.7) rotate(-15deg)}100%{transform:scale(1)}}
+.tt-spark{position:absolute;left:22px;top:50%;pointer-events:none;font-size:14px;animation:ttSpark .9s ease-out forwards}
+@keyframes ttSpark{from{opacity:1;transform:translate(0,-50%) scale(.6)}to{opacity:0;transform:translate(var(--dx),calc(-50% + var(--dy))) scale(1.2)}}
+html.cs-calm .tt-love.pop .tt-ico,html.cs-calm .tt-spark{animation:none;display:none}
+html.cs-calm .tt-love.pop .tt-ico{display:inline-block}
+.park{position:relative;width:100%;height:min(70vh,560px);min-height:380px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);
+  background:radial-gradient(ellipse 34% 30% at 50% 52%,color-mix(in srgb,#F5C842 22%,#9BD88A) 0 98%,transparent 100%),linear-gradient(180deg,#BFE6FF 0 14%,#9BD88A 14% 100%)}
+:root[data-theme="dark"] .park,:root:not([data-theme]) .park{background:radial-gradient(ellipse 34% 30% at 50% 52%,#3E6B3A 0 98%,transparent 100%),linear-gradient(180deg,#22305A 0 14%,#2E5230 14% 100%)}
+.park-deco{position:absolute;font-size:26px;pointer-events:none;opacity:.9}
+.park-b{all:unset;position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;width:96px}
+.park-b svg{width:64px;height:70px;image-rendering:pixelated;animation:parkBob 1.8s steps(1) infinite;filter:drop-shadow(0 3px 0 rgba(0,0,0,.15))}
+.park-b:nth-child(3n) svg{animation-delay:.6s}.park-b:nth-child(3n+1) svg{animation-delay:1.1s}
+@keyframes parkBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.park-b.hop svg{animation:parkHop .45s steps(2) 2}
+@keyframes parkHop{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.park-b .pn{font:800 12.5px var(--body);color:#1F2A44;background:rgba(255,255,255,.88);border-radius:999px;padding:2px 9px;margin-top:2px;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
+.park-b .po{font:600 11px var(--body);color:#1F2A44;background:rgba(255,255,255,.7);border-radius:999px;padding:1px 7px;margin-top:2px;white-space:nowrap}
+.park-b.me .pn{background:#2E8B57;color:#fff}
+.park-b:focus-visible .pn{outline:3px solid #5BD38E}
+.park-fx{position:absolute;pointer-events:none;font-size:18px;animation:bdFloat 1.2s ease-out forwards}
+.park-msg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px}
+.park-msg div{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;max-width:360px}
+.park-legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 0;font-size:13.5px;color:var(--muted)}
+html.cs-calm .park-b svg{animation:none}
+@media (max-width:640px){.park{height:min(78vh,620px)}.park-b{width:78px}.park-b svg{width:50px;height:55px}.park-b .po{display:none}}
 </style>
 
 <header class="top">
@@ -658,6 +692,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
+      <button class="navbtn cn-nav" data-go="park"><span class="w-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup"><h4>Start here</h4>
@@ -771,6 +806,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     <div class="card today-thought">
       <span class="tag td-tag2">Thought for today</span>
       <p class="tt" id="ttText"></p>
+      <div class="tt-row"><button class="tt-love" type="button" id="ttLove" aria-pressed="false"><span class="tt-ico" aria-hidden="true">✨</span><span id="ttLoveTxt">Send love</span></button></div>
     </div>
   </div>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your words, class notes and starred sections sync automatically to any device where you sign in.</div></div>
@@ -800,6 +836,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     <div class="field"><label for="nWord">English word / expression</label><input id="nWord" type="text" placeholder="e.g. figure out" spellcheck="false"></div>
     <div class="field"><label for="nMeaning">Spanish translation</label><input id="nMeaning" type="text" placeholder="e.g. entender, resolver"></div>
     <div class="field wide"><label for="nExample">Example sentence <span class="opt">(optional)</span></label><input id="nExample" type="text" placeholder="e.g. I couldn't figure out the answer."></div>
+    <div class="field wide"><label for="nNote">Notes <span class="opt">(optional)</span></label><input id="nNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
     <div class="note-actions"><button class="pill-btn" type="submit">+ Add word</button><button class="swap" type="button" data-go="words" id="wAllBtn">All my words →</button><span class="count">Tip: press Enter to save</span></div>
   </form>
   </div></div>
@@ -919,6 +956,13 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 </section>
 
 <!-- ============ TRANSLATOR ============ -->
+<section class="view" id="v-park" hidden>
+  <h1>Buddy <em>park</em></h1>
+  <p class="lede">Everyone's study buddies, hanging out together. Tap a buddy to say hi.</p>
+  <div class="park" id="parkArea" aria-live="polite"></div>
+  <div class="park-legend"><span>🌼 In the middle: Noa's English Club</span><span>🌳 Around the edges: private students</span></div>
+</section>
+
 <section class="view" id="v-translate" hidden>
   <h1>Quick <em>translator</em></h1>
   <p class="lede">Write a word or sentence and tap <b>Translate here</b>, or open it in Google Translate or DeepL. For single words, WordReference gives you examples and every meaning.</p>
@@ -1632,7 +1676,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=4" defer></script>
+<script src="buddy.js?v=5" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -1712,6 +1756,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   <div class="field"><label for="qaWord">English word / expression</label><input id="qaWord" type="text" spellcheck="false"></div>
   <div class="field"><label for="qaMeaning">Spanish translation</label><input id="qaMeaning" type="text"></div>
   <div class="field"><label for="qaExample">Example sentence <span class="opt">(optional)</span></label><input id="qaExample" type="text"></div>
+  <div class="field"><label for="qaNote">Notes <span class="opt">(optional)</span></label><input id="qaNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
@@ -2152,7 +2197,7 @@ function renderWords(){
   const list=sortWords(allWords().slice());
   if(typeof renderSelBar==="function") renderSelBar();
   const q=norm(wSearch.value.trim());
-  const shown=list.filter(x=>!q||[x.w,x.m,x.e].some(s=>norm(s||"").includes(q)));
+  const shown=list.filter(x=>!q||[x.w,x.m,x.e,x.n].some(s=>norm(s||"").includes(q)));
   const newCount=words.filter(isPending).length + (showSamples()?SAMPLE.length:0);
   wCount.textContent= list.length? "· "+list.length : "";
   document.getElementById("wNavCount").textContent= words.length? words.length : "";
@@ -2169,38 +2214,39 @@ function renderWords(){
       '<div class="field"><label for="ed-w">English word / expression</label><input id="ed-w" type="text" value="'+esc(x.w)+'" spellcheck="false"></div>'+
       '<div class="field"><label for="ed-m">Spanish translation</label><input id="ed-m" type="text" value="'+esc(x.m||"")+'"></div>'+
       '<div class="field wide"><label for="ed-e">Example sentence</label><input id="ed-e" type="text" value="'+esc(x.e||"")+'"></div>'+
+      '<div class="field wide"><label for="ed-n">Notes</label><input id="ed-n" type="text" value="'+esc(x.n||"")+'"></div>'+
       '<div class="note-actions"><button class="pill-btn" type="submit">Save changes</button><button class="swap" type="button" data-cancel>Cancel</button></div></form>';
     const isNew = x.sample || isPending(x);
     const picked=wSel&&fcPick.includes(x.id);
     return '<article class="card wcard'+(wSel?' wsel':'')+(picked?' picked':'')+'"'+(wSel?' data-pick="'+x.id+'"':'')+'>'+(wSel?'<input type="checkbox" class="w-chk" aria-label="Choose '+esc(x.w)+'"'+(picked?' checked':'')+'>':sayBtn(x.w.replace(/\(.*?\)/g,"")))+
-      '<div><div class="w">'+esc(x.w)+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+
+      '<div><div class="w">'+esc(x.w)+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
       '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+(isNew?'<span class="badge new">not copied yet</span>':'')+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
   }).join("");
 }
 function isPending(x){ return !x.imp && x.t>lastCopy; }
-function addWord(w,m,e){
-  w=(w||"").trim(); m=(m||"").trim(); e=(e||"").trim();
+function addWord(w,m,e,n){
+  w=(w||"").trim(); m=(m||"").trim(); e=(e||"").trim(); n=(n||"").trim();
   if(!w) return false;
   if(words.some(x=>norm(x.w)===norm(w))){ toast("“"+w+"” is already in your words"); return true; }
-  words.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),w,m,e,t:Date.now()});
+  words.push(Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),w,m,e,t:Date.now()},n?{n}:{}));
   const saved=LS.set("ncs-words",words);
   renderWords(); toast(saved?"Saved to your words":"Saved for now, but this browser blocks storage");
   return true;
 }
 document.getElementById("noteForm").addEventListener("submit",e=>{
   e.preventDefault();
-  const w=document.getElementById("nWord"), m=document.getElementById("nMeaning"), ex=document.getElementById("nExample");
+  const w=document.getElementById("nWord"), m=document.getElementById("nMeaning"), ex=document.getElementById("nExample"), nn=document.getElementById("nNote");
   if(!w.value.trim()){ w.focus(); return; }
-  addWord(w.value,m.value,ex.value);
-  w.value=""; m.value=""; ex.value=""; w.focus();
+  addWord(w.value,m.value,ex.value,nn.value);
+  w.value=""; m.value=""; ex.value=""; nn.value=""; w.focus();
 });
 wSearch.addEventListener("input",renderWords);
 wList.addEventListener("submit",e=>{
   const f=e.target.closest("[data-editform]"); if(!f) return; e.preventDefault();
   const x=words.find(y=>y.id===f.dataset.editform); if(!x) return;
   const nw=document.getElementById("ed-w").value.trim(); if(!nw){ document.getElementById("ed-w").focus(); return; }
-  x.w=nw; x.m=document.getElementById("ed-m").value.trim(); x.e=document.getElementById("ed-e").value.trim();
+  x.w=nw; x.m=document.getElementById("ed-m").value.trim(); x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; }
   LS.set("ncs-words",words); editingId=null; renderWords(); toast("Changes saved");
 });
 wList.addEventListener("keydown",e=>{ if(e.key==="Escape" && editingId){ editingId=null; renderWords(); } });
@@ -2269,7 +2315,7 @@ const fab=document.getElementById("fab"), qa=document.getElementById("qa"), qaBd
 let qaReturn=null;
 function openQA(w,m,e){
   qaReturn=document.activeElement;
-  document.getElementById("qaWord").value=w||""; document.getElementById("qaMeaning").value=m||""; document.getElementById("qaExample").value=e||"";
+  document.getElementById("qaWord").value=w||""; document.getElementById("qaMeaning").value=m||""; document.getElementById("qaExample").value=e||""; document.getElementById("qaNote").value="";
   qa.hidden=false; qaBd.hidden=false; fab.setAttribute("aria-expanded","true");
   const first=[ "qaWord","qaMeaning","qaExample"].map(i=>document.getElementById(i)).find(i=>!i.value)||document.getElementById("qaWord");
   setTimeout(()=>first.focus(),20);
@@ -2283,7 +2329,7 @@ qa.addEventListener("submit",e=>{
   e.preventDefault();
   const w=document.getElementById("qaWord");
   if(!w.value.trim()){ w.focus(); return; }
-  addWord(w.value,document.getElementById("qaMeaning").value,document.getElementById("qaExample").value);
+  addWord(w.value,document.getElementById("qaMeaning").value,document.getElementById("qaExample").value,document.getElementById("qaNote").value);
   closeQA();
 });
 
@@ -2435,6 +2481,18 @@ document.getElementById("wSelDone").addEventListener("click",()=>{ wSel=false; r
 document.getElementById("wSelNone").addEventListener("click",()=>{ fcPick=[]; savePick(); });
 document.getElementById("wSelAll").addEventListener("click",()=>{ const q=norm(wSearch.value.trim()); const ids=allWords().filter(x=>x.w&&!x.sample&&(!q||[x.w,x.m,x.e].some(s=>norm(s||"").includes(q)))).map(x=>x.id); fcPick=Array.from(new Set(fcPick.concat(ids))); savePick(); });
 document.getElementById("wSelGo").addEventListener("click",()=>{ wSel=false; renderWords(); fcSetMode("pick"); go("quiz"); });
+(function(){
+  const b=document.getElementById("ttLove"); if(!b) return;
+  const day=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+  const paint=()=>{ const on=LS.get("ncs-ttlove","")===day(); b.setAttribute("aria-pressed",String(on)); document.getElementById("ttLoveTxt").textContent=on?"Love sent":"Send love"; };
+  paint();
+  b.addEventListener("click",()=>{
+    const first=LS.get("ncs-ttlove","")!==day();
+    b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+    for(let i=0;i<8;i++){ const s=document.createElement("span"); s.className="tt-spark"; s.textContent=i%2?"✦":"✨"; const a=i/8*Math.PI*2; s.style.setProperty("--dx",Math.round(Math.cos(a)*38)+"px"); s.style.setProperty("--dy",Math.round(Math.sin(a)*30)+"px"); b.appendChild(s); setTimeout(()=>s.remove(),1000); }
+    if(first){ LS.set("ncs-ttlove",day()); paint(); if(window.csBuddy&&window.csBuddy.love) window.csBuddy.love(); }
+  });
+})();
 /* flashcards: practice my words (missed cards come back sooner) */
 let fcOrder=[], fcIdx=0, fcFlipped=false, fcSpanishFirst=false;
 let fcStats=LS.get("ncs-fc",{});
@@ -2470,7 +2528,7 @@ function renderFlash(){
   if(fcIdx>=fcOrder.length) fcIdx=0;
   const x=list.find(y=>y.id===fcOrder[fcIdx]);
   const en='<b>'+esc(x.w)+'</b>', es='<b>'+esc(x.m||"(no translation yet)")+'</b>';
-  const ex=x.e?'<i>'+esc(x.e)+'</i>':'';
+  const ex=(x.e?'<i>'+esc(x.e)+'</i>':'')+(x.n?'<small class="fc-note">📝 '+esc(x.n)+'</small>':'');
   fcFront.innerHTML= fcSpanishFirst? es : en;
   fcBack.innerHTML= (fcSpanishFirst? en : es) + ex;
   fcBack.hidden=!fcFlipped; fcHint.textContent= fcFlipped? "Did you know it?" : "Tap to flip";
@@ -3205,6 +3263,12 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-park", date:"November 2, 2026", title:"The Buddy park 🌳", items:[
+    ["🌳","Buddy park","see everyone's study buddies hanging out together in the new <b>Buddy park</b> (in the green menu). Club members are in the middle, private students around the edges.","park"],
+    ["📝","Notes for your words","add an optional note to any word: when to use it, a similar word, a tip from class.","words"],
+    ["✨","Send love","tap ✨ on the <b>Thought for today</b> to send some love (and give your buddy +1 friendship).","notes"],
+    ["💛","Each buddy, its own friendship","every animal has its own friendship level now. Your words, outfits and colors are shared. Two colors are free, and the rest unlock at 10, 20 and 35 words.",null]
+  ]},
   {id:"2026-garden", date:"November 2, 2026", title:"Your buddy's garden 🌱", items:[
     ["🌱","Study garden","every day you study, a new flower grows in front of your buddy. Missed days don't matter, your flowers stay.",null],
     ["🎅","Seasonal outfits","your buddy dresses up on its own for Halloween, Christmas, Fiestas Patrias and more.",null],
@@ -3479,7 +3543,29 @@ onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();
   if (u) syncDown();
+  window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } }));
 });
+
+/* ---------- buddy park: everyone's buddy look (no words or notes) at park/{uid} ---------- */
+let parkTimer = null;
+window.__csPark = {
+  signedIn: () => !!user,
+  publish(b) {
+    if (!user) return;
+    clearTimeout(parkTimer);
+    parkTimer = setTimeout(() => {
+      const first = String(user.displayName || "").trim().split(/\s+/)[0] || "";
+      setDoc(doc(db, "park", user.uid), Object.assign({ first, at: serverTimestamp() }, b)).catch(e => console.warn("park", e));
+    }, 1500);
+  },
+  async list() {
+    if (!user) { const e = new Error("signed out"); e.code = "signed-out"; throw e; }
+    const [p, r] = await Promise.all([getDocs(collection(db, "park")), getDocs(collection(db, "roles")).catch(() => null)]);
+    const roles = {}; if (r) r.forEach(d => { roles[d.id] = d.data() || {}; });
+    const out = []; p.forEach(d => out.push(Object.assign({}, d.data(), { uid: d.id, me: d.id === user.uid, role: roles[d.id] || {} })));
+    return out;
+  }
+};
 
 /* ---------- translator (Gemini via Firebase AI Logic, free tier) ----------
    Same shape as the Claude page's sample(): sample(prompt,{onText}) -> {text} */
