@@ -401,6 +401,26 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-sw span{font-size:12.5px;color:var(--muted,#777);margin-left:4px}
 .bd-foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-top:18px;padding-top:12px;border-top:1px dashed var(--line,#ddd)}
 .bd-foot .bd-link{all:unset;cursor:pointer;font-size:13px;color:var(--muted,#777);text-decoration:underline}
+.bd-pet.bd-yawn .bd-svg{animation:bdYawn 1.4s steps(4) 1;transform-origin:50% 100%}
+@keyframes bdYawn{0%,100%{transform:scale(1,1)}30%{transform:scale(1.06,.94)}60%{transform:scale(.95,1.07)}}
+.bd-pet.bd-look .bd-svg{animation:bdLook 2.2s steps(1) 1}
+@keyframes bdLook{0%,100%{transform:scaleX(1)}25%{transform:translateX(-3px)}50%{transform:scaleX(-1)}75%{transform:scaleX(-1) translateX(-3px)}}
+.bd-pet.bd-spin .bd-svg{animation:bdSpin .9s steps(6) 1}
+@keyframes bdSpin{0%{transform:scaleX(1)}25%{transform:scaleX(0) translateY(-6px)}50%{transform:scaleX(-1) translateY(-10px)}75%{transform:scaleX(0) translateY(-6px)}100%{transform:scaleX(1)}}
+.bd-pet.bd-dance .bd-svg{animation:bdDance 1.3s steps(1) 1}
+@keyframes bdDance{0%,100%{transform:rotate(0)}16%{transform:rotate(-10deg) translateY(-4px)}33%{transform:rotate(10deg)}50%{transform:rotate(-10deg) translateY(-4px)}66%{transform:rotate(10deg)}83%{transform:translateY(-6px)}}
+.bd-prop{position:absolute;pointer-events:none;font-size:16px;line-height:1}
+.bd-yawntxt{top:-10px;left:50%;transform:translateX(-50%);font:700 11px var(--body,sans-serif);color:var(--muted,#888);white-space:nowrap}
+.bd-fly{top:-20px;left:-60px;animation:bdFly 4.2s ease-in-out forwards}
+@keyframes bdFly{0%{transform:translate(0,10px)}25%{transform:translate(40px,-14px)}50%{transform:translate(70px,6px)}75%{transform:translate(100px,-18px)}100%{transform:translate(150px,-40px);opacity:0}}
+.bd-ball{bottom:0;left:-40px;animation:bdBall 2.4s ease-out forwards}
+@keyframes bdBall{0%{transform:translate(0,0)}20%{transform:translate(14px,-22px)}40%{transform:translate(28px,0)}60%{transform:translate(38px,-10px)}80%{transform:translate(46px,0)}100%{transform:translate(50px,0);opacity:0}}
+.bd-book{bottom:6px;left:-14px;font-size:18px;animation:bdRead 2s steps(2) infinite}
+@keyframes bdRead{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.bd-note,.bd-note2{top:0;right:-6px;animation:bdFloat 2.6s ease-out forwards}
+.bd-note2{right:auto;left:-4px}
+.bd-hearts{letter-spacing:-2px;font-size:13px}
+html.cs-calm .bd-prop{display:none}
 html.cs-calm .bd-pet .bd-svg,html.cs-calm .bd-pet.hop .bd-svg,html.cs-calm .bd-pet.walk .bd-svg{animation:none}
 html.cs-calm .bd-shiny::before,html.cs-calm .bd-shiny::after{animation:none;opacity:.8}
 html.cs-calm .bd-z{animation:none;opacity:.8}
@@ -448,16 +468,71 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   function hideBub() { clearTimeout(bubTimer); bub.hidden = true; }
   const menuActs = () => `<button class="bd-b go" type="button" data-bd="feed">🍪 Feed (${S.t | 0})</button><button class="bd-b" type="button" data-bd="open">⚙ ${esc(nameOf())}</button><button class="bd-b" type="button" data-bd="min" aria-label="Tuck your buddy away" title="Tuck away">🐾</button>`;
 
+  /* ---------- friendship ---------- */
+  const LV = [0, 20, 50, 100, 170, 260, 380, 530, 720, 950];
+  const LV_WHAT = ["Blinks, bounces and naps", "Yawns and stretches", "Dances when you save a word", "Looks around curiously", "Watches butterflies 🦋", "Plays with its ball ⚽", "Hums along to your music 🎵", "Reads its book during the study timer 📖", "Spins and does happy jumps", "Best friends 💛"];
+  const level = () => { const p = S.fp | 0; let l = 1; LV.forEach((t, i) => { if (p >= t) l = i + 1; }); return l; };
+  function addFP(n) {
+    const before = level(); S.fp = (S.fp | 0) + n; save();
+    const after = level();
+    if (after > before) setTimeout(() => { hop(); fx(["💛", "✨", "💛"]); say(`💛 Friendship level <b>${after}</b>! New: ${esc(LV_WHAT[after - 1])}.`, `<button class="bd-b" type="button" data-bd="open">See ${esc(nameOf())}</button>`, 8000); if (!modal.hidden) renderModal(); }, 1300);
+    else if (!modal.hidden) renderModal();
+  }
+  const IDIOMS = [["a piece of cake", "muy fácil 🍰"], ["break the ice", "romper el hielo 🧊"], ["hit the books", "ponerse a estudiar 📚"], ["under the weather", "medio enfermo 🤒"], ["call it a day", "dar por terminado el día"], ["on the same page", "estar de acuerdo"], ["get the hang of it", "agarrarle la mano"], ["once in a blue moon", "muy de vez en cuando 🌙"], ["cost an arm and a leg", "costar un ojo de la cara"], ["take it easy", "tomárselo con calma"], ["better late than never", "más vale tarde que nunca"], ["practice makes perfect", "la práctica hace al maestro"]];
+  function chatLine() {
+    const l = level(), pick = a => a[Math.floor(Math.random() * a.length)];
+    const opts = [() => pick(["♥", "*wiggles*", "Hi!", "Happy to study with you!"])];
+    if (l >= 3) opts.push(() => pick(["You're doing great.", "One word at a time.", "Proud of you!", "Tiny steps still count."]));
+    if (l >= 5) opts.push(() => { const w = (document.getElementById("twWord") || {}).textContent; return w ? `Remember <b>${esc(w)}</b>? It's today's word.` : "Did you see today's word?"; });
+    if (l >= 6) opts.push(() => { let n = 0; try { const c = Date.now() - 7 * 864e5; n = JSON.parse(localStorage.getItem("ncs-words") || "[]").filter(x => x && x.t >= c).length; } catch (e) {} return n ? `You saved <b>${n}</b> ${n === 1 ? "word" : "words"} this week! 🎉` : "Let's find a new word this week?"; });
+    if (l >= 7) opts.push(() => { const [e, sp] = pick(IDIOMS); return `Idiom time: <b>${esc(e)}</b> = ${esc(sp)}`; });
+    if (l >= 10) opts.push(() => `Best friends forever 💛`);
+    return pick(opts)();
+  }
+  function friendName() { const t = (document.getElementById("authWho") || {}).textContent || ""; const n = t.split(" · ")[0].trim(); return n && !n.includes("@") && n !== "You" ? n.split(/\s+/)[0] : ""; }
+
+  /* ---------- idle animations (unlocked by friendship) ---------- */
+  let lastIdle = Date.now(), propEl = null;
+  function anim(cls, ms) { petBtn.classList.remove("hop", "walk", "bd-yawn", "bd-look", "bd-spin", "bd-dance"); void petBtn.offsetWidth; petBtn.classList.add(cls); setTimeout(() => petBtn.classList.remove(cls), ms || 1400); }
+  function prop(ch, cls, ms) { const s = document.createElement("span"); s.className = "bd-prop " + cls; s.textContent = ch; s.setAttribute("aria-hidden", "true"); petBtn.appendChild(s); setTimeout(() => s.remove(), ms || 3000); }
+  function yawn() { blinkOn = true; paintPet(); anim("bd-yawn", 1500); prop("*yawn*", "bd-yawntxt", 1500); setTimeout(() => { blinkOn = false; paintPet(); }, 1400); }
+  const IDLE = [
+    [2, yawn],
+    [4, () => anim("bd-look", 2200)],
+    [5, () => { prop("🦋", "bd-fly", 4200); setTimeout(() => anim("bd-look", 2200), 800); }],
+    [6, () => { if (!isOpen(byId.ball)) return false; prop("⚽", "bd-ball", 2400); setTimeout(hop, 500); }],
+    [9, () => { anim("bd-spin", 900); setTimeout(hop, 900); }]
+  ];
+  function idleTick() {
+    if (S.on !== true || root.hidden || document.hidden || sleeping || !bub.hidden || !modal.hidden) return;
+    if (document.documentElement.classList.contains("cs-calm")) return;
+    const ae = document.activeElement; if (ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;
+    const l = level(), now = Date.now();
+    // book while the study timer runs, music notes while music plays
+    const timerOn = l >= 8 && ((document.getElementById("csTGo") || {}).textContent === "Pause");
+    if (timerOn && !petBtn.querySelector(".bd-book")) prop("📖", "bd-book", 14000);
+    const musicOn = l >= 7 && (document.getElementById("musicPlay") || { getAttribute: () => "" }).getAttribute("aria-pressed") === "true";
+    if (musicOn && now - lastIdle > 9000 && Math.random() < .5) { prop("🎵", "bd-note", 2600); setTimeout(() => prop("🎶", "bd-note2", 2600), 700); lastIdle = now; return; }
+    if (now - lastAct < 20000 || now - lastIdle < 45000) return;
+    const opts = IDLE.filter(([n]) => l >= n);
+    if (!opts.length) return;
+    lastIdle = now;
+    const f = opts[Math.floor(Math.random() * opts.length)][1];
+    if (f() === false) yawn();
+  }
+  setInterval(idleTick, 5000);
+
   /* ---------- actions ---------- */
   function petIt() {
     hop(); fx(["💛", "🩷", "💛"]);
-    const lines = ["♥", "Happy to study with you!", "*wiggles*", "You're doing great.", "One word at a time.", "Hi " + "there!"];
-    say(Math.random() < .5 ? "" : esc(lines[Math.floor(Math.random() * lines.length)]), menuActs(), 6000);
+    if (!S.pd || S.pd[0] !== today()) S.pd = [today(), 0];
+    if (S.pd[1] < 10) { S.pd[1]++; addFP(1); }
+    say(Math.random() < .35 ? "" : chatLine(), menuActs(), 6500);
   }
   function feed() {
     if (S.fd && S.fd[0] === today() && S.fd[1] >= FEED_PER_DAY) { say("I'm full! 😋 Let's study instead.", "", 3500); return; }
     if (!(S.t > 0)) { say("No treats left. Save a new word or finish a flashcard round to earn more 🍪", `<button class="bd-b" type="button" data-bd="open">How it works</button>`, 6500); return; }
-    S.t -= 1; S.fd = [today(), (S.fd && S.fd[0] === today() ? S.fd[1] : 0) + 1]; save();
+    S.t -= 1; S.fd = [today(), (S.fd && S.fd[0] === today() ? S.fd[1] : 0) + 1]; addFP(3);
     hop(); fx(["🍪", "😋", "💛"]);
     say(["Nom nom! 😋", "Yum, thank you!", "Delicious 🍪", "*happy crunching*"][Math.floor(Math.random() * 4)], menuActs(), 4000);
     if (!modal.hidden) renderModal();
@@ -520,11 +595,13 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     };
     const slotRow = (slot, label) => `<div style="margin-bottom:10px"><div class="bd-small" style="margin:0 0 5px;font-weight:700">${label}</div><div class="bd-row"><button class="bd-chip" type="button" data-wear="${slot}" data-item="" aria-pressed="${!S[slot]}">${slot === "room" ? "🌱 Garden" : "None"}</button>${ITEMS.filter(i => i.slot === slot).map(i => chip(i, slot === "room" ? "room" : slot)).join("")}</div></div>`;
     const legend = isOpen(byId.legend);
-    modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}Your study buddy</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
+    modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}${level() >= 10 ? "💛 " : ""}Your study buddy</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
       <div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}" id="bdStage" title="Tap to pet">${stageSVG({ wear })}</div>
       <div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" value="${esc(nameOf())}" aria-label="Your buddy's name" autocomplete="off"><span class="bd-treats" title="Treats">🍪 ${S.t | 0} / ${MAXT}</span></div>
       <div class="bd-row" style="margin-top:10px"><button class="bd-b go" type="button" data-m="feed">🍪 Feed</button><button class="bd-b" type="button" data-m="pet">🤚 Pet</button></div>
       <p class="bd-small">Earn treats: <b>+1</b> for each new word you save, <b>+3</b> for each flashcard round you finish (up to ${MAXT}). Your buddy eats up to ${FEED_PER_DAY} treats a day.</p>
+      <h4>Friendship</h4>
+      ${(() => { const l = level(), p = S.fp | 0, nxt = LV[l]; return `<div class="bd-prog"><span class="bd-hearts" aria-label="Friendship level ${l} of 10">${"💛".repeat(l)}<span style="opacity:.25">${"🤍".repeat(10 - l)}</span></span> <b>Level ${l}</b>${l >= 10 ? " · best friends!" : ""}</div>${nxt ? `<div class="bd-bar" aria-hidden="true"><i style="width:${Math.max(4, Math.round((p - LV[l - 1]) / (nxt - LV[l - 1]) * 100))}%"></i></div><div class="bd-small" style="margin:0">Next: <b>${esc(LV_WHAT[l])}</b></div>` : ""}<p class="bd-small">Friendship grows when you feed your buddy (<b>+3</b>), pet it (<b>+1</b>, up to 10 a day) and visit (<b>+2</b> a day). New levels unlock new things it does on its own, and it starts sharing little English tips.</p>`; })()}
       <h4>Your progress</h4>
       <div class="bd-prog"><b>${c.words}</b> ${c.words === 1 ? "word" : "words"} saved${nextW ? ` · next: ${nextW.ico} <b>${esc(nextW.name)}</b> at ${nextW.w}` : " · everything unlocked! 🎉"}</div>
       ${nextW ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.words, prevW ? prevW.w : 0, nextW.w)}%"></i></div>` : ""}
@@ -547,7 +624,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       if (pick) { draft.a = pick.dataset.pick; draft.c = 0; renderModal(); modal.querySelector(`[data-pick="${draft.a}"]`).focus(); return; }
       if (col) { draft.c = +col.dataset.col; renderModal(); modal.querySelector(`[data-col="${draft.c}"]`).focus(); return; }
       if (m && m.dataset.m === "adopt") {
-        S.on = true; S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
+        S.on = true; S.hi = today(); S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
         if (S.t == null) S.t = START_T; if (S.mw == null) S.mw = counts().words; S.min = false; S.seen = ITEMS.filter(isOpen).map(i => i.id);
         save(); closeModal(); visible(); hop(); fx(["💛", "🎉", "💛"]);
         say(`Hi! I'm <b>${esc(nameOf())}</b> 👋 I brought ${S.t} treats. Tap me anytime.`, menuActs(), 7000);
@@ -589,7 +666,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const unlocked = ITEMS.filter(i => i.w != null && before < i.w && c.words >= i.w);
       wake(); hop();
       if (unlocked.length) { fx(["🎉", "✨", "🎉"]); say(`🎉 New for ${esc(nameOf())}: <b>${unlocked.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>!`, `<button class="bd-b go" type="button" data-bd="open">Try it on</button>`, 9000); }
-      else if (S.t > old) { fx("🍪", 1); say(`+${S.t - old} 🍪 Nice word!`, "", 2600); }
+      else if (S.t > old) { if (level() >= 3) anim("bd-dance", 1300); fx("🍪", 1); say(`+${S.t - old} 🍪 Nice word!`, "", 2600); }
       else say("Treat jar's full (30) 🍪 Time for a snack?", menuActs(), 4000);
     }
   }
@@ -641,8 +718,11 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   if (S.on === true) { const c = counts(); if (c.words > (S.mw | 0)) { rawWords = null; } }
   visible();
   if (S.on === undefined) setTimeout(() => { if (S.on === undefined && !document.documentElement.classList.contains("cs-calm")) say("Something's inside this egg… 🥚", `<button class="bd-b go" type="button" data-bd="adopt">Take a look</button><button class="bd-b" type="button" data-bd="later">Later</button>`, 9000); }, 4000);
-  else if (S.on === true && !S.min) setTimeout(() => { if (!sleeping && bub.hidden) say("Hi again! 👋", "", 2200); }, 2500);
+  else if (S.on === true) {
+    if (S.hi !== today()) { S.hi = today(); addFP(2); }
+    if (!S.min) setTimeout(() => { if (sleeping || !bub.hidden) return; const fn = friendName(); say(level() >= 10 ? `Hi${fn ? " " + esc(fn) : ""}! Best friends forever 💛` : level() >= 4 && fn ? `Hi ${esc(fn)}! 👋` : "Hi again! 👋", "", 2600); }, 2500);
+  }
   window.addEventListener("storage", e => { if (e.key === KEY) { S = load(); visible(); if (!modal.hidden) renderModal(); } });
 
-  window.csBuddy = { get state() { return S; }, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
+  window.csBuddy = { get state() { return S; }, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();
