@@ -78,14 +78,16 @@ td.act{white-space:nowrap;text-align:right}
 .hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
 
 .parkbox{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0}
+.bcard{display:flex;gap:12px;align-items:center;margin-top:8px}
+.bsvg{width:72px;height:79px;image-rendering:pixelated;flex:none;background:color-mix(in srgb,var(--green) 10%,var(--surface));border-radius:12px}
 .seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 </style>
-<link rel="stylesheet" href="comfort.css?v=5">
+<link rel="stylesheet" href="comfort.css?v=6">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=5" defer></script>
+<script src="comfort.js?v=6" defer></script>
 </head>
 <body>
 <header><div class="top">
@@ -126,9 +128,10 @@ td.act{white-space:nowrap;text-align:right}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=6"></script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
-  getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0b";
+  getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
 
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
@@ -229,6 +232,19 @@ async function guarded(s, key, fn, msg) {
   try { await change(s, key, fn); toast(msg); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the edit rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
+function buddyCard(b) {
+  const A = window.csBuddyArt;
+  if (!b || !b.a || !A || !A.sprites[b.a]) return ` <span class="muted">· ${b && b.on === false ? "they turned their buddy off" : "no buddy yet"}</span>`;
+  const lv = p => { let l = 1; A.LV.forEach((t, i) => { if ((p | 0) >= t) l = i + 1; }); return l; };
+  const fpm = b.fpm || (b.fp != null ? { [b.a]: b.fp } : {});
+  const others = Object.keys(fpm).filter(k => k !== b.a && A.sprites[k] && fpm[k] > 0);
+  const name = (b.n && String(b.n).trim()) || A.sprites[b.a].name;
+  const color = (A.sprites[b.a].colors[b.c | 0] || A.sprites[b.a].colors[0])[0];
+  return `<div class="bcard">${A.svg({ a: b.a, pal: A.palFor(b.a, b.c), wear: { head: b.head, face: b.face, neck: b.neck }, plain: true, cls: "bsvg" })}
+    <div><b style="font-size:16px">${esc(name)}</b> <span class="muted">· ${esc(A.sprites[b.a].name)}, ${esc(color)}${b.on === false ? " · turned off" : ""}</span>
+    <div class="muted" style="margin-top:3px">💛 Friendship level ${lv(fpm[b.a])} · 🍪 ${b.t | 0} treats · 🌱 ${(b.gd || []).length} garden flowers</div>
+    ${others.length ? `<div class="muted" style="margin-top:3px">Other buddies: ${others.map(k => esc(A.sprites[k].name) + " 💛" + lv(fpm[k])).join(" · ")}</div>` : ""}</div></div>`;
+}
 async function saveRole(s, patch) {
   try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved for the Buddy park"); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
@@ -258,7 +274,7 @@ function renderDetail(s) {
     <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
     ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
-    <div class="parkbox"><b>Buddy park</b>${s.buddy && s.buddy.on ? ` <span class="muted">· their buddy: ${esc(s.buddy.n || s.buddy.a || "")}</span>` : ` <span class="muted">· no buddy yet</span>`}
+    <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
       <div class="row" style="margin-top:8px"><button type="button" class="seg" data-role="club" aria-pressed="${s.role.club !== false}">🌼 Club member (middle)</button><button type="button" class="seg" data-role="private" aria-pressed="${s.role.club === false}">🌳 Private student (edges)</button></div>
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
     <h2>Words</h2>

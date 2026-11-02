@@ -250,7 +250,7 @@ axolotl:{name:"Axolotl",sub:"always smiling",
   function publishPark() {
     const P = window.__csPark; if (!P || !P.signedIn()) return;
     if (S.on !== true || !S.a) { P.publish({ on: false }); return; }
-    P.publish({ on: true, a: S.a, c: S.c | 0, n: String(S.n || "").slice(0, 16), head: S.head || null, face: S.face || null, neck: S.neck || null, lvl: typeof level === "function" ? level() : 1, shiny: !!(S.shiny && S.mw >= 400) });
+    P.publish({ on: true, a: S.a, c: S.c | 0, n: String(S.n || "").slice(0, 16), head: S.head || null, face: S.face || null, neck: S.neck || null, lvl: typeof level === "function" ? level() : 1, words: counts().words, shiny: !!(S.shiny && S.mw >= 400) });
   }
   function counts() {
     let words = 0, learned = 0;
@@ -362,6 +362,7 @@ axolotl:{name:"Axolotl",sub:"always smiling",
     return `<svg class="bd-stage-svg" viewBox="0 0 40 26" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}<g class="bd-stg-pet" id="${opts.plain ? "" : "bdStgPet"}">${rects(drawPet(opts), 10, 0)}</g>${opts.plain ? "" : gardenSVG()}</svg>`;
   }
 
+  if (window.__bdRender) { window.csBuddyArt = { svg: petSVG, sprites: SP, palFor: (a, c) => Object.assign({}, SP[a].p, ((SP[a].colors[c | 0] || SP[a].colors[0])[1])), LV: [0, 20, 50, 100, 170, 260, 380, 530, 720, 950] }; return; }
   /* ---------- styles ---------- */
   const css = `
 .bd{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:14;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
@@ -485,11 +486,23 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     petBtn.setAttribute("aria-label", nameOf() + ", your study buddy. Tap to pet.");
     petBtn.classList.toggle("bd-shiny", !!S.shiny && isOpen(byId.shiny));
     petBtn.classList.toggle("sleep", sleeping);
+    if (S.on === true) setFavicon(true);
+  }
+  let favKey = "", favOrig = null;
+  function setFavicon(on) {
+    let l = document.querySelector('link[rel~="icon"]');
+    if (!l) { l = document.createElement("link"); l.rel = "icon"; document.head.appendChild(l); }
+    if (favOrig === null) favOrig = l.getAttribute("href") || "";
+    if (!on) { if (favKey) { favKey = ""; l.setAttribute("href", favOrig); l.removeAttribute("type"); } return; }
+    const key = [animal(), S.c | 0, S.head, S.face, S.neck, S.seas, season() && season().id].join("|"); if (key === favKey) return; favKey = key;
+    const svg = petSVG().replace('<svg class="bd-svg" viewBox="0 0 20 22"', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 2.5 19 19"');
+    l.setAttribute("type", "image/svg+xml"); l.setAttribute("href", "data:image/svg+xml," + encodeURIComponent(svg));
   }
   function visible() {
     const show = S.on === true || S.on === undefined;
     root.hidden = !show || !!S.min; mini.hidden = !(S.on === true && S.min);
     if (show) paintPet();
+    setFavicon(S.on === true && !!S.a);
   }
   function fx(ch, n) {
     for (let i = 0; i < (n || 3); i++) {
@@ -684,7 +697,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       if (col && !colorOpen(+col.dataset.col)) { say("🔒 This color unlocks at " + COLOR_AT[+col.dataset.col] + " saved words.", "", 3000); return; }
       if (col) { draft.c = +col.dataset.col; renderModal(); modal.querySelector(`[data-col="${draft.c}"]`).focus(); return; }
       if (m && m.dataset.m === "adopt") {
-        S.on = true; S.hi = today(); S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
+        favKey = ""; S.on = true; S.hi = today(); S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
         if (S.t == null) S.t = START_T; if (S.mw == null) S.mw = counts().words; S.min = false; S.seen = ITEMS.filter(isOpen).map(i => i.id);
         save(); closeModal(); visible(); hop(); fx(["💛", "🎉", "💛"]);
         say(`Hi! I'm <b>${esc(nameOf())}</b> 👋 I brought ${S.t} treats. Tap me anytime.`, menuActs(), 7000);
@@ -809,6 +822,29 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   window.addEventListener("storage", e => { if (e.key === KEY) { S = load(); visible(); if (!modal.hidden) renderModal(); } });
 
+  /* ---------- love between buddies ---------- */
+  const lovedKey = "cs-parklove";
+  function lovedToday(uid) { try { const m = JSON.parse(localStorage.getItem(lovedKey) || "{}"); return m[uid] === today(); } catch (e) { return false; } }
+  function markLoved(uid) { try { const m = JSON.parse(localStorage.getItem(lovedKey) || "{}"); Object.keys(m).forEach(k => { if (m[k] !== today()) delete m[k]; }); m[uid] = today(); localStorage.setItem(lovedKey, JSON.stringify(m)); } catch (e) {} }
+  function parkToast(pb, t) { const s = document.createElement("span"); s.className = "park-tip"; s.textContent = t; s.style.left = pb.offsetLeft + "px"; s.style.top = (pb.offsetTop - 70) + "px"; pb.parentNode.appendChild(s); setTimeout(() => s.remove(), 2600); }
+  async function sendLove(pb) {
+    const uid = pb.dataset.uid, bn = pb.dataset.bn || "them";
+    if (lovedToday(uid)) { parkToast(pb, "You already sent " + bn + " love today 💛"); return; }
+    const P = window.__csPark; if (!P || !P.heart) return;
+    try { await P.heart(uid, pb.dataset.a); markLoved(uid); parkToast(pb, "💛 Love sent to " + bn + "! (+2 friendship)"); }
+    catch (e) { if (/permission/i.test(String(e && (e.code || e.message)))) { markLoved(uid); parkToast(pb, "You already sent " + bn + " love today 💛"); } else parkToast(pb, "Couldn't send love. Try again."); }
+  }
+  async function claimLove() {
+    const P = window.__csPark; if (!P || !P.claim || S.on !== true) return;
+    let got = []; try { got = await P.claim(); } catch (e) { return; }
+    if (!got.length) return;
+    if (!S.fpm) S.fpm = {};
+    got.forEach(h => { const a = SP[h.a] ? h.a : animal(); S.fpm[a] = ((S.fpm[a]) | 0) + 2; });
+    save();
+    const names = [...new Set(got.map(h => h.first).filter(Boolean))];
+    const who = names.length ? (names.length > 2 ? names.slice(0, 2).join(", ") + " and " + (names.length - 2) + " more" : names.join(" and ")) : (got.length === 1 ? "A friend" : got.length + " friends");
+    setTimeout(() => { if (root.hidden) return; wake(); hop(); fx(["💛", "💌", "💛"]); say(`💌 <b>${esc(who)}</b> sent your buddy love in the Buddy park! +${got.length * 2} friendship`, `<button class="bd-b" type="button" data-bd="open">See ${esc(nameOf())}</button>`, 9000); }, 3500);
+  }
   /* ---------- buddy park ---------- */
   const DECO = [["🌳", 3, 16], ["🌲", 90, 18], ["🌳", 2, 70], ["🌲", 92, 74], ["🌷", 24, 92], ["🌼", 70, 93], ["🌻", 47, 95], ["☁️", 20, 3], ["☁️", 72, 5], ["🌼", 12, 44], ["🌷", 86, 46]]
     .map(([e, x, y]) => `<span class="park-deco" style="left:${x}%;top:${y}%" aria-hidden="true">${e}</span>`).join("");
@@ -827,25 +863,26 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     parkBusy = false;
     const mine = list.find(x => x.me);
     list = list.filter(x => !x.me && x.on && SP[x.a] && !(x.role && x.role.hidden));
-    if (S.on === true && S.a) list.push({ me: true, a: S.a, c: S.c | 0, n: S.n, head: S.head, face: S.face, neck: S.neck, lvl: level(), role: mine ? mine.role : {}, first: "" });
+    if (S.on === true && S.a) list.push({ me: true, words: counts().words, a: S.a, c: S.c | 0, n: S.n, head: S.head, face: S.face, neck: S.neck, lvl: level(), role: mine ? mine.role : {}, first: "" });
     if (!list.length) { msg(`The park is empty right now. <b>Adopt a buddy</b> to be the first one here! 🥚<br><button class="bd-b go" type="button" data-park="adopt" style="margin-top:10px">Adopt a buddy</button>`); return; }
     const club = list.filter(x => !(x.role && x.role.club === false)), priv = list.filter(x => x.role && x.role.club === false);
     const pos = [];
-    club.forEach((x, i) => { const n = club.length; if (n === 1) { pos.push([x, 50, 54]); return; } const inner = n > 7 && i % 2; const ang = i / n * Math.PI * 2 - Math.PI / 2; const r = inner ? .45 : 1; pos.push([x, 50 + Math.cos(ang) * 17 * r, 55 + Math.sin(ang) * 15 * r]); });
-    priv.forEach((x, i) => { const n = priv.length; const ang = (i + .5) / n * Math.PI * 2 - Math.PI / 2; pos.push([x, Math.max(9, Math.min(91, 50 + Math.cos(ang) * 39)), Math.max(24, Math.min(84, 55 + Math.sin(ang) * 30))]); });
+    club.forEach((x, i) => { const n = club.length; if (n === 1) { pos.push([x, 50, 54]); return; } const inner = n > 7 && i % 2; const ang = i / n * Math.PI * 2 - Math.PI / 2; const r = inner ? .45 : 1; pos.push([x, 50 + Math.cos(ang) * 19 * r, 54 + Math.sin(ang) * 17 * r]); });
+    priv.forEach((x, i) => { const n = priv.length; const ang = i / n * Math.PI * 2 + Math.PI / 4; pos.push([x, Math.max(9, Math.min(91, 50 + Math.cos(ang) * 39)), Math.max(24, Math.min(84, 55 + Math.sin(ang) * 30))]); });
     el.innerHTML = DECO + pos.map(([x, l, t]) => {
       const bn = (x.n && String(x.n).trim()) || SP[x.a].name, owner = x.me ? "You" : (x.first ? x.first + "'s" : "");
-      return `<button class="park-b${x.me ? " me" : ""}" type="button" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, friendship level ${x.lvl | 0 || 1}">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}<span class="pn">${esc(bn)}</span>${owner ? `<span class="po">${esc(owner)}${x.lvl > 1 ? " · 💛" + (x.lvl | 0) : ""}</span>` : ""}</button>`;
+      return `<button class="park-b${x.me ? " me" : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, friendship level ${x.lvl | 0 || 1}">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}<span class="pn">${esc(bn)}</span>${owner ? `<span class="po">${esc(owner)}${x.lvl > 1 ? " · 💛" + (x.lvl | 0) : ""}</span>` : ""}<span class="pw">📚 ${(x.me ? counts().words : x.words | 0)} ${(x.me ? counts().words : x.words | 0) === 1 ? "word" : "words"}</span></button>`;
     }).join("");
   }
   document.addEventListener("click", e => {
     const pb = e.target.closest(".park-b");
+    if (pb && !pb.classList.contains("me") && pb.dataset.uid) sendLove(pb);
     if (pb) { pb.classList.remove("hop"); void pb.offsetWidth; pb.classList.add("hop"); ["💛", "👋", "💛"].forEach((ch, i) => { const s = document.createElement("span"); s.className = "park-fx"; s.textContent = ch; s.style.left = (pb.offsetLeft - 20 + i * 16) + "px"; s.style.top = (pb.offsetTop - 50) + "px"; s.style.animationDelay = i * .12 + "s"; pb.parentNode.appendChild(s); setTimeout(() => s.remove(), 1500); }); return; }
     const a = e.target.closest("[data-park]"); if (!a) return;
     if (a.dataset.park === "signin" && window.csSignIn) window.csSignIn(); else if (a.dataset.park === "retry") renderPark(); else if (a.dataset.park === "adopt") openModal("adopt");
   });
   (function watchPark() { const v = $("v-park"); if (!v) return; new MutationObserver(() => { if (!v.hidden) renderPark(); }).observe(v, { attributes: true, attributeFilter: ["hidden"] }); if (!v.hidden) renderPark(); })();
-  window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); } renderPark(); });
+  window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); } renderPark(); });
 
   window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();

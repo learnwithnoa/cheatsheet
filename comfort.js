@@ -27,13 +27,13 @@
     default: "<b>Lexend</b> (the default): clean and round, with a little extra space between letters. It was designed to make reading easier and faster.",
     atkinson: "<b>Atkinson Hyperlegible</b>: made for people with low vision. Letters that look alike, like I, l and 1, are easy to tell apart.",
     book: "<b>Book</b> (Literata): a calm, classic font like the ones in printed books and e-readers. Lovely with the Sepia look.",
-    classic: "<b>Classic</b> (Nunito): the Cheat Sheet's original font. Soft, round and friendly."
+    classic: "<b>Classic</b>: the Cheat Sheet's original look, with Nunito for text and playful Sour Gummy for titles. Soft, round and friendly."
   };
   /* ---------- fonts (loaded only when chosen) ---------- */
   const FONTS = {
     atkinson: "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap",
     book: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&display=swap",
-    classic: "https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,800;0,900;1,600&display=swap"
+    classic: "https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,800;0,900;1,600&family=Sour+Gummy:wght@500;700&display=swap"
   };
   function loadFont(f) {
     if (!FONTS[f] || document.querySelector('link[data-csfontlink="' + f + '"]')) return;
