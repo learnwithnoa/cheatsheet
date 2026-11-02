@@ -640,6 +640,36 @@ html.cs-calm .park-b svg{animation:none}
 .park-tip{position:absolute;transform:translateX(-50%);z-index:3;pointer-events:none;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;font:700 12.5px var(--body);white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);animation:parkTip 2.6s ease forwards}
 @keyframes parkTip{0%{opacity:0;transform:translate(-50%,6px)}10%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
 @media (max-width:640px){.park-b .po{display:block;font-size:9.5px;padding:0 5px}.park-b .pw{font-size:9.5px}.park-b .pn{font-size:11px}}
+
+.nb-week{margin-bottom:14px}
+.nb-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.nb-head h3{margin:0;font-family:var(--display);font-size:19px}
+.nb-sum h4{margin:12px 0 4px;font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.nb-sum h4:first-child{margin-top:4px}
+.nb-sum ul{margin:0;padding-left:20px}
+.nb-sum li{margin:3px 0}
+.nb-sum p{margin:6px 0}
+.nb-loading{color:var(--muted);padding:6px 0}
+.nb-add{font:800 11.5px var(--body);color:var(--green);background:transparent;border:1.5px solid color-mix(in srgb,var(--green) 50%,var(--line));border-radius:999px;padding:1px 8px;margin-left:4px;cursor:pointer;vertical-align:1px}
+.nb-add:disabled{opacity:.6;cursor:default}
+.nb-stale{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+.nb-orig{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.nb-orig summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--muted)}
+.nb-note{margin:8px 0}
+.nb-day{font:700 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.nb-txt{white-space:pre-wrap;font-size:14.5px}
+.nb-monthcard{border-color:color-mix(in srgb,#F5B800 45%,var(--line))}
+.sn-word{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:10px 0}
+.sn-word b{font-family:var(--display);font-size:26px}
+.sn-word span{color:var(--green);font-weight:800}
+.sn-card textarea{width:100%;box-sizing:border-box;font:500 16px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;resize:vertical;margin-bottom:10px}
+.sn-out{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+.sn-res{display:inline-block;border-radius:999px;padding:3px 12px;font-size:14px}
+.sn-great{background:color-mix(in srgb,var(--green) 20%,var(--surface))}
+.sn-almost{background:color-mix(in srgb,#F5B800 22%,var(--surface))}
+.sn-try{background:color-mix(in srgb,#E5533D 18%,var(--surface))}
+.sn-better{margin-top:8px;background:var(--surface-2);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sn-lbl{font-weight:800;color:var(--muted);font-size:13px}
 </style>
 
 <header class="top">
@@ -699,6 +729,7 @@ html.cs-calm .park-b svg{animation:none}
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
+      <button class="navbtn cn-nav" data-go="notebook"><span class="w-ico" aria-hidden="true">📓</span><span>My notebook</span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
       <button class="navbtn cn-nav" data-go="park"><span class="w-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
@@ -965,6 +996,16 @@ html.cs-calm .park-b svg{animation:none}
 </section>
 
 <!-- ============ TRANSLATOR ============ -->
+<section class="view" id="v-notebook" hidden>
+  <h1>My <em>notebook</em></h1>
+  <p class="lede">Your class notes, grouped by week, with a short summary of each week: the main topics, corrections to remember and new expressions. Tap <b>+ save</b> to add an expression to your words.</p>
+  <div class="note-actions" style="margin-bottom:12px"><button class="pill-btn" type="button" id="nbMonthBtn" hidden>✨ Summarize this month</button><button class="swap" type="button" data-go="classnotes">All my class notes →</button></div>
+  <p class="muted" id="nbAiMsg" hidden style="font-size:14px">The summaries use AI, which is still loading or isn't available right now. Your notes are below.</p>
+  <div id="nbMonth"></div>
+  <div id="nbList"></div>
+  <p class="muted" style="font-size:13px;margin-top:14px">Summaries are written by AI from your own notes, so double-check anything that looks odd. Noa's notes always win.</p>
+</section>
+
 <section class="view" id="v-park" hidden>
   <h1>Buddy <em>park</em></h1>
   <p class="lede">Everyone's study buddies, hanging out together. Tap someone's buddy to send it love: it gets <b>+2 friendship</b> (once a day per buddy).</p>
@@ -1667,6 +1708,16 @@ html.cs-calm .park-b svg{animation:none}
       <div class="quiz-btns"><button class="pill-btn" type="button" id="fcNext">Skip →</button><button class="swap" type="button" id="fcShuffle">Shuffle</button><button class="swap" type="button" id="fcDir">Start in Spanish</button></div>
     </div>
   </div>
+  <h2>Use it in a sentence</h2>
+  <p>Write your own sentence with one of your words, and get quick feedback. It uses the same words you chose above.</p>
+  <div class="card sn-card" id="snCard" style="max-width:560px">
+    <div class="quiz-top"><span class="tag">✍️ Your word</span><button class="swap" type="button" id="snNext">Another word →</button></div>
+    <div class="sn-word"><b id="snWord"></b><span id="snMean"></span></div>
+    <label class="sr" for="snText">Your sentence</label>
+    <textarea id="snText" rows="2" placeholder="Write a sentence with this word…" spellcheck="true"></textarea>
+    <div class="note-actions"><button class="pill-btn pill-green" type="button" id="snCheck">Check my sentence</button><span class="muted" id="snOff" hidden style="font-size:13px">The checker is loading…</span></div>
+    <div class="sn-out" id="snOut" hidden aria-live="polite"></div>
+  </div>
   <h2>Irregular verbs</h2>
   <p class="lede" style="margin-bottom:12px">Write the past simple and the past participle. Press Enter to check.</p>
   <div class="card quiz" style="max-width:560px">
@@ -1684,7 +1735,7 @@ html.cs-calm .park-b svg{animation:none}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=6" defer></script>
+<script src="buddy.js?v=7" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2573,6 +2624,143 @@ document.querySelector("#v-quiz").addEventListener("click",e=>{
 fcShuffle();
 
 
+/* ---------- My notebook: class notes grouped by week, summarized by AI ---------- */
+(function(){
+  const box=document.getElementById("nbList"), monthBox=document.getElementById("nbMonth"), monthBtn=document.getElementById("nbMonthBtn"), aiMsg=document.getElementById("nbAiMsg");
+  if(!box) return;
+  const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const pad=n=>String(n).padStart(2,"0");
+  const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  function weekStart(t){ const d=new Date(t); d.setHours(0,0,0,0); const wd=(d.getDay()+6)%7; d.setDate(d.getDate()-wd); return d; }
+  function hash(s){ let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))|0; return String(h); }
+  let sums=LS.get("ncs-nbsum",{}); if(!sums||typeof sums!=="object") sums={};
+  const busy=new Set();
+  const aiReady=()=>!!window.__csSample;
+  const notes=()=>(LS.get("ncs-classnotes",[])||[]).filter(n=>n&&n.text&&String(n.text).trim());
+  function groups(){
+    const g={};
+    notes().forEach(n=>{ const ws=weekStart(n.t||Date.now()), k=ymd(ws); (g[k]=g[k]||{key:k,start:ws,list:[]}).list.push(n); });
+    return Object.values(g).sort((a,b)=>b.start-a.start).map(x=>{ x.list.sort((a,b)=>(a.t||0)-(b.t||0)); return x; });
+  }
+  const rangeTxt=ws=>{ const e=new Date(ws); e.setDate(e.getDate()+6); return ws.getMonth()===e.getMonth()? MON[ws.getMonth()]+" "+ws.getDate()+"–"+e.getDate() : MON[ws.getMonth()]+" "+ws.getDate()+" – "+MON[e.getMonth()]+" "+e.getDate(); };
+  const dayTxt=t=>{ const d=new Date(t); return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()]+" "+MON[d.getMonth()]+" "+d.getDate(); };
+  const notesText=list=>list.map(n=>"["+dayTxt(n.t)+"]\n"+String(n.text).trim()).join("\n\n");
+  function prompt(label,list){
+    return "You are helping a Spanish-speaking student of English (level B1 to B2) review their own class notes from their English coach, Noa. "+
+    "Below are the notes from "+label+". Write a short, clean study summary in English, speaking directly to the student (\"you\"). Use simple, friendly English. "+
+    "Use exactly these sections, in this order, and skip a section if the notes have nothing for it:\n"+
+    "## Main topics\n- (one short line per topic)\n## Corrections to remember\n- wrong → right (very short reason)\n## New words & expressions\n- expression — meaning in Spanish\n## Practice next\n- one or two small, practical suggestions\n\n"+
+    "Rules: under 180 words. Only use information that is in the notes, never invent examples or facts. Fix spelling mistakes in the notes. No introduction, no closing sentence, no bold titles other than the ## headings.\n\nNOTES:\n"+notesText(list);
+  }
+  function render(md){
+    let html="", inList=false, sec="";
+    const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+    String(md||"").split("\n").forEach(raw=>{
+      const line=raw.trim(); if(!line) return;
+      if(/^#{1,4}\s/.test(line)){ if(inList){ html+="</ul>"; inList=false; } sec=line.replace(/^#+\s*/,""); html+="<h4>"+inline(sec)+"</h4>"; return; }
+      if(/^[-*•]\s+/.test(line)){
+        const t=line.replace(/^[-*•]\s+/,"");
+        if(!inList){ html+="<ul>"; inList=true; }
+        let extra="";
+        if(/words|expressions/i.test(sec)){ const m=t.split(/\s+[—–-]\s+/); if(m.length>=2&&m[0].length<60){ const w=m[0].replace(/\*\*/g,"").replace(/^["“]|["”]$/g,"").trim(), mean=m.slice(1).join(" - ").replace(/\*\*/g,"").trim(); extra=' <button class="nb-add" type="button" data-w="'+esc(w)+'" data-m="'+esc(mean)+'">+ save</button>'; } }
+        html+="<li>"+inline(t)+extra+"</li>"; return;
+      }
+      if(inList){ html+="</ul>"; inList=false; }
+      html+="<p>"+inline(line)+"</p>";
+    });
+    if(inList) html+="</ul>";
+    return html;
+  }
+  async function summarize(key,label,list,auto){
+    if(!aiReady()||busy.has(key)) return;
+    busy.add(key); paint();
+    try{
+      const r=await window.__csSample(prompt(label,list));
+      const txt=(r&&r.text||"").trim();
+      if(txt){ sums[key]={h:hash(notesText(list)),s:txt,at:Date.now()}; LS.set("ncs-nbsum",sums); }
+    }catch(e){ if(!auto) toast("Couldn't make the summary right now. Try again in a minute."); console.warn(e); }
+    busy.delete(key); paint();
+  }
+  function card(g,i){
+    const key="w-"+g.key, s=sums[key], h=hash(notesText(g.list)), fresh=s&&s.h===h, label="the week of "+rangeTxt(g.start);
+    const head='<div class="nb-head"><h3>'+(i===0&&weekStart(Date.now()).getTime()===g.start.getTime()?"This week · ":"")+rangeTxt(g.start)+'</h3><span class="count">'+g.list.length+(g.list.length===1?" note":" notes")+'</span></div>';
+    let body;
+    if(busy.has(key)) body='<div class="nb-sum nb-loading">✨ Writing your summary…</div>';
+    else if(s) body='<div class="nb-sum">'+render(s.s)+'</div>'+(fresh?"":'<p class="nb-stale">You added or changed notes since this summary. <button class="foot-link" type="button" data-nbsum="'+key+'">Update summary</button></p>');
+    else body= aiReady()? '<button class="pill-btn pill-green" type="button" data-nbsum="'+key+'">✨ Summarize this week</button>' : '<p class="muted" style="margin:0">Summaries will appear here when the AI is available.</p>';
+    const orig='<details class="nb-orig"><summary>My notes ('+g.list.length+')</summary>'+g.list.map(n=>'<div class="nb-note"><div class="nb-day">'+dayTxt(n.t)+'</div><div class="nb-txt">'+esc(n.text)+'</div></div>').join("")+'</details>';
+    return '<article class="card nb-week">'+head+body+orig+'</article>';
+  }
+  let G=[];
+  function paint(){
+    G=groups();
+    aiMsg.hidden=aiReady();
+    if(!G.length){ box.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Save notes on your Home page or in <b>My class notes</b>, and they\'ll show up here, grouped by week with a summary.</div>'; monthBtn.hidden=true; monthBox.innerHTML=""; return; }
+    monthBtn.hidden=!aiReady();
+    box.innerHTML=G.map(card).join("");
+    const mk="m-"+ymd(new Date()).slice(0,7), ms=sums[mk];
+    monthBox.innerHTML= busy.has(mk)? '<article class="card nb-week nb-monthcard"><div class="nb-sum nb-loading">✨ Writing your month summary…</div></article>'
+      : ms? '<article class="card nb-week nb-monthcard"><div class="nb-head"><h3>'+MONTHS[new Date().getMonth()]+' summary</h3><button class="foot-link" type="button" id="nbMonthClose">hide</button></div><div class="nb-sum">'+render(ms.s)+'</div></article>' : "";
+    monthBtn.textContent= ms? "✨ Update this month's summary" : "✨ Summarize this month";
+  }
+  function monthList(){ const now=new Date(); return notes().filter(n=>{ const d=new Date(n.t||0); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).sort((a,b)=>(a.t||0)-(b.t||0)); }
+  monthBtn.addEventListener("click",()=>{ const l=monthList(); if(!l.length){ toast("No class notes this month yet"); return; } summarize("m-"+ymd(new Date()).slice(0,7),MONTHS[new Date().getMonth()],l,false); });
+  document.getElementById("v-notebook").addEventListener("click",e=>{
+    const b=e.target.closest("[data-nbsum]"); if(b){ const k=b.dataset.nbsum, g=G.find(x=>"w-"+x.key===k); if(g) summarize(k,"the week of "+rangeTxt(g.start),g.list,false); return; }
+    const a=e.target.closest(".nb-add"); if(a){ if(addWord(a.dataset.w,a.dataset.m)){ a.textContent="✓ saved"; a.disabled=true; } return; }
+    if(e.target.closest("#nbMonthClose")){ const mk="m-"+ymd(new Date()).slice(0,7); delete sums[mk]; LS.set("ncs-nbsum",sums); paint(); }
+  });
+  function onOpen(){
+    sums=LS.get("ncs-nbsum",{})||{}; paint();
+    // write the newest week's summary automatically (one per visit, to keep it light)
+    const g=G[0]; if(g&&aiReady()){ const k="w-"+g.key, s=sums[k]; if(!s||s.h!==hash(notesText(g.list))) summarize(k,"the week of "+rangeTxt(g.start),g.list,true); }
+  }
+  const v=document.getElementById("v-notebook");
+  new MutationObserver(()=>{ if(!v.hidden) onOpen(); }).observe(v,{attributes:true,attributeFilter:["hidden"]});
+  window.addEventListener("cs-sample-ready",()=>{ if(!v.hidden) onOpen(); });
+  if(!v.hidden) onOpen();
+})();
+
+/* ---------- Use it in a sentence (AI feedback) ---------- */
+(function(){
+  const card=document.getElementById("snCard"); if(!card) return;
+  const wEl=document.getElementById("snWord"), mEl=document.getElementById("snMean"), ta=document.getElementById("snText"), out=document.getElementById("snOut"), go=document.getElementById("snCheck"), nx=document.getElementById("snNext"), off=document.getElementById("snOff");
+  let cur=null, lastId=null;
+  function pool(){ let l=[]; try{ l=typeof fcList==="function"? fcList() : allWords(); }catch(e){ l=allWords(); } l=l.filter(x=>x&&x.w); if(!l.length) l=allWords().filter(x=>x&&x.w); return l; }
+  function pick(){
+    const l=pool(); if(!l.length){ cur=null; wEl.textContent="Save a few words first"; mEl.textContent=""; ta.disabled=true; go.disabled=true; return; }
+    let x=l[Math.floor(Math.random()*l.length)]; if(l.length>1&&x.id===lastId) x=l.find(y=>y.id!==lastId);
+    cur=x; lastId=x.id; wEl.textContent=x.w; mEl.textContent=x.m||""; ta.value=""; ta.disabled=false; out.innerHTML=""; out.hidden=true; paintBtn();
+  }
+  function paintBtn(){ const ok=!!window.__csSample; go.disabled=!cur||!ok; off.hidden=ok; }
+  function parse(t){ const m=String(t||"").match(/\{[\s\S]*\}/); if(!m) return null; try{ return JSON.parse(m[0]); }catch(e){ return null; } }
+  go.addEventListener("click",async()=>{
+    const s=ta.value.trim(); if(!cur) return; if(s.split(/\s+/).length<3){ toast("Write a full sentence with “"+cur.w+"”"); ta.focus(); return; }
+    go.disabled=true; go.textContent="Checking…"; out.hidden=false; out.innerHTML='<p class="muted" style="margin:0">✨ Reading your sentence…</p>';
+    const p="You are a kind, encouraging English coach for a Spanish-speaking learner (level B1 to B2). The student is practicing the word or expression \""+cur.w+"\""+(cur.m?" (meaning: "+cur.m+")":"")+".\n"+
+      "Their sentence: \""+s+"\"\n\n"+
+      "Check two things: 1) is \""+cur.w+"\" used with the right meaning and in a natural way, and 2) is the sentence grammatically correct? Focus on what matters for communication; don't nitpick tiny style choices.\n"+
+      "Reply with ONLY this JSON, no other text:\n{\"result\":\"great\" or \"almost\" or \"try_again\",\"feedback\":\"one or two short, friendly sentences in simple English, speaking to the student as you. Say what's good, and explain the main fix if there is one\",\"better\":\"a corrected or more natural version of THEIR sentence (keep their idea), or an empty string if it's already great\"}\n"+
+      "Use \"try_again\" only if the word is used with the wrong meaning or the sentence is very hard to understand.";
+    let r=null;
+    try{ const res=await window.__csSample(p); r=parse(res&&res.text); }catch(e){ console.warn(e); }
+    go.textContent="Check my sentence"; paintBtn();
+    if(!r||!r.feedback){ out.innerHTML='<p style="margin:0">Couldn\'t check it right now. Try again in a minute.</p>'; return; }
+    const res=String(r.result||"").toLowerCase(), tag= res==="great"?["🎉","Great!","sn-great"]: res==="almost"?["👍","Almost!","sn-almost"]:["💪","Try again","sn-try"];
+    out.innerHTML='<div class="sn-res '+tag[2]+'"><b>'+tag[0]+' '+tag[1]+'</b></div><p style="margin:6px 0 0">'+esc(r.feedback)+'</p>'+
+      (r.better&&String(r.better).trim()&&res!=="great"?'<div class="sn-better"><span class="sn-lbl">Try it like this:</span> '+esc(r.better)+(canSpeak?' <button class="say" type="button" data-sn-say aria-label="Hear it">🔊</button>':'')+'</div>':'');
+    const sb=out.querySelector("[data-sn-say]"); if(sb) sb.addEventListener("click",()=>say(r.better,sb));
+    if(res==="great"||res==="almost") document.dispatchEvent(new CustomEvent("cs-sentence",{detail:{result:res}}));
+  });
+  ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); go.click(); } });
+  nx.addEventListener("click",pick);
+  window.addEventListener("cs-sample-ready",paintBtn);
+  const v=document.getElementById("v-quiz");
+  new MutationObserver(()=>{ if(!v.hidden&&!cur) pick(); }).observe(v,{attributes:true,attributeFilter:["hidden"]});
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-fcset]")) setTimeout(pick,50); });
+  pick();
+})();
+
 /* ---------------- import words ---------------- */
 const impCard=document.getElementById("importCard"), impOpen=document.getElementById("impOpen"), impText=document.getElementById("impText"), impPrev=document.getElementById("impPreview");
 function parseCSV(text,delim){
@@ -3294,6 +3482,10 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-notebook", date:"November 2, 2026", title:"Your notebook & sentence practice ✍️", items:[
+    ["📓","My notebook","your class notes grouped by week, with a short AI summary: main topics, corrections to remember and new expressions.","notebook"],
+    ["✍️","Use it in a sentence","in <b>Practice</b>, write a sentence with one of your words and get quick, friendly feedback.","quiz"]
+  ]},
   {id:"2026-love", date:"November 2, 2026", title:"Love in the park 💌", items:[
     ["💌","Send love","tap a friend's buddy in the <b>Buddy park</b> to give it +2 friendship (once a day per buddy). You'll see who sent love to yours.","park"],
     ["🐾","Your buddy in your tab","the little icon in your browser tab is now your own study buddy.",null],

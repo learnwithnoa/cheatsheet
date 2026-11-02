@@ -744,6 +744,14 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       else say("Treat jar's full (30) 🍪 Time for a snack?", menuActs(), 4000);
     }
   }
+  document.addEventListener("cs-sentence", e => {
+    if (S.on !== true) return;
+    const grew = markStudy();
+    if (!S.sd || S.sd[0] !== today()) S.sd = [today(), 0];
+    let gave = 0; if (S.sd[1] < 5 && (S.t | 0) < MAXT) { S.sd[1]++; S.t = (S.t | 0) + 1; gave = 1; }
+    save(); wake(); hop(); fx(["✍️", "💛", "✨"]);
+    say((e.detail && e.detail.result === "great" ? "What a sentence! 🎉" : "Nice try, you're close! 👍") + (gave ? " +1 🍪" : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3500);
+  });
   document.addEventListener("cs-fcround", () => {
     if (S.on !== true) return;
     const c = counts(), before = S.lc == null ? c.learned : S.lc; S.lc = c.learned;
