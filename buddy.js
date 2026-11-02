@@ -200,7 +200,18 @@ axolotl:{name:"Axolotl",sub:"always smiling",
   const ORDER = ["max", "miki", "cat", "llama", "unicorn", "chicken", "pudu", "capybara", "axolotl"];
 
   /* accessories: slot, unlocked at N saved words (w) or N learned words (l) */
-  const AP = { r: "#E5533D", R: "#A8321F", y: "#F5C842", Y: "#D9A520", w: "#FFFFFF", k: "#1E1712", K: "#4A4A55", g: "#3BA776", G: "#2A7D54", b: "#3B6FD9", p: "#F37BA5", P: "#D9527F", v: "#8E5CD9", V: "#6B3FB5", u: "#6FB6F2", o: "#F5A623", c: "#F6E7CF" };
+  const AP = { r: "#E5533D", R: "#A8321F", y: "#F5C842", Y: "#D9A520", w: "#FFFFFF", k: "#1E1712", K: "#4A4A55", g: "#3BA776", G: "#2A7D54", b: "#3B6FD9", p: "#F37BA5", P: "#D9527F", v: "#8E5CD9", V: "#6B3FB5", u: "#6FB6F2", o: "#F5A623", c: "#F6E7CF", h: "#E8C987", H: "#B8924A", n: "#F28C28", N: "#C96A12" };
+  /* seasonal hats: worn automatically on those dates (students can turn this off) */
+  function easter(y) { const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1; return new Date(y, mo - 1, da); }
+  const SEASONS = [
+    { id: "s-newyear", name: "New Year party hat", ico: "🎆", when: (m, d) => (m === 12 && d === 31) || (m === 1 && d <= 2), px: ["..ww..", "..yy..", ".yvvy.", ".yyyy.", "yvvvvy"] },
+    { id: "s-valentine", name: "Heart boppers", ico: "💘", when: (m, d) => m === 2 && d >= 10 && d <= 14, px: ["pp..pp", "pp..pp", ".k..k.", "kkkkkk"] },
+    { id: "s-easter", name: "Bunny ears", ico: "🐰", when: (m, d, y) => { const e = easter(y), t = new Date(y, m - 1, d); const diff = Math.round((t - e) / 864e5); return diff >= -3 && diff <= 1; }, px: ["w....w", "wp..pw", "wp..pw", "ww..ww"] },
+    { id: "s-patrias", name: "Chupalla (Fiestas Patrias)", ico: "🇨🇱", when: (m, d) => m === 9 && d >= 14 && d <= 20, px: ["..hhhh..", "..rrbb..", "HhhhhhhH"] },
+    { id: "s-halloween", name: "Witch hat", ico: "🎃", when: (m, d) => m === 10 && d >= 24, px: ["....kk..", "...kkk..", "..kkkk..", "..vvvv..", "kkkkkkkk"] },
+    { id: "s-xmas", name: "Santa hat", ico: "🎅", when: (m, d) => m === 12 && d <= 26, px: ["......ww", "....rrrw", "..rrrrr.", ".rrrrrr.", "wwwwwwww"] }
+  ];
+  function season() { const t = window.__bdDate ? new Date(window.__bdDate) : new Date(), m = t.getMonth() + 1, d = t.getDate(), y = t.getFullYear(); return SEASONS.find(x => x.when(m, d, y)) || null; }
   const ITEMS = [
     { id: "bandana", name: "Bandana", ico: "🧣", slot: "neck", w: 5, px: ["rrrrrr", ".rwrr.", "..rr.."] },
     { id: "bowtie", name: "Bow tie", ico: "🎀", slot: "neck", w: 15, px: ["p....p", "ppPPpp", "p....p"] },
@@ -277,7 +288,8 @@ axolotl:{name:"Axolotl",sub:"always smiling",
     const px = [];
     g.forEach((row, y) => row.forEach((ch, x) => { if (ch !== "." && ch !== " " && pal[ch]) px.push([x + OX, y + OY, pal[ch]]); }));
     const wear = opts.wear || { head: S.head, face: S.face, neck: S.neck };
-    const neck = byId[wear.neck], face = byId[wear.face], head = byId[wear.head];
+    const neck = byId[wear.neck], face = byId[wear.face]; let head = byId[wear.head];
+    if (!opts.plain && S.seas !== false) { const se = season(); if (se) head = se; }
     if (neck && neck.px) stamp(px, neck.px, anc.neck[0], anc.neck[1], AP);
     if (face && face.lens) {
       const [ey, cs] = anc.eyes, lw = face.lens[0].length;
@@ -326,11 +338,22 @@ axolotl:{name:"Axolotl",sub:"always smiling",
     toys.forEach(t => { const d = T[t]; if (!d) return; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(d[0] + dx, d[1] + dy, 1, 1, d[3][ch]); })); });
     return r;
   }
+  function gardenSVG() {
+    const days = (S.gd || []).slice(-38), C = ["#F37BA5", "#F5C842", "#E5533D", "#8E5CD9", "#6FB6F2", "#FFFFFF", "#F59A2E"]; let r = "";
+    days.forEach((day, i) => {
+      let h = 0; for (const ch of day) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      const x = i < 19 ? 1 + i * 2 : 2 + (i - 19) * 2, tall = i < 19 ? 0 : 1;
+      r += `<rect x="${x}" y="${24 - tall}" width="1" height="${2 + tall}" fill="#3BA776"/><rect x="${x}" y="${23 - tall}" width="1" height="1" fill="${C[h % C.length]}"/>`;
+      if (h % 3 === 0) r += `<rect x="${x + (i < 19 ? 1 : -1)}" y="${25}" width="1" height="1" fill="#2A7D54"/>`;
+    });
+    return r;
+  }
+  function markStudy() { const d = today(); if (!Array.isArray(S.gd)) S.gd = []; if (S.gd[S.gd.length - 1] === d || S.gd.includes(d)) return false; S.gd.push(d); save(); return true; }
   function stageSVG(opts) {
     opts = opts || {};
     const toys = ITEMS.filter(i => i.slot === "toy" && isOpen(i)).map(i => i.id);
     const room = opts.room !== undefined ? opts.room : S.room;
-    return `<svg class="bd-stage-svg" viewBox="0 0 40 26" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}${rects(drawPet(opts), 10, 0)}</svg>`;
+    return `<svg class="bd-stage-svg" viewBox="0 0 40 26" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}${rects(drawPet(opts), 10, 0)}${opts.plain ? "" : gardenSVG()}</svg>`;
   }
 
   /* ---------- styles ---------- */
@@ -420,6 +443,10 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-note,.bd-note2{top:0;right:-6px;animation:bdFloat 2.6s ease-out forwards}
 .bd-note2{right:auto;left:-4px}
 .bd-hearts{letter-spacing:-2px;font-size:13px}
+.bd-pet.bd-nervous .bd-svg{animation:bdNerv .65s steps(2) 2}
+@keyframes bdNerv{0%,100%{transform:translateX(0)}50%{transform:translateX(-2px)}}
+.bd-sweat{top:8px;right:4px;font-size:13px;animation:bdSweat 1.6s ease-in forwards}
+@keyframes bdSweat{from{transform:translateY(0);opacity:1}to{transform:translateY(14px);opacity:0}}
 html.cs-calm .bd-prop{display:none}
 html.cs-calm .bd-pet .bd-svg,html.cs-calm .bd-pet.hop .bd-svg,html.cs-calm .bd-pet.walk .bd-svg{animation:none}
 html.cs-calm .bd-shiny::before,html.cs-calm .bd-shiny::after{animation:none;opacity:.8}
@@ -567,7 +594,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (e.key === "Tab") { const f = [...modal.querySelectorAll("button:not([disabled]),input,[tabindex='0']")].filter(x => x.offsetParent); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
   });
   function animalGrid(sel) {
-    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: SP[id].p, wear: {} })}${esc(SP[id].name)}</button>`).join("")}</div>`;
+    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}</button>`).join("")}</div>`;
   }
   function swatches(id, sel) {
     const d = SP[id];
@@ -578,7 +605,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const d = draft, pal = Object.assign({}, SP[d.a].p, (SP[d.a].colors[d.c] || [0, {}])[1]);
       modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">Adopt a study buddy 🐾</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
         <p class="bd-small" style="margin-top:8px">A little friend who keeps you company while you study. Feed it treats you earn by saving words and practicing. It never gets sick or sad if you're away, it just naps.</p>
-        <div class="bd-stage">${stageSVG({ a: d.a, pal, wear: {}, room: null })}</div>
+        <div class="bd-stage">${stageSVG({ a: d.a, pal, wear: {}, room: null, plain: true })}</div>
         <h4>Choose your buddy</h4>${animalGrid(d.a)}${swatches(d.a, d.c)}
         <h4>Give it a name</h4><div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" placeholder="${esc(SP[d.a].name)}" value="${esc(d.n)}" aria-label="Your buddy's name" autocomplete="off"></div>
         <div class="bd-foot"><button class="bd-link" type="button" data-m="nothanks">No thanks</button><button class="bd-b go" type="button" data-m="adopt">Adopt ${esc(d.n.trim() || SP[d.a].name)}!</button></div>`;
@@ -610,6 +637,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       <p class="bd-small" style="margin-top:0">A word counts as <b>learned</b> when you tap <b>✓ I knew it</b> on it 3 times in flashcards. Toys show up in your buddy's room.</p>
       <h4>Wardrobe</h4>${slotRow("head", "Head")}${slotRow("face", "Face")}${slotRow("neck", "Neck")}
       <h4>Room</h4>${slotRow("room", "Background")}
+      ${(() => { const n = (S.gd || []).length; return `<p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows in front of your buddy on every day you study (save a word or practice flashcards). Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`; })()}
+      ${(() => { const se = season(); return `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:8px"><input type="checkbox" id="bdSeas" ${S.seas !== false ? "checked" : ""}> 🗓️ Seasonal outfits${se ? ` <span class="bd-small" style="margin:0">(now: ${se.ico} ${esc(se.name)})</span>` : ` <span class="bd-small" style="margin:0">(Halloween, Christmas, Fiestas Patrias and more)</span>`}</label>`; })()}
       ${isOpen(byId.shiny) ? `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" id="bdShiny" ${S.shiny ? "checked" : ""}> ✨ Shiny sparkles</label>` : `<p class="bd-small">🔒 <b>Shiny sparkles</b> at 400 words · ⭐ <b>Legend star</b> at 1,000 words</p>`}
       <h4>Change your buddy</h4>${animalGrid(animal())}${swatches(animal(), S.c | 0)}
       <div class="bd-foot"><button class="bd-link" type="button" data-m="hide">Hide my buddy</button><button class="bd-b" type="button" data-m="close">Done</button></div>`;
@@ -649,7 +678,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (mode === "adopt") { draft.n = e.target.value; const b = modal.querySelector('[data-m="adopt"]'); if (b) b.textContent = "Adopt " + (draft.n.trim() || SP[draft.a].name) + "!"; return; }
     S.n = e.target.value.slice(0, 16); save(); paintPet();
   });
-  modal.addEventListener("change", e => { if (e.target.id === "bdShiny") { S.shiny = e.target.checked; save(); renderModal(); paintPet(); } });
+  modal.addEventListener("change", e => { if (e.target.id === "bdSeas") { S.seas = e.target.checked; save(); renderModal(); paintPet(); return; } if (e.target.id === "bdShiny") { S.shiny = e.target.checked; save(); renderModal(); paintPet(); } });
   function toastMsg(t) { if (typeof window.toast === "function") window.toast(t); else say(esc(t), "", 3500); }
 
   /* ---------- earning treats & unlocks ---------- */
@@ -662,7 +691,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (S.mw == null) { S.mw = c.words; save(); return; }
     if (c.words > S.mw) {
       const gain = c.words - S.mw, before = S.mw; S.mw = c.words;
-      const old = S.t | 0; S.t = Math.min(MAXT, old + gain); save();
+      const old = S.t | 0; S.t = Math.min(MAXT, old + gain); markStudy(); save();
       const unlocked = ITEMS.filter(i => i.w != null && before < i.w && c.words >= i.w);
       wake(); hop();
       if (unlocked.length) { fx(["🎉", "✨", "🎉"]); say(`🎉 New for ${esc(nameOf())}: <b>${unlocked.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>!`, `<button class="bd-b go" type="button" data-bd="open">Try it on</button>`, 9000); }
@@ -673,17 +702,41 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   document.addEventListener("cs-fcround", () => {
     if (S.on !== true) return;
     const c = counts(), before = S.lc == null ? c.learned : S.lc; S.lc = c.learned;
-    const old = S.t | 0; S.t = Math.min(MAXT, old + 3); save(); wake(); hop(); fx(["🍪", "💛", "🍪"]);
+    const old = S.t | 0; S.t = Math.min(MAXT, old + 3); markStudy(); save(); wake(); hop(); fx(["🍪", "💛", "🍪"]);
     const toys = ITEMS.filter(i => i.l != null && before < i.l && c.learned >= i.l);
     if (toys.length) say(`🎉 You've learned ${c.learned} words! New toy: <b>${toys.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000);
     else say(S.t > old ? `Round done! +${S.t - old} 🍪` : "Round done! Treat jar's full 🍪", "", 3500);
   });
   document.addEventListener("click", e => {
     if (S.on !== true || root.hidden) return;
-    if (e.target.closest("#fcKnew")) { if (Math.random() < .5) hop(); }
+    if (e.target.closest("#fcKnew")) {
+      if (markStudy()) setTimeout(() => say("🌱 A new flower grew in your study garden!", "", 3000), 900);
+      const cur = currentCard();
+      if (cur && cur.missed) { wake(); hop(); fx(["🎉", "💛", "🎉"]); say(["You got it this time! 🎉", "Yes! You remembered it!", "Look at you! 🎉"][Math.floor(Math.random() * 3)], "", 2600); }
+      else if (Math.random() < .5) hop();
+    } else if (e.target.closest("#fcMiss")) { if (markStudy()) setTimeout(() => say("🌱 A new flower grew in your study garden!", "", 3000), 900); }
     else if (!e.target.closest("#buddy") && !bub.hidden && !e.target.closest(".bd-bub")) hideBub();
   }, true);
   window.addEventListener("hashchange", () => { if (S.on === true && !root.hidden && !sleeping) { petBtn.classList.remove("walk", "hop"); void petBtn.offsetWidth; petBtn.classList.add("walk"); setTimeout(() => petBtn.classList.remove("walk"), 700); } });
+
+  /* flashcards: nervous on words you missed before */
+  function currentCard() {
+    const f = document.getElementById("fcFront"); if (!f) return null;
+    const t = f.textContent.trim(); if (!t) return null;
+    let words = [], fc = {}; try { words = JSON.parse(localStorage.getItem("ncs-words") || "[]"); fc = JSON.parse(localStorage.getItem("ncs-fc") || "{}"); } catch (e) {}
+    const x = words.find(w => w && (w.w === t || w.m === t)); if (!x) return null;
+    return { id: x.id, missed: fc[x.id] === 0 };
+  }
+  let lastCardTxt = "";
+  function onCard() {
+    if (S.on !== true || root.hidden) return;
+    const v = document.getElementById("v-quiz"); if (!v || v.hidden) return;
+    const f = document.getElementById("fcFront"), t = f ? f.textContent : ""; if (t === lastCardTxt) return; lastCardTxt = t;
+    const cur = currentCard(); if (!cur || !cur.missed) return;
+    anim("bd-nervous", 1300); if (!document.documentElement.classList.contains("cs-calm")) prop("💧", "bd-sweat", 1600);
+    if (Math.random() < .35 && bub.hidden) say(["Ooh, this one's tricky…", "We've got this one!", "Hmm, I remember this one being hard 👀"][Math.floor(Math.random() * 3)], "", 2400);
+  }
+  (function watchCards() { const f = document.getElementById("fcFront"); if (!f) return; new MutationObserver(onCard).observe(f, { childList: true, characterData: true, subtree: true }); })();
 
   /* blink & nap */
   function wake() { lastAct = Date.now(); if (sleeping) { sleeping = false; paintPet(); } }
@@ -724,5 +777,5 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   window.addEventListener("storage", e => { if (e.key === KEY) { S = load(); visible(); if (!modal.hidden) renderModal(); } });
 
-  window.csBuddy = { get state() { return S; }, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
+  window.csBuddy = { get state() { return S; }, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();

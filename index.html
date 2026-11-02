@@ -1632,7 +1632,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=3" defer></script>
+<script src="buddy.js?v=4" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -3205,6 +3205,11 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-garden", date:"November 2, 2026", title:"Your buddy's garden 🌱", items:[
+    ["🌱","Study garden","every day you study, a new flower grows in front of your buddy. Missed days don't matter, your flowers stay.",null],
+    ["🎅","Seasonal outfits","your buddy dresses up on its own for Halloween, Christmas, Fiestas Patrias and more.",null],
+    ["🃏","A flashcard cheerleader","your buddy gets a little nervous on words you missed before, and celebrates when you finally get them right.","quiz"]
+  ]},
   {id:"2026-friends", date:"November 2, 2026", title:"Friendship levels 💛", items:[
     ["💛","Become best friends","feed, pet and visit your study buddy to raise its friendship level, from 1 to 10.",null],
     ["🦋","New things it does","each level unlocks something new: yawning, dancing, chasing butterflies, playing with its ball, humming to your music and reading during the study timer.",null],
