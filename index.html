@@ -6,9 +6,9 @@
 <meta name="description" content="Your English Cheat Sheet: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<link rel="stylesheet" href="comfort.css?v=4">
+<link rel="stylesheet" href="comfort.css?v=5">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=4" defer></script>
+<script src="comfort.js?v=5" defer></script>
 </head>
 <body data-auth="out">
 <script>try{if(localStorage.getItem("ncs-sync-uid"))document.body.dataset.auth="in";}catch(e){}</script>
@@ -647,6 +647,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup"><h4>Start here</h4>
+      <button class="navbtn" data-go="basics">Sentence basics</button>
       <button class="navbtn" data-go="tenses">Verb tenses</button>
       <button class="navbtn" data-go="verbs">Irregular verbs</button>
       <button class="navbtn" data-go="be">Verb to be</button>
@@ -687,7 +688,6 @@ body:not([data-auth="in"]) .when-in{display:none!important}
     </div>
     <div class="navgroup"><h4>Practice</h4>
       <button class="navbtn" data-go="quiz">Practice</button>
-      <button class="navbtn" data-go="basics">Sentence basics</button>
     </div>
     <div class="navgroup"><h4>Help</h4>
       <button class="navbtn fb-nav" data-go="feedback">Send feedback</button>
@@ -1613,7 +1613,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
   <div class="chips" style="margin-top:14px"><button class="chip" type="button" data-ql="common" aria-pressed="true">Common verbs</button><button class="chip" type="button" data-ql="all" aria-pressed="false">All verbs</button></div>
 </section>
 
-<footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa · @learnwithnoa</div></footer>
+<footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>

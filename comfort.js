@@ -23,9 +23,16 @@
     el.textContent = t; el.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 2800);
   }
 
+  const FONT_DESC = {
+    default: "<b>Lexend</b> (the default): clean and round, with a little extra space between letters. It was designed to make reading easier and faster.",
+    atkinson: "<b>Atkinson Hyperlegible</b>: made for people with low vision. Letters that look alike, like I, l and 1, are easy to tell apart.",
+    book: "<b>Book</b> (Literata): a calm, classic font like the ones in printed books and e-readers. Lovely with the Sepia look.",
+    classic: "<b>Classic</b> (Nunito): the Cheat Sheet's original font. Soft, round and friendly."
+  };
   /* ---------- fonts (loaded only when chosen) ---------- */
   const FONTS = {
     atkinson: "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap",
+    book: "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&display=swap",
     classic: "https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,800;0,900;1,600&display=swap"
   };
   function loadFont(f) {
@@ -36,11 +43,10 @@
   /* ---------- theme ---------- */
   const THEME_LIST = [["dark", "☾", "Dark"], ["light", "☀", "Light"], ["sepia", "📖", "Sepia"], ["unicorn", "🦄", "Unicorn"]];
   function curTheme() { return root.getAttribute("data-theme") || "dark"; }
-  function sepiaFont() { if (curTheme() === "sepia" && !document.querySelector('link[data-csfontlink="literata"]')) { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&display=swap"; l.dataset.csfontlink = "literata"; document.head.appendChild(l); } }
   function setTheme(t) {
     if (typeof window.csSetTheme === "function") window.csSetTheme(t);
     else { root.setAttribute("data-theme", t); try { localStorage.setItem("ncs-theme", t); } catch (e) {} }
-    paintPanel(); sepiaFont();
+    paintPanel();
     window.dispatchEvent(new Event("cs-theme"));
   }
 
@@ -254,7 +260,7 @@
   /* ---------- apply everything ---------- */
   function applyAll() {
     root.style.setProperty("--cs-zoom", String(S.size));
-    root.classList.remove("cs-font-atkinson", "cs-font-lexend", "cs-font-classic");
+    root.classList.remove("cs-font-atkinson", "cs-font-lexend", "cs-font-classic", "cs-font-book");
     if (S.font !== "default") { loadFont(S.font); root.classList.add("cs-font-" + S.font); }
     root.classList.toggle("cs-space", !!S.space);
     root.classList.toggle("cs-no-inshort", !S.inshort);
@@ -274,8 +280,8 @@
         <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>
         <div class="cs-sec"><h4>Reading</h4>
           <div class="cs-size"><button type="button" id="csSmaller" aria-label="Smaller text">A−</button><span id="csSizeTxt">100%</span><button type="button" id="csBigger" aria-label="Bigger text">A+</button></div>
-          <div class="cs-seg three" id="csFonts"><button type="button" data-csfont="default" style="font-family:'Lexend',sans-serif">Lexend</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="classic" style="font-family:'Nunito',sans-serif">Classic</button></div>
-          <small style="color:var(--muted);font-size:12.5px;margin-top:-2px">Lexend (the default) and Atkinson Hyperlegible were designed to be easier to read. Classic is the Cheat Sheet's original font.</small>
+          <div class="cs-seg two" id="csFonts"><button type="button" data-csfont="default" style="font-family:'Lexend',sans-serif">Lexend</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="book" style="font-family:'Literata',Georgia,serif">Book</button><button type="button" data-csfont="classic" style="font-family:'Nunito',sans-serif">Classic</button></div>
+          <small class="cs-fdesc" id="csFontDesc" aria-live="polite"></small>
           ${tog("csSpace", "More space", "Extra room between lines, words and paragraphs.")}
           ${tog("csBionic", "Bionic reading", "Bolds the start of each word. Some people find it easier to read; try it and see.")}
           ${tog("csRulerT", "Reading ruler", "A highlighted band that follows your mouse or finger, to keep your place.")}
@@ -297,15 +303,15 @@
           <small style="color:var(--muted);font-size:12.5px">${isMain ? "Signed in? These settings follow you to your other devices." : "Saved in this browser."}</small></div>
       </div>`;
     const btn = $("csBtn"), panel = $("csPanel");
-    const open = o => { panel.hidden = !o; btn.setAttribute("aria-expanded", String(o)); if (o) { paintPanel(); loadFont("atkinson"); loadFont("classic"); } };
+    const open = o => { panel.hidden = !o; btn.setAttribute("aria-expanded", String(o)); if (o) { paintPanel(); loadFont("atkinson"); loadFont("book"); loadFont("classic"); } };
     btn.onclick = () => open(panel.hidden);
     $("csClose").onclick = () => { open(false); btn.focus(); };
     panel.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); btn.focus(); } });
     document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest("#csWrap") && !e.target.closest("#csTimerChip")) open(false); });
     $("csThemes").onclick = e => { const b = e.target.closest("[data-cstheme]"); if (b) setTheme(b.dataset.cstheme); };
     $("csFonts").onclick = e => { const b = e.target.closest("[data-csfont]"); if (!b) return; S.font = b.dataset.csfont; save(); applyAll(); };
-    const SIZES = [.9, 1, 1.1, 1.2, 1.35, 1.5];
-    const step = d => { let i = SIZES.findIndex(x => Math.abs(x - S.size) < .01); if (i < 0) i = 1; i = Math.min(SIZES.length - 1, Math.max(0, i + d)); S.size = SIZES[i]; save(); applyAll(); };
+    const SIZES = [.8, .9, 1, 1.1, 1.2, 1.35, 1.5];
+    const step = d => { let i = SIZES.findIndex(x => Math.abs(x - S.size) < .01); if (i < 0) i = 2; i = Math.min(SIZES.length - 1, Math.max(0, i + d)); S.size = SIZES[i]; save(); applyAll(); };
     $("csSmaller").onclick = () => step(-1); $("csBigger").onclick = () => step(1);
     const bind = (id, k) => { const el = $(id); if (el) el.onchange = () => { S[k] = el.checked; save(); applyAll(); }; };
     bind("csSpace", "space"); bind("csBionic", "bionic"); bind("csRulerT", "ruler"); bind("csInshort", "inshort"); bind("csRead", "read"); bind("csCalm", "calm");
@@ -324,6 +330,7 @@
     const th = curTheme();
     document.querySelectorAll("[data-cstheme]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cstheme === th)));
     document.querySelectorAll("#csFonts [data-csfont]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.csfont === S.font)));
+    $("csFontDesc").innerHTML = FONT_DESC[S.font] || FONT_DESC.default;
     $("csSizeTxt").textContent = Math.round(S.size * 100) + "%";
     const set = (id, v) => { const el = $(id); if (el) el.checked = !!v; };
     set("csSpace", S.space); set("csBionic", S.bionic); set("csRulerT", S.ruler); set("csFocus", focusOn()); set("csInshort", S.inshort); set("csRead", S.read); set("csCalm", S.calm);
@@ -335,7 +342,6 @@
   new MutationObserver(paintPanel).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
   function init() {
-    sepiaFont();
     buildPanel(); addReadButtons(); applyAll();
     if (tRun) { clearInterval(tInt); tInt = setInterval(tTick, 1000); tTick(); }
   }
