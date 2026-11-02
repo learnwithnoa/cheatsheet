@@ -207,6 +207,8 @@ async function load() {
         stars: parse(data["ncs-stars"], []),
         sheet: parse(data["ncs-sheet"], ""),
         buddy: parse(data["ncs-buddy"], null),
+        loveLog: parse(data["ncs-ttlove-log"], []),
+        loveLast: parse(data["ncs-ttlove"], ""),
         role: roles[d.id] || {}
       });
     }));
@@ -282,6 +284,10 @@ function newsEvents() {
     const add = (t, m, kind) => { const day = new Date(t).toDateString(), k = kind + day; if (!best[k] || best[k].m < m) best[k] = { t, m, kind }; };
     const ws = s.words.filter(w => w.t).sort((a, b) => a.t - b.t); MILES.forEach(m => { if (ws.length >= m) add(ws[m - 1].t, m, "w"); });
     const ns = s.notes.filter(n => n.t).sort((a, b) => a.t - b.t); NOTE_MILES.forEach(m => { if (ns.length >= m) add(ns[m - 1].t, m, "n"); });
+    // ✨ Send love on the Thought for today
+    const ll = Array.isArray(s.loveLog) ? s.loveLog.filter(x => x && x.t) : [];
+    if (ll.length) ll.forEach(x => ev.push({ t: x.t, s, ico: "✨", txt: `<b>${first}</b> sent love to the Thought for today${x.tt ? `: <i>“${esc(String(x.tt).slice(0, 70))}${String(x.tt).length > 70 ? "…" : ""}”</i>` : ""}` }));
+    else if (typeof s.loveLast === "string" && s.loveLast) { const pr = s.loveLast.split("-").map(Number); if (pr.length === 3) ev.push({ t: new Date(pr[0], pr[1] - 1, pr[2], 12).getTime(), s, ico: "✨", txt: `<b>${first}</b> sent love to the Thought for today` }); }
     Object.values(best).forEach(b => ev.push({ t: b.t, s, ico: b.kind === "w" ? "📚" : "📝", txt: `<b>${first}</b> reached <b>${b.m} ${b.kind === "w" ? "words" : "class notes"}</b>`, big: b.kind === "w" && b.m >= 100, kind: "kudos", m: b.m, mk: b.kind, eid: s.uid + "-" + b.kind + b.m }));
   });
   return ev.filter(e => e.t >= since).sort((a, b) => b.t - a.t);
@@ -294,8 +300,8 @@ function renderNews() {
   box.hidden = false;
   const shown = newsOpen ? ev : ev.slice(0, 6);
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔔 Student news${fresh ? ` <span class="news-n">${fresh} new</span>` : ""}</h2>${fresh ? `<button type="button" id="newsSeen">Mark all as seen</button>` : ""}</div>
-    <p class="muted" style="margin:4px 0 8px">New students and milestones from the last 45 days. Great things to celebrate in class 🎉</p>
-    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><div class="news-row"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button>${kdSent()[e.eid] ? `<span class="kd-done">✓ Sent</span>` : `<button type="button" class="kd-btn" data-kd="${esc(e.eid)}">${e.kind === "welcome" ? "👋 Send welcome" : "🎉 Send kudos"}</button>`}</div>${kdOpen === e.eid ? composer(e.eid, kdText(e)) : ""}</li>`).join("")}</ul>
+    <p class="muted" style="margin:4px 0 8px">New students, milestones and ✨ love from the last 45 days. Great things to celebrate in class 🎉</p>
+    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><div class="news-row"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button>${!e.kind ? "" : kdSent()[e.eid] ? `<span class="kd-done">✓ Sent</span>` : `<button type="button" class="kd-btn" data-kd="${esc(e.eid)}">${e.kind === "welcome" ? "👋 Send welcome" : "🎉 Send kudos"}</button>`}</div>${kdOpen === e.eid ? composer(e.eid, kdText(e)) : ""}</li>`).join("")}</ul>
     ${ev.length > 6 ? `<button type="button" id="newsMore" class="foot-link">${newsOpen ? "Show less" : "Show all " + ev.length}</button>` : ""}`;
 }
 /* ---------- kudos & messages: they pop up in the student's Cheat Sheet ---------- */

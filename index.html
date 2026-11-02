@@ -2603,7 +2603,7 @@ document.getElementById("wSelGo").addEventListener("click",()=>{ wSel=false; ren
     const first=LS.get("ncs-ttlove","")!==day();
     b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
     for(let i=0;i<8;i++){ const s=document.createElement("span"); s.className="tt-spark"; s.textContent=i%2?"✦":"✨"; const a=i/8*Math.PI*2; s.style.setProperty("--dx",Math.round(Math.cos(a)*38)+"px"); s.style.setProperty("--dy",Math.round(Math.sin(a)*30)+"px"); b.appendChild(s); setTimeout(()=>s.remove(),1000); }
-    if(first){ LS.set("ncs-ttlove",day()); paint(); if(window.csBuddy&&window.csBuddy.love) window.csBuddy.love(); }
+    if(first){ LS.set("ncs-ttlove",day()); const lg=(LS.get("ncs-ttlove-log",[])||[]).filter(x=>x&&x.t>Date.now()-60*864e5); lg.push({t:Date.now(),tt:(document.getElementById("ttText")||{}).textContent||""}); LS.set("ncs-ttlove-log",lg.slice(-40)); paint(); if(window.csBuddy&&window.csBuddy.love) window.csBuddy.love(); }
   });
 })();
 /* flashcards: practice my words (missed cards come back sooner) */
