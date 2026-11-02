@@ -1632,6 +1632,7 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
+<script src="buddy.js?v=1" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -3204,6 +3205,11 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-buddy", date:"November 2, 2026", title:"Adopt a study buddy 🐾", items:[
+    ["🥚","A little friend","tap the egg in the bottom corner to adopt a pixel buddy: Max, Miki, a cat, llama, unicorn, chicken, pudú, capybara or axolotl.",null],
+    ["🍪","Feed it treats","you earn treats by saving new words and finishing flashcard rounds. Tap your buddy to pet it or feed it.",null],
+    ["🎓","Unlock outfits","hats, glasses, scarves and rooms unlock as your word list grows, all the way to 1,000 words. Turn it off anytime in <b>Settings</b>.",null]
+  ]},
   {id:"2026-fcsets", date:"November 2, 2026", title:"Practice just some of your words 🃏", items:[
     ["🎯","Choose which words","in <b>Practice</b>, pick <b>Newest 20</b>, <b>This week</b>, <b>Hard ones</b> or <b>My pick</b> instead of your whole list.","quiz"],
     ["☑","Pick your own","in <b>My words</b>, tap <b>Choose words</b>, tick the ones you want and press <b>Practice these</b>.","words"],
