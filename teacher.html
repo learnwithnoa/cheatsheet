@@ -215,7 +215,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " student has" : " students have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList(); renderNews();
+    renderList(); renderNews(); syncPark();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -254,6 +254,19 @@ async function change(s, key, fn) {
 async function guarded(s, key, fn, msg) {
   try { await change(s, key, fn); toast(msg); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the edit rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
+}
+/* ---------- keep the Buddy park up to date with every student's buddy ---------- */
+const PARK_LV = [0, 20, 50, 100, 170, 260, 380, 530, 720, 950];
+function syncPark() {
+  students.forEach(s => {
+    const b = s.buddy; if (!b || !b.a) return;
+    const fpm = b.fpm || (b.fp != null ? { [b.a]: b.fp } : {});
+    let lvl = 1; PARK_LV.forEach((t, i) => { if (((fpm[b.a]) | 0) >= t) lvl = i + 1; });
+    setDoc(doc(db, "park", s.uid), {
+      on: b.on === true, a: b.a, c: b.c | 0, n: String(b.n || "").slice(0, 16), head: b.head || null, face: b.face || null, neck: b.neck || null,
+      lvl, words: s.words.length, first: s.name.split(" ")[0] || "", at: serverTimestamp()
+    }, { merge: true }).catch(e => console.warn("park sync", s.name, e && e.code));
+  });
 }
 /* ---------- student news: who joined, who hit a milestone ---------- */
 const MILES = [10, 25, 50, 100, 150, 200, 300, 400, 500, 750, 1000], NOTE_MILES = [5, 10, 25, 50, 100];

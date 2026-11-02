@@ -707,6 +707,7 @@ html.cs-calm .park-b svg{animation:none}
 .kd-conf{position:absolute;top:-10px;font-size:20px;pointer-events:none;animation:kdFall 2.4s ease-in forwards}
 @keyframes kdFall{to{transform:translateY(300px) rotate(var(--r));opacity:0}}
 .nb-err{background:color-mix(in srgb,#E5533D 12%,var(--surface));border-radius:10px;padding:8px 12px;font-size:14px;margin:6px 0}
+.w-ico.em-ico{display:inline-grid;place-items:center;box-sizing:border-box;width:18px;height:18px;padding:0;letter-spacing:0;font-size:10.5px;line-height:1;overflow:hidden}
 </style>
 
 <header class="top">
@@ -768,7 +769,7 @@ html.cs-calm .park-b svg{animation:none}
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
-      <button class="navbtn cn-nav" data-go="park"><span class="w-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
+      <button class="navbtn cn-nav" data-go="park"><span class="w-ico em-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup"><h4>Start here</h4>
