@@ -744,6 +744,16 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       else say("Treat jar's full (30) 🍪 Time for a snack?", menuActs(), 4000);
     }
   }
+  document.addEventListener("cs-said", () => {
+    if (S.on !== true) return;
+    const grew = markStudy(); wake(); hop(); fx(["🎤", "💛", "✨"]);
+    say("I heard you! Great pronunciation 🎤" + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3000);
+  });
+  document.addEventListener("cs-kudos", () => {
+    if (S.on !== true) return;
+    addFP(3); wake(); hop(); fx(["💌", "💛", "🎉"]);
+    say(`${esc(nameOf())} is so proud of you! 💛 +3 friendship`, "", 4000);
+  });
   document.addEventListener("cs-sentence", e => {
     if (S.on !== true) return;
     const grew = markStudy();

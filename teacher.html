@@ -83,6 +83,14 @@ td.act{white-space:nowrap;text-align:right}
 .news-top button{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:700 13px var(--body);cursor:pointer}
 .news-n{font:800 12px var(--body);background:#E5533D;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:3px}
 .news-list{list-style:none;margin:0;padding:0}
+.news-row{display:flex;align-items:center;gap:8px}
+.news-row .news-i{flex:1;min-width:0}
+.kd-btn{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 11px;font:700 12.5px var(--body);cursor:pointer;white-space:nowrap}
+.kd-btn:hover{border-color:var(--green)}
+.kd-done{color:var(--green);font:700 12.5px var(--body);white-space:nowrap;padding:0 8px}
+.kd-comp{margin:6px 0 12px 34px;display:flex;flex-direction:column;gap:8px}
+.kd-comp textarea{width:100%;box-sizing:border-box;font:500 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+@media (max-width:600px){.news-row{flex-wrap:wrap}.kd-comp{margin-left:0}}
 .news-i{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px}
 .news-i:hover{background:var(--surface-2)}
 .news-i:focus-visible{outline:3px solid var(--green)}
@@ -256,12 +264,12 @@ function newsEvents() {
     const first = esc(s.name.split(" ")[0]);
     const acts = [...s.words.map(w => w.t), ...s.notes.map(n => n.t)].filter(Boolean);
     const joined = Math.min(...[s.firstSeen, ...acts].filter(Boolean));
-    if (isFinite(joined)) ev.push({ t: joined, s, ico: "👋", txt: `<b>${first}</b> joined the Cheat Sheet` });
+    if (isFinite(joined)) ev.push({ t: joined, s, ico: "👋", txt: `<b>${first}</b> joined the Cheat Sheet`, kind: "welcome", eid: s.uid + "-join" });
     const best = {}; // one milestone per student per day (imports add many words at once)
     const add = (t, m, kind) => { const day = new Date(t).toDateString(), k = kind + day; if (!best[k] || best[k].m < m) best[k] = { t, m, kind }; };
     const ws = s.words.filter(w => w.t).sort((a, b) => a.t - b.t); MILES.forEach(m => { if (ws.length >= m) add(ws[m - 1].t, m, "w"); });
     const ns = s.notes.filter(n => n.t).sort((a, b) => a.t - b.t); NOTE_MILES.forEach(m => { if (ns.length >= m) add(ns[m - 1].t, m, "n"); });
-    Object.values(best).forEach(b => ev.push({ t: b.t, s, ico: b.kind === "w" ? "📚" : "📝", txt: `<b>${first}</b> reached <b>${b.m} ${b.kind === "w" ? "words" : "class notes"}</b>`, big: b.kind === "w" && b.m >= 100 }));
+    Object.values(best).forEach(b => ev.push({ t: b.t, s, ico: b.kind === "w" ? "📚" : "📝", txt: `<b>${first}</b> reached <b>${b.m} ${b.kind === "w" ? "words" : "class notes"}</b>`, big: b.kind === "w" && b.m >= 100, kind: "kudos", m: b.m, mk: b.kind, eid: s.uid + "-" + b.kind + b.m }));
   });
   return ev.filter(e => e.t >= since).sort((a, b) => b.t - a.t);
 }
@@ -274,10 +282,46 @@ function renderNews() {
   const shown = newsOpen ? ev : ev.slice(0, 6);
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔔 Student news${fresh ? ` <span class="news-n">${fresh} new</span>` : ""}</h2>${fresh ? `<button type="button" id="newsSeen">Mark all as seen</button>` : ""}</div>
     <p class="muted" style="margin:4px 0 8px">New students and milestones from the last 45 days. Great things to celebrate in class 🎉</p>
-    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button></li>`).join("")}</ul>
+    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><div class="news-row"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button>${kdSent()[e.eid] ? `<span class="kd-done">✓ Sent</span>` : `<button type="button" class="kd-btn" data-kd="${esc(e.eid)}">${e.kind === "welcome" ? "👋 Send welcome" : "🎉 Send kudos"}</button>`}</div>${kdOpen === e.eid ? composer(e.eid, kdText(e)) : ""}</li>`).join("")}</ul>
     ${ev.length > 6 ? `<button type="button" id="newsMore" class="foot-link">${newsOpen ? "Show less" : "Show all " + ev.length}</button>` : ""}`;
 }
+/* ---------- kudos & messages: they pop up in the student's Cheat Sheet ---------- */
+let kdOpen = null;
+const kdSent = () => { try { return JSON.parse(localStorage.getItem("cs-kudos-sent") || "{}"); } catch (e) { return {}; } };
+function kdText(e) {
+  const f = e.s.name.split(" ")[0];
+  if (e.kind === "welcome") return `Welcome to the Cheat Sheet, ${f}! 🎉 I'm so happy you're here. After each class, save your new words and notes here, and they'll be waiting for you on any device. See you in class! – Noa`;
+  if (e.mk === "n") return `Kudos, ${f}! 📝 ${e.m} class notes saved. Going back to your notes is what makes things stick. Proud of you! – Noa`;
+  return `Congrats, ${f}! 📚 You just reached ${e.m} words in your Cheat Sheet. That's real progress, and I can hear it in class. Keep going! – Noa`;
+}
+function composer(id, text) {
+  return `<div class="kd-comp"><label class="muted" for="kdTa" style="font-size:13px">It pops up in their Cheat Sheet the next time they open it (signed in). Edit it if you like:</label>
+    <textarea id="kdTa" rows="3">${esc(text)}</textarea>
+    <div class="row"><button type="button" class="primary" data-kdsend="${esc(id)}">Send 💌</button><button type="button" data-kdcancel>Cancel</button></div></div>`;
+}
+async function sendMsg(uid, text, kind, eid) {
+  try {
+    await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: text.slice(0, 1000), kind: kind || "note", at: serverTimestamp() });
+    if (eid) { const m = kdSent(); m[eid] = Date.now(); localStorage.setItem("cs-kudos-sent", JSON.stringify(m)); }
+    kdOpen = null; toast("Sent! 💌 They'll see it next time they open the Cheat Sheet."); return true;
+  } catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the messages rule isn't in the Firestore rules yet." : "Couldn't send. Try again."); return false; }
+}
+function kdClick(e, rerender) {
+  const o = e.target.closest("[data-kd]"); if (o) { kdOpen = o.dataset.kd; rerender(); const t = $("kdTa"); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } return true; }
+  if (e.target.closest("[data-kdcancel]")) { kdOpen = null; rerender(); return true; }
+  const sb = e.target.closest("[data-kdsend]");
+  if (sb) {
+    const id = sb.dataset.kdsend, text = ($("kdTa").value || "").trim(); if (!text) return true;
+    let uid, kind, eid = null;
+    if (id.startsWith("msg-")) { uid = id.slice(4); kind = "note"; }
+    else { const ev = newsEvents().find(x => x.eid === id); if (!ev) return true; uid = ev.s.uid; kind = ev.kind; eid = id; }
+    sb.disabled = true; sendMsg(uid, text, kind, eid).then(() => { renderNews(); const s = students.find(x => x.uid === current); if (s) renderDetail(s); });
+    return true;
+  }
+  return false;
+}
 $("news").addEventListener("click", e => {
+  if (kdClick(e, renderNews)) return;
   if (e.target.closest("#newsSeen")) { localStorage.setItem(NEWS_KEY, String(Date.now())); renderNews(); return; }
   if (e.target.closest("#newsMore")) { newsOpen = !newsOpen; renderNews(); return; }
   const b = e.target.closest("[data-news]"); if (!b) return;
@@ -323,6 +367,8 @@ function renderDetail(s) {
   $("detail").innerHTML = `
     <h2 style="margin-top:0">${esc(s.name)}</h2>
     <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
+    <div class="row" style="margin-top:10px"><button type="button" class="kd-btn" data-kd="msg-${esc(s.uid)}">💌 Send ${esc(s.name.split(" ")[0])} a message</button></div>
+    ${kdOpen === "msg-" + s.uid ? composer("msg-" + s.uid, "Hi " + s.name.split(" ")[0] + "! ") : ""}
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
     ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
     <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
@@ -367,6 +413,7 @@ function confirmTwice(btn, go) {
 }
 $("detail").addEventListener("click", e => {
   const s = students.find(x => x.uid === current); if (!s) return;
+  if (kdClick(e, () => renderDetail(s))) return;
   const t = e.target.closest("button"); if (!t) return;
   const d = t.dataset;
   if (d.tsort) { const k = d.tsort; tSort = tSort.k === k ? { k, d: -tSort.d } : { k, d: k === "t" ? -1 : 1 }; renderDetail(s); return; }

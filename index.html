@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="comfort.css?v=6">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
 <script src="comfort.js?v=6" defer></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#1D4ED8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cheat Sheet">
 </head>
 <body data-auth="out">
 <script>try{if(localStorage.getItem("ncs-sync-uid"))document.body.dataset.auth="in";}catch(e){}</script>
@@ -676,6 +681,32 @@ html.cs-calm .park-b svg{animation:none}
 .cn-tabs button[aria-selected="true"]{color:var(--ink);background:var(--surface);border-color:var(--line)}
 .cn-tabs button:hover{color:var(--ink)}
 .cn-tabs button:focus-visible{outline:3px solid var(--bright)}
+
+.rv-card{margin:14px 0 4px}
+.rv-list{display:flex;flex-wrap:wrap;gap:8px}
+.rv-chip{all:unset;box-sizing:border-box;cursor:pointer;border:1.5px solid var(--line);background:var(--surface-2);border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;min-width:110px}
+.rv-chip:hover{border-color:var(--green)}
+.rv-chip:focus-visible{outline:3px solid var(--bright)}
+.rv-w{font-weight:800}
+.rv-m{font-size:13.5px;color:var(--green);font-weight:700;display:none}
+.rv-chip[aria-expanded="true"] .rv-m{display:block}
+.rv-tag{font:700 9.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:#E5533D}
+.sp-mic{font:800 15px var(--body);color:#fff;background:linear-gradient(180deg,#4FD18B 0%,#1F9D5C 60%,#167A47 100%);border:0;border-radius:999px;padding:10px 18px;cursor:pointer}
+.sp-mic.on{background:linear-gradient(180deg,#F2716B,#C9372C);animation:spPulse 1.2s ease-in-out infinite}
+@keyframes spPulse{50%{box-shadow:0 0 0 8px color-mix(in srgb,#E5533D 25%,transparent)}}
+.sp-mic:disabled{opacity:.5;cursor:not-allowed}
+.cs-dlg-bd{position:fixed;inset:0;background:rgba(10,14,30,.5);z-index:70}
+.cs-dlg{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:71;width:min(440px,calc(100vw - 28px));max-height:calc(100dvh - 40px);overflow:auto;padding:20px 20px 18px}
+.cs-dlg-x{position:absolute;top:10px;right:10px}
+.cs-dlg ol{padding-left:22px}.cs-dlg li{margin:6px 0}
+.kd{text-align:center;overflow:hidden}
+.kd-top{font:800 21px var(--display);margin:6px 0 10px}
+.kd-text{font-size:17px;line-height:1.5;margin:0}
+.kd-date{font-size:12.5px;color:var(--muted);margin-top:8px}
+.kd-item{border-top:1px dashed var(--line);padding:10px 0;text-align:left}
+.kd-conf{position:absolute;top:-10px;font-size:20px;pointer-events:none;animation:kdFall 2.4s ease-in forwards}
+@keyframes kdFall{to{transform:translateY(300px) rotate(var(--r));opacity:0}}
+.nb-err{background:color-mix(in srgb,#E5533D 12%,var(--surface));border-radius:10px;padding:8px 12px;font-size:14px;margin:6px 0}
 </style>
 
 <header class="top">
@@ -853,6 +884,12 @@ html.cs-calm .park-b svg{animation:none}
       <p class="tt" id="ttText"></p>
       <div class="tt-row"><button class="tt-love" type="button" id="ttLove" aria-pressed="false"><span class="tt-ico" aria-hidden="true">✨</span><span id="ttLoveTxt">Send love</span></button></div>
     </div>
+  </div>
+  <div class="card rv-card" id="rvBox" hidden>
+    <div class="td-top"><span class="tag td-tag">🔁 Words to review today</span></div>
+    <p class="muted" style="margin:6px 0 10px;font-size:14px">5 of your words that need a little love today. Tap a word to see what it means.</p>
+    <div class="rv-list" id="rvList"></div>
+    <div class="note-actions" style="margin-top:10px"><button class="pill-btn pill-green" type="button" id="rvGo">Practice these 5 →</button></div>
   </div>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your words, class notes and starred sections sync automatically to any device where you sign in.</div></div>
   <div class="store-info dismissible when-out">
@@ -1701,7 +1738,7 @@ html.cs-calm .park-b svg{animation:none}
   <h2 style="margin-top:6px">My words</h2>
   <div class="card flash-wrap" style="max-width:560px">
     <div id="fcEmpty" hidden><p style="margin:0 0 10px">You don't have any words yet. Save a few on your <b>Home</b> page and they'll show up here as flashcards.</p><button class="pill-btn pill-green" type="button" data-go="notes">Go to Home</button></div>
-    <div class="fc-set" role="group" aria-label="Which words to practice"><span class="fc-set-l">Which words?</span><button type="button" data-fcset="all">All</button><button type="button" data-fcset="new20">Newest 20</button><button type="button" data-fcset="week">This week</button><button type="button" data-fcset="hard">Hard ones</button><button type="button" data-fcset="pick">My pick <span id="fcPickN"></span></button></div>
+    <div class="fc-set" role="group" aria-label="Which words to practice"><span class="fc-set-l">Which words?</span><button type="button" data-fcset="all">All</button><button type="button" data-fcset="today">Today&#39;s 5</button><button type="button" data-fcset="new20">Newest 20</button><button type="button" data-fcset="week">This week</button><button type="button" data-fcset="hard">Hard ones</button><button type="button" data-fcset="pick">My pick <span id="fcPickN"></span></button></div>
     <div id="fcSetEmpty" class="fc-set-empty" hidden></div>
     <div id="fcBox">
       <div class="quiz-top"><span class="tag" id="fcDirTag">English → Español</span><span class="count" id="fcCount"></span></div>
@@ -1725,6 +1762,15 @@ html.cs-calm .park-b svg{animation:none}
     <div class="note-actions"><button class="pill-btn pill-green" type="button" id="snCheck">Check my sentence</button><span class="muted" id="snOff" hidden style="font-size:13px">The checker is loading…</span></div>
     <div class="sn-out" id="snOut" hidden aria-live="polite"></div>
   </div>
+  <h2>Say it out loud</h2>
+  <p>Practice your pronunciation: say one of your words (or its example sentence) and see if the computer understands you.</p>
+  <div class="card sn-card" id="spCard" style="max-width:560px">
+    <div class="quiz-top"><span class="tag">🎤 Say this</span><button class="swap" type="button" id="spNext">Another word →</button></div>
+    <div class="sn-word"><b id="spTarget"></b><span id="spMean"></span></div>
+    <div class="note-actions"><button class="sp-mic" type="button" id="spMic">🎤 <span>Tap and say it</span></button><button class="swap" type="button" id="spHear">🔊 Listen</button><button class="swap" type="button" id="spMode" hidden>Say the example sentence</button></div>
+    <p class="muted" id="spNo" hidden style="font-size:14px;margin:8px 0 0">Your browser can't listen to you. Try Chrome, Edge or Safari.</p>
+    <div class="sn-out" id="spOut" hidden aria-live="polite"></div>
+  </div>
   <h2>Irregular verbs</h2>
   <p class="lede" style="margin-bottom:12px">Write the past simple and the past participle. Press Enter to check.</p>
   <div class="card quiz" style="max-width:560px">
@@ -1741,8 +1787,8 @@ html.cs-calm .park-b svg{animation:none}
   <div class="chips" style="margin-top:14px"><button class="chip" type="button" data-ql="common" aria-pressed="true">Common verbs</button><button class="chip" type="button" data-ql="all" aria-pressed="false">All verbs</button></div>
 </section>
 
-<footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=8" defer></script>
+<footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
+<script src="buddy.js?v=9" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2567,6 +2613,7 @@ const fcEmpty=document.getElementById("fcEmpty"), fcBox=document.getElementById(
 let fcSet="all"; try{ fcSet=localStorage.getItem("cs-fcset")||"all"; }catch(e){}
 function fcList(){
   const l=allWords().filter(x=>x.w);
+  if(fcSet==="today"){ const t=new Set(todays5()); return l.filter(x=>t.has(x.id)); }
   if(fcSet==="new20") return l.slice().sort((a,b)=>(b.t||0)-(a.t||0)).slice(0,20);
   if(fcSet==="week"){ const c=Date.now()-7*864e5; return l.filter(x=>(x.t||0)>=c); }
   if(fcSet==="hard") return l.filter(x=>x.id in fcStats && fcStats[x.id]<=1);
@@ -2678,14 +2725,17 @@ fcShuffle();
     if(inList) html+="</ul>";
     return html;
   }
+  const errs={};
   async function summarize(key,label,list,auto){
-    if(!aiReady()||busy.has(key)) return;
-    busy.add(key); paint();
+    if(!aiReady()){ errs[key]="The AI isn't available right now. Refresh the page and try again."; paint(); return; }
+    if(busy.has(key)) return;
+    busy.add(key); delete errs[key]; paint();
     try{
       const r=await window.__csSample(prompt(label,list));
       const txt=(r&&r.text||"").trim();
       if(txt){ sums[key]={h:hash(notesText(list)),s:txt,at:Date.now()}; LS.set("ncs-nbsum",sums); }
-    }catch(e){ if(!auto) toast("Couldn't make the summary right now. Try again in a minute."); console.warn(e); }
+      else errs[key]="The AI sent back an empty answer. Try again in a minute.";
+    }catch(e){ console.warn("summary failed",e); errs[key]=(e&&e.code==="timeout")?"The AI took too long. Try again in a minute.":"Couldn't make the summary right now ("+String((e&&(e.code||e.message))||"error").slice(0,60)+"). Try again in a minute."; }
     busy.delete(key); paint();
   }
   function card(g,i){
@@ -2694,6 +2744,7 @@ fcShuffle();
     let body;
     if(busy.has(key)) body='<div class="nb-sum nb-loading">✨ Writing your summary…</div>';
     else if(s) body='<div class="nb-sum">'+render(s.s)+'</div>'+(fresh?"":'<p class="nb-stale">You added or changed notes since this summary. <button class="foot-link" type="button" data-nbsum="'+key+'">Update summary</button></p>');
+    else if(errs[key]) body='<p class="nb-err" role="alert">'+esc(errs[key])+'</p><button class="pill-btn" type="button" data-nbsum="'+key+'">Try again</button>';
     else body= aiReady()? '<button class="pill-btn pill-green" type="button" data-nbsum="'+key+'">✨ Summarize this week</button>' : '<p class="muted" style="margin:0">Summaries will appear here when the AI is available.</p>';
     const orig='<details class="nb-orig"><summary>My notes ('+g.list.length+')</summary>'+g.list.map(n=>'<div class="nb-note"><div class="nb-day">'+dayTxt(n.t)+'</div><div class="nb-txt">'+esc(n.text)+'</div></div>').join("")+'</details>';
     return '<article class="card nb-week">'+head+body+orig+'</article>';
@@ -2705,17 +2756,18 @@ fcShuffle();
     if(!G.length){ box.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Save notes on your Home page or in <b>My class notes</b>, and they\'ll show up here, grouped by week with a summary.</div>'; monthBtn.hidden=true; monthBox.innerHTML=""; return; }
     monthBtn.hidden=!aiReady();
     box.innerHTML=G.map(card).join("");
-    const mk="m-"+ymd(new Date()).slice(0,7), ms=sums[mk];
-    monthBox.innerHTML= busy.has(mk)? '<article class="card nb-week nb-monthcard"><div class="nb-sum nb-loading">✨ Writing your month summary…</div></article>'
-      : ms? '<article class="card nb-week nb-monthcard"><div class="nb-head"><h3>'+MONTHS[new Date().getMonth()]+' summary</h3><button class="foot-link" type="button" id="nbMonthClose">hide</button></div><div class="nb-sum">'+render(ms.s)+'</div></article>' : "";
-    monthBtn.textContent= ms? "✨ Update this month's summary" : "✨ Summarize this month";
+    const mk="m-30", ms=sums[mk];
+    monthBox.innerHTML= busy.has(mk)? '<article class="card nb-week nb-monthcard"><div class="nb-sum nb-loading">✨ Writing a summary of your last 30 days… (this can take up to 20 seconds)</div></article>'
+      : errs[mk]? '<p class="nb-err" role="alert">'+esc(errs[mk])+'</p>'
+      : ms? '<article class="card nb-week nb-monthcard"><div class="nb-head"><h3>Your last 30 days</h3><button class="foot-link" type="button" id="nbMonthClose">hide</button></div><div class="nb-sum">'+render(ms.s)+'</div></article>' : "";
+    monthBtn.textContent= ms? "✨ Update my 30-day summary" : "✨ Summarize my last 30 days";
   }
-  function monthList(){ const now=new Date(); return notes().filter(n=>{ const d=new Date(n.t||0); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).sort((a,b)=>(a.t||0)-(b.t||0)); }
-  monthBtn.addEventListener("click",()=>{ const l=monthList(); if(!l.length){ toast("No class notes this month yet"); return; } summarize("m-"+ymd(new Date()).slice(0,7),MONTHS[new Date().getMonth()],l,false); });
+  function monthList(){ const c=Date.now()-30*864e5; return notes().filter(n=>(n.t||0)>=c).sort((a,b)=>(a.t||0)-(b.t||0)); }
+  monthBtn.addEventListener("click",()=>{ const l=monthList(); if(!l.length){ errs["m-30"]="You don't have any class notes from the last 30 days yet."; paint(); return; } summarize("m-30","the last 30 days",l,false); });
   document.getElementById("v-notebook").addEventListener("click",e=>{
     const b=e.target.closest("[data-nbsum]"); if(b){ const k=b.dataset.nbsum, g=G.find(x=>"w-"+x.key===k); if(g) summarize(k,"the week of "+rangeTxt(g.start),g.list,false); return; }
     const a=e.target.closest(".nb-add"); if(a){ if(addWord(a.dataset.w,a.dataset.m)){ a.textContent="✓ saved"; a.disabled=true; } return; }
-    if(e.target.closest("#nbMonthClose")){ const mk="m-"+ymd(new Date()).slice(0,7); delete sums[mk]; LS.set("ncs-nbsum",sums); paint(); }
+    if(e.target.closest("#nbMonthClose")){ const mk="m-30"; delete sums[mk]; LS.set("ncs-nbsum",sums); paint(); }
   });
   function onOpen(){
     sums=LS.get("ncs-nbsum",{})||{}; paint();
@@ -2766,6 +2818,176 @@ fcShuffle();
   new MutationObserver(()=>{ if(!v.hidden&&!cur) pick(); }).observe(v,{attributes:true,attributeFilter:["hidden"]});
   document.addEventListener("click",e=>{ if(e.target.closest("[data-fcset]")) setTimeout(pick,50); });
   pick();
+})();
+
+/* ---------- small dialog used by install + kudos ---------- */
+function csDialog(html,opts){
+  opts=opts||{};
+  const bd=document.createElement("div"); bd.className="cs-dlg-bd";
+  const d=document.createElement("div"); d.className="cs-dlg card"+(opts.cls?" "+opts.cls:""); d.setAttribute("role","dialog"); d.setAttribute("aria-modal","true");
+  d.innerHTML='<button class="qa-x cs-dlg-x" type="button" aria-label="Close">×</button>'+html;
+  const back=document.activeElement;
+  const close=()=>{ bd.remove(); d.remove(); if(opts.onClose) opts.onClose(); if(back&&back.focus) try{ back.focus(); }catch(e){} };
+  bd.addEventListener("click",close); d.querySelector(".cs-dlg-x").addEventListener("click",close);
+  d.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); close(); } });
+  document.body.append(bd,d);
+  setTimeout(()=>{ const f=d.querySelector("[data-autofocus]")||d.querySelector("button:not(.cs-dlg-x)")||d.querySelector(".cs-dlg-x"); if(f) f.focus(); },30);
+  return {el:d,close};
+}
+
+/* ---------- install as an app ---------- */
+(function(){
+  let deferred=null;
+  const standalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+  window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferred=e; });
+  window.addEventListener("appinstalled",()=>{ deferred=null; toast("🎉 Installed! Find the Cheat Sheet on your home screen."); });
+  function how(){
+    const ua=navigator.userAgent||"", ios=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1), android=/Android/i.test(ua), safariMac=/Macintosh/.test(ua)&&/Safari/.test(ua)&&!/Chrome|Edg|Firefox/.test(ua);
+    if(ios) return "<ol><li>Tap the <b>Share</b> button <span aria-hidden=\"true\">⬆︎</span> (at the bottom in Safari, or at the top in Chrome).</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. That's it!</li></ol>";
+    if(android) return "<ol><li>Tap your browser's menu <b>⋮</b> (top right).</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li><li>Tap <b>Install</b>.</li></ol>";
+    if(safariMac) return "<ol><li>In the menu bar, click <b>File</b>.</li><li>Click <b>Add to Dock…</b></li></ol>";
+    return "<ol><li>Look for the install icon <b>⊕</b> at the right end of the address bar and click it.</li><li>Or open the browser menu <b>⋮</b> and choose <b>Install Cheat Sheet</b> (in Edge: <b>Apps → Install this site as an app</b>).</li></ol>";
+  }
+  window.csInstall=async function(){
+    if(standalone()){ csDialog('<h3 style="margin-top:0">📲 You\'re already in the app 🎉</h3><p>You opened the Cheat Sheet from your home screen. Nothing else to do!</p>'); return; }
+    if(deferred){ try{ deferred.prompt(); const r=await deferred.userChoice; deferred=null; if(r&&r.outcome==="accepted") return; }catch(e){} }
+    csDialog('<h3 style="margin-top:0">📲 Get the Cheat Sheet app</h3><p>Add the Cheat Sheet to your home screen. It opens like an app, full screen, with your words and notes right there.</p>'+how()+'<p class="muted" style="font-size:13.5px;margin-bottom:0">It\'s free and takes no space. Your words and notes stay synced with your account.</p>');
+  };
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-install]")){ e.preventDefault(); window.csInstall(); } });
+  // Settings panel: add an "Install the app" button
+  function inject(){
+    const p=document.getElementById("csPanel"); if(!p||document.getElementById("csInstallSec")) return;
+    const secs=p.querySelectorAll(".cs-sec"), last=secs[secs.length-1]; if(!last) return;
+    const sec=document.createElement("div"); sec.className="cs-sec"; sec.id="csInstallSec";
+    sec.innerHTML='<h4>App</h4><button class="cs-reset" type="button" data-install style="text-align:left">📲 Install the Cheat Sheet as an app</button><small style="color:var(--muted);font-size:12.5px">Opens from your home screen like a normal app.</small>';
+    p.insertBefore(sec,last);
+  }
+  new MutationObserver(inject).observe(document.body,{childList:true,subtree:true}); inject();
+})();
+
+/* ---------- words to review today ---------- */
+function todays5(){
+  const day=new Date().toDateString();
+  const saved=LS.get("cs-today5",null), all=allWords().filter(x=>x&&x.w&&!x.sample), ids=new Set(all.map(x=>x.id));
+  if(saved&&saved.day===day&&saved.ids.every(i=>ids.has(i))&&saved.ids.length===Math.min(5,all.length)) return saved.ids;
+  const st=LS.get("ncs-fc",{})||{};
+  let seed=0; for(const ch of day) seed=(seed*31+ch.charCodeAt(0))>>>0;
+  const rnd=()=>{ seed=(seed*1664525+1013904223)>>>0; return seed/4294967296; };
+  const score=x=>{ const b=st[x.id]; const base= b===0?0 : b===1?1 : b===2?2 : b==null?3 : b===3?4 : 5; return base+rnd()*0.9; };
+  const pick=all.slice().sort((a,b)=>score(a)-score(b)).slice(0,5).map(x=>x.id);
+  LS.set("cs-today5",{day,ids:pick});
+  return pick;
+}
+(function(){
+  const box=document.getElementById("rvBox"); if(!box) return;
+  function paint(){
+    const all=allWords().filter(x=>x&&x.w&&!x.sample);
+    if(all.length<3){ box.hidden=true; return; }
+    box.hidden=false;
+    const ids=todays5(), st=LS.get("ncs-fc",{})||{}, list=ids.map(i=>all.find(x=>x.id===i)).filter(Boolean);
+    document.getElementById("rvList").innerHTML=list.map(x=>'<button class="rv-chip" type="button" aria-expanded="false" data-rv="'+esc(x.id)+'"><span class="rv-w">'+esc(x.w)+'</span><span class="rv-m">'+esc(x.m||"(no translation yet)")+'</span>'+(st[x.id]===0?'<span class="rv-tag">missed</span>':'')+'</button>').join("");
+  }
+  box.addEventListener("click",e=>{
+    const c=e.target.closest("[data-rv]"); if(c){ c.setAttribute("aria-expanded",c.getAttribute("aria-expanded")==="true"?"false":"true"); return; }
+    if(e.target.closest("#rvGo")){ if(typeof fcSetMode==="function") fcSetMode("today"); go("quiz"); }
+  });
+  paint();
+  window.addEventListener("storage",paint);
+  const v=document.getElementById("v-notes"); if(v) new MutationObserver(()=>{ if(!v.hidden) paint(); }).observe(v,{attributes:true,attributeFilter:["hidden"]});
+})();
+
+/* ---------- say it out loud (speech recognition) ---------- */
+(function(){
+  const card=document.getElementById("spCard"); if(!card) return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const tgt=document.getElementById("spTarget"), mean=document.getElementById("spMean"), mic=document.getElementById("spMic"), out=document.getElementById("spOut"), modeB=document.getElementById("spMode"), nextB=document.getElementById("spNext"), hear=document.getElementById("spHear");
+  if(!SR){ document.getElementById("spNo").hidden=false; mic.disabled=true; }
+  let cur=null, lastId=null, useEx=false, rec=null, listening=false;
+  const norm2=s=>String(s||"").toLowerCase().replace(/\(.*?\)/g," ").replace(/[’']/g,"'").replace(/[^a-z0-9' ]+/g," ").replace(/\s+/g," ").trim();
+  function pool(){ let l=[]; try{ l=typeof fcList==="function"?fcList():allWords(); }catch(e){ l=allWords(); } l=l.filter(x=>x&&x.w); return l.length?l:allWords().filter(x=>x&&x.w); }
+  function text(){ return useEx&&cur&&cur.e? cur.e : (cur? cur.w.replace(/\(.*?\)/g,"").trim() : ""); }
+  function pick(){
+    const l=pool(); if(!l.length){ cur=null; tgt.textContent="Save a few words first"; mean.textContent=""; mic.disabled=true; return; }
+    let x=l[Math.floor(Math.random()*l.length)]; if(l.length>1&&x.id===lastId) x=l.find(y=>y.id!==lastId);
+    cur=x; lastId=x.id; paint(); out.hidden=true; out.innerHTML="";
+  }
+  function paint(){
+    if(!cur) return;
+    tgt.textContent=text(); mean.textContent=useEx&&cur.e? "" : (cur.m||"");
+    modeB.hidden=!cur.e; modeB.textContent=useEx?"Say the word instead":"Say the example sentence";
+    mic.disabled=!SR;
+  }
+  function judge(alts){
+    const t=norm2(text()), tw=t.split(" ").filter(Boolean);
+    let best="", bestScore=0;
+    alts.forEach(a=>{ const n=norm2(a); if(!n) return; let sc;
+      if(n===t||(" "+n+" ").includes(" "+t+" ")) sc=1;
+      else { const nw=n.split(" "); const hit=tw.filter(w=>nw.includes(w)).length; sc=hit/Math.max(tw.length,1); }
+      if(sc>bestScore||!best){ bestScore=sc; best=a; } });
+    return {heard:best,score:bestScore};
+  }
+  function show(r){
+    out.hidden=false;
+    const ok=r.score>=(useEx?0.8:1), close=!ok&&r.score>=0.5;
+    out.innerHTML='<div class="sn-res '+(ok?"sn-great":close?"sn-almost":"sn-try")+'"><b>'+(ok?"🎉 Great, I understood you!":close?"👍 Almost!":"🤔 Not quite")+'</b></div>'+
+      '<p style="margin:6px 0 0">I heard: <i>“'+esc(r.heard||"…")+'”</i></p>'+
+      (ok?"":'<p class="muted" style="margin:4px 0 0;font-size:14px">Tap <b>🔊 Listen</b> to hear it, then try again. Speak a little slower and clearer than normal.</p>');
+    if(ok) document.dispatchEvent(new CustomEvent("cs-said"));
+  }
+  function stop(){ listening=false; mic.classList.remove("on"); mic.innerHTML='🎤 <span>Tap and say it</span>'; }
+  mic.addEventListener("click",()=>{
+    if(!SR||!cur) return;
+    if(listening){ try{ rec.stop(); }catch(e){} return; }
+    rec=new SR(); rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=5; rec.continuous=false;
+    let got=false;
+    rec.onresult=e=>{ got=true; const res=e.results[0]; const alts=[]; for(let i=0;i<res.length;i++) alts.push(res[i].transcript); show(judge(alts)); };
+    rec.onerror=e=>{ stop(); out.hidden=false;
+      out.innerHTML='<p style="margin:0">'+(e.error==="not-allowed"||e.error==="service-not-allowed"?"🎤 Your browser blocked the microphone. Allow it (the 🔒 or 🎤 icon in the address bar) and try again.":e.error==="no-speech"?"I didn't hear anything. Tap the mic and speak a bit louder.":e.error==="network"?"Speech recognition needs an internet connection. Try again in a moment.":"Something went wrong with the microphone. Try again.")+'</p>'; };
+    rec.onend=()=>{ stop(); if(!got&&out.hidden){ out.hidden=false; out.innerHTML='<p style="margin:0">I didn\'t hear anything. Tap the mic and try again.</p>'; } };
+    try{ rec.start(); listening=true; mic.classList.add("on"); mic.innerHTML='⏺ <span>Listening… tap to stop</span>'; out.hidden=true; }catch(e){ stop(); }
+  });
+  hear.addEventListener("click",()=>{ if(cur) say(text(),hear); });
+  modeB.addEventListener("click",()=>{ useEx=!useEx; paint(); out.hidden=true; });
+  nextB.addEventListener("click",()=>{ useEx=false; pick(); });
+  if(!canSpeak) hear.hidden=true;
+  const v=document.getElementById("v-quiz");
+  new MutationObserver(()=>{ if(!v.hidden&&!cur) pick(); }).observe(v,{attributes:true,attributeFilter:["hidden"]});
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-fcset]")) setTimeout(()=>{ useEx=false; pick(); },60); });
+  pick();
+})();
+
+/* ---------- kudos: messages from Noa ---------- */
+(function(){
+  const fmt=t=>{ try{ return new Date(t).toLocaleDateString("en-US",{month:"long",day:"numeric"}); }catch(e){ return ""; } };
+  function confetti(el){
+    if(document.documentElement.classList.contains("cs-calm")) return;
+    const em=["🎉","✨","💛","🎊","⭐"];
+    for(let i=0;i<14;i++){ const s=document.createElement("span"); s.className="kd-conf"; s.textContent=em[i%em.length]; s.style.left=(6+Math.random()*88)+"%"; s.style.animationDelay=(Math.random()*.5)+"s"; s.style.setProperty("--r",(Math.random()*80-40)+"deg"); el.appendChild(s); setTimeout(()=>s.remove(),2600); }
+  }
+  function paintLink(){ const n=(LS.get("ncs-kudos",[])||[]).length, a=document.getElementById("kdLink"); if(a){ a.hidden=!n; a.textContent="💌 Messages from Noa ("+n+")"; } }
+  window.csShowKudos=function(list,done){
+    list=(list||[]).filter(m=>m&&m.text);
+    if(!list.length) return;
+    const hist=LS.get("ncs-kudos",[])||[];
+    list.forEach(m=>{ if(!hist.some(h=>h.id===m.id)) hist.unshift({id:m.id,text:m.text,kind:m.kind||"",at:m.at||Date.now()}); });
+    LS.set("ncs-kudos",hist.slice(0,60)); paintLink();
+    let i=0;
+    const next=()=>{
+      if(i>=list.length) return;
+      const m=list[i++];
+      const title=m.kind==="welcome"?"👋 Welcome from Noa":m.kind==="kudos"?"🎉 Kudos from Noa":"💌 A message from Noa";
+      const dl=csDialog('<div class="kd-top">'+title+'</div><p class="kd-text">'+esc(m.text).replace(/\n/g,"<br>")+'</p><div class="kd-date">'+fmt(m.at)+'</div><div class="note-actions" style="justify-content:flex-end;margin-top:14px"><button class="pill-btn pill-green" type="button" data-autofocus id="kdOk">Thanks, Noa! 💛</button></div>',{cls:"kd",onClose:()=>{ if(done) done(m.id); document.dispatchEvent(new CustomEvent("cs-kudos",{detail:{kind:m.kind}})); setTimeout(next,400); }});
+      confetti(dl.el);
+      dl.el.querySelector("#kdOk").addEventListener("click",dl.close);
+    };
+    setTimeout(next,1200);
+  };
+  document.addEventListener("click",e=>{
+    if(!e.target.closest("#kdLink")) return;
+    const hist=LS.get("ncs-kudos",[])||[];
+    csDialog('<h3 style="margin-top:0">💌 Messages from Noa</h3>'+(hist.length?hist.map(m=>'<div class="kd-item"><div class="kd-date">'+fmt(m.at)+'</div><div>'+esc(m.text).replace(/\n/g,"<br>")+'</div></div>').join(""):'<p>No messages yet.</p>'));
+  });
+  paintLink();
 })();
 
 /* ---------------- import words ---------------- */
@@ -3489,6 +3711,12 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-app", date:"November 2, 2026", title:"Practice more, and get the app 📲", items:[
+    ["🔁","Words to review today","a new card on your Home page with 5 of your words that need practice. Tap <b>Practice these 5</b>.","notes"],
+    ["🎤","Say it out loud","in <b>Practice</b>, say one of your words and see if the computer understands you.","quiz"],
+    ["📲","Install the app","put the Cheat Sheet on your phone's home screen: tap <b>📲 Install the app</b> at the bottom of the page.",null],
+    ["💌","Messages from Noa","Noa can now send you a little message right here in the Cheat Sheet.",null]
+  ]},
   {id:"2026-notebook", date:"November 2, 2026", title:"Your notebook & sentence practice ✍️", items:[
     ["📓","Weekly summaries","in <b>My class notes</b>, a new tab groups your notes by week with a short AI summary: main topics, corrections to remember and new expressions.","notebook"],
     ["✍️","Use it in a sentence","in <b>Practice</b>, write a sentence with one of your words and get quick, friendly feedback.","quiz"]
@@ -3705,6 +3933,7 @@ async function syncDown() {
     }).catch(() => {});
     if (toPush.length) await Promise.all(toPush.map(pushKey));
     status("synced");
+    checkInbox();
     if (changed) {
       const last = +(sessionStorage.getItem("ncs-reload-at") || 0);
       if (Date.now() - last > 8000) { sessionStorage.setItem("ncs-reload-at", String(Date.now())); location.reload(); return; }
@@ -3713,6 +3942,18 @@ async function syncDown() {
     console.warn("Cheat Sheet sync failed", e);
     status("error");
   } finally { syncing = false; }
+}
+
+/* ---------- messages from Noa (inbox/{uid}/msgs) ---------- */
+async function checkInbox() {
+  if (!user || !window.csShowKudos) return;
+  try {
+    const snap = await getDocs(collection(db, "inbox", user.uid, "msgs"));
+    const list = []; const refs = {};
+    snap.forEach(d => { const x = d.data() || {}; refs[d.id] = d.ref; list.push({ id: d.id, text: x.text || "", kind: x.kind || "", at: x.at && x.at.toMillis ? x.at.toMillis() : Date.now() }); });
+    list.sort((a, b) => a.at - b.at);
+    if (list.length) window.csShowKudos(list, id => { if (refs[id]) deleteDoc(refs[id]).catch(() => {}); });
+  } catch (e) { console.warn("inbox", e); }
 }
 
 /* ---------- sign in / out ---------- */
