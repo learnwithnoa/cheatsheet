@@ -634,8 +634,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (e.key === "Escape") { e.preventDefault(); closeModal(); return; }
     if (e.key === "Tab") { const f = [...modal.querySelectorAll("button:not([disabled]),input,[tabindex='0']")].filter(x => x.offsetParent); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
   });
-  function animalGrid(sel) {
-    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>`;
+  function animalGrid(sel, col) {
+    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: id === sel ? Object.assign({}, SP[id].p, (SP[id].colors[col | 0] || SP[id].colors[0])[1]) : SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>`;
   }
   const COLOR_AT = [0, 0, 10, 20, 35];
   const colorOpen = i => counts().words >= (COLOR_AT[i] || 0);
@@ -649,7 +649,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">Adopt a study buddy 🐾</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
         <p class="bd-small" style="margin-top:8px">A little friend who keeps you company while you study. Feed it treats you earn by saving words and practicing. It never gets sick or sad if you're away, it just naps.</p>
         <div class="bd-stage">${stageSVG({ a: d.a, pal, wear: {}, room: null, plain: true })}</div>
-        <h4>Choose your buddy</h4>${animalGrid(d.a)}${swatches(d.a, d.c)}
+        <h4>Choose your buddy</h4>${animalGrid(d.a, d.c)}${swatches(d.a, d.c)}
         <h4>Give it a name</h4><div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" placeholder="${esc(SP[d.a].name)}" value="${esc(d.n)}" aria-label="Your buddy's name" autocomplete="off"></div>
         <div class="bd-foot"><button class="bd-link" type="button" data-m="nothanks">No thanks</button><button class="bd-b go" type="button" data-m="adopt">Adopt ${esc(d.n.trim() || SP[d.a].name)}!</button></div>`;
       return;
@@ -683,7 +683,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       ${(() => { const n = (S.gd || []).length; return `<p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows in front of your buddy on every day you study (save a word or practice flashcards). Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`; })()}
       ${(() => { const se = season(); return `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:8px"><input type="checkbox" id="bdSeas" ${S.seas !== false ? "checked" : ""}> 🗓️ Seasonal outfits${se ? ` <span class="bd-small" style="margin:0">(now: ${se.ico} ${esc(se.name)})</span>` : ` <span class="bd-small" style="margin:0">(Halloween, Christmas, Fiestas Patrias and more)</span>`}</label>`; })()}
       ${isOpen(byId.shiny) ? `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" id="bdShiny" ${S.shiny ? "checked" : ""}> ✨ Shiny sparkles</label>` : `<p class="bd-small">🔒 <b>Shiny sparkles</b> at 400 words · ⭐ <b>Legend star</b> at 1,000 words</p>`}
-      <h4>Change your buddy</h4>${animalGrid(animal())}${swatches(animal(), S.c | 0)}
+      <h4>Change your buddy</h4>${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}
       <div class="bd-foot"><button class="bd-link" type="button" data-m="hide">Hide my buddy</button><button class="bd-b" type="button" data-m="close">Done</button></div>`;
     // everything visible in the panel counts as seen
     const opened = ITEMS.filter(isOpen).map(i => i.id); if (opened.some(i => !seen.has(i))) { S.seen = opened; save(); }

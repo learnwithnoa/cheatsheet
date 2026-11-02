@@ -670,6 +670,12 @@ html.cs-calm .park-b svg{animation:none}
 .sn-try{background:color-mix(in srgb,#E5533D 18%,var(--surface))}
 .sn-better{margin-top:8px;background:var(--surface-2);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .sn-lbl{font-weight:800;color:var(--muted);font-size:13px}
+
+.cn-tabs{display:flex;gap:6px;margin:4px 0 14px;border-bottom:1.5px solid var(--line);flex-wrap:wrap}
+.cn-tabs button{all:unset;cursor:pointer;font:800 15px var(--body);color:var(--muted);padding:9px 14px;border-radius:12px 12px 0 0;border:1.5px solid transparent;border-bottom:0;margin-bottom:-1.5px}
+.cn-tabs button[aria-selected="true"]{color:var(--ink);background:var(--surface);border-color:var(--line)}
+.cn-tabs button:hover{color:var(--ink)}
+.cn-tabs button:focus-visible{outline:3px solid var(--bright)}
 </style>
 
 <header class="top">
@@ -729,7 +735,6 @@ html.cs-calm .park-b svg{animation:none}
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
-      <button class="navbtn cn-nav" data-go="notebook"><span class="w-ico" aria-hidden="true">📓</span><span>My notebook</span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
       <button class="navbtn cn-nav" data-go="park"><span class="w-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
@@ -978,6 +983,7 @@ html.cs-calm .park-b svg{animation:none}
 <!-- ============ CLASS NOTES ============ -->
 <section class="view" id="v-classnotes" hidden>
   <h1>My class <em>notes</em></h1>
+  <div class="cn-tabs" role="tablist" aria-label="Class notes"><button type="button" role="tab" data-go="classnotes" aria-selected="true">✏️ My notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Weekly summaries</button></div>
   <p class="lede">Write today's notes here or on your Home page. Every note you save shows up below, newest first.</p>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
   <div class="store-info dismissible when-out">
@@ -997,13 +1003,14 @@ html.cs-calm .park-b svg{animation:none}
 
 <!-- ============ TRANSLATOR ============ -->
 <section class="view" id="v-notebook" hidden>
-  <h1>My <em>notebook</em></h1>
-  <p class="lede">Your class notes, grouped by week, with a short summary of each week: the main topics, corrections to remember and new expressions. Tap <b>+ save</b> to add an expression to your words.</p>
-  <div class="note-actions" style="margin-bottom:12px"><button class="pill-btn" type="button" id="nbMonthBtn" hidden>✨ Summarize this month</button><button class="swap" type="button" data-go="classnotes">All my class notes →</button></div>
+  <h1>My class <em>notes</em></h1>
+  <div class="cn-tabs" role="tablist" aria-label="Class notes"><button type="button" role="tab" data-go="classnotes" aria-selected="false">✏️ My notes</button><button type="button" role="tab" data-go="notebook" aria-selected="true">📓 Weekly summaries</button></div>
+  <p class="lede">The same notes, grouped by week, with a short summary of each week: the main topics, corrections to remember and new expressions. Tap <b>+ save</b> to add an expression to your words. To write a new note, go to <b>✏️ My notes</b>.</p>
+  <div class="note-actions" style="margin-bottom:12px"><button class="pill-btn" type="button" id="nbMonthBtn" hidden>✨ Summarize this month</button></div>
   <p class="muted" id="nbAiMsg" hidden style="font-size:14px">The summaries use AI, which is still loading or isn't available right now. Your notes are below.</p>
   <div id="nbMonth"></div>
   <div id="nbList"></div>
-  <p class="muted" style="font-size:13px;margin-top:14px">Summaries are written by AI from your own notes, so double-check anything that looks odd. Noa's notes always win.</p>
+  <p class="muted" style="font-size:13px;margin-top:14px">Summaries are written by AI from your own notes, so double-check anything that looks odd.</p>
 </section>
 
 <section class="view" id="v-park" hidden>
@@ -1735,7 +1742,7 @@ html.cs-calm .park-b svg{animation:none}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=7" defer></script>
+<script src="buddy.js?v=8" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -3041,7 +3048,7 @@ function go(id,push){
   const cnB=document.getElementById("cnEditorBlock"), awB=document.getElementById("addWordBlock");
   if(cnB){ const to=document.getElementById(id==="classnotes"?"slotCnPage":"slotCnHome"); if(cnB.parentNode!==to) to.appendChild(cnB); }
   if(awB){ const to=document.getElementById(id==="words"?"slotAwPage":"slotAwHome"); if(awB.parentNode!==to) to.appendChild(awB); }
-  document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", b.dataset.go===id?"true":"false"));
+  document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", (b.dataset.go===id||(id==="notebook"&&b.dataset.go==="classnotes"))?"true":"false"));
   const cur=document.querySelector('.navbtn[aria-current="true"]'); if(cur&&cur.scrollIntoView&&window.innerWidth<=900) cur.scrollIntoView({block:"nearest",inline:"center"});
   try{localStorage.setItem("eep-view",id);}catch(e){}
   if(push){ try{ history.replaceState(null,"","#"+id);}catch(e){} }
@@ -3058,7 +3065,7 @@ go(start);
 let stars=LS.get("ncs-stars",[]);
 const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const sp=[...b.querySelectorAll("span")].filter(x=>!x.getAttribute("aria-hidden")&&!x.classList.contains("cn-count")); return (sp[0]||b).textContent.trim(); };
 document.querySelectorAll(".view").forEach(v=>{
-  const id=v.id.slice(2); if(id==="notes"||id==="classnotes"||id==="feedback"||id==="words"||id==="backup"||id==="changelog") return;
+  const id=v.id.slice(2); if(id==="notes"||id==="classnotes"||id==="notebook"||id==="feedback"||id==="words"||id==="backup"||id==="changelog") return;
   const h=v.querySelector("h1"); if(!h) return;
   const wrap=document.createElement("div"); wrap.className="vhead";
   h.parentNode.insertBefore(wrap,h); wrap.appendChild(h);
@@ -3483,7 +3490,7 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-notebook", date:"November 2, 2026", title:"Your notebook & sentence practice ✍️", items:[
-    ["📓","My notebook","your class notes grouped by week, with a short AI summary: main topics, corrections to remember and new expressions.","notebook"],
+    ["📓","Weekly summaries","in <b>My class notes</b>, a new tab groups your notes by week with a short AI summary: main topics, corrections to remember and new expressions.","notebook"],
     ["✍️","Use it in a sentence","in <b>Practice</b>, write a sentence with one of your words and get quick, friendly feedback.","quiz"]
   ]},
   {id:"2026-love", date:"November 2, 2026", title:"Love in the park 💌", items:[
@@ -3594,7 +3601,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
    First sign-in on a device: local + cloud are merged (nothing lost).
    After that: the cloud is the source of truth, local edits are pushed right away. */
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
-  getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp,
+  getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
 
 const firebaseConfig = {
@@ -3690,7 +3697,12 @@ async function syncDown() {
     setRaw("ncs-sync-uid", user.uid);
     ready = true;
     // so the teacher can tell whose data is whose in the Firebase console
-    setDoc(doc(db, "users", user.uid), { name: user.displayName || "", email: user.email || "", lastSeen: serverTimestamp() }, { merge: true }).catch(() => {});
+    getDoc(doc(db, "users", user.uid)).then(sn => {
+      const x = sn.exists() ? (sn.data() || {}) : {};
+      const patch = { name: user.displayName || "", email: user.email || "", lastSeen: serverTimestamp() };
+      if (!x.firstSeen) patch.firstSeen = serverTimestamp();   // when they first joined (for the teacher's notifications)
+      return setDoc(doc(db, "users", user.uid), patch, { merge: true });
+    }).catch(() => {});
     if (toPush.length) await Promise.all(toPush.map(pushKey));
     status("synced");
     if (changed) {

@@ -78,6 +78,19 @@ td.act{white-space:nowrap;text-align:right}
 .hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
 
 .parkbox{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0}
+.news{border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 18px;background:var(--surface)}
+.news-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.news-top button{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:700 13px var(--body);cursor:pointer}
+.news-n{font:800 12px var(--body);background:#E5533D;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:3px}
+.news-list{list-style:none;margin:0;padding:0}
+.news-i{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px}
+.news-i:hover{background:var(--surface-2)}
+.news-i:focus-visible{outline:3px solid var(--green)}
+.news-list .fresh .news-i{background:var(--green-soft)}
+.news-list .big .ni{transform:scale(1.2)}
+.ni{font-size:18px;flex:none;width:24px;text-align:center}
+.nd{margin-left:auto;color:var(--muted);font-size:13px;white-space:nowrap}
+.foot-link{background:none;border:0;color:var(--royal);text-decoration:underline;cursor:pointer;font:600 13.5px var(--body);padding:4px 0}
 .bcard{display:flex;gap:12px;align-items:center;margin-top:8px}
 .bsvg{width:72px;height:79px;image-rendering:pixelated;flex:none;background:color-mix(in srgb,var(--green) 10%,var(--surface));border-radius:12px}
 .seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
@@ -114,6 +127,7 @@ td.act{white-space:nowrap;text-align:right}
   <section id="vMain" hidden>
     <h1>Your students</h1>
     <p class="lede" id="summary">Loading…</p>
+    <div class="news" id="news" hidden></div>
     <div class="layout">
       <div>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search students">
@@ -177,6 +191,7 @@ async function load() {
       ds.forEach(x => { const v = x.data(); if (!v.deleted && typeof v.json === "string") data[x.id] = v.json; });
       list.push({
         uid: d.id, name: p.name || "(no name)", email: p.email || "",
+        firstSeen: p.firstSeen && p.firstSeen.toMillis ? p.firstSeen.toMillis() : 0,
         lastSeen: p.lastSeen && p.lastSeen.toMillis ? p.lastSeen.toMillis() : 0,
         words: parse(data["ncs-words"], []).filter(w => w && w.w),
         notes: parse(data["ncs-classnotes"], []).filter(n => n && n.text),
@@ -192,7 +207,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " student has" : " students have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList();
+    renderList(); renderNews();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -232,6 +247,42 @@ async function guarded(s, key, fn, msg) {
   try { await change(s, key, fn); toast(msg); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the edit rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
+/* ---------- student news: who joined, who hit a milestone ---------- */
+const MILES = [10, 25, 50, 100, 150, 200, 300, 400, 500, 750, 1000], NOTE_MILES = [5, 10, 25, 50, 100];
+const NEWS_KEY = "cs-tnews-seen", baseTitle = document.title;
+function newsEvents() {
+  const ev = [], since = Date.now() - 45 * 864e5;
+  students.forEach(s => {
+    const first = esc(s.name.split(" ")[0]);
+    const acts = [...s.words.map(w => w.t), ...s.notes.map(n => n.t)].filter(Boolean);
+    const joined = Math.min(...[s.firstSeen, ...acts].filter(Boolean));
+    if (isFinite(joined)) ev.push({ t: joined, s, ico: "👋", txt: `<b>${first}</b> joined the Cheat Sheet` });
+    const best = {}; // one milestone per student per day (imports add many words at once)
+    const add = (t, m, kind) => { const day = new Date(t).toDateString(), k = kind + day; if (!best[k] || best[k].m < m) best[k] = { t, m, kind }; };
+    const ws = s.words.filter(w => w.t).sort((a, b) => a.t - b.t); MILES.forEach(m => { if (ws.length >= m) add(ws[m - 1].t, m, "w"); });
+    const ns = s.notes.filter(n => n.t).sort((a, b) => a.t - b.t); NOTE_MILES.forEach(m => { if (ns.length >= m) add(ns[m - 1].t, m, "n"); });
+    Object.values(best).forEach(b => ev.push({ t: b.t, s, ico: b.kind === "w" ? "📚" : "📝", txt: `<b>${first}</b> reached <b>${b.m} ${b.kind === "w" ? "words" : "class notes"}</b>`, big: b.kind === "w" && b.m >= 100 }));
+  });
+  return ev.filter(e => e.t >= since).sort((a, b) => b.t - a.t);
+}
+let newsOpen = false;
+function renderNews() {
+  const box = $("news"), ev = newsEvents(), seen = +(localStorage.getItem(NEWS_KEY) || 0), fresh = ev.filter(e => e.t > seen).length;
+  document.title = (fresh ? "(" + fresh + ") " : "") + baseTitle;
+  if (!ev.length) { box.hidden = true; return; }
+  box.hidden = false;
+  const shown = newsOpen ? ev : ev.slice(0, 6);
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔔 Student news${fresh ? ` <span class="news-n">${fresh} new</span>` : ""}</h2>${fresh ? `<button type="button" id="newsSeen">Mark all as seen</button>` : ""}</div>
+    <p class="muted" style="margin:4px 0 8px">New students and milestones from the last 45 days. Great things to celebrate in class 🎉</p>
+    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button></li>`).join("")}</ul>
+    ${ev.length > 6 ? `<button type="button" id="newsMore" class="foot-link">${newsOpen ? "Show less" : "Show all " + ev.length}</button>` : ""}`;
+}
+$("news").addEventListener("click", e => {
+  if (e.target.closest("#newsSeen")) { localStorage.setItem(NEWS_KEY, String(Date.now())); renderNews(); return; }
+  if (e.target.closest("#newsMore")) { newsOpen = !newsOpen; renderNews(); return; }
+  const b = e.target.closest("[data-news]"); if (!b) return;
+  current = b.dataset.news; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
+});
 function buddyCard(b) {
   const A = window.csBuddyArt;
   if (!b || !b.a || !A || !A.sprites[b.a]) return ` <span class="muted">· ${b && b.on === false ? "they turned their buddy off" : "no buddy yet"}</span>`;
