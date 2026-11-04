@@ -6,10 +6,10 @@
 <meta name="description" content="Your English Cheat Sheet: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<script src="ios-sound.js?v=1"></script>
-<link rel="stylesheet" href="comfort.css?v=7">
+<script src="ios-sound.js?v=2"></script>
+<link rel="stylesheet" href="comfort.css?v=8">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=7" defer></script>
+<script src="comfort.js?v=8" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
@@ -4107,6 +4107,25 @@ function withTimeout(prompt, opts = {}) {
   ]);
 }
 if (ai) { window.__csSample = withTimeout; window.dispatchEvent(new Event("cs-sample-ready")); }
+
+/* Gemini voice (used on iPhone, where the built-in voice is muted in silent mode) */
+const TTS_MODELS = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts"];
+let ttsIdx = 0;
+async function ttsOnce(text) {
+  let last;
+  for (let i = ttsIdx; i < TTS_MODELS.length; i++) {
+    try {
+      const m = getGenerativeModel(ai, { model: TTS_MODELS[i], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } } });
+      const r = await m.generateContent("Say clearly and naturally, in a friendly American English voice, at a slightly slow pace for an English learner: " + text);
+      const parts = r.response.inlineDataParts ? r.response.inlineDataParts() : [];
+      const d = parts && parts[0] && parts[0].inlineData;
+      if (!d || !d.data) throw new Error("no audio in reply");
+      ttsIdx = i; return { data: d.data, mime: d.mimeType || "" };
+    } catch (e) { last = e; if (!/not.?found|404|not supported|unsupported|invalid model/i.test(String((e && e.message) || ""))) throw e; }
+  }
+  throw last;
+}
+if (ai) window.__csTTS = text => Promise.race([ttsOnce(text), new Promise((_, rej) => setTimeout(() => { const e = new Error("timeout"); e.code = "timeout"; rej(e); }, 15000))]);
 
 </script>
 </body>

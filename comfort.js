@@ -151,11 +151,30 @@
   let speakId = 0;
   /* Speak text reliably: waits a moment after cancelling (Chrome drops speech started right after cancel),
      un-pauses a stuck engine, and retries with the default voice if the chosen one stays silent. */
+  let tipShown = false;
+  function silentTip() {
+    if (tipShown) return; tipShown = true;
+    try { if (sessionStorage.getItem("cs-silenttip")) return; sessionStorage.setItem("cs-silenttip", "1"); } catch (e) {}
+    toast("No sound? Turn off silent mode on your iPhone to hear the voice.");
+  }
   function csSpeak(text, o) {
     if (window.csUnlockAudio) window.csUnlockAudio(false);
     o = o || {};
-    if (!canSpeak || !text) { o.onend && o.onend(); return false; }
-    const synth = speechSynthesis, id = ++speakId;
+    if (!text) { o.onend && o.onend(); return false; }
+    /* iPhone: the built-in voice is muted in silent mode, so use the Gemini voice (played like music) */
+    if (window.csVoice && window.csVoice.active()) {
+      const id = ++speakId;
+      try { if (canSpeak) speechSynthesis.cancel(); } catch (e) {}
+      window.csVoice.speak(text).then(r => { if (id === speakId && r !== "stopped") o.onend && o.onend(); })
+        .catch(err => { console.warn("Gemini voice failed, using the built-in voice", err); if (id !== speakId) return; silentTip(); speakNative(text, o, id); });
+      return true;
+    }
+    if (!canSpeak) { o.onend && o.onend(); return false; }
+    return speakNative(text, o, ++speakId);
+  }
+  function speakNative(text, o, id) {
+    if (!canSpeak) { o.onend && o.onend(); return false; }
+    const synth = speechSynthesis;
     const busy = synth.speaking || synth.pending;
     try { synth.cancel(); } catch (e) {}
     const go = (withVoice, tries) => {
@@ -184,7 +203,7 @@
     return true;
   }
   window.csSpeak = csSpeak;
-  window.csStopSpeaking = () => { speakId++; try { speechSynthesis.cancel(); } catch (e) {} };
+  window.csStopSpeaking = () => { speakId++; try { if (window.csVoice) window.csVoice.stop(); } catch (e) {} try { speechSynthesis.cancel(); } catch (e) {} };
   function textOf(view) {
     const clone = view.cloneNode(true);
     clone.querySelectorAll("button,input,select,textarea,script,style,.es,.no-read,.tip-x,.star-btn,.cs-read-row,[hidden],svg").forEach(n => n.remove());
@@ -206,12 +225,13 @@
     const next = () => {
       if (speaking !== btn) return;
       if (i >= chunks.length) { stopReading(); return; }
+      if (window.csVoice && window.csVoice.active() && chunks[i + 1]) window.csVoice.prefetch(chunks[i + 1]);
       csSpeak(chunks[i++], { rate: .9, onend: next, onfail: stopReading });
     };
     next();
   }
   function addReadButtons() {
-    if (!isMain || !canSpeak) return;
+    if (!isMain || !(canSpeak || window.csVoice)) return;
     document.querySelectorAll("main section.view").forEach(v => {
       if (v.querySelector(".cs-read") || ["v-feedback", "v-backup", "v-changelog", "v-notes", "v-words", "v-translate", "v-quiz"].includes(v.id)) return;
       const btn = document.createElement("button"); btn.type = "button"; btn.className = "cs-read"; btn.innerHTML = "🔊 Listen";

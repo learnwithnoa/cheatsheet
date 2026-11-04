@@ -20,9 +20,64 @@
       clearTimeout(timer);
       if (hold) holding = true;
       var p = a.play(); if (p && p.catch) p.catch(function () {});
+      ctx();
       if (!holding) timer = setTimeout(function () { if (!holding) { try { a.pause(); } catch (e) {} } }, 30000);
     } catch (e) {}
   };
+  /* ---------- Gemini voice for iPhone (plays like music, so silent mode can't mute it) ---------- */
+  var vac = null;
+  function ctx() {
+    try { if (!vac) { var A = window.AudioContext || window.webkitAudioContext; if (A) vac = new A(); } if (vac && vac.state !== "running") vac.resume(); } catch (e) {}
+    return vac;
+  }
+  var mem = {}, db = null, off = false, sid = 0, src = null;
+  function idb() {
+    if (db) return db;
+    db = new Promise(function (res) {
+      try { var r = indexedDB.open("cs-voice", 1); r.onupgradeneeded = function () { r.result.createObjectStore("clips"); }; r.onsuccess = function () { res(r.result); }; r.onerror = function () { res(null); }; } catch (e) { res(null); }
+    });
+    return db;
+  }
+  function dbGet(k) { return idb().then(function (d) { return d ? new Promise(function (res) { try { var q = d.transaction("clips").objectStore("clips").get(k); q.onsuccess = function () { res(q.result || null); }; q.onerror = function () { res(null); }; } catch (e) { res(null); } }) : null; }); }
+  function dbPut(k, v) { idb().then(function (d) { try { if (d) d.transaction("clips", "readwrite").objectStore("clips").put(v, k); } catch (e) {} }); }
+  var key = function (t) { return "kore|" + String(t).trim().toLowerCase(); };
+  function clip(text) {
+    var k = key(text);
+    if (mem[k]) return mem[k];
+    mem[k] = dbGet(k).then(function (hit) {
+      if (hit) return hit;
+      return window.__csTTS(text).then(function (r) { dbPut(k, r); return r; });
+    }).catch(function (e) { delete mem[k]; throw e; });
+    return mem[k];
+  }
+  function toBuffer(r) {
+    var bin = atob(r.data), n = bin.length >> 1, rate = 24000, m = /rate=(\d+)/.exec(r.mime || "");
+    if (m) rate = +m[1];
+    var b = vac.createBuffer(1, n, rate), ch = b.getChannelData(0);
+    for (var i = 0; i < n; i++) { var lo = bin.charCodeAt(2 * i), hi = bin.charCodeAt(2 * i + 1), v = (hi << 8) | lo; if (v >= 32768) v -= 65536; ch[i] = v / 32768; }
+    return b;
+  }
+  window.csVoice = {
+    active: function () { return ios && !off && typeof window.__csTTS === "function"; },
+    prefetch: function (text) { if (this.active() && text) clip(text).catch(function () {}); },
+    stop: function () { sid++; if (src) { try { src.onended = null; src.stop(); } catch (e) {} src = null; } },
+    speak: function (text) {
+      var me = this; me.stop(); var id = ++sid; ctx();
+      return clip(text).then(function (r) {
+        if (id !== sid) return "stopped";
+        var a = ctx(); if (!a) throw new Error("no audio");
+        return new Promise(function (res) {
+          var s = a.createBufferSource(); s.buffer = toBuffer(r); s.connect(a.destination);
+          s.onended = function () { if (src === s) src = null; res("done"); };
+          src = s; s.start();
+        });
+      }).catch(function (e) {
+        if (/quota|exhausted|429|rate|billing|permission|app.?check/i.test(String((e && (e.code || e.message)) || ""))) off = true; /* don't keep waiting on a dead end */
+        throw e;
+      });
+    }
+  };
+
   /* music stopped: let the silent loop go shortly after */
   window.csReleaseAudio = function () {
     holding = false;
