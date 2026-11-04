@@ -6,9 +6,10 @@
 <meta name="description" content="Your English Cheat Sheet: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<link rel="stylesheet" href="comfort.css?v=6">
+<script src="ios-sound.js?v=1"></script>
+<link rel="stylesheet" href="comfort.css?v=7">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=6" defer></script>
+<script src="comfort.js?v=7" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
@@ -2186,6 +2187,7 @@ let enVoice=null;
 function pickVoice(){ if(!canSpeak) return; const vs=speechSynthesis.getVoices(); enVoice=vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null; }
 if(canSpeak){ pickVoice(); try{ speechSynthesis.addEventListener("voiceschanged",pickVoice); }catch(e){} }
 function say(text,btn){
+  if(window.csUnlockAudio) window.csUnlockAudio(false);
   if(!canSpeak) return;
   if(window.csSpeak){ document.querySelectorAll(".say.playing").forEach(x=>x.classList.remove("playing")); if(btn) btn.classList.add("playing"); window.csSpeak(text,{rate:.85,onend:()=>{ if(btn) btn.classList.remove("playing"); }}); return; }
   try{
@@ -3515,12 +3517,13 @@ bkRender();
     document.querySelectorAll("[data-mm]").forEach(b=>{ const on=b.dataset.mm===mode; b.setAttribute("aria-checked",on); b.setAttribute("aria-pressed",on); });
   }
   async function play(){
+    if(window.csUnlockAudio) window.csUnlockAudio(true);
     if(!ac && !setup()){ toast("Your browser can't play generated music"); return; }
     try{ await ac.resume(); }catch(e){}
     playing=true; nextTime=ac.currentTime+0.1; step=0;
     clearInterval(timer); timer=setInterval(tick,25); tick(); applyMix(); paint();
   }
-  function pause(){ playing=false; applyMix(); paint(); setTimeout(()=>{ if(!playing){ clearInterval(timer); timer=null; try{ ac.suspend(); }catch(e){} } },600); }
+  function pause(){ if(window.csReleaseAudio) window.csReleaseAudio(); playing=false; applyMix(); paint(); setTimeout(()=>{ if(!playing){ clearInterval(timer); timer=null; try{ ac.suspend(); }catch(e){} } },600); }
   playB.addEventListener("click",()=> playing?pause():play());
   document.getElementById("musicModes").addEventListener("click",e=>{ const b=e.target.closest("[data-mm]"); if(!b) return; mode=b.dataset.mm; LS.set("ncs-music-mode",mode); applyMix(); paint(); if(!playing) play(); });
   vol.addEventListener("input",()=>{ volume=+vol.value; LS.set("ncs-music-vol",volume); applyMix(); });
@@ -3712,6 +3715,9 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-iossound", quiet:true, date:"November 4, 2026", title:"Sound fix for iPhone 🔊", items:[
+    ["🔊","Sound fix for iPhone","music and the 🔊 buttons now work even when your iPhone is on silent.",null]
+  ]},
   {id:"2026-app", date:"November 2, 2026", title:"Practice more, and get the app 📲", items:[
     ["🔁","Words to review today","a new card on your Home page with 5 of your words that need practice. Tap <b>Practice these 5</b>.","notes"],
     ["🎤","Say it out loud","in <b>Practice</b>, say one of your words and see if the computer understands you.","quiz"],

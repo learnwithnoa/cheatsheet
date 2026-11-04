@@ -152,6 +152,7 @@
   /* Speak text reliably: waits a moment after cancelling (Chrome drops speech started right after cancel),
      un-pauses a stuck engine, and retries with the default voice if the chosen one stays silent. */
   function csSpeak(text, o) {
+    if (window.csUnlockAudio) window.csUnlockAudio(false);
     o = o || {};
     if (!canSpeak || !text) { o.onend && o.onend(); return false; }
     const synth = speechSynthesis, id = ++speakId;
@@ -230,6 +231,7 @@
   const fmt = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
   function tSave() { try { sessionStorage.setItem("cs-timer", JSON.stringify({ len: tLen, left: tLeft, end: tRun ? tEnd : 0 })); } catch (e) {} }
   function chime() {
+    if (window.csUnlockAudio) window.csUnlockAudio(false);
     try {
       const A = window.AudioContext || window.webkitAudioContext; const ac = new A(); const t0 = ac.currentTime;
       [[660, 0], [880, .35], [990, .7]].forEach(([f, d]) => { const o = ac.createOscillator(), g = ac.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0, t0 + d); g.gain.linearRampToValueAtTime(.18, t0 + d + .03); g.gain.exponentialRampToValueAtTime(.0001, t0 + d + 1.6); o.connect(g); g.connect(ac.destination); o.start(t0 + d); o.stop(t0 + d + 1.7); });
