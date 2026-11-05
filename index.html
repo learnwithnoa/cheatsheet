@@ -7,9 +7,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=8">
+<link rel="stylesheet" href="comfort.css?v=9">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=8" defer></script>
+<script src="comfort.js?v=9" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
@@ -36,7 +36,7 @@
   --mono:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   --shadow:0 1px 2px rgba(15,35,65,.06),0 6px 18px rgba(30,140,240,.08);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="unicorn"]):not([data-theme="sepia"]){
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="unicorn"]):not([data-theme="sepia"]):not([data-theme="midnight"]){
   --bg:#0A1424; --surface:#111E33; --surface-2:#0E1A2D; --line:#22385A;
   --ink:#E6EEF8; --muted:#9DB1CA;
   --royal:#8FB0FF; --bright:#5DB6FF; --sky:#16304F; --green:#5AD394; --green-soft:#123726; --red:#F08A82; --red-soft:#3A1B1A;
@@ -709,6 +709,53 @@ html.cs-calm .park-b svg{animation:none}
 @keyframes kdFall{to{transform:translateY(300px) rotate(var(--r));opacity:0}}
 .nb-err{background:color-mix(in srgb,#E5533D 12%,var(--surface));border-radius:10px;padding:8px 12px;font-size:14px;margin:6px 0}
 .w-ico.em-ico{display:inline-grid;place-items:center;box-sizing:border-box;width:18px;height:18px;padding:0;letter-spacing:0;font-size:10.5px;line-height:1;overflow:hidden}
+
+.theme-menu{position:fixed;z-index:80;min-width:170px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.25);padding:6px;display:flex;flex-direction:column;gap:2px}
+.theme-menu[hidden]{display:none}
+.theme-menu button{all:unset;cursor:pointer;padding:8px 10px;border-radius:9px;font:700 14px var(--body);color:var(--ink);display:flex;gap:8px;align-items:center}
+.theme-menu button:hover,.theme-menu button:focus-visible{background:var(--surface-2);outline:none}
+.theme-menu button[aria-checked="true"]{background:color-mix(in srgb,var(--green) 18%,var(--surface))}
+:root[data-theme="midnight"] .td-tag2{color:#F5C842}
+:root[data-theme="midnight"] .park{background:radial-gradient(ellipse 34% 30% at 50% 52%,#1E3A1E 0 98%,transparent 100%),linear-gradient(180deg,#05070D 0 14%,#0F1F10 14% 100%)}
+/* smarter words */
+.wcard .pos,.fc-def .pos,.imp-row .pos,.cn-sug .pos{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--royal);background:color-mix(in srgb,var(--royal) 12%,var(--surface));border-radius:6px;padding:1px 6px;vertical-align:2px;margin-left:4px}
+.wcard .wdef{font-size:14px;color:var(--muted);margin-top:2px}
+.fc-def{display:block;margin:6px 0;font-size:14.5px;color:var(--muted)}
+.ai-status{font-size:14px;background:color-mix(in srgb,var(--green) 10%,var(--surface));border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 12px}
+.imp-lede{margin:4px 0 10px;font-size:14.5px}
+.imp-sheet{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
+.imp-sheet summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--muted)}
+.imp-found{margin:12px 0 6px;font-size:14.5px}
+.imp-list{display:flex;flex-direction:column;gap:4px;max-height:320px;overflow:auto;border:1.5px solid var(--line);border-radius:12px;padding:6px}
+.imp-row{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:14.5px}
+.imp-row:hover{background:var(--surface-2)}
+.imp-row input{margin-top:3px;accent-color:var(--green);width:17px;height:17px;flex:none}
+.imp-row small{display:block;color:var(--muted);font-size:13px}
+.imp-row.dup{opacity:.55;cursor:default}
+.cn-sug{margin:12px 0 4px;border:1.5px solid color-mix(in srgb,var(--green) 45%,var(--line));background:color-mix(in srgb,var(--green) 7%,var(--surface));border-radius:14px;padding:10px 12px}
+.cn-sug-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.cn-sug-top .tip-x{position:static}
+.cu-dlg{width:min(560px,calc(100vw - 28px))}
+.cu-list{display:flex;flex-direction:column;gap:4px;max-height:42vh;overflow:auto}
+.cu-row{display:flex;gap:10px;align-items:flex-start;padding:6px 4px;border-bottom:1px dashed var(--line);font-size:14px;cursor:pointer}
+.cu-row input{margin-top:3px;accent-color:var(--green);width:17px;height:17px;flex:none}
+.cu-row del{color:var(--red);text-decoration:line-through}
+.cu-row ins{color:var(--green);text-decoration:none;font-weight:700}
+.cu-dlg h4{margin:14px 0 6px}
+/* beginner mode */
+.esb{display:none}
+html.cs-beginner .esb{display:block;font:600 .86em var(--body);color:var(--muted);font-style:normal;letter-spacing:0;text-transform:none;margin-top:3px}
+html.cs-beginner .esb.esb-in{font-size:11.5px;opacity:.85;margin-top:1px;line-height:1.2}
+html.cs-beginner label .esb.esb-in{display:inline;margin-left:6px}
+html.cs-beginner label .esb.esb-in::before{content:"· "}
+html.cs-beginner .tag .esb.esb-in,html.cs-beginner .td-tag2 .esb.esb-in{display:inline;margin-left:6px;font-size:10.5px}
+.lvl-chip{display:inline-block;vertical-align:middle;margin-left:10px;font:800 12px var(--mono);letter-spacing:.04em;padding:3px 8px;border-radius:8px;color:#fff;background:#3BA776;-webkit-text-fill-color:#fff}
+.lvl-a2{background:#2F8FD9}.lvl-b1{background:#8E5CD9}.lvl-b2{background:#D9527F}
+.nav-lvl{display:none}
+html.cs-beginner .nav-lvl{display:inline-block;margin-left:6px;font:800 9.5px var(--mono);padding:1px 5px;border-radius:5px;color:#fff;vertical-align:1px}
+.is-es{display:none}
+html.cs-beginner .is-es{display:inline-block;margin-top:8px;font:700 12.5px var(--body);color:var(--royal);background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer}
+.is-es-txt{margin-top:6px;font-size:14.5px;color:var(--ink);border-left:3px solid var(--green);padding-left:10px}
 </style>
 
 <header class="top">
@@ -910,6 +957,7 @@ html.cs-calm .park-b svg{animation:none}
     <div class="cn-top"><label for="freeNotes" class="cn-date" id="cnToday">Today</label><span class="count" id="freeSaved">Your draft is kept until you save it</span></div>
     <textarea id="freeNotes" placeholder="Write your notes for today's class: corrections, things to practice, questions for next class…"></textarea>
     <div class="note-actions"><button class="pill-btn pill-green" type="button" id="cnSave">Save note</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
+    <div id="cnSuggest" class="cn-sug" hidden aria-live="polite"></div>
     <p class="cn-warn dismissible when-out">Saved notes go to <b>My class notes</b>, sorted by date. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to keep them in your account. Until then, they're only saved in this browser.</p>
   </div>
   </div></div>
@@ -964,23 +1012,30 @@ html.cs-calm .park-b svg{animation:none}
 <section class="view" id="v-words" hidden>
   <h1>My <em>words</em></h1>
   <p class="lede">Every word you save, newest first. Practice them with flashcards or import a list you already have.</p>
-  <div class="note-actions" style="margin-bottom:14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">Import a list of words</button><button class="swap" type="button" data-go="quiz">Practice with flashcards →</button></div>
+  <div class="note-actions" style="margin-bottom:14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiFill" title="Fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap" type="button" id="aiClean" title="Fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" data-go="quiz">Practice with flashcards →</button></div>
+  <p class="ai-status" id="aiStatus" hidden aria-live="polite"></p>
   <div id="slotAwPage" class="page-slot"></div>
   <div class="card import-card" id="importCard" hidden>
-    <div class="qa-top"><h3>Import your words</h3><button class="qa-x" type="button" id="impClose" aria-label="Close import">×</button></div>
-    <ol class="imp-steps">
-      <li>Open the sheet or doc where you keep your words. <span class="es">1:1 students: the <b>My Word Bank</b> tab in your English Journey sheet.</span></li>
-      <li>Select the rows with your words (the English, Spanish and example columns) and copy them (Ctrl+C / ⌘C).</li>
-      <li>Paste them below (Ctrl+V / ⌘V) and press <b>Import words</b>.</li>
-    </ol>
+    <div class="qa-top"><h3>Add many words at once</h3><button class="qa-x" type="button" id="impClose" aria-label="Close">×</button></div>
+    <p class="imp-lede">Paste your words in <b>any format</b>: a list, a message, notes from class, a copy from a document… ✨ The AI finds the words, adds the Spanish and skips the ones you already have. You'll see the list before anything is added.</p>
     <label for="impText" class="sr">Paste your words</label>
-    <textarea id="impText" spellcheck="false" placeholder="Paste here. From a sheet, each row becomes one word.&#10;From a list, write one per line, like:&#10;figure out = entender, resolver&#10;run into = toparse con"></textarea>
+    <textarea id="impText" spellcheck="false" placeholder="Paste here. For example:&#10;figure out&#10;run into = toparse con&#10;Today I learned &quot;break the ice&quot; and &quot;call it a day&quot;"></textarea>
     <div class="note-actions">
-      <button class="pill-btn pill-green" type="button" id="impBtn">Import words</button>
+      <button class="pill-btn pill-green" type="button" id="impAI">✨ Find my words</button>
       <label class="swap file-btn" for="impFile">Or choose a file (.csv, .txt)</label>
       <input type="file" id="impFile" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values" class="sr">
     </div>
+    <div id="impPick" aria-live="polite"></div>
     <p class="imp-preview" id="impPreview" aria-live="polite"></p>
+    <details class="imp-sheet">
+      <summary>Copying from your English Journey sheet? You can also import it exactly as it is</summary>
+      <ol class="imp-steps">
+        <li>Open the sheet where you keep your words. <span class="es">1:1 students: the <b>My Word Bank</b> tab in your English Journey sheet.</span></li>
+        <li>Select the rows with your words (the English, Spanish and example columns) and copy them (Ctrl+C / ⌘C).</li>
+        <li>Paste them in the box above and press <b>Import exactly as pasted</b>. No AI, every row becomes one word.</li>
+      </ol>
+      <button class="pill-btn" type="button" id="impBtn">Import exactly as pasted</button>
+    </details>
   </div>
   <div class="card sheet-card" style="margin-bottom:18px">
     <div id="sheetEmpty">
@@ -1790,7 +1845,7 @@ html.cs-calm .park-b svg{animation:none}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=9" defer></script>
+<script src="buddy.js?v=10" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2189,7 +2244,7 @@ if(canSpeak){ pickVoice(); try{ speechSynthesis.addEventListener("voiceschanged"
 function say(text,btn){
   if(window.csUnlockAudio) window.csUnlockAudio(false);
   if(!canSpeak) return;
-  if(window.csSpeak){ document.querySelectorAll(".say.playing").forEach(x=>x.classList.remove("playing")); if(btn) btn.classList.add("playing"); window.csSpeak(text,{rate:.85,onend:()=>{ if(btn) btn.classList.remove("playing"); }}); return; }
+  if(window.csSpeak){ document.querySelectorAll(".say.playing").forEach(x=>x.classList.remove("playing")); if(btn) btn.classList.add("playing"); window.csSpeak(text,{rate:(window.csBeginnerOn&&window.csBeginnerOn())?.72:.85,onend:()=>{ if(btn) btn.classList.remove("playing"); }}); return; }
   try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=.85; if(enVoice) u.voice=enVoice;
@@ -2312,7 +2367,7 @@ function renderWords(){
   const list=sortWords(allWords().slice());
   if(typeof renderSelBar==="function") renderSelBar();
   const q=norm(wSearch.value.trim());
-  const shown=list.filter(x=>!q||[x.w,x.m,x.e,x.n].some(s=>norm(s||"").includes(q)));
+  const shown=list.filter(x=>!q||[x.w,x.m,x.e,x.n,x.def,x.pos].some(s=>norm(s||"").includes(q)));
   const newCount=words.filter(isPending).length + (showSamples()?SAMPLE.length:0);
   wCount.textContent= list.length? "· "+list.length : "";
   document.getElementById("wNavCount").textContent= words.length? words.length : "";
@@ -2334,7 +2389,7 @@ function renderWords(){
     const isNew = x.sample || isPending(x);
     const picked=wSel&&fcPick.includes(x.id);
     return '<article class="card wcard'+(wSel?' wsel':'')+(picked?' picked':'')+'"'+(wSel?' data-pick="'+x.id+'"':'')+'>'+(wSel?'<input type="checkbox" class="w-chk" aria-label="Choose '+esc(x.w)+'"'+(picked?' checked':'')+'>':sayBtn(x.w.replace(/\(.*?\)/g,"")))+
-      '<div><div class="w">'+esc(x.w)+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
+      '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
       '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+(isNew?'<span class="badge new">not copied yet</span>':'')+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
   }).join("");
@@ -2644,7 +2699,7 @@ function renderFlash(){
   if(fcIdx>=fcOrder.length) fcIdx=0;
   const x=list.find(y=>y.id===fcOrder[fcIdx]);
   const en='<b>'+esc(x.w)+'</b>', es='<b>'+esc(x.m||"(no translation yet)")+'</b>';
-  const ex=(x.e?'<i>'+esc(x.e)+'</i>':'')+(x.n?'<small class="fc-note">📝 '+esc(x.n)+'</small>':'');
+  const ex=(x.def?'<small class="fc-def">'+(x.pos?'<span class="pos">'+esc(x.pos)+'</span> ':'')+esc(x.def)+'</small>':'')+(x.e?'<i>'+esc(x.e)+'</i>':'')+(x.n?'<small class="fc-note">📝 '+esc(x.n)+'</small>':'');
   fcFront.innerHTML= fcSpanishFirst? es : en;
   fcBack.innerHTML= (fcSpanishFirst? en : es) + ex;
   fcBack.hidden=!fcFlipped; fcHint.textContent= fcFlipped? "Did you know it?" : "Tap to flip";
@@ -2703,7 +2758,7 @@ fcShuffle();
   const dayTxt=t=>{ const d=new Date(t); return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()]+" "+MON[d.getMonth()]+" "+d.getDate(); };
   const notesText=list=>list.map(n=>"["+dayTxt(n.t)+"]\n"+String(n.text).trim()).join("\n\n");
   function prompt(label,list){
-    return "You are helping a Spanish-speaking student of English (level B1 to B2) review their own class notes from their English coach, Noa. "+
+    return "You are helping a Spanish-speaking student of English "+((window.csBeginnerOn&&window.csBeginnerOn())?"who is a beginner (level A1 to A2; write in very simple English and add the Spanish meaning in brackets after hard words)":"(level B1 to B2)")+" review their own class notes from their English coach, Noa. "+
     "Below are the notes from "+label+". Write a short, clean study summary in English, speaking directly to the student (\"you\"). Use simple, friendly English. "+
     "Use exactly these sections, in this order, and skip a section if the notes have nothing for it:\n"+
     "## Main topics\n- (one short line per topic)\n## Corrections to remember\n- wrong → right (very short reason)\n## New words & expressions\n- expression — meaning in Spanish\n## Practice next\n- one or two small, practical suggestions\n\n"+
@@ -2799,7 +2854,7 @@ fcShuffle();
   go.addEventListener("click",async()=>{
     const s=ta.value.trim(); if(!cur) return; if(s.split(/\s+/).length<3){ toast("Write a full sentence with “"+cur.w+"”"); ta.focus(); return; }
     go.disabled=true; go.textContent="Checking…"; out.hidden=false; out.innerHTML='<p class="muted" style="margin:0">✨ Reading your sentence…</p>';
-    const p="You are a kind, encouraging English coach for a Spanish-speaking learner (level B1 to B2). The student is practicing the word or expression \""+cur.w+"\""+(cur.m?" (meaning: "+cur.m+")":"")+".\n"+
+    const p="You are a kind, encouraging English coach for a Spanish-speaking learner "+((window.csBeginnerOn&&window.csBeginnerOn())?"who is a BEGINNER (level A1 to A2): use very simple, short English, and end the feedback with one short sentence in Spanish that repeats the main point":"(level B1 to B2)")+". The student is practicing the word or expression \""+cur.w+"\""+(cur.m?" (meaning: "+cur.m+")":"")+".\n"+
       "Their sentence: \""+s+"\"\n\n"+
       "Check two things: 1) is \""+cur.w+"\" used with the right meaning and in a natural way, and 2) is the sentence grammatically correct? Focus on what matters for communication; don't nitpick tiny style choices.\n"+
       "Reply with ONLY this JSON, no other text:\n{\"result\":\"great\" or \"almost\" or \"try_again\",\"feedback\":\"one or two short, friendly sentences in simple English, speaking to the student as you. Say what's good, and explain the main fix if there is one\",\"better\":\"a corrected or more natural version of THEIR sentence (keep their idea), or an empty string if it's already great\"}\n"+
@@ -3032,7 +3087,7 @@ function impSummary(){
   if(!impText.value.trim()){ impPrev.textContent=""; return list; }
   const have=new Set(words.map(x=>norm(x.w))); const seen=new Set();
   let fresh=0, dup=0; list.forEach(x=>{ const k=norm(x.w); if(have.has(k)||seen.has(k)) dup++; else { fresh++; seen.add(k); } });
-  impPrev.innerHTML= list.length ? "Found <b>"+fresh+"</b> new "+(fresh===1?"word":"words")+(dup?" · "+dup+" already in your list (skipped)":"")+"." : "Nothing to import yet. Check that each word is on its own line.";
+  impPrev.innerHTML= list.length ? "Exactly as pasted: <b>"+fresh+"</b> new "+(fresh===1?"word":"words")+(dup?" · "+dup+" already in your list (skipped)":"")+"." : "Nothing to import yet. Check that each word is on its own line.";
   return list;
 }
 function toggleImport(open){ impCard.hidden=!open; impOpen.setAttribute("aria-expanded",open?"true":"false"); if(open) setTimeout(()=>impText.focus(),20); }
@@ -3047,13 +3102,292 @@ document.getElementById("impBtn").addEventListener("click",()=>{
   const list=parseImport(impText.value);
   if(!list.length){ impPrev.textContent="Paste your words first."; impText.focus(); return; }
   const have=new Set(words.map(x=>norm(x.w))); let n=0; const base=Date.now();
-  list.forEach((x,i)=>{ const k=norm(x.w); if(have.has(k)) return; have.add(k); words.push({id:(base+i).toString(36)+Math.random().toString(36).slice(2,6),w:x.w,m:x.m,e:x.e,t:base-(list.length-i),imp:true}); n++; });
+  const newIds=[]; list.forEach((x,i)=>{ const k=norm(x.w); if(have.has(k)) return; have.add(k); const id=(base+i).toString(36)+Math.random().toString(36).slice(2,6); newIds.push(id); words.push({id,w:x.w,m:x.m,e:x.e,t:base-(list.length-i),imp:true}); n++; }); setTimeout(()=>{ if(window.queueEnrich) window.queueEnrich(newIds); },50);
   const ok=LS.set("ncs-words",words);
   impText.value=""; renderWords(); fcShuffle(); renderFlash();
   impPrev.innerHTML= n ? "✓ Imported <b>"+n+"</b> "+(n===1?"word":"words")+(ok?"":" (but this browser blocks storage, so they won't be kept)")+'. <button class="foot-link" type="button" data-go="quiz">Practice them with flashcards →</button>' : "All of those words were already in your list.";
   toast(n? "Imported "+n+(n===1?" word":" words") : "Nothing new to import");
 });
 
+
+/* ---------- level: beginner mode (more Spanish, simpler examples) ---------- */
+const csBeginner=()=>LS.get("ncs-level","normal")==="beginner";
+function applyLevel(){ document.documentElement.classList.toggle("cs-beginner",csBeginner()); }
+applyLevel();
+if(csBeginner()){ try{ fcSpanishFirst=true; }catch(e){} }
+window.csSetLevel=function(on){
+  LS.set("ncs-level",on?"beginner":"normal"); applyLevel();
+  try{ fcSpanishFirst=!!on; fcFlipped=false; renderFlash(); }catch(e){}
+  toast(on?"🌱 Modo principiante activado · Beginner mode on":"Beginner mode off");
+};
+
+/* ---------- AI helpers ---------- */
+const aiOK=()=>typeof window.__csSample==="function";
+function aiJSON(t){
+  t=String(t||"").replace(/```(?:json)?/gi,"");
+  const a=t.indexOf("["), o=t.indexOf("{");
+  const s= a>=0&&(o<0||a<o) ? t.slice(a,t.lastIndexOf("]")+1) : t.slice(o,t.lastIndexOf("}")+1);
+  try{ return JSON.parse(s); }catch(e){ return null; }
+}
+const POS_LIST=["noun","verb","adjective","adverb","phrasal verb","idiom","expression","collocation","preposition","conjunction","pronoun","interjection"];
+const exampleRule=()=>csBeginner()
+  ? "Example sentences: very short and simple, A1 to A2 level, 4 to 8 words, everyday topics."
+  : "Example sentences: natural and useful, B1 to B2 level, 8 to 15 words.";
+const cleanPos=p=>{ p=String(p||"").toLowerCase().trim(); return POS_LIST.includes(p)?p:(p.includes("phrasal")?"phrasal verb":p.slice(0,20)); };
+function saveWordsNow(){ LS.set("ncs-words",words); try{ renderWords(); fcShuffle(); renderFlash(); }catch(e){} }
+
+/* ---------- fill in the details of each word (part of speech, meaning, translation, example) ---------- */
+async function enrichBatch(list){
+  const items=list.map(x=>({id:x.id,word:x.w,spanish:x.m||"",example:x.e||""}));
+  const p="You help a Spanish-speaking learner of English (from Chile) build their vocabulary list. For EACH item return:\n"+
+    "- pos: the part of speech, one of: "+POS_LIST.join(", ")+"\n"+
+    "- def: a very short, simple English meaning (max 10 words, no quotes)\n"+
+    "- es: a natural Spanish translation ONLY if \"spanish\" is empty, otherwise an empty string\n"+
+    "- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n"+
+    "Use American English. Never change the student's word. Reply with ONLY a JSON array like [{\"id\":\"...\",\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\"}].\n\nITEMS:\n"+JSON.stringify(items);
+  const r=await window.__csSample(p);
+  const arr=aiJSON(r&&r.text); if(!Array.isArray(arr)) throw new Error("The AI's answer didn't make sense");
+  let n=0;
+  arr.forEach(a=>{ const x=words.find(w=>w.id===a.id); if(!x) return;
+    if(a.pos&&!x.pos) x.pos=cleanPos(a.pos);
+    if(a.def&&!x.def) x.def=String(a.def).trim().slice(0,140);
+    if(!x.m&&a.es) x.m=String(a.es).trim().slice(0,140);
+    if(!x.e&&a.ex){ x.e=String(a.ex).trim().slice(0,220); x.aiEx=1; }
+    x.ai=1; n++; });
+  saveWordsNow();
+  return n;
+}
+const needsInfo=x=>x&&x.w&&!x.sample&&(!x.pos||!x.def||!x.m||!x.e)&&!x.ai;
+let enrQ=new Set(), enrT=null, enrBusy=false;
+function queueEnrich(ids){ ids.forEach(i=>enrQ.add(i)); clearTimeout(enrT); enrT=setTimeout(runEnrich,2200); }
+async function runEnrich(){
+  if(enrBusy) return; if(!aiOK()){ return; }
+  const list=[...enrQ].map(i=>words.find(w=>w.id===i)).filter(needsInfo); enrQ.clear(); if(!list.length) return;
+  enrBusy=true;
+  try{ for(let i=0;i<list.length;i+=20) await enrichBatch(list.slice(i,i+20)); }catch(e){ console.warn("word details",e); }
+  enrBusy=false;
+}
+window.addEventListener("cs-sample-ready",()=>{ if(enrQ.size) runEnrich(); });
+/* every word added from now on gets its details */
+const _addWordPlain=addWord;
+addWord=function(){ const before=words.length, r=_addWordPlain.apply(this,arguments); if(words.length>before) queueEnrich([words[words.length-1].id]); return r; };
+
+/* "Complete my words": fill in everything that's missing, in small batches */
+async function completeAll(btn){
+  const list=words.filter(needsInfo);
+  const st=document.getElementById("aiStatus");
+  if(!list.length){ st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
+  if(!aiOK()){ st.hidden=false; st.textContent="The AI is still loading. Try again in a few seconds."; return; }
+  btn.disabled=true; st.hidden=false; let done=0;
+  try{
+    for(let i=0;i<list.length;i+=20){ st.textContent="✨ Filling in your words… "+Math.min(i,list.length)+" of "+list.length; done+=await enrichBatch(list.slice(i,i+20)); }
+    st.textContent="✓ Done! "+done+(done===1?" word":" words")+" now have a translation, meaning, word type and example. Anything you wrote yourself stayed the same.";
+  }catch(e){ console.warn(e); st.textContent="Stopped after "+done+" words: the AI didn't answer. Try again in a minute (it continues where it stopped)."; }
+  btn.disabled=false;
+}
+
+/* ---------- add many words: paste anything ---------- */
+let impFound=[];
+async function aiImport(){
+  const txt=(impText.value||"").trim(), pick=document.getElementById("impPick");
+  if(!txt){ impPrev.textContent="Paste your words first."; impText.focus(); return; }
+  if(!aiOK()){ impPrev.innerHTML="The AI isn't ready yet. Use <b>Import exactly as pasted</b> below, or try again in a few seconds."; return; }
+  const b=document.getElementById("impAI"); b.disabled=true; b.textContent="✨ Reading your list…"; pick.innerHTML=""; impPrev.textContent="";
+  const p="A Spanish-speaking learner of English pasted this text to add words to their vocabulary list. It can be in any format: a list, a sheet, a chat message, notes.\n"+
+    "Find every English word or expression they want to learn (single words, phrasal verbs, idioms, expressions). Rules:\n"+
+    "- w: the English item, lowercase unless it's a name. Fix obvious typos. If they only wrote a Spanish word, translate it to English.\n"+
+    "- m: the Spanish meaning: use theirs if they wrote one, otherwise translate.\n"+
+    "- e: their example sentence if they wrote one, otherwise an empty string.\n"+
+    "- Skip greetings, chit-chat and headings. Don't add items that aren't in the text.\n"+
+    "Reply with ONLY a JSON array like [{\"w\":\"...\",\"m\":\"...\",\"e\":\"...\"}].\n\nTEXT:\n"+txt.slice(0,8000);
+  let arr=null;
+  try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); }
+  b.disabled=false; b.textContent="✨ Find my words";
+  if(!Array.isArray(arr)){ impPrev.innerHTML="Couldn't read that right now. Try again, or use <b>Import exactly as pasted</b> below."; return; }
+  const have=new Set(words.map(x=>norm(x.w))), seen=new Set();
+  impFound=arr.filter(x=>x&&x.w&&String(x.w).trim()).map(x=>{ const w=String(x.w).trim().slice(0,120), k=norm(w); const dup=have.has(k)||seen.has(k); seen.add(k); return {w,m:String(x.m||"").trim().slice(0,140),e:String(x.e||"").trim().slice(0,220),dup}; });
+  if(!impFound.length){ impPrev.textContent="I couldn't find any English words in that. Check what you pasted."; return; }
+  renderImpPick();
+}
+function renderImpPick(){
+  const pick=document.getElementById("impPick"), fresh=impFound.filter(x=>!x.dup).length;
+  pick.innerHTML='<p class="imp-found">Found <b>'+impFound.length+'</b> '+(impFound.length===1?"word":"words")+(fresh<impFound.length?" · "+(impFound.length-fresh)+" already in your list":"")+'. Untick anything you don\'t want:</p>'+
+    '<div class="imp-list">'+impFound.map((x,i)=>'<label class="imp-row'+(x.dup?" dup":"")+'"><input type="checkbox" data-imp="'+i+'"'+(x.dup?" disabled":" checked")+'><span><b>'+esc(x.w)+'</b>'+(x.m?' · '+esc(x.m):'')+(x.e?'<small>'+esc(x.e)+'</small>':'')+(x.dup?'<small>Already in your list</small>':'')+'</span></label>').join("")+'</div>'+
+    '<div class="note-actions"><button class="pill-btn pill-green" type="button" id="impAdd">Add '+fresh+' '+(fresh===1?"word":"words")+'</button><button class="swap" type="button" id="impCancel">Cancel</button></div>';
+}
+document.getElementById("impAI").addEventListener("click",aiImport);
+document.getElementById("impPick").addEventListener("change",()=>{ const n=[...document.querySelectorAll("#impPick [data-imp]:checked")].length, b=document.getElementById("impAdd"); if(b) b.textContent="Add "+n+" "+(n===1?"word":"words"); });
+document.getElementById("impPick").addEventListener("click",e=>{
+  if(e.target.closest("#impCancel")){ document.getElementById("impPick").innerHTML=""; impFound=[]; return; }
+  if(!e.target.closest("#impAdd")) return;
+  const idx=[...document.querySelectorAll("#impPick [data-imp]:checked")].map(c=>+c.dataset.imp);
+  const have=new Set(words.map(x=>norm(x.w))), base=Date.now(), ids=[];
+  idx.forEach((i,k)=>{ const x=impFound[i]; if(!x||have.has(norm(x.w))) return; have.add(norm(x.w)); const id=(base+k).toString(36)+Math.random().toString(36).slice(2,6); words.push({id,w:x.w,m:x.m,e:x.e,t:base-(idx.length-k),imp:true}); ids.push(id); });
+  saveWordsNow(); impText.value=""; impFound=[]; document.getElementById("impPick").innerHTML="";
+  impPrev.innerHTML= ids.length? "✓ Added <b>"+ids.length+"</b> "+(ids.length===1?"word":"words")+". ✨ Their meanings and examples are being filled in. <button class=\"foot-link\" type=\"button\" data-go=\"quiz\">Practice them →</button>" : "Nothing new to add.";
+  toast(ids.length?"Added "+ids.length+(ids.length===1?" word":" words"):"Nothing new to add");
+  if(ids.length) queueEnrich(ids);
+});
+
+/* ---------- words found in class notes ---------- */
+window.csSuggestWords=async function(text){
+  const box=document.getElementById("cnSuggest"); if(!box||!aiOK()||!text||text.trim().length<12) return;
+  box.hidden=false; box.innerHTML='<p class="muted" style="margin:0">✨ Looking for new words in your note…</p>';
+  const p="These are class notes written by a Spanish-speaking learner of English (they can mix English and Spanish).\n"+
+    "List the useful English vocabulary in them worth saving for study: words, phrasal verbs, idioms, collocations and expressions the student is learning or was corrected on.\n"+
+    "Skip very basic words (like house, go, good, days of the week), names, and grammar labels (like 'present perfect'). Maximum 12 items. For each item:\n"+
+    "w (the English word or expression, lowercase unless it's a name), m (Spanish meaning), pos (one of: "+POS_LIST.join(", ")+"), def (very short English meaning, max 10 words), e (an example from the notes if there is one, otherwise a new one. "+exampleRule()+")\n"+
+    "Reply with ONLY a JSON array. If there's nothing worth saving, reply [].\n\nNOTES:\n"+text.slice(0,6000);
+  let arr=null;
+  try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); }
+  if(!Array.isArray(arr)){ box.hidden=true; return; }
+  const have=new Set(words.map(x=>norm(x.w)));
+  const list=arr.filter(x=>x&&x.w&&!have.has(norm(x.w))).slice(0,12);
+  if(!list.length){ box.hidden=true; return; }
+  box._list=list;
+  box.innerHTML='<div class="cn-sug-top"><b>✨ I found '+list.length+' new '+(list.length===1?"word":"words")+' in your note</b><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'+
+    '<div class="imp-list">'+list.map((x,i)=>'<label class="imp-row"><input type="checkbox" data-sugi="'+i+'" checked><span><b>'+esc(x.w)+'</b>'+(x.pos?' <span class="pos">'+esc(cleanPos(x.pos))+'</span>':'')+(x.m?' · '+esc(x.m):'')+(x.def?'<small>'+esc(x.def)+'</small>':'')+'</span></label>').join("")+'</div>'+
+    '<div class="note-actions"><button class="pill-btn pill-green" type="button" data-sug="add">Add to my words</button><button class="swap" type="button" data-sug="x">No thanks</button></div>';
+};
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-sug]"); if(!b) return;
+  const box=document.getElementById("cnSuggest");
+  if(b.dataset.sug==="x"){ box.hidden=true; box.innerHTML=""; return; }
+  const idx=[...box.querySelectorAll("[data-sugi]:checked")].map(c=>+c.dataset.sugi), base=Date.now(), have=new Set(words.map(x=>norm(x.w))); let n=0;
+  idx.forEach((i,k)=>{ const x=box._list[i]; if(!x||have.has(norm(x.w))) return; have.add(norm(x.w));
+    words.push({id:(base+k).toString(36)+Math.random().toString(36).slice(2,6),w:String(x.w).trim().slice(0,120),m:String(x.m||"").trim().slice(0,140),e:String(x.e||"").trim().slice(0,220),pos:cleanPos(x.pos),def:String(x.def||"").trim().slice(0,140),t:base+k,ai:1,fromNote:1}); n++; });
+  saveWordsNow(); box.hidden=true; box.innerHTML="";
+  toast(n?"Added "+n+(n===1?" word":" words")+" to My words":"Nothing new to add");
+});
+
+/* ---------- clean up my words ---------- */
+const dupKey=w=>norm(String(w||"").toLowerCase().replace(/\(.*?\)/g,"").replace(/^to\s+/,"").replace(/[^\p{L}\p{N}' ]+/gu," ").replace(/\s+/g," ").trim());
+async function cleanUp(btn){
+  const list=words.filter(x=>x&&x.w&&!x.sample);
+  if(!list.length){ toast("You don't have any words yet"); return; }
+  const dlg=csDialog('<h3 style="margin-top:0">🧹 Clean up my words</h3><div id="cuBody"><p>Checking your <b>'+list.length+'</b> words for spelling, punctuation, capital letters, missing translations and repeated words…</p><p class="muted" id="cuProg">Starting…</p></div>',{cls:"cu-dlg"});
+  const body=dlg.el.querySelector("#cuBody"), prog=()=>dlg.el.querySelector("#cuProg");
+  // 1) repeated words (done here, no AI needed)
+  const groups={}; list.forEach(x=>{ const k=dupKey(x.w); if(k) (groups[k]=groups[k]||[]).push(x); });
+  const dups=Object.values(groups).filter(g=>g.length>1).map(g=>{ const score=x=>["m","e","n","pos","def"].filter(f=>x[f]).length; const keep=g.slice().sort((a,b)=>score(b)-score(a)||(a.t||0)-(b.t||0))[0]; return {keep,drop:g.filter(x=>x!==keep)}; });
+  // 2) fixes from the AI, 40 words at a time
+  const fixes=[]; let failed=false;
+  if(aiOK()){
+    for(let i=0;i<list.length;i+=40){
+      if(!document.body.contains(dlg.el)) return;
+      const p2=prog(); if(p2) p2.textContent="✨ Checking words "+(i+1)+"–"+Math.min(i+40,list.length)+" of "+list.length+"…";
+      const chunk=list.slice(i,i+40).map(x=>({id:x.id,w:x.w,m:x.m||"",e:x.e||""}));
+      const p="You are checking a Spanish-speaking learner's English vocabulary list. For each item: w = English word/expression, m = Spanish meaning, e = example sentence.\n"+
+        "Find ONLY real problems and suggest fixes:\n- spelling mistakes (English or Spanish)\n- capital letters: w lowercase unless it's a name or 'I'; example sentences start with a capital letter\n- punctuation: example sentences end with . ? or !; no stray symbols\n- a wrong Spanish meaning\n- grammar mistakes in the example\n- missing m: add the Spanish meaning\n- missing e: add a short example. "+exampleRule()+"\n"+
+        "Do NOT rewrite things that are already correct, and don't change the meaning. Reply with ONLY a JSON array of changes like [{\"id\":\"...\",\"field\":\"w\" or \"m\" or \"e\",\"to\":\"the corrected text\",\"why\":\"very short reason, max 6 words\"}]. If nothing needs fixing, reply [].\n\nWORDS:\n"+JSON.stringify(chunk);
+      try{ const r=await window.__csSample(p); const arr=aiJSON(r&&r.text); if(Array.isArray(arr)) arr.forEach(c=>{ const x=words.find(w=>w.id===c.id); if(!x||!["w","m","e"].includes(c.field)) return; const from=String(x[c.field]||""), to=String(c.to||"").trim(); if(!to||to===from) return; fixes.push({id:c.id,field:c.field,from,to:to.slice(0,220),why:String(c.why||"").slice(0,60)}); }); else failed=true; }
+      catch(e){ console.warn(e); failed=true; }
+    }
+  } else failed=true;
+  if(!document.body.contains(dlg.el)) return;
+  if(!fixes.length&&!dups.length){ body.innerHTML='<p>✨ Your word list looks great. Nothing to fix!</p>'+(failed?'<p class="muted">(The AI couldn\'t check everything right now. Try again later for spelling checks.)</p>':''); return; }
+  const fieldName={w:"word",m:"Spanish",e:"example"};
+  const wName=id=>{ const x=words.find(w=>w.id===id); return x?x.w:""; };
+  body.innerHTML='<p>Here\'s what I\'d change. <b>Nothing changes until you press Apply.</b> Untick anything you want to keep as it is.</p>'+
+    (fixes.length?'<h4>✏️ Fixes ('+fixes.length+')</h4><div class="cu-list">'+fixes.map((f,i)=>'<label class="cu-row"><input type="checkbox" data-fx="'+i+'" checked><span><b>'+esc(wName(f.id))+'</b> · '+fieldName[f.field]+(f.why?' <small>('+esc(f.why)+')</small>':'')+'<br>'+(f.from?'<del>'+esc(f.from)+'</del> → ':'<i>missing</i> → ')+'<ins>'+esc(f.to)+'</ins></span></label>').join("")+'</div>':'')+
+    (dups.length?'<h4>🗂 Repeated words ('+dups.length+')</h4><div class="cu-list">'+dups.map((d,i)=>'<label class="cu-row"><input type="checkbox" data-dp="'+i+'" checked><span><b>'+esc(d.keep.w)+'</b> is in your list '+(d.drop.length+1)+' times. Keep one and combine their details.</span></label>').join("")+'</div>':'')+
+    (failed?'<p class="muted" style="font-size:13px">The AI couldn\'t check every word right now, so some spelling fixes may be missing.</p>':'')+
+    '<div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" type="button" id="cuApply">Apply changes</button><button class="swap" type="button" id="cuNo">Cancel</button></div>';
+  body.querySelector("#cuNo").addEventListener("click",dlg.close);
+  body.querySelector("#cuApply").addEventListener("click",()=>{
+    try{ sessionStorage.setItem("cs-words-undo",JSON.stringify(words)); }catch(e){}
+    let nf=0, nd=0;
+    body.querySelectorAll("[data-fx]:checked").forEach(c=>{ const f=fixes[+c.dataset.fx], x=words.find(w=>w.id===f.id); if(x){ x[f.field]=f.to; if(f.field==="w"){ delete x.pos; delete x.def; delete x.ai; } nf++; } });
+    const drop=new Set();
+    body.querySelectorAll("[data-dp]:checked").forEach(c=>{ const d=dups[+c.dataset.dp]; d.drop.forEach(o=>{ ["m","e","n","pos","def"].forEach(f=>{ if(!d.keep[f]&&o[f]) d.keep[f]=o[f]; }); drop.add(o.id); }); nd+=d.drop.length; });
+    words=words.filter(x=>!drop.has(x.id));
+    saveWordsNow(); dlg.close();
+    const st=document.getElementById("aiStatus"); st.hidden=false;
+    st.innerHTML="✓ Cleaned up: "+nf+(nf===1?" fix":" fixes")+(nd?" · "+nd+" repeated "+(nd===1?"word":"words")+" removed":"")+'. <button class="foot-link" type="button" id="cuUndo">Undo</button>';
+    toast("Your words are cleaned up ✨");
+  });
+}
+document.addEventListener("click",e=>{
+  if(e.target.closest("#aiFill")) completeAll(e.target.closest("#aiFill"));
+  else if(e.target.closest("#aiClean")) cleanUp(e.target.closest("#aiClean"));
+  else if(e.target.closest("#cuUndo")){ try{ const u=JSON.parse(sessionStorage.getItem("cs-words-undo")||"null"); if(Array.isArray(u)){ words=u; saveWordsNow(); sessionStorage.removeItem("cs-words-undo"); document.getElementById("aiStatus").textContent="↩ Undone. Your words are back the way they were."; } }catch(err){} }
+});
+
+window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
+/* ---------- beginner mode: small Spanish helper lines, level badges, Spanish "In short" ---------- */
+(function(){
+  // [selector, Spanish text, where]  where: "after" = new line under it, "in" = inside (buttons/labels)
+  const ES=[
+    ["#v-notes .lede","Tu palabra del día, tus apuntes de clase y tus palabras nuevas, todo en un solo lugar.","after"],
+    ["#v-words .lede","Todas las palabras que guardas. Practícalas con tarjetas o agrega una lista que ya tengas.","after"],
+    ["#v-quiz .lede","Repasa tus palabras con tarjetas: dales vuelta y marca si te la sabías. Las que no te sabes vuelven más seguido.","after"],
+    ["#v-classnotes .lede","Tus apuntes de cada clase, ordenados por fecha.","after"],
+    ["#v-notebook .lede","Tus apuntes agrupados por semana, con un resumen corto de cada semana.","after"],
+    ["#v-translate .lede","Traduce palabras y frases entre español e inglés.","after"],
+    ["#v-park .lede","Las mascotas de todos. Toca una para mandarle cariño (+2 de amistad).","after"],
+    ['label[for="nWord"]',"Palabra o expresión en inglés","in"],
+    ['label[for="nMeaning"]',"Traducción al español","in"],
+    ['label[for="nExample"]',"Oración de ejemplo","in"],
+    ['label[for="nNote"]',"Notas","in"],
+    ["#cnSave","Guardar nota","in"],
+    ["#twSave","Guardar en mis palabras","in"],
+    ["#fcKnew","¡Me la sabía!","in"],
+    ["#fcMiss","No me la sabía","in"],
+    ["#fcNext","Saltar","in"],
+    ["#snCheck","Revisar mi oración","in"],
+    ["#spMic","Toca y dilo","in"],
+    ["#rvGo","Practicar estas 5","in"],
+    ["#impOpen","Agregar muchas palabras","in"],
+    ["#aiFill","Completar mis palabras","in"],
+    ["#aiClean","Ordenar mis palabras","in"],
+    ["#ttLove","Mandar cariño","in"],
+    [".today-word .td-tag","Palabra del día","in"],
+    [".today-thought .td-tag2","Pensamiento del día","in"],
+    ["#rvBox .td-tag","Palabras para repasar hoy","in"]
+  ];
+  const H2=[["Use it in a sentence","Úsala en una oración: escribe una oración con tu palabra y recibe comentarios."],["Say it out loud","Dila en voz alta para practicar tu pronunciación."],["Irregular verbs","Verbos irregulares"]];
+  function addHints(){
+    ES.forEach(([sel,txt,where])=>{ document.querySelectorAll(sel).forEach(el=>{ if(el.dataset.esb) return; el.dataset.esb="1"; const s=document.createElement("span"); s.className="esb"+(where==="in"?" esb-in":""); s.lang="es"; s.textContent=txt; if(where==="in") el.appendChild(s); else el.insertAdjacentElement("afterend",s); }); });
+    document.querySelectorAll("#v-quiz h2").forEach(h=>{ const m=H2.find(([en])=>h.textContent.trim().startsWith(en)); if(!m||h.dataset.esb) return; h.dataset.esb="1"; const s=document.createElement("span"); s.className="esb"; s.lang="es"; s.textContent=m[1]; h.insertAdjacentElement("afterend",s); });
+  }
+  addHints();
+  // level of each lesson page (shown on the page; in the menu only in beginner mode)
+  const LV={basics:"A1",be:"A1",time:"A1",place:"A1",pronouns:"A1",frequency:"A1",numbers:"A1",tenses:"A2",verbs:"A2",mistakes:"A2",stuck:"A2",conversation:"A2",modals:"A2",compare:"A2",usedto:"A2",domake:"A2",tofor:"A2",quantity:"A2",pronunciation:"A2",false:"A2",summary:"B1",opinions:"B1",linking:"B1",conditionals:"B1",perfect:"B1",gerund:"B1",phrasal:"B1",passive:"B1",email:"B1",reported:"B2"};
+  Object.keys(LV).forEach(id=>{
+    const v=document.getElementById("v-"+id), h=v&&v.querySelector("h1");
+    if(h&&!h.querySelector(".lvl-chip")){ const c=document.createElement("span"); c.className="lvl-chip lvl-"+LV[id].toLowerCase(); c.textContent=LV[id]; c.title="Level "+LV[id]; h.appendChild(c); }
+    document.querySelectorAll('nav.side .navbtn[data-go="'+id+'"]').forEach(b=>{ if(b.querySelector(".nav-lvl")) return; const c=document.createElement("span"); c.className="nav-lvl lvl-"+LV[id].toLowerCase(); c.setAttribute("aria-hidden","true"); c.textContent=LV[id]; b.appendChild(c); });
+  });
+  // "In short" boxes: Spanish version on request (beginner mode)
+  let isCache=LS.get("cs-is-es",{})||{};
+  document.querySelectorAll(".in-short").forEach(b=>{
+    if(b.querySelector(".is-es")) return;
+    const btn=document.createElement("button"); btn.type="button"; btn.className="is-es"; btn.textContent="Ver en español";
+    const out=document.createElement("div"); out.className="is-es-txt"; out.lang="es"; out.hidden=true;
+    b.appendChild(btn); b.appendChild(out);
+    btn.addEventListener("click",async()=>{
+      if(!out.hidden){ out.hidden=true; btn.textContent="Ver en español"; return; }
+      const en=(b.querySelector("div")||b).textContent.trim(), k=String(en.length)+en.slice(0,40);
+      if(isCache[k]){ out.textContent=isCache[k]; out.hidden=false; btn.textContent="Ocultar español"; return; }
+      if(typeof window.__csSample!=="function"){ toast("La traducción no está disponible ahora. Inténtalo en un momento."); return; }
+      btn.textContent="Traduciendo…"; btn.disabled=true;
+      try{ const r=await window.__csSample("Translate this short English grammar explanation into natural, simple Latin American Spanish (Chile) for a beginner student. Keep English examples in English. Reply with ONLY the translation.\n\n"+en); const t=(r&&r.text||"").trim(); if(t){ isCache[k]=t; LS.set("cs-is-es",isCache); out.textContent=t; out.hidden=false; btn.textContent="Ocultar español"; } else btn.textContent="Ver en español"; }
+      catch(e){ btn.textContent="Ver en español"; toast("No se pudo traducir ahora. Inténtalo de nuevo."); }
+      btn.disabled=false;
+    });
+  });
+  // Settings: beginner mode switch
+  function inject(){
+    const p=document.getElementById("csPanel"); if(!p||document.getElementById("csLevelSec")) return;
+    const first=p.querySelector(".cs-sec"); if(!first) return;
+    const sec=document.createElement("div"); sec.className="cs-sec"; sec.id="csLevelSec";
+    sec.innerHTML='<h4>Level</h4><label class="cs-tog"><input type="checkbox" id="csBeginnerT"><span><b>🌱 Beginner mode · Modo principiante</b><small>Más ayuda en español, ejemplos más simples, tarjetas que empiezan en español y una voz más lenta. More Spanish help, simpler examples and a slower voice.</small></span></label>';
+    p.insertBefore(sec,first);
+    const t=document.getElementById("csBeginnerT"); t.checked=csBeginner();
+    t.addEventListener("change",()=>window.csSetLevel(t.checked));
+  }
+  new MutationObserver(inject).observe(document.body,{childList:true,subtree:true}); inject();
+})();
 
 /* ---------------- delete all words ---------------- */
 const delBar=document.getElementById("delAllBar");
@@ -3159,6 +3493,7 @@ document.getElementById("cnSave").addEventListener("click",()=>{
   const text=freeNotes.value.trim();
   if(!text){ toast("Write something first"); freeNotes.focus(); return; }
   cnotes.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),text,t:Date.now()});
+  setTimeout(()=>{ if(window.csSuggestWords) window.csSuggestWords(text); },400);
   const ok=LS.set("ncs-classnotes",cnotes);
   freeNotes.value=""; LS.set("ncs-freenotes",""); freeSaved.textContent="Your draft is kept until you save it";
   renderCN(); toast(ok?"Note saved to My class notes":"Saved for now, but this browser blocks storage");
@@ -3211,24 +3546,35 @@ renderWords();
 
 /* ---------------- theme ---------------- */
 const themeBtn=document.getElementById("themeBtn");
-const THEMES=["dark","light","sepia","unicorn"], TNEXT={dark:["☀","Light","light mode"],light:["📖","Sepia","sepia mode"],sepia:["🦄","Unicorn","unicorn mode"],unicorn:["☾","Dark","dark mode"]};
+const THEMES=["dark","midnight","light","sepia","unicorn"], TINFO={dark:["☾","Dark"],midnight:["🌑","Midnight"],light:["☀","Light"],sepia:["📖","Sepia"],unicorn:["🦄","Unicorn"]};
 function paintThemeBtn(){
   const cur=THEMES.includes(document.documentElement.getAttribute("data-theme"))?document.documentElement.getAttribute("data-theme"):"dark";
-  const n=TNEXT[cur];
-  document.getElementById("themeIcon").textContent=n[0];
-  document.getElementById("themeTxt").textContent=n[1];
-  themeBtn.setAttribute("aria-label","Switch to "+n[2]);
-  themeBtn.title="Switch to "+n[2];
+  document.getElementById("themeIcon").textContent=TINFO[cur][0];
+  document.getElementById("themeTxt").textContent=TINFO[cur][1];
+  themeBtn.setAttribute("aria-label","Theme: "+TINFO[cur][1]+". Change theme");
+  themeBtn.title="Change theme";
+  themeBtn.setAttribute("aria-haspopup","menu");
+  document.querySelectorAll("#themeMenu [data-th]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.th===cur)));
 }
-themeBtn.addEventListener("click",()=>{
-  const cur=document.documentElement.getAttribute("data-theme");
-  const next=THEMES[(THEMES.indexOf(cur)+1)%THEMES.length]||"light";
-  if(next==="unicorn") setTimeout(()=>toast("🦄 Unicorn mode!"),50);
-  document.documentElement.setAttribute("data-theme",next);
-  chosenTheme=next;
-  try{localStorage.setItem("ncs-theme",next);}catch(e){}
-  paintThemeBtn();
-});
+(function(){
+  const m=document.createElement("div"); m.id="themeMenu"; m.className="theme-menu"; m.setAttribute("role","menu"); m.hidden=true;
+  m.innerHTML=THEMES.map(t=>'<button type="button" role="menuitemradio" data-th="'+t+'" aria-checked="false"><span aria-hidden="true">'+TINFO[t][0]+'</span> '+TINFO[t][1]+'</button>').join("");
+  document.body.appendChild(m);
+  const close=()=>{ m.hidden=true; themeBtn.setAttribute("aria-expanded","false"); };
+  themeBtn.addEventListener("click",e=>{
+    e.stopPropagation();
+    if(!m.hidden){ close(); return; }
+    paintThemeBtn();
+    const r=themeBtn.getBoundingClientRect(); m.style.top=(r.bottom+6)+"px"; m.style.left=Math.max(8,Math.min(window.innerWidth-200,r.left))+"px";
+    m.hidden=false; themeBtn.setAttribute("aria-expanded","true");
+    const on=m.querySelector('[aria-checked="true"]')||m.querySelector("button"); on.focus();
+  });
+  m.addEventListener("click",e=>{ const b=e.target.closest("[data-th]"); if(!b) return; window.csSetTheme(b.dataset.th); close(); themeBtn.focus(); });
+  m.addEventListener("keydown",e=>{ const bs=[...m.querySelectorAll("button")], i=bs.indexOf(document.activeElement);
+    if(e.key==="Escape"){ close(); themeBtn.focus(); } else if(e.key==="ArrowDown"){ e.preventDefault(); bs[(i+1)%bs.length].focus(); } else if(e.key==="ArrowUp"){ e.preventDefault(); bs[(i-1+bs.length)%bs.length].focus(); } });
+  document.addEventListener("click",e=>{ if(!m.hidden&&!e.target.closest("#themeMenu")) close(); });
+  window.addEventListener("resize",close);
+})();
 let chosenTheme="dark";
 window.csSetTheme=t=>{ chosenTheme=t; try{localStorage.setItem("ncs-theme",t);}catch(e){} document.documentElement.setAttribute("data-theme",t); paintThemeBtn(); if(t==="unicorn") toast("🦄 Unicorn mode!"); };
 try{chosenTheme=localStorage.getItem("ncs-theme")||"dark"; if(chosenTheme==="soft") chosenTheme="sepia";}catch(e){}
@@ -3288,7 +3634,7 @@ go(start);
 
 /* ---------------- starred sections ---------------- */
 let stars=LS.get("ncs-stars",[]);
-const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const sp=[...b.querySelectorAll("span")].filter(x=>!x.getAttribute("aria-hidden")&&!x.classList.contains("cn-count")); return (sp[0]||b).textContent.trim(); };
+const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl').forEach(x=>x.remove()); return c.textContent.trim(); };
 document.querySelectorAll(".view").forEach(v=>{
   const id=v.id.slice(2); if(id==="notes"||id==="classnotes"||id==="notebook"||id==="feedback"||id==="words"||id==="backup"||id==="changelog") return;
   const h=v.querySelector("h1"); if(!h) return;
@@ -3715,6 +4061,14 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-smartwords", date:"November 5, 2026", title:"Smarter words 🧠", items:[
+    ["✨","Every word explained","new words now get their type (noun, verb, phrasal verb…), a simple meaning and an example sentence, all by themselves. Tap <b>✨ Complete my words</b> to do it for the ones you already have.","words"],
+    ["📋","Paste anything","<b>+ Add many words</b> now understands any list: a message, notes, a document. You check the words before they're added.","words"],
+    ["📝","Words from your notes","when you save a class note, the Cheat Sheet suggests the new words and expressions in it.","notes"],
+    ["🧹","Clean up my words","fixes spelling, punctuation and capital letters, fills in what's missing and finds repeated words. Nothing changes until you say yes.","words"],
+    ["🌱","Beginner mode","in <b>Settings</b>: more Spanish help, simpler examples and a slower voice. ¡Ideal para empezar!",null],
+    ["🌑","Midnight & a new friend","a pure black <b>Midnight</b> theme, and Kero the frog 🐸 joined the study buddies.",null]
+  ]},
   {id:"2026-iossound", quiet:true, date:"November 4, 2026", title:"Sound fix for iPhone 🔊", items:[
     ["🔊","Sound fix for iPhone","music and the 🔊 buttons now work even when your iPhone is on silent.",null]
   ]},

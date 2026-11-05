@@ -59,7 +59,7 @@ cat:{name:"Cat",sub:"curious and cozy",
     "..oooooo"],
  colors:[["Orange",{}],["Gray",{b:"#A9AEB8",d:"#7E8490",l:"#E4E7EC"}],["Black",{b:"#34343A",d:"#1F1F24",l:"#6E6E78",o:"#121216"}],["White",{b:"#F4F2EE",d:"#D9D5CE",l:"#FFFFFF"}],["Cream",{b:"#EBD3A6",d:"#CFAE76",l:"#FAF0DC"}]]},
 llama:{name:"Llama",sub:"calm and fluffy",
- p:{o:"#6B5A48",b:"#F3E6D0",s:"#E4D2B2",l:"#FFF8EC",k:"#1E1712",w:"#FFFFFF",n:"#4A3726",i:"#F4A9B4",p:"#F08A9A",r:"#E5533D",O:"#F59A2E",y:"#F5C842",g:"#3BA776",u:"#4FA3E8",v:"#9B6FE0"},
+ p:{o:"#6B5A48",b:"#F3E6D0",s:"#E4D2B2",l:"#FFF8EC",k:"#1E1712",w:"#FFFFFF",n:"#4A3726",i:"#F4A9B4",p:"#F08A9A",r:"#E5533D",y:"#F5B800",g:"#3BA776","1":"#E5533D","2":"#E5533D","3":"#F5B800","4":"#3BA776","5":"#3BA776","6":"#F5B800","7":"#F5B800","8":"#E5533D","9":"#E5533D"},
  r:[".........o...o..",
     "........oio.oio.",
     "........oiollio.",
@@ -71,12 +71,12 @@ llama:{name:"Llama",sub:"calm and fluffy",
     ".........obboo..",
     ".........obbo...",
     "..oooooooobbo...",
-    "oobrOyygguvvbo..",
-    ".obrOyygguvvbo..",
+    "oob123456789bo..",
+    ".ob123456789bo..",
     ".ooooooooooooo..",
     "..ob......ob....",
     "..oo......oo...."],
- colors:[["Cream",{}],["Chocolate",{b:"#9A6A45",s:"#7C5333",l:"#B98A62"}],["Gray",{b:"#B9B6B0",s:"#9A968F",l:"#D8D5CF"}],["Lilac",{b:"#D3C0EC",s:"#B49BD6",l:"#EADFF7"}],["Black",{b:"#3E3A38",s:"#2A2725",l:"#6A6460",o:"#141210"}]]},
+ colors:[["Cream",{}],["Chocolate",{b:"#9A6A45",s:"#7C5333",l:"#B98A62"}],["Gray",{b:"#B9B6B0",s:"#9A968F",l:"#D8D5CF"}],["Lilac",{b:"#D3C0EC",s:"#B49BD6",l:"#EADFF7"}],["Black",{b:"#3E3A38",s:"#2A2725",l:"#6A6460",o:"#141210"}],["Rainbow",{"1":"#E5533D","2":"#F59A2E","3":"#F5C842","4":"#F5C842","5":"#3BA776","6":"#3BA776","7":"#4FA3E8","8":"#9B6FE0","9":"#9B6FE0",sw:"linear-gradient(135deg,#E5533D,#F5C842,#3BA776,#4FA3E8,#9B6FE0)"}]]},
 unicorn:{name:"Unicorn",sub:"sparkly, obviously",
  over:{3:"....ry..........",4:"...ryg..........",5:"..rygu..........",6:".ryg............",7:".ygu............",8:".guv............",9:"..uv............",10:"..v............."},
  p:{o:"#5B4A6B",b:"#FFFFFF",s:"#ECE6F5",k:"#1E1712",w:"#FFFFFF",H:"#FBE7A8",n:"#F7A8C4",p:"#F7A8C4",h:"#F5C842",r:"#F2716B",y:"#F9D25C",g:"#6FD39A",u:"#6FB6F2",v:"#B48CF0"},
@@ -172,7 +172,26 @@ axolotl:{name:"Axolotl",sub:"always smiling",
     "..oblbbb",
     "..oblbbb",
     "..oo.ooo"],
- colors:[["Pink",{}],["Lemon",{b:"#FFD978",s:"#F5C04A",g:"#E8963A",o:"#7A5A20"}],["Lavender",{b:"#D9C6F7",s:"#C2A8F0",g:"#9B6FE0",o:"#4E3A7A"}],["Wild (dark)",{b:"#5E6B5A",s:"#4A5547",g:"#C9A64E",o:"#25301F",l:"#8A9A84"}],["White",{b:"#FAF6F2",s:"#EDE4DC",g:"#F07D9A"}]]}
+ colors:[["Pink",{}],["Lemon",{b:"#FFD978",s:"#F5C04A",g:"#E8963A",o:"#7A5A20"}],["Lavender",{b:"#D9C6F7",s:"#C2A8F0",g:"#9B6FE0",o:"#4E3A7A"}],["Wild (dark)",{b:"#5E6B5A",s:"#4A5547",g:"#C9A64E",o:"#25301F",l:"#8A9A84"}],["White",{b:"#FAF6F2",s:"#EDE4DC",g:"#F07D9A"}]]},
+frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
+ p:{o:"#2F5A1E",b:"#6CC24A",d:"#4E9A33",l:"#D8F0B0",k:"#1E1712",w:"#FFFFFF",p:"#F08A9A"},
+ r:["........",
+    "........",
+    "...oooo.",
+    "..owwwwo",
+    "..owkkwo",
+    ".obwkwwb",
+    ".obbbbbb",
+    "obpbbbbb",
+    "obbkbbbb",
+    "obbbkkkk",
+    ".obbbbbb",
+    "obdollll",
+    "obdollll",
+    "obbdolll",
+    ".oddoooo",
+    "oooo...."],
+ colors:[["Green",{}],["Lime",{b:"#9BE04A",d:"#6FB52A",l:"#EEF9C8",o:"#3E6A12"}],["Blue",{b:"#4FA3E8",d:"#2F7CC4",l:"#CFE8FB",o:"#1E3F66"}],["Pink",{b:"#F59AC0",d:"#D9709C",l:"#FDE0EC",o:"#7A2F52"}],["Purple",{b:"#A98BE8",d:"#7E5CC9",l:"#E8DDFB",o:"#3E2A6E"}]]}
 };
 
 /* ---------- study buddy: pixel pet that keeps you company ---------- */
@@ -195,9 +214,10 @@ axolotl:{name:"Axolotl",sub:"always smiling",
     chicken:  { hat: [7.5, 2], eyes: [5, [4.5, 10.5]], neck: [7.5, 9], keep: "c" },
     pudu:     { hat: [7.5, 2], eyes: [6, [4.5, 10.5]], neck: [7.5, 11] },
     capybara: { hat: [7.5, 3], eyes: [6, [4, 11]], neck: [7.5, 12] },
-    axolotl:  { hat: [7.5, 2], eyes: [6, [4.5, 10.5]], neck: [7.5, 11] }
+    axolotl:  { hat: [7.5, 2], eyes: [6, [4.5, 10.5]], neck: [7.5, 11] },
+    frog:     { hat: [7.5, 1], eyes: [4, [4.5, 10.5]], neck: [7.5, 10] }
   };
-  const ORDER = ["max", "miki", "cat", "llama", "unicorn", "chicken", "pudu", "capybara", "axolotl"];
+  const ORDER = ["max", "miki", "cat", "llama", "unicorn", "chicken", "pudu", "capybara", "axolotl", "frog"];
 
   /* accessories: slot, unlocked at N saved words (w) or N learned words (l) */
   const AP = { r: "#E5533D", R: "#A8321F", y: "#F5C842", Y: "#D9A520", w: "#FFFFFF", k: "#1E1712", K: "#4A4A55", g: "#3BA776", G: "#2A7D54", b: "#3B6FD9", p: "#F37BA5", P: "#D9527F", v: "#8E5CD9", V: "#6B3FB5", u: "#6FB6F2", o: "#F5A623", c: "#F6E7CF", h: "#E8C987", H: "#B8924A", n: "#F28C28", N: "#C96A12" };
@@ -412,7 +432,11 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 @keyframes bdHopS{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
 .bd-stage .bd-fx{font-size:22px}
 html.cs-calm .bd-stage .bd-stg-pet{animation:none}
-.bd-sw button.locked{opacity:.45;font-size:11px;line-height:1;cursor:not-allowed}
+.bd-sw button.locked{opacity:.55;font-size:11px;line-height:1;cursor:pointer}
+.bd-sw button.pv,.bd-chip.pv{outline:2.5px dashed var(--ink,#222);outline-offset:2px;opacity:1}
+.bd-chip.locked{opacity:.6}
+.bd-pv{margin:10px 0 -4px;font-size:13.5px;background:color-mix(in srgb,#F5B800 16%,var(--surface,#fff));border:1.5px solid color-mix(in srgb,#F5B800 50%,var(--line,#ddd));border-radius:12px;padding:7px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bd-pv .bd-b{margin-left:auto;padding:4px 10px}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer}
 .bd-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .bd-name input{font:800 17px var(--body,sans-serif);color:var(--ink,#222);background:transparent;border:1.5px dashed var(--line,#ddd);border-radius:10px;padding:5px 9px;width:12ch;min-width:0}
@@ -585,7 +609,13 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     refreshPanel(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.m === "pet" ? '[data-m="pet"]' : null, ["💛", "🩷", "💛"]);
     say(Math.random() < .35 ? "" : chatLine(), menuActs(), 6500);
   }
-  function paintStagePet(blink) { const g = document.getElementById("bdStgPet"); if (g && !modal.hidden) g.innerHTML = rects(drawPet({ blink }), 10, 0); }
+  function pvOpts(extra) {
+    const o = Object.assign({ wear: { head: S.head, face: S.face, neck: S.neck } }, extra || {});
+    if (pv && pv.c != null) o.pal = palIdx(animal(), pv.c);
+    if (pv && pv.slot) { if (pv.slot === "room") o.room = pv.item; else o.wear = Object.assign({}, o.wear, { [pv.slot]: pv.item }); }
+    return o;
+  }
+  function paintStagePet(blink) { const g = document.getElementById("bdStgPet"); if (g && !modal.hidden && mode === "main") g.innerHTML = rects(drawPet(pvOpts({ blink })), 10, 0); }
   function stageReact(em) {
     const st = document.getElementById("bdStage"); if (!st || modal.hidden) return;
     st.classList.remove("hop"); void st.offsetWidth; st.classList.add("hop"); setTimeout(() => st.classList.remove("hop"), 1000);
@@ -621,34 +651,42 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   });
 
   /* ---------- panel ---------- */
-  let mode = "main", draft = null, returnFocus = null;
+  let mode = "main", draft = null, returnFocus = null, pv = null;
+  const pvAnimal = () => (mode === "adopt" ? draft.a : animal());
+  const palIdx = (a, c) => Object.assign({}, SP[a].p, (SP[a].colors[c | 0] || SP[a].colors[0])[1]);
+  function pvBanner() {
+    if (!pv) return "";
+    const a = pvAnimal();
+    const what = pv.c != null ? `<b>${esc(SP[a].colors[pv.c][0])}</b> · unlocks at ${COLOR_AT[pv.c]} words` : (() => { const it = byId[pv.item]; return `<b>${esc(it.name)}</b> · unlocks at ${it.w != null ? it.w + " words" : it.l + " learned words"}`; })();
+    return `<div class="bd-pv" role="status">👀 Preview: ${what} <button class="bd-b" type="button" data-m="pvoff">Back to my buddy</button></div>`;
+  }
   function openModal(m) {
-    mode = m || "main"; returnFocus = document.activeElement;
+    mode = m || "main"; returnFocus = document.activeElement; pv = null;
     draft = mode === "adopt" ? { a: S.a && SP[S.a] ? S.a : "max", c: S.c | 0, n: S.n || "" } : null;
     renderModal(); back.hidden = false; modal.hidden = false;
     setTimeout(() => { const f = modal.querySelector(mode === "adopt" ? ".bd-animal[aria-pressed=true]" : "#bdClose"); if (f) f.focus(); }, 30);
   }
-  function closeModal() { modal.hidden = true; back.hidden = true; if (returnFocus && returnFocus.focus) try { returnFocus.focus(); } catch (e) {} }
+  function closeModal() { pv = null; modal.hidden = true; back.hidden = true; if (returnFocus && returnFocus.focus) try { returnFocus.focus(); } catch (e) {} }
   back.addEventListener("click", closeModal);
   modal.addEventListener("keydown", e => {
     if (e.key === "Escape") { e.preventDefault(); closeModal(); return; }
     if (e.key === "Tab") { const f = [...modal.querySelectorAll("button:not([disabled]),input,[tabindex='0']")].filter(x => x.offsetParent); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
   });
   function animalGrid(sel, col) {
-    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: id === sel ? Object.assign({}, SP[id].p, (SP[id].colors[col | 0] || SP[id].colors[0])[1]) : SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>`;
+    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: id === sel ? Object.assign({}, SP[id].p, (SP[id].colors[col | 0] || SP[id].colors[0])[1]) : SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${SP[id].species ? `<small style="display:block;font-size:10px;color:var(--muted,#777);font-weight:600">${esc(SP[id].species)}</small>` : ""}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>`;
   }
-  const COLOR_AT = [0, 0, 10, 20, 35];
+  const COLOR_AT = [0, 0, 10, 20, 35, 50];
   const colorOpen = i => counts().words >= (COLOR_AT[i] || 0);
   function swatches(id, sel) {
     const d = SP[id], next = d.colors.findIndex((x, i) => !colorOpen(i));
-    return `<div class="bd-sw" role="group" aria-label="Choose a color">${d.colors.map(([n, p], i) => { const open = colorOpen(i); return `<button type="button" data-col="${i}" aria-pressed="${i === sel}" aria-label="${esc(n)}${open ? "" : ", unlocks at " + COLOR_AT[i] + " words"}" title="${esc(n)}${open ? "" : " · unlocks at " + COLOR_AT[i] + " words"}" ${open ? "" : 'aria-disabled="true" class="locked"'} style="background:${id === "unicorn" ? (p.b || p.r || d.p.r) : (p.b || d.p.b)}">${open ? "" : "🔒"}</button>`; }).join("")}<span>${esc((d.colors[sel] || d.colors[0])[0])}${next > 0 ? ` · next color at ${COLOR_AT[next]} words` : ""}</span></div>`;
+    return `<div class="bd-sw" role="group" aria-label="Choose a color">${d.colors.map(([n, p], i) => { const open = colorOpen(i); return `<button type="button" data-col="${i}" aria-pressed="${i === sel}" aria-label="${esc(n)}${open ? "" : ", unlocks at " + COLOR_AT[i] + " words"}" title="${esc(n)}${open ? "" : " · unlocks at " + COLOR_AT[i] + " words"}" ${open ? "" : 'aria-disabled="true"'} class="${open ? "" : "locked"}${pv && pv.c === i ? " pv" : ""}" style="background:${p.sw || (id === "unicorn" ? (p.b || p.r || d.p.r) : (p.b || d.p.b))}">${open ? "" : "🔒"}</button>`; }).join("")}<span>${esc((d.colors[sel] || d.colors[0])[0])}${next > 0 ? ` · next color at ${COLOR_AT[next]} words` : ""}</span></div>`;
   }
   function renderModal() {
     if (mode === "adopt") {
       const d = draft, pal = Object.assign({}, SP[d.a].p, (SP[d.a].colors[d.c] || [0, {}])[1]);
       modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">Adopt a study buddy 🐾</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
         <p class="bd-small" style="margin-top:8px">A little friend who keeps you company while you study. Feed it treats you earn by saving words and practicing. It never gets sick or sad if you're away, it just naps.</p>
-        <div class="bd-stage">${stageSVG({ a: d.a, pal, wear: {}, room: null, plain: true })}</div>
+        ${pvBanner()}<div class="bd-stage">${stageSVG({ a: d.a, pal: pv && pv.c != null ? palIdx(d.a, pv.c) : pal, wear: {}, room: null, plain: true })}</div>
         <h4>Choose your buddy</h4>${animalGrid(d.a, d.c)}${swatches(d.a, d.c)}
         <h4>Give it a name</h4><div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" placeholder="${esc(SP[d.a].name)}" value="${esc(d.n)}" aria-label="Your buddy's name" autocomplete="off"></div>
         <div class="bd-foot"><button class="bd-link" type="button" data-m="nothanks">No thanks</button><button class="bd-b go" type="button" data-m="adopt">Adopt ${esc(d.n.trim() || SP[d.a].name)}!</button></div>`;
@@ -661,12 +699,12 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const seen = new Set(S.seen || []);
     const chip = (it, slot) => {
       const open = isOpen(it), on = S[slot] === it.id;
-      return `<button class="bd-chip" type="button" data-wear="${slot}" data-item="${it.id}" aria-pressed="${on}" ${open ? "" : "disabled"} title="${open ? esc(it.name) : "Unlocks at " + (it.w != null ? it.w + " words" : it.l + " learned words")}">${open ? it.ico : "🔒"} ${esc(it.name)}${open ? (seen.has(it.id) ? "" : ' <span class="bd-new">NEW</span>') : ` <small>· ${it.w != null ? it.w : it.l}</small>`}</button>`;
+      return `<button type="button" data-wear="${slot}" data-item="${it.id}" aria-pressed="${on}" ${open ? "" : 'aria-disabled="true" data-locked="1"'} class="bd-chip${open ? "" : " locked"}${pv && pv.item === it.id ? " pv" : ""}" title="${open ? esc(it.name) : "Tap to preview · unlocks at " + (it.w != null ? it.w + " words" : it.l + " learned words")}">${open ? it.ico : "🔒"} ${esc(it.name)}${open ? (seen.has(it.id) ? "" : ' <span class="bd-new">NEW</span>') : ` <small>· ${it.w != null ? it.w : it.l}</small>`}</button>`;
     };
     const slotRow = (slot, label) => `<div style="margin-bottom:10px"><div class="bd-small" style="margin:0 0 5px;font-weight:700">${label}</div><div class="bd-row"><button class="bd-chip" type="button" data-wear="${slot}" data-item="" aria-pressed="${!S[slot]}">${slot === "room" ? "🌱 Garden" : "None"}</button>${ITEMS.filter(i => i.slot === slot).map(i => chip(i, slot === "room" ? "room" : slot)).join("")}</div></div>`;
     const legend = isOpen(byId.legend);
     modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}${level() >= 10 ? "💛 " : ""}Your study buddy</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
-      <div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}" id="bdStage" title="Tap to pet">${stageSVG({ wear })}</div>
+      ${pvBanner()}<div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}" id="bdStage" title="Tap to pet">${stageSVG(pvOpts())}</div>
       <div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" value="${esc(nameOf())}" aria-label="Your buddy's name" autocomplete="off"><span class="bd-treats" title="Treats">🍪 ${S.t | 0} / ${MAXT}</span></div>
       <div class="bd-row" style="margin-top:10px"><button class="bd-b go" type="button" data-m="feed">🍪 Feed</button><button class="bd-b" type="button" data-m="pet">🤚 Pet</button></div>
       <p class="bd-small">Earn treats: <b>+1</b> for each new word you save, <b>+3</b> for each flashcard round you finish (up to ${MAXT}). Your buddy eats up to ${FEED_PER_DAY} treats a day.</p>
@@ -693,9 +731,11 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const pick = e.target.closest("[data-pick]"), col = e.target.closest("[data-col]"), m = e.target.closest("[data-m]"), w = e.target.closest("[data-wear]");
     if (mode === "adopt") {
       const nin = $("bdNameIn"); if (nin) draft.n = nin.value;
-      if (pick) { draft.a = pick.dataset.pick; draft.c = 0; renderModal(); modal.querySelector(`[data-pick="${draft.a}"]`).focus(); return; }
-      if (col && !colorOpen(+col.dataset.col)) { say("🔒 This color unlocks at " + COLOR_AT[+col.dataset.col] + " saved words.", "", 3000); return; }
-      if (col) { draft.c = +col.dataset.col; renderModal(); modal.querySelector(`[data-col="${draft.c}"]`).focus(); return; }
+      if (pick) { pv = null; draft.a = pick.dataset.pick; draft.c = 0; renderModal(); modal.querySelector(`[data-pick="${draft.a}"]`).focus(); return; }
+      if (m && m.dataset.m === "pvoff") { pv = null; renderModal(); return; }
+      if (col && !colorOpen(+col.dataset.col)) { pv = { c: +col.dataset.col }; renderModal(); const f = modal.querySelector(`[data-col="${pv.c}"]`); if (f) f.focus(); return; }
+      if (pick) pv = null;
+      if (col) { pv = null; draft.c = +col.dataset.col; renderModal(); modal.querySelector(`[data-col="${draft.c}"]`).focus(); return; }
       if (m && m.dataset.m === "adopt") {
         favKey = ""; S.on = true; S.hi = today(); S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
         if (S.t == null) S.t = START_T; if (S.mw == null) S.mw = counts().words; S.min = false; S.seen = ITEMS.filter(isOpen).map(i => i.id);
@@ -707,10 +747,13 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       if (m && m.dataset.m === "nothanks") { S.on = false; save(); closeModal(); visible(); updateToggle(); toastMsg("No problem. You can adopt a buddy anytime in Settings."); return; }
       return;
     }
-    if (pick) { S.a = pick.dataset.pick; S.c = 0; save(); renderModal(); paintPet(); modal.querySelector(`[data-pick="${S.a}"]`).focus(); return; }
-    if (col && !colorOpen(+col.dataset.col)) { toastMsg("🔒 This color unlocks at " + COLOR_AT[+col.dataset.col] + " saved words."); return; }
+    if (pick) { pv = null; S.a = pick.dataset.pick; S.c = 0; save(); renderModal(); paintPet(); modal.querySelector(`[data-pick="${S.a}"]`).focus(); return; }
+    if (m && m.dataset.m === "pvoff") { pv = null; renderModal(); return; }
+    if (col && !colorOpen(+col.dataset.col)) { pv = { c: +col.dataset.col }; renderModal(); const f = modal.querySelector(`[data-col="${pv.c}"]`); if (f) f.focus(); return; }
+    if (w && w.dataset.locked) { pv = { slot: w.dataset.wear, item: w.dataset.item }; renderModal(); const f = modal.querySelector(`[data-wear="${pv.slot}"][data-item="${pv.item}"]`); if (f) f.focus(); return; }
+    if (pick || col || w) pv = null;
     if (col) { S.c = +col.dataset.col; save(); renderModal(); paintPet(); modal.querySelector(`[data-col="${S.c}"]`).focus(); return; }
-    if (w && !w.disabled) { const slot = w.dataset.wear; S[slot] = w.dataset.item || null; save(); renderModal(); paintPet(); const f = modal.querySelector(`[data-wear="${slot}"][data-item="${w.dataset.item}"]`); if (f) f.focus(); return; }
+    if (w) { const slot = w.dataset.wear; S[slot] = w.dataset.item || null; save(); renderModal(); paintPet(); const f = modal.querySelector(`[data-wear="${slot}"][data-item="${w.dataset.item}"]`); if (f) f.focus(); return; }
     if (e.target.closest("#bdStage")) { petIt(); return; }
     if (m) {
       const a = m.dataset.m;

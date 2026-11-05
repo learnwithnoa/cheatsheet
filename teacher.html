@@ -104,11 +104,11 @@ td.act{white-space:nowrap;text-align:right}
 .seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 </style>
-<link rel="stylesheet" href="comfort.css?v=8">
+<link rel="stylesheet" href="comfort.css?v=9">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=8" defer></script>
+<script src="comfort.js?v=9" defer></script>
 </head>
 <body>
 <header><div class="top">
@@ -150,7 +150,7 @@ td.act{white-space:nowrap;text-align:right}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=6"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=10"></script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
@@ -208,6 +208,7 @@ async function load() {
         sheet: parse(data["ncs-sheet"], ""),
         buddy: parse(data["ncs-buddy"], null),
         loveLog: parse(data["ncs-ttlove-log"], []),
+        level: parse(data["ncs-level"], "normal"),
         loveLast: parse(data["ncs-ttlove"], ""),
         role: roles[d.id] || {}
       });
@@ -386,6 +387,7 @@ function renderDetail(s) {
   $("detail").innerHTML = `
     <h2 style="margin-top:0">${esc(s.name)}</h2>
     <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
+    <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:10px;cursor:pointer"><input type="checkbox" id="lvlBeg" ${s.level === "beginner" ? "checked" : ""}> 🌱 Beginner mode (more Spanish, simpler examples, slower voice)</label>
     <div class="row" style="margin-top:10px"><button type="button" class="kd-btn" data-kd="msg-${esc(s.uid)}">💌 Send ${esc(s.name.split(" ")[0])} a message</button></div>
     ${kdOpen === "msg-" + s.uid ? composer("msg-" + s.uid, "Hi " + s.name.split(" ")[0] + "! ") : ""}
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
@@ -405,6 +407,11 @@ function renderDetail(s) {
     ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
     ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
   const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });
+  const lb = $("lvlBeg"); if (lb) lb.onchange = async () => {
+    const v = lb.checked ? "beginner" : "normal";
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-level"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.level = v; toast(lb.checked ? "🌱 Beginner mode on for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Beginner mode off"); }
+    catch (e) { console.warn(e); lb.checked = !lb.checked; toast("Couldn't save. Try again."); }
+  };
   const cp = $("cpW");
   if (cp) cp.onclick = async () => {
     const clean = v => String(v || "").replace(/[\t\n\r]+/g, " ").trim();

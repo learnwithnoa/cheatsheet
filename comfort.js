@@ -41,7 +41,7 @@
   }
 
   /* ---------- theme ---------- */
-  const THEME_LIST = [["dark", "☾", "Dark"], ["light", "☀", "Light"], ["sepia", "📖", "Sepia"], ["unicorn", "🦄", "Unicorn"]];
+  const THEME_LIST = [["dark", "☾", "Dark"], ["midnight", "🌑", "Midnight"], ["light", "☀", "Light"], ["sepia", "📖", "Sepia"], ["unicorn", "🦄", "Unicorn"]];
   function curTheme() { return root.getAttribute("data-theme") || "dark"; }
   function setTheme(t) {
     if (typeof window.csSetTheme === "function") window.csSetTheme(t);
