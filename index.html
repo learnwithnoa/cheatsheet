@@ -797,6 +797,31 @@ html.cs-beginner .is-es{display:inline-block;margin-top:8px;font:700 12.5px var(
 html.cs-calm .park-b{transition:none}
 @media (prefers-reduced-motion:reduce){.park-b{transition:none}}
 @media (max-width:640px){.park-b svg{width:calc(50px * var(--z,1));height:calc(55px * var(--z,1))}.park-b{min-width:56px}}
+
+#copyNew{display:none!important}
+.navgroup{--ng:var(--muted)}
+.ng-start{--ng:#3BB273}.ng-practice{--ng:#F2994A}.ng-speaking{--ng:#E86BA0}.ng-grammar{--ng:#4F9DF0}.ng-words{--ng:#A57CF0}.ng-work{--ng:#2BB5B0}.ng-help{--ng:#9AA3B2}
+:root[data-theme="light"] .ng-start,:root[data-theme="sepia"] .ng-start{--ng:#1F8A55}
+:root[data-theme="light"] .ng-practice,:root[data-theme="sepia"] .ng-practice{--ng:#C46A12}
+:root[data-theme="light"] .ng-speaking,:root[data-theme="sepia"] .ng-speaking{--ng:#C2417A}
+:root[data-theme="light"] .ng-grammar,:root[data-theme="sepia"] .ng-grammar{--ng:#1F6FD0}
+:root[data-theme="light"] .ng-words,:root[data-theme="sepia"] .ng-words{--ng:#7A4FD0}
+:root[data-theme="light"] .ng-work,:root[data-theme="sepia"] .ng-work{--ng:#138A86}
+nav.side .navgroup h4{color:var(--ng)}
+@media (min-width:901px){
+  nav.side .navgroup .navbtn{position:relative;padding-left:22px}
+  nav.side .navgroup .navbtn::before{content:"";position:absolute;left:9px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--ng)}
+  nav.side .navgroup:not([class*="ng-"]) .navbtn{padding-left:revert-layer}
+  nav.side .navgroup:not([class*="ng-"]) .navbtn::before{display:none}
+  nav.side .navgroup .navbtn:hover{background:color-mix(in srgb,var(--ng) 14%,transparent)}
+  nav.side .navgroup .navbtn[aria-current="true"]{background:color-mix(in srgb,var(--ng) 30%,var(--surface));color:var(--ink);box-shadow:inset 3px 0 0 var(--ng);text-shadow:none}
+}
+@media (max-width:900px){ nav.side .navgroup .navbtn{border-color:color-mix(in srgb,var(--ng) 55%,var(--line))} nav.side .navgroup .navbtn[aria-current="true"]{background:var(--ng);border-color:var(--ng);color:#fff} }
+.cn-card .cn-sug{margin-top:10px}
+.park-treat{all:unset;position:absolute;transform:translate(-50%,-50%);cursor:pointer;font-size:calc(24px * var(--z,1));z-index:3;animation:ptBob 1.6s ease-in-out infinite;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+.park-treat:focus-visible{outline:3px solid var(--bright);border-radius:8px}
+@keyframes ptBob{50%{transform:translate(-50%,calc(-50% - 4px))}}
+html.cs-calm .park-treat{animation:none}
 </style>
 
 <header class="top">
@@ -861,24 +886,24 @@ html.cs-calm .park-b{transition:none}
       <button class="navbtn cn-nav" data-go="park"><span class="w-ico em-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
-    <div class="navgroup"><h4>Start here</h4>
+    <div class="navgroup ng-start"><h4>Start here</h4>
       <button class="navbtn" data-go="basics">Sentence basics</button>
       <button class="navbtn" data-go="tenses">Verb tenses</button>
       <button class="navbtn" data-go="verbs">Irregular verbs</button>
       <button class="navbtn" data-go="be">Verb to be</button>
       <button class="navbtn" data-go="mistakes">Common mistakes</button>
     </div>
-    <div class="navgroup"><h4>Practice</h4>
+    <div class="navgroup ng-practice"><h4>Practice</h4>
       <button class="navbtn" data-go="quiz">Practice</button>
     </div>
-    <div class="navgroup"><h4>Speaking</h4>
+    <div class="navgroup ng-speaking"><h4>Speaking</h4>
       <button class="navbtn" data-go="summary">Summary helper</button>
       <button class="navbtn" data-go="stuck">I'm stuck!</button>
       <button class="navbtn" data-go="opinions">Opinions</button>
       <button class="navbtn" data-go="conversation">Conversation</button>
       <button class="navbtn" data-go="linking">Linking words</button>
     </div>
-    <div class="navgroup"><h4>Grammar</h4>
+    <div class="navgroup ng-grammar"><h4>Grammar</h4>
       <button class="navbtn" data-go="conditionals">Conditionals</button>
       <button class="navbtn" data-go="perfect">Perfect vs past</button>
       <button class="navbtn" data-go="modals">Modal verbs</button>
@@ -896,15 +921,15 @@ html.cs-calm .park-b{transition:none}
       <button class="navbtn" data-go="quantity">Quantifiers</button>
       <button class="navbtn" data-go="frequency">Frequency</button>
     </div>
-    <div class="navgroup"><h4>Words &amp; sounds</h4>
+    <div class="navgroup ng-words"><h4>Words &amp; sounds</h4>
       <button class="navbtn" data-go="pronunciation">Pronunciation</button>
       <button class="navbtn" data-go="numbers">Numbers &amp; dates</button>
       <button class="navbtn" data-go="false">False friends</button>
     </div>
-    <div class="navgroup"><h4>Work</h4>
+    <div class="navgroup ng-work"><h4>Work</h4>
       <button class="navbtn" data-go="email">Emails &amp; meetings</button>
     </div>
-    <div class="navgroup"><h4>Help</h4>
+    <div class="navgroup ng-help"><h4>Help</h4>
       <button class="navbtn fb-nav" data-go="feedback">Send feedback</button>
     </div>
   </nav>
@@ -1069,16 +1094,16 @@ html.cs-calm .park-b{transition:none}
     <div id="impPick" aria-live="polite"></div>
     <p class="imp-preview" id="impPreview" aria-live="polite"></p>
     <details class="imp-sheet">
-      <summary>Copying from your English Journey sheet? You can also import it exactly as it is</summary>
+      <summary>Copying from a spreadsheet? You can also import it exactly as it is</summary>
       <ol class="imp-steps">
-        <li>Open the sheet where you keep your words. <span class="es">1:1 students: the <b>My Word Bank</b> tab in your English Journey sheet.</span></li>
+        <li>Open the spreadsheet or document where you keep your words.</li>
         <li>Select the rows with your words (the English, Spanish and example columns) and copy them (Ctrl+C / ⌘C).</li>
         <li>Paste them in the box above and press <b>Import exactly as pasted</b>. No AI, every row becomes one word.</li>
       </ol>
       <button class="pill-btn" type="button" id="impBtn">Import exactly as pasted</button>
     </details>
   </div>
-  <div class="card sheet-card" style="margin-bottom:18px">
+  <div class="card sheet-card" style="margin-bottom:18px" hidden>
     <div id="sheetEmpty">
       <h3>Link your English Journey sheet <span class="opt">(1:1 students)</span></h3>
       <p class="sheet-help">Open your <b>English Journey</b> Google Sheet in your Drive folder, copy the link from the address bar and paste it here, so your sheet is always one click away. You only do this once.</p>
@@ -1886,7 +1911,7 @@ html.cs-calm .park-b{transition:none}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=11" defer></script>
+<script src="buddy.js?v=12" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2431,7 +2456,7 @@ function renderWords(){
     const picked=wSel&&fcPick.includes(x.id);
     return '<article class="card wcard'+(wSel?' wsel':'')+(picked?' picked':'')+'"'+(wSel?' data-pick="'+x.id+'"':'')+'>'+(wSel?'<input type="checkbox" class="w-chk" aria-label="Choose '+esc(x.w)+'"'+(picked?' checked':'')+'>':sayBtn(x.w.replace(/\(.*?\)/g,"")))+
       '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
-      '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+(isNew?'<span class="badge new">not copied yet</span>':'')+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
+      '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
   }).join("");
 }
@@ -2490,7 +2515,7 @@ async function doCopy(onlyNew){
   if(ok){
     if(!showSamples()){ lastCopy=Date.now(); LS.set("ncs-lastcopy",lastCopy); }
     renderWords();
-    toast(list.length+(list.length===1?" word":" words")+" copied. Now paste in your sheet.");
+    toast(list.length+(list.length===1?" word":" words")+" copied. Paste them anywhere you like.");
   } else toast("Your browser blocked copying. Select the words and copy them by hand.");
 }
 copyNewBtn.addEventListener("click",()=>doCopy(true));
@@ -3271,8 +3296,9 @@ document.getElementById("impPick").addEventListener("click",e=>{
 });
 
 /* ---------- words found in class notes ---------- */
-window.csSuggestWords=async function(text){
-  const box=document.getElementById("cnSuggest"); if(!box||!aiOK()||!text||text.trim().length<12) return;
+window.csSuggestWords=async function(text,box,manual){
+  box=box||document.getElementById("cnSuggest"); if(!box||!text||text.trim().length<12){ if(manual&&box){ box.hidden=false; box.innerHTML='<p class="muted" style="margin:0">This note is too short to find words in.</p>'; } return; }
+  if(!aiOK()){ if(manual){ box.hidden=false; box.innerHTML='<p class="muted" style="margin:0">The AI is still loading. Try again in a few seconds.</p>'; } return; }
   box.hidden=false; box.innerHTML='<p class="muted" style="margin:0">✨ Looking for new words in your note…</p>';
   const p="These are class notes written by a Spanish-speaking learner of English (they can mix English and Spanish).\n"+
     "List the useful English vocabulary in them worth saving for study: words, phrasal verbs, idioms, collocations and expressions the student is learning or was corrected on.\n"+
@@ -3281,10 +3307,10 @@ window.csSuggestWords=async function(text){
     "Reply with ONLY a JSON array. If there's nothing worth saving, reply [].\n\nNOTES:\n"+text.slice(0,6000);
   let arr=null;
   try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); }
-  if(!Array.isArray(arr)){ box.hidden=true; return; }
+  if(!Array.isArray(arr)){ if(manual){ box.innerHTML='<p class="muted" style="margin:0">Couldn\'t check this note right now. Try again in a minute.</p>'; } else box.hidden=true; return; }
   const have=new Set(words.map(x=>norm(x.w)));
   const list=arr.filter(x=>x&&x.w&&!have.has(norm(x.w))).slice(0,12);
-  if(!list.length){ box.hidden=true; return; }
+  if(!list.length){ if(manual){ box.innerHTML='<div class="cn-sug-top"><span>✓ No new words in this note. You already have them all!</span><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'; } else box.hidden=true; return; }
   box._list=list;
   box.innerHTML='<div class="cn-sug-top"><b>✨ I found '+list.length+' new '+(list.length===1?"word":"words")+' in your note</b><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'+
     '<div class="imp-list">'+list.map((x,i)=>'<label class="imp-row"><input type="checkbox" data-sugi="'+i+'" checked><span><b>'+esc(x.w)+'</b>'+(x.pos?' <span class="pos">'+esc(cleanPos(x.pos))+'</span>':'')+(x.m?' · '+esc(x.m):'')+(x.def?'<small>'+esc(x.def)+'</small>':'')+'</span></label>').join("")+'</div>'+
@@ -3292,7 +3318,7 @@ window.csSuggestWords=async function(text){
 };
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-sug]"); if(!b) return;
-  const box=document.getElementById("cnSuggest");
+  const box=b.closest(".cn-sug")||document.getElementById("cnSuggest");
   if(b.dataset.sug==="x"){ box.hidden=true; box.innerHTML=""; return; }
   const idx=[...box.querySelectorAll("[data-sugi]:checked")].map(c=>+c.dataset.sugi), base=Date.now(), have=new Set(words.map(x=>norm(x.w))); let n=0;
   idx.forEach((i,k)=>{ const x=box._list[i]; if(!x||have.has(norm(x.w))) return; have.add(norm(x.w));
@@ -3555,13 +3581,14 @@ function renderCN(){
     if(x.id===cnEditing){
       html+='<form class="card cn-card" data-cnform="'+x.id+'"><div class="cn-head"><span class="cn-day">'+fmtLong(x.t)+'</span></div><label for="cnEdit" class="sr">Edit note</label><textarea id="cnEdit">'+esc(x.text)+'</textarea><div class="note-actions"><button class="pill-btn" type="submit">Save changes</button><button class="swap" type="button" data-cncancel>Cancel</button></div></form>';
     } else {
-      html+='<article class="card cn-card"><div class="cn-head"><span class="cn-day">'+fmtLong(x.t)+'</span><span class="cn-time">'+fmtTime(x.t)+'</span><div class="wbtns"><button class="del edit" type="button" data-cncopy="'+x.id+'">Copy</button><button class="del edit" type="button" data-cnedit="'+x.id+'">Edit</button><button class="del" type="button" data-cndel="'+x.id+'">Delete</button></div></div><div class="cn-text">'+esc(x.text)+'</div></article>';
+      html+='<article class="card cn-card"><div class="cn-head"><span class="cn-day">'+fmtLong(x.t)+'</span><span class="cn-time">'+fmtTime(x.t)+'</span><div class="wbtns"><button class="del edit" type="button" data-cnwords="'+x.id+'" title="Find new words and expressions in this note">✨ Find words</button><button class="del edit" type="button" data-cncopy="'+x.id+'">Copy</button><button class="del edit" type="button" data-cnedit="'+x.id+'">Edit</button><button class="del" type="button" data-cndel="'+x.id+'">Delete</button></div></div><div class="cn-text">'+esc(x.text)+'</div></article>';
     }
   });
   cnList.innerHTML=html;
 }
 const noteToText=x=>fmtLong(x.t)+"\n"+x.text;
 cnList.addEventListener("click",async e=>{
+  const fw=e.target.closest("[data-cnwords]"); if(fw){ const x=cnotes.find(y=>y.id===fw.dataset.cnwords); const card=fw.closest(".cn-card"); if(!x||!card) return; let box=card.querySelector(".cn-sug"); if(!box){ box=document.createElement("div"); box.className="cn-sug"; box.setAttribute("aria-live","polite"); card.appendChild(box); } if(window.csSuggestWords) window.csSuggestWords(x.text,box,true); return; }
   const c=e.target.closest("[data-cncopy]"); if(c){ const x=cnotes.find(y=>y.id===c.dataset.cncopy); if(x) toast(await copyText(noteToText(x))?"Note copied":"Your browser blocked copying"); return; }
   const ed=e.target.closest("[data-cnedit]"); if(ed){ cnEditing=ed.dataset.cnedit; renderCN(); const t=document.getElementById("cnEdit"); if(t) t.focus(); return; }
   if(e.target.closest("[data-cncancel]")){ cnEditing=null; renderCN(); return; }
@@ -4102,6 +4129,11 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-findwords", date:"November 5, 2026", title:"Find words, park treats and a colorful menu 🍪", items:[
+    ["✨","Find words in any saved note","in <b>My class notes</b>, tap <b>✨ Find words</b> on a saved note to see new words and expressions you can add to My words.","classnotes"],
+    ["🍪","Treats in the park","sometimes a treat is hiding in the <b>Buddy park</b>. If you see one, tap it to pick it up! It doesn't happen every day.","park"],
+    ["🎨","A colorful menu","each part of the menu now has its own color, so it's easier to find what you need."]
+  ]},
   {id:"2026-parklife", date:"November 5, 2026", title:"A livelier Buddy park 🌳", items:[
     ["🚶","Buddies on the move","in the <b>Buddy park</b>, buddies now walk around, say hi to each other and show off the moves they have unlocked.","park"],
     ["🔍","Zoom in and out","use <b>− / +</b> in the park for a wide view or a close-up. Tap a buddy to see whose it is.","park"]

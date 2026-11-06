@@ -947,7 +947,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const info = `${owner ? `<b>${esc(owner)}</b>` : ""}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}<br>📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}`;
       return `<button class="park-b${x.me ? " me" : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo" aria-hidden="true">${info}</span><span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;
-    applyZoom(false); startPark();
+    applyZoom(false); startPark(); dropTreat();
   }
   /* ---------- park: zoom ---------- */
   const ZL = [0.6, 0.8, 1, 1.35, 1.8, 2.4];
@@ -1006,6 +1006,25 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       parkFx(a, "👋"); setTimeout(() => parkFx(b, ["💛", "😊", "🤝", "✨"][Math.floor(Math.random() * 4)]), 350);
     }, 3100);
   }
+  /* ---------- park: a rare treat to find (max one find a day, ~1 in 3 visits) ---------- */
+  function dropTreat() {
+    const w = $("parkWorld"); if (!w || !S.on) return;
+    const d = today(); if (S.pt && S.pt[0] === d) return;
+    if (!S.pr || S.pr[0] !== d) S.pr = [d, Math.random() < .35 ? 1 : 0];
+    if (!S.pr[1]) return;
+    const [l, t] = spot("p");
+    const b = document.createElement("button"); b.type = "button"; b.className = "park-treat"; b.textContent = "🍪";
+    b.setAttribute("aria-label", "A treat! Tap to pick it up"); b.title = "A treat! Tap to pick it up";
+    b.style.left = l + "%"; b.style.top = t + "%"; w.appendChild(b);
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".park-treat"); if (!b) return;
+    e.stopPropagation();
+    const old = S.t | 0; S.t = Math.min(MAXT, old + 2); S.pt = [today()]; S.pr = [today(), 0]; save();
+    b.remove();
+    const got = S.t - old;
+    toastMsg(got ? `You found ${got === 2 ? "2 treats" : "a treat"} in the park! 🍪 (${S.t}/${MAXT})` : `You found a treat, but your bag is full (${MAXT}/${MAXT}). Feed your buddy first!`);
+  }, true);
   function startPark() {
     clearInterval(parkTick);
     if (calm()) return;
