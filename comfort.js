@@ -240,7 +240,7 @@
       btn.onclick = () => readAloud(btn, v);
       const head = v.querySelector(".vhead");
       if (head) { const row = document.createElement("div"); row.className = "cs-read-row"; const star = head.querySelector(".star-btn"); if (star) { head.insertBefore(row, star); row.appendChild(btn); row.appendChild(star); } else { row.appendChild(btn); head.appendChild(row); } }
-      else { const h1 = v.querySelector("h1"); if (h1) h1.insertAdjacentElement("afterend", btn); }
+      else { const h1 = v.querySelector("h1"); if (h1) { const wrap = document.createElement("div"); wrap.className = "vhead"; h1.parentNode.insertBefore(wrap, h1); wrap.appendChild(h1); const row = document.createElement("div"); row.className = "cs-read-row"; row.appendChild(btn); wrap.appendChild(row); } }
     });
     document.addEventListener("click", e => { if (e.target.closest("[data-go], .navbtn")) stopReading(); }, true);
   }

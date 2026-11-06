@@ -264,10 +264,15 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   /* ---------- state ---------- */
   function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); return s && typeof s === "object" ? s : {}; } catch (e) { return {}; } }
   let S = load();
+  if (S.a === "unicorn") S.ua = true;
+  const COS = ["a", "c", "n", "head", "face", "neck", "room", "shiny", "seas", "snd"];
+  let base = null; /* the saved look, while the buddy window has unsaved edits */
+  const pickCos = o => { const r = {}; COS.forEach(k => r[k] = o[k]); return r; };
+  const dirty = () => !!base && COS.some(k => JSON.stringify(S[k] == null ? null : S[k]) !== JSON.stringify(base[k] == null ? null : base[k]));
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify(base ? Object.assign({}, S, base) : S)); } catch (e) {}
     try { window.__csOnSet && window.__csOnSet(KEY); } catch (e) {}
-    try { publishPark(); } catch (e) {}
+    try { if (!base) publishPark(); } catch (e) {}
   }
   function publishPark() {
     const P = window.__csPark; if (!P || !P.signedIn()) return;
@@ -280,7 +285,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     try { const f = JSON.parse(localStorage.getItem("ncs-fc") || "{}"); learned = Object.values(f).filter(v => v >= 3).length; } catch (e) {}
     return { words, learned };
   }
-  const modDone = m => { try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 14) || [1, 2, 3, 4, 5, 6].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
+  const modDone = m => { try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
   const isOpen = it => { if (it.m) return modDone(it.m); const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
   const lockTxt = it => it.m ? "when you finish " + it.mt : it.w != null ? it.w + " words" : it.l + " learned words";
   const animal = () => SP[S.a] ? S.a : "max";
@@ -421,6 +426,24 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-b[disabled]{opacity:.45;cursor:not-allowed}
 .bd-mini{all:unset;position:fixed;right:calc(24px + env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:14;cursor:pointer;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);box-shadow:0 4px 12px rgba(0,0,0,.12)}
 .bd-mini[hidden]{display:none}
+.bd-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.bd-tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:14px;border:1.5px solid var(--line,#ddd);background:var(--surface-2,#f6f6f6);transition:transform .12s,border-color .12s}
+.bd-tile:hover{transform:translateY(-2px);border-color:var(--bright,#4a8)}
+.bd-tile:focus-visible{outline:3px solid var(--bright,#4a8);outline-offset:2px}
+.bd-tile b{font-size:15px}
+.bd-tile>span:last-child{font-size:12px;color:var(--muted,#777)}
+.bd-tile-ico{font-size:22px;line-height:1.1}
+.bd-tiles .bd-tile:last-child:nth-child(odd){grid-column:1/-1}
+.bd-lv{margin-top:12px;font-size:13px}
+.bd-lv .bd-bar{margin-top:5px}
+.bd-earn{margin:4px 0 8px;padding-left:18px;font-size:13px}
+.bd-earn li{margin:3px 0}
+.bd-set{align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:10px}
+.bd-animal.locked{opacity:.55;cursor:not-allowed}
+.bd-flash{animation:bdFlash .8s}
+@keyframes bdFlash{0%,100%{background:transparent}30%{background:rgba(255,200,0,.25)}}
+.bd-confirm{position:sticky;bottom:0;margin:12px -4px 0;padding:14px;border-radius:14px;background:var(--surface,#fff);border:2px solid #E0A100;box-shadow:0 -6px 20px rgba(0,0,0,.25)}
+.bd-confirm p{margin:0 0 10px;font-size:14px}
 .bd-back{position:fixed;inset:0;background:rgba(10,14,30,.45);z-index:60}
 .bd-back[hidden],.bd-modal[hidden]{display:none}
 .bd-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:61;width:min(460px,calc(100vw - 24px));max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;background:var(--surface,#fff);color:var(--ink,#222);border:1.5px solid var(--line,#ddd);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:16px 16px 18px;font-family:var(--body,sans-serif)}
@@ -662,7 +685,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   function petIt() {
     hop(); fx(["💛", "🩷", "💛"]); animalSound(animal());
     if (!S.pd || S.pd[0] !== today()) S.pd = [today(), 0];
-    if (S.pd[1] < 10) { S.pd[1]++; addFP(1); }
+    if (S.pd[1] < 5) { S.pd[1]++; addFP(1); }
     refreshPanel(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.m === "pet" ? '[data-m="pet"]' : null, ["💛", "🩷", "💛"]);
     say(infoLine() + (Math.random() < .35 ? "" : chatLine()), menuActs(), 6500);
   }
@@ -735,7 +758,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   });
 
   /* ---------- panel ---------- */
-  let mode = "main", draft = null, returnFocus = null, pv = null;
+  let mode = "main", draft = null, returnFocus = null, pv = null, sec = null, confirmOpen = false;
+  const SECT = { wardrobe: "👕 Wardrobe", room: "🏠 Room", buddy: "🐾 Change buddy", progress: "📈 Progress", settings: "⚙️ Settings" };
   const pvAnimal = () => (mode === "adopt" ? draft.a : animal());
   const palIdx = (a, c) => Object.assign({}, SP[a].p, (SP[a].colors[c | 0] || SP[a].colors[0])[1]);
   function pvBanner() {
@@ -745,19 +769,27 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     return `<div class="bd-pv" role="status">👀 Preview: ${what} <button class="bd-b" type="button" data-m="pvoff">Back to my buddy</button></div>`;
   }
   function openModal(m) {
-    mode = m || "main"; returnFocus = document.activeElement; pv = null;
+    mode = m || "main"; returnFocus = document.activeElement; pv = null; confirmOpen = false; sec = null;
+    if (mode !== "adopt" && !base) base = pickCos(S);
     draft = mode === "adopt" ? { a: S.a && SP[S.a] ? S.a : "max", c: S.c | 0, n: S.n || "" } : null;
     renderModal(); back.hidden = false; modal.hidden = false;
     setTimeout(() => { const f = modal.querySelector(mode === "adopt" ? ".bd-animal[aria-pressed=true]" : "#bdClose"); if (f) f.focus(); }, 30);
   }
-  function closeModal() { pv = null; modal.hidden = true; back.hidden = true; if (returnFocus && returnFocus.focus) try { returnFocus.focus(); } catch (e) {} }
+  function reallyClose() { pv = null; confirmOpen = false; sec = null; base = null; modal.hidden = true; back.hidden = true; if (returnFocus && returnFocus.focus) try { returnFocus.focus(); } catch (e) {} }
+  function closeModal() {
+    if (mode !== "adopt" && dirty()) { confirmOpen = true; renderModal(); const b = modal.querySelector('.bd-confirm [data-m="save"]'); if (b) b.focus(); return; }
+    reallyClose();
+  }
+  function commit() { base = null; save(); paintPet(); }
   back.addEventListener("click", closeModal);
   modal.addEventListener("keydown", e => {
     if (e.key === "Escape") { e.preventDefault(); closeModal(); return; }
     if (e.key === "Tab") { const f = [...modal.querySelectorAll("button:not([disabled]),input,[tabindex='0']")].filter(x => x.offsetParent); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
   });
+  const UNI_AT = 150;
+  const uniOpen = () => S.ua === true || counts().learned >= UNI_AT;
   function animalGrid(sel, col) {
-    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: id === sel ? Object.assign({}, SP[id].p, (SP[id].colors[col | 0] || SP[id].colors[0])[1]) : SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${SP[id].species ? `<small style="display:block;font-size:10px;color:var(--muted,#777);font-weight:600">${esc(SP[id].species)}</small>` : ""}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>`;
+    return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => id === "unicorn" && !uniOpen() ? `<button class="bd-animal locked" type="button" data-unilock="1" aria-disabled="true" title="Unlocks at ${UNI_AT} learned words">${petSVG({ a: id, pal: SP[id].p, wear: {}, plain: true })}🔒 ${esc(SP[id].name)}<small style="display:block;font-size:10px;color:var(--muted,#777);font-weight:600">${UNI_AT} learned words</small></button>` : `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: id === sel ? Object.assign({}, SP[id].p, (SP[id].colors[col | 0] || SP[id].colors[0])[1]) : SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${SP[id].species ? `<small style="display:block;font-size:10px;color:var(--muted,#777);font-weight:600">${esc(SP[id].species)}</small>` : ""}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>${uniOpen() ? "" : `<p class="bd-small" id="bdUniNote" style="margin:6px 0 0">🦄 <b>${esc(SP.unicorn.name)} the unicorn</b> is the rarest buddy: she unlocks when you've <b>learned ${UNI_AT} words</b> in flashcards (you have ${counts().learned}).</p>`}`;
   }
   const COLOR_AT = [0, 0, 10, 20, 35, 50];
   const colorOpen = i => counts().words >= (COLOR_AT[i] || 0);
@@ -786,31 +818,62 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       return `<button type="button" data-wear="${slot}" data-item="${it.id}" aria-pressed="${on}" ${open ? "" : 'aria-disabled="true" data-locked="1"'} class="bd-chip${open ? "" : " locked"}${pv && pv.item === it.id ? " pv" : ""}" title="${open ? esc(it.name) : "Tap to preview · unlocks " + (it.m ? "" : "at ") + lockTxt(it)}">${open ? it.ico : "🔒"} ${esc(it.name)}${open ? (seen.has(it.id) ? "" : ' <span class="bd-new">NEW</span>') : ` <small>· ${it.m ? "⏪" : it.w != null ? it.w : it.l}</small>`}</button>`;
     };
     const slotRow = (slot, label) => `<div style="margin-bottom:10px"><div class="bd-small" style="margin:0 0 5px;font-weight:700">${label}</div><div class="bd-row"><button class="bd-chip" type="button" data-wear="${slot}" data-item="" aria-pressed="${!S[slot]}">${slot === "room" ? "🌱 Garden" : "None"}</button>${ITEMS.filter(i => i.slot === slot).map(i => chip(i, slot === "room" ? "room" : slot)).join("")}</div></div>`;
-    const legend = isOpen(byId.legend);
-    modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}${level() >= 10 ? "💛 " : ""}Your study buddy</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
-      ${pvBanner()}<div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}" id="bdStage" title="Tap to pet">${stageSVG(pvOpts())}</div>
-      <div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" value="${esc(nameOf())}" aria-label="Your buddy's name" autocomplete="off"><span class="bd-treats" title="Treats">🍪 ${S.t | 0} / ${MAXT}</span></div>
-      <div class="bd-row" style="margin-top:10px"><button class="bd-b go" type="button" data-m="feed">🍪 Feed</button><button class="bd-b" type="button" data-m="pet">🤚 Pet</button></div>
-      <p class="bd-small">Earn treats: <b>+1</b> for each new word you save, <b>+3</b> for each flashcard round, <b>+2</b> for each grammar round (3 a day), up to ${MAXT}. Your buddy eats up to ${FEED_PER_DAY} treats a day.</p>
-      <h4>Friendship</h4>
-      ${(() => { const l = level(), p = fpOf(), nxt = LV[l]; return `<div class="bd-prog"><span class="bd-hearts" aria-label="Friendship level ${l} of 10">${"💛".repeat(l)}<span style="opacity:.25">${"🤍".repeat(10 - l)}</span></span> <b>Level ${l}</b>${l >= 10 ? " · best friends!" : ""}</div>${nxt ? `<div class="bd-bar" aria-hidden="true"><i style="width:${Math.max(4, Math.round((p - LV[l - 1]) / (nxt - LV[l - 1]) * 100))}%"></i></div><div class="bd-small" style="margin:0">Next: <b>${esc(LV_WHAT[l])}</b></div>` : ""}<p class="bd-small">Friendship grows when you feed your buddy (<b>+3</b>), pet it (<b>+1</b>, up to 10 a day) and visit (<b>+2</b> a day). New levels unlock new things it does on its own, and it starts sharing little English tips.</p>`; })()}
-      <h4>Your progress</h4>
+    const legend = isOpen(byId.legend), l = level();
+    const newIn = slots => ITEMS.filter(i => slots.includes(i.slot) && isOpen(i) && !seen.has(i.id)).length;
+    const nb = n => n ? ` <span class="bd-new">${n} NEW</span>` : "";
+    const top = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}${l >= 10 ? "💛 " : ""}${sec ? SECT[sec] : "Your study buddy"}</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>`;
+    const stage = `${pvBanner()}<div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}" id="bdStage" title="Tap to pet">${stageSVG(pvOpts())}</div>`;
+    const foot = `<div class="bd-foot">${sec ? `<button class="bd-link" type="button" data-m="back">← Back</button>` : `<span></span>`}<button class="bd-b go" type="button" data-m="save">${dirty() ? "Save changes" : "Save"}</button></div>`;
+    const confirmBox = confirmOpen ? `<div class="bd-confirm" role="alertdialog" aria-labelledby="bdCfT"><p id="bdCfT"><b>Save your changes?</b><br>Your changes won't be saved unless you tap <b>Save</b>.</p><div class="bd-row" style="justify-content:flex-end"><button class="bd-b" type="button" data-m="keep" style="background:transparent">Keep editing</button><button class="bd-b" type="button" data-m="discard">Don't save</button><button class="bd-b go" type="button" data-m="save">Save</button></div></div>` : "";
+    let body = "";
+    if (!sec) {
+      const fp = fpOf(), nxt = LV[l], pctL = nxt ? Math.max(4, Math.round((fp - LV[l - 1]) / (nxt - LV[l - 1]) * 100)) : 100;
+      const tile = (k, ico, t, sub) => `<button class="bd-tile" type="button" data-sec="${k}"><span class="bd-tile-ico" aria-hidden="true">${ico}</span><b>${t}</b><span>${sub}</span></button>`;
+      body = `<div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" value="${esc(nameOf())}" aria-label="Your buddy's name" autocomplete="off"><span class="bd-treats" title="Treats">🍪 ${S.t | 0} / ${MAXT}</span></div>
+      <div class="bd-row" style="margin-top:10px"><button class="bd-b go" type="button" data-m="feed">🍪 Feed</button><button class="bd-b" type="button" data-m="pet">✋ Pet</button></div>
+      <div class="bd-lv"><span><b>Level ${l}</b> 💛${l >= 10 ? " · best friends!" : nxt ? ` · next: ${esc(LV_WHAT[l])}` : ""}</span><div class="bd-bar" aria-hidden="true"><i style="width:${pctL}%"></i></div></div>
+      <div class="bd-tiles">
+        ${tile("wardrobe", "👕", "Wardrobe", "Hats, glasses & more" + nb(newIn(["head", "face", "neck"])))}
+        ${tile("room", "🏠", "Room", "Background, toys & garden" + nb(newIn(["room", "toy"])))}
+        ${tile("buddy", "🐾", "Change buddy", "Animal & color")}
+        ${tile("progress", "📈", "Progress", `${c.words} words · ${c.learned} learned`)}
+        ${tile("settings", "⚙️", "Settings", "Sounds, outfits & more")}
+      </div>`;
+    } else if (sec === "wardrobe") {
+      body = `${slotRow("head", "Head")}${slotRow("face", "Face")}${slotRow("neck", "Neck")}
+      ${isOpen(byId.shiny) ? `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" id="bdShiny" ${S.shiny ? "checked" : ""}> ✨ Shiny sparkles</label>` : `<p class="bd-small">🔒 <b>Shiny sparkles</b> at 400 words · ⭐ <b>Legend star</b> at 1,000 words</p>`}
+      <p class="bd-small">New clothes unlock as you save more words. Tap a 🔒 item to preview it.</p>`;
+    } else if (sec === "room") {
+      const n = (S.gd || []).length, toys = ITEMS.filter(i => i.slot === "toy");
+      body = `${slotRow("room", "Background")}
+      <div class="bd-small" style="margin:4px 0 5px;font-weight:700">Toys</div><div class="bd-row">${toys.map(t => `<span class="bd-chip${isOpen(t) ? "" : " locked"}" title="${isOpen(t) ? esc(t.name) : "Unlocks " + (t.m ? "" : "at ") + lockTxt(t)}">${isOpen(t) ? t.ico : "🔒"} ${esc(t.name)}${isOpen(t) ? "" : ` <small>· ${t.m ? "⏪" : t.l}</small>`}</span>`).join("")}</div>
+      <p class="bd-small">Toys appear in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass comes from finishing the Past simple.</p>
+      <p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows on every day you study. Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`;
+    } else if (sec === "buddy") {
+      body = `${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}<p class="bd-small">Each buddy has its own friendship level. Your treats, words and unlocks are shared by all of them.</p>`;
+    } else if (sec === "progress") {
+      const fp = fpOf(), nxt = LV[l];
+      body = `<h4 style="margin-top:4px">Friendship</h4><div class="bd-prog"><span class="bd-hearts" aria-label="Friendship level ${l} of 10">${"💛".repeat(l)}<span style="opacity:.25">${"🤍".repeat(10 - l)}</span></span> <b>Level ${l}</b>${l >= 10 ? " · best friends!" : ""}</div>${nxt ? `<div class="bd-bar" aria-hidden="true"><i style="width:${Math.max(4, Math.round((fp - LV[l - 1]) / (nxt - LV[l - 1]) * 100))}%"></i></div><div class="bd-small" style="margin:0">Next: <b>${esc(LV_WHAT[l])}</b></div>` : ""}
+      <p class="bd-small">Friendship grows when you feed your buddy (<b>+3</b>), pet it (<b>+1</b>, up to 5 a day), visit (<b>+2</b> a day) and get a perfect grammar round (<b>+3</b>).</p>
+      <h4>Your words</h4>
       <div class="bd-prog"><b>${c.words}</b> ${c.words === 1 ? "word" : "words"} saved${nextW ? ` · next: ${nextW.ico} <b>${esc(nextW.name)}</b> at ${nextW.w}` : " · everything unlocked! 🎉"}</div>
       ${nextW ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.words, prevW ? prevW.w : 0, nextW.w)}%"></i></div>` : ""}
       <div class="bd-prog"><b>${c.learned}</b> ${c.learned === 1 ? "word" : "words"} learned${nextL ? ` · next: ${nextL.ico} <b>${esc(nextL.name)}</b> at ${nextL.l}` : " · every toy unlocked! 🎉"}</div>
       ${nextL ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.learned, prevL ? prevL.l : 0, nextL.l)}%"></i></div>` : ""}
-      <p class="bd-small" style="margin-top:0">A word counts as <b>learned</b> when you tap <b>✓ I knew it</b> on it 3 times in flashcards. Toys show up in your buddy's room.</p>
-      <div class="bd-prog">⏪ <b>Grammar:</b> ${modDone("ps") ? "⏳ Magic hourglass unlocked! ✨" : `finish the <b>Past simple</b> module in Practice to get the ⏳ <b>Magic hourglass</b>`}</div>
-      <h4>Wardrobe</h4>${slotRow("head", "Head")}${slotRow("face", "Face")}${slotRow("neck", "Neck")}
-      <h4>Room</h4>${slotRow("room", "Background")}
-      ${(() => { const n = (S.gd || []).length; return `<p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows in front of your buddy on every day you study (save a word or practice flashcards). Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`; })()}
-      <label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:8px"><input type="checkbox" id="bdSnd" ${S.snd !== false ? "checked" : ""}> 🔊 Buddy sounds <span class="bd-small" style="margin:0">(sometimes, when you tap a buddy)</span></label>
-      ${(() => { const se = season(); return `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:8px"><input type="checkbox" id="bdSeas" ${S.seas !== false ? "checked" : ""}> 🗓️ Seasonal outfits${se ? ` <span class="bd-small" style="margin:0">(now: ${se.ico} ${esc(se.name)})</span>` : ` <span class="bd-small" style="margin:0">(Halloween, Christmas, Fiestas Patrias and more)</span>`}</label>`; })()}
-      ${isOpen(byId.shiny) ? `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" id="bdShiny" ${S.shiny ? "checked" : ""}> ✨ Shiny sparkles</label>` : `<p class="bd-small">🔒 <b>Shiny sparkles</b> at 400 words · ⭐ <b>Legend star</b> at 1,000 words</p>`}
-      <h4>Change your buddy</h4>${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}
-      <div class="bd-foot"><button class="bd-link" type="button" data-m="hide">Hide my buddy</button><button class="bd-b" type="button" data-m="close">Done</button></div>`;
+      <div class="bd-prog">⏪ <b>Grammar:</b> ${modDone("ps") ? "⏳ Magic hourglass unlocked! ✨" : `finish the <b>Past simple</b> in Practice to get the ⏳ <b>Magic hourglass</b>`}</div>
+      <h4>How to earn treats 🍪</h4>
+      <ul class="bd-earn"><li>Save a new word: <b>+1</b> (up to 10 a day)</li><li>Finish a flashcard round of 5+ cards: <b>+3</b> (up to 5 a day)</li><li>Finish a grammar round: <b>+2</b> (up to 3 a day)</li><li>Write a good sentence: <b>+1</b> (up to 5 a day)</li><li>Say it out loud: <b>+1</b> (up to 3 a day)</li><li>Weekly goal: <b>+5</b> · Rare park treat: <b>+2</b></li></ul>
+      <p class="bd-small">Your jar holds ${MAXT} treats, and your buddy eats up to ${FEED_PER_DAY} a day.</p>`;
+    } else if (sec === "settings") {
+      const se = season();
+      body = `<label class="bd-row bd-set"><input type="checkbox" id="bdSnd" ${S.snd !== false ? "checked" : ""}> 🔊 Buddy sounds <span class="bd-small" style="margin:0">(sometimes, when you tap a buddy)</span></label>
+      <label class="bd-row bd-set"><input type="checkbox" id="bdSeas" ${S.seas !== false ? "checked" : ""}> 🗓️ Seasonal outfits${se ? ` <span class="bd-small" style="margin:0">(now: ${se.ico} ${esc(se.name)})</span>` : ` <span class="bd-small" style="margin:0">(Halloween, Christmas, Fiestas Patrias and more)</span>`}</label>
+      <p class="bd-small">Tip: you can drag your buddy to another spot on the screen.</p>
+      <button class="bd-link" type="button" data-m="hide" style="margin-top:6px">Hide my buddy</button>`;
+    }
+    modal.innerHTML = top + stage + body + foot + confirmBox;
     // everything visible in the panel counts as seen
-    const opened = ITEMS.filter(isOpen).map(i => i.id); if (opened.some(i => !seen.has(i))) { S.seen = opened; save(); }
+    if (sec === "wardrobe" || sec === "room") { const sl = sec === "wardrobe" ? ["head", "face", "neck", "fx", "badge"] : ["room", "toy"]; const add = ITEMS.filter(i => isOpen(i) && sl.includes(i.slot) && !seen.has(i.id)).map(i => i.id); if (add.length) { S.seen = [...seen, ...add]; save(); } }
   }
   modal.addEventListener("click", e => {
     if (e.target.closest("#bdClose")) { closeModal(); return; }
@@ -833,26 +896,35 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       if (m && m.dataset.m === "nothanks") { S.on = false; save(); closeModal(); visible(); updateToggle(); toastMsg("No problem. You can adopt a buddy anytime in Settings."); return; }
       return;
     }
-    if (pick) { pv = null; S.a = pick.dataset.pick; S.c = 0; save(); renderModal(); paintPet(); modal.querySelector(`[data-pick="${S.a}"]`).focus(); return; }
+    if (m && ["save", "discard", "keep", "back"].includes(m.dataset.m)) {
+      const a = m.dataset.m;
+      if (a === "save") { const was = dirty(); commit(); reallyClose(); if (was) toastMsg("Saved ✓"); return; }
+      if (a === "discard") { Object.assign(S, base); commit(); reallyClose(); return; }
+      if (a === "keep") { confirmOpen = false; renderModal(); return; }
+      if (a === "back") { sec = null; pv = null; renderModal(); const f = modal.querySelector(".bd-tile"); if (f) f.focus(); return; }
+    }
+    const st = e.target.closest("[data-sec]"); if (st) { sec = st.dataset.sec; pv = null; renderModal(); modal.scrollTop = 0; const f = modal.querySelector('[data-m="back"]'); if (f) f.focus(); return; }
+    if (e.target.closest("[data-unilock]")) { const nt = $("bdUniNote"); if (nt) { nt.classList.remove("bd-flash"); void nt.offsetWidth; nt.classList.add("bd-flash"); } return; }
+    if (pick) { pv = null; S.a = pick.dataset.pick; S.c = 0; save(); renderModal(); modal.querySelector(`[data-pick="${S.a}"]`).focus(); return; }
     if (m && m.dataset.m === "pvoff") { pv = null; renderModal(); return; }
     if (col && !colorOpen(+col.dataset.col)) { pv = { c: +col.dataset.col }; renderModal(); const f = modal.querySelector(`[data-col="${pv.c}"]`); if (f) f.focus(); return; }
     if (w && w.dataset.locked) { pv = { slot: w.dataset.wear, item: w.dataset.item }; renderModal(); const f = modal.querySelector(`[data-wear="${pv.slot}"][data-item="${pv.item}"]`); if (f) f.focus(); return; }
     if (pick || col || w) pv = null;
-    if (col) { S.c = +col.dataset.col; save(); renderModal(); paintPet(); modal.querySelector(`[data-col="${S.c}"]`).focus(); return; }
-    if (w) { const slot = w.dataset.wear; S[slot] = w.dataset.item || null; save(); renderModal(); paintPet(); const f = modal.querySelector(`[data-wear="${slot}"][data-item="${w.dataset.item}"]`); if (f) f.focus(); return; }
+    if (col) { S.c = +col.dataset.col; save(); renderModal(); modal.querySelector(`[data-col="${S.c}"]`).focus(); return; }
+    if (w) { const slot = w.dataset.wear; S[slot] = w.dataset.item || null; save(); renderModal(); const f = modal.querySelector(`[data-wear="${slot}"][data-item="${w.dataset.item}"]`); if (f) f.focus(); return; }
     if (e.target.closest("#bdStage")) { petIt(); return; }
     if (m) {
       const a = m.dataset.m;
       if (a === "feed") feed(); else if (a === "pet") petIt(); else if (a === "close") closeModal();
-      else if (a === "hide") { S.on = false; save(); closeModal(); visible(); updateToggle(); toastMsg("Your buddy is napping. Bring it back anytime in Settings."); }
+      else if (a === "hide") { commit(); S.on = false; save(); reallyClose(); visible(); updateToggle(); toastMsg("Your buddy is napping. Bring it back anytime in Settings."); }
     }
   });
   modal.addEventListener("input", e => {
     if (e.target.id !== "bdNameIn") return;
     if (mode === "adopt") { draft.n = e.target.value; const b = modal.querySelector('[data-m="adopt"]'); if (b) b.textContent = "Adopt " + (draft.n.trim() || SP[draft.a].name) + "!"; return; }
-    S.n = e.target.value.slice(0, 16); save(); paintPet();
+    S.n = e.target.value.slice(0, 16); save(); const sb = modal.querySelector('.bd-foot [data-m="save"]'); if (sb) sb.textContent = dirty() ? "Save changes" : "Save";
   });
-  modal.addEventListener("change", e => { if (e.target.id === "bdSnd") { S.snd = e.target.checked; save(); if (S.snd) animalSound(animal(), true); return; } if (e.target.id === "bdSeas") { S.seas = e.target.checked; save(); renderModal(); paintPet(); return; } if (e.target.id === "bdShiny") { S.shiny = e.target.checked; save(); renderModal(); paintPet(); } });
+  modal.addEventListener("change", e => { if (e.target.id === "bdSnd") { S.snd = e.target.checked; save(); renderModal(); if (S.snd) animalSound(animal(), true); return; } if (e.target.id === "bdSeas") { S.seas = e.target.checked; save(); renderModal(); return; } if (e.target.id === "bdShiny") { S.shiny = e.target.checked; save(); renderModal(); } });
   function toastMsg(t) { if (typeof window.toast === "function") window.toast(t); else say(esc(t), "", 3500); }
 
   /* ---------- earning treats & unlocks ---------- */
@@ -865,7 +937,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (S.mw == null) { S.mw = c.words; save(); return; }
     if (c.words > S.mw) {
       const gain = c.words - S.mw, before = S.mw; S.mw = c.words;
-      const old = S.t | 0; S.t = Math.min(MAXT, old + gain); markStudy(); save();
+      if (!S.wd || S.wd[0] !== today()) S.wd = [today(), 0];
+      const give = Math.max(0, Math.min(gain, 10 - S.wd[1])); S.wd[1] += give;
+      const old = S.t | 0; S.t = Math.min(MAXT, old + give); markStudy(); save();
       const unlocked = ITEMS.filter(i => i.w != null && before < i.w && c.words >= i.w);
       wake(); hop();
       if (unlocked.length) { fx(["🎉", "✨", "🎉"]); say(`🎉 New for ${esc(nameOf())}: <b>${unlocked.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>!`, `<button class="bd-b go" type="button" data-bd="open">Try it on</button>`, 9000); }
@@ -875,8 +949,10 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   document.addEventListener("cs-said", () => {
     if (S.on !== true) return;
-    const grew = markStudy(); wake(); hop(); fx(["🎤", "💛", "✨"]);
-    say("I heard you! Great pronunciation 🎤" + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3000);
+    if (!S.sy || S.sy[0] !== today()) S.sy = [today(), 0];
+    let gave = 0; if (S.sy[1] < 3 && (S.t | 0) < MAXT) { S.sy[1]++; S.t = (S.t | 0) + 1; gave = 1; }
+    const grew = markStudy(); save(); wake(); hop(); fx(["🎤", "💛", "✨"]);
+    say("I heard you! Great pronunciation 🎤" + (gave ? " +1 🍪" : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3000);
   });
   document.addEventListener("cs-kudos", () => {
     if (S.on !== true) return;
@@ -907,10 +983,14 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const old = S.t | 0; S.t = Math.min(MAXT, old + 5); addFP(5); save(); wake(); hop(); fx(["🎯", "🎉", "💛"]);
     say(`Weekly goal done! 🎯 +5 friendship${S.t > old ? ` and +${S.t - old} 🍪` : ""}`, "", 5000);
   });
-  document.addEventListener("cs-fcround", () => { maybeTrick();
+  document.addEventListener("cs-fcround", e => { maybeTrick();
     if (S.on !== true) return;
+    const n = e.detail && e.detail.n != null ? e.detail.n : 99;
     const c = counts(), before = S.lc == null ? c.learned : S.lc; S.lc = c.learned;
-    const old = S.t | 0; S.t = Math.min(MAXT, old + 3); markStudy(); save(); wake(); hop(); fx(["🍪", "💛", "🍪"]);
+    if (!S.fr || S.fr[0] !== today()) S.fr = [today(), 0];
+    const old = S.t | 0; if (n >= 5 && S.fr[1] < 5) { S.fr[1]++; S.t = Math.min(MAXT, old + 3); }
+    markStudy(); save(); wake(); hop(); fx(["🍪", "💛", "🍪"]);
+    if (n < 5) { say("Round done! 💪 Rounds with 5 or more cards earn treats 🍪", "", 3800); return; }
     const toys = ITEMS.filter(i => i.l != null && before < i.l && c.learned >= i.l);
     if (toys.length) say(`🎉 You've learned ${c.learned} words! New toy: <b>${toys.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000);
     else say(S.t > old ? `Round done! +${S.t - old} 🍪` : "Round done! Treat jar's full 🍪", "", 3500);
@@ -1033,11 +1113,13 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     club.forEach((x, i) => { const n = club.length; if (n === 1) { pos.push([x, 50, 54]); return; } const inner = n > 7 && i % 2; const ang = i / n * Math.PI * 2 - Math.PI / 2; const r = inner ? .45 : 1; pos.push([x, 50 + Math.cos(ang) * 19 * r, 54 + Math.sin(ang) * 17 * r]); });
     priv.forEach((x, i) => { const n = priv.length; const ang = i / n * Math.PI * 2 + Math.PI / 4; pos.push([x, Math.max(9, Math.min(91, 50 + Math.cos(ang) * 39)), Math.max(24, Math.min(84, 55 + Math.sin(ang) * 30))]); });
     const wc = x => (x.me ? counts().words : x.words | 0);
+    if (!document.getElementById("parkLegend")) el.insertAdjacentHTML("beforebegin", `<p class="park-legend" id="parkLegend">✨ The glow shows friendship: <span class="lg1">silver</span> at level 4, <span class="lg2">gold</span> at level 7, <span class="lg3">rainbow</span> at level 10.</p>`);
     el.innerHTML = `<div class="park-zoom" role="group" aria-label="Zoom"><button type="button" data-pz="-1" aria-label="Zoom out">−</button><button type="button" data-pz="0" aria-label="Fit the whole park">⤢</button><button type="button" data-pz="1" aria-label="Zoom in">+</button></div>
       <div class="park-vp" id="parkVp"><div class="park-world" id="parkWorld">${DECO}${pos.map(([x, l, t]) => {
       const bn = (x.n && String(x.n).trim() && String(x.n).trim() !== SP[x.a].old ? String(x.n).trim() : SP[x.a].name), owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
       const info = `${owner ? `<b>${esc(owner)}</b>` : ""}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}<br>📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}`;
-      return `<button class="park-b${x.me ? " me" : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo" aria-hidden="true">${info}</span><span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
+      const lv = x.lvl | 0 || 1, tier = lv >= 10 ? 3 : lv >= 7 ? 2 : lv >= 4 ? 1 : 0;
+      return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo" aria-hidden="true">${info}</span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;
     applyZoom(false); startPark(); dropTreat();
   }
@@ -1147,5 +1229,5 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   (function watchPark() { const v = $("v-park"); if (!v) return; new MutationObserver(() => { if (!v.hidden) renderPark(); }).observe(v, { attributes: true, attributeFilter: ["hidden"] }); if (!v.hidden) renderPark(); })();
   window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); } renderPark(); });
 
-  window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
+  window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();
