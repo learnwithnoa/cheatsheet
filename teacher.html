@@ -137,6 +137,7 @@ td.act{white-space:nowrap;text-align:right}
     <h1>Your students</h1>
     <p class="lede" id="summary">Loading…</p>
     <div class="news" id="news" hidden></div>
+    <div class="news" id="usage" hidden></div>
     <div class="layout">
       <div>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search students">
@@ -151,7 +152,7 @@ td.act{white-space:nowrap;text-align:right}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=17"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=18"></script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
@@ -226,7 +227,7 @@ async function load() {
         buddy: parse(data["ncs-buddy"], null),
         loveLog: parse(data["ncs-ttlove-log"], []),
         level: parse(data["ncs-level"], "normal"),
-        mods: parse(data["ncs-mods"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), modrec: parse(data["ncs-modrec"], {}) || {},
+        mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), modrec: parse(data["ncs-modrec"], {}) || {},
         loveLast: parse(data["ncs-ttlove"], ""),
         role: roles[d.id] || {}
       });
@@ -236,7 +237,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " student has" : " students have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList(); renderNews(); syncPark();
+    renderList(); renderNews(); renderUsage(); syncPark();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -312,6 +313,29 @@ function newsEvents() {
   return ev.filter(e => e.t >= since).sort((a, b) => b.t - a.t);
 }
 let newsOpen = false;
+const USE_L = [["word", "📚 Words saved"], ["flash", "🃏 Flashcard rounds"], ["gram", "🧩 Grammar rounds"], ["vocab", "🗂️ Vocabulary quizzes"], ["vcards", "🗂️ Vocabulary flashcards"], ["irr", "🔁 Irregular verbs rounds"], ["sentence", "✍️ Sentences checked"], ["say", "🎤 Said out loud"], ["translate", "⇄ Translations"],
+  ["p:classnotes", "📝 Opened My class notes"], ["p:notebook", "📓 Opened weekly summaries"], ["p:park", "🌳 Opened Buddy park"], ["p:quiz", "🎯 Opened Practice"]];
+let usageDays = 7;
+function usageSum(u, days) {
+  const out = {}, cut = Date.now() - days * 864e5;
+  Object.keys(u || {}).forEach(d => { const t = new Date(d).getTime(); if (!(t >= cut - 864e5)) return; Object.entries(u[d] || {}).forEach(([k, v]) => out[k] = (out[k] | 0) + (v | 0)); });
+  return out;
+}
+function renderUsage() {
+  const box = $("usage"); if (!box) return;
+  const per = students.map(s => ({ s, u: usageSum(s.usage, usageDays) }));
+  const any = per.some(x => Object.keys(x.u).length);
+  box.hidden = false;
+  const rows = USE_L.map(([k, l]) => { const tot = per.reduce((t, x) => t + (x.u[k] | 0), 0), who = per.filter(x => x.u[k]).length; return { k, l, tot, who }; }).filter(r => r.tot);
+  const pages = {}; per.forEach(x => Object.entries(x.u).forEach(([k, v]) => { if (k.startsWith("p:") && !USE_L.some(z => z[0] === k)) pages[k.slice(2)] = (pages[k.slice(2)] | 0) + v; }));
+  const topPages = Object.entries(pages).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const active = per.filter(x => Object.keys(x.u).length).length;
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">📊 How students use the site</h2><div><button type="button" class="seg" data-ud="7" aria-pressed="${usageDays === 7}">7 days</button> <button type="button" class="seg" data-ud="30" aria-pressed="${usageDays === 30}">30 days</button></div></div>
+    ${any ? `<p class="hint" style="margin:6px 0 10px">${active} of ${students.length} students used it in the last ${usageDays} days. Counting started on November 6, 2026.</p>
+    <table class="pstbl" style="max-width:640px"><thead><tr><td><b>What</b></td><td><b>Times</b></td><td><b>Students</b></td></tr></thead><tbody>${rows.map(r => `<tr><td>${r.l}</td><td>${r.tot}</td><td>${r.who}</td></tr>`).join("")}</tbody></table>
+    ${topPages.length ? `<p class="hint" style="margin:10px 0 0"><b>Most opened pages:</b> ${topPages.map(([k, v]) => esc(k) + " (" + v + ")").join(" · ")}</p>` : ""}` : `<p class="hint" style="margin:6px 0 0">No data yet. Counting started on November 6, 2026, so give it a few days.</p>`}`;
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
 function renderNews() {
   const box = $("news"), ev = newsEvents(), seen = +(localStorage.getItem(NEWS_KEY) || 0), fresh = ev.filter(e => e.t > seen).length;
   document.title = (fresh ? "(" + fresh + ") " : "") + baseTitle;
@@ -367,15 +391,20 @@ $("news").addEventListener("click", e => {
 });
 const PS_T = ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"];
 function weekKeyT() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
-function practiceBox(s) {
-  const p = s.mods.ps || {}, b = p.b || {}, st = p.s || {}, rec = s.modrec.ps || 0;
-  const tot = PS_T.reduce((t, _, i) => t + (st[i + 1] | 0), 0);
-  const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
+const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] } };
+function modBlock(s, id) {
+  const T = MODT[id], p = s.mods[id] || {}, b = p.b || {}, st = p.s || {}, rec = s.modrec[id] || 0;
+  const tot = T.stages.reduce((t, _, i) => t + (st[i + 1] | 0), 0), tOut = p.to && p.to.sc >= 15;
   const star = n => `<span class="pstars">${"★".repeat(n)}<span>${"★".repeat(3 - n)}</span></span>`;
-  const tOut = p.to && p.to.sc >= 15, open = n => n === 1 || tOut || (b[n - 1] | 0) >= 7;
-  return `<div class="parkbox"><b>Practice · Past simple</b>${tOut ? ` <span class="chip">🎓 Tested out ${p.to.sc}/15</span>` : ""} <span class="muted">${tot} / 21 ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
-    <table class="pstbl"><tbody>${PS_T.map((t, i) => { const n = i + 1; return `<tr><td>${n}. ${esc(t)}</td><td>${b[n] != null ? star(st[n] | 0) + ` <span class="muted">best ${b[n]}/10</span>` : `<span class="muted">${tOut ? star(st[n] | 0) + " tested out" : open(n) ? "not tried" : "🔒 locked"}</span>`}</td><td><button type="button" class="seg" data-psrec="${n}" aria-pressed="${rec === n}">${rec === n ? "⭐ Recommended" : "Recommend"}</button></td></tr>`; }).join("")}</tbody></table>
-    <div class="muted" style="margin-top:6px">📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
+  const open = n => n === 1 || tOut || (b[n - 1] | 0) >= 7;
+  return `<div style="margin-top:8px"><b>${esc(T.name)}</b>${tOut ? ` <span class="chip">🎓 Tested out</span>` : ""} <span class="muted">${tot} / ${T.stages.length * 3} ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
+    <table class="pstbl"><tbody>${T.stages.map((t, i) => { const n = i + 1; return `<tr><td>${n}. ${esc(t)}</td><td>${b[n] != null ? star(st[n] | 0) + ` <span class="muted">best ${b[n]}/10</span>` : `<span class="muted">${tOut ? star(st[n] | 0) + " tested out" : open(n) ? "not tried" : "🔒 locked"}</span>`}</td><td><button type="button" class="seg" data-psrec="${n}" data-mod="${id}" aria-pressed="${rec === n}">${rec === n ? "⭐ Recommended" : "Recommend"}</button></td></tr>`; }).join("")}</tbody></table></div>`;
+}
+function practiceBox(s) {
+  const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
+  const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
+  return `<div class="parkbox"><b>Practice</b>${modBlock(s, "ps")}${modBlock(s, "pp")}
+    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
     <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. Tap it again to remove it.</p></div>`;
 }
 function buddyCard(b) {
@@ -427,6 +456,7 @@ function renderDetail(s) {
       <div class="row" style="margin-top:8px"><button type="button" class="seg" data-role="club" aria-pressed="${s.role.club !== false}">🌼 Club member (middle)</button><button type="button" class="seg" data-role="private" aria-pressed="${s.role.club === false}">🌳 Private student (edges)</button></div>
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
     ${practiceBox(s)}
+    ${(() => { const u = usageSum(s.usage, 7), r = USE_L.filter(([k]) => u[k]).map(([k, l]) => l + ": " + u[k]); return `<div class="parkbox"><b>Last 7 days</b><div class="muted" style="margin-top:4px">${r.length ? r.join(" · ") : "No activity yet (counting started Nov 6, 2026)."}</div></div>`; })()}
     <h2>Words</h2>
     <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Cheat Sheet the next time they open it or come back to the tab.</p>
     <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><input id="an2" placeholder="Notes (optional)" aria-label="Notes"><button class="primary" type="submit">+ Add</button></form>
@@ -439,8 +469,8 @@ function renderDetail(s) {
     ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
     ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
   $("detail").querySelectorAll("[data-psrec]").forEach(btn => btn.onclick = async () => {
-    const n = +btn.dataset.psrec, v = s.modrec.ps === n ? {} : { ps: n };
-    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; renderDetail(s); toast(v.ps ? "⭐ Stage " + n + " recommended for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Recommendation removed"); }
+    const n = +btn.dataset.psrec, md = btn.dataset.mod || "ps", v = Object.assign({}, s.modrec); if (v[md] === n) delete v[md]; else v[md] = n;
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; renderDetail(s); toast(v[md] === n ? "⭐ " + MODT[md].name + " stage " + n + " recommended for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Recommendation removed"); }
     catch (e) { console.warn(e); toast("Couldn't save. Try again."); }
   });
   const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });

@@ -972,6 +972,14 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 .fc-back .fc-hint-tap{font-size:12px;color:var(--muted)}
 
 .fc-tok{-webkit-user-select:none;user-select:none}
+
+.wl-choice{display:grid;gap:10px;margin-top:12px}
+.wl-opt{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface-2)}
+.wl-opt:hover{border-color:var(--bright)}
+.wl-opt:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.wl-opt[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft)}
+.wl-opt span{color:var(--muted);font-size:14px}
+.wl-adopt{margin-top:12px}
 </style>
 
 <header class="top">
@@ -2012,11 +2020,11 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
   <div class="pr-big"><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Vocabulary</b><span>Word sets by Noa: phrasal verbs, work, travel and more</span><span class="esb">Vocabulario</span></button><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Flashcards, sentences and pronunciation</span><span class="esb">Tus palabras</span></button></div></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Vocabulary</em></h1><p class="lede">Useful words and expressions, in sets. Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
-<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Past simple</em></h1><p class="lede">Seven stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Siete etapas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
+<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="psTitle"><em>Past simple</em></h1><p class="lede">Seven stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Siete etapas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
 <div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
 <div class="pr-panel" data-pp="flash" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Flashcards</em></h1><p class="lede">Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p><div class="card flash-wrap" style="max-width:560px">
     <div id="fcEmpty" hidden><p style="margin:0 0 10px">You don't have any words yet. Save a few on your <b>Home</b> page and they'll show up here as flashcards.</p><button class="pill-btn pill-green" type="button" data-go="notes">Go to Home</button></div>
@@ -2074,7 +2082,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=17" defer></script>
+<script src="buddy.js?v=18" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2095,42 +2103,65 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 
   <div class="wl-step" data-step="0">
     <h2 id="wlTitle">Welcome to your <em>Cheat Sheet</em> 👋</h2>
-    <p class="wl-lede">This is your English companion from <b>Learn with Noa</b>. It does two jobs:</p>
+    <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. It does three jobs:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">📚</span><div><b>A quick reference while you speak.</b> Verb tenses, irregular verbs, grammar, phrases for when you're stuck… all short, clear and with Spanish where it helps.</div></li>
-      <li><span class="wl-ico wl-green" aria-hidden="true">📝</span><div><b>Your own English notebook.</b> Save new words and class notes here, practice them with flashcards, and find them again anytime.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📚</span><div><b>A quick reference while you speak.</b> Verb tenses, irregular verbs, grammar and phrases for when you're stuck, all short and clear. Keep it open next to Zoom during class.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">📝</span><div><b>Your own English notebook.</b> Save the new words and class notes that matter to <i>you</i>.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>A place to practice.</b> Grammar step by step, vocabulary sets and flashcards with your own words.</div></li>
     </ul>
-    <p class="wl-tip">💡 Bookmark it now (<b>Ctrl+D</b> or <b>⌘D</b>) so it's always one click away.</p>
+    <p class="esb">Tu compañero de inglés: referencia rápida, cuaderno personal y práctica.</p>
   </div>
 
   <div class="wl-step" data-step="1" hidden>
-    <h2>During <em>class</em> 🎧</h2>
-    <p class="wl-lede">Keep this tab open next to Zoom. When you need something, it's right here:</p>
-    <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🔍</span><div><b>Search everything</b> with the box at the top. Press <kbd>/</kbd> to jump to it. Try “since” or “make”.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🆘</span><div><b>Stuck?</b> Open <b>I'm stuck!</b> in the menu for phrases that keep you talking in English.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⇄</span><div><b>Translator</b> is pinned in the green menu, for the word you just can't find.</div></li>
-      <li><span class="wl-ico wl-star" aria-hidden="true">★</span><div><b>Star the pages you use most.</b> They move to the top of the menu.</div></li>
-    </ul>
+    <h2>Your <em>level</em> 🌱</h2>
+    <p class="wl-lede">Do you want more help in Spanish? You can change this anytime in <b>Settings</b>.</p>
+    <div class="wl-choice">
+      <button class="wl-opt" type="button" data-wllevel="beginner"><b>🌱 Yes, please</b><span>I'm a beginner. Más ayuda en español, ejemplos más simples y una voz más lenta.</span></button>
+      <button class="wl-opt" type="button" data-wllevel="normal"><b>🚀 I'm OK in English</b><span>Show me everything in English, with Spanish only where it helps.</span></button>
+    </div>
   </div>
 
   <div class="wl-step" data-step="2" hidden>
-    <h2>After <em>class</em> 📝</h2>
-    <p class="wl-lede">Five minutes here after each class makes a big difference:</p>
+    <h2><em>My words</em>: the heart of it 💛</h2>
+    <p class="wl-lede">The words you save are the most important part of the Cheat Sheet. Everything else builds on them.</p>
     <ul class="wl-list">
-      <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save new words</b> with the green <b>+ word</b> button. It's on every page.</div></li>
-      <li><span class="wl-ico wl-green" aria-hidden="true">✎</span><div><b>Write your class notes</b> on your <b>Home</b> page: corrections, things to practice, questions for next time.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice your words</b> with flashcards. The ones you miss come back sooner.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">☀</span><div><b>Check your Home page</b> for a new word of the day and a thought for today.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My words</b> and it's organized for you, with meanings and examples.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice them with flashcards.</b> The ones you miss come back sooner, so you spend your time on the hard ones.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">✨</span><div><b>Words grow your buddy,</b> too: more words unlock clothes and colors, and words you learn unlock toys.</div></li>
     </ul>
   </div>
 
   <div class="wl-step" data-step="3" hidden>
+    <h2>Time to <em>practice</em> 🎯</h2>
+    <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find three parts:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>past simple</b> and the <b>present perfect</b>, in stages from easy to harder. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Vocabulary:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> 3 practice rounds a week. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-step" data-step="4" hidden>
+    <h2>Your <em>study buddy</em> 🐾</h2>
+    <p class="wl-lede">A little friend in the corner of the screen that grows as you study.</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">🍪</span><div><b>Earn treats by studying:</b> saving words, flashcard rounds, grammar rounds, writing sentences and more. Then <b>feed</b> your buddy (up to 5 a day).</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💛</span><div><b>Friendship levels:</b> feeding, petting and visiting raise its level. Each level unlocks a new trick, and in the <b>Buddy park</b> it starts to glow: silver, gold and rainbow.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">👕</span><div><b>Clothes, colors and toys</b> unlock as you save and learn words. Finish grammar modules for special magic toys.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🌳</span><div><b>Buddy park:</b> see everyone's buddies and send them love. It never gets sick or sad if you're away, it just naps.</div></li>
+    </ul>
+    <div class="note-actions wl-adopt" id="wlAdoptRow"><button class="pill-btn pill-green" type="button" data-wladopt>🐾 Choose my buddy</button></div>
+  </div>
+
+  <div class="wl-step" data-step="5" hidden>
     <h2>Make it <em>yours</em> ⚙️</h2>
     <ul class="wl-list">
-      <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes and settings save to your Google account and follow you to every device.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (top right): bigger text, easier fonts, calm mode, focus mode, a study timer, and four looks, including Sepia and 🦄 Unicorn.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music</b>: lo-fi, rain, piano or brown, pink and white noise while you study.</div></li>
+      <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (top right): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music:</b> lo-fi, piano, rain or calm noise while you study.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
       <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Something missing?</b> Use “Tell Noa” at the bottom of any page.</div></li>
     </ul>
     <div class="wl-warn wl-sign when-out">
@@ -2140,7 +2171,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
   </div>
 
   <div class="wl-nav">
-    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="note-actions wl-btns">
       <button class="swap" type="button" id="wlBack" hidden>← Back</button>
       <button class="pill-btn" type="button" id="wlNext">Next →</button>
@@ -2640,6 +2671,7 @@ function addWord(w,m,e,n){
   w=(w||"").trim(); m=(m||"").trim(); e=(e||"").trim(); n=(n||"").trim();
   if(!w) return false;
   if(words.some(x=>norm(x.w)===norm(w))){ toast("“"+w+"” is already in your words"); return true; }
+  if(window.csUse) window.csUse("word");
   words.push(Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),w,m,e,t:Date.now()},n?{n}:{}));
   const saved=LS.set("ncs-words",words);
   renderWords(); toast(saved?"Saved to your words":"Saved for now, but this browser blocks storage");
@@ -3029,9 +3061,17 @@ fcShuffle();
     "Below are the notes from "+label+". Write a short, clean study summary in English, speaking directly to the student (\"you\"). Use simple, friendly English. "+
     "Use exactly these sections, in this order, and skip a section if the notes have nothing for it:\n"+
     "## Main topics\n- (one short line per topic)\n## Corrections to remember\n- wrong → right (very short reason)\n## New words & expressions\n- expression — meaning in Spanish\n## Practice next\n- one or two small, practical suggestions\n\n"+
-    "Rules: under 180 words. Only use information that is in the notes, never invent examples or facts. Fix spelling mistakes in the notes. If a correction is about the past simple (was/were, didn't + verb, Did…? questions, -ed endings or irregular past verbs), end its reason with \"(past simple)\". No introduction, no closing sentence, no bold titles other than the ## headings.\n\nNOTES:\n"+notesText(list);
+    "Rules: under 180 words. Only use information that is in the notes, never invent examples or facts. Fix spelling mistakes in the notes. If a correction is about the past simple (was/were, didn't + verb, Did…? questions, -ed endings or irregular past verbs), end its reason with \"(past simple)\". If it is about the present perfect (have/has + participle, for/since, ever/never/already/yet/just, or present perfect vs past simple), end its reason with \"(present perfect)\". No introduction, no closing sentence, no bold titles other than the ## headings.\n\nNOTES:\n"+notesText(list);
   }
   /* which past simple stage fits a correction line (0 = not past simple) */
+  function ppStage(t){
+    if(!/present perfect/i.test(t)) return 0; const l=t.toLowerCase();
+    if(/\b(since|for)\b/.test(l)) return 5;
+    if(/\b(ever|never|already|yet|just)\b/.test(l)) return 4;
+    if(/\b(haven't|hasn't|have you|has (he|she|it)|have they)\b/.test(l)) return 3;
+    if(/\b(yesterday|last|ago|past simple)\b/.test(l)) return 6;
+    return 2;
+  }
   function psStage(t){
     const ps=/past simple|past tense/i.test(t), l=t.toLowerCase();
     if(/\b(was|were|wasn't|weren't)\b/.test(l)&&(ps||/\bwas (go|went|eat|ate|have|had)\b/.test(l))) return 3;
@@ -3053,7 +3093,7 @@ fcShuffle();
         if(!inList){ html+="<ul>"; inList=true; }
         let extra="";
         if(/words|expressions/i.test(sec)){ const m=t.split(/\s+[—–-]\s+/); if(m.length>=2&&m[0].length<60){ const w=m[0].replace(/\*\*/g,"").replace(/^["“]|["”]$/g,"").trim(), mean=m.slice(1).join(" - ").replace(/\*\*/g,"").trim(); extra=' <button class="nb-add" type="button" data-w="'+esc(w)+'" data-m="'+esc(mean)+'">+ save</button>'; } }
-        if(/correction/i.test(sec)){ const st=psStage(t); if(st) extra+=' <button class="nb-prac" type="button" data-psgo="'+st+'" title="Practice the past simple">Practice this →</button>'; }
+        if(/correction/i.test(sec)){ const pp=ppStage(t); const st=pp?0:psStage(t); if(pp) extra+=' <button class="nb-prac" type="button" data-psgo="'+pp+'" data-psmod="pp" title="Practice the present perfect">Practice this →</button>'; else if(st) extra+=' <button class="nb-prac" type="button" data-psgo="'+st+'" title="Practice the past simple">Practice this →</button>'; }
         html+="<li>"+inline(t)+extra+"</li>"; return;
       }
       if(inList){ html+="</ul>"; inList=false; }
@@ -3752,6 +3792,343 @@ VOC_SETS.forEach(set=>{
   });
 });
 
+/* ---------- Present perfect question bank (same format as the past simple) ---------- */
+const PP_STAGES=[
+ {n:1, t:"Have / has + verb", sub:"I have worked, she has finished", why:"Present perfect = have / has + past participle. I / you / we / they have, he / she / it has.", es:"have / has + participio. I have worked, she has worked.", q:`
+I ___ in Santiago for ten years. (live)|have lived|has lived,lived,am live
+She ___ her homework. (finish)|has finished|have finished,finished,has finish
+We ___ this movie before. (watch)|have watched|has watched,watched,have watch
+He ___ a new job. (start)|has started|have started,started,has start
+They ___ to Chile three times. (travel)|have traveled/have travelled|has traveled,traveled,have travel
+I ___ my mind. (change)|have changed|has changed,changed,have change
+My sister ___ a cake for us. (bake)|has baked|have baked,baked,has bake
+You ___ a lot this year. (improve)|have improved|has improved,improved,have improve
+The train ___. (arrive)|has arrived|have arrived,arrived,has arrive
+It ___ all week. (rain)|has rained|have rained,rained,has rain
+We ___ the whole house. (clean)|have cleaned|has cleaned,cleaned,have clean
+My parents ___ a new sofa. (order)|have ordered|has ordered,ordered,have order
+He ___ smoking. (stop)|has stopped|have stopped,has stoped,stopped|Stop doubles the p: has stopped.|Stop duplica la p: stopped.
+I ___ really hard for this exam. (study)|have studied|has studied,have studyed,studied|Consonant + y → -ied: studied.|Consonante + y → -ied.
+She ___ us to her wedding. (invite)|has invited|have invited,invited,has invite
+The kids ___ outside all afternoon. (play)|have played|has played,played,have play
+Our team ___ very hard this season. (try)|has tried|have tried,has tryed,tried|"Our team" is one group → has.|"Our team" = it → has.
+I ___ to your message. (reply)|have replied|has replied,have replyed,replied
+Prices ___ a lot this year. (increase)|have increased|has increased,increased,have increase|Prices is plural → have.|Prices = they → have.
+The company ___ ten new people. (hire)|has hired|have hired,hired,has hire
+You ___ the right answer! (guess)|have guessed|has guessed,guessed,have guess
+My brother ___ to Canada. (move)|has moved|have moved,moved,has move
+We ___ three trips this year. (plan)|have planned|has planned,have planed,planned|Plan doubles the n: planned.|Plan duplica la n: planned.
+She ___ English for two years. (learn)|has learned/has learnt|have learned,learned,has learn
+I ___ my grandmother twice this week. (call)|have called|has called,called,have call
+The weather ___ a lot today. (change)|has changed|have changed,changed,has change
+They ___ the date of the party. (confirm)|have confirmed|has confirmed,confirmed,have confirm
+He ___ about this for weeks. (talk)|has talked|have talked,talked,has talk
+I ___ to this song a hundred times. (listen)|have listened|has listened,listened,have listen
+My dog ___ the sofa again! (destroy)|has destroyed|have destroyed,destroyed,has destroy
+We ___ for this moment for so long. (wait)|have waited|has waited,waited,have wait
+Someone ___ the window. (open)|has opened|have opened,opened,has openned
+You ___ me so much! (help)|have helped|has helped,helped,have help
+The shop on the corner ___. (close)|has closed|have closed,closed,has close
+I ___ two new apps. (download)|have downloaded|has downloaded,downloaded,have download
+She ___ in three marathons. (compete)|has competed|have competed,competed,has compete
+They ___ really well together. (work)|have worked|has worked,worked,have work
+It ___ since this morning. (snow)|has snowed|have snowed,snowed,has snow
+I ___ to learn the guitar. (decide)|have decided|has decided,decided,have decide
+My friends ___ me a lot. (support)|have supported|has supported,supported,have support
+`},
+ {n:2, t:"Irregular participles", sub:"seen, gone, eaten, done", why:"This verb is irregular: use its past participle (the 3rd form).", es:"Verbo irregular: usa el participio (la 3ª forma).", q:`
+I ___ that movie three times. (see)|have seen|have saw,has seen,have seed
+She ___ to Europe twice. (be)|has been|has be,have been,has was
+We ___ lunch already. (eat)|have eaten|have ate,has eaten,have eated
+He ___ to the bank. He'll be back soon. (go)|has gone|has went,has go,have gone|Has gone = he's there now. Has been = he went and came back.|has gone = está allá ahora.
+I ___ my homework. (do)|have done|have did,has done,have doed
+They ___ a new house. (buy)|have bought|have buyed,has bought,have brought|Bought comes from buy. Brought comes from bring.|bought = comprado, brought = traído.
+She ___ three books this year. (write)|has written|has wrote,have written,has writed
+I ___ my keys! (lose)|have lost|have losed,has lost,have loose
+You ___ so much! (grow)|have grown|have grew,has grown,have growed
+He ___ his leg. (break)|has broken|has broke,have broken,has breaked
+We ___ a lot of money this month. (spend)|have spent|have spended,has spent,have spend
+I ___ him for years. (know)|have known|have knew,has known,have knowed
+She ___ me a message. (send)|has sent|has sended,have sent,has send
+They ___ the match! (win)|have won|have winned,has won,have win
+I ___ a decision. (make)|have made|have maked,has made,have make
+He ___ a lot of coffee today. (drink)|has drunk|has drank,have drunk,has drinked
+I ___ that song before. (hear)|have heard|have heared,has heard,have hear
+We ___ our tickets. (get)|have got/have gotten|have getted,has got,have get|Got (UK) and gotten (US) are both correct.|got y gotten están bien.
+She ___ her car. (sell)|has sold|has selled,have sold,has sell
+I ___ the news. (read)|have read|have readed,has read,have red|Read, read, read: same spelling, but the participle sounds like "red".|Se escribe read, suena "red".
+They ___ to visit us. (come)|have come|have came,has come,have comed
+You ___ my favorite shirt again! (wear)|have worn|have wore,has worn,have weared
+He ___ his phone at home. (leave)|has left|has leaved,have left,has leave
+I ___ really tired lately. (feel)|have felt|have feeled,has felt,have fell
+She ___ English for ten years. (teach)|has taught|has teached,have taught,has thought|Taught comes from teach. Thought comes from think.|taught = enseñado.
+We ___ a lot of new people here. (meet)|have met|have meeted,has met,have meet
+I ___ my bike to work all week. (ride)|have ridden|have rode,has ridden,have rided
+The baby ___ asleep. (fall)|has fallen|has fell,have fallen,has falled
+I ___ in the sea today. (swim)|have swum|have swam,has swum,have swimmed
+He ___ me his secret. (tell)|has told|has telled,have told,has tell
+We ___ the wrong bus! (take)|have taken|have took,has taken,have taked
+She ___ a beautiful dress for the wedding. (choose)|has chosen|has chose,have chosen,has choosed
+I ___ the answer. (forget)|have forgotten|have forgetted,has forgotten,have forgeted
+They ___ a new bridge. (build)|have built|have builded,has built,have build
+The price of coffee ___ again. (rise)|has risen|has rose,have risen,has rised
+I ___ the cat some food. (give)|have given|have gave,has given,have gived
+I ___ my old glasses! (find)|have found|have finded,has found,have find
+He ___ the whole cake! (eat)|has eaten|has ate,have eaten,has eated
+We ___ here before. (be)|have been|have be,has been,have was
+She ___ a lot of photos. (take)|has taken|has took,have taken,has taked
+`},
+ {n:3, t:"Negatives & questions", sub:"I haven't seen… Have you ever…?", why:"Negative: haven't / hasn't + past participle. Questions: Have / Has + person + past participle.", es:"Negativo: haven't / hasn't + participio. Pregunta: Have / Has + persona + participio.", q:`
+I ___ my homework yet. (not / finish)|haven't finished/have not finished|didn't finish,haven't finish,hasn't finished
+She ___ the movie. (not / see)|hasn't seen/has not seen|hasn't saw,haven't seen,didn't seen
+We ___ lunch. (not / eat)|haven't eaten/have not eaten|haven't ate,hasn't eaten,didn't eaten
+He ___ me back. (not / call)|hasn't called/has not called|haven't called,hasn't call,didn't called
+They ___ yet. (not / arrive)|haven't arrived/have not arrived|hasn't arrived,haven't arrive,didn't arrived
+It ___ for weeks. (not / rain)|hasn't rained/has not rained|haven't rained,didn't rained,hasn't rain
+I ___ him for years. (not / see)|haven't seen/have not seen|haven't saw,hasn't seen,didn't seen
+My boss ___ my email. (not / answer)|hasn't answered/has not answered|haven't answered,hasn't answer,didn't answered
+___ you ever been to Peru?|Have|Has,Did,Are
+___ she finished the report?|Has|Have,Did,Is
+___ they called you?|Have|Has,Did,Are
+Have you ___ my keys? (see)|seen|saw,see,seeing
+Has he ___ the tickets? (buy)|bought|buyed,buy,buying
+___ it stopped raining?|Has|Have,Did,Is
+What ___ you done today?|have|has,did,are
+Where ___ she gone?|has|have,did,is
+How many countries ___ you visited?|have|has,did,are
+___ your parents met your new partner?|Have|Has,Did,Are|Your parents = they → Have.|Your parents = they → Have.
+___ anyone seen my phone?|Has|Have,Did,Is|Anyone is singular → Has.|Anyone es singular → Has.
+We ___ a decision yet. (not / make)|haven't made/have not made|haven't make,hasn't made,didn't made
+She ___ to me since Monday. (not / speak)|hasn't spoken/has not spoken|hasn't spoke,haven't spoken,didn't spoken
+I ___ that book. (not / read)|haven't read/have not read|hasn't read,haven't readed,didn't readed
+Have you ___ lunch yet? (have)|had|have,has,having
+Has she ___ home? (go)|gone|went,go,goes
+Has your brother ___ a job? (find)|found|finded,find,finding
+The kids ___ their vegetables. (not / eat)|haven't eaten/have not eaten|hasn't eaten,haven't ate,didn't ate
+___ you tried the new café?|Have|Has,Did,Do
+Why ___ he answered my messages? (not)|hasn't|haven't,didn't,isn't
+Fix it: "Have you saw this movie?" → Have you ___ this movie?|seen|saw,see,seeing
+Fix it: "She haven't called." → She ___ called.|hasn't/has not|haven't,didn't,isn't
+Fix it: "Has they finished?" → ___ they finished?|Have|Has,Did,Are
+Fix it: "I don't have finished." → I ___ finished.|haven't/have not|don't,didn't,hasn't|Use haven't, not "don't have".|Usa haven't, no "don't have".
+___ he ever ridden a horse?|Has|Have,Did,Is
+Have they ___ the news? (hear)|heard|heared,hear,hearing
+How long ___ you worked here?|have|has,did,are
+I ___ my password. (not / change)|haven't changed/have not changed|hasn't changed,haven't change,didn't changed
+Has the package ___? (arrive)|arrived|arrive,arriving,arrives
+My sister ___ her new car yet. (not / drive)|hasn't driven/has not driven|hasn't drove,haven't driven,didn't drove
+___ we met before?|Have|Has,Did,Are
+What ___ he done to his hair?!|has|have,did,is
+`},
+ {n:4, t:"Ever, never, already, yet, just", sub:"Have you ever…? I've just…", why:"", es:"", q:`
+Have you ___ been to Japan?|ever|yet,since,for|Use ever in questions about your whole life.|ever = alguna vez.
+Have you ___ eaten sushi?|ever|yet,since,for|Use ever in questions about your whole life.|ever = alguna vez.
+Has she ___ met a famous person?|ever|yet,since,for|Use ever in questions about your whole life.|ever = alguna vez.
+Have they ___ seen snow?|ever|yet,since,for|Use ever in questions about your whole life.|ever = alguna vez.
+Is this the best movie you've ___ seen?|ever|yet,since,for|After "the best…", use ever.|the best… I've ever seen = el mejor que he visto.
+Has your dog ___ bitten anyone?|ever|yet,since,for|Use ever in questions about your whole life.|ever = alguna vez.
+I've ___ been to Japan, but I'd love to go.|never|ever,yet,since|never = not at any time in your life.|never = nunca.
+She's ___ eaten sushi. She doesn't like fish.|never|ever,yet,since|never = not at any time in your life.|never = nunca.
+We've ___ seen snow.|never|ever,yet,since|never = not at any time in your life.|never = nunca.
+He's ___ been late to class. Not once!|never|ever,yet,since|never = not at any time.|never = nunca.
+I've ___ tried surfing.|never|ever,yet,since|never = not at any time in your life.|never = nunca.
+They've ___ met my parents.|never|ever,yet,since|never = not at any time.|never = nunca.
+Have you finished ___?|yet|since,for,ever|Use yet at the end of questions.|yet = ya (en preguntas), al final.
+I haven't eaten ___.|yet|already,ever,just|Use yet at the end of negatives.|yet = todavía (en negativo), al final.
+Has the bus come ___?|yet|since,for,ever|Use yet at the end of questions.|yet = ya (en preguntas), al final.
+She hasn't called ___.|yet|already,ever,just|Use yet at the end of negatives.|yet = todavía, al final.
+We haven't decided ___.|yet|already,ever,just|Use yet at the end of negatives.|yet = todavía, al final.
+Have you done your homework ___?|yet|since,for,ever|Use yet at the end of questions.|yet = ya (en preguntas), al final.
+They haven't arrived ___.|yet|already,ever,just|Use yet at the end of negatives.|yet = todavía, al final.
+She's ___ finished. That was fast!|already|yet,ever,since|already = sooner than expected. It goes between has and the participle.|already = ya.
+We've ___ seen this movie. Let's watch something else.|already|yet,ever,since|already goes between have and the participle.|already = ya.
+I've ___ paid. You don't need to pay.|already|yet,ever,since|already goes between have and the participle.|already = ya.
+He's ___ told me the news.|already|yet,ever,since|already goes between has and the participle.|already = ya.
+They've ___ left. They're on the bus now.|already|yet,ever,since|already goes between have and the participle.|already = ya.
+I've ___ had lunch, thanks.|already|yet,ever,since|already goes between have and the participle.|already = ya.
+He's ___ left. You missed him by one minute.|just|yet,ever,since|just = a moment ago.|just = recién, acaba de.
+I've ___ woken up. Give me five minutes.|just|yet,ever,since|just = a moment ago.|just = recién, acabo de.
+The movie has ___ started. Hurry!|just|yet,ever,since|just = a moment ago.|just = recién, acaba de.
+She's ___ called me. She's on her way.|just|yet,ever,since|just = a moment ago.|just = recién, acaba de.
+We've ___ arrived at the airport.|just|yet,ever,since|just = a moment ago.|just = recién, acabamos de.
+I've ___ seen the news. Wow!|just|yet,ever,since|just = a moment ago.|just = recién, acabo de.
+Fix it: "I have finished yet." → I have ___ finished.|already|yet,ever,since|In positive sentences, use already, not yet.|En afirmativo: already.
+Fix it: "She has yet arrived." → She has ___ arrived.|already/just|yet,ever,since|In positive sentences, use already or just, not yet.|En afirmativo: already o just.
+Fix it: "I don't have ever been to Peru." → I have ___ been to Peru.|never|ever,yet,since|Say "I have never been", not "don't have ever".|"Nunca he ido" = I have never been.
+Have you ___ been here before?|ever|yet,since,for|Use ever in questions about your whole life.|ever = alguna vez.
+I've ___ had a better coffee!|never|ever,yet,since|never = not at any time.|never = nunca.
+Has he sent the email ___?|yet|since,for,ever|Use yet at the end of questions.|yet = ya (en preguntas), al final.
+Wow, you've ___ finished the whole book!|already|yet,ever,since|already = sooner than expected.|already = ya.
+The baby has ___ fallen asleep, so be quiet.|just|yet,ever,since|just = a moment ago.|just = recién, acaba de.
+I haven't told anyone ___.|yet|already,ever,just|Use yet at the end of negatives.|yet = todavía, al final.
+`},
+ {n:5, t:"For & since", sub:"for two years, since 2020, How long…?", why:"for + a period of time (for two years). since + a starting point (since 2020, since Monday).", es:"for = durante (un período). since = desde (un momento).", q:`
+I've lived here ___ ten years.|for|since,ago,during
+I've lived here ___ 2015.|since|for,ago,during
+She's worked there ___ March.|since|for,ago,from
+We've known each other ___ a long time.|for|since,ago,from
+He's been sick ___ Monday.|since|for,ago,from
+They've been married ___ five years.|for|since,ago,during
+I haven't seen her ___ last summer.|since|for,ago,from
+It's rained ___ three days.|for|since,ago,during
+I've had this phone ___ two months.|for|since,ago,during
+She's been a teacher ___ she was 25.|since|for,ago,from
+We've waited ___ an hour!|for|since,ago,during
+He hasn't eaten ___ breakfast.|since|for,ago,from
+I've studied English ___ I was a kid.|since|for,ago,from
+They've lived in Chile ___ ages.|for|since,ago,during
+I haven't slept well ___ weeks.|for|since,ago,during
+She's had her dog ___ Christmas.|since|for,ago,from
+How long ___ you lived here?|have|has,did,are|How long + have / has + person + past participle.|How long + have / has + persona + participio.
+How long ___ she known him?|has|have,did,is|How long + have / has + person + past participle.|How long + have / has + persona + participio.
+How long have you ___ a teacher? (be)|been|be,was,being|The participle of be is been.|El participio de be es been.
+How long ___ they been together?|have|has,did,are|How long + have / has + person + past participle.|How long + have / has + persona + participio.
+I ___ here for three years. (work)|have worked|work,am working,has worked|Until now + for → present perfect.|Hasta ahora + for → present perfect.
+She ___ him since 2010. (know)|has known|knows,is knowing,have known|Until now + since → present perfect.|Hasta ahora + since → present perfect.
+We ___ in this house since 2019. (live)|have lived|live,are living,has lived|Until now + since → present perfect.|Hasta ahora + since → present perfect.
+He ___ that car for ten years. (have)|has had|has,is having,have had|Until now + for → present perfect.|Hasta ahora + for → present perfect.
+They ___ friends since school. (be)|have been|are,are being,has been|Until now + since → present perfect.|Hasta ahora + since → present perfect.
+I ___ to the gym since January. (not / go)|haven't been/have not been/haven't gone/have not gone|don't go,didn't go,hasn't gone|Until now + since → present perfect.|Hasta ahora + since → present perfect.
+Fix it: "I live here since 2015." → I ___ here since 2015.|have lived|live,lived,am living|With since and for (until now), use the present perfect.|"Vivo aquí desde 2015" = I have lived here since 2015.
+Fix it: "I know her for ten years." → I ___ her for ten years.|have known|know,knew,am knowing|With for (until now), use the present perfect.|"La conozco hace diez años" = I have known her for ten years.
+Fix it: "She works here since May." → She ___ here since May.|has worked|works,worked,is work|With since (until now), use the present perfect.|"Trabaja aquí desde mayo" = She has worked here since May.
+Fix it: "How long do you live here?" → How long ___ you lived here?|have|do,did,are|How long + have + person + past participle.|"¿Cuánto tiempo llevas viviendo aquí?" = How long have you lived here?
+Fix it: "We are married for five years." → We ___ married for five years.|have been|are,were,has been|With for (until now), use the present perfect.|"Llevamos cinco años casados" = We have been married for five years.
+It's been a long time ___ I saw you!|since|for,ago,from
+I've been awake ___ 6 a.m.|since|for,ago,from
+She's played the piano ___ most of her life.|for|since,ago,during
+We haven't talked ___ the party.|since|for,ago,from
+He's been in the meeting ___ two hours.|for|since,ago,during
+I've wanted this ___ a long time.|for|since,ago,during
+They haven't called ___ yesterday.|since|for,ago,from
+How long ___ your sister lived in Spain?|has|have,did,is|Your sister = she → has.|Your sister = she → has.
+I've known about it ___ this morning.|since|for,ago,from
+`},
+ {n:6, t:"Present perfect or past simple?", sub:"I've been… vs I went…", why:"Finished time (yesterday, last week, in 2019, ago) → past simple. Life until now, no specific time → present perfect.", es:"Tiempo terminado (yesterday, last…, ago) → pasado simple. Hasta ahora, sin fecha → present perfect.", q:`
+I ___ to Brazil last year. (go)|went|have gone,have been,go
+I ___ to Brazil twice. (be)|have been|was,am,be
+She ___ me yesterday. (call)|called|has called,have called,calls
+She ___ me three times today. (call)|has called|have called,calls,call|Today isn't finished yet → present perfect.|Hoy no ha terminado → present perfect.
+We ___ the movie on Friday. (see)|saw|have seen,has seen,seen
+___ you ever eaten sushi?|Have|Did,Do,Has|Life experience (ever) → present perfect.|Experiencia de vida (ever) → present perfect.
+___ you eat sushi last night?|Did|Have,Do,Has|Last night is finished → past simple.|Last night → pasado simple.
+He ___ here since 2020. (work)|has worked|worked,works,have worked|Since + until now → present perfect.|Since → present perfect.
+He ___ here from 2015 to 2020. (work)|worked|has worked,have worked,works|From… to… is a finished period → past simple.|Período terminado → pasado simple.
+I ___ my keys. I can't find them! (lose)|have lost|lose,loses,has lost|The result is now (I can't find them) → present perfect.|El resultado es ahora → present perfect.
+I ___ my keys yesterday, but I found them. (lose)|lost|have lost,has lost,lose
+When ___ you arrive?|did|have,has,do|With "when", use the past simple.|Con "when" → pasado simple.
+They ___ married in 2018. (get)|got|have got,have gotten,get
+They ___ married for five years. (be)|have been|were,are,was|For + until now → present perfect.|For → present perfect.
+I ___ breakfast at 7 a.m. (have)|had|have had,has had,have
+___ you finished your homework yet?|Have|Did,Do,Has|Yet → present perfect.|Yet → present perfect.
+I ___ him two days ago. (see)|saw|have seen,has seen,seen|With "ago", use the past simple.|Con "ago" → pasado simple.
+I ___ him since Monday. (not / see)|haven't seen/have not seen|didn't see,don't see,hasn't seen|Since + until now → present perfect.|Since → present perfect.
+She ___ a book in 2021. (write)|wrote|has written,have written,writes
+She ___ three books so far. (write)|has written|wrote,writes,have written|"So far" = until now → present perfect.|"So far" = hasta ahora → present perfect.
+We ___ to that restaurant last weekend. (go)|went|have gone,have been,go
+Shakespeare ___ many plays. (write)|wrote|has written,have written,writes|His life is finished → past simple.|Su vida terminó → pasado simple.
+My grandma ___ 30 countries, and she's still traveling! (visit)|has visited|visit,visits,have visited|Her life experience until now → present perfect.|Hasta ahora → present perfect.
+___ you see the game last night?|Did|Have,Do,Has|Last night is finished → past simple.|Last night → pasado simple.
+I've never ___ a horse. (ride)|ridden|rode,ride,riding|After have / has, use the past participle: ridden.|Después de have / has: participio.
+I ___ a horse when I was ten. (ride)|rode|have ridden,ridden,ride|"When I was ten" is finished time → past simple.|"When I was ten" → pasado simple.
+What time ___ you get up today?|did|have,has,do|"What time" asks for a specific time → past simple.|Hora específica → pasado simple.
+It ___ a lot this year. (rain)|has rained|rains,have rained,rain|This year isn't finished → present perfect.|Este año no ha terminado → present perfect.
+It ___ a lot last year. (rain)|rained|has rained,rains,have rained
+Fix it: "I have seen him yesterday." → I ___ him yesterday.|saw|have seen,seen,see|With yesterday, use the past simple.|Con yesterday → pasado simple.
+Fix it: "Did you ever go to Europe?" → ___ you ever been to Europe?|Have|Did,Do,Has
+Fix it: "When have you arrived?" → When ___ you arrive?|did|have,has,do
+Fix it: "I have finished school in 2015." → I ___ school in 2015.|finished|have finished,finish,has finished|"In 2015" is finished time → past simple.|"In 2015" → pasado simple.
+Fix it: "She lived here since 2010." → She ___ here since 2010.|has lived|lived,lives,have lived|Since + until now → present perfect.|Since → present perfect.
+Look! Someone ___ my car! (scratch)|has scratched|scratches,scratch,have scratched|You can see the result now → present perfect.|Se ve el resultado ahora → present perfect.
+Last night I ___ until 2 a.m. (study)|studied|have studied,has studied,study
+How many times ___ you been to the dentist this year?|have|did,has,do|This year isn't finished → present perfect.|Este año → present perfect.
+I ___ to the dentist on Tuesday. (go)|went|have gone,have been,go
+We ___ each other since we were kids. (know)|have known|knew,know,has known|Since + until now → present perfect.|Since → present perfect.
+We ___ in school, in 2005. (meet)|met|have met,has met,meet
+`},
+ {n:7, t:"Tell the story", sub:"real stories with 10 blanks", story:true, why:"Read the whole sentence: the time words tell you which tense you need.", es:"Lee toda la oración: las palabras de tiempo te dicen qué tiempo verbal usar.", q:`
+#Moving to a new city
+I ___ in Santiago for two years now. (live)|have lived|lived,live,has lived
+I ___ here from Valdivia in 2024. (move)|moved|have moved,has moved,move
+Since then, I ___ a lot of new friends. (make)|have made|make,makes,has made
+I ___ my first job here three months after I arrived. (get)|got|have got,have gotten,get
+I ___ at the same company since then. (work)|have worked|work,works,has worked
+I ___ every neighborhood yet. (not / visit)|haven't visited/have not visited|didn't visit,don't visit,hasn't visited
+Last weekend, I ___ Cerro San Cristóbal for the first time. (climb)|climbed|have climbed,has climbed,climb
+"___ you ever seen the city from up there?" my friend asked.|Have|Did,Do,Has
+"I've never ___ anything so beautiful," I said. (see)|seen|saw,see,seeing
+I ___ really happy here so far. (be)|have been|am,be,has been
+#Job interview prep
+I've just ___ an email from a big company. (get)|got/gotten|get,getting,gets
+They ___ me twice this week. (write)|have written|write,writes,has written
+I ___ this job for months. (want)|have wanted|want,wants,has wanted
+I ___ three interviews this year, and none of them went well. (have)|have had|has had,having,have
+At my last interview, I ___ really nervous. (be)|was|have been,has been,am
+I ___ the questions at that interview. (not / understand)|didn't understand/did not understand|don't understand,hasn't understood,not understood
+But since then, I ___ English every day. (practice)|have practiced/have practised|practice,practices,has practiced
+I've already ___ my answers to the common questions. (write)|written|wrote,write,writing
+Yesterday, my teacher ___ a practice interview with me. (do)|did|has done,have done,does
+"You ___ so much!" she told me. (improve)|have improved|improve,improves,has improved
+#My grandma's adventures
+My grandma ___ 80 years old last month. (turn)|turned|has turned,have turned,turns
+She ___ to more than 20 countries in her life. (be)|has been|is,be,have been
+When she was young, she ___ in Italy for a year. (live)|lived|has lived,have lived,lives
+She ___ Italian there, and she still speaks it. (learn)|learned/learnt|has learn,learn,have learned
+She has never ___ on a cruise. (be)|been|was,be,being
+This year, she has already ___ three trips. (take)|taken|took,take,taking
+In March, she ___ to Mexico with her friends. (fly)|flew|has flown,have flown,flies
+"___ you ever tried skydiving?" I asked her.|Have|Did,Do,Has
+"Not yet," she said. "But I ___ about it a lot!" (think)|have thought|think,thinks,has thought
+I've never ___ anyone like her. (meet)|met|meet,meeting,meets
+#A busy morning
+It's 9 a.m., and I've already ___ a lot. (do)|done|did,do,doing
+I ___ up at 6 today. (wake)|woke|have woken,has woken,wake
+Then I ___ for a run before breakfast. (go)|went|have gone,has gone,go
+I ___ all my emails, but I haven't answered them yet. (read)|have read|has read,reading,am read
+My roommate ___ up yet. (not / get)|hasn't got/has not got/hasn't gotten/has not gotten|didn't get,don't get,haven't got
+He ___ to bed at 3 a.m. last night. (go)|went|has gone,have gone,goes
+I ___ two coffees so far. (drink)|have drunk/have had|drink,drinks,has drunk
+Oh no, I ___ my keys! I can't find them anywhere. (lose)|have lost|lose,loses,has lost
+Wait, I've ___ them! They were in my bag. (find)|found|finded,find,finding
+I've just ___ the door, and now I'm ready for work. (lock)|locked|lock,locking,locks
+`}
+];
+PP_STAGES.forEach(st=>{
+  if(st.story){ st.stories=[]; let cur=null, k=0; st.items=[]; st.q.trim().split("\n").forEach(l=>{ if(l.startsWith("#")){ cur={title:l.slice(1).trim(),items:[]}; st.stories.push(cur); return; } const p=l.split("|").map(x=>x.trim()); const it={id:"pp"+st.n+"-"+(k++), st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es, story:cur.title}; cur.items.push(it); st.items.push(it); }); delete st.q; return; }
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"pp"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+const PP_TEST=`
+I ___ here since I was a child. (live)|have lived|Since + until now → present perfect.
+She ___ to Paris. She'll be back next week. (go)|has gone|Has gone = she's there now. Has been = she went and came back.
+She ___ to Paris twice. She loved it. (be)|has been|Has been = she went and came back (experience).
+How long ___ you known her?|have|How long + have + person + past participle.
+I ___ him since we were in school. (know)|have known|Know → known. Since → present perfect.
+When ___ you start working here?|did|With "when", use the past simple.
+I ___ my wallet. Can you help me look for it? (lose)|have lost|The result is now → present perfect.
+We ___ each other in 2019. (meet)|met|"In 2019" is finished time → past simple.
+This is the best pizza I have ever ___. (eat)|eaten|Eat → eaten.
+She hasn't called ___.|yet|Yet goes at the end of negatives.
+I've ___ seen him. He was here a minute ago.|just|Just = a moment ago.
+Have you ___ been to Easter Island?|ever|Ever is for life experience questions.
+I haven't seen her ___ ages.|for|For + a period of time (ages).
+It's been two years ___ we moved.|since|Since + the starting point (when we moved).
+He ___ three cups of coffee today. (drink)|has drunk/has had|Today isn't finished. Drink → drunk.
+They ___ married for ten years. (be)|have been|For + until now → present perfect.
+Fix it: "I am here since Monday." → I ___ here since Monday.|have been|Since + until now → present perfect, not "am".
+Fix it: "Have you went to the bank?" → Have you ___ to the bank?|gone/been|After have, use the participle: gone or been.
+Fix it: "She has wrote a book." → She has ___ a book.|written|Write → wrote → written.
+Fix it: "I have seen that movie last week." → I ___ that movie last week.|saw|Last week is finished → past simple.
+Fix it: "How long are you studying English?" → How long ___ you studied English?|have|How long + have + person + past participle.
+Fix it: "Did you ever try sushi?" → ___ you ever tried sushi?|Have|Life experience (ever) → present perfect.
+The price of gas ___ a lot this year. (rise)|has risen|Rise → rose → risen.
+Someone ___ the last cookie! (eat)|has eaten|You see the result now → present perfect.
+My phone ___ again. I need a new one. (break)|has broken|Break → broke → broken.
+I ___ to Mendoza in 2022. (drive)|drove|"In 2022" is finished time → past simple.
+He has ___ his bike to work every day this week. (ride)|ridden|Ride → rode → ridden.
+We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|Since → present perfect. Speak → spoken.
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"ppt-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
+
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
 (function(){
   const view=document.getElementById("v-quiz"), hub=document.getElementById("prHub"); if(!view||!hub) return;
@@ -3759,21 +4136,26 @@ VOC_SETS.forEach(set=>{
   const $=id=>document.getElementById(id);
   const beg=()=>typeof csBeginner==="function"&&csBeginner();
   const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
-  const ITEM={}; PS_STAGES.forEach(st=>st.items.forEach(q=>ITEM[q.id]=q)); VOC_SETS.forEach(v=>v.qs.forEach(q=>ITEM[q.id]=q));
+  const MODS={
+    ps:{id:"ps",name:"Past simple",lname:"past simple",stages:PS_STAGES,test:PS_TEST,toy:"⏳ Magic hourglass",toyName:"Magic hourglass",ico:"⏪"},
+    pp:{id:"pp",name:"Present perfect",lname:"present perfect",stages:PP_STAGES,test:PP_TEST,toy:"🌍 Little globe",toyName:"Little globe",ico:"🌍"}
+  };
+  let M="ps"; const MD=()=>MODS[M];
+  const ITEM={}; Object.values(MODS).forEach(md=>md.stages.forEach(st=>st.items.forEach(q=>{ q.mod=md.id; ITEM[q.id]=q; }))); VOC_SETS.forEach(v=>v.qs.forEach(q=>ITEM[q.id]=q));
   const VSET={}; VOC_SETS.forEach(v=>VSET[v.id]=v);
   const vprog=()=>{ const v=LS.get("ncs-vocab",{}); return v&&typeof v==="object"?v:{}; };
   const GOAL=3, PASS=7, TOPASS=15;
 
   /* ---- saved progress ---- */
   const mods=()=>{ const m=LS.get("ncs-mods",{}); return m&&typeof m==="object"?m:{}; };
-  const ps=()=>{ const m=mods(); const p=m.ps||{}; p.b=p.b||{}; p.s=p.s||{}; p.r=p.r|0; return p; };
+  const ps=(id)=>{ const m=mods(); const p=m[id||M]||{}; p.b=p.b||{}; p.s=p.s||{}; p.r=p.r|0; return p; };
   const rec=()=>{ const r=LS.get("ncs-modrec",{}); return r&&typeof r==="object"?r:{}; };
   const starsFor=sc=>sc>=10?3:sc>=9?2:sc>=PASS?1:0;
-  const testedOut=()=>{ const p=ps(); return !!(p.to&&p.to.sc>=TOPASS); };
+  const testedOut=(id)=>{ const p=ps(id); return !!(p.to&&p.to.sc>=TOPASS); };
   const today=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
-  const unlocked=n=>{ const p=ps(); return n===1||testedOut()||(p.b[n-1]|0)>=PASS||rec().ps===n; };
-  const totalStars=()=>{ const p=ps(); return PS_STAGES.reduce((t,st)=>t+(p.s[st.n]|0),0); };
-  const allDone=()=>{ const p=ps(); return testedOut()||PS_STAGES.every(st=>(p.b[st.n]|0)>=PASS); };
+  const unlocked=n=>{ const p=ps(); return n===1||testedOut()||(p.b[n-1]|0)>=PASS||rec()[M]===n; };
+  const totalStars=(id)=>{ const p=ps(id); return MODS[id||M].stages.reduce((t,st)=>t+(p.s[st.n]|0),0); };
+  const allDone=(id)=>{ const p=ps(id); return testedOut(id)||MODS[id||M].stages.every(st=>(p.b[st.n]|0)>=PASS); };
   const mis=()=>{ const m=LS.get("ncs-mymis",{}); return m&&typeof m==="object"?m:{}; };
   const misList=()=>{ const m=mis(); return Object.keys(m).filter(id=>ITEM[id]).sort((a,b)=>(m[b].n-m[a].n)||(m[b].t-m[a].t)); };
   function noteAnswer(id,ok){
@@ -3800,11 +4182,13 @@ VOC_SETS.forEach(set=>{
       '<div class="pr-dots" aria-hidden="true">'+Array.from({length:GOAL},(_,i)=>'<i class="'+(i<w.n?"on":"")+'"></i>').join("")+'</div>'+
       '<p>'+(w.got?"Done for this week! 🎉 Your buddy got its reward. Keep going if you want, a new goal starts on Monday.":"Finish "+GOAL+" practice rounds this week (grammar or flashcards). Your buddy gets <b>+5 🍪</b> and <b>+5 friendship</b>.")+'</p>'+
       '<p class="esb">Meta semanal: termina '+GOAL+' rondas de práctica esta semana.</p>';
-    const ts=$("prPsTile"); if(ts){ const t=totalStars(), r=rec().ps; ts.querySelector(".pr-sub").innerHTML=t+" / "+(PS_STAGES.length*3)+" ★"+(r?' · <span class="pr-rec">Noa recommends stage '+r+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/(PS_STAGES.length*3)*100)+"%"; }
+    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.length*3; ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(r?' · <span class="pr-rec">Noa recommends stage '+r+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
     const sc=$("prShortCount"); if(sc){ sc.textContent=Math.min(w.n,GOAL)+"/"+GOAL; sc.parentElement.classList.toggle("done",!!w.got); }
     const tm=$("prMisTile"); if(tm){ const n=misList().length; tm.querySelector(".pr-sub").textContent=n?n+(n===1?" question to review":" questions to review"):"Nothing to review yet"; }
   }
   let cur=null;
+  function setMod(id){ if(!MODS[id]) return; M=id; const h=$("psTitle"); if(h) h.innerHTML="<em>"+esc(MODS[id].name)+"</em>"; try{ sessionStorage.setItem("cs-mod",id); }catch(e){} }
+  try{ const sm=sessionStorage.getItem("cs-mod"); if(MODS[sm]) M=sm; }catch(e){}
   const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab"};
   const PNAME={gram:"Grammar",words:"Your words",vocab:"Vocabulary"};
   function show(p,fromPop){
@@ -3820,7 +4204,7 @@ VOC_SETS.forEach(set=>{
     window.scrollTo({top:0});
   }
   view.addEventListener("click",e=>{
-    const t=e.target.closest("[data-pr]"); if(t){ round=null; show(t.dataset.pr); return; }
+    const t=e.target.closest("[data-pr]"); if(t){ round=null; if(t.dataset.modtile) setMod(t.dataset.modtile); show(t.dataset.pr); return; }
     if(e.target.closest("[data-prback]")){ round=null; show(PARENT[cur]||null); }
   });
   document.addEventListener("click",e=>{ const b=e.target.closest('[data-go="quiz"]'); if(b&&!b.closest("#v-quiz")){ round=null; setTimeout(()=>show(null),0); } });
@@ -3828,31 +4212,31 @@ VOC_SETS.forEach(set=>{
   /* ---- past simple: stage list ---- */
   const stars=n=>'<span class="ps-stars" aria-label="'+n+' of 3 stars">'+"★★★".slice(0,n)+'<s>'+"★★★".slice(0,3-n)+'</s></span>';
   function renderStages(){
-    const box=$("psArea"); if(!box) return; const p=ps(), r=rec().ps;
+    const box=$("psArea"); if(!box) return; const p=ps(), r=rec()[M], md=MD(); setMod(M);
     const to=p.to, triedToday=p.tod===today();
-    const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of the past simple</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
-      :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at the past simple?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span></div>'+
+    const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of the '+esc(md.lname)+'</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
+      :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at the '+esc(md.lname)+'?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span></div>'+
         (triedToday?'<button class="pill-btn" type="button" disabled>Try again tomorrow</button>':'<button class="pill-btn pill-green" type="button" data-tostart>Take the test</button>')+'</div>';
-    box.innerHTML=toCard+'<div class="ps-list">'+PS_STAGES.map(st=>{
+    box.innerHTML=toCard+'<div class="ps-list">'+md.stages.map(st=>{
       const open=unlocked(st.n), best=p.b[st.n];
       return '<div class="card ps-stage'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?st.n:"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
         (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":testedOut()?"🎓 tested out":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
         (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
     }).join("")+'</div>'+
-    '<p class="ps-goal">'+(allDone()?"⏳ You finished every stage! Your buddy has the <b>Magic hourglass</b>.":"Finish all "+PS_STAGES.length+" stages ("+PASS+"/10 or more) to unlock the ⏳ <b>Magic hourglass</b> for your buddy.")+'</p>';
+    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p>';
   }
 
   /* ---- a round ---- */
   let round=null;
-  const nrm=s=>String(s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.?!,]+$/g,"").replace(/\bdidn't\b/g,"did not").replace(/\bwasn't\b/g,"was not").replace(/\bweren't\b/g,"were not").replace(/\s+/g," ").trim();
+  const nrm=s=>String(s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.?!,]+$/g,"").replace(/\bdidn't\b/g,"did not").replace(/\bwasn't\b/g,"was not").replace(/\bweren't\b/g,"were not").replace(/\bhaven't\b/g,"have not").replace(/\bhasn't\b/g,"has not").replace(/\s+/g," ").trim();
   function start(kind,stage){
     let pool, title;
     let story=null;
-    if(kind==="ps"){ const st=PS_STAGES[stage-1];
-      if(st.story){ let last=""; try{ last=sessionStorage.getItem("cs-ps-story")||""; }catch(e){} const opts=st.stories.filter(x=>x.title!==last); story=opts[Math.floor(Math.random()*opts.length)]||st.stories[0]; try{ sessionStorage.setItem("cs-ps-story",story.title); }catch(e){} pool=story.items.slice(); }
+    if(kind==="ps"){ const st=MD().stages[stage-1];
+      if(st.story){ let last=""; try{ last=sessionStorage.getItem("cs-"+M+"-story")||""; }catch(e){} const opts=st.stories.filter(x=>x.title!==last); story=opts[Math.floor(Math.random()*opts.length)]||st.stories[0]; try{ sessionStorage.setItem("cs-"+M+"-story",story.title); }catch(e){} pool=story.items.slice(); }
       else pool=shuffle(st.items).slice(0,10);
       title="Stage "+st.n+" · "+st.t; }
-    else if(kind==="test"){ if(ps().tod===today()) { renderStages(); return; } pool=shuffle(PS_TEST).slice(0,15); title="🎓 Test out"; round={kind,stage:0,title,list:pool.map(q=>({q,mc:false})),i:0,score:0,missed:[],retry:false,answered:false,test:true}; const p=ps(), m=mods(); p.tod=today(); m.ps=p; LS.set("ncs-mods",m); show("ps"); paintQ(); return; }
+    else if(kind==="test"){ if(ps().tod===today()) { renderStages(); return; } pool=shuffle(MD().test).slice(0,15); title="🎓 Test out"; round={kind,stage:0,title,list:pool.map(q=>({q,mc:false})),i:0,score:0,missed:[],retry:false,answered:false,test:true}; const p=ps(), m=mods(); p.tod=today(); m[M]=p; LS.set("ncs-mods",m); show("ps"); paintQ(); return; }
     else if(kind==="voc"){ const v=VSET[stage]; vsCur=v.id; const mq=shuffle(v.qs.filter(q=>q.mco)).slice(0,5), cq=shuffle(v.qs.filter(q=>!q.mco)).slice(0,5); pool=mq.concat(cq); title=v.ico+" "+v.t; }
     else { const ids=misList().slice(0,10); if(!ids.length){ renderMis(); return; } pool=shuffle(ids.map(id=>ITEM[id])); title="My mistakes"; }
     const half=Math.ceil(pool.length/2);
@@ -3911,20 +4295,19 @@ VOC_SETS.forEach(set=>{
         '<div class="note-actions" style="justify-content:center"><button class="pill-btn pill-green" type="button" data-vqstart="'+id+'">Try again</button><button class="swap" type="button" data-vlearn="'+id+'">See the words</button></div></div>';
       document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:R.score,perfect,finished:false}}));
     } else if(R.kind==="ps"){
-      const m=mods(), p=ps(), st=R.stage, oldBest=p.b[st], wasDone=allDone(), wasOpen=PS_STAGES[st]?unlocked(st+1):true;
+      const m=mods(), p=ps(), md=MD(), st=R.stage, oldBest=p.b[st], wasDone=allDone(), wasOpen=md.stages[st]?unlocked(st+1):true;
       if(oldBest==null||R.score>oldBest) p.b[st]=R.score;
-      p.s[st]=Math.max(p.s[st]|0,starsFor(R.score)); p.r++; p.last=Date.now(); m.ps=p; LS.set("ncs-mods",m);
-      const nowOpen=PS_STAGES[st]?unlocked(st+1):false, finishedAll=!wasDone&&allDone();
-      if(rec().ps===st&&R.score>=PASS){ /* Noa's recommendation done */ }
+      p.s[st]=Math.max(p.s[st]|0,starsFor(R.score)); p.r++; p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m);
+      const nowOpen=md.stages[st]?unlocked(st+1):false, finishedAll=!wasDone&&allDone();
       const sg=starsFor(R.score);
       html='<div class="card ps-res"><div class="ps-big">'+R.score+' / 10</div>'+stars(sg)+
         '<p class="ps-sent">'+(R.score===10?"Perfect round! 🎉":R.score>=9?"Excellent! 🌟":R.score>=PASS?"Well done! You passed this stage. 👍":"Good practice! Get "+PASS+"/10 to pass this stage. You can do it 💪")+'</p>'+
         (nowOpen&&!wasOpen?'<p class="ps-unlock">🔓 Stage '+(st+1)+' is open!</p>':"")+
-        (finishedAll?'<p class="ps-unlock">⏳ You finished the whole past simple module! Your buddy got the <b>Magic hourglass</b>.</p>':"")+
+        (finishedAll?'<p class="ps-unlock">'+md.toy.split(" ")[0]+' You finished the whole '+esc(md.lname)+' module! Your buddy got the <b>'+md.toyName+'</b>.</p>':"")+
         (R.missed.length?'<p class="muted">The questions you missed are saved in <b>My mistakes</b>, so you can review them later.</p>':"")+
-        '<div class="note-actions" style="justify-content:center">'+(nowOpen&&PS_STAGES[st]?'<button class="pill-btn pill-green" type="button" data-psstart="'+(st+1)+'">Next stage →</button>':"")+
+        '<div class="note-actions" style="justify-content:center">'+(nowOpen&&md.stages[st]?'<button class="pill-btn pill-green" type="button" data-psstart="'+(st+1)+'">Next stage →</button>':"")+
         '<button class="pill-btn'+(nowOpen?"":" pill-green")+'" type="button" data-psstart="'+st+'">Try again</button><button class="swap" type="button" data-psall>All stages</button></div></div>';
-      document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:R.score,perfect,finished:finishedAll}}));
+      document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:R.score,perfect,finished:finishedAll,mod:M,toy:md.toy}}));
     } else {
       const left=misList().length;
       html='<div class="card ps-res"><div class="ps-big">'+R.score+' / '+n+'</div><p class="ps-sent">'+(perfect?"All correct! 🎉":"Good review! 👍")+'</p><p class="muted">'+(left?left+(left===1?" question is":" questions are")+" still on your list. A question leaves the list when you get it right twice in a row.":"Your list is empty. Nothing left to review! 🎉")+'</p>'+
@@ -3954,18 +4337,18 @@ VOC_SETS.forEach(set=>{
   });
 
   function finishTest(){
-    const R=round, sc=R.score, pass=sc>=TOPASS, m=mods(), p=ps(), wasDone=allDone();
-    if(pass){ if(!p.to||sc>p.to.sc) p.to={sc,t:Date.now()}; PS_STAGES.forEach(st=>{ p.s[st.n]=Math.max(p.s[st.n]|0,3); }); }
-    p.r++; p.last=Date.now(); m.ps=p; LS.set("ncs-mods",m);
+    const R=round, sc=R.score, pass=sc>=TOPASS, m=mods(), p=ps(), md=MD(), wasDone=allDone();
+    if(pass){ if(!p.to||sc>p.to.sc) p.to={sc,t:Date.now()}; md.stages.forEach(st=>{ p.s[st.n]=Math.max(p.s[st.n]|0,3); }); }
+    p.r++; p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m);
     const finished=pass&&!wasDone;
     const box=area(); round=null;
     box.innerHTML='<div class="card ps-res"><div class="ps-big">'+sc+' / 15</div>'+(pass?stars(3):"")+
-      '<p class="ps-sent">'+(pass?"Perfect! 🎓 You tested out of the past simple.":sc>=13?"So close! You need 15/15 to test out. 💪":"Good try! You need 15/15 to test out. 💪")+'</p>'+
-      (finished?'<p class="ps-unlock">⏳ Every stage is done, and your buddy got the <b>Magic hourglass</b>!</p>':"")+
+      '<p class="ps-sent">'+(pass?"Perfect! 🎓 You tested out of the "+md.lname+".":sc>=13?"So close! You need 15/15 to test out. 💪":"Good try! You need 15/15 to test out. 💪")+'</p>'+
+      (finished?'<p class="ps-unlock">'+md.toy.split(" ")[0]+' Every stage is done, and your buddy got the <b>'+md.toyName+'</b>!</p>':"")+
       (pass?"":'<p class="muted">You can try the test again tomorrow, or practice the stages to get there step by step.</p>')+
       (R.missed.length?'<div class="ps-miss"><b>'+(R.missed.length===1?"The one you missed":"The ones you missed")+'</b><ul>'+R.missed.map(x=>'<li>'+esc(x.q.q).replace("___","<b>"+esc(x.q.a[0])+"</b>")+(x.val?' <small>(you wrote: '+esc(x.val)+')</small>':"")+'<br><span class="muted">'+esc(x.q.why)+'</span></li>').join("")+'</ul></div>':"")+
       '<div class="note-actions" style="justify-content:center"><button class="pill-btn pill-green" type="button" data-psall>See the stages</button></div></div>';
-    document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:sc,perfect:sc===15,finished}}));
+    document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:sc,perfect:sc===15,finished,mod:M,toy:md.toy}}));
     bumpWeek();
   }
   /* ---- Vocabulary ---- */
@@ -3992,7 +4375,7 @@ VOC_SETS.forEach(set=>{
   /* ---- My mistakes ---- */
   function renderMis(){
     const box=$("misArea"); if(!box) return; const ids=misList(), m=mis();
-    if(!ids.length){ box.innerHTML='<div class="card"><p style="margin:0 0 10px"><b>Nothing to review yet 🎉</b></p><p class="muted" style="margin:0 0 12px">When you miss a question in a grammar stage, it shows up here so you can practice it again later.</p><button class="pill-btn" type="button" data-pr="ps">Practice the past simple</button></div>'; return; }
+    if(!ids.length){ box.innerHTML='<div class="card"><p style="margin:0 0 10px"><b>Nothing to review yet 🎉</b></p><p class="muted" style="margin:0 0 12px">When you miss a question in a grammar stage, it shows up here so you can practice it again later.</p><button class="pill-btn" type="button" data-pr="gram">Go to Grammar</button></div>'; return; }
     box.innerHTML='<div class="card"><p style="margin:0 0 12px">You have <b>'+ids.length+'</b> '+(ids.length===1?"question":"questions")+' to review. Get one right twice in a row and it leaves the list.</p>'+
       '<ul class="mis-list">'+ids.slice(0,8).map(id=>'<li>'+esc(ITEM[id].q).replace("___","<b>"+esc(ITEM[id].a[0])+"</b>")+(m[id].n>1?' <small>missed '+m[id].n+'×</small>':"")+'</li>').join("")+(ids.length>8?'<li class="muted">…and '+(ids.length-8)+' more</li>':"")+'</ul>'+
       '<button class="pill-btn pill-green" type="button" data-misstart>Review '+Math.min(10,ids.length)+(ids.length===1?" question":" questions")+'</button></div>';
@@ -4000,8 +4383,8 @@ VOC_SETS.forEach(set=>{
 
   /* ---- open from elsewhere (notebook "Practice this") ---- */
   window.__prShow=(p,fromPop)=>{ round=null; show(p,fromPop); };
-  window.csPractice=function(p,stage){ go("quiz",true); round=null; if(p==="ps"&&stage){ start("ps",stage); } else show(p); };
-  document.addEventListener("click",e=>{ const b=e.target.closest("[data-psgo]"); if(!b) return; e.preventDefault(); window.csPractice("ps",+b.dataset.psgo||0); });
+  window.csPractice=function(p,stage,mod){ go("quiz",true); round=null; if(mod) setMod(mod); if(p==="ps"&&stage){ start("ps",stage); } else show(p); };
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-psgo]"); if(!b) return; e.preventDefault(); window.csPractice("ps",+b.dataset.psgo||0,b.dataset.psmod||"ps"); });
   renderHub();
 })();
 
@@ -4020,7 +4403,7 @@ VOC_SETS.forEach(set=>{
     const ws=(LS.get("ncs-words",[])||[]).filter(w=>w&&w.w), ns=(LS.get("ncs-classnotes",[])||[]).filter(n=>n&&n.text);
     const fc=LS.get("ncs-fc",{})||{}, learned=Object.values(fc).filter(v=>v>=3).length;
     const bd=LS.get("ncs-buddy",{})||{}, days=Array.isArray(bd.gd)?bd.gd.length:0;
-    const mods=LS.get("ncs-mods",{})||{}, ps=mods.ps||{}, st=Object.values(ps.s||{}).reduce((a,b)=>a+(b|0),0);
+    const mods=LS.get("ncs-mods",{})||{}, ps=mods.ps||{}, st=["ps","pp"].reduce((t,k)=>t+Object.values((mods[k]||{}).s||{}).reduce((a,b)=>a+(b|0),0),0), outs=["ps","pp"].filter(k=>mods[k]&&mods[k].to&&mods[k].to.sc>=15).length;
     const pt=LS.get("ncs-ptime",null)||{s:0,since:Date.now()};
     const times=[...ws.map(w=>w.t),...ns.map(n=>n.t),LS.get("ncs-joined",0),pt.since].filter(t=>t>1e12);
     const joined=times.length?Math.min(...times):Date.now();
@@ -4034,7 +4417,7 @@ VOC_SETS.forEach(set=>{
       row("📚","Words saved",ws.length)+
       row("✅","Words learned",learned)+
       row("📝","Class notes",ns.length)+
-      row("⏪","Past simple",st+" / 21 ★"+(ps.to&&ps.to.sc>=14?" 🎓":""))+
+      row("🧩","Grammar stars",st+" / 42 ★"+(outs?" 🎓":""))+
       buddy+
       '<div class="note-actions" style="margin-top:8px"><button class="swap" type="button" data-recap="now">📸 My monthly recap</button></div>';
   }
@@ -4057,7 +4440,7 @@ VOC_SETS.forEach(set=>{
     const bd=LS.get("ncs-buddy",{})||{};
     const days=(Array.isArray(bd.gd)?bd.gd:[]).filter(g=>String(g).startsWith(k+"-")).length;
     const fc=LS.get("ncs-fc",{})||{}, learned=Object.values(fc).filter(v=>v>=3).length;
-    const ps=(LS.get("ncs-mods",{})||{}).ps||{}, stars=Object.values(ps.s||{}).reduce((a,b)=>a+(b|0),0);
+    const md=LS.get("ncs-mods",{})||{}, stars=["ps","pp"].reduce((t,k)=>t+Object.values((md[k]||{}).s||{}).reduce((a,b)=>a+(b|0),0),0);
     const notes=(LS.get("ncs-classnotes",[])||[]).filter(n=>n&&inM(n.t)).length;
     return {month:MON[m], y, words:ws.filter(w=>inM(w.t)).length, total:ws.length, days, rounds:(LS.get("ncs-mst",{})||{})[k]|0, learned, stars, notes,
       lvl:(window.csBuddy&&bd.on===true)?window.csBuddy.level():0, bname:(window.csBuddy&&bd.on===true)?window.csBuddy.name():""};
@@ -4085,7 +4468,7 @@ VOC_SETS.forEach(set=>{
       c.fillStyle="#FFD86B"; c.font="700 40px "+F; c.fillText("💛 Friendship level "+st.lvl,W/2,by+66); by+=100;
     } else by+=40;
     /* stat cards */
-    const cards=[["📚",st.words,st.words===1?"new word":"new words"],["🌱",st.days,st.days===1?"study day":"study days"],["🎯",st.rounds,st.rounds===1?"practice round":"practice rounds"],["✅",st.learned,"words learned"],["⏪",st.stars+"/21","past simple stars"],["📝",st.notes,st.notes===1?"class note":"class notes"]];
+    const cards=[["📚",st.words,st.words===1?"new word":"new words"],["🌱",st.days,st.days===1?"study day":"study days"],["🎯",st.rounds,st.rounds===1?"practice round":"practice rounds"],["✅",st.learned,"words learned"],["🧩",st.stars,st.stars===1?"grammar star":"grammar stars"],["📝",st.notes,st.notes===1?"class note":"class notes"]];
     const cw=440, ch=220, gx=50, x0=(W-cw*2-gx)/2;
     cards.forEach((k,i)=>{ const x=x0+(i%2)*(cw+gx), y=by+Math.floor(i/2)*(ch+30);
       rr(c,x,y,cw,ch,36); c.fillStyle="rgba(255,255,255,.1)"; c.fill();
@@ -4118,6 +4501,30 @@ VOC_SETS.forEach(set=>{
   }catch(e){} },7000);
 })();
 
+/* ---------- usage counts (for Noa's teacher view): how often each part of the site is used, per day ---------- */
+(function(){
+  const DAY=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+  let pend={}, timer=null;
+  function flush(){
+    timer=null; const keys=Object.keys(pend); if(!keys.length) return;
+    const u=LS.get("ncs-usage",{})||{}, d=DAY(); u[d]=u[d]||{};
+    keys.forEach(k=>{ u[d][k]=(u[d][k]|0)+pend[k]; }); pend={};
+    const ds=Object.keys(u).sort((a,b)=>new Date(b)-new Date(a)); ds.slice(35).forEach(k=>delete u[k]);
+    LS.set("ncs-usage",u);
+  }
+  window.csUse=function(k){ pend[k]=(pend[k]|0)+1; if(!timer) timer=setTimeout(flush,45000); };
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden) flush(); });
+  window.addEventListener("pagehide",flush);
+  document.addEventListener("cs-fcround",e=>{ if(!(e.detail&&e.detail.n<5)) csUse("flash"); });
+  document.addEventListener("cs-modround",e=>{ const d=e.detail||{}; csUse(d.irr?"irr":d.mod?"gram":"vocab"); });
+  document.addEventListener("cs-sentence",()=>csUse("sentence"));
+  document.addEventListener("cs-said",()=>csUse("say"));
+  document.addEventListener("click",e=>{ if(e.target.closest("#trBtn")) csUse("translate"); if(e.target.closest("[data-vlearn]")) csUse("vcards"); },true);
+})();
+
+/* offline support */
+if("serviceWorker" in navigator&&location.protocol==="https:"){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
+window.addEventListener("offline",()=>toast("You're offline. Your saved words and notes still work, and everything syncs when you're back online."));
 /* ---------------- import words ---------------- */
 const impCard=document.getElementById("importCard"), impOpen=document.getElementById("impOpen"), impText=document.getElementById("impText"), impPrev=document.getElementById("impPreview");
 function parseCSV(text,delim){
@@ -4698,6 +5105,7 @@ function go(id,push){
   if(!ids.includes(id)) id="tenses";
   if(curView && curView!==id && curView!=="feedback") window.__lastView=curView;
   if(curView && curView!==id && !goingBack){ backStack.push({id:curView,y:window.scrollY||0}); if(backStack.length>30) backStack.shift(); }
+  if(curView!==id&&window.csUse) window.csUse("p:"+id);
   curView=id;
   renderBack();
   views.forEach(v=>v.hidden = v.id!=="v-"+id);
@@ -5139,11 +5547,18 @@ function wlShow(i){ const steps=wl.querySelectorAll(".wl-step"); wlAt=Math.max(0
   document.getElementById("wlOk").hidden=!last; document.getElementById("wlNotes").hidden=!last;
   wl.scrollTop=0; const h=steps[wlAt].querySelector("h2"); if(h){ h.setAttribute("tabindex","-1"); }
   setTimeout(()=>document.getElementById(last?"wlOk":"wlNext").focus(),30); }
-function openWelcome(){ wlReturn=document.activeElement; wl.hidden=false; wlBd.hidden=false; wlShow(0); }
+function openWelcome(){ wlReturn=document.activeElement; wl.hidden=false; wlBd.hidden=false; wlShow(0);
+  const lvl=LS.get("ncs-level","normal"); wl.querySelectorAll("[data-wllevel]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.wllevel===(lvl==="beginner"?"beginner":"normal"))));
+  const bd=LS.get("ncs-buddy",{})||{}; const ar=document.getElementById("wlAdoptRow"); if(ar) ar.hidden=bd.on===true; }
 document.getElementById("wlNext").addEventListener("click",()=>wlShow(wlAt+1));
 document.getElementById("wlBack").addEventListener("click",()=>wlShow(wlAt-1));
 document.getElementById("wlSkip").addEventListener("click",()=>closeWelcome());
-wl.addEventListener("keydown",e=>{ if(e.key==="ArrowRight"&&wlAt<3) wlShow(wlAt+1); if(e.key==="ArrowLeft"&&wlAt>0) wlShow(wlAt-1); });
+wl.addEventListener("keydown",e=>{ const n=wl.querySelectorAll(".wl-step").length; if(e.key==="ArrowRight"&&wlAt<n-1) wlShow(wlAt+1); if(e.key==="ArrowLeft"&&wlAt>0) wlShow(wlAt-1); });
+wl.addEventListener("click",e=>{
+  const lv=e.target.closest("[data-wllevel]");
+  if(lv){ wl.querySelectorAll("[data-wllevel]").forEach(b=>b.setAttribute("aria-pressed",String(b===lv))); try{ if(typeof csSetLevel==="function") csSetLevel(lv.dataset.wllevel==="beginner"); }catch(er){} setTimeout(()=>wlShow(wlAt+1),350); return; }
+  if(e.target.closest("[data-wladopt]")){ closeWelcome(); setTimeout(()=>{ if(window.csBuddy) window.csBuddy.open("adopt"); },200); }
+});
 function closeWelcome(){ wl.hidden=true; wlBd.hidden=true; LS.set("ncs-welcomed",1); if(wlReturn&&wlReturn.focus&&wlReturn!==document.body) wlReturn.focus(); }
 document.getElementById("wlOk").addEventListener("click",closeWelcome);
 document.getElementById("wlNotes").addEventListener("click",()=>{ closeWelcome(); });
@@ -5155,6 +5570,11 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-presentperfect", date:"November 6, 2026", title:"Present perfect + works offline 🌍", items:[
+    ["🌍","Present perfect","a new grammar module in <b>Practice</b>, with 7 stages, stories, a test out exam and a 🌍 Little globe for your buddy.","quiz"],
+    ["📶","Works offline","once you\u2019ve opened the Cheat Sheet, it opens even without internet. Your saved words and notes are there, and everything syncs when you\u2019re back online."],
+    ["👋","A new welcome tour","tap <b>How this page works</b> at the bottom of any page to see what\u2019s new."]
+  ]},
   {id:"2026-smarttranslate", date:"November 6, 2026", title:"A smarter translator 🗣️", items:[
     ["🔁","It knows the language","write in Spanish or English: the translator figures it out by itself.","translate"],
     ["🗣️","How to say it","translations now show an easy way to say the English, like <b>KUMF-ter-buhl</b>.","translate"],

@@ -257,7 +257,8 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "lamp", name: "Lamp", ico: "💡", slot: "toy", l: 100 },
     { id: "trophy", name: "Trophy", ico: "🏆", slot: "toy", l: 200 },
     /* grammar modules: finish every stage */
-    { id: "hourglass", name: "Magic hourglass", ico: "⏳", slot: "toy", m: "ps", mt: "Past simple" }
+    { id: "hourglass", name: "Magic hourglass", ico: "⏳", slot: "toy", m: "ps", mt: "Past simple" },
+    { id: "globe", name: "Little globe", ico: "🌍", slot: "toy", m: "pp", mt: "Present perfect" }
   ];
   const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
@@ -367,7 +368,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     } else {
       R(0, 0, RW, RH, "var(--bd-sky)"); R(0, 20, RW, 6, "var(--bd-grass)"); R(0, 20, RW, 1, "var(--bd-grass2)");
     }
-    const T = { hourglass: [30, 1, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
+    const T = { globe: [3, 1, ["...w...", "..bbb..", ".bggbb.", "bbgbbgb", "bgggbbb", ".bbggb.", "..bbb..", "...k...", "..kkk.."], { b: "#4A90E2", g: "#58C26B", k: "#8A6A3A", w: "#FFF3A0" }], hourglass: [30, 1, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
       plant: [34, 14, ["g.g.", ".gg.", "gggg", ".gg.", "oooo", ".oo."], { g: "#3BA776", o: "#C0673A" }], lamp: [1, 11, ["yyyy", "yyyy", ".kk.", ".k..", ".k..", ".k..", ".k..", "kkk."], { y: "#F9D25C", k: "#4A3A2A" }],
       trophy: [28, 19, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }] };
     toys.forEach(t => { const d = T[t]; if (!d) return; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(d[0] + dx, d[1] + dy, 1, 1, d[3][ch]); })); });
@@ -847,7 +848,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const n = (S.gd || []).length, toys = ITEMS.filter(i => i.slot === "toy");
       body = `${slotRow("room", "Background")}
       <div class="bd-small" style="margin:4px 0 5px;font-weight:700">Toys</div><div class="bd-row">${toys.map(t => `<span class="bd-chip${isOpen(t) ? "" : " locked"}" title="${isOpen(t) ? esc(t.name) : "Unlocks " + (t.m ? "" : "at ") + lockTxt(t)}">${isOpen(t) ? t.ico : "🔒"} ${esc(t.name)}${isOpen(t) ? "" : ` <small>· ${t.m ? "⏪" : t.l}</small>`}</span>`).join("")}</div>
-      <p class="bd-small">Toys appear in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass comes from finishing the Past simple.</p>
+      <p class="bd-small">Toys appear in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass and 🌍 globe come from finishing grammar modules.</p>
       <p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows on every day you study. Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`;
     } else if (sec === "buddy") {
       body = `${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}<p class="bd-small">Each buddy has its own friendship level. Your treats, words and unlocks are shared by all of them.</p>`;
@@ -860,7 +861,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       ${nextW ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.words, prevW ? prevW.w : 0, nextW.w)}%"></i></div>` : ""}
       <div class="bd-prog"><b>${c.learned}</b> ${c.learned === 1 ? "word" : "words"} learned${nextL ? ` · next: ${nextL.ico} <b>${esc(nextL.name)}</b> at ${nextL.l}` : " · every toy unlocked! 🎉"}</div>
       ${nextL ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.learned, prevL ? prevL.l : 0, nextL.l)}%"></i></div>` : ""}
-      <div class="bd-prog">⏪ <b>Grammar:</b> ${modDone("ps") ? "⏳ Magic hourglass unlocked! ✨" : `finish the <b>Past simple</b> in Practice to get the ⏳ <b>Magic hourglass</b>`}</div>
+      <div class="bd-prog">⏪ <b>Past simple:</b> ${modDone("ps") ? "⏳ Magic hourglass unlocked! ✨" : `finish it in Practice to get the ⏳ <b>Magic hourglass</b>`}</div>
+      <div class="bd-prog">🌍 <b>Present perfect:</b> ${modDone("pp") ? "🌍 Little globe unlocked! ✨" : `finish it in Practice to get the 🌍 <b>Little globe</b>`}</div>
       <h4>How to earn treats 🍪</h4>
       <ul class="bd-earn"><li>Save a new word: <b>+1</b> (up to 10 a day)</li><li>Finish a flashcard round of 5+ cards: <b>+3</b> (up to 5 a day)</li><li>Finish a grammar round: <b>+2</b> (up to 3 a day)</li><li>Write a good sentence: <b>+1</b> (up to 5 a day)</li><li>Say it out loud: <b>+1</b> (up to 3 a day)</li><li>Weekly goal: <b>+5</b> · Rare park treat: <b>+2</b></li></ul>
       <p class="bd-small">Your jar holds ${MAXT} treats, and your buddy eats up to ${FEED_PER_DAY} a day.</p>`;
@@ -974,7 +976,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     let gave = 0; if (S.md[1] < 3) { S.md[1]++; const old = S.t | 0; S.t = Math.min(MAXT, old + 2); gave = S.t - old; }
     if (d.perfect) addFP(3);
     const grew = markStudy(); save(); wake(); hop();
-    if (d.finished) { fx(["✨", "⏳", "✨"]); say(`🎉 You finished the past simple! New magic toy for ${esc(nameOf())}: <b>⏳ Magic hourglass</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000); return; }
+    if (d.finished) { const toy = d.toy || "⏳ Magic hourglass"; fx(["✨", toy.split(" ")[0], "✨"]); say(`🎉 You finished a grammar module! New magic toy for ${esc(nameOf())}: <b>${esc(toy)}</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000); return; }
     fx(d.perfect ? ["⭐", "💛", "⭐"] : ["🍪", "💛", "✨"]); maybeTrick();
     say((d.perfect ? "Perfect round! ⭐ +3 friendship" : "Round done! 💪") + (gave ? ` +${gave} 🍪` : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 4000);
   });
