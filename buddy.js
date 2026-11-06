@@ -485,6 +485,9 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 @keyframes bdNerv{0%,100%{transform:translateX(0)}50%{transform:translateX(-2px)}}
 .bd-sweat{top:8px;right:4px;font-size:13px;animation:bdSweat 1.6s ease-in forwards}
 @keyframes bdSweat{from{transform:translateY(0);opacity:1}to{transform:translateY(14px);opacity:0}}
+.bd-stbub{position:absolute;left:50%;top:8px;transform:translateX(-50%);max-width:86%;background:var(--surface,#fff);color:var(--ink,#222);border:1.5px solid var(--line,#ddd);border-radius:12px;padding:6px 10px;font:700 13px/1.35 var(--body,sans-serif);box-shadow:0 6px 16px rgba(0,0,0,.18);text-align:center;animation:bdPop .25s ease-out}
+.bd-stbub[hidden]{display:none}
+@keyframes bdPop{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
 html.cs-calm .bd-prop{display:none}
 html.cs-calm .bd-pet .bd-svg,html.cs-calm .bd-pet.hop .bd-svg,html.cs-calm .bd-pet.walk .bd-svg{animation:none}
 html.cs-calm .bd-shiny::before,html.cs-calm .bd-shiny::after{animation:none;opacity:.8}
@@ -536,7 +539,14 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     }
   }
   function hop() { petBtn.classList.remove("hop", "walk"); void petBtn.offsetWidth; petBtn.classList.add("hop"); setTimeout(() => petBtn.classList.remove("hop"), 1000); }
+  let stTimer = 0;
+  function stageSay(html, ms) {
+    const st = document.getElementById("bdStage"); if (!st || modal.hidden || mode !== "main") return;
+    let b = st.querySelector(".bd-stbub"); if (!b) { b = document.createElement("div"); b.className = "bd-stbub"; b.setAttribute("role", "status"); st.appendChild(b); }
+    b.innerHTML = html; b.hidden = false; clearTimeout(stTimer); stTimer = setTimeout(() => { b.hidden = true; }, Math.min(ms || 4000, 6000));
+  }
   function say(html, acts, ms) {
+    if (!modal.hidden && mode === "main") { if (html) setTimeout(() => stageSay(html, ms), 0); return; }
     clearTimeout(bubTimer);
     bub.innerHTML = (html ? `<div class="bd-msg">${html}</div>` : "") + (acts ? `<div class="bd-acts">${acts}</div>` : "");
     bub.hidden = false;
@@ -887,7 +897,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   const lovedKey = "cs-parklove";
   function lovedToday(uid) { try { const m = JSON.parse(localStorage.getItem(lovedKey) || "{}"); return m[uid] === today(); } catch (e) { return false; } }
   function markLoved(uid) { try { const m = JSON.parse(localStorage.getItem(lovedKey) || "{}"); Object.keys(m).forEach(k => { if (m[k] !== today()) delete m[k]; }); m[uid] = today(); localStorage.setItem(lovedKey, JSON.stringify(m)); } catch (e) {} }
-  function parkToast(pb, t) { const s = document.createElement("span"); s.className = "park-tip"; s.textContent = t; s.style.left = pb.offsetLeft + "px"; s.style.top = (pb.offsetTop - 70) + "px"; pb.parentNode.appendChild(s); setTimeout(() => s.remove(), 2600); }
+  function parkToast(pb, t) { const s = document.createElement("span"); s.className = "park-tip"; s.textContent = t; s.style.left = pb.style.left; s.style.top = "calc(" + pb.style.top + " + 46px)"; pb.parentNode.appendChild(s); setTimeout(() => s.remove(), 2600); }
   async function sendLove(pb) {
     const uid = pb.dataset.uid, bn = pb.dataset.bn || "them";
     if (lovedToday(uid)) { parkToast(pb, "You already sent " + bn + " love today 💛"); return; }
@@ -930,15 +940,95 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const pos = [];
     club.forEach((x, i) => { const n = club.length; if (n === 1) { pos.push([x, 50, 54]); return; } const inner = n > 7 && i % 2; const ang = i / n * Math.PI * 2 - Math.PI / 2; const r = inner ? .45 : 1; pos.push([x, 50 + Math.cos(ang) * 19 * r, 54 + Math.sin(ang) * 17 * r]); });
     priv.forEach((x, i) => { const n = priv.length; const ang = i / n * Math.PI * 2 + Math.PI / 4; pos.push([x, Math.max(9, Math.min(91, 50 + Math.cos(ang) * 39)), Math.max(24, Math.min(84, 55 + Math.sin(ang) * 30))]); });
-    el.innerHTML = DECO + pos.map(([x, l, t]) => {
-      const bn = (x.n && String(x.n).trim()) || SP[x.a].name, owner = x.me ? "You" : (x.first ? x.first + "'s" : "");
-      return `<button class="park-b${x.me ? " me" : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, friendship level ${x.lvl | 0 || 1}">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}<span class="pn">${esc(bn)}</span>${owner ? `<span class="po">${esc(owner)}${x.lvl > 1 ? " · 💛" + (x.lvl | 0) : ""}</span>` : ""}<span class="pw">📚 ${(x.me ? counts().words : x.words | 0)} ${(x.me ? counts().words : x.words | 0) === 1 ? "word" : "words"}</span></button>`;
-    }).join("");
+    const wc = x => (x.me ? counts().words : x.words | 0);
+    el.innerHTML = `<div class="park-zoom" role="group" aria-label="Zoom"><button type="button" data-pz="-1" aria-label="Zoom out">−</button><button type="button" data-pz="0" aria-label="Fit the whole park">⤢</button><button type="button" data-pz="1" aria-label="Zoom in">+</button></div>
+      <div class="park-vp" id="parkVp"><div class="park-world" id="parkWorld">${DECO}${pos.map(([x, l, t]) => {
+      const bn = (x.n && String(x.n).trim()) || SP[x.a].name, owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
+      const info = `${owner ? `<b>${esc(owner)}</b>` : ""}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}<br>📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}`;
+      return `<button class="park-b${x.me ? " me" : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo" aria-hidden="true">${info}</span><span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
+    }).join("")}</div></div>`;
+    applyZoom(false); startPark();
+  }
+  /* ---------- park: zoom ---------- */
+  const ZL = [0.6, 0.8, 1, 1.35, 1.8, 2.4];
+  let pz = (() => { const def = window.innerWidth < 640 ? .8 : 1; try { const v = +localStorage.getItem("cs-parkz"); return ZL.includes(v) && localStorage.getItem("cs-parkz") ? v : def; } catch (e) { return def; } })();
+  function applyZoom(keepCenter) {
+    const vp = $("parkVp"), w = $("parkWorld"); if (!vp || !w) return;
+    const cx = (vp.scrollLeft + vp.clientWidth / 2) / Math.max(1, vp.scrollWidth), cy = (vp.scrollTop + vp.clientHeight / 2) / Math.max(1, vp.scrollHeight);
+    w.style.setProperty("--z", pz); w.style.setProperty("--zw", Math.max(1, pz));
+    const ar = $("parkArea"); ar.querySelectorAll("[data-pz]").forEach(b => { const d = +b.dataset.pz; b.disabled = d < 0 ? pz <= ZL[0] : d > 0 ? pz >= ZL[ZL.length - 1] : pz === (window.innerWidth < 640 ? .8 : 1); });
+    requestAnimationFrame(() => { const nx = keepCenter ? cx : .5, ny = keepCenter ? cy : .5; vp.scrollLeft = nx * vp.scrollWidth - vp.clientWidth / 2; vp.scrollTop = ny * vp.scrollHeight - vp.clientHeight / 2; });
+  }
+  document.addEventListener("click", e => {
+    const z = e.target.closest("[data-pz]"); if (!z) return;
+    const d = +z.dataset.pz, i = ZL.indexOf(pz);
+    pz = d === 0 ? (window.innerWidth < 640 ? .8 : 1) : ZL[Math.max(0, Math.min(ZL.length - 1, i + d))];
+    try { localStorage.setItem("cs-parkz", String(pz)); } catch (err) {}
+    applyZoom(d !== 0);
+  });
+  /* ---------- park: buddies wander, play and say hi ---------- */
+  let parkTick = null;
+  const calm = () => document.documentElement.classList.contains("cs-calm") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  function spot(zone) {
+    if (zone === "p") { const a = Math.random() * Math.PI * 2, r = .82 + Math.random() * .2; return [Math.max(7, Math.min(93, 50 + Math.cos(a) * 39 * r)), Math.max(24, Math.min(86, 55 + Math.sin(a) * 30 * r))]; }
+    const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * .95; return [50 + Math.cos(a) * 23 * r, 54 + Math.sin(a) * 20 * r];
+  }
+  /* try a few spots and take the one with the most room around it */
+  function freeSpot(b) {
+    const others = [...document.querySelectorAll("#parkWorld .park-b")].filter(x => x !== b).map(x => [parseFloat(x.style.left), parseFloat(x.style.top)]);
+    let best = null, bestD = -1;
+    for (let i = 0; i < 8; i++) { const p = spot(b.dataset.zone); const d = others.reduce((m, o) => Math.min(m, Math.hypot((p[0] - o[0]) * 1.2, p[1] - o[1])), 999); if (d > bestD) { bestD = d; best = p; } }
+    return best;
+  }
+  function moveTo(b, l, t) {
+    const ol = parseFloat(b.style.left) || 50;
+    b.querySelector(".pb-flip").classList.toggle("left", l < ol - .5);
+    b.classList.add("walking"); b.style.left = l + "%"; b.style.top = t + "%";
+    clearTimeout(b._wt); b._wt = setTimeout(() => b.classList.remove("walking"), 3000);
+  }
+  function parkFx(b, ch, cls) { const w = $("parkWorld"); if (!w) return; const s = document.createElement("span"); s.className = "park-fx" + (cls ? " " + cls : ""); s.textContent = ch; s.style.left = b.style.left; s.style.top = "calc(" + b.style.top + " - 40px)"; w.appendChild(s); setTimeout(() => s.remove(), 2400); }
+  function playAnim(b) {
+    const l = +b.dataset.lvl || 1, opts = [["hop", 1]];
+    if (l >= 2) opts.push(["yawn", 2]); if (l >= 3) opts.push(["dance", 3]); if (l >= 4) opts.push(["look", 4]); if (l >= 5) opts.push(["fly", 5]); if (l >= 6) opts.push(["ball", 6]); if (l >= 7) opts.push(["music", 7]); if (l >= 8) opts.push(["book", 8]); if (l >= 9) opts.push(["spin", 9]);
+    const [k] = opts[Math.floor(Math.random() * opts.length)];
+    const cls = { hop: "hop", yawn: "p-yawn", dance: "p-dance", look: "p-look", spin: "p-spin" }[k];
+    if (cls) { b.classList.remove("hop", "p-yawn", "p-dance", "p-look", "p-spin"); void b.offsetWidth; b.classList.add(cls); setTimeout(() => b.classList.remove(cls), 2200); }
+    if (k === "fly") parkFx(b, "🦋", "pf-fly"); else if (k === "ball") parkFx(b, "⚽", "pf-ball"); else if (k === "music") { parkFx(b, "🎵"); setTimeout(() => parkFx(b, "🎶"), 500); } else if (k === "book") parkFx(b, "📖", "pf-book"); else if (k === "yawn") parkFx(b, "💤", "pf-small");
+  }
+  function meet(a, b) {
+    const bl = parseFloat(b.style.left), bt = parseFloat(b.style.top), side = (parseFloat(a.style.left) < bl) ? -1 : 1;
+    moveTo(a, Math.max(5, Math.min(95, bl + side * 7)), bt);
+    setTimeout(() => {
+      if (!document.body.contains(a)) return;
+      a.querySelector(".pb-flip").classList.toggle("left", side > 0);
+      b.querySelector(".pb-flip").classList.toggle("left", side < 0);
+      [a, b].forEach(x => { x.classList.remove("hop"); void x.offsetWidth; x.classList.add("hop"); setTimeout(() => x.classList.remove("hop"), 1000); });
+      parkFx(a, "👋"); setTimeout(() => parkFx(b, ["💛", "😊", "🤝", "✨"][Math.floor(Math.random() * 4)]), 350);
+    }, 3100);
+  }
+  function startPark() {
+    clearInterval(parkTick);
+    if (calm()) return;
+    let n = 0;
+    parkTick = setInterval(() => {
+      const v = $("v-park"); if (!v || v.hidden) { clearInterval(parkTick); return; }
+      if (document.hidden) return;
+      const bs = [...document.querySelectorAll("#parkWorld .park-b")].filter(b => !b.matches(":hover") && !b.classList.contains("show-info")); if (!bs.length) return;
+      n++;
+      if (n % 4 === 0 && bs.length > 1) { const a = bs[Math.floor(Math.random() * bs.length)]; let b = bs[Math.floor(Math.random() * bs.length)]; if (a === b) b = bs[(bs.indexOf(a) + 1) % bs.length]; meet(a, b); return; }
+      bs.forEach(b => { if (Math.random() < .3 && !b.classList.contains("walking")) { const [l, t] = freeSpot(b); moveTo(b, l, t); } else if (Math.random() < .2) playAnim(b); });
+    }, 2600);
   }
   document.addEventListener("click", e => {
     const pb = e.target.closest(".park-b");
     if (pb && !pb.classList.contains("me") && pb.dataset.uid) sendLove(pb);
-    if (pb) { pb.classList.remove("hop"); void pb.offsetWidth; pb.classList.add("hop"); ["💛", "👋", "💛"].forEach((ch, i) => { const s = document.createElement("span"); s.className = "park-fx"; s.textContent = ch; s.style.left = (pb.offsetLeft - 20 + i * 16) + "px"; s.style.top = (pb.offsetTop - 50) + "px"; s.style.animationDelay = i * .12 + "s"; pb.parentNode.appendChild(s); setTimeout(() => s.remove(), 1500); }); return; }
+    if (pb) {
+      document.querySelectorAll(".park-b.show-info").forEach(x => { if (x !== pb) x.classList.remove("show-info"); });
+      pb.classList.add("show-info"); clearTimeout(pb._it); pb._it = setTimeout(() => pb.classList.remove("show-info"), 3500);
+      pb.classList.remove("hop"); void pb.offsetWidth; pb.classList.add("hop"); setTimeout(() => pb.classList.remove("hop"), 1000);
+      ["💛", "👋", "💛"].forEach((ch, i) => setTimeout(() => parkFx(pb, ch), i * 130));
+      return;
+    }
     const a = e.target.closest("[data-park]"); if (!a) return;
     if (a.dataset.park === "signin" && window.csSignIn) window.csSignIn(); else if (a.dataset.park === "retry") renderPark(); else if (a.dataset.park === "adopt") openModal("adopt");
   });
