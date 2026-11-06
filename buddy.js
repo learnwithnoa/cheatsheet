@@ -288,8 +288,10 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     try { const f = JSON.parse(localStorage.getItem("ncs-fc") || "{}"); learned = Object.values(f).filter(v => v >= 3).length; } catch (e) {}
     return { words, learned };
   }
-  const modDone = m => { try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
-  const isOpen = it => { if (it.m) return modDone(it.m); const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
+  /* Noa (the teacher account) has everything unlocked and a best-friends buddy */
+  const TCH = () => window.__csTeacher === true;
+  const modDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
+  const isOpen = it => { if (TCH()) return true; if (it.m) return modDone(it.m); const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
   const lockTxt = it => it.m ? "when you finish " + it.mt : it.w != null ? it.w + " words" : it.l + " learned words";
   const animal = () => SP[S.a] ? S.a : "max";
   const palette = () => { const d = SP[animal()], c = d.colors[S.c | 0] || d.colors[0]; return Object.assign({}, d.p, c[1]); };
@@ -603,7 +605,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   const LV = [0, 20, 50, 100, 170, 260, 380, 530, 720, 950];
   const LV_WHAT = ["Blinks, bounces and naps", "Yawns and stretches", "Dances when you save a word", "Looks around curiously", "Watches butterflies 🦋", "Plays with its ball ⚽", "Hums along to your music 🎵", "Reads its book during the study timer 📖", "Spins and does happy jumps", "Best friends 💛"];
   if (S.fp != null && !S.fpm) { S.fpm = {}; S.fpm[S.a && SP[S.a] ? S.a : "max"] = S.fp | 0; }
-  const fpOf = a => (S.fpm && S.fpm[a || animal()]) | 0;
+  const fpOf = a => TCH() ? Math.max(1000, (S.fpm && S.fpm[a || animal()]) | 0) : (S.fpm && S.fpm[a || animal()]) | 0;
   const lvlOf = p => { let l = 1; LV.forEach((t, i) => { if (p >= t) l = i + 1; }); return l; };
   const level = a => lvlOf(fpOf(a));
   function addFP(n) {
@@ -795,12 +797,12 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (e.key === "Tab") { const f = [...modal.querySelectorAll("button:not([disabled]),input,[tabindex='0']")].filter(x => x.offsetParent); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
   });
   const UNI_AT = 150;
-  const uniOpen = () => S.ua === true || counts().learned >= UNI_AT;
+  const uniOpen = () => TCH() || S.ua === true || counts().learned >= UNI_AT;
   function animalGrid(sel, col) {
     return `<div class="bd-animals" role="group" aria-label="Choose an animal">${ORDER.map(id => id === "unicorn" && !uniOpen() ? `<button class="bd-animal locked" type="button" data-unilock="1" aria-disabled="true" title="Tap to preview · unlocks at ${UNI_AT} learned words" aria-pressed="${!!(pv && pv.a)}">${petSVG({ a: id, pal: SP[id].p, wear: {}, plain: true })}🔒 ${esc(SP[id].name)}<small style="display:block;font-size:10px;color:var(--muted,#777);font-weight:600">${UNI_AT} learned words</small></button>` : `<button class="bd-animal" type="button" data-pick="${id}" aria-pressed="${id === sel}">${petSVG({ a: id, pal: id === sel ? Object.assign({}, SP[id].p, (SP[id].colors[col | 0] || SP[id].colors[0])[1]) : SP[id].p, wear: {}, plain: true })}${esc(SP[id].name)}${SP[id].species ? `<small style="display:block;font-size:10px;color:var(--muted,#777);font-weight:600">${esc(SP[id].species)}</small>` : ""}${fpOf(id) ? `<small style="display:block;font-size:10.5px;color:var(--muted,#777)">💛 ${level(id)}</small>` : ""}</button>`).join("")}</div>${uniOpen() ? "" : `<p class="bd-small" id="bdUniNote" style="margin:6px 0 0">🦄 <b>${esc(SP.unicorn.name)} the unicorn</b> is the rarest buddy: she unlocks when you've <b>learned ${UNI_AT} words</b> in flashcards (you have ${counts().learned}).</p>`}`;
   }
   const COLOR_AT = [0, 0, 10, 20, 35, 50];
-  const colorOpen = i => counts().words >= (COLOR_AT[i] || 0);
+  const colorOpen = i => TCH() || counts().words >= (COLOR_AT[i] || 0);
   function swatches(id, sel) {
     const d = SP[id], next = d.colors.findIndex((x, i) => !colorOpen(i));
     return `<div class="bd-sw" role="group" aria-label="Choose a color">${d.colors.map(([n, p], i) => { const open = colorOpen(i); return `<button type="button" data-col="${i}" aria-pressed="${i === sel}" aria-label="${esc(n)}${open ? "" : ", unlocks at " + COLOR_AT[i] + " words"}" title="${esc(n)}${open ? "" : " · unlocks at " + COLOR_AT[i] + " words"}" ${open ? "" : 'aria-disabled="true"'} class="${open ? "" : "locked"}${pv && pv.c === i ? " pv" : ""}" style="background:${p.sw || (id === "unicorn" ? (p.b || p.r || d.p.r) : (p.b || d.p.b))}">${open ? "" : "🔒"}</button>`; }).join("")}<span>${esc((d.colors[sel] || d.colors[0])[0])}${next > 0 ? ` · next color at ${COLOR_AT[next]} words` : ""}</span></div>`;
@@ -1254,5 +1256,6 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   (function watchPark() { const v = $("v-park"); if (!v) return; new MutationObserver(() => { if (!v.hidden) renderPark(); }).observe(v, { attributes: true, attributeFilter: ["hidden"] }); if (!v.hidden) renderPark(); })();
   window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); } renderPark(); });
 
+  document.addEventListener("cs-teacher", () => { try { paintPet(); if (!modal.hidden) renderModal(); publishPark(); } catch (e) {} });
   window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();

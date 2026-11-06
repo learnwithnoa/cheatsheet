@@ -2137,7 +2137,7 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=20" defer></script>
+<script src="buddy.js?v=21" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -6075,7 +6075,8 @@ function renderUser() {
     else ico.textContent = name.charAt(0).toUpperCase();
     $("authWho").textContent = name + (user.email && user.displayName ? " · " + user.email : "");
     const tl = $("teacherLink"); if (tl) tl.hidden = (user.email || "").toLowerCase() !== "learnwithnoa@gmail.com";
-  } else { ico.textContent = "G"; panel.hidden = true; const tl = $("teacherLink"); if (tl) tl.hidden = true; }
+    const isT = (user.email || "").toLowerCase() === "learnwithnoa@gmail.com" && user.emailVerified; if (window.__csTeacher !== isT) { window.__csTeacher = isT; document.dispatchEvent(new CustomEvent("cs-teacher")); }
+  } else { ico.textContent = "G"; panel.hidden = true; const tl = $("teacherLink"); if (tl) tl.hidden = true; if (window.__csTeacher) { window.__csTeacher = false; document.dispatchEvent(new CustomEvent("cs-teacher")); } }
   status(user ? lastStatus === "out" ? "syncing" : lastStatus : "out");
 }
 btn.addEventListener("click", () => {
