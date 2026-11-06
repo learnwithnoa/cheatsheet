@@ -954,6 +954,24 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 .park-legend .lg3{font-weight:700;background:linear-gradient(90deg,#ff6fb5,#ffb347,#6fd3ff,#8cff9e);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 .rc-dlg{max-width:380px;text-align:center}
+
+.tr-also{display:block;margin-top:8px;font-size:15px;color:var(--muted)}
+.tr-note{margin:10px 0 0;font-size:14px;color:var(--bright)}
+.tr-say{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}
+.tr-say-l{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tr-say-p{font-weight:700;font-size:17px;letter-spacing:.02em}
+.opt{font-weight:400;color:var(--muted);font-size:.9em}
+.fc-tok{cursor:pointer;border-radius:4px;transition:background .12s}
+.fc-tok:hover{background:color-mix(in srgb,var(--bright) 22%,transparent)}
+.fc-tok.on{background:var(--bright);color:#fff}
+.fc-pickbar{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:14px;font-style:normal}
+.fc-pickbar[hidden]{display:none}
+.fc-pick-w{font-weight:700;color:var(--ink)}
+.fc-pick-add{cursor:pointer;padding:4px 12px;border-radius:99px;background:var(--green);color:#fff;font-weight:700}
+.fc-pick-x{cursor:pointer;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.fc-back .fc-hint-tap{font-size:12px;color:var(--muted)}
+
+.fc-tok{-webkit-user-select:none;user-select:none}
 </style>
 
 <header class="top">
@@ -1162,7 +1180,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
   <h2>Add a word</h2>
   <form id="noteForm" class="card note-form" autocomplete="off">
     <div class="field"><label for="nWord">English word / expression</label><input id="nWord" type="text" placeholder="e.g. figure out" spellcheck="false"></div>
-    <div class="field"><label for="nMeaning">Spanish translation</label><input id="nMeaning" type="text" placeholder="e.g. entender, resolver"></div>
+    <div class="field"><label for="nMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="nMeaning" type="text" placeholder="Leave it empty and we\'ll add it for you"></div>
     <div class="field wide"><label for="nExample">Example sentence <span class="opt">(optional)</span></label><input id="nExample" type="text" placeholder="e.g. I couldn't figure out the answer."></div>
     <div class="field wide"><label for="nNote">Notes <span class="opt">(optional)</span></label><input id="nNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
     <div class="note-actions"><button class="pill-btn" type="submit">+ Add word</button><button class="swap" type="button" data-go="words" id="wAllBtn">All my words →</button><span class="count">Tip: press Enter to save</span></div>
@@ -1311,7 +1329,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 
 <section class="view" id="v-translate" hidden>
   <h1>Quick <em>translator</em></h1>
-  <p class="lede">Write a word or sentence and tap <b>Translate here</b>, or open it in Google Translate or DeepL. For single words, WordReference gives you examples and every meaning.</p>
+  <p class="lede">Write a word or sentence in Spanish <i>or</i> English and tap <b>Translate here</b>. It figures out the language for you, and shows you how to say the English part. You can also open it in Google Translate or DeepL.</p>
   <div class="tr">
     <div class="card">
       <div class="dir"><strong id="fromLbl">Español</strong><span aria-hidden="true">→</span><strong id="toLbl">English</strong><button class="swap" id="swapBtn" type="button">Swap ⇄</button></div>
@@ -1322,12 +1340,14 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
         <a class="linkbtn" id="lnkGoogle" href="https://translate.google.com/" target="_blank" rel="noopener">Google Translate ↗</a>
         <a class="linkbtn" id="lnkDeepl" href="https://www.deepl.com/translator" target="_blank" rel="noopener">DeepL ↗</a>
         <a class="linkbtn" id="lnkWR" href="https://www.wordreference.com/" target="_blank" rel="noopener" hidden>WordReference ↗</a>
-        <button class="linkbtn save-link" id="trSave" type="button">+ Save to my words</button>
       </div>
     </div>
     <div class="card" id="outCard" hidden>
       <div class="dir"><strong>Translation</strong></div>
       <div class="out placeholder" id="trOut" aria-live="polite">Your translation shows up here.</div>
+      <p class="tr-note" id="trNote" hidden></p>
+      <div class="tr-say" id="trSay" hidden><span class="tr-say-l">How to say it</span><span class="tr-say-p" id="trSayP"></span><button class="say" type="button" id="trSayBtn" aria-label="Listen">🔊</button></div>
+      <div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" id="trSave" type="button">+ Save to my words</button></div>
     </div>
   </div>
   <div class="note dismissible">Tip: translate whole ideas, not word by word. And try saying it in English <i>first</i>, then check. That's how you actually get faster.</div>
@@ -2132,7 +2152,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 <form class="qa card" id="qa" role="dialog" aria-modal="true" aria-labelledby="qaTitle" hidden autocomplete="off">
   <div class="qa-top"><h3 id="qaTitle">Save a word</h3><button class="qa-x" type="button" id="qaClose" aria-label="Close">×</button></div>
   <div class="field"><label for="qaWord">English word / expression</label><input id="qaWord" type="text" spellcheck="false"></div>
-  <div class="field"><label for="qaMeaning">Spanish translation</label><input id="qaMeaning" type="text"></div>
+  <div class="field"><label for="qaMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="qaMeaning" type="text" placeholder="Leave it empty and we\'ll add it for you"></div>
   <div class="field"><label for="qaExample">Example sentence <span class="opt">(optional)</span></label><input id="qaExample" type="text"></div>
   <div class="field"><label for="qaNote">Notes <span class="opt">(optional)</span></label><input id="qaNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
@@ -2340,15 +2360,27 @@ updateLinks();
 let sample=null, ctrl=null;
 function useCsSample(){ if(!sample && window.__csSample){ sample=window.__csSample; trBtn.hidden=false; outCard.hidden=false; } }
 window.addEventListener("cs-sample-ready",useCsSample); useCsSample();
+/* without the AI, the save button lives next to the links instead */
+setTimeout(()=>{ if(!sample){ const s=document.getElementById("trSave"), l=document.querySelector("#v-translate .links"); if(s&&l){ s.className="linkbtn save-link"; l.appendChild(s); } } },4000);
+document.getElementById("trSayBtn").addEventListener("click",()=>{ const t=trOut.dataset.en; if(t&&window.csSpeak) window.csSpeak(t); });
 trBtn.addEventListener("click",async()=>{
   const t=trIn.value.trim(); if(!t||!sample) { trIn.focus(); return; }
-  const [sl,tl]=dir.split("-"); const from= sl==="es"?"Spanish (Chilean)":"English", to= tl==="es"?"Chilean Spanish":"natural, everyday English";
   if(ctrl) ctrl.abort(); ctrl=new AbortController();
-  trOut.classList.remove("placeholder"); trOut.textContent="Translating…"; trBtn.disabled=true;
-  const prompt="You are a translator for an English learner. Translate the text below from "+from+" into "+to+". Reply with the translation only, no quotes or notes. If there is a more natural or common alternative, add it on a new line starting with 'Also: '.\n\nText:\n"+t;
+  trOut.classList.remove("placeholder"); trOut.textContent="Translating…"; trBtn.disabled=true; trOut.dataset.tr=""; trOut.dataset.en="";
+  document.getElementById("trNote").hidden=true; document.getElementById("trSay").hidden=true;
+  const prompt="You help a Spanish-speaking (Chilean) English learner. The text below is in Spanish or English. The learner chose "+(dir==="es-en"?"Spanish → English":"English → Spanish")+", but they may have written in the other language: detect the real language yourself.\n"+
+    "Translate it into the other language: Spanish into natural, everyday English; English into natural Chilean Spanish.\n"+
+    "Reply with ONLY a JSON object, no code fences:\n"+
+    "{\"from\": \"es\" or \"en\", \"translation\": \"the translation\", \"also\": \"a more natural or common alternative, or an empty string\", \"say\": \"a learner-friendly American English pronunciation respelling of the ENGLISH text (the original if it is English, otherwise the translation), with the stressed syllable in CAPITALS and hyphens between syllables, like KUMF-ter-buhl for comfortable or ai-m LUK-ing FOR-werd tuh it. Use simple English spelling, no IPA. Empty string if the English text is longer than 10 words.\"}\n\nText:\n"+t;
   try{
-    const r=await sample(prompt,{modelTier:"quick",signal:ctrl.signal,onText:({text})=>{trOut.textContent=text;}});
-    trOut.textContent=r.text;
+    const r=await sample(prompt,{modelTier:"quick",signal:ctrl.signal});
+    let j=null; try{ j=JSON.parse(String(r.text||"").replace(/^[^{]*/,"").replace(/[^}]*$/,"")); }catch(er){}
+    if(!j||!j.translation){ trOut.textContent=r.text; trOut.dataset.tr=String(r.text||"").split("\n")[0]; return; }
+    const from=j.from==="en"?"en":"es";
+    if((from==="en")!==(dir==="en-es")){ dir=from==="en"?"en-es":"es-en"; updateLinks(); const n=document.getElementById("trNote"); n.hidden=false; n.textContent=from==="en"?"✨ That looks like English, so I translated it into Spanish.":"✨ That looks like Spanish, so I translated it into English."; }
+    trOut.innerHTML=esc(j.translation)+(j.also&&String(j.also).trim()?'<span class="tr-also">Also: '+esc(j.also)+'</span>':"");
+    trOut.dataset.tr=j.translation; trOut.dataset.en= from==="en"? t : j.translation;
+    if(j.say&&String(j.say).trim()){ document.getElementById("trSayP").textContent=j.say; document.getElementById("trSay").hidden=false; }
   }catch(e){
     if(e&&e.code==="rate_limited"){ trOut.textContent="Too many translations in a row. Use Google Translate or DeepL for now."; }
     else if(!(e&&e.name==="AbortError")){ trOut.textContent="That didn't work. Use Google Translate or DeepL below."; }
@@ -2696,7 +2728,7 @@ function openQA(w,m,e){
   qaReturn=document.activeElement;
   document.getElementById("qaWord").value=w||""; document.getElementById("qaMeaning").value=m||""; document.getElementById("qaExample").value=e||""; document.getElementById("qaNote").value="";
   qa.hidden=false; qaBd.hidden=false; fab.setAttribute("aria-expanded","true");
-  const first=[ "qaWord","qaMeaning","qaExample"].map(i=>document.getElementById(i)).find(i=>!i.value)||document.getElementById("qaWord");
+  const first=document.getElementById("qaWord").value?(document.getElementById("qaExample").value?document.getElementById("qaMeaning"):document.getElementById("qaMeaning")):document.getElementById("qaWord");
   setTimeout(()=>first.focus(),20);
 }
 function closeQA(){ qa.hidden=true; qaBd.hidden=true; fab.setAttribute("aria-expanded","false"); if(qaReturn&&qaReturn.focus) qaReturn.focus(); }
@@ -2721,7 +2753,7 @@ document.addEventListener("click",e=>{
 /* save from translator */
 document.getElementById("trSave").addEventListener("click",()=>{
   const inp=trIn.value.trim();
-  const out=(trOut.classList.contains("placeholder")?"":trOut.textContent.split("\n")[0].replace(/^Also:\s*/i,"")).trim();
+  const out=(trOut.classList.contains("placeholder")?"":(trOut.dataset.tr||trOut.textContent.split("\n")[0].replace(/^Also:\s*/i,""))).trim();
   const okOut = out && !/^(Translating…|Too many|That didn't work)/.test(out) ? out : "";
   if(dir==="es-en") openQA(okOut,inp,""); else openQA(inp,okOut,"");
 });
@@ -2892,6 +2924,31 @@ const FC_EMPTY={new20:"",week:"You haven't saved any words in the last 7 days. A
   hard:"No hard words yet. Words you mark <b>✗ Didn't know</b> show up here, so you can practice just those.",
   pick:"You haven't picked any words yet. Go to <b>My words</b>, tap <b>Choose words</b>, tick the ones you want and press <b>Practice these</b>."};
 function fcShuffle(){ const l=fcList(); fcOrder=l.map(x=>x.id).sort(()=>Math.random()-.5).sort((a,b)=>fcBoxOf(a)-fcBoxOf(b)); fcIdx=0; fcFlipped=false; }
+/* tap words on the back of a flashcard to save them (tap neighbours to make a phrase) */
+let fcSel=[];
+function fcToks(t){ return t.split(/(\s+)/).map(p=>/\S/.test(p)?'<span class="fc-tok" data-tok>'+p+'</span>':p).join(""); }
+function fcClean(w){ return w.replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu,""); }
+function fcPaintSel(){
+  const toks=[...fcBack.querySelectorAll(".fc-tok")]; toks.forEach((t,i)=>t.classList.toggle("on",fcSel.includes(i)));
+  const bar=document.getElementById("fcPickBar"); if(!bar) return;
+  if(!fcSel.length){ bar.hidden=true; return; }
+  const phrase=fcSel.slice().sort((a,b)=>a-b).map(i=>toks[i].textContent).join(" ");
+  bar.hidden=false; bar.innerHTML='<span class="fc-pick-w">“'+esc(fcClean(phrase))+'”</span><span role="button" tabindex="0" class="fc-pick-add" data-fcadd>+ Save to My words</span><span role="button" tabindex="0" class="fc-pick-x" data-fcclear aria-label="Clear">×</span>';
+}
+fcBack.addEventListener("click",e=>{
+  const tok=e.target.closest("[data-tok]"), add=e.target.closest("[data-fcadd]"), clr=e.target.closest("[data-fcclear]");
+  if(!tok&&!add&&!clr) return;
+  e.stopPropagation(); e.preventDefault();
+  if(clr){ fcSel=[]; fcPaintSel(); return; }
+  const toks=[...fcBack.querySelectorAll(".fc-tok")];
+  if(add){ const phrase=fcClean(fcSel.slice().sort((a,b)=>a-b).map(i=>toks[i].textContent).join(" ")); if(phrase){ const ctx=(toks[fcSel[0]].closest("i")||toks[fcSel[0]].closest("small")||{}).textContent||""; openQA(phrase,"",toks[fcSel[0]].closest("i")?ctx:""); } fcSel=[]; fcPaintSel(); return; }
+  const i=toks.indexOf(tok);
+  const sameLine=fcSel.length&&toks[fcSel[0]].parentNode===tok.parentNode;
+  if(fcSel.includes(i)) fcSel=fcSel.filter(x=>x!==i);
+  else if(sameLine&&(i===Math.min(...fcSel)-1||i===Math.max(...fcSel)+1)) fcSel.push(i);
+  else fcSel=[i];
+  fcPaintSel();
+},true);
 function renderFlash(){
   const all=allWords().filter(x=>x.w), list=fcList();
   document.querySelectorAll("[data-fcset]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.fcset===fcSet)));
@@ -2910,8 +2967,9 @@ function renderFlash(){
   const en='<b>'+esc(x.w)+'</b>', es='<b>'+esc(x.m||"(no translation yet)")+'</b>';
   const ex=(x.def?'<small class="fc-def">'+(x.pos?'<span class="pos">'+esc(x.pos)+'</span> ':'')+esc(x.def)+'</small>':'')+(x.e?'<i>'+esc(x.e)+'</i>':'')+(x.n?'<small class="fc-note">📝 '+esc(x.n)+'</small>':'');
   fcFront.innerHTML= fcSpanishFirst? es : en;
-  fcBack.innerHTML= (fcSpanishFirst? en : es) + ex;
-  fcBack.hidden=!fcFlipped; fcHint.textContent= fcFlipped? "Did you know it?" : "Tap to flip";
+  fcBack.innerHTML= (fcSpanishFirst? en : es) + ex.replace(/(<small class="fc-def">(?:<span class="pos">[^<]*<\/span> )?)([^<]*)(<\/small>)/,(m,a,b,c)=>a+fcToks(b)+c).replace(/<i>([^<]*)<\/i>/,(m,b)=>'<i>'+fcToks(b)+'</i>') + '<span class="fc-pickbar" id="fcPickBar" hidden></span>';
+  fcSel=[];
+  fcBack.hidden=!fcFlipped; fcHint.textContent= fcFlipped? "Did you know it? · Tap any word to save it" : "Tap to flip";
   document.getElementById("fcAnswer").hidden=!fcFlipped;
   document.getElementById("fcCount").textContent=(fcIdx+1)+" of "+fcOrder.length;
   const learned=list.filter(y=>fcBoxOf(y.id)>=3).length, learning=list.filter(y=>fcBoxOf(y.id)>0&&fcBoxOf(y.id)<3).length;
@@ -3749,8 +3807,9 @@ VOC_SETS.forEach(set=>{
   let cur=null;
   const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab"};
   const PNAME={gram:"Grammar",words:"Your words",vocab:"Vocabulary"};
-  function show(p){
+  function show(p,fromPop){
     cur=p||null;
+    if(!fromPop&&!view.hidden){ try{ const st=history.state||{}; if(st.cs&&st.v==="quiz"&&(st.pp||null)!==cur) history.pushState({cs:1,v:"quiz",pp:cur,n:(st.n|0)+1},"","#quiz"); }catch(e){} }
     view.querySelectorAll(".pr-back-t").forEach(t=>t.textContent=PNAME[PARENT[cur]]||"All practice");
     hub.hidden=!!cur; panels.forEach(x=>x.hidden=x.dataset.pp!==cur);
     if(cur==="ps"&&!round) renderStages();
@@ -3940,6 +3999,7 @@ VOC_SETS.forEach(set=>{
   }
 
   /* ---- open from elsewhere (notebook "Practice this") ---- */
+  window.__prShow=(p,fromPop)=>{ round=null; show(p,fromPop); };
   window.csPractice=function(p,stage){ go("quiz",true); round=null; if(p==="ps"&&stage){ start("ps",stage); } else show(p); };
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-psgo]"); if(!b) return; e.preventDefault(); window.csPractice("ps",+b.dataset.psgo||0); });
   renderHub();
@@ -4609,17 +4669,31 @@ function renderBack(){
   const view=document.getElementById("v-"+curView); if(view && link.parentNode!==view) view.prepend(link);
   if(prev){
     const nb=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+prev.id+'"]');
-    const name= prev.id==="notes"?"Home":prev.id==="classnotes"?"My class notes":prev.id==="words"?"My words":prev.id==="changelog"?"What's new":(nb?nb.textContent.trim():prev.id);
+    const nbt=nb?(()=>{ const c=nb.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl,svg').forEach(x=>x.remove()); return c.textContent.trim(); })():"";
+    const name= prev.id==="notes"?"Home":prev.id==="classnotes"?"My class notes":prev.id==="words"?"My words":prev.id==="changelog"?"What's new":(nbt||prev.id);
     document.getElementById("backTxt").textContent=name;
     link.setAttribute("aria-label","Back to "+name);
     fabB.setAttribute("aria-label","Back to "+name); fabB.title="Back to "+name;
   }
 }
 function goBack(){
+  if(history.state&&history.state.cs&&history.state.n>0){ history.back(); return; }
   const prev=backStack.pop(); if(!prev) return;
   goingBack=true; go(prev.id,true); goingBack=false;
   setTimeout(()=>window.scrollTo({top:prev.y}),20);
 }
+let histN=0, fromPop=false;
+window.addEventListener("popstate",e=>{
+  const st=e.state||{}, id=st.v||location.hash.slice(1)||"notes";
+  histN=st.n|0;
+  if(id===curView){ if(id==="quiz"&&window.__prShow) window.__prShow(st.pp||null,true); return; }
+  const top=backStack[backStack.length-1];
+  fromPop=true; goingBack=true;
+  if(top&&top.id===id){ backStack.pop(); go(id); setTimeout(()=>window.scrollTo({top:top.y}),20); } else go(id);
+  goingBack=false; fromPop=false;
+  if(id==="quiz"&&window.__prShow) window.__prShow(st.pp||null,true);
+  renderBack();
+});
 function go(id,push){
   if(!ids.includes(id)) id="tenses";
   if(curView && curView!==id && curView!=="feedback") window.__lastView=curView;
@@ -4634,21 +4708,22 @@ function go(id,push){
   document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", (b.dataset.go===id||(id==="notebook"&&b.dataset.go==="classnotes"))?"true":"false"));
   const cur=document.querySelector('.navbtn[aria-current="true"]'); if(cur&&cur.scrollIntoView&&window.innerWidth<=900) cur.scrollIntoView({block:"nearest",inline:"center"});
   try{localStorage.setItem("eep-view",id);}catch(e){}
-  if(push){ try{ history.replaceState(null,"","#"+id);}catch(e){} }
+  if(push&&!fromPop){ try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"","#"+id); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"","#"+id); else history.pushState({cs:1,v:id,n:++histN},"","#"+id);}catch(e){} }
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]"); if(!b)return; e.preventDefault(); go(b.dataset.go,true); if(b.closest("nav.side,header.top")){ backStack.length=0; renderBack(); } window.scrollTo({top:0}); if(b.dataset.go==="translate") setTimeout(()=>trIn.focus(),50);});
-window.addEventListener("hashchange",()=>go(location.hash.slice(1)));
+window.addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h&&h!==curView&&ids.includes(h)) go(h); });
 document.getElementById("backLink").addEventListener("click",goBack);
 document.getElementById("backFab").addEventListener("click",goBack);
 let start=location.hash.slice(1);
 if(!ids.includes(start)){ try{ start=localStorage.getItem("eep-view")||"notes"; }catch(e){ start="notes"; } }
 go(start);
+try{ history.replaceState({cs:1,v:curView,n:0},"","#"+curView); }catch(e){}
 
 /* ---------------- starred sections ---------------- */
 let stars=LS.get("ncs-stars",[]);
 const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl').forEach(x=>x.remove()); return c.textContent.trim(); };
 document.querySelectorAll(".view").forEach(v=>{
-  const id=v.id.slice(2); if(id==="notes"||id==="classnotes"||id==="notebook"||id==="feedback"||id==="words"||id==="backup"||id==="changelog") return;
+  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","translate","park"].includes(id)) return;
   const h=v.querySelector("h1"); if(!h) return;
   const wrap=document.createElement("div"); wrap.className="vhead";
   h.parentNode.insertBefore(wrap,h); wrap.appendChild(h);
@@ -4656,7 +4731,7 @@ document.querySelectorAll(".view").forEach(v=>{
   wrap.appendChild(b);
 });
 function renderStars(){
-  stars=stars.filter(id=>document.getElementById("v-"+id));
+  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","translate","park"].includes(id));
   document.querySelectorAll("[data-star]").forEach(b=>{
     const on=stars.includes(b.dataset.star);
     b.setAttribute("aria-pressed",on?"true":"false");
@@ -5080,6 +5155,12 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-smarttranslate", date:"November 6, 2026", title:"A smarter translator 🗣️", items:[
+    ["🔁","It knows the language","write in Spanish or English: the translator figures it out by itself.","translate"],
+    ["🗣️","How to say it","translations now show an easy way to say the English, like <b>KUMF-ter-buhl</b>.","translate"],
+    ["🃏","Save words from flashcards","tap any word in the meaning or example on a flashcard to save it. Tap the words next to it to save a phrase.","quiz"],
+    ["↩️","Back button","your browser\u2019s back button now takes you to the last page you visited on the Cheat Sheet."]
+  ]},
   {id:"2026-vocab", date:"November 6, 2026", title:"Vocabulary, stories and a new buddy window 🗂️", items:[
     ["🗂️","Vocabulary","a new part of <b>Practice</b>: word sets made by Noa (phrasal verbs, work, travel and everyday expressions), with flashcards and a quiz.","quiz"],
     ["📖","Past simple stories","a new stage 7, <b>Tell the story</b>, plus lots of new questions in every stage.","quiz"],
