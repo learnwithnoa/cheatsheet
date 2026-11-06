@@ -1,7 +1,7 @@
 /* Cheat Sheet study buddy */
 // 16x16 pixel sprites. 8-char rows are mirrored; 16-char rows are used as-is.
 window.BUDDY_SPRITES={
-max:{name:"Max",sub:"poodle-schnauzer mix",
+max:{name:"Max",species:"Dog",old:"Max",sub:"poodle-schnauzer mix",
  p:{o:"#4A3726",b:"#E3BF7C",d:"#BF8A48",l:"#F8EACB",k:"#1E1712",w:"#FFFFFF",n:"#2B1E16",p:"#F08A9A",t:"#F07D8F"},
  r:["......oo",
     "....ooll",
@@ -20,7 +20,7 @@ max:{name:"Max",sub:"poodle-schnauzer mix",
     "...obbbb",
     "...ooooo"],
  colors:[["Max",{}],["Apricot",{b:"#E8A25C",d:"#C27A33",l:"#F6D3A6"}],["Chocolate",{b:"#8A5A3A",d:"#64391F",l:"#C79A74"}],["Silver",{b:"#C9C9CC",d:"#8E8E94",l:"#EFEFF2"}],["Black",{b:"#3A3A40",d:"#232328",l:"#7A7A82",o:"#141418"}]]},
-miki:{name:"Miki",sub:"cocker spaniel",
+miki:{name:"Miki",species:"Dog",old:"Miki",sub:"cocker spaniel",
  p:{o:"#5A3418",b:"#CF9050",d:"#9C5A26",l:"#F2C894",k:"#1E1712",w:"#FFFFFF",n:"#2B1E16",p:"#F08A9A",t:"#F07D8F",r:"#F06C9B",R:"#C94A7A"},
  r:["........",
     ".....ooo",
@@ -39,7 +39,7 @@ miki:{name:"Miki",sub:"cocker spaniel",
     "....obbb",
     "....oooo"],
  colors:[["Miki",{}],["Red",{b:"#B5652F",d:"#7E3F17",l:"#E3A877"}],["Black",{b:"#3A3A40",d:"#232328",l:"#8A8A92",o:"#141418"}],["Cream",{b:"#EBD3A6",d:"#C9A770",l:"#FAF0DC"}],["Chocolate",{b:"#7A4A2E",d:"#55301A",l:"#B98A68"}]]},
-cat:{name:"Cat",sub:"curious and cozy",
+cat:{name:"Luna",species:"Cat",old:"Cat",sub:"curious and cozy",
  p:{o:"#4A3528",b:"#F2A65A",d:"#D9803A",l:"#FBE3C8",k:"#1E1712",w:"#FFFFFF",n:"#E87A8A",p:"#F08A9A",i:"#F4A9B4"},
  r:["..o.....",
     "..oo....",
@@ -58,7 +58,7 @@ cat:{name:"Cat",sub:"curious and cozy",
     "..oblbbb",
     "..oooooo"],
  colors:[["Orange",{}],["Gray",{b:"#A9AEB8",d:"#7E8490",l:"#E4E7EC"}],["Black",{b:"#34343A",d:"#1F1F24",l:"#6E6E78",o:"#121216"}],["White",{b:"#F4F2EE",d:"#D9D5CE",l:"#FFFFFF"}],["Cream",{b:"#EBD3A6",d:"#CFAE76",l:"#FAF0DC"}]]},
-llama:{name:"Llama",sub:"calm and fluffy",
+llama:{name:"Pancho",species:"Llama",old:"Llama",sub:"calm and fluffy",
  p:{o:"#6B5A48",b:"#F3E6D0",s:"#E4D2B2",l:"#FFF8EC",k:"#1E1712",w:"#FFFFFF",n:"#4A3726",i:"#F4A9B4",p:"#F08A9A",r:"#E5533D",y:"#F5B800",g:"#3BA776","1":"#E5533D","2":"#E5533D","3":"#F5B800","4":"#3BA776","5":"#3BA776","6":"#F5B800","7":"#F5B800","8":"#E5533D","9":"#E5533D"},
  r:[".........o...o..",
     "........oio.oio.",
@@ -77,7 +77,7 @@ llama:{name:"Llama",sub:"calm and fluffy",
     "..ob......ob....",
     "..oo......oo...."],
  colors:[["Cream",{}],["Chocolate",{b:"#9A6A45",s:"#7C5333",l:"#B98A62"}],["Gray",{b:"#B9B6B0",s:"#9A968F",l:"#D8D5CF"}],["Lilac",{b:"#D3C0EC",s:"#B49BD6",l:"#EADFF7"}],["Black",{b:"#3E3A38",s:"#2A2725",l:"#6A6460",o:"#141210"}],["Rainbow",{"1":"#E5533D","2":"#F59A2E","3":"#F5C842","4":"#F5C842","5":"#3BA776","6":"#3BA776","7":"#4FA3E8","8":"#9B6FE0","9":"#9B6FE0",sw:"linear-gradient(135deg,#E5533D,#F5C842,#3BA776,#4FA3E8,#9B6FE0)"}]]},
-unicorn:{name:"Unicorn",sub:"sparkly, obviously",
+unicorn:{name:"Glitter",species:"Unicorn",old:"Unicorn",sub:"sparkly, obviously",
  over:{3:"....ry..........",4:"...ryg..........",5:"..rygu..........",6:".ryg............",7:".ygu............",8:".guv............",9:"..uv............",10:"..v............."},
  p:{o:"#5B4A6B",b:"#FFFFFF",s:"#ECE6F5",k:"#1E1712",w:"#FFFFFF",H:"#FBE7A8",n:"#F7A8C4",p:"#F7A8C4",h:"#F5C842",r:"#F2716B",y:"#F9D25C",g:"#6FD39A",u:"#6FB6F2",v:"#B48CF0"},
  r:[".......h",
@@ -97,7 +97,7 @@ unicorn:{name:"Unicorn",sub:"sparkly, obviously",
     "...obsbb",
     "...ooooo"],
  colors:[["Rainbow",{}],["Pastel",{r:"#F7B6C8",y:"#FBE3A0",g:"#B8EBCB",u:"#B7DBF8",v:"#D9C6F7"}],["Starry night",{b:"#3C3A6E",s:"#2C2A55",o:"#18163A",r:"#F5C842",y:"#FFFFFF",g:"#9FB6FF",u:"#C9A6E8",v:"#F5C842"}],["Pink",{b:"#FFE3EE",s:"#F7C6D8"}]]},
-chicken:{name:"Chicken",sub:"small but brave",
+chicken:{name:"Pea",species:"Chicken",old:"Chicken",sub:"small but brave",
  p:{o:"#5A4632",b:"#FFFFFF",s:"#EDE6DA",k:"#1E1712",w:"#FFFFFF",c:"#E5533D",y:"#F5A623",p:"#F7A8C4"},
  r:["......cc",
     ".....ccc",
@@ -116,7 +116,7 @@ chicken:{name:"Chicken",sub:"small but brave",
     ".....ooo",
     "....y..y"],
  colors:[["White",{}],["Yellow chick",{b:"#FFE27A",s:"#F5C842"}],["Brown hen",{b:"#B8743E",s:"#8F5428"}],["Black",{b:"#3A3A40",s:"#26262B"}]]},
-pudu:{name:"Pudú",sub:"tiny Chilean deer",
+pudu:{name:"Puli",species:"Pudú",old:"Pudú",sub:"tiny Chilean deer",
  p:{o:"#3E2A1C",b:"#9C6440",d:"#7A4A2C",l:"#D9A97E",k:"#1E1712",w:"#FFFFFF",n:"#1E1712",p:"#F08A9A",i:"#D98C78"},
  r:["........",
     ".oo....o",
@@ -135,7 +135,7 @@ pudu:{name:"Pudú",sub:"tiny Chilean deer",
     "..odbbbb",
     "..oo.ooo"],
  colors:[["Reddish brown",{}],["Dark brown",{b:"#6B4430",d:"#4E3020",l:"#A9805F"}],["Sandy",{b:"#C08A50",d:"#9C6A35",l:"#E8C79A"}],["Gray",{b:"#8E8378",d:"#6E655C",l:"#BDB4AA"}]]},
-capybara:{name:"Capybara",sub:"chill level: maximum",
+capybara:{name:"Don Capi",species:"Capybara",old:"Capybara",sub:"chill level: maximum",
  p:{o:"#4A3426",b:"#B07A4E",d:"#8E5E38",l:"#C8946A",k:"#1E1712",w:"#FFFFFF",n:"#3A2A1E",p:"#E8907E",f:"#F59A2E",g:"#5BAF5B"},
  r:["......g.",
     "......ff",
@@ -154,7 +154,7 @@ capybara:{name:"Capybara",sub:"chill level: maximum",
     "..obbbbb",
     "..oooooo"],
  colors:[["Classic",{}],["Sandy",{b:"#C99A5E",d:"#A57A44",l:"#DDB37E"}],["Chocolate",{b:"#7E5434",d:"#5E3C22",l:"#9C6E4C"}],["Pink (why not)",{b:"#F2B6C6",d:"#D98FA5",l:"#F8CDD8"}]]},
-axolotl:{name:"Axolotl",sub:"always smiling",
+axolotl:{name:"Kiki",species:"Axolotl",old:"Axolotl",sub:"always smiling",
  p:{o:"#7A3B57",b:"#F9B8CF",s:"#F59AB8",g:"#E8608F",k:"#1E1712",w:"#FFFFFF",p:"#F57FA6",l:"#FDE0EA"},
  r:["........",
     "g.g.....",
@@ -257,7 +257,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "lamp", name: "Lamp", ico: "💡", slot: "toy", l: 100 },
     { id: "trophy", name: "Trophy", ico: "🏆", slot: "toy", l: 200 },
     /* grammar modules: finish every stage */
-    { id: "timemachine", name: "Time machine", ico: "🕰️", slot: "toy", m: "ps", mt: "Past simple" }
+    { id: "hourglass", name: "Magic hourglass", ico: "⏳", slot: "toy", m: "ps", mt: "Past simple" }
   ];
   const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
@@ -285,7 +285,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   const lockTxt = it => it.m ? "when you finish " + it.mt : it.w != null ? it.w + " words" : it.l + " learned words";
   const animal = () => SP[S.a] ? S.a : "max";
   const palette = () => { const d = SP[animal()], c = d.colors[S.c | 0] || d.colors[0]; return Object.assign({}, d.p, c[1]); };
-  const nameOf = () => (S.n && String(S.n).trim()) || SP[animal()].name;
+  const nameOf = () => { const n = S.n && String(S.n).trim(), sp = SP[animal()]; return n && n !== sp.old ? n : sp.name; };
 
   /* ---------- drawing ---------- */
   const W = 20, H = 22, OX = 2, OY = 5;
@@ -362,7 +362,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     } else {
       R(0, 0, RW, RH, "var(--bd-sky)"); R(0, 20, RW, 6, "var(--bd-grass)"); R(0, 20, RW, 1, "var(--bd-grass2)");
     }
-    const T = { timemachine: [33, 3, [".ooo.", "owkwo", "owkko", "owwwo", ".ooo.", "..o.."], { o: "#C79A3B", w: "#FFF6DC", k: "#3A2A1A" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
+    const T = { hourglass: [30, 1, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
       plant: [34, 14, ["g.g.", ".gg.", "gggg", ".gg.", "oooo", ".oo."], { g: "#3BA776", o: "#C0673A" }], lamp: [1, 11, ["yyyy", "yyyy", ".kk.", ".k..", ".k..", ".k..", ".k..", "kkk."], { y: "#F9D25C", k: "#4A3A2A" }],
       trophy: [28, 19, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }] };
     toys.forEach(t => { const d = T[t]; if (!d) return; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(d[0] + dx, d[1] + dy, 1, 1, d[3][ch]); })); });
@@ -557,7 +557,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (ms !== 0) bubTimer = setTimeout(() => { bub.hidden = true; }, ms || 5000);
   }
   function hideBub() { clearTimeout(bubTimer); bub.hidden = true; }
-  const menuActs = () => `<button class="bd-b go" type="button" data-bd="feed">🍪 Feed (${S.t | 0})</button><button class="bd-b" type="button" data-bd="open">⚙ ${esc(nameOf())}</button><button class="bd-b" type="button" data-bd="min" aria-label="Tuck your buddy away" title="Tuck away">🐾</button>`;
+  const menuActs = () => `<button class="bd-b go" type="button" data-bd="feed">🍪 Feed (${S.t | 0})</button><button class="bd-b" type="button" data-bd="pet">✋ Pet</button><button class="bd-b" type="button" data-bd="open">⚙ ${esc(nameOf())}</button><button class="bd-b" type="button" data-bd="min" aria-label="Tuck your buddy away" title="Tuck away">🐾</button>`;
 
   /* ---------- friendship ---------- */
   const LV = [0, 20, 50, 100, 170, 260, 380, 530, 720, 950];
@@ -660,7 +660,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   bub.addEventListener("click", e => {
     const b = e.target.closest("[data-bd]"); if (!b) return;
     const a = b.dataset.bd;
-    if (a === "feed") feed(); else if (a === "open") { hideBub(); openModal(); } else if (a === "min") setMin(true);
+    if (a === "feed") feed(); else if (a === "pet") petIt(); else if (a === "open") { hideBub(); openModal(); } else if (a === "min") setMin(true);
     else if (a === "adopt") { hideBub(); openModal("adopt"); } else if (a === "later") { hideBub(); }
   });
 
@@ -730,7 +730,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       <div class="bd-prog"><b>${c.learned}</b> ${c.learned === 1 ? "word" : "words"} learned${nextL ? ` · next: ${nextL.ico} <b>${esc(nextL.name)}</b> at ${nextL.l}` : " · every toy unlocked! 🎉"}</div>
       ${nextL ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.learned, prevL ? prevL.l : 0, nextL.l)}%"></i></div>` : ""}
       <p class="bd-small" style="margin-top:0">A word counts as <b>learned</b> when you tap <b>✓ I knew it</b> on it 3 times in flashcards. Toys show up in your buddy's room.</p>
-      <div class="bd-prog">⏪ <b>Grammar:</b> ${modDone("ps") ? "🕰️ Time machine unlocked! 🎉" : `finish the <b>Past simple</b> module in Practice to get the 🕰️ <b>Time machine</b>`}</div>
+      <div class="bd-prog">⏪ <b>Grammar:</b> ${modDone("ps") ? "⏳ Magic hourglass unlocked! ✨" : `finish the <b>Past simple</b> module in Practice to get the ⏳ <b>Magic hourglass</b>`}</div>
       <h4>Wardrobe</h4>${slotRow("head", "Head")}${slotRow("face", "Face")}${slotRow("neck", "Neck")}
       <h4>Room</h4>${slotRow("room", "Background")}
       ${(() => { const n = (S.gd || []).length; return `<p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows in front of your buddy on every day you study (save a word or practice flashcards). Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`; })()}
@@ -827,7 +827,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     let gave = 0; if (S.md[1] < 3) { S.md[1]++; const old = S.t | 0; S.t = Math.min(MAXT, old + 2); gave = S.t - old; }
     if (d.perfect) addFP(3);
     const grew = markStudy(); save(); wake(); hop();
-    if (d.finished) { fx(["🎉", "🕰️", "🎉"]); say(`🎉 You finished the past simple! New toy for ${esc(nameOf())}: <b>🕰️ Time machine</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000); return; }
+    if (d.finished) { fx(["✨", "⏳", "✨"]); say(`🎉 You finished the past simple! New magic toy for ${esc(nameOf())}: <b>⏳ Magic hourglass</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000); return; }
     fx(d.perfect ? ["⭐", "💛", "⭐"] : ["🍪", "💛", "✨"]);
     say((d.perfect ? "Perfect round! ⭐ +3 friendship" : "Round done! 💪") + (gave ? ` +${gave} 🍪` : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 4000);
   });
@@ -964,7 +964,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const wc = x => (x.me ? counts().words : x.words | 0);
     el.innerHTML = `<div class="park-zoom" role="group" aria-label="Zoom"><button type="button" data-pz="-1" aria-label="Zoom out">−</button><button type="button" data-pz="0" aria-label="Fit the whole park">⤢</button><button type="button" data-pz="1" aria-label="Zoom in">+</button></div>
       <div class="park-vp" id="parkVp"><div class="park-world" id="parkWorld">${DECO}${pos.map(([x, l, t]) => {
-      const bn = (x.n && String(x.n).trim()) || SP[x.a].name, owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
+      const bn = (x.n && String(x.n).trim() && String(x.n).trim() !== SP[x.a].old ? String(x.n).trim() : SP[x.a].name), owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
       const info = `${owner ? `<b>${esc(owner)}</b>` : ""}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}<br>📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}`;
       return `<button class="park-b${x.me ? " me" : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo" aria-hidden="true">${info}</span><span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;

@@ -151,7 +151,7 @@ td.act{white-space:nowrap;text-align:right}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=13"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=14"></script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
@@ -186,8 +186,24 @@ const parse = (s, d) => { try { const v = JSON.parse(s); return v ?? d; } catch 
 
 let students = [], current = null;
 
+/* what you already sent / saw, kept in your own account so every computer knows */
+let tUid = null;
+async function loadTPrefs() {
+  const u = auth.currentUser; if (!u) return; tUid = u.uid;
+  try {
+    const [a, b] = await Promise.all([getDoc(doc(db, "users", tUid, "data", "t-kudos-sent")), getDoc(doc(db, "users", tUid, "data", "t-news-seen"))]);
+    const loc = kdSent(); let more = false;
+    if (a.exists()) { const c = JSON.parse(a.data().json || "{}") || {}; Object.keys(c).forEach(k => { if (!(loc[k] >= c[k])) loc[k] = c[k]; }); localStorage.setItem("cs-kudos-sent", JSON.stringify(loc)); }
+    Object.keys(loc).forEach(k => { if (!(a.exists() && (JSON.parse(a.data().json || "{}") || {})[k])) more = true; });
+    if (more) saveTPref("t-kudos-sent", loc);
+    const ls = +(localStorage.getItem(NEWS_KEY) || 0), cs = b.exists() ? +(JSON.parse(b.data().json || "0") || 0) : 0;
+    if (cs > ls) localStorage.setItem(NEWS_KEY, String(cs)); else if (ls > cs) saveTPref("t-news-seen", ls);
+  } catch (e) { console.warn("teacher prefs", e); }
+}
+function saveTPref(id, val) { if (!tUid) return; setDoc(doc(db, "users", tUid, "data", id), { json: JSON.stringify(val), deleted: false, at: serverTimestamp() }).catch(e => console.warn("save pref", e)); }
 async function load() {
   $("summary").textContent = "Loading…"; $("loadErr").hidden = true;
+  await loadTPrefs();
   try {
     const snap = await getDocs(collection(db, "users"));
     const roles = {};
@@ -324,7 +340,7 @@ function composer(id, text) {
 async function sendMsg(uid, text, kind, eid) {
   try {
     await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: text.slice(0, 1000), kind: kind || "note", at: serverTimestamp() });
-    if (eid) { const m = kdSent(); m[eid] = Date.now(); localStorage.setItem("cs-kudos-sent", JSON.stringify(m)); }
+    if (eid) { const m = kdSent(); m[eid] = Date.now(); localStorage.setItem("cs-kudos-sent", JSON.stringify(m)); saveTPref("t-kudos-sent", m); }
     kdOpen = null; toast("Sent! 💌 They'll see it next time they open the Cheat Sheet."); return true;
   } catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the messages rule isn't in the Firestore rules yet." : "Couldn't send. Try again."); return false; }
 }
@@ -344,7 +360,7 @@ function kdClick(e, rerender) {
 }
 $("news").addEventListener("click", e => {
   if (kdClick(e, renderNews)) return;
-  if (e.target.closest("#newsSeen")) { localStorage.setItem(NEWS_KEY, String(Date.now())); renderNews(); return; }
+  if (e.target.closest("#newsSeen")) { const now = Date.now(); localStorage.setItem(NEWS_KEY, String(now)); saveTPref("t-news-seen", now); renderNews(); return; }
   if (e.target.closest("#newsMore")) { newsOpen = !newsOpen; renderNews(); return; }
   const b = e.target.closest("[data-news]"); if (!b) return;
   current = b.dataset.news; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
@@ -368,7 +384,7 @@ function buddyCard(b) {
   const lv = p => { let l = 1; A.LV.forEach((t, i) => { if ((p | 0) >= t) l = i + 1; }); return l; };
   const fpm = b.fpm || (b.fp != null ? { [b.a]: b.fp } : {});
   const others = Object.keys(fpm).filter(k => k !== b.a && A.sprites[k] && fpm[k] > 0);
-  const name = (b.n && String(b.n).trim()) || A.sprites[b.a].name;
+  const name = (b.n && String(b.n).trim() && String(b.n).trim() !== A.sprites[b.a].old ? String(b.n).trim() : A.sprites[b.a].name);
   const color = (A.sprites[b.a].colors[b.c | 0] || A.sprites[b.a].colors[0])[0];
   return `<div class="bcard">${A.svg({ a: b.a, pal: A.palFor(b.a, b.c), wear: { head: b.head, face: b.face, neck: b.neck }, plain: true, cls: "bsvg" })}
     <div><b style="font-size:16px">${esc(name)}</b> <span class="muted">· ${esc(A.sprites[b.a].name)}, ${esc(color)}${b.on === false ? " · turned off" : ""}</span>

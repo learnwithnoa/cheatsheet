@@ -886,6 +886,8 @@ html.cs-calm .park-treat{animation:none}
 .mis-list small{color:var(--muted)}
 .nb-prac{all:unset;cursor:pointer;margin-left:6px;font-size:13px;font-weight:700;color:var(--bright);border:1px solid var(--bright);border-radius:99px;padding:1px 9px}
 @media (max-width:560px){.ps-opts{grid-template-columns:1fr}.ps-stage{flex-wrap:wrap}.ps-side{flex-direction:row;align-items:center;width:100%;justify-content:space-between}}
+
+html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
 </style>
 
 <header class="top">
@@ -908,17 +910,16 @@ html.cs-calm .park-treat{animation:none}
         <div class="chips" role="radiogroup" aria-label="Sound" id="musicModes">
           <button type="button" class="chip" role="radio" data-mm="lofi">Lo-fi beats</button>
           <button type="button" class="chip" role="radio" data-mm="both">Lo-fi + rain</button>
-          <button type="button" class="chip" role="radio" data-mm="rain">Just rain</button>
           <button type="button" class="chip" role="radio" data-mm="piano">Calm piano</button>
+          <button type="button" class="chip" role="radio" data-mm="pianorain">Piano + rain</button>
+          <button type="button" class="chip" role="radio" data-mm="rain">Just rain</button>
           <button type="button" class="chip" role="radio" data-mm="brown">Brown noise</button>
           <button type="button" class="chip" role="radio" data-mm="pink">Pink noise</button>
           <button type="button" class="chip" role="radio" data-mm="white">White noise</button>
         </div>
         <label class="vol" for="musicVol"><span class="vol-lbl">Volume</span><span aria-hidden="true">🔈</span><input type="range" id="musicVol" min="0" max="100" value="45"><span aria-hidden="true">🔊</span></label>
         <label class="vol bal" for="musicBal" id="balRow" hidden><span class="vol-lbl">Mix</span><span class="bal-end">Music</span><input type="range" id="musicBal" min="0" max="100" value="40" aria-valuetext="40% rain"><span class="bal-end">Rain</span></label>
-        <p class="music-note" id="mnBrown" hidden><b>Brown noise</b> is a deep, steady sound that blocks out distractions.</p>
-        <p class="music-note" id="mnPink" hidden><b>Pink noise</b> is softer than white noise and sounds like steady rain or wind. Many people find it calming.</p>
-        <p class="music-note" id="mnWhite" hidden><b>White noise</b> is a bright, even hiss, like a fan. Good for covering voices and sudden sounds.</p>
+        <p class="music-note" id="mnDesc"></p>
         <p class="music-note" id="mnLofi" hidden>Want real tracks? <a href="https://www.youtube.com/@LofiGirl" target="_blank" rel="noopener">Lofi Girl on YouTube ↗</a></p>
       </div>
     </div>
@@ -1988,7 +1989,7 @@ html.cs-calm .park-treat{animation:none}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=13" defer></script>
+<script src="buddy.js?v=14" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2438,7 +2439,7 @@ document.getElementById("qzForm").addEventListener("submit",e=>{
   const a=okForm(qzPast.value,qCur[1]), b=okForm(qzPP.value,qCur[2]);
   qzPast.className=a?"right":"wrong"; qzPP.className=b?"right":"wrong";
   qChecked=true;
-  if(a&&b){ qRight++; qStreak++; qzFb.innerHTML='<span class="ok">Nice!</span> '+esc(qCur[0])+' · '+esc(qCur[1])+' · '+esc(qCur[2])+' <span class="count">(Enter for the next one)</span>'; }
+  if(a&&b){ qRight++; qStreak++; if(qRight%10===0){ document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:10,perfect:false,finished:false,irr:true}})); document.dispatchEvent(new CustomEvent("cs-irrround")); } qzFb.innerHTML='<span class="ok">Nice!</span> '+esc(qCur[0])+' · '+esc(qCur[1])+' · '+esc(qCur[2])+' <span class="count">(Enter for the next one)</span>'; }
   else { qStreak=0; qzFb.innerHTML='Almost. It\'s <b>'+esc(qCur[0])+' · '+esc(qCur[1])+' · '+esc(qCur[2])+'</b> <span class="count">(Enter for the next one)</span>'; }
   qScore();
 });
@@ -3417,7 +3418,7 @@ PS_STAGES.forEach(st=>{
     if(hit){ document.dispatchEvent(new CustomEvent("cs-weekgoal")); setTimeout(()=>toast("🎯 Weekly goal done! Your buddy got +5 🍪 and +5 friendship."),1200); }
     renderHub();
   }
-  document.addEventListener("cs-fcround",bumpWeek);
+  document.addEventListener("cs-fcround",bumpWeek); document.addEventListener("cs-irrround",bumpWeek);
 
   /* ---- home page ---- */
   function renderHub(){
@@ -3454,7 +3455,7 @@ PS_STAGES.forEach(st=>{
         (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
         (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
     }).join("")+'</div>'+
-    '<p class="ps-goal">'+(allDone()?"🕰️ You finished every stage! Your buddy has the <b>Time machine</b> toy.":"Finish all 6 stages ("+PASS+"/10 or more) to unlock the 🕰️ <b>Time machine</b> toy for your buddy.")+'</p>';
+    '<p class="ps-goal">'+(allDone()?"⏳ You finished every stage! Your buddy has the <b>Magic hourglass</b>.":"Finish all 6 stages ("+PASS+"/10 or more) to unlock the ⏳ <b>Magic hourglass</b> for your buddy.")+'</p>';
   }
 
   /* ---- a round ---- */
@@ -3521,7 +3522,7 @@ PS_STAGES.forEach(st=>{
       html='<div class="card ps-res"><div class="ps-big">'+R.score+' / 10</div>'+stars(sg)+
         '<p class="ps-sent">'+(R.score===10?"Perfect round! 🎉":R.score>=9?"Excellent! 🌟":R.score>=PASS?"Well done! You passed this stage. 👍":"Good practice! Get "+PASS+"/10 to pass this stage. You can do it 💪")+'</p>'+
         (nowOpen&&!wasOpen?'<p class="ps-unlock">🔓 Stage '+(st+1)+' is open!</p>':"")+
-        (finishedAll?'<p class="ps-unlock">🕰️ You finished the whole past simple module! Your buddy got the <b>Time machine</b> toy.</p>':"")+
+        (finishedAll?'<p class="ps-unlock">⏳ You finished the whole past simple module! Your buddy got the <b>Magic hourglass</b>.</p>':"")+
         (R.missed.length?'<p class="muted">The questions you missed are saved in <b>My mistakes</b>, so you can review them later.</p>':"")+
         '<div class="note-actions" style="justify-content:center">'+(nowOpen&&PS_STAGES[st]?'<button class="pill-btn pill-green" type="button" data-psstart="'+(st+1)+'">Next stage →</button>':"")+
         '<button class="pill-btn'+(nowOpen?"":" pill-green")+'" type="button" data-psstart="'+st+'">Try again</button><button class="swap" type="button" data-psall>All stages</button></div></div>';
@@ -4328,7 +4329,7 @@ bkRender();
   function schedule(t){
     const s=step%16, ch=PROG[bar%PROG.length];
     const swing=(s%2===1)? S16*0.3 : 0, tt=t+swing;
-    if(mode==="piano"){
+    if(mode==="piano"||mode==="pianorain"){
       const pc=PIANO[pianoBar%PIANO.length];
       if(s===0){ pianoNote(pc.r,t,0.13,6); pianoNote(pc.r+12,t+0.02,0.07,5.5); }
       const arp={2:0,5:1,8:2,11:3,14:4};
@@ -4355,24 +4356,31 @@ bkRender();
     const t=ac.currentTime, v=(volume/100);
     master.gain.setTargetAtTime(playing? v*v*0.9 : 0, t, 0.15);
     const b=balance/100;
+    const mix2= mode==="both"||mode==="pianorain";
     const mus= mode==="lofi"?1 : mode==="both"? Math.cos(b*Math.PI/2)*1.15 : 0;
-    const rn= mode==="rain"?0.75 : mode==="both"? Math.sin(b*Math.PI/2)*0.75 : 0;
+    const rn= mode==="rain"?0.75 : mix2? Math.sin(b*Math.PI/2)*0.75 : 0;
     musicBus.gain.setTargetAtTime(mus, t, 0.2);
     rainGain.gain.setTargetAtTime(rn, t, 0.3);
     brownGain.gain.setTargetAtTime(mode==="brown"?0.9:0, t, 0.3);
     pinkGain.gain.setTargetAtTime(mode==="pink"?0.8:0, t, 0.3);
     whiteGain.gain.setTargetAtTime(mode==="white"?0.32:0, t, 0.3);
-    pianoBus.gain.setTargetAtTime(mode==="piano"?1:0, t, 0.3);
+    pianoBus.gain.setTargetAtTime(mode==="piano"?1 : mode==="pianorain"? Math.cos(b*Math.PI/2)*1.1 : 0, t, 0.3);
   }
   function paint(){
     playB.setAttribute("aria-pressed",playing?"true":"false");
     document.getElementById("mpIco").textContent= playing?"❚❚":"▶";
     document.getElementById("mpTxt").textContent= playing?"Pause":"Play";
     btn.classList.toggle("on",playing);
-    balRow.hidden= mode!=="both";
-    document.getElementById("mnBrown").hidden= mode!=="brown";
-    document.getElementById("mnPink").hidden= mode!=="pink";
-    document.getElementById("mnWhite").hidden= mode!=="white";
+    balRow.hidden= !(mode==="both"||mode==="pianorain");
+    const MDESC={lofi:"<b>Lo-fi beats</b>: relaxed hip-hop beats with soft keys. A classic for studying.",
+      both:"<b>Lo-fi + rain</b>: lo-fi beats with rain in the background. Use <b>Mix</b> to choose how much of each.",
+      piano:"<b>Calm piano</b>: slow, gentle piano chords. Good when you need to focus or relax.",
+      pianorain:"<b>Piano + rain</b>: calm piano with soft rain. Use <b>Mix</b> to choose how much of each.",
+      rain:"<b>Just rain</b>: steady rain, no music. Nice for reading.",
+      brown:"<b>Brown noise</b>: a deep, steady sound that blocks out distractions.",
+      pink:"<b>Pink noise</b>: softer than white noise, like steady rain or wind. Many people find it calming.",
+      white:"<b>White noise</b>: a bright, even hiss, like a fan. Good for covering voices and sudden sounds."};
+    document.getElementById("mnDesc").innerHTML= MDESC[mode]||"";
     document.getElementById("mnLofi").hidden= !(mode==="lofi"||mode==="both");
     document.querySelectorAll("[data-mm]").forEach(b=>{ const on=b.dataset.mm===mode; b.setAttribute("aria-checked",on); b.setAttribute("aria-pressed",on); });
   }
@@ -4575,9 +4583,15 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-pianorain", date:"November 5, 2026", title:"Piano + rain, a Pet button and more 🐾", items:[
+    ["🎹","Piano + rain","a new <b>Music</b> option: calm piano with soft rain, with a slider to mix them. Every sound now has a short description too.","music"],
+    ["🐾","Pet your buddy","your buddy now has a <b>Pet</b> button next to <b>Feed</b>."],
+    ["🔁","Irregular verbs count","every 10 right answers in <b>Irregular verbs</b> now counts as a practice round for your buddy and your weekly goal.","quiz"],
+    ["✨","New default names","the cat, llama, unicorn, chicken, pudú, capybara and axolotl now have names. If you already named yours, it keeps its name."]
+  ]},
   {id:"2026-pastsimple", date:"November 5, 2026", title:"A new Practice page + the past simple ⏪", items:[
     ["🧩","A new Practice page","<b>Practice</b> now has its own home page: pick flashcards, sentences, pronunciation, irregular verbs or grammar.","quiz"],
-    ["⏪","Past simple, step by step","six stages from easy to harder: regular verbs, irregular verbs, was / were, negatives, questions and a final mix. Get 7/10 to open the next stage, and finish them all to get a 🕰️ toy for your buddy.","quiz"],
+    ["⏪","Past simple, step by step","six stages from easy to harder: regular verbs, irregular verbs, was / were, negatives, questions and a final mix. Get 7/10 to open the next stage, and finish them all to get a ⏳ magic hourglass for your buddy.","quiz"],
     ["📌","My mistakes","the questions you miss are saved so you can review them later. A question leaves the list when you get it right twice in a row.","quiz"],
     ["🎯","A weekly goal","finish 3 practice rounds in a week and your buddy gets +5 🍪 and +5 friendship.","quiz"],
     ["📓","Practice this","in your weekly summaries, past simple corrections now have a <b>Practice this</b> button.","notebook"]
