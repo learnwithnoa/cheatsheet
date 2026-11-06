@@ -442,9 +442,10 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-earn{margin:4px 0 8px;padding-left:18px;font-size:13px}
 .bd-earn li{margin:3px 0}
 .bd-set{align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:10px}
-.bd-animal.locked{opacity:.55;cursor:not-allowed}
+.bd-animal.locked{opacity:.55;cursor:pointer}
 .bd-flash{animation:bdFlash .8s}
 @keyframes bdFlash{0%,100%{background:transparent}30%{background:rgba(255,200,0,.25)}}
+.bd-err{margin:8px 0;padding:10px 12px;border-radius:12px;background:rgba(229,83,61,.15);border:1.5px solid #E5533D;font-size:14px}
 .bd-confirm{position:sticky;bottom:0;margin:12px -4px 0;padding:14px;border-radius:14px;background:var(--surface,#fff);border:2px solid #E0A100;box-shadow:0 -6px 20px rgba(0,0,0,.25)}
 .bd-confirm p{margin:0 0 10px;font-size:14px}
 .bd-back{position:fixed;inset:0;background:rgba(10,14,30,.45);z-index:60}
@@ -470,7 +471,10 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer}
 .bd-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .bd-name input{font:800 17px var(--body,sans-serif);color:var(--ink,#222);background:transparent;border:1.5px dashed var(--line,#ddd);border-radius:10px;padding:5px 9px;width:12ch;min-width:0}
-.bd-treats{margin-left:auto;font:800 14px var(--body,sans-serif);white-space:nowrap}
+.bd-treats{font:800 14px var(--body,sans-serif);white-space:nowrap}
+.bd-name{flex-direction:column;justify-content:center;gap:6px;margin-top:8px}
+.bd-name input{text-align:center}
+.bd-name + .bd-row{justify-content:center}
 .bd-row{display:flex;flex-wrap:wrap;gap:6px}
 .bd-chip{all:unset;box-sizing:border-box;cursor:pointer;font:700 13px var(--body,sans-serif);padding:6px 10px;border-radius:999px;border:1.5px solid var(--line,#ddd);background:var(--surface,#fff);color:var(--ink,#222);display:inline-flex;align-items:center;gap:5px}
 .bd-chip[aria-pressed="true"]{border-color:var(--green,#2E8B57);background:color-mix(in srgb,var(--green,#2E8B57) 16%,var(--surface,#fff))}
@@ -904,7 +908,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     }
     if (m && ["save", "discard", "keep", "back"].includes(m.dataset.m)) {
       const a = m.dataset.m;
-      if (a === "save") { const was = dirty(); commit(); reallyClose(); if (was) toastMsg("Saved ✓"); return; }
+      if (a === "save") {
+        if (pv) { const box = modal.querySelector(".bd-pv"); const what = pv.a ? `${SP[pv.a].name} is still locked` : pv.c != null ? `That color is still locked` : `That item is still locked`; let er = modal.querySelector(".bd-err"); if (!er) { er = document.createElement("p"); er.className = "bd-err"; er.setAttribute("role", "alert"); (box || modal.querySelector(".bd-foot")).insertAdjacentElement(box ? "afterend" : "beforebegin", er); } er.innerHTML = `🔒 <b>${what}</b>, so it can't be saved yet. Tap <b>Back to my buddy</b> and choose one you've unlocked.`; return; }
+        const was = dirty(); commit(); reallyClose(); if (was) toastMsg("Saved ✓"); return; }
       if (a === "discard") { Object.assign(S, base); commit(); reallyClose(); return; }
       if (a === "keep") { confirmOpen = false; renderModal(); return; }
       if (a === "back") { sec = null; pv = null; renderModal(); const f = modal.querySelector(".bd-tile"); if (f) f.focus(); return; }

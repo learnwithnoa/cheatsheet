@@ -1251,7 +1251,7 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
   <p class="lede">Every word you save, newest first. Practice them with flashcards or import a list you already have.</p>
   <p class="ai-status" id="aiStatus" hidden aria-live="polite"></p>
   <div id="slotAwPage" class="page-slot"></div>
-  <div class="note-actions" style="margin:4px 0 14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiFill" title="Fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap" type="button" id="aiClean" title="Fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" data-go="quiz">Practice with flashcards →</button></div>
+  <div class="note-actions" style="margin:4px 0 14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiFill" title="Fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap" type="button" id="aiClean" title="Fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" id="wGoFlash">Practice with flashcards →</button></div>
   <div class="card import-card" id="importCard" hidden>
     <div class="qa-top"><h3>Add many words at once</h3><button class="qa-x" type="button" id="impClose" aria-label="Close">×</button></div>
     <p class="imp-lede">Paste your words in <b>any format</b>: a list, a message, notes from class, a copy from a document… ✨ The AI finds the words, adds the Spanish and skips the ones you already have. You'll see the list before anything is added.</p>
@@ -1362,7 +1362,7 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
         <button class="pill-btn" id="trBtn" type="button" hidden>Translate here</button>
         <a class="linkbtn" id="lnkGoogle" href="https://translate.google.com/" target="_blank" rel="noopener">Google Translate ↗</a>
         <a class="linkbtn" id="lnkDeepl" href="https://www.deepl.com/translator" target="_blank" rel="noopener">DeepL ↗</a>
-        <a class="linkbtn" id="lnkWR" href="https://www.wordreference.com/" target="_blank" rel="noopener">WordReference ↗</a>
+        <a class="linkbtn" id="lnkWR" href="https://www.wordreference.com/" target="_blank" rel="noopener" hidden>WordReference ↗</a>
       </div>
     </div>
     <div class="card" id="outCard" hidden>
@@ -2137,7 +2137,7 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=19" defer></script>
+<script src="buddy.js?v=20" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2434,8 +2434,9 @@ function updateLinks(){
   trIn.placeholder = sl==="es" ? "Ej: Me cuesta entender cuando hablan rápido" : "E.g. I'm looking forward to it";
   lnkG.href="https://translate.google.com/?sl="+sl+"&tl="+tl+(t?"&text="+encodeURIComponent(t):"")+"&op=translate";
   lnkD.href="https://www.deepl.com/translator#"+sl+"/"+tl+"/"+(t?encodeURIComponent(t).replace(/%2F/g,"%5C%2F"):"");
-  lnkW.hidden=false;
-  lnkW.href = !t ? (sl==="es" ? "https://www.wordreference.com/es/en/" : "https://www.wordreference.com/es/") : sl==="es" ? "https://www.wordreference.com/es/en/translation.asp?spen="+encodeURIComponent(t) : "https://www.wordreference.com/es/translation.asp?tranword="+encodeURIComponent(t);
+  const single=/^[\p{L}'-]+$/u.test(t);
+  lnkW.hidden=!single;
+  if(single) lnkW.href = sl==="es" ? "https://www.wordreference.com/es/en/translation.asp?spen="+encodeURIComponent(t) : "https://www.wordreference.com/es/translation.asp?tranword="+encodeURIComponent(t);
 }
 trIn.addEventListener("input",updateLinks);
 document.getElementById("swapBtn").addEventListener("click",()=>{dir= dir==="es-en"?"en-es":"es-en"; updateLinks();});
@@ -4670,6 +4671,7 @@ window.addEventListener("offline",()=>toast("You're offline. Your saved words an
   window.addEventListener("scroll",()=>{ if((box||chip)&&fine) close(); },{passive:true});
 })();
 
+document.getElementById("wGoFlash").addEventListener("click",()=>{ if(window.csPractice) window.csPractice("flash"); });
 /* ---------------- import words ---------------- */
 const impCard=document.getElementById("importCard"), impOpen=document.getElementById("impOpen"), impText=document.getElementById("impText"), impPrev=document.getElementById("impPreview");
 function parseCSV(text,delim){
@@ -5533,7 +5535,7 @@ bkRender();
 const FB_MAIL="learnwithnoa@gmail.com";
 const fbSection=document.getElementById("fbSection"), fbMsg=document.getElementById("fbMsg"), fbName=document.getElementById("fbName"), fbGmail=document.getElementById("fbGmail"), fbErr=document.getElementById("fbErr");
 let fbType="Something's missing";
-const fbOpts=[["General","General / the whole page"]].concat([...document.querySelectorAll("nav.side .navbtn")].filter(b=>!b.closest(".starred") && b.dataset.go!=="feedback").map(b=>[b.dataset.go, b.dataset.go==="notes"?"Home":b.textContent.replace(/\d+$/,"").trim()]));
+const fbOpts=[["General","General / the whole page"]].concat([...document.querySelectorAll("nav.side .navbtn")].filter(b=>!b.closest(".starred") && b.dataset.go!=="feedback").map(b=>{ const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl,svg').forEach(x=>x.remove()); return [b.dataset.go, b.dataset.go==="notes"?"Home":c.textContent.replace(/\d+$/,"").trim()]; }));
 fbSection.innerHTML=fbOpts.map(o=>'<option value="'+o[0]+'">'+esc(o[1])+'</option>').join("");
 const fbDraft=LS.get("ncs-feedback",{});
 if(fbDraft.msg) fbMsg.value=fbDraft.msg; if(fbDraft.name) fbName.value=fbDraft.name;
