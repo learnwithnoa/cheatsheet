@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   const KEY = "ncs-comfort";
-  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true };
+  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true, cursor: "default", lookup: true };
   const root = document.documentElement;
   const isMain = !!document.getElementById("v-notes");
   let S = Object.assign({}, DEF);
@@ -289,6 +289,7 @@
     root.classList.remove("cs-font-atkinson", "cs-font-lexend", "cs-font-classic", "cs-font-book");
     if (S.font !== "default") { loadFont(S.font); root.classList.add("cs-font-" + S.font); }
     root.classList.toggle("cs-space", !!S.space);
+    ["big", "paw", "pencil", "star"].forEach(c => root.classList.toggle("cs-cur-" + c, S.cursor === c));
     root.classList.toggle("cs-no-inshort", !S.inshort);
     root.classList.toggle("cs-no-read", !S.read);
     applyCalm(); applyFocus(); applyRuler(); applyBionic();
@@ -311,6 +312,8 @@
           ${tog("csSpace", "More space", "Extra room between lines, words and paragraphs.")}
           ${tog("csBionic", "Bionic reading", "Bolds the start of each word. Some people find it easier to read; try it and see.")}
           ${tog("csRulerT", "Reading ruler", "A highlighted band that follows your mouse or finger, to keep your place.")}
+          ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click" : "Press and hold") + " any word to see what it means and save it to My words.") : ""}
+          ${matchMedia("(pointer:fine)").matches ? `<div class="cs-curl"><b style="font-weight:800">Mouse cursor</b><div class="cs-seg" id="csCursors">${[["default", "↖", "Normal"], ["big", "⬉", "Big"], ["paw", "🐾", "Paw"], ["pencil", "✏️", "Pencil"], ["star", "⭐", "Star"]].map(([v, i, l]) => `<button type="button" data-cscur="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>` : ""}
         </div>
         <div class="cs-sec"><h4>Focus</h4>
           ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on." : "Hides the student list so you only see one student.")}
@@ -340,6 +343,8 @@
     const step = d => { let i = SIZES.findIndex(x => Math.abs(x - S.size) < .01); if (i < 0) i = 2; i = Math.min(SIZES.length - 1, Math.max(0, i + d)); S.size = SIZES[i]; save(); applyAll(); };
     $("csSmaller").onclick = () => step(-1); $("csBigger").onclick = () => step(1);
     const bind = (id, k) => { const el = $(id); if (el) el.onchange = () => { S[k] = el.checked; save(); applyAll(); }; };
+    bind("csLookup", "lookup");
+    if ($("csCursors")) $("csCursors").onclick = e => { const b = e.target.closest("[data-cscur]"); if (!b) return; S.cursor = b.dataset.cscur; save(); applyAll(); };
     bind("csSpace", "space"); bind("csBionic", "bionic"); bind("csRulerT", "ruler"); bind("csInshort", "inshort"); bind("csRead", "read"); bind("csCalm", "calm");
     if ($("csFocus")) $("csFocus").addEventListener("change", () => { setFocus($("csFocus").checked); applyAll(); if (focusOn()) { open(false); toast("Focus mode on. Tap “Exit focus mode” at the bottom to leave."); } });
     if ($("csRead")) $("csRead").addEventListener("change", () => { if (!S.read) stopReading(); });
@@ -359,6 +364,8 @@
     $("csFontDesc").innerHTML = FONT_DESC[S.font] || FONT_DESC.default;
     $("csSizeTxt").textContent = Math.round(S.size * 100) + "%";
     const set = (id, v) => { const el = $(id); if (el) el.checked = !!v; };
+    set("csLookup", S.lookup !== false);
+    document.querySelectorAll("[data-cscur]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cscur === (S.cursor || "default"))));
     set("csSpace", S.space); set("csBionic", S.bionic); set("csRulerT", S.ruler); set("csFocus", focusOn()); set("csInshort", S.inshort); set("csRead", S.read); set("csCalm", S.calm);
     paintTimer();
   }

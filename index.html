@@ -7,9 +7,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=10">
+<link rel="stylesheet" href="comfort.css?v=11">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=11" defer></script>
+<script src="comfort.js?v=12" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
@@ -984,6 +984,17 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;height:18px;box-sizing:border-box;line-height:1;padding:0 0 2px;font-size:12px}
 .park-b .pinfo .pb-feed{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:99px;background:var(--green);color:#fff;font-weight:800;cursor:pointer;pointer-events:auto}
 .park-b .pinfo .pb-feed:focus-visible{outline:3px solid #fff}
+
+.lk-box{position:fixed;z-index:70;padding:14px 16px 12px;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.35);max-width:calc(100vw - 24px)}
+.lk-x{all:unset;cursor:pointer;position:absolute;top:6px;right:10px;font-size:22px;color:var(--muted)}
+.lk-w{font-size:20px;font-weight:800;padding-right:24px}
+.lk-w .pos{font-size:12px;font-weight:700;color:var(--muted);margin-left:4px}
+.lk-p{margin:6px 0}
+.lk-es{margin:6px 0;color:var(--green);font-weight:700}
+.lk-ex{margin:6px 0;color:var(--muted);font-style:italic}
+.lk-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.lk-acts a{text-decoration:none}
+.lk-have{color:var(--green);font-weight:700;font-size:14px}
 </style>
 
 <header class="top">
@@ -4565,6 +4576,79 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
 /* offline support */
 if("serviceWorker" in navigator&&location.protocol==="https:"){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 window.addEventListener("offline",()=>toast("You're offline. Your saved words and notes still work, and everything syncs when you're back online."));
+/* ---------- look up any word: double-click (computer) or press and hold (phone) ---------- */
+(function(){
+  const on=()=>{ try{ return !window.csComfort||window.csComfort.get().lookup!==false; }catch(e){ return true; } };
+  const fine=matchMedia("(pointer:fine)").matches;
+  const cache={};
+  let box=null, cur="";
+  function skip(el){ return !el||!!el.closest("input,textarea,select,button,a,[contenteditable=true],.lk-box,.cs-panel,.music-panel,.bd-modal,.bd-bub,.qa,#welcome,#whatsnew,.cs-dlg,.flashcard,.park-b,nav.side,header.top"); }
+  function pickText(){
+    const sel=window.getSelection(); if(!sel||sel.isCollapsed) return null;
+    const t=String(sel.toString()).replace(/\s+/g," ").trim().replace(/^[^\p{L}']+|[^\p{L}']+$/gu,"");
+    if(!t||t.length>40||t.split(" ").length>4||!/\p{L}/u.test(t)) return null;
+    const node=sel.anchorNode&&(sel.anchorNode.nodeType===1?sel.anchorNode:sel.anchorNode.parentElement);
+    if(skip(node)) return null;
+    let r=null; try{ r=sel.getRangeAt(0).getBoundingClientRect(); }catch(e){}
+    const ctx=(node&&node.closest("p,li,td,.ps-sent,.vs-ex,div")||{}).textContent||"";
+    return {t, r, ctx:ctx.replace(/\s+/g," ").trim().slice(0,220)};
+  }
+  function close(){ if(box){ box.remove(); box=null; cur=""; } }
+  function place(r){
+    if(!box) return; const w=Math.min(320,innerWidth-24); box.style.width=w+"px";
+    let x=r?Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2)):(innerWidth-w)/2, y=r?r.bottom+10:120;
+    box.style.left=x+"px"; box.style.top=y+"px";
+    requestAnimationFrame(()=>{ if(!box) return; const h=box.offsetHeight; if(y+h>innerHeight-12&&r) box.style.top=Math.max(12,r.top-h-10)+"px"; });
+  }
+  function paint(d){
+    if(!box) return;
+    const have=(LS.get("ncs-words",[])||[]).some(x=>norm(x.w)===norm(d.w||cur));
+    box.innerHTML='<button class="lk-x" type="button" aria-label="Close" data-lkx>×</button><div class="lk-w">'+esc(d.w||cur)+(d.pos?' <span class="pos">'+esc(d.pos)+'</span>':"")+'</div>'+
+      (d.loading?'<p class="muted lk-p">Looking it up…</p>':
+       d.err?'<p class="muted lk-p">'+esc(d.err)+'</p>':
+       (d.meaning?'<p class="lk-p">'+esc(d.meaning)+'</p>':"")+(d.es?'<p class="lk-es">🇪🇸 '+esc(d.es)+'</p>':"")+(d.ex?'<p class="lk-ex">“'+esc(d.ex)+'”</p>':""))+
+      '<div class="lk-acts">'+(have?'<span class="lk-have">✓ In My words</span>':'<button class="pill-btn pill-green" type="button" data-lksave>+ Save to My words</button>')+
+      (window.csSpeak?'<button class="swap" type="button" data-lksay aria-label="Listen">🔊</button>':"")+
+      '<a class="swap" href="https://www.wordreference.com/es/translation.asp?tranword='+encodeURIComponent(d.w||cur)+'" target="_blank" rel="noopener">WordReference ↗</a></div>';
+    box._d=d;
+  }
+  async function open(p){
+    if(!on()) return;
+    close(); cur=p.t;
+    box=document.createElement("div"); box.className="lk-box card"; box.setAttribute("role","dialog"); box.setAttribute("aria-label","Word lookup");
+    document.body.appendChild(box); place(p.r);
+    if(window.csUse) csUse("lookup");
+    const key=p.t.toLowerCase();
+    if(cache[key]){ paint(cache[key]); place(p.r); return; }
+    if(!window.__csSample){ paint({w:p.t, err:"The dictionary needs internet right now. You can still save the word."}); place(p.r); return; }
+    paint({w:p.t, loading:true}); place(p.r);
+    const prompt="A Spanish-speaking (Chilean) English learner selected this word or expression on an English learning website: \""+p.t+"\". The sentence around it: \""+p.ctx+"\".\n"+
+      "If it's English, explain it as used in that sentence. If it's Spanish, give the English for it.\n"+
+      "Reply with ONLY a JSON object, no code fences: {\"w\": \"the English word or expression in its dictionary form (e.g. 'go' for 'went')\", \"pos\": \"noun, verb, adjective, phrasal verb, expression…\", \"meaning\": \"a short, simple English definition (A2-B1 level, max 15 words)\", \"es\": \"a natural Spanish translation\", \"ex\": \"a short, natural example sentence\"}";
+    try{
+      const r=await window.__csSample(prompt,{modelTier:"quick"});
+      let j=null; try{ j=JSON.parse(String(r.text||"").replace(/^[^{]*/,"").replace(/[^}]*$/,"")); }catch(e){}
+      if(!j||!j.meaning) throw new Error("bad");
+      j.w=String(j.w||p.t).trim(); cache[key]=j; if(cur===p.t){ paint(j); place(p.r); }
+    }catch(e){ if(cur===p.t){ paint({w:p.t, err:"Couldn't look it up right now. Try again in a moment."}); } }
+  }
+  if(fine){
+    document.addEventListener("dblclick",e=>{ if(skip(e.target)) return; setTimeout(()=>{ const p=pickText(); if(p) open(p); },10); });
+  } else {
+    let st=null;
+    document.addEventListener("selectionchange",()=>{ clearTimeout(st); st=setTimeout(()=>{ const p=pickText(); if(p&&p.t!==cur) open(p); },700); });
+  }
+  document.addEventListener("click",e=>{
+    if(!box) return;
+    if(e.target.closest("[data-lkx]")){ close(); return; }
+    if(e.target.closest("[data-lksay]")){ const d=box._d||{}; if(window.csSpeak) csSpeak(d.w||cur); return; }
+    if(e.target.closest("[data-lksave]")){ const d=box._d||{}; if(typeof addWord==="function"&&addWord(d.w||cur,d.es||"",d.ex||"")){ paint(d); } return; }
+    if(!e.target.closest(".lk-box")) close();
+  });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&box) close(); });
+  window.addEventListener("scroll",()=>{ if(box&&fine) close(); },{passive:true});
+})();
+
 /* ---------------- import words ---------------- */
 const impCard=document.getElementById("importCard"), impOpen=document.getElementById("impOpen"), impText=document.getElementById("impText"), impPrev=document.getElementById("impPreview");
 function parseCSV(text,delim){
@@ -5610,6 +5694,10 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-lookup", date:"November 6, 2026", title:"Look up any word 🔎", items:[
+    ["🔎","Look up any word","<b>double-click</b> a word (or <b>press and hold</b> it on your phone) anywhere on the site to see what it means, in English and Spanish, and save it to My words."],
+    ["🐾","Fun mouse cursors","on a computer, choose a paw, pencil, star or a big cursor in <b>Settings</b>."]
+  ]},
   {id:"2026-interviews", date:"November 6, 2026", title:"Job interviews and feeding friends 🍪", items:[
     ["💼","Job interviews","a new page in <b>Work</b>: the classic questions, the STAR method, phrases to buy time and questions to ask.","interview"],
     ["🍪","Feed other buddies","in the <b>Buddy park</b>, tap someone else\u2019s buddy and give it one of your treats (once a day). It gives them +3 friendship.","park"],
