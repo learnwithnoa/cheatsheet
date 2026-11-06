@@ -255,7 +255,9 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "book", name: "Little book", ico: "📘", slot: "toy", l: 25 },
     { id: "plant", name: "Plant", ico: "🪴", slot: "toy", l: 50 },
     { id: "lamp", name: "Lamp", ico: "💡", slot: "toy", l: 100 },
-    { id: "trophy", name: "Trophy", ico: "🏆", slot: "toy", l: 200 }
+    { id: "trophy", name: "Trophy", ico: "🏆", slot: "toy", l: 200 },
+    /* grammar modules: finish every stage */
+    { id: "timemachine", name: "Time machine", ico: "🕰️", slot: "toy", m: "ps", mt: "Past simple" }
   ];
   const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
@@ -278,7 +280,9 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     try { const f = JSON.parse(localStorage.getItem("ncs-fc") || "{}"); learned = Object.values(f).filter(v => v >= 3).length; } catch (e) {}
     return { words, learned };
   }
-  const isOpen = it => { const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
+  const modDone = m => { try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return [1, 2, 3, 4, 5, 6].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
+  const isOpen = it => { if (it.m) return modDone(it.m); const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
+  const lockTxt = it => it.m ? "when you finish " + it.mt : it.w != null ? it.w + " words" : it.l + " learned words";
   const animal = () => SP[S.a] ? S.a : "max";
   const palette = () => { const d = SP[animal()], c = d.colors[S.c | 0] || d.colors[0]; return Object.assign({}, d.p, c[1]); };
   const nameOf = () => (S.n && String(S.n).trim()) || SP[animal()].name;
@@ -358,7 +362,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     } else {
       R(0, 0, RW, RH, "var(--bd-sky)"); R(0, 20, RW, 6, "var(--bd-grass)"); R(0, 20, RW, 1, "var(--bd-grass2)");
     }
-    const T = { ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
+    const T = { timemachine: [33, 3, [".ooo.", "owkwo", "owkko", "owwwo", ".ooo.", "..o.."], { o: "#C79A3B", w: "#FFF6DC", k: "#3A2A1A" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
       plant: [34, 14, ["g.g.", ".gg.", "gggg", ".gg.", "oooo", ".oo."], { g: "#3BA776", o: "#C0673A" }], lamp: [1, 11, ["yyyy", "yyyy", ".kk.", ".k..", ".k..", ".k..", ".k..", "kkk."], { y: "#F9D25C", k: "#4A3A2A" }],
       trophy: [28, 19, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }] };
     toys.forEach(t => { const d = T[t]; if (!d) return; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(d[0] + dx, d[1] + dy, 1, 1, d[3][ch]); })); });
@@ -667,7 +671,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   function pvBanner() {
     if (!pv) return "";
     const a = pvAnimal();
-    const what = pv.c != null ? `<b>${esc(SP[a].colors[pv.c][0])}</b> · unlocks at ${COLOR_AT[pv.c]} words` : (() => { const it = byId[pv.item]; return `<b>${esc(it.name)}</b> · unlocks at ${it.w != null ? it.w + " words" : it.l + " learned words"}`; })();
+    const what = pv.c != null ? `<b>${esc(SP[a].colors[pv.c][0])}</b> · unlocks at ${COLOR_AT[pv.c]} words` : (() => { const it = byId[pv.item]; return `<b>${esc(it.name)}</b> · unlocks ${it.m ? "" : "at "}${lockTxt(it)}`; })();
     return `<div class="bd-pv" role="status">👀 Preview: ${what} <button class="bd-b" type="button" data-m="pvoff">Back to my buddy</button></div>`;
   }
   function openModal(m) {
@@ -709,7 +713,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const seen = new Set(S.seen || []);
     const chip = (it, slot) => {
       const open = isOpen(it), on = S[slot] === it.id;
-      return `<button type="button" data-wear="${slot}" data-item="${it.id}" aria-pressed="${on}" ${open ? "" : 'aria-disabled="true" data-locked="1"'} class="bd-chip${open ? "" : " locked"}${pv && pv.item === it.id ? " pv" : ""}" title="${open ? esc(it.name) : "Tap to preview · unlocks at " + (it.w != null ? it.w + " words" : it.l + " learned words")}">${open ? it.ico : "🔒"} ${esc(it.name)}${open ? (seen.has(it.id) ? "" : ' <span class="bd-new">NEW</span>') : ` <small>· ${it.w != null ? it.w : it.l}</small>`}</button>`;
+      return `<button type="button" data-wear="${slot}" data-item="${it.id}" aria-pressed="${on}" ${open ? "" : 'aria-disabled="true" data-locked="1"'} class="bd-chip${open ? "" : " locked"}${pv && pv.item === it.id ? " pv" : ""}" title="${open ? esc(it.name) : "Tap to preview · unlocks " + (it.m ? "" : "at ") + lockTxt(it)}">${open ? it.ico : "🔒"} ${esc(it.name)}${open ? (seen.has(it.id) ? "" : ' <span class="bd-new">NEW</span>') : ` <small>· ${it.m ? "⏪" : it.w != null ? it.w : it.l}</small>`}</button>`;
     };
     const slotRow = (slot, label) => `<div style="margin-bottom:10px"><div class="bd-small" style="margin:0 0 5px;font-weight:700">${label}</div><div class="bd-row"><button class="bd-chip" type="button" data-wear="${slot}" data-item="" aria-pressed="${!S[slot]}">${slot === "room" ? "🌱 Garden" : "None"}</button>${ITEMS.filter(i => i.slot === slot).map(i => chip(i, slot === "room" ? "room" : slot)).join("")}</div></div>`;
     const legend = isOpen(byId.legend);
@@ -717,7 +721,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       ${pvBanner()}<div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}" id="bdStage" title="Tap to pet">${stageSVG(pvOpts())}</div>
       <div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" value="${esc(nameOf())}" aria-label="Your buddy's name" autocomplete="off"><span class="bd-treats" title="Treats">🍪 ${S.t | 0} / ${MAXT}</span></div>
       <div class="bd-row" style="margin-top:10px"><button class="bd-b go" type="button" data-m="feed">🍪 Feed</button><button class="bd-b" type="button" data-m="pet">🤚 Pet</button></div>
-      <p class="bd-small">Earn treats: <b>+1</b> for each new word you save, <b>+3</b> for each flashcard round you finish (up to ${MAXT}). Your buddy eats up to ${FEED_PER_DAY} treats a day.</p>
+      <p class="bd-small">Earn treats: <b>+1</b> for each new word you save, <b>+3</b> for each flashcard round, <b>+2</b> for each grammar round (3 a day), up to ${MAXT}. Your buddy eats up to ${FEED_PER_DAY} treats a day.</p>
       <h4>Friendship</h4>
       ${(() => { const l = level(), p = fpOf(), nxt = LV[l]; return `<div class="bd-prog"><span class="bd-hearts" aria-label="Friendship level ${l} of 10">${"💛".repeat(l)}<span style="opacity:.25">${"🤍".repeat(10 - l)}</span></span> <b>Level ${l}</b>${l >= 10 ? " · best friends!" : ""}</div>${nxt ? `<div class="bd-bar" aria-hidden="true"><i style="width:${Math.max(4, Math.round((p - LV[l - 1]) / (nxt - LV[l - 1]) * 100))}%"></i></div><div class="bd-small" style="margin:0">Next: <b>${esc(LV_WHAT[l])}</b></div>` : ""}<p class="bd-small">Friendship grows when you feed your buddy (<b>+3</b>), pet it (<b>+1</b>, up to 10 a day) and visit (<b>+2</b> a day). New levels unlock new things it does on its own, and it starts sharing little English tips.</p>`; })()}
       <h4>Your progress</h4>
@@ -726,6 +730,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       <div class="bd-prog"><b>${c.learned}</b> ${c.learned === 1 ? "word" : "words"} learned${nextL ? ` · next: ${nextL.ico} <b>${esc(nextL.name)}</b> at ${nextL.l}` : " · every toy unlocked! 🎉"}</div>
       ${nextL ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.learned, prevL ? prevL.l : 0, nextL.l)}%"></i></div>` : ""}
       <p class="bd-small" style="margin-top:0">A word counts as <b>learned</b> when you tap <b>✓ I knew it</b> on it 3 times in flashcards. Toys show up in your buddy's room.</p>
+      <div class="bd-prog">⏪ <b>Grammar:</b> ${modDone("ps") ? "🕰️ Time machine unlocked! 🎉" : `finish the <b>Past simple</b> module in Practice to get the 🕰️ <b>Time machine</b>`}</div>
       <h4>Wardrobe</h4>${slotRow("head", "Head")}${slotRow("face", "Face")}${slotRow("neck", "Neck")}
       <h4>Room</h4>${slotRow("room", "Background")}
       ${(() => { const n = (S.gd || []).length; return `<p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows in front of your buddy on every day you study (save a word or practice flashcards). Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`; })()}
@@ -814,6 +819,22 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     let gave = 0; if (S.sd[1] < 5 && (S.t | 0) < MAXT) { S.sd[1]++; S.t = (S.t | 0) + 1; gave = 1; }
     save(); wake(); hop(); fx(["✍️", "💛", "✨"]);
     say((e.detail && e.detail.result === "great" ? "What a sentence! 🎉" : "Nice try, you're close! 👍") + (gave ? " +1 🍪" : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3500);
+  });
+  document.addEventListener("cs-modround", e => {
+    if (S.on !== true) return;
+    const d = e.detail || {};
+    if (!S.md || S.md[0] !== today()) S.md = [today(), 0];
+    let gave = 0; if (S.md[1] < 3) { S.md[1]++; const old = S.t | 0; S.t = Math.min(MAXT, old + 2); gave = S.t - old; }
+    if (d.perfect) addFP(3);
+    const grew = markStudy(); save(); wake(); hop();
+    if (d.finished) { fx(["🎉", "🕰️", "🎉"]); say(`🎉 You finished the past simple! New toy for ${esc(nameOf())}: <b>🕰️ Time machine</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000); return; }
+    fx(d.perfect ? ["⭐", "💛", "⭐"] : ["🍪", "💛", "✨"]);
+    say((d.perfect ? "Perfect round! ⭐ +3 friendship" : "Round done! 💪") + (gave ? ` +${gave} 🍪` : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 4000);
+  });
+  document.addEventListener("cs-weekgoal", () => {
+    if (S.on !== true) return;
+    const old = S.t | 0; S.t = Math.min(MAXT, old + 5); addFP(5); save(); wake(); hop(); fx(["🎯", "🎉", "💛"]);
+    say(`Weekly goal done! 🎯 +5 friendship${S.t > old ? ` and +${S.t - old} 🍪` : ""}`, "", 5000);
   });
   document.addEventListener("cs-fcround", () => {
     if (S.on !== true) return;

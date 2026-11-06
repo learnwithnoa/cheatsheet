@@ -103,6 +103,7 @@ td.act{white-space:nowrap;text-align:right}
 .bsvg{width:72px;height:79px;image-rendering:pixelated;flex:none;background:color-mix(in srgb,var(--green) 10%,var(--surface));border-radius:12px}
 .seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
+.pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 </style>
 <link rel="stylesheet" href="comfort.css?v=9">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -150,7 +151,7 @@ td.act{white-space:nowrap;text-align:right}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=12"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=13"></script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
@@ -209,6 +210,7 @@ async function load() {
         buddy: parse(data["ncs-buddy"], null),
         loveLog: parse(data["ncs-ttlove-log"], []),
         level: parse(data["ncs-level"], "normal"),
+        mods: parse(data["ncs-mods"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), modrec: parse(data["ncs-modrec"], {}) || {},
         loveLast: parse(data["ncs-ttlove"], ""),
         role: roles[d.id] || {}
       });
@@ -347,6 +349,19 @@ $("news").addEventListener("click", e => {
   const b = e.target.closest("[data-news]"); if (!b) return;
   current = b.dataset.news; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
 });
+const PS_T = ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up"];
+function weekKeyT() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+function practiceBox(s) {
+  const p = s.mods.ps || {}, b = p.b || {}, st = p.s || {}, rec = s.modrec.ps || 0;
+  const tot = PS_T.reduce((t, _, i) => t + (st[i + 1] | 0), 0);
+  const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
+  const star = n => `<span class="pstars">${"★".repeat(n)}<span>${"★".repeat(3 - n)}</span></span>`;
+  const open = n => n === 1 || (b[n - 1] | 0) >= 7;
+  return `<div class="parkbox"><b>Practice · Past simple</b> <span class="muted">${tot} / 18 ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
+    <table class="pstbl"><tbody>${PS_T.map((t, i) => { const n = i + 1; return `<tr><td>${n}. ${esc(t)}</td><td>${b[n] != null ? star(st[n] | 0) + ` <span class="muted">best ${b[n]}/10</span>` : `<span class="muted">${open(n) ? "not tried" : "🔒 locked"}</span>`}</td><td><button type="button" class="seg" data-psrec="${n}" aria-pressed="${rec === n}">${rec === n ? "⭐ Recommended" : "Recommend"}</button></td></tr>`; }).join("")}</tbody></table>
+    <div class="muted" style="margin-top:6px">📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
+    <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. Tap it again to remove it.</p></div>`;
+}
 function buddyCard(b) {
   const A = window.csBuddyArt;
   if (!b || !b.a || !A || !A.sprites[b.a]) return ` <span class="muted">· ${b && b.on === false ? "they turned their buddy off" : "no buddy yet"}</span>`;
@@ -395,6 +410,7 @@ function renderDetail(s) {
     <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
       <div class="row" style="margin-top:8px"><button type="button" class="seg" data-role="club" aria-pressed="${s.role.club !== false}">🌼 Club member (middle)</button><button type="button" class="seg" data-role="private" aria-pressed="${s.role.club === false}">🌳 Private student (edges)</button></div>
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
+    ${practiceBox(s)}
     <h2>Words</h2>
     <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Cheat Sheet the next time they open it or come back to the tab.</p>
     <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><input id="an2" placeholder="Notes (optional)" aria-label="Notes"><button class="primary" type="submit">+ Add</button></form>
@@ -406,6 +422,11 @@ function renderDetail(s) {
     ${notes.length ? notes.map(nCard).join("") : `<p class="muted">No class notes saved yet.</p>`}
     ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
     ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
+  $("detail").querySelectorAll("[data-psrec]").forEach(btn => btn.onclick = async () => {
+    const n = +btn.dataset.psrec, v = s.modrec.ps === n ? {} : { ps: n };
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; renderDetail(s); toast(v.ps ? "⭐ Stage " + n + " recommended for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Recommendation removed"); }
+    catch (e) { console.warn(e); toast("Couldn't save. Try again."); }
+  });
   const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });
   const lb = $("lvlBeg"); if (lb) lb.onchange = async () => {
     const v = lb.checked ? "beginner" : "normal";

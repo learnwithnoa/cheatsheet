@@ -822,6 +822,70 @@ nav.side .navgroup h4{color:var(--ng)}
 .park-treat:focus-visible{outline:3px solid var(--bright);border-radius:8px}
 @keyframes ptBob{50%{transform:translate(-50%,calc(-50% - 4px))}}
 html.cs-calm .park-treat{animation:none}
+
+#prHub h2{margin-top:22px}
+.pr-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.pr-tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.pr-tile:hover{transform:translateY(-2px);border-color:var(--bright)}
+.pr-tile:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.pr-tile b{font-size:17px;color:var(--ink)}
+.pr-ico{font-size:28px;line-height:1}
+.pr-sub{color:var(--muted);font-size:14px}
+.pr-bar,.ps-bar{display:block;height:6px;border-radius:9px;background:var(--surface-2);overflow:hidden;margin-top:6px}
+.pr-bar i,.ps-bar i{display:block;height:100%;width:0;background:var(--green);border-radius:9px;transition:width .3s}
+.pr-rec{color:#E0A100;font-weight:700}
+:root[data-theme="light"] .pr-rec,:root[data-theme="sepia"] .pr-rec{color:#A46A00}
+.pr-goal{max-width:620px}
+.pr-goal-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.pr-goal-top span{color:var(--muted);font-size:14px}
+.pr-goal p{margin:8px 0 0}
+.pr-dots{display:flex;gap:8px;margin-top:10px}
+.pr-dots i{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:var(--surface-2)}
+.pr-dots i.on{background:var(--green);border-color:var(--green)}
+.pr-back{all:unset;cursor:pointer;color:var(--bright);font-weight:700;font-size:15px;margin-bottom:6px;display:inline-block}
+.pr-back:focus-visible{outline:2px solid var(--bright);border-radius:6px}
+.pr-panel>.card{max-width:620px}
+.ps-list{display:flex;flex-direction:column;gap:10px;max-width:680px}
+.ps-stage{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.ps-stage.locked{opacity:.6}
+.ps-stage.rec{border-color:#E0A100;box-shadow:0 0 0 2px rgba(224,161,0,.35)}
+.ps-num{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--surface-2);color:var(--ink)}
+.ps-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ps-info span{color:var(--muted);font-size:14px}
+.ps-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
+.ps-side small{color:var(--muted)}
+.ps-stars{color:#F5B301;letter-spacing:2px;font-size:18px}
+.ps-stars s{text-decoration:none;color:var(--line)}
+.ps-goal{max-width:680px}
+.ps-q{max-width:620px}
+.ps-kind{color:var(--muted);font-size:14px;margin:12px 0 4px}
+.ps-sent{font-size:20px;line-height:1.5;margin:4px 0 14px}
+.ps-blank{display:inline-block;min-width:70px;border-bottom:3px solid var(--bright);text-align:center;color:var(--bright)}
+.ps-in{font:inherit;font-size:19px;width:11em;max-width:100%;padding:4px 8px;border-radius:8px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink)}
+.ps-in:focus{outline:none;border-color:var(--bright)}
+.ps-in.right{border-color:var(--green)}.ps-in.wrong{border-color:var(--red)}
+.ps-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ps-opt{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);font-weight:600;font-size:17px}
+.ps-opt:hover:not(:disabled){border-color:var(--bright)}
+.ps-opt:focus-visible{outline:3px solid var(--bright)}
+.ps-opt:disabled{cursor:default}
+.ps-opt.right{border-color:var(--green);background:var(--green-soft)}
+.ps-opt.wrong{border-color:var(--red);background:var(--red-soft)}
+.ps-fb:empty{display:none}
+.ps-fb{margin-top:14px;padding:12px 14px;border-radius:12px}
+.ps-fb.ok{background:var(--green-soft)}.ps-fb.no{background:var(--red-soft)}
+.ps-fb p{margin:6px 0}
+.ps-fb .es{display:block}
+.ps-quit{max-width:620px;text-align:right;margin-top:8px}
+.ps-res,.ps-mid{text-align:center}
+.ps-big{font-size:44px;font-weight:800;font-family:var(--display)}
+.ps-res .ps-stars{font-size:30px}
+.ps-unlock{font-weight:700;color:var(--green)}
+.mis-list{margin:0 0 14px;padding-left:20px}
+.mis-list li{margin:4px 0}
+.mis-list small{color:var(--muted)}
+.nb-prac{all:unset;cursor:pointer;margin-left:6px;font-size:13px;font-weight:700;color:var(--bright);border:1px solid var(--bright);border-radius:99px;padding:1px 9px}
+@media (max-width:560px){.ps-opts{grid-template-columns:1fr}.ps-stage{flex-wrap:wrap}.ps-side{flex-direction:row;align-items:center;width:100%;justify-content:space-between}}
 </style>
 
 <header class="top">
@@ -1856,10 +1920,19 @@ html.cs-calm .park-treat{animation:none}
 
 <!-- ============ QUIZ ============ -->
 <section class="view" id="v-quiz" hidden>
+<div id="prHub">
   <h1><em>Practice</em></h1>
-  <p class="lede">Review your own words with flashcards, or test yourself on irregular verbs. Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p>
-  <h2 style="margin-top:6px">My words</h2>
-  <div class="card flash-wrap" style="max-width:560px">
+  <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
+  <p class="esb">Elige qué quieres practicar hoy.</p>
+  <div class="card pr-goal" id="prGoal"></div>
+  <h2>Grammar</h2>
+  <div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div>
+  <h2>Your words</h2>
+  <div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button></div>
+</div>
+<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1><em>Past simple</em></h1><p class="lede">Six stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Seis etapas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
+<div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
+<div class="pr-panel" data-pp="flash" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1><em>Flashcards</em></h1><p class="lede">Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p><div class="card flash-wrap" style="max-width:560px">
     <div id="fcEmpty" hidden><p style="margin:0 0 10px">You don't have any words yet. Save a few on your <b>Home</b> page and they'll show up here as flashcards.</p><button class="pill-btn pill-green" type="button" data-go="notes">Go to Home</button></div>
     <div class="fc-set" role="group" aria-label="Which words to practice"><span class="fc-set-l">Which words?</span><button type="button" data-fcset="all">All</button><button type="button" data-fcset="today">Today&#39;s 5</button><button type="button" data-fcset="new20">Newest 20</button><button type="button" data-fcset="week">This week</button><button type="button" data-fcset="hard">Hard ones</button><button type="button" data-fcset="pick">My pick <span id="fcPickN"></span></button></div>
     <div id="fcSetEmpty" class="fc-set-empty" hidden></div>
@@ -1875,8 +1948,9 @@ html.cs-calm .park-treat{animation:none}
       <div class="quiz-btns"><button class="pill-btn" type="button" id="fcNext">Skip →</button><button class="swap" type="button" id="fcShuffle">Shuffle</button><button class="swap" type="button" id="fcDir">Start in Spanish</button></div>
     </div>
   </div>
-  <h2>Use it in a sentence</h2>
-  <p>Write your own sentence with one of your words, and get quick feedback. It uses the same words you chose above.</p>
+  </div>
+<div class="pr-panel" data-pp="sent" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1>Use it in a <em>sentence</em></h1>
+  <p>Write your own sentence with one of your words, and get quick feedback. It uses the words from your flashcards.</p>
   <div class="card sn-card" id="snCard" style="max-width:560px">
     <div class="quiz-top"><span class="tag">✍️ Your word</span><button class="swap" type="button" id="snNext">Another word →</button></div>
     <div class="sn-word"><b id="snWord"></b><span id="snMean"></span></div>
@@ -1885,7 +1959,8 @@ html.cs-calm .park-treat{animation:none}
     <div class="note-actions"><button class="pill-btn pill-green" type="button" id="snCheck">Check my sentence</button><span class="muted" id="snOff" hidden style="font-size:13px">The checker is loading…</span></div>
     <div class="sn-out" id="snOut" hidden aria-live="polite"></div>
   </div>
-  <h2>Say it out loud</h2>
+  </div>
+<div class="pr-panel" data-pp="say" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1>Say it <em>out loud</em></h1>
   <p>Practice your pronunciation: say one of your words (or its example sentence) and see if the computer understands you.</p>
   <div class="card sn-card" id="spCard" style="max-width:560px">
     <div class="quiz-top"><span class="tag">🎤 Say this</span><button class="swap" type="button" id="spNext">Another word →</button></div>
@@ -1894,7 +1969,8 @@ html.cs-calm .park-treat{animation:none}
     <p class="muted" id="spNo" hidden style="font-size:14px;margin:8px 0 0">Your browser can't listen to you. Try Chrome, Edge or Safari.</p>
     <div class="sn-out" id="spOut" hidden aria-live="polite"></div>
   </div>
-  <h2>Irregular verbs</h2>
+  </div>
+<div class="pr-panel" data-pp="irr" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1>Irregular <em>verbs</em></h1>
   <p class="lede" style="margin-bottom:12px">Write the past simple and the past participle. Press Enter to check.</p>
   <div class="card quiz" style="max-width:560px">
     <div class="quiz-top"><span class="tag" id="qzLevel">common verbs</span><span class="count" id="qzScore">0 correct · streak 0</span></div>
@@ -1908,10 +1984,11 @@ html.cs-calm .park-treat{animation:none}
     <div id="qzFeedback" class="quiz-fb" aria-live="polite"></div>
   </div>
   <div class="chips" style="margin-top:14px"><button class="chip" type="button" data-ql="common" aria-pressed="true">Common verbs</button><button class="chip" type="button" data-ql="all" aria-pressed="false">All verbs</button></div>
+</div>
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=12" defer></script>
+<script src="buddy.js?v=13" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2828,7 +2905,18 @@ fcShuffle();
     "Below are the notes from "+label+". Write a short, clean study summary in English, speaking directly to the student (\"you\"). Use simple, friendly English. "+
     "Use exactly these sections, in this order, and skip a section if the notes have nothing for it:\n"+
     "## Main topics\n- (one short line per topic)\n## Corrections to remember\n- wrong → right (very short reason)\n## New words & expressions\n- expression — meaning in Spanish\n## Practice next\n- one or two small, practical suggestions\n\n"+
-    "Rules: under 180 words. Only use information that is in the notes, never invent examples or facts. Fix spelling mistakes in the notes. No introduction, no closing sentence, no bold titles other than the ## headings.\n\nNOTES:\n"+notesText(list);
+    "Rules: under 180 words. Only use information that is in the notes, never invent examples or facts. Fix spelling mistakes in the notes. If a correction is about the past simple (was/were, didn't + verb, Did…? questions, -ed endings or irregular past verbs), end its reason with \"(past simple)\". No introduction, no closing sentence, no bold titles other than the ## headings.\n\nNOTES:\n"+notesText(list);
+  }
+  /* which past simple stage fits a correction line (0 = not past simple) */
+  function psStage(t){
+    const ps=/past simple|past tense/i.test(t), l=t.toLowerCase();
+    if(/\b(was|were|wasn't|weren't)\b/.test(l)&&(ps||/\bwas (go|went|eat|ate|have|had)\b/.test(l))) return 3;
+    if(/\bdid(n't| not)\b/.test(l)) return 4;
+    if(/\bdid (you|he|she|they|we|i|it)\b/.test(l)) return 5;
+    if(!ps) return 0;
+    if(/\b\w+(ed)\b/.test(l)&&/(ed\b|-ed|regular)/.test(l)&&!/irregular/.test(l)) return 1;
+    if(/irregular/.test(l)) return 2;
+    return 6;
   }
   function render(md){
     let html="", inList=false, sec="";
@@ -2841,6 +2929,7 @@ fcShuffle();
         if(!inList){ html+="<ul>"; inList=true; }
         let extra="";
         if(/words|expressions/i.test(sec)){ const m=t.split(/\s+[—–-]\s+/); if(m.length>=2&&m[0].length<60){ const w=m[0].replace(/\*\*/g,"").replace(/^["“]|["”]$/g,"").trim(), mean=m.slice(1).join(" - ").replace(/\*\*/g,"").trim(); extra=' <button class="nb-add" type="button" data-w="'+esc(w)+'" data-m="'+esc(mean)+'">+ save</button>'; } }
+        if(/correction/i.test(sec)){ const st=psStage(t); if(st) extra+=' <button class="nb-prac" type="button" data-psgo="'+st+'" title="Practice the past simple">Practice this →</button>'; }
         html+="<li>"+inline(t)+extra+"</li>"; return;
       }
       if(inList){ html+="</ul>"; inList=false; }
@@ -3112,6 +3201,363 @@ function todays5(){
     csDialog('<h3 style="margin-top:0">💌 Messages from Noa</h3>'+(hist.length?hist.map(m=>'<div class="kd-item"><div class="kd-date">'+fmt(m.at)+'</div><div>'+esc(m.text).replace(/\n/g,"<br>")+'</div></div>').join(""):'<p>No messages yet.</p>'));
   });
   paintLink();
+})();
+
+/* ---------- Past simple question bank ----------
+   one question per line:  sentence with ___ | right answer(s) / ... | 3 wrong options , , | why (optional) | Spanish hint (optional)
+   empty "why" / "es" use the stage's default. */
+const PS_STAGES=[
+ {n:1, t:"Regular verbs", sub:"worked, stopped, studied", why:"Regular verbs add -ed in the past.", es:"Los verbos regulares agregan -ed en pasado.", q:`
+Yesterday I ___ late at the office. (work)|worked|work,workt,working
+We ___ a movie last night. (watch)|watched|watch,watcht,watching
+She ___ her mom on Sunday. (call)|called|call,calls,calld
+They ___ in Valparaíso for two years. (live)|lived|liveed,live,lives|If the verb ends in -e, just add -d.|Si el verbo termina en -e, solo agrega -d.
+I ___ English at school. (study)|studied|studyed,studed,study|Consonant + y → change the y to -ied.|Consonante + y → cambia la y por -ied.
+The bus ___ in front of my house. (stop)|stopped|stoped,stopt,stop|Short verbs like stop double the last letter: stopped.|Verbos cortos como stop duplican la última letra.
+He ___ video games all weekend. (play)|played|plaied,plaid,play|Vowel + y → just add -ed: played.|Vocal + y → solo agrega -ed.
+We ___ for the bus for 20 minutes. (wait)|waited|waitted,wait,waitid
+My brother ___ me with my homework. (help)|helped|helpt,help,helpped
+I ___ the dishes after dinner. (wash)|washed|washt,wash,washid
+She ___ when she saw the photo. (smile)|smiled|smileed,smile,smild|If the verb ends in -e, just add -d.|Si el verbo termina en -e, solo agrega -d.
+They ___ to Spain in 2019. (travel)|traveled/travelled|traveld,travel,travelt|Both traveled (US) and travelled (UK) are correct.|traveled (EE.UU.) y travelled (UK) están bien.
+I ___ to a podcast on the way to work. (listen)|listened|listen,listend,listenned
+He ___ the email this morning. (answer)|answered|answerd,answer,answerred
+We ___ the party a lot. (enjoy)|enjoyed|enjoied,enjoy,enjoyd|Vowel + y → just add -ed: enjoyed.|Vocal + y → solo agrega -ed.
+The baby ___ all night. (cry)|cried|cryed,cry,cryied|Consonant + y → change the y to -ied.|Consonante + y → cambia la y por -ied.
+I ___ my phone and broke the screen. (drop)|dropped|droped,drop,dropt|Short verbs like drop double the last letter: dropped.|Verbos cortos como drop duplican la última letra.
+She ___ to buy a new phone. (decide)|decided|decideed,decide,decidid|If the verb ends in -e, just add -d.|Si el verbo termina en -e, solo agrega -d.
+We ___ the whole apartment on Saturday. (clean)|cleaned|clean,cleand,cleanned
+He ___ a new job last month. (start)|started|startted,start,startid
+I ___ my grandparents in the south. (visit)|visited|visitted,visit,visitid|Visit doesn't double the t, because the stress is at the start: VIS-it.|Visit no duplica la t.
+They ___ about the problem for hours. (talk)|talked|talk,talkt,talkked
+The class ___ at 7 p.m. (finish)|finished|finisht,finish,finishd
+We ___ a trip to the south. (plan)|planned|planed,plan,plannd|Short verbs like plan double the last letter: planned.|Verbos cortos como plan duplican la última letra.
+She ___ the exam! (pass)|passed|past,pass,passd|"Past" isn't a verb. The past of pass is passed.|"Past" no es un verbo: el pasado de pass es passed.
+He ___ me his new car. (show)|showed|showd,show,shown
+`},
+ {n:2, t:"Irregular verbs", sub:"went, had, saw, made", why:"This verb is irregular, so it doesn't use -ed.", es:"Este verbo es irregular: no lleva -ed.", q:`
+Last summer we ___ to the beach. (go)|went|goed,gone,go
+I ___ a great time at the party. (have)|had|haved,has,have
+She ___ a delicious cake for my birthday. (make)|made|maked,make,maded
+They ___ a famous actor at the mall. (see)|saw|seed,seen,sawed
+I ___ breakfast at 8. (eat)|ate|eated,eaten,eat
+He ___ me a message last night. (send)|sent|sended,send,sented
+We ___ the 10 o'clock bus. (take)|took|taked,taken,tooked
+I ___ a new laptop. (buy)|bought|buyed,boughted,brought|Careful: bought comes from buy, brought comes from bring.|Ojo: bought = compré, brought = traje.
+She ___ "hello" and smiled. (say)|said|sayed,say,sayd
+My parents ___ me a bike for Christmas. (give)|gave|gived,given,gaved
+I ___ really tired after work. (feel)|felt|feeled,feel,fell|Felt comes from feel. Fell is the past of fall.|felt = me sentí, fell = me caí.
+He ___ home at midnight. (come)|came|comed,come,camed
+We ___ an email to the company. (write)|wrote|writed,written,wroted
+I ___ the answer! (know)|knew|knowed,known,new
+She ___ her keys on the table. (leave)|left|leaved,leave,lefted
+They ___ a lot of money on the trip. (spend)|spent|spended,spend,spented
+I ___ my wallet at the restaurant. (lose)|lost|losed,loose,lose
+He ___ the whole book in two days. (read)|read|readed,red,reads|The past of read is written "read" but it sounds like "red".|Se escribe read pero suena como "red".
+We ___ on a bench at the park. (sit)|sat|sitted,set,sit
+I ___ my best friend at a concert. (meet)|met|meeted,meet,metted
+She ___ a beautiful song. (sing)|sang|singed,sung,sing
+I ___ about you yesterday. (think)|thought|thinked,taught,think|Thought comes from think. Taught is the past of teach.|thought = pensé, taught = enseñé.
+Our teacher ___ us a new grammar rule. (teach)|taught|teached,thought,teach|Taught comes from teach. Thought is the past of think.|taught = enseñó, thought = pensó.
+He ___ his car to work. (drive)|drove|drived,driven,drive
+The movie ___ at 9. (begin)|began|begined,begun,begin
+I ___ really well last night. (sleep)|slept|sleeped,sleep,slep
+We ___ coffee after class. (drink)|drank|drinked,drunk,drink
+They ___ the match 3–1. (win)|won|winned,win,wined
+`},
+ {n:3, t:"Was / were", sub:"I was, they were", why:"I / he / she / it → was. You / we / they → were.", es:"I, he, she, it → was. You, we, they → were.", q:`
+I ___ tired yesterday.|was|were,am,be
+They ___ at the party last night.|were|was,are,been
+You ___ right!|were|was,are,be|With "you", always use were, even for one person.|Con "you" siempre es were.
+The movie ___ really boring.|was|were,is,been
+We ___ very hungry after the hike.|were|was,are,be
+My parents ___ in Chile last year.|were|was,are,be
+It ___ cold this morning.|was|were,is,be
+She ___ born in 1995.|was|were,is,has|"Be born" uses was / were: I was born, she was born.|"Nací" = I was born.
+There ___ a lot of people at the concert.|were|was,are,had|There were + plural (people).|There were + plural.
+There ___ a problem with my phone.|was|were,is,had|There was + singular (a problem).|There was + singular.
+I ___ at home, I was at work. (not)|wasn't/was not|weren't,didn't,not was|The negative is wasn't (was not).|Negativo: wasn't = was not.
+They ___ happy with the hotel. (not)|weren't/were not|wasn't,didn't,not were|The negative is weren't (were not).|Negativo: weren't = were not.
+___ you at home last night?|Were|Was,Did,Are|In questions, put was / were first: Were you…?|En preguntas, was / were va primero.
+___ the test difficult?|Was|Were,Did,Is|In questions, put was / were first: Was the test…?|En preguntas, was / were va primero.
+Where ___ you yesterday?|were|was,did,are
+Why ___ she so angry?|was|were,did,is
+The restaurant ___ open on Monday. (not)|wasn't/was not|weren't,didn't,isn't
+My friends and I ___ late for class.|were|was,are,did|"My friends and I" = we → were.|"My friends and I" = we → were.
+How ___ your weekend?|was|were,did,is
+The tickets ___ really expensive.|were|was,are,did
+I ___ born in Santiago.|was|were,am,did|"Be born" uses was / were: I was born.|"Nací" = I was born.
+___ your parents at the wedding?|Were|Was,Did,Are
+He ___ at the meeting, he was sick. (not)|wasn't/was not|weren't,didn't,isn't
+We ___ really excited about the trip.|were|was,are,did
+Yesterday I ___ to the gym. (go)|went|was go,was went,goed|For actions, use the past verb (went), not was + verb.|Para acciones usa el verbo en pasado, no "was go".
+She ___ very nervous before the interview.|was|were,did,is
+`},
+ {n:4, t:"Negatives", sub:"didn't go, didn't eat", why:"After didn't, use the base verb: didn't go, not didn't went.", es:"Después de didn't, el verbo va en forma base: didn't go.", q:`
+I ___ to the party. (not / go)|didn't go/did not go|didn't went,don't went,not went
+She ___ breakfast this morning. (not / eat)|didn't eat/did not eat|didn't ate,not ate,doesn't ate
+We ___ the movie. (not / like)|didn't like/did not like|didn't liked,not liked,don't liked
+They ___ the bus. (not / take)|didn't take/did not take|didn't took,not took,wasn't take
+He ___ my message. (not / answer)|didn't answer/did not answer|didn't answered,not answered,wasn't answer
+I ___ much last night. (not / sleep)|didn't sleep/did not sleep|didn't slept,wasn't sleep,not slept
+You ___ me! (not / call)|didn't call/did not call|didn't called,not called,don't called
+It ___ yesterday. (not / rain)|didn't rain/did not rain|didn't rained,wasn't rain,not rained
+We ___ enough time. (not / have)|didn't have/did not have|didn't had,hadn't,not had
+She ___ anything. (not / say)|didn't say/did not say|didn't said,not said,wasn't say
+I ___ the answer. (not / know)|didn't know/did not know|didn't knew,not knew,wasn't know
+They ___ to the meeting. (not / come)|didn't come/did not come|didn't came,not came,wasn't come
+He ___ his homework. (not / do)|didn't do/did not do|didn't did,not did,wasn't do
+I ___ any souvenirs. (not / buy)|didn't buy/did not buy|didn't bought,not bought,wasn't buy
+We ___ each other at the concert. (not / see)|didn't see/did not see|didn't saw,not saw,wasn't see
+She ___ the job. (not / get)|didn't get/did not get|didn't got,not got,wasn't get
+My team ___ the game. (not / win)|didn't win/did not win|didn't won,not won,wasn't win
+I ___ to bring my umbrella. (not / remember)|didn't remember/did not remember|didn't remembered,not remembered,wasn't remember
+He ___ the lesson. (not / understand)|didn't understand/did not understand|didn't understood,not understood,wasn't understand
+Fix it: "I didn't went to work." → I didn't ___ to work.|go|went,gone,goes
+Fix it: "She didn't saw me." → She didn't ___ me.|see|saw,seen,sees
+Fix it: "We not watched the game." → We ___ the game.|didn't watch/did not watch|not watched,don't watched,didn't watched|Use didn't + base verb, not just "not".|Usa didn't + verbo base, no solo "not".
+I ___ my phone all day. (not / use)|didn't use/did not use|didn't used,not used,don't used
+They ___ me about the party. (not / tell)|didn't tell/did not tell|didn't told,not told,don't told
+She ___ well, so she stayed home. (not / feel)|didn't feel/did not feel|didn't felt,not felt,wasn't feel
+`},
+ {n:5, t:"Questions", sub:"Did you…? Where did you…?", why:"Questions: Did + person + base verb. Did you go? Where did you go?", es:"Preguntas: Did + persona + verbo base.", q:`
+___ you go to the gym yesterday?|Did|Do,Was,Were
+Did she ___ the email? (send)|send|sent,sends,sending|After Did, use the base verb: Did she send…?|Después de Did, el verbo va en forma base.
+___ they like the food?|Did|Do,Were,Was
+Did you ___ a good time? (have)|have|had,has,having|After Did, use the base verb: Did you have…?|Después de Did, el verbo va en forma base.
+Where ___ last summer? (you / go)|did you go|did you went,you went,were you go
+What ___ for dinner? (you / eat)|did you eat|did you ate,you ate,were you eat
+When ___? (the movie / start)|did the movie start|did the movie started,the movie started,was the movie start
+Who ___ at the party? (you / see)|did you see|did you saw,you saw,were you see
+Why ___ early? (she / leave)|did she leave|did she left,she left,was she leave
+How ___ there? (they / get)|did they get|did they got,they got,were they get
+___ he call you back?|Did|Was,Does,Were
+Did they ___ the game? (win)|win|won,wins,winned|After Did, use the base verb: Did they win…?|Después de Did, el verbo va en forma base.
+What time ___ up? (you / wake)|did you wake|did you woke,you woke,were you wake
+Did you ___ my message? (get)|get|got,gets,getting|After Did, use the base verb: Did you get…?|Después de Did, el verbo va en forma base.
+___ you tired after the trip?|Were|Did,Was,Do|With be (tired, happy, at home…), don't use did: Were you tired?|Con "be" no se usa did: Were you…?
+___ the hotel nice?|Was|Did,Were,Does|With be (nice, big, open…), don't use did: Was the hotel nice?|Con "be" no se usa did: Was it…?
+What ___ you do last weekend?|did|do,were,was
+Where ___ you born?|were|did,was,are|"Be born" uses was / were: Where were you born?|"¿Dónde naciste?" = Where were you born?
+How long ___ there? (you / stay)|did you stay|did you stayed,you stayed,were you stay
+Did she ___ you about her new job? (tell)|tell|told,tells,telling|After Did, use the base verb: Did she tell…?|Después de Did, el verbo va en forma base.
+Fix it: "Did you saw the news?" → Did you ___ the news?|see|saw,seen,sees|After Did, use the base verb: Did you see…?|Después de Did, el verbo va en forma base.
+Fix it: "Where you went?" → Where ___?|did you go|you went,did you went,went you
+___ it rain yesterday?|Did|Was,Does,Were
+What ___ she say?|did|was,does,were
+How much ___? (it / cost)|did it cost|did it costed,it cost,was it cost
+Which restaurant ___? (you / choose)|did you choose|did you chose,you chose,were you choose
+`},
+ {n:6, t:"Mix it up", sub:"everything together + fix the mistake", why:"", es:"", q:`
+Last year I ___ to Peru. (travel)|traveled/travelled|travel,was travel,traveling|Regular verb: add -ed.|Verbo regular: agrega -ed.
+She ___ the bus this morning. (not / take)|didn't take/did not take|didn't took,wasn't take,not took|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
+___ you at work yesterday?|Were|Did,Was,Do|With be (at work), use Were you…?, not Did.|Con "be" no se usa did.
+We visited the museum three days ___.|ago|before,last,past|Use "ago" after an amount of time: three days ago.|"three days ago" = hace tres días.
+I ___ him last week. (meet)|met|meeted,meet,was meet|Meet is irregular: met.|Meet es irregular: met.
+What did you do ___ weekend?|last|the last,past,ago|Say "last weekend", not "the last weekend".|"el fin de semana pasado" = last weekend.
+They ___ very happy with the results.|were|was,did,are|They → were.|They → were.
+He ___ his keys yesterday. (lose)|lost|losed,was lose,loosed|Lose is irregular: lost.|Lose es irregular: lost.
+___ she like the gift?|Did|Was,Does,Is|Did + person + base verb: Did she like…?|Did + persona + verbo base.
+I ___ busy, so I didn't call you.|was|were,did,am|I → was.|I → was.
+We ___ dinner at home last night. (have)|had|haved,have,was have|Have is irregular: had.|Have es irregular: had.
+Fix it: "I was go to the supermarket." → I ___ to the supermarket.|went|was go,was went,goed|For actions, use the past verb (went), not was + verb.|Para acciones usa el verbo en pasado, no "was go".
+Fix it: "He didn't came to class." → He didn't ___ to class.|come|came,comed,comes|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
+Fix it: "Did you enjoyed the trip?" → Did you ___ the trip?|enjoy|enjoyed,enjoys,was enjoy|After Did, use the base verb.|Después de Did, el verbo va en forma base.
+Fix it: "They was at the beach." → They ___ at the beach.|were|was,did,are|They → were.|They → were.
+Fix it: "I studyed a lot." → I ___ a lot.|studied|studyed,study,studed|Consonant + y → -ied: studied.|Consonante + y → -ied.
+I ___ English when I was a kid. (not / study)|didn't study/did not study|didn't studied,wasn't study,not studied|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
+How ___ the concert?|was|did,were,is|The concert (it) → was.|The concert (it) → was.
+She sent me a message ___ night.|last|yesterday,ago,the last|Say "last night" (but "yesterday morning").|anoche = last night.
+I ___ you at the party! Where were you? (not / see)|didn't see/did not see|didn't saw,wasn't see,not saw|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
+Where ___ before Santiago? (you / live)|did you live|did you lived,you lived,were you live|Where + did + person + base verb.|Where + did + persona + verbo base.
+It ___ a great day at the beach.|was|were,did,is|It → was.|It → was.
+My sister ___ a new car last month. (buy)|bought|buyed,brought,was buy|Buy is irregular: bought (brought comes from bring).|bought = compró, brought = trajo.
+___ they finish the project on time?|Did|Were,Was,Do|Did + person + base verb: Did they finish…?|Did + persona + verbo base.
+We ___ to the radio while we cooked. (listen)|listened|listen,were listen,listenned|Regular verb: add -ed.|Verbo regular: agrega -ed.
+I finished my homework ___ evening.|yesterday|last,ago,past|Say "yesterday evening", "yesterday morning" (but "last night").|ayer en la tarde = yesterday evening.
+`}
+];
+PS_STAGES.forEach(st=>{
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"ps"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+
+/* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
+(function(){
+  const view=document.getElementById("v-quiz"), hub=document.getElementById("prHub"); if(!view||!hub) return;
+  const panels=[...view.querySelectorAll(".pr-panel")];
+  const $=id=>document.getElementById(id);
+  const beg=()=>typeof csBeginner==="function"&&csBeginner();
+  const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const ITEM={}; PS_STAGES.forEach(st=>st.items.forEach(q=>ITEM[q.id]=q));
+  const GOAL=3, PASS=7;
+
+  /* ---- saved progress ---- */
+  const mods=()=>{ const m=LS.get("ncs-mods",{}); return m&&typeof m==="object"?m:{}; };
+  const ps=()=>{ const m=mods(); const p=m.ps||{}; p.b=p.b||{}; p.s=p.s||{}; p.r=p.r|0; return p; };
+  const rec=()=>{ const r=LS.get("ncs-modrec",{}); return r&&typeof r==="object"?r:{}; };
+  const starsFor=sc=>sc>=10?3:sc>=9?2:sc>=PASS?1:0;
+  const unlocked=n=>{ const p=ps(); return n===1||(p.b[n-1]|0)>=PASS||rec().ps===n; };
+  const totalStars=()=>{ const p=ps(); return PS_STAGES.reduce((t,st)=>t+(p.s[st.n]|0),0); };
+  const allDone=()=>{ const p=ps(); return PS_STAGES.every(st=>(p.b[st.n]|0)>=PASS); };
+  const mis=()=>{ const m=LS.get("ncs-mymis",{}); return m&&typeof m==="object"?m:{}; };
+  const misList=()=>{ const m=mis(); return Object.keys(m).filter(id=>ITEM[id]).sort((a,b)=>(m[b].n-m[a].n)||(m[b].t-m[a].t)); };
+  function noteAnswer(id,ok){
+    const m=mis();
+    if(ok){ if(m[id]){ m[id].ok=(m[id].ok|0)+1; if(m[id].ok>=2) delete m[id]; } else return; }
+    else { m[id]=m[id]||{n:0,ok:0,t:0}; m[id].n++; m[id].ok=0; m[id].t=Date.now(); }
+    LS.set("ncs-mymis",m);
+  }
+  const weekKey=()=>{ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+  const week=()=>{ const w=LS.get("ncs-wk",null); return w&&w.w===weekKey()?w:{w:weekKey(),n:0,got:false}; };
+  function bumpWeek(){
+    const w=week(); w.n++; let hit=false;
+    if(w.n>=GOAL&&!w.got){ w.got=true; hit=true; }
+    LS.set("ncs-wk",w);
+    if(hit){ document.dispatchEvent(new CustomEvent("cs-weekgoal")); setTimeout(()=>toast("🎯 Weekly goal done! Your buddy got +5 🍪 and +5 friendship."),1200); }
+    renderHub();
+  }
+  document.addEventListener("cs-fcround",bumpWeek);
+
+  /* ---- home page ---- */
+  function renderHub(){
+    const w=week(), g=$("prGoal");
+    if(g) g.innerHTML='<div class="pr-goal-top"><b>🎯 This week\'s goal</b><span>'+Math.min(w.n,GOAL)+' / '+GOAL+' rounds</span></div>'+
+      '<div class="pr-dots" aria-hidden="true">'+Array.from({length:GOAL},(_,i)=>'<i class="'+(i<w.n?"on":"")+'"></i>').join("")+'</div>'+
+      '<p>'+(w.got?"Done for this week! 🎉 Your buddy got its reward. Keep going if you want, a new goal starts on Monday.":"Finish "+GOAL+" practice rounds this week (grammar or flashcards). Your buddy gets <b>+5 🍪</b> and <b>+5 friendship</b>.")+'</p>'+
+      '<p class="esb">Meta semanal: termina '+GOAL+' rondas de práctica esta semana.</p>';
+    const ts=$("prPsTile"); if(ts){ const t=totalStars(), r=rec().ps; ts.querySelector(".pr-sub").innerHTML=t+" / 18 ★"+(r?' · <span class="pr-rec">Noa recommends stage '+r+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/18*100)+"%"; }
+    const tm=$("prMisTile"); if(tm){ const n=misList().length; tm.querySelector(".pr-sub").textContent=n?n+(n===1?" question to review":" questions to review"):"Nothing to review yet"; }
+  }
+  let cur=null;
+  function show(p){
+    cur=p||null;
+    hub.hidden=!!cur; panels.forEach(x=>x.hidden=x.dataset.pp!==cur);
+    if(cur==="ps"&&!round) renderStages();
+    if(cur==="mis"&&!round) renderMis();
+    if(!cur) renderHub();
+    window.scrollTo({top:0});
+  }
+  view.addEventListener("click",e=>{
+    const t=e.target.closest("[data-pr]"); if(t){ round=null; show(t.dataset.pr); return; }
+    if(e.target.closest("[data-prback]")){ round=null; show(null); }
+  });
+  document.addEventListener("click",e=>{ const b=e.target.closest('[data-go="quiz"]'); if(b&&!b.closest("#v-quiz")){ round=null; setTimeout(()=>show(null),0); } });
+
+  /* ---- past simple: stage list ---- */
+  const stars=n=>'<span class="ps-stars" aria-label="'+n+' of 3 stars">'+"★★★".slice(0,n)+'<s>'+"★★★".slice(0,3-n)+'</s></span>';
+  function renderStages(){
+    const box=$("psArea"); if(!box) return; const p=ps(), r=rec().ps;
+    box.innerHTML='<div class="ps-list">'+PS_STAGES.map(st=>{
+      const open=unlocked(st.n), best=p.b[st.n];
+      return '<div class="card ps-stage'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?st.n:"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
+        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
+        (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
+    }).join("")+'</div>'+
+    '<p class="ps-goal">'+(allDone()?"🕰️ You finished every stage! Your buddy has the <b>Time machine</b> toy.":"Finish all 6 stages ("+PASS+"/10 or more) to unlock the 🕰️ <b>Time machine</b> toy for your buddy.")+'</p>';
+  }
+
+  /* ---- a round ---- */
+  let round=null;
+  const nrm=s=>String(s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.?!,]+$/g,"").replace(/\bdidn't\b/g,"did not").replace(/\bwasn't\b/g,"was not").replace(/\bweren't\b/g,"were not").replace(/\s+/g," ").trim();
+  function start(kind,stage){
+    let pool, title;
+    if(kind==="ps"){ const st=PS_STAGES[stage-1]; pool=shuffle(st.items).slice(0,10); title="Stage "+st.n+" · "+st.t; }
+    else { const ids=misList().slice(0,10); if(!ids.length){ renderMis(); return; } pool=shuffle(ids.map(id=>ITEM[id])); title="My mistakes"; }
+    const half=Math.ceil(pool.length/2);
+    round={kind,stage,title,list:pool.map((q,i)=>({q,mc:i<half})),i:0,score:0,missed:[],retry:false,answered:false};
+    show(kind==="ps"?"ps":"mis"); paintQ();
+  }
+  const area=()=>$(round&&round.kind==="ps"?"psArea":"misArea");
+  function sentence(q,inner){ return esc(q.q).replace("___",inner); }
+  function paintQ(){
+    const R=round, it=R.list[R.i], q=it.q, n=R.list.length, box=area(); if(!box) return;
+    R.answered=false;
+    const blank=it.mc?'<span class="ps-blank">___</span>':'<input class="ps-in" id="psIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer">';
+    box.innerHTML='<div class="card ps-q"><div class="quiz-top"><span class="tag">'+esc(R.title)+'</span><span class="count">'+(R.retry?"Try again · "+(R.i+1)+" / "+n:(R.i+1)+" / "+n)+'</span></div>'+
+      '<div class="ps-bar" aria-hidden="true"><i style="width:'+Math.round(R.i/n*100)+'%"></i></div>'+
+      '<p class="ps-kind">'+(it.mc?"Choose the right answer":"Write the missing words")+'</p>'+
+      '<p class="ps-sent">'+sentence(q,blank)+'</p>'+
+      (it.mc?'<div class="ps-opts">'+shuffle([q.a[0]].concat(q.o.slice(0,3))).map(o=>'<button type="button" class="ps-opt" data-psopt="'+esc(o)+'">'+esc(o)+'</button>').join("")+'</div>'
+            :'<div class="note-actions"><button class="pill-btn" type="button" id="psCheck">Check</button><button class="swap" type="button" id="psDunno">I don\'t know</button></div>')+
+      '<div class="ps-fb" id="psFb" aria-live="polite"></div></div>'+
+      '<p class="ps-quit"><button class="foot-link" type="button" data-psquit>Stop this round</button></p>';
+    const inp=$("psIn"); if(inp){ inp.focus({preventScroll:true}); inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if(R.answered) next(); else check(inp.value); } }); }
+  }
+  function check(val,btn){
+    const R=round; if(!R||R.answered) return; const it=R.list[R.i], q=it.q;
+    if(!it.mc&&!String(val||"").trim()&&val!==null) { const i=$("psIn"); if(i) i.focus(); return; }
+    R.answered=true;
+    const ok=val!==null&&q.a.some(a=>nrm(a)===nrm(val));
+    if(!R.retry){ if(ok) R.score++; else R.missed.push(it); noteAnswer(q.id,ok); }
+    else if(ok) noteAnswer(q.id,true);
+    const box=area();
+    if(it.mc){ box.querySelectorAll(".ps-opt").forEach(b=>{ b.disabled=true; if(nrm(b.dataset.psopt)===nrm(q.a[0])) b.classList.add("right"); }); if(btn&&!ok) btn.classList.add("wrong"); }
+    else { const i=$("psIn"); if(i){ i.readOnly=true; i.classList.add(ok?"right":"wrong"); } const c=$("psCheck"), d=$("psDunno"); if(c) c.remove(); if(d) d.remove(); }
+    const fb=$("psFb");
+    fb.className="ps-fb "+(ok?"ok":"no");
+    fb.innerHTML=(ok?'<b>✓ '+["Correct!","Nice!","That's it!","Exactly!"][Math.floor(Math.random()*4)]+'</b>':'<b>✗ The answer is: '+esc(q.a[0])+'</b>')+
+      '<p>'+esc(q.why)+'</p>'+(q.es&&(beg()||!ok)?'<p class="es">'+esc(q.es)+'</p>':"")+
+      '<button class="pill-btn pill-green" type="button" id="psNext">'+(R.i+1<R.list.length?"Next →":R.retry||!R.missed.length?"See my results":"Next →")+'</button>';
+    const nb=$("psNext"); if(nb) nb.focus({preventScroll:true});
+  }
+  function next(){
+    const R=round; if(!R) return;
+    R.i++;
+    if(R.i<R.list.length){ paintQ(); return; }
+    if(!R.retry&&R.missed.length){ R.retry=true; R.list=R.missed.map(x=>({q:x.q,mc:x.mc})); R.i=0; const box=area(); box.innerHTML='<div class="card ps-q ps-mid"><p class="ps-sent">Let\'s try the '+(R.list.length===1?"one you missed":R.list.length+" you missed")+' one more time 💪</p><p class="muted">This part doesn\'t change your score.</p><button class="pill-btn pill-green" type="button" id="psGo">Let\'s go</button></div>'; $("psGo").focus({preventScroll:true}); return; }
+    finish();
+  }
+  function finish(){
+    const R=round, n=R.list.length; let html="";
+    const perfect=!R.missed.length;
+    if(R.kind==="ps"){
+      const m=mods(), p=ps(), st=R.stage, oldBest=p.b[st], wasDone=allDone(), wasOpen=PS_STAGES[st]?unlocked(st+1):true;
+      if(oldBest==null||R.score>oldBest) p.b[st]=R.score;
+      p.s[st]=Math.max(p.s[st]|0,starsFor(R.score)); p.r++; p.last=Date.now(); m.ps=p; LS.set("ncs-mods",m);
+      const nowOpen=PS_STAGES[st]?unlocked(st+1):false, finishedAll=!wasDone&&allDone();
+      if(rec().ps===st&&R.score>=PASS){ /* Noa's recommendation done */ }
+      const sg=starsFor(R.score);
+      html='<div class="card ps-res"><div class="ps-big">'+R.score+' / 10</div>'+stars(sg)+
+        '<p class="ps-sent">'+(R.score===10?"Perfect round! 🎉":R.score>=9?"Excellent! 🌟":R.score>=PASS?"Well done! You passed this stage. 👍":"Good practice! Get "+PASS+"/10 to pass this stage. You can do it 💪")+'</p>'+
+        (nowOpen&&!wasOpen?'<p class="ps-unlock">🔓 Stage '+(st+1)+' is open!</p>':"")+
+        (finishedAll?'<p class="ps-unlock">🕰️ You finished the whole past simple module! Your buddy got the <b>Time machine</b> toy.</p>':"")+
+        (R.missed.length?'<p class="muted">The questions you missed are saved in <b>My mistakes</b>, so you can review them later.</p>':"")+
+        '<div class="note-actions" style="justify-content:center">'+(nowOpen&&PS_STAGES[st]?'<button class="pill-btn pill-green" type="button" data-psstart="'+(st+1)+'">Next stage →</button>':"")+
+        '<button class="pill-btn'+(nowOpen?"":" pill-green")+'" type="button" data-psstart="'+st+'">Try again</button><button class="swap" type="button" data-psall>All stages</button></div></div>';
+      document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:R.score,perfect,finished:finishedAll}}));
+    } else {
+      const left=misList().length;
+      html='<div class="card ps-res"><div class="ps-big">'+R.score+' / '+n+'</div><p class="ps-sent">'+(perfect?"All correct! 🎉":"Good review! 👍")+'</p><p class="muted">'+(left?left+(left===1?" question is":" questions are")+" still on your list. A question leaves the list when you get it right twice in a row.":"Your list is empty. Nothing left to review! 🎉")+'</p>'+
+        '<div class="note-actions" style="justify-content:center">'+(left?'<button class="pill-btn pill-green" type="button" data-misstart>Review again</button>':"")+'<button class="swap" type="button" data-prback>All practice</button></div></div>';
+      document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:R.score,perfect:perfect&&n>=5,finished:false}}));
+    }
+    const box=area(); round=null; box.innerHTML=html; bumpWeek();
+  }
+  view.addEventListener("click",e=>{
+    const o=e.target.closest("[data-psopt]"); if(o&&round){ check(o.dataset.psopt,o); return; }
+    if(e.target.closest("#psCheck")){ const i=$("psIn"); check(i?i.value:""); return; }
+    if(e.target.closest("#psDunno")){ check(null); return; }
+    if(e.target.closest("#psNext")||e.target.closest("#psGo")){ if(e.target.closest("#psGo")) paintQ(); else next(); return; }
+    const s=e.target.closest("[data-psstart]"); if(s){ start("ps",+s.dataset.psstart); return; }
+    if(e.target.closest("[data-misstart]")){ start("mis"); return; }
+    if(e.target.closest("[data-psall]")){ round=null; renderStages(); window.scrollTo({top:0}); return; }
+    if(e.target.closest("[data-psquit]")){ const k=round&&round.kind; round=null; if(k==="mis") renderMis(); else renderStages(); }
+  });
+
+  /* ---- My mistakes ---- */
+  function renderMis(){
+    const box=$("misArea"); if(!box) return; const ids=misList(), m=mis();
+    if(!ids.length){ box.innerHTML='<div class="card"><p style="margin:0 0 10px"><b>Nothing to review yet 🎉</b></p><p class="muted" style="margin:0 0 12px">When you miss a question in a grammar stage, it shows up here so you can practice it again later.</p><button class="pill-btn" type="button" data-pr="ps">Practice the past simple</button></div>'; return; }
+    box.innerHTML='<div class="card"><p style="margin:0 0 12px">You have <b>'+ids.length+'</b> '+(ids.length===1?"question":"questions")+' to review. Get one right twice in a row and it leaves the list.</p>'+
+      '<ul class="mis-list">'+ids.slice(0,8).map(id=>'<li>'+esc(ITEM[id].q).replace("___","<b>"+esc(ITEM[id].a[0])+"</b>")+(m[id].n>1?' <small>missed '+m[id].n+'×</small>':"")+'</li>').join("")+(ids.length>8?'<li class="muted">…and '+(ids.length-8)+' more</li>':"")+'</ul>'+
+      '<button class="pill-btn pill-green" type="button" data-misstart>Review '+Math.min(10,ids.length)+(ids.length===1?" question":" questions")+'</button></div>';
+  }
+
+  /* ---- open from elsewhere (notebook "Practice this") ---- */
+  window.csPractice=function(p,stage){ go("quiz",true); round=null; if(p==="ps"&&stage){ start("ps",stage); } else show(p); };
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-psgo]"); if(!b) return; e.preventDefault(); window.csPractice("ps",+b.dataset.psgo||0); });
+  renderHub();
 })();
 
 /* ---------------- import words ---------------- */
@@ -4129,6 +4575,13 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-pastsimple", date:"November 5, 2026", title:"A new Practice page + the past simple ⏪", items:[
+    ["🧩","A new Practice page","<b>Practice</b> now has its own home page: pick flashcards, sentences, pronunciation, irregular verbs or grammar.","quiz"],
+    ["⏪","Past simple, step by step","six stages from easy to harder: regular verbs, irregular verbs, was / were, negatives, questions and a final mix. Get 7/10 to open the next stage, and finish them all to get a 🕰️ toy for your buddy.","quiz"],
+    ["📌","My mistakes","the questions you miss are saved so you can review them later. A question leaves the list when you get it right twice in a row.","quiz"],
+    ["🎯","A weekly goal","finish 3 practice rounds in a week and your buddy gets +5 🍪 and +5 friendship.","quiz"],
+    ["📓","Practice this","in your weekly summaries, past simple corrections now have a <b>Practice this</b> button.","notebook"]
+  ]},
   {id:"2026-findwords", date:"November 5, 2026", title:"Find words, park treats and a colorful menu 🍪", items:[
     ["✨","Find words in any saved note","in <b>My class notes</b>, tap <b>✨ Find words</b> on a saved note to see new words and expressions you can add to My words.","classnotes"],
     ["🍪","Treats in the park","sometimes a treat is hiding in the <b>Buddy park</b>. If you see one, tap it to pick it up! It doesn't happen every day.","park"],
