@@ -904,6 +904,20 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
 .ps-miss ul{padding-left:20px;margin:6px 0}
 .ps-miss li{margin:8px 0}
 @media (max-width:560px){.ps-to{flex-direction:column;align-items:stretch}}
+
+#themeBtn{display:none!important}
+.pr-short b{font-size:12px;padding:1px 7px;border-radius:99px;background:var(--surface-2);margin-left:2px}
+.pr-short.done b{background:var(--green);color:#fff}
+.pr-big{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px;max-width:820px}
+.pr-bigbtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:26px 22px;border-radius:20px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);transition:transform .15s,border-color .15s;min-height:170px}
+.pr-bigbtn:hover{transform:translateY(-3px)}
+.pr-bigbtn:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.pr-bigbtn .pr-ico{font-size:40px}
+.pr-bigbtn b{font-size:24px;font-family:var(--display);color:var(--ink)}
+.pr-bigbtn>span:not(.pr-ico){color:var(--muted)}
+.pb-gram{border-top:5px solid #4F9DF0}.pb-gram:hover{border-color:#4F9DF0}
+.pb-words{border-top:5px solid #F2994A}.pb-words:hover{border-color:#F2994A}
+.pr-soon{color:var(--muted)}
 </style>
 
 <header class="top">
@@ -941,6 +955,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
     </div>
     <button id="csTimerChip" type="button" hidden aria-label="Study timer"></button>
     <button class="theme-btn cs-hide-phone" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
+    <button class="theme-btn pr-short cs-hide-phone" id="prShortcut" type="button" data-go="quiz" title="Practice · this week's goal"><span aria-hidden="true">🎯</span><span class="theme-txt">Practice</span><b id="prShortCount">0/3</b></button>
     <div class="cs-wrap" id="csWrap"></div>
     <div class="music-wrap auth-wrap">
       <button class="theme-btn auth-btn" id="authBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="authPanel"><span class="g-ico" id="authIco" aria-hidden="true">G</span><span class="theme-txt" id="authTxt">Sign in</span></button>
@@ -962,21 +977,19 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
   <nav class="side" aria-label="Sections">
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
+      <button class="navbtn cn-nav" data-go="quiz"><span class="w-ico em-ico" aria-hidden="true">🎯</span><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
       <button class="navbtn cn-nav" data-go="park"><span class="w-ico em-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
-    <div class="navgroup ng-start"><h4>Start here</h4>
+    <div class="navgroup ng-start"><h4>Essentials</h4>
       <button class="navbtn" data-go="basics">Sentence basics</button>
       <button class="navbtn" data-go="tenses">Verb tenses</button>
       <button class="navbtn" data-go="verbs">Irregular verbs</button>
       <button class="navbtn" data-go="be">Verb to be</button>
       <button class="navbtn" data-go="mistakes">Common mistakes</button>
-    </div>
-    <div class="navgroup ng-practice"><h4>Practice</h4>
-      <button class="navbtn" data-go="quiz">Practice</button>
     </div>
     <div class="navgroup ng-speaking"><h4>Speaking</h4>
       <button class="navbtn" data-go="summary">Summary helper</button>
@@ -1943,14 +1956,12 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
   <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
-  <h2>Grammar</h2>
-  <div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div>
-  <h2>Your words</h2>
-  <div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button></div>
-</div>
-<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1><em>Past simple</em></h1><p class="lede">Six stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Seis etapas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
-<div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
-<div class="pr-panel" data-pp="flash" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1><em>Flashcards</em></h1><p class="lede">Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p><div class="card flash-wrap" style="max-width:560px">
+  <div class="pr-big"><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Flashcards, sentences and pronunciation</span><span class="esb">Tus palabras</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button></div></div>
+<div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
+<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Past simple</em></h1><p class="lede">Six stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Seis etapas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
+<div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
+<div class="pr-panel" data-pp="flash" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Flashcards</em></h1><p class="lede">Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p><div class="card flash-wrap" style="max-width:560px">
     <div id="fcEmpty" hidden><p style="margin:0 0 10px">You don't have any words yet. Save a few on your <b>Home</b> page and they'll show up here as flashcards.</p><button class="pill-btn pill-green" type="button" data-go="notes">Go to Home</button></div>
     <div class="fc-set" role="group" aria-label="Which words to practice"><span class="fc-set-l">Which words?</span><button type="button" data-fcset="all">All</button><button type="button" data-fcset="today">Today&#39;s 5</button><button type="button" data-fcset="new20">Newest 20</button><button type="button" data-fcset="week">This week</button><button type="button" data-fcset="hard">Hard ones</button><button type="button" data-fcset="pick">My pick <span id="fcPickN"></span></button></div>
     <div id="fcSetEmpty" class="fc-set-empty" hidden></div>
@@ -1967,7 +1978,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
     </div>
   </div>
   </div>
-<div class="pr-panel" data-pp="sent" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1>Use it in a <em>sentence</em></h1>
+<div class="pr-panel" data-pp="sent" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Use it in a <em>sentence</em></h1>
   <p>Write your own sentence with one of your words, and get quick feedback. It uses the words from your flashcards.</p>
   <div class="card sn-card" id="snCard" style="max-width:560px">
     <div class="quiz-top"><span class="tag">✍️ Your word</span><button class="swap" type="button" id="snNext">Another word →</button></div>
@@ -1978,7 +1989,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
     <div class="sn-out" id="snOut" hidden aria-live="polite"></div>
   </div>
   </div>
-<div class="pr-panel" data-pp="say" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1>Say it <em>out loud</em></h1>
+<div class="pr-panel" data-pp="say" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Say it <em>out loud</em></h1>
   <p>Practice your pronunciation: say one of your words (or its example sentence) and see if the computer understands you.</p>
   <div class="card sn-card" id="spCard" style="max-width:560px">
     <div class="quiz-top"><span class="tag">🎤 Say this</span><button class="swap" type="button" id="spNext">Another word →</button></div>
@@ -1988,7 +1999,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
     <div class="sn-out" id="spOut" hidden aria-live="polite"></div>
   </div>
   </div>
-<div class="pr-panel" data-pp="irr" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> All practice</button><h1>Irregular <em>verbs</em></h1>
+<div class="pr-panel" data-pp="irr" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Irregular <em>verbs</em></h1>
   <p class="lede" style="margin-bottom:12px">Write the past simple and the past participle. Press Enter to check.</p>
   <div class="card quiz" style="max-width:560px">
     <div class="quiz-top"><span class="tag" id="qzLevel">common verbs</span><span class="count" id="qzScore">0 correct · streak 0</span></div>
@@ -2006,7 +2017,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=14" defer></script>
+<script src="buddy.js?v=15" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -3478,11 +3489,15 @@ I ___ English for three years when I was at school. (study)|studied|Consonant + 
       '<p>'+(w.got?"Done for this week! 🎉 Your buddy got its reward. Keep going if you want, a new goal starts on Monday.":"Finish "+GOAL+" practice rounds this week (grammar or flashcards). Your buddy gets <b>+5 🍪</b> and <b>+5 friendship</b>.")+'</p>'+
       '<p class="esb">Meta semanal: termina '+GOAL+' rondas de práctica esta semana.</p>';
     const ts=$("prPsTile"); if(ts){ const t=totalStars(), r=rec().ps; ts.querySelector(".pr-sub").innerHTML=t+" / 18 ★"+(r?' · <span class="pr-rec">Noa recommends stage '+r+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/18*100)+"%"; }
+    const sc=$("prShortCount"); if(sc){ sc.textContent=Math.min(w.n,GOAL)+"/"+GOAL; sc.parentElement.classList.toggle("done",!!w.got); }
     const tm=$("prMisTile"); if(tm){ const n=misList().length; tm.querySelector(".pr-sub").textContent=n?n+(n===1?" question to review":" questions to review"):"Nothing to review yet"; }
   }
   let cur=null;
+  const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words"};
+  const PNAME={gram:"Grammar",words:"Your words"};
   function show(p){
     cur=p||null;
+    view.querySelectorAll(".pr-back-t").forEach(t=>t.textContent=PNAME[PARENT[cur]]||"All practice");
     hub.hidden=!!cur; panels.forEach(x=>x.hidden=x.dataset.pp!==cur);
     if(cur==="ps"&&!round) renderStages();
     if(cur==="mis"&&!round) renderMis();
@@ -3491,7 +3506,7 @@ I ___ English for three years when I was at school. (study)|studied|Consonant + 
   }
   view.addEventListener("click",e=>{
     const t=e.target.closest("[data-pr]"); if(t){ round=null; show(t.dataset.pr); return; }
-    if(e.target.closest("[data-prback]")){ round=null; show(null); }
+    if(e.target.closest("[data-prback]")){ round=null; show(PARENT[cur]||null); }
   });
   document.addEventListener("click",e=>{ const b=e.target.closest('[data-go="quiz"]'); if(b&&!b.closest("#v-quiz")){ round=null; setTimeout(()=>show(null),0); } });
 
@@ -4691,6 +4706,11 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-practicefirst", date:"November 6, 2026", title:"Practice moves up 🎯", items:[
+    ["🎯","Practice is easier to find","it is now right under <b>Home</b> in the menu, and the <b>🎯</b> button at the top shows your weekly goal. Change the theme in <b>Settings</b>.","quiz"],
+    ["🐾","Move your buddy","drag your buddy to another spot on the screen. It stays where you leave it."],
+    ["💛","More about your buddy","tap your buddy to see its level, mood and treats at a glance."]
+  ]},
   {id:"2026-testout", date:"November 5, 2026", title:"Test out, buddy sounds, piano + rain and more 🎓", items:[
     ["🎹","Piano + rain","a new <b>Music</b> option: calm piano with soft rain, with a slider to mix them. Every sound now has a short description too.","music"],
     ["🐾","Pet your buddy","your buddy now has a <b>Pet</b> button next to <b>Feed</b>."],

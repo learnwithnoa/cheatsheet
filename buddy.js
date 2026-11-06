@@ -497,7 +497,16 @@ html.cs-calm .bd-pet .bd-svg,html.cs-calm .bd-pet.hop .bd-svg,html.cs-calm .bd-p
 html.cs-calm .bd-shiny::before,html.cs-calm .bd-shiny::after{animation:none;opacity:.8}
 html.cs-calm .bd-z{animation:none;opacity:.8}
 @media (prefers-reduced-motion:reduce){.bd-pet .bd-svg,.bd-pet.hop .bd-svg,.bd-pet.walk .bd-svg{animation:none}}
-@media (max-width:640px){.bd{bottom:calc(74px + env(safe-area-inset-bottom,0px));right:calc(12px + env(safe-area-inset-right,0px))}.bd-pet{width:64px;height:70px}.bd-bub{max-width:min(260px,calc(100vw - 100px));margin-bottom:28px}}
+.bd.dragging{transform:translate(var(--dx,0),var(--dy,0));transition:none}.bd.dragging .bd-pet{cursor:grabbing;filter:drop-shadow(0 10px 8px rgba(0,0,0,.3))}
+.bd.at-bl,.bd.at-ml{right:auto;left:calc(18px + env(safe-area-inset-left,0px));flex-direction:row-reverse}
+.bd.at-mr,.bd.at-ml{bottom:42vh}
+@media (min-width:901px){.bd.at-bl,.bd.at-ml{left:calc(max(0px,(100vw - 1280px) / 2) + 262px)}}
+.bd-ic{margin:-2px 0 8px;padding-bottom:8px;border-bottom:1px solid var(--line,#ddd)}
+.bd-ic-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.bd-ic-top span{font-size:12px;opacity:.8}
+.bd-ic .bd-bar{margin:5px 0 4px}
+.bd-ic-sub{font-size:12px;opacity:.8}
+@media (max-width:640px){.bd.at-bl,.bd.at-ml{left:calc(12px + env(safe-area-inset-left,0px))}.bd{bottom:calc(74px + env(safe-area-inset-bottom,0px));right:calc(12px + env(safe-area-inset-right,0px))}.bd-pet{width:64px;height:70px}.bd-bub{max-width:min(260px,calc(100vw - 100px));margin-bottom:28px}}
 `;
   const st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
 
@@ -606,7 +615,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (timerOn && !petBtn.querySelector(".bd-book")) prop("📖", "bd-book", 14000);
     const musicOn = l >= 7 && (document.getElementById("musicPlay") || { getAttribute: () => "" }).getAttribute("aria-pressed") === "true";
     if (musicOn && now - lastIdle > 9000 && Math.random() < .5) { prop("🎵", "bd-note", 2600); setTimeout(() => prop("🎶", "bd-note2", 2600), 700); lastIdle = now; return; }
-    if (now - lastAct < 20000 || now - lastIdle < 45000) return;
+    if (now - lastAct < 12000 || now - lastIdle < 35000) return;
     const opts = IDLE.filter(([n]) => l >= n);
     if (!opts.length) return;
     lastIdle = now;
@@ -614,6 +623,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (f() === false) yawn();
   }
   setInterval(idleTick, 5000);
+  /* sometimes show a trick a few seconds after something good happens */
+  function maybeTrick() { if (Math.random() < .3 && Date.now() - lastIdle > 35000) setTimeout(() => { const a = lastAct; lastAct = 0; idleTick(); lastAct = a; }, 5200); }
 
   /* ---------- actions ---------- */
   /* ---------- little 8-bit animal sounds (about 1 in 4 taps) ---------- */
@@ -652,7 +663,13 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (!S.pd || S.pd[0] !== today()) S.pd = [today(), 0];
     if (S.pd[1] < 10) { S.pd[1]++; addFP(1); }
     refreshPanel(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.m === "pet" ? '[data-m="pet"]' : null, ["💛", "🩷", "💛"]);
-    say(Math.random() < .35 ? "" : chatLine(), menuActs(), 6500);
+    say(infoLine() + (Math.random() < .35 ? "" : chatLine()), menuActs(), 6500);
+  }
+  function infoLine() {
+    const l = level(), p = fpOf(), nxt = LV[l], fed = S.fd && S.fd[0] === today() ? S.fd[1] : 0;
+    const mood = fed >= FEED_PER_DAY ? "full 😋" : fed === 0 && (S.t | 0) > 0 ? "a little hungry 🍪" : "happy 😊";
+    const pct = nxt ? Math.max(4, Math.round((p - LV[l - 1]) / (nxt - LV[l - 1]) * 100)) : 100;
+    return `<div class="bd-ic"><div class="bd-ic-top"><b>${esc(nameOf())}</b><span>Level ${l} 💛</span></div><div class="bd-bar" aria-hidden="true"><i style="width:${pct}%"></i></div><div class="bd-ic-sub">Feeling ${mood} · 🍪 ${S.t | 0}/${MAXT}${nxt ? ` · next: ${esc(LV_WHAT[l])}` : " · best friends!"}</div></div>`;
   }
   function pvOpts(extra) {
     const o = Object.assign({ wear: { head: S.head, face: S.face, neck: S.neck } }, extra || {});
@@ -682,7 +699,28 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   function setMin(v) { S.min = !!v; save(); hideBub(); visible(); if (!v) { petBtn.focus(); hop(); } else mini.focus(); }
 
-  petBtn.addEventListener("click", () => {
+  const SPOTS = ["br", "bl", "mr", "ml"];
+  function setSpot(k) { SPOTS.forEach(x => root.classList.remove("at-" + x)); if (k && k !== "br") root.classList.add("at-" + k); try { localStorage.setItem("cs-bd-spot", k || "br"); } catch (e) {} }
+  try { const k = localStorage.getItem("cs-bd-spot"); if (SPOTS.includes(k)) setSpot(k); } catch (e) {}
+  let drag = null, justDragged = false;
+  petBtn.style.touchAction = "none";
+  petBtn.addEventListener("pointerdown", e => { if (e.button) return; drag = { x: e.clientX, y: e.clientY, on: false, id: e.pointerId }; });
+  window.addEventListener("pointermove", e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.on) { if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 9) return; drag.on = true; root.classList.add("dragging"); hideBub(); try { petBtn.setPointerCapture(drag.id); } catch (er) {} }
+    const r = petBtn.getBoundingClientRect();
+    root.style.setProperty("--dx", (e.clientX - drag.x) + "px"); root.style.setProperty("--dy", (e.clientY - drag.y) + "px");
+  });
+  const endDrag = e => {
+    if (!drag) return; const d = drag; drag = null; if (!d.on) return;
+    justDragged = true; setTimeout(() => justDragged = false, 50);
+    root.classList.remove("dragging"); root.style.removeProperty("--dx"); root.style.removeProperty("--dy");
+    const left = e.clientX < innerWidth / 2, mid = e.clientY < innerHeight * .62;
+    setSpot((mid ? "m" : "b") + (left ? "l" : "r")); hop();
+  };
+  window.addEventListener("pointerup", endDrag); window.addEventListener("pointercancel", endDrag);
+  petBtn.addEventListener("click", e => {
+    if (justDragged) { e.stopImmediatePropagation(); return; }
     wake();
     if (S.on === undefined) { openModal("adopt"); return; }
     petIt();
@@ -860,7 +898,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (d.perfect) addFP(3);
     const grew = markStudy(); save(); wake(); hop();
     if (d.finished) { fx(["✨", "⏳", "✨"]); say(`🎉 You finished the past simple! New magic toy for ${esc(nameOf())}: <b>⏳ Magic hourglass</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000); return; }
-    fx(d.perfect ? ["⭐", "💛", "⭐"] : ["🍪", "💛", "✨"]);
+    fx(d.perfect ? ["⭐", "💛", "⭐"] : ["🍪", "💛", "✨"]); maybeTrick();
     say((d.perfect ? "Perfect round! ⭐ +3 friendship" : "Round done! 💪") + (gave ? ` +${gave} 🍪` : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 4000);
   });
   document.addEventListener("cs-weekgoal", () => {
@@ -868,7 +906,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const old = S.t | 0; S.t = Math.min(MAXT, old + 5); addFP(5); save(); wake(); hop(); fx(["🎯", "🎉", "💛"]);
     say(`Weekly goal done! 🎯 +5 friendship${S.t > old ? ` and +${S.t - old} 🍪` : ""}`, "", 5000);
   });
-  document.addEventListener("cs-fcround", () => {
+  document.addEventListener("cs-fcround", () => { maybeTrick();
     if (S.on !== true) return;
     const c = counts(), before = S.lc == null ? c.learned : S.lc; S.lc = c.learned;
     const old = S.t | 0; S.t = Math.min(MAXT, old + 3); markStudy(); save(); wake(); hop(); fx(["🍪", "💛", "🍪"]);
