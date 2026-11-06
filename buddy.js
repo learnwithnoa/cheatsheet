@@ -280,7 +280,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     try { const f = JSON.parse(localStorage.getItem("ncs-fc") || "{}"); learned = Object.values(f).filter(v => v >= 3).length; } catch (e) {}
     return { words, learned };
   }
-  const modDone = m => { try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return [1, 2, 3, 4, 5, 6].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
+  const modDone = m => { try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 14) || [1, 2, 3, 4, 5, 6].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
   const isOpen = it => { if (it.m) return modDone(it.m); const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
   const lockTxt = it => it.m ? "when you finish " + it.mt : it.w != null ? it.w + " words" : it.l + " learned words";
   const animal = () => SP[S.a] ? S.a : "max";
@@ -616,8 +616,39 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   setInterval(idleTick, 5000);
 
   /* ---------- actions ---------- */
+  /* ---------- little 8-bit animal sounds (about 1 in 4 taps) ---------- */
+  let sac = null;
+  const sndOn = () => S.snd !== false && !document.documentElement.classList.contains("cs-calm");
+  function tone(type, f0, f1, t0, dur, vol, opts) {
+    opts = opts || {};
+    const o = sac.createOscillator(), g = sac.createGain(); o.type = type;
+    o.frequency.setValueAtTime(f0, t0); if (opts.mid) o.frequency.linearRampToValueAtTime(opts.mid, t0 + dur * .45); o.frequency.exponentialRampToValueAtTime(Math.max(30, f1), t0 + dur);
+    if (opts.vib) { const l = sac.createOscillator(), lg = sac.createGain(); l.frequency.value = opts.vib; lg.gain.value = opts.vd || 20; l.connect(lg).connect(o.frequency); l.start(t0); l.stop(t0 + dur + .05); }
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + .015); g.gain.setValueAtTime(vol, t0 + dur * .6); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
+    let out = g;
+    if (opts.trem) { const tg = sac.createGain(), l = sac.createOscillator(), lg = sac.createGain(); l.frequency.value = opts.trem; lg.gain.value = .5; tg.gain.value = .5; l.connect(lg).connect(tg.gain); l.start(t0); l.stop(t0 + dur + .05); g.connect(tg); out = tg; }
+    const lp = sac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = opts.lp || 3000;
+    o.connect(g); out.connect(lp).connect(sac.destination); o.start(t0); o.stop(t0 + dur + .05);
+  }
+  function animalSound(a, force) {
+    if (!sndOn() || (!force && Math.random() > .25)) return;
+    try {
+      if (!sac) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; sac = new AC(); }
+      if (sac.state === "suspended") sac.resume();
+      const t = sac.currentTime + .02, V = .12;
+      if (a === "max" || a === "miki") { const f = a === "max" ? 330 : 470; tone("square", f, f * .55, t, .12, V, { lp: 1400 }); tone("square", f * 1.05, f * .5, t + .2, .14, V, { lp: 1400 }); }
+      else if (a === "cat") tone("sawtooth", 480, 420, t, .55, V * .8, { mid: 820, lp: 1800, vib: 6, vd: 15 });
+      else if (a === "chicken") [0, .13, .26].forEach((d, i) => tone("square", i === 2 ? 900 : 700, 450, t + d, .09, V * .8, { lp: 2200 }));
+      else if (a === "frog") { tone("square", 260, 200, t, .16, V, { trem: 40, lp: 900 }); tone("square", 300, 230, t + .22, .2, V, { trem: 40, lp: 900 }); }
+      else if (a === "llama") tone("triangle", 230, 210, t, .6, V * 1.3, { mid: 260, vib: 4, vd: 6, lp: 1200 });
+      else if (a === "unicorn") [1047, 1319, 1568, 2093].forEach((f, i) => tone("sine", f, f, t + i * .09, .35, V * .7, { lp: 6000 }));
+      else if (a === "pudu") tone("sawtooth", 620, 540, t, .38, V * .7, { vib: 9, vd: 40, lp: 2000 });
+      else if (a === "capybara") { tone("sine", 1100, 1500, t, .1, V, { lp: 5000 }); tone("sine", 1200, 1650, t + .16, .12, V, { lp: 5000 }); }
+      else if (a === "axolotl") { tone("sine", 280, 900, t, .08, V * 1.2, { lp: 4000 }); tone("sine", 340, 1100, t + .14, .07, V, { lp: 4000 }); }
+    } catch (e) {}
+  }
   function petIt() {
-    hop(); fx(["💛", "🩷", "💛"]);
+    hop(); fx(["💛", "🩷", "💛"]); animalSound(animal());
     if (!S.pd || S.pd[0] !== today()) S.pd = [today(), 0];
     if (S.pd[1] < 10) { S.pd[1]++; addFP(1); }
     refreshPanel(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.m === "pet" ? '[data-m="pet"]' : null, ["💛", "🩷", "💛"]);
@@ -734,6 +765,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       <h4>Wardrobe</h4>${slotRow("head", "Head")}${slotRow("face", "Face")}${slotRow("neck", "Neck")}
       <h4>Room</h4>${slotRow("room", "Background")}
       ${(() => { const n = (S.gd || []).length; return `<p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows in front of your buddy on every day you study (save a word or practice flashcards). Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`; })()}
+      <label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:8px"><input type="checkbox" id="bdSnd" ${S.snd !== false ? "checked" : ""}> 🔊 Buddy sounds <span class="bd-small" style="margin:0">(sometimes, when you tap a buddy)</span></label>
       ${(() => { const se = season(); return `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:8px"><input type="checkbox" id="bdSeas" ${S.seas !== false ? "checked" : ""}> 🗓️ Seasonal outfits${se ? ` <span class="bd-small" style="margin:0">(now: ${se.ico} ${esc(se.name)})</span>` : ` <span class="bd-small" style="margin:0">(Halloween, Christmas, Fiestas Patrias and more)</span>`}</label>`; })()}
       ${isOpen(byId.shiny) ? `<label class="bd-row" style="align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" id="bdShiny" ${S.shiny ? "checked" : ""}> ✨ Shiny sparkles</label>` : `<p class="bd-small">🔒 <b>Shiny sparkles</b> at 400 words · ⭐ <b>Legend star</b> at 1,000 words</p>`}
       <h4>Change your buddy</h4>${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}
@@ -781,7 +813,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (mode === "adopt") { draft.n = e.target.value; const b = modal.querySelector('[data-m="adopt"]'); if (b) b.textContent = "Adopt " + (draft.n.trim() || SP[draft.a].name) + "!"; return; }
     S.n = e.target.value.slice(0, 16); save(); paintPet();
   });
-  modal.addEventListener("change", e => { if (e.target.id === "bdSeas") { S.seas = e.target.checked; save(); renderModal(); paintPet(); return; } if (e.target.id === "bdShiny") { S.shiny = e.target.checked; save(); renderModal(); paintPet(); } });
+  modal.addEventListener("change", e => { if (e.target.id === "bdSnd") { S.snd = e.target.checked; save(); if (S.snd) animalSound(animal(), true); return; } if (e.target.id === "bdSeas") { S.seas = e.target.checked; save(); renderModal(); paintPet(); return; } if (e.target.id === "bdShiny") { S.shiny = e.target.checked; save(); renderModal(); paintPet(); } });
   function toastMsg(t) { if (typeof window.toast === "function") window.toast(t); else say(esc(t), "", 3500); }
 
   /* ---------- earning treats & unlocks ---------- */
@@ -1061,6 +1093,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   document.addEventListener("click", e => {
     const pb = e.target.closest(".park-b");
+    if (pb && pb.dataset.a) animalSound(pb.dataset.a);
     if (pb && !pb.classList.contains("me") && pb.dataset.uid) sendLove(pb);
     if (pb) {
       document.querySelectorAll(".park-b.show-info").forEach(x => { if (x !== pb) x.classList.remove("show-info"); });

@@ -888,6 +888,22 @@ html.cs-calm .park-treat{animation:none}
 @media (max-width:560px){.ps-opts{grid-template-columns:1fr}.ps-stage{flex-wrap:wrap}.ps-side{flex-direction:row;align-items:center;width:100%;justify-content:space-between}}
 
 html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
+
+.auth-stats{border-top:1px solid var(--line);margin-top:8px;padding-top:8px}
+.auth-stats h4{margin:0 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.as-row{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:14px}
+.as-row span{color:var(--muted)}
+.as-row b{text-align:right}
+.as-row small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
+.ps-to{display:flex;align-items:center;gap:14px;justify-content:space-between;max-width:680px;margin-bottom:14px;border-color:#8E5CD9}
+.ps-to>div,.ps-to.done{display:flex;flex-direction:column;gap:4px}
+.ps-to span{color:var(--muted);font-size:14px}
+.ps-to .esb{color:var(--muted)}
+.ps-to.done{border-color:var(--green)}
+.ps-miss{text-align:left;margin:12px 0}
+.ps-miss ul{padding-left:20px;margin:6px 0}
+.ps-miss li{margin:8px 0}
+@media (max-width:560px){.ps-to{flex-direction:column;align-items:stretch}}
 </style>
 
 <header class="top">
@@ -932,6 +948,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
         <div class="qa-top"><h3>Your account</h3><button class="qa-x" type="button" id="authClose" aria-label="Close">×</button></div>
         <p class="auth-who" id="authWho"></p>
         <p class="auth-status" id="authStatus"></p>
+        <div class="auth-stats" id="authStats"></div>
         <p class="music-note">Your words, class notes, stars and flashcard progress save to your Google account automatically. Sign in with the same account on your phone or another computer to see them there.</p>
         <a class="swap" id="teacherLink" href="teacher.html" hidden style="text-decoration:none;align-self:flex-start">📋 Teacher view →</a>
         <div id="authOutBox"><button class="swap" type="button" id="authOut">Sign out</button></div>
@@ -3382,6 +3399,37 @@ PS_STAGES.forEach(st=>{
   st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"ps"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
   delete st.q;
 });
+/* ---------- Test out: tricky questions (all typed) ---------- */
+const PS_TEST=`
+Who ___ you last night? (call)|called|When "who" is the person doing the action, don't use did: Who called you?
+What ___ at the meeting? (happen)|happened|"What" is the subject here, so no did: What happened?
+Who ___ the cake? It was delicious! (make)|made|"Who" is the person doing the action, so no did: Who made the cake?
+There ___ a lot of traffic this morning. (be)|was|Traffic is uncountable, so: there was.
+Everybody ___ really happy at the party. (be)|was|Everybody is singular: everybody was.
+The news ___ really surprising. (be)|was|News is uncountable: the news was.
+My new jeans ___ too small, so I returned them. (be)|were|Jeans are plural: they were.
+She ___ coffee to tea when she was younger. (prefer)|preferred|The stress is at the end (pre-FER), so double the r: preferred.
+The accident ___ on a Monday night. (occur)|occurred|The stress is at the end (oc-CUR), so double the r: occurred.
+He ___ when he saw the spider. (panic)|panicked|Verbs that end in -ic add -ked: panicked.
+I ___ the bill last week. (pay)|paid|Pay is irregular: paid (not payed).
+The police ___ the thief two blocks away. (catch)|caught|catch → caught.
+They ___ for their rights for many years. (fight)|fought|fight → fought.
+She ___ with the problem really well. (deal)|dealt|deal → dealt.
+The price of the tickets ___ a lot last year. (rise)|rose|rise → rose (risen is the participle).
+I'm sorry, I ___ to hurt you. (not / mean)|didn't mean/did not mean|After didn't, use the base verb: didn't mean.
+She ___ the bus because she woke up late. (not / catch)|didn't catch/did not catch|After didn't, use the base verb: didn't catch.
+Why ___ me back? (you / not / call)|didn't you call/did you not call|Negative questions: Why didn't you call me back?
+How long ago ___ to Santiago? (you / move)|did you move|Did + person + base verb: How long ago did you move…?
+What time ___ yesterday? (the store / close)|did the store close|Did + subject + base verb: did the store close.
+I ___ my keys on the table, and now they're gone! (put)|put|Put doesn't change: put – put – put.
+That shirt ___ a lot of money. (cost)|cost|Cost doesn't change: cost – cost – cost.
+The baby ___ at 3 a.m. and didn't go back to sleep. (wake up)|woke up|wake up → woke up.
+We ___ the whole night talking. (spend)|spent|spend → spent.
+She ___ me she was tired. (tell)|told|tell → told.
+He ___ his phone into the pool by accident. (drop)|dropped|Short verbs like drop double the last letter: dropped.
+The kids ___ in the garden all afternoon. (lie)|lay|lie (= acostarse) → lay. Tricky!
+I ___ English for three years when I was at school. (study)|studied|Consonant + y → -ied: studied.
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"pst-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
 
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
 (function(){
@@ -3398,9 +3446,11 @@ PS_STAGES.forEach(st=>{
   const ps=()=>{ const m=mods(); const p=m.ps||{}; p.b=p.b||{}; p.s=p.s||{}; p.r=p.r|0; return p; };
   const rec=()=>{ const r=LS.get("ncs-modrec",{}); return r&&typeof r==="object"?r:{}; };
   const starsFor=sc=>sc>=10?3:sc>=9?2:sc>=PASS?1:0;
-  const unlocked=n=>{ const p=ps(); return n===1||(p.b[n-1]|0)>=PASS||rec().ps===n; };
+  const testedOut=()=>{ const p=ps(); return !!(p.to&&p.to.sc>=14); };
+  const today=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+  const unlocked=n=>{ const p=ps(); return n===1||testedOut()||(p.b[n-1]|0)>=PASS||rec().ps===n; };
   const totalStars=()=>{ const p=ps(); return PS_STAGES.reduce((t,st)=>t+(p.s[st.n]|0),0); };
-  const allDone=()=>{ const p=ps(); return PS_STAGES.every(st=>(p.b[st.n]|0)>=PASS); };
+  const allDone=()=>{ const p=ps(); return testedOut()||PS_STAGES.every(st=>(p.b[st.n]|0)>=PASS); };
   const mis=()=>{ const m=LS.get("ncs-mymis",{}); return m&&typeof m==="object"?m:{}; };
   const misList=()=>{ const m=mis(); return Object.keys(m).filter(id=>ITEM[id]).sort((a,b)=>(m[b].n-m[a].n)||(m[b].t-m[a].t)); };
   function noteAnswer(id,ok){
@@ -3449,10 +3499,14 @@ PS_STAGES.forEach(st=>{
   const stars=n=>'<span class="ps-stars" aria-label="'+n+' of 3 stars">'+"★★★".slice(0,n)+'<s>'+"★★★".slice(0,3-n)+'</s></span>';
   function renderStages(){
     const box=$("psArea"); if(!box) return; const p=ps(), r=rec().ps;
-    box.innerHTML='<div class="ps-list">'+PS_STAGES.map(st=>{
+    const to=p.to, triedToday=p.tod===today();
+    const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of the past simple</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
+      :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at the past simple?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>14 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con 14 correctas apruebas todo el módulo.</span></div>'+
+        (triedToday?'<button class="pill-btn" type="button" disabled>Try again tomorrow</button>':'<button class="pill-btn pill-green" type="button" data-tostart>Take the test</button>')+'</div>';
+    box.innerHTML=toCard+'<div class="ps-list">'+PS_STAGES.map(st=>{
       const open=unlocked(st.n), best=p.b[st.n];
       return '<div class="card ps-stage'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?st.n:"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
-        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
+        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":testedOut()?"🎓 tested out":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
         (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
     }).join("")+'</div>'+
     '<p class="ps-goal">'+(allDone()?"⏳ You finished every stage! Your buddy has the <b>Magic hourglass</b>.":"Finish all 6 stages ("+PASS+"/10 or more) to unlock the ⏳ <b>Magic hourglass</b> for your buddy.")+'</p>';
@@ -3464,12 +3518,13 @@ PS_STAGES.forEach(st=>{
   function start(kind,stage){
     let pool, title;
     if(kind==="ps"){ const st=PS_STAGES[stage-1]; pool=shuffle(st.items).slice(0,10); title="Stage "+st.n+" · "+st.t; }
+    else if(kind==="test"){ if(ps().tod===today()) { renderStages(); return; } pool=shuffle(PS_TEST).slice(0,15); title="🎓 Test out"; round={kind,stage:0,title,list:pool.map(q=>({q,mc:false})),i:0,score:0,missed:[],retry:false,answered:false,test:true}; const p=ps(), m=mods(); p.tod=today(); m.ps=p; LS.set("ncs-mods",m); show("ps"); paintQ(); return; }
     else { const ids=misList().slice(0,10); if(!ids.length){ renderMis(); return; } pool=shuffle(ids.map(id=>ITEM[id])); title="My mistakes"; }
     const half=Math.ceil(pool.length/2);
     round={kind,stage,title,list:pool.map((q,i)=>({q,mc:i<half})),i:0,score:0,missed:[],retry:false,answered:false};
     show(kind==="ps"?"ps":"mis"); paintQ();
   }
-  const area=()=>$(round&&round.kind==="ps"?"psArea":"misArea");
+  const area=()=>$(round&&round.kind!=="mis"?"psArea":"misArea");
   function sentence(q,inner){ return esc(q.q).replace("___",inner); }
   function paintQ(){
     const R=round, it=R.list[R.i], q=it.q, n=R.list.length, box=area(); if(!box) return;
@@ -3477,10 +3532,10 @@ PS_STAGES.forEach(st=>{
     const blank=it.mc?'<span class="ps-blank">___</span>':'<input class="ps-in" id="psIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer">';
     box.innerHTML='<div class="card ps-q"><div class="quiz-top"><span class="tag">'+esc(R.title)+'</span><span class="count">'+(R.retry?"Try again · "+(R.i+1)+" / "+n:(R.i+1)+" / "+n)+'</span></div>'+
       '<div class="ps-bar" aria-hidden="true"><i style="width:'+Math.round(R.i/n*100)+'%"></i></div>'+
-      '<p class="ps-kind">'+(it.mc?"Choose the right answer":"Write the missing words")+'</p>'+
+      '<p class="ps-kind">'+(it.mc?"Choose the right answer":"Write the missing words")+(R.test?" · you'll see your results at the end":"")+'</p>'+
       '<p class="ps-sent">'+sentence(q,blank)+'</p>'+
       (it.mc?'<div class="ps-opts">'+shuffle([q.a[0]].concat(q.o.slice(0,3))).map(o=>'<button type="button" class="ps-opt" data-psopt="'+esc(o)+'">'+esc(o)+'</button>').join("")+'</div>'
-            :'<div class="note-actions"><button class="pill-btn" type="button" id="psCheck">Check</button><button class="swap" type="button" id="psDunno">I don\'t know</button></div>')+
+            :'<div class="note-actions"><button class="pill-btn" type="button" id="psCheck">'+(R.test?"Next →":"Check")+'</button><button class="swap" type="button" id="psDunno">'+(R.test?"Skip":"I don\'t know")+'</button></div>')+
       '<div class="ps-fb" id="psFb" aria-live="polite"></div></div>'+
       '<p class="ps-quit"><button class="foot-link" type="button" data-psquit>Stop this round</button></p>';
     const inp=$("psIn"); if(inp){ inp.focus({preventScroll:true}); inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if(R.answered) next(); else check(inp.value); } }); }
@@ -3490,6 +3545,7 @@ PS_STAGES.forEach(st=>{
     if(!it.mc&&!String(val||"").trim()&&val!==null) { const i=$("psIn"); if(i) i.focus(); return; }
     R.answered=true;
     const ok=val!==null&&q.a.some(a=>nrm(a)===nrm(val));
+    if(R.test){ if(ok) R.score++; else R.missed.push({q,val}); R.i++; if(R.i<R.list.length) paintQ(); else finishTest(); return; }
     if(!R.retry){ if(ok) R.score++; else R.missed.push(it); noteAnswer(q.id,ok); }
     else if(ok) noteAnswer(q.id,true);
     const box=area();
@@ -3542,10 +3598,26 @@ PS_STAGES.forEach(st=>{
     if(e.target.closest("#psNext")||e.target.closest("#psGo")){ if(e.target.closest("#psGo")) paintQ(); else next(); return; }
     const s=e.target.closest("[data-psstart]"); if(s){ start("ps",+s.dataset.psstart); return; }
     if(e.target.closest("[data-misstart]")){ start("mis"); return; }
+    if(e.target.closest("[data-tostart]")){ start("test"); return; }
     if(e.target.closest("[data-psall]")){ round=null; renderStages(); window.scrollTo({top:0}); return; }
     if(e.target.closest("[data-psquit]")){ const k=round&&round.kind; round=null; if(k==="mis") renderMis(); else renderStages(); }
   });
 
+  function finishTest(){
+    const R=round, sc=R.score, pass=sc>=14, m=mods(), p=ps(), wasDone=allDone();
+    if(pass){ if(!p.to||sc>p.to.sc) p.to={sc,t:Date.now()}; PS_STAGES.forEach(st=>{ p.s[st.n]=Math.max(p.s[st.n]|0,sc===15?3:2); }); }
+    p.r++; p.last=Date.now(); m.ps=p; LS.set("ncs-mods",m);
+    const finished=pass&&!wasDone;
+    const box=area(); round=null;
+    box.innerHTML='<div class="card ps-res"><div class="ps-big">'+sc+' / 15</div>'+(pass?stars(sc===15?3:2):"")+
+      '<p class="ps-sent">'+(pass?(sc===15?"Perfect! 🎓 You tested out of the past simple.":"You passed! 🎓 You tested out of the past simple."):"So close! You need 14/15 to test out. 💪")+'</p>'+
+      (finished?'<p class="ps-unlock">⏳ Every stage is done, and your buddy got the <b>Magic hourglass</b>!</p>':"")+
+      (pass?"":'<p class="muted">You can try the test again tomorrow, or practice the stages to get there step by step.</p>')+
+      (R.missed.length?'<div class="ps-miss"><b>'+(R.missed.length===1?"The one you missed":"The ones you missed")+'</b><ul>'+R.missed.map(x=>'<li>'+esc(x.q.q).replace("___","<b>"+esc(x.q.a[0])+"</b>")+(x.val?' <small>(you wrote: '+esc(x.val)+')</small>':"")+'<br><span class="muted">'+esc(x.q.why)+'</span></li>').join("")+'</ul></div>':"")+
+      '<div class="note-actions" style="justify-content:center"><button class="pill-btn pill-green" type="button" data-psall>See the stages</button></div></div>';
+    document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:sc,perfect:sc===15,finished}}));
+    bumpWeek();
+  }
   /* ---- My mistakes ---- */
   function renderMis(){
     const box=$("misArea"); if(!box) return; const ids=misList(), m=mis();
@@ -3559,6 +3631,42 @@ PS_STAGES.forEach(st=>{
   window.csPractice=function(p,stage){ go("quiz",true); round=null; if(p==="ps"&&stage){ start("ps",stage); } else show(p); };
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-psgo]"); if(!b) return; e.preventDefault(); window.csPractice("ps",+b.dataset.psgo||0); });
   renderHub();
+})();
+
+/* ---------- account stats in the profile panel + approximate practice time ---------- */
+(function(){
+  /* practice time: count 30-second blocks while the tab is visible and you did something in the last 2 minutes */
+  let lastAct=Date.now();
+  ["pointerdown","keydown","scroll","touchstart"].forEach(ev=>document.addEventListener(ev,()=>{ lastAct=Date.now(); },{passive:true,capture:true}));
+  setInterval(()=>{ if(document.hidden||Date.now()-lastAct>120000) return; const t=LS.get("ncs-ptime",null)||{s:0,since:Date.now()}; t.s=(t.s|0)+30; LS.set("ncs-ptime",t); },30000);
+  if(!LS.get("ncs-ptime",null)) LS.set("ncs-ptime",{s:0,since:Date.now()});
+  const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const fmtD=t=>{ const d=new Date(t); return MON[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear(); };
+  const fmtT=s=>{ const h=Math.floor(s/3600), m=Math.round((s%3600)/60); return h? h+" h "+(m?m+" min":"") : (m||0)+" min"; };
+  function fill(){
+    const box=document.getElementById("authStats"); if(!box) return;
+    const ws=(LS.get("ncs-words",[])||[]).filter(w=>w&&w.w), ns=(LS.get("ncs-classnotes",[])||[]).filter(n=>n&&n.text);
+    const fc=LS.get("ncs-fc",{})||{}, learned=Object.values(fc).filter(v=>v>=3).length;
+    const bd=LS.get("ncs-buddy",{})||{}, days=Array.isArray(bd.gd)?bd.gd.length:0;
+    const mods=LS.get("ncs-mods",{})||{}, ps=mods.ps||{}, st=Object.values(ps.s||{}).reduce((a,b)=>a+(b|0),0);
+    const pt=LS.get("ncs-ptime",null)||{s:0,since:Date.now()};
+    const times=[...ws.map(w=>w.t),...ns.map(n=>n.t),LS.get("ncs-joined",0),pt.since].filter(t=>t>1e12);
+    const joined=times.length?Math.min(...times):Date.now();
+    let buddy="";
+    try{ if(window.csBuddy&&bd.on===true) buddy='<div class="as-row"><span>💛 Buddy friendship</span><b>Level '+window.csBuddy.level()+'</b></div>'; }catch(e){}
+    const row=(i,l,v)=>'<div class="as-row"><span>'+i+' '+l+'</span><b>'+v+'</b></div>';
+    box.innerHTML='<h4>Your Cheat Sheet</h4>'+
+      row("📅","Here since",fmtD(joined))+
+      row("⏱️","Practice time","≈ "+fmtT(pt.s|0)+'<small>since '+fmtD(pt.since)+'</small>')+
+      row("🌱","Study days",days)+
+      row("📚","Words saved",ws.length)+
+      row("✅","Words learned",learned)+
+      row("📝","Class notes",ns.length)+
+      row("⏪","Past simple",st+" / 18 ★"+(ps.to&&ps.to.sc>=14?" 🎓":""))+
+      buddy;
+  }
+  const btn=document.getElementById("authBtn"); if(btn) btn.addEventListener("click",()=>setTimeout(fill,0));
+  fill();
 })();
 
 /* ---------------- import words ---------------- */
@@ -4583,11 +4691,14 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
-  {id:"2026-pianorain", date:"November 5, 2026", title:"Piano + rain, a Pet button and more 🐾", items:[
+  {id:"2026-testout", date:"November 5, 2026", title:"Test out, buddy sounds, piano + rain and more 🎓", items:[
     ["🎹","Piano + rain","a new <b>Music</b> option: calm piano with soft rain, with a slider to mix them. Every sound now has a short description too.","music"],
     ["🐾","Pet your buddy","your buddy now has a <b>Pet</b> button next to <b>Feed</b>."],
     ["🔁","Irregular verbs count","every 10 right answers in <b>Irregular verbs</b> now counts as a practice round for your buddy and your weekly goal.","quiz"],
-    ["✨","New default names","the cat, llama, unicorn, chicken, pudú, capybara and axolotl now have names. If you already named yours, it keeps its name."]
+    ["✨","New default names","the cat, llama, unicorn, chicken, pudú, capybara and axolotl now have names. If you already named yours, it keeps its name."],
+    ["🎓","Test out of the past simple","already good at it? Take the 15-question <b>test out</b> exam on the Past simple page. Get 14 right and the whole module is done.","quiz"],
+    ["🔊","Buddy sounds","sometimes buddies make a little sound when you tap them, in your corner and in the park. You can turn it off in the buddy window."],
+    ["📊","Your stats","tap your name at the top right to see your words, study days, practice time and more."]
   ]},
   {id:"2026-pastsimple", date:"November 5, 2026", title:"A new Practice page + the past simple ⏪", items:[
     ["🧩","A new Practice page","<b>Practice</b> now has its own home page: pick flashcards, sentences, pronunciation, irregular verbs or grammar.","quiz"],

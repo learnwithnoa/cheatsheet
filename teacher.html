@@ -372,9 +372,9 @@ function practiceBox(s) {
   const tot = PS_T.reduce((t, _, i) => t + (st[i + 1] | 0), 0);
   const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
   const star = n => `<span class="pstars">${"★".repeat(n)}<span>${"★".repeat(3 - n)}</span></span>`;
-  const open = n => n === 1 || (b[n - 1] | 0) >= 7;
-  return `<div class="parkbox"><b>Practice · Past simple</b> <span class="muted">${tot} / 18 ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
-    <table class="pstbl"><tbody>${PS_T.map((t, i) => { const n = i + 1; return `<tr><td>${n}. ${esc(t)}</td><td>${b[n] != null ? star(st[n] | 0) + ` <span class="muted">best ${b[n]}/10</span>` : `<span class="muted">${open(n) ? "not tried" : "🔒 locked"}</span>`}</td><td><button type="button" class="seg" data-psrec="${n}" aria-pressed="${rec === n}">${rec === n ? "⭐ Recommended" : "Recommend"}</button></td></tr>`; }).join("")}</tbody></table>
+  const tOut = p.to && p.to.sc >= 14, open = n => n === 1 || tOut || (b[n - 1] | 0) >= 7;
+  return `<div class="parkbox"><b>Practice · Past simple</b>${tOut ? ` <span class="chip">🎓 Tested out ${p.to.sc}/15</span>` : ""} <span class="muted">${tot} / 18 ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
+    <table class="pstbl"><tbody>${PS_T.map((t, i) => { const n = i + 1; return `<tr><td>${n}. ${esc(t)}</td><td>${b[n] != null ? star(st[n] | 0) + ` <span class="muted">best ${b[n]}/10</span>` : `<span class="muted">${tOut ? star(st[n] | 0) + " tested out" : open(n) ? "not tried" : "🔒 locked"}</span>`}</td><td><button type="button" class="seg" data-psrec="${n}" aria-pressed="${rec === n}">${rec === n ? "⭐ Recommended" : "Recommend"}</button></td></tr>`; }).join("")}</tbody></table>
     <div class="muted" style="margin-top:6px">📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
     <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. Tap it again to remove it.</p></div>`;
 }
