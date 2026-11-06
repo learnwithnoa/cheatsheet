@@ -416,7 +416,7 @@ function buddyCard(b) {
   const name = (b.n && String(b.n).trim() && String(b.n).trim() !== A.sprites[b.a].old ? String(b.n).trim() : A.sprites[b.a].name);
   const color = (A.sprites[b.a].colors[b.c | 0] || A.sprites[b.a].colors[0])[0];
   return `<div class="bcard">${A.svg({ a: b.a, pal: A.palFor(b.a, b.c), wear: { head: b.head, face: b.face, neck: b.neck }, plain: true, cls: "bsvg" })}
-    <div><b style="font-size:16px">${esc(name)}</b> <span class="muted">· ${esc(A.sprites[b.a].name)}, ${esc(color)}${b.on === false ? " · turned off" : ""}</span>
+    <div><b style="font-size:16px">${esc(name)}</b> <span class="muted">· ${esc(A.sprites[b.a].species || A.sprites[b.a].name)}, ${esc(color)}${b.on === false ? " · turned off" : ""}</span>
     <div class="muted" style="margin-top:3px">💛 Friendship level ${lv(fpm[b.a])} · 🍪 ${b.t | 0} treats · 🌱 ${(b.gd || []).length} garden flowers</div>
     ${others.length ? `<div class="muted" style="margin-top:3px">Other buddies: ${others.map(k => esc(A.sprites[k].name) + " 💛" + lv(fpm[k])).join(" · ")}</div>` : ""}</div></div>`;
 }
