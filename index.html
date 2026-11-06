@@ -955,7 +955,6 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
     </div>
     <button id="csTimerChip" type="button" hidden aria-label="Study timer"></button>
     <button class="theme-btn cs-hide-phone" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
-    <button class="theme-btn pr-short cs-hide-phone" id="prShortcut" type="button" data-go="quiz" title="Practice · this week's goal"><span aria-hidden="true">🎯</span><span class="theme-txt">Practice</span><b id="prShortCount">0/3</b></button>
     <div class="cs-wrap" id="csWrap"></div>
     <div class="music-wrap auth-wrap">
       <button class="theme-btn auth-btn" id="authBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="authPanel"><span class="g-ico" id="authIco" aria-hidden="true">G</span><span class="theme-txt" id="authTxt">Sign in</span></button>
@@ -977,7 +976,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
   <nav class="side" aria-label="Sections">
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
-      <button class="navbtn cn-nav" data-go="quiz"><span class="w-ico em-ico" aria-hidden="true">🎯</span><span>Practice</span></button>
+      <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
@@ -2017,7 +2016,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=15" defer></script>
+<script src="buddy.js?v=16" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -4707,7 +4706,7 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-practicefirst", date:"November 6, 2026", title:"Practice moves up 🎯", items:[
-    ["🎯","Practice is easier to find","it is now right under <b>Home</b> in the menu, and the <b>🎯</b> button at the top shows your weekly goal. Change the theme in <b>Settings</b>.","quiz"],
+    ["🎯","Practice is easier to find","it is now right under <b>Home</b> in the menu. You can change the theme in <b>Settings</b>.","quiz"],
     ["🐾","Move your buddy","drag your buddy to another spot on the screen. It stays where you leave it."],
     ["💛","More about your buddy","tap your buddy to see its level, mood and treats at a glance."]
   ]},

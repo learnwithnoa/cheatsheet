@@ -217,7 +217,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     axolotl:  { hat: [7.5, 2], eyes: [6, [4.5, 10.5]], neck: [7.5, 11] },
     frog:     { hat: [7.5, 1], eyes: [4, [4.5, 10.5]], neck: [7.5, 10] }
   };
-  const ORDER = ["max", "miki", "cat", "llama", "unicorn", "chicken", "pudu", "capybara", "axolotl", "frog"];
+  const ORDER = ["max", "miki", "cat", "chicken", "llama", "capybara", "pudu", "frog", "axolotl", "unicorn"];
 
   /* accessories: slot, unlocked at N saved words (w) or N learned words (l) */
   const AP = { r: "#E5533D", R: "#A8321F", y: "#F5C842", Y: "#D9A520", w: "#FFFFFF", k: "#1E1712", K: "#4A4A55", g: "#3BA776", G: "#2A7D54", b: "#3B6FD9", p: "#F37BA5", P: "#D9527F", v: "#8E5CD9", V: "#6B3FB5", u: "#6FB6F2", o: "#F5A623", c: "#F6E7CF", h: "#E8C987", H: "#B8924A", n: "#F28C28", N: "#C96A12" };
@@ -500,6 +500,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
 .bd.dragging{transform:translate(var(--dx,0),var(--dy,0));transition:none}.bd.dragging .bd-pet{cursor:grabbing;filter:drop-shadow(0 10px 8px rgba(0,0,0,.3))}
 .bd.at-bl,.bd.at-ml{right:auto;left:calc(18px + env(safe-area-inset-left,0px));flex-direction:row-reverse}
 .bd.at-mr,.bd.at-ml{bottom:42vh}
+.bd.at-tr{bottom:auto;top:calc(86px + env(safe-area-inset-top,0px));align-items:flex-start}
 @media (min-width:901px){.bd.at-bl,.bd.at-ml{left:calc(max(0px,(100vw - 1280px) / 2) + 262px)}}
 .bd-ic{margin:-2px 0 8px;padding-bottom:8px;border-bottom:1px solid var(--line,#ddd)}
 .bd-ic-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
@@ -699,7 +700,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   function setMin(v) { S.min = !!v; save(); hideBub(); visible(); if (!v) { petBtn.focus(); hop(); } else mini.focus(); }
 
-  const SPOTS = ["br", "bl", "mr", "ml"];
+  const SPOTS = ["br", "bl", "mr", "ml", "tr"];
   function setSpot(k) { SPOTS.forEach(x => root.classList.remove("at-" + x)); if (k && k !== "br") root.classList.add("at-" + k); try { localStorage.setItem("cs-bd-spot", k || "br"); } catch (e) {} }
   try { const k = localStorage.getItem("cs-bd-spot"); if (SPOTS.includes(k)) setSpot(k); } catch (e) {}
   let drag = null, justDragged = false;
@@ -716,7 +717,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     justDragged = true; setTimeout(() => justDragged = false, 50);
     root.classList.remove("dragging"); root.style.removeProperty("--dx"); root.style.removeProperty("--dy");
     const left = e.clientX < innerWidth / 2, mid = e.clientY < innerHeight * .62;
-    setSpot((mid ? "m" : "b") + (left ? "l" : "r")); hop();
+    setSpot(!left && e.clientY < innerHeight * .28 ? "tr" : (mid ? "m" : "b") + (left ? "l" : "r")); hop();
   };
   window.addEventListener("pointerup", endDrag); window.addEventListener("pointercancel", endDrag);
   petBtn.addEventListener("click", e => {
