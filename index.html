@@ -9,7 +9,7 @@
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=11">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=12" defer></script>
+<script src="comfort.js?v=13" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
@@ -995,6 +995,8 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .lk-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
 .lk-acts a{text-decoration:none}
 .lk-have{color:var(--green);font-weight:700;font-size:14px}
+.lk-chip{all:unset;position:fixed;z-index:70;cursor:pointer;padding:6px 12px;border-radius:99px;background:var(--bright);color:#fff;font-size:14px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.3);white-space:nowrap}
+.lk-chip:focus-visible{outline:3px solid #fff}
 </style>
 
 <header class="top">
@@ -4585,7 +4587,13 @@ window.addEventListener("offline",()=>toast("You're offline. Your saved words an
   function skip(el){ return !el||!!el.closest("input,textarea,select,button,a,[contenteditable=true],.lk-box,.cs-panel,.music-panel,.bd-modal,.bd-bub,.qa,#welcome,#whatsnew,.cs-dlg,.flashcard,.park-b,nav.side,header.top"); }
   function pickText(){
     const sel=window.getSelection(); if(!sel||sel.isCollapsed) return null;
-    const t=String(sel.toString()).replace(/\s+/g," ").trim().replace(/^[^\p{L}']+|[^\p{L}']+$/gu,"");
+    /* snap to whole words, so "Looking forwar" becomes "Looking forward" */
+    let raw=String(sel.toString());
+    try{ const rg=sel.getRangeAt(0).cloneRange(), L=/[\p{L}'’-]/u;
+      if(rg.startContainer.nodeType===3){ const tx=rg.startContainer.nodeValue; let i=rg.startOffset; while(i>0&&L.test(tx[i-1])) i--; rg.setStart(rg.startContainer,i); }
+      if(rg.endContainer.nodeType===3){ const tx=rg.endContainer.nodeValue; let j=rg.endOffset; while(j<tx.length&&L.test(tx[j])) j++; rg.setEnd(rg.endContainer,j); }
+      raw=rg.toString(); }catch(e){}
+    const t=raw.replace(/\s+/g," ").trim().replace(/^[^\p{L}']+|[^\p{L}']+$/gu,"");
     if(!t||t.length>40||t.split(" ").length>4||!/\p{L}/u.test(t)) return null;
     const node=sel.anchorNode&&(sel.anchorNode.nodeType===1?sel.anchorNode:sel.anchorNode.parentElement);
     if(skip(node)) return null;
@@ -4593,7 +4601,18 @@ window.addEventListener("offline",()=>toast("You're offline. Your saved words an
     const ctx=(node&&node.closest("p,li,td,.ps-sent,.vs-ex,div")||{}).textContent||"";
     return {t, r, ctx:ctx.replace(/\s+/g," ").trim().slice(0,220)};
   }
-  function close(){ if(box){ box.remove(); box=null; cur=""; } }
+  let chip=null;
+  function closeChip(){ if(chip){ chip.remove(); chip=null; } }
+  function close(){ closeChip(); if(box){ box.remove(); box=null; cur=""; } }
+  /* drag across a few words: offer a small "Look up" button (it doesn't open by itself, so copying still works) */
+  function offer(p){
+    closeChip(); if(!on()) return;
+    chip=document.createElement("button"); chip.type="button"; chip.className="lk-chip"; chip.innerHTML="🔎 Look up <b>"+esc(p.t.length>24?p.t.slice(0,22)+"…":p.t)+"</b>";
+    document.body.appendChild(chip);
+    const r=p.r, w=chip.offsetWidth; chip.style.left=Math.max(8,Math.min(innerWidth-w-8,(r?r.left+r.width/2:innerWidth/2)-w/2))+"px"; chip.style.top=Math.max(8,(r?r.top:100)-chip.offsetHeight-8)+"px";
+    chip.addEventListener("mousedown",e=>e.preventDefault());
+    chip.addEventListener("click",e=>{ e.stopPropagation(); closeChip(); open(p); });
+  }
   function place(r){
     if(!box) return; const w=Math.min(320,innerWidth-24); box.style.width=w+"px";
     let x=r?Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2)):(innerWidth-w)/2, y=r?r.bottom+10:120;
@@ -4623,7 +4642,7 @@ window.addEventListener("offline",()=>toast("You're offline. Your saved words an
     if(!window.__csSample){ paint({w:p.t, err:"The dictionary needs internet right now. You can still save the word."}); place(p.r); return; }
     paint({w:p.t, loading:true}); place(p.r);
     const prompt="A Spanish-speaking (Chilean) English learner selected this word or expression on an English learning website: \""+p.t+"\". The sentence around it: \""+p.ctx+"\".\n"+
-      "If it's English, explain it as used in that sentence. If it's Spanish, give the English for it.\n"+
+      "If it's English, explain it as used in that sentence. IMPORTANT: if the selected word is part of a phrasal verb, idiom or fixed expression in that sentence (for example \"figure\" in \"I can't figure out the answer\", or \"look\" in \"I'm looking forward to it\"), explain the WHOLE expression (\"figure out\", \"look forward to\") and use it as w. If it's Spanish, give the English for it.\n"+
       "Reply with ONLY a JSON object, no code fences: {\"w\": \"the English word or expression in its dictionary form (e.g. 'go' for 'went')\", \"pos\": \"noun, verb, adjective, phrasal verb, expression…\", \"meaning\": \"a short, simple English definition (A2-B1 level, max 15 words)\", \"es\": \"a natural Spanish translation\", \"ex\": \"a short, natural example sentence\"}";
     try{
       const r=await window.__csSample(prompt,{modelTier:"quick"});
@@ -4633,12 +4652,14 @@ window.addEventListener("offline",()=>toast("You're offline. Your saved words an
     }catch(e){ if(cur===p.t){ paint({w:p.t, err:"Couldn't look it up right now. Try again in a moment."}); } }
   }
   if(fine){
-    document.addEventListener("dblclick",e=>{ if(skip(e.target)) return; setTimeout(()=>{ const p=pickText(); if(p) open(p); },10); });
+    document.addEventListener("dblclick",e=>{ if(skip(e.target)) return; closeChip(); setTimeout(()=>{ const p=pickText(); if(p) open(p); },10); });
+    document.addEventListener("mouseup",e=>{ if(e.detail>1||skip(e.target)||e.target.closest(".lk-chip")) return; setTimeout(()=>{ const p=pickText(); if(p&&p.t.includes(" ")) offer(p); else closeChip(); },10); });
   } else {
     let st=null;
     document.addEventListener("selectionchange",()=>{ clearTimeout(st); st=setTimeout(()=>{ const p=pickText(); if(p&&p.t!==cur) open(p); },700); });
   }
   document.addEventListener("click",e=>{
+    if(chip&&!e.target.closest(".lk-chip")){ const sel=window.getSelection(); if(!sel||sel.isCollapsed) closeChip(); }
     if(!box) return;
     if(e.target.closest("[data-lkx]")){ close(); return; }
     if(e.target.closest("[data-lksay]")){ const d=box._d||{}; if(window.csSpeak) csSpeak(d.w||cur); return; }
@@ -4646,7 +4667,7 @@ window.addEventListener("offline",()=>toast("You're offline. Your saved words an
     if(!e.target.closest(".lk-box")) close();
   });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&box) close(); });
-  window.addEventListener("scroll",()=>{ if(box&&fine) close(); },{passive:true});
+  window.addEventListener("scroll",()=>{ if((box||chip)&&fine) close(); },{passive:true});
 })();
 
 /* ---------------- import words ---------------- */
@@ -5695,7 +5716,7 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-lookup", date:"November 6, 2026", title:"Look up any word 🔎", items:[
-    ["🔎","Look up any word","<b>double-click</b> a word (or <b>press and hold</b> it on your phone) anywhere on the site to see what it means, in English and Spanish, and save it to My words."],
+    ["🔎","Look up any word","<b>double-click</b> a word, or select a few words for phrases like <i>figure out</i> (on your phone, <b>press and hold</b>), anywhere on the site to see what it means, in English and Spanish, and save it to My words."],
     ["🐾","Fun mouse cursors","on a computer, choose a paw, pencil, star or a big cursor in <b>Settings</b>."]
   ]},
   {id:"2026-interviews", date:"November 6, 2026", title:"Job interviews and feeding friends 🍪", items:[

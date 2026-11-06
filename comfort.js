@@ -312,7 +312,7 @@
           ${tog("csSpace", "More space", "Extra room between lines, words and paragraphs.")}
           ${tog("csBionic", "Bionic reading", "Bolds the start of each word. Some people find it easier to read; try it and see.")}
           ${tog("csRulerT", "Reading ruler", "A highlighted band that follows your mouse or finger, to keep your place.")}
-          ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click" : "Press and hold") + " any word to see what it means and save it to My words.") : ""}
+          ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click a word, or select a few words," : "Press and hold a word") + " to see what it means and save it to My words.") : ""}
           ${matchMedia("(pointer:fine)").matches ? `<div class="cs-curl"><b style="font-weight:800">Mouse cursor</b><div class="cs-seg" id="csCursors">${[["default", "↖", "Normal"], ["big", "⬉", "Big"], ["paw", "🐾", "Paw"], ["pencil", "✏️", "Pencil"], ["star", "⭐", "Star"]].map(([v, i, l]) => `<button type="button" data-cscur="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>` : ""}
         </div>
         <div class="cs-sec"><h4>Focus</h4>
