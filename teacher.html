@@ -418,7 +418,7 @@ function buddyCard(b) {
   return `<div class="bcard">${A.svg({ a: b.a, pal: A.palFor(b.a, b.c), wear: { head: b.head, face: b.face, neck: b.neck }, plain: true, cls: "bsvg" })}
     <div><b style="font-size:16px">${esc(name)}</b> <span class="muted">· ${esc(A.sprites[b.a].species || A.sprites[b.a].name)}, ${esc(color)}${b.on === false ? " · turned off" : ""}</span>
     <div class="muted" style="margin-top:3px">💛 Friendship level ${lv(fpm[b.a])} · 🍪 ${b.t | 0} treats · 🌱 ${(b.gd || []).length} garden flowers</div>
-    ${others.length ? `<div class="muted" style="margin-top:3px">Other buddies: ${others.map(k => esc(A.sprites[k].name) + " 💛" + lv(fpm[k])).join(" · ")}</div>` : ""}</div></div>`;
+    ${others.length ? `<div class="muted" style="margin-top:3px">Other buddies: ${others.map(k => esc(A.sprites[k].species || A.sprites[k].name) + " 💛" + lv(fpm[k])).join(" · ")}</div>` : ""}</div></div>`;
 }
 async function saveRole(s, patch) {
   try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved for the Buddy park"); }
