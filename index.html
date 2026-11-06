@@ -6154,8 +6154,9 @@ window.__csPark = {
 const MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
 let ai = null;
 try { ai = getAI(app, { backend: new GoogleAIBackend() }); } catch (e) { console.warn("AI Logic not available", e); }
+const aiCount = k => { try { window.csUse && window.csUse(k); } catch (e) {} };
 async function geminiSample(prompt, opts = {}) {
-  let lastErr;
+  let lastErr; aiCount("ai");
   for (const name of MODELS) {
     try {
       const model = getGenerativeModel(ai, { model: name, generationConfig: { temperature: 0.2 } });
@@ -6171,11 +6172,11 @@ async function geminiSample(prompt, opts = {}) {
       if (e && e.name === "AbortError") throw e;
       lastErr = e;
       const msg = String((e && (e.message || e.code)) || "");
-      if (/429|quota|exhaust|rate/i.test(msg)) { const err = new Error("rate limited"); err.code = "rate_limited"; throw err; }
+      if (/429|quota|exhaust|rate/i.test(msg)) { aiCount("ai-limit"); const err = new Error("rate limited"); err.code = "rate_limited"; throw err; }
       if (!/not found|404|unsupported|not supported/i.test(msg)) break;   // only try the next model if this one doesn't exist
     }
   }
-  console.warn("Translator failed", lastErr);
+  console.warn("Translator failed", lastErr); aiCount("ai-fail");
   throw lastErr || new Error("failed");
 }
 function withTimeout(prompt, opts = {}) {
@@ -6190,7 +6191,7 @@ if (ai) { window.__csSample = withTimeout; window.dispatchEvent(new Event("cs-sa
 const TTS_MODELS = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts"];
 let ttsIdx = 0;
 async function ttsOnce(text) {
-  let last;
+  let last; aiCount("ai-voice");
   for (let i = ttsIdx; i < TTS_MODELS.length; i++) {
     try {
       const m = getGenerativeModel(ai, { model: TTS_MODELS[i], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } } });
@@ -6199,7 +6200,7 @@ async function ttsOnce(text) {
       const d = parts && parts[0] && parts[0].inlineData;
       if (!d || !d.data) throw new Error("no audio in reply");
       ttsIdx = i; return { data: d.data, mime: d.mimeType || "" };
-    } catch (e) { last = e; if (!/not.?found|404|not supported|unsupported|invalid model/i.test(String((e && e.message) || ""))) throw e; }
+    } catch (e) { last = e; if (!/not.?found|404|not supported|unsupported|invalid model/i.test(String((e && e.message) || ""))) { aiCount(/429|quota|exhaust|rate/i.test(String((e && e.message) || "")) ? "ai-limit" : "ai-fail"); throw e; } }
   }
   throw last;
 }

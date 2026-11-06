@@ -314,6 +314,7 @@ function newsEvents() {
 }
 let newsOpen = false;
 const USE_L = [["word", "📚 Words saved"], ["flash", "🃏 Flashcard rounds"], ["gram", "🧩 Grammar rounds"], ["vocab", "🗂️ Vocabulary quizzes"], ["vcards", "🗂️ Vocabulary flashcards"], ["irr", "🔁 Irregular verbs rounds"], ["sentence", "✍️ Sentences checked"], ["say", "🎤 Said out loud"], ["translate", "⇄ Translations"],
+  ["ai", "🤖 AI requests (text)"], ["ai-voice", "🔊 AI voice (iPhone)"], ["ai-limit", "⚠️ AI hit the limit"], ["ai-fail", "⚠️ AI failed (other)"], ["lookup", "🔎 Word lookups"],
   ["p:classnotes", "📝 Opened My class notes"], ["p:notebook", "📓 Opened weekly summaries"], ["p:park", "🌳 Opened Buddy park"], ["p:quiz", "🎯 Opened Practice"]];
 let usageDays = 7;
 function usageSum(u, days) {
@@ -333,6 +334,7 @@ function renderUsage() {
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">📊 How students use the site</h2><div><button type="button" class="seg" data-ud="7" aria-pressed="${usageDays === 7}">7 days</button> <button type="button" class="seg" data-ud="30" aria-pressed="${usageDays === 30}">30 days</button></div></div>
     ${any ? `<p class="hint" style="margin:6px 0 10px">${active} of ${students.length} students used it in the last ${usageDays} days. Counting started on November 6, 2026.</p>
     <table class="pstbl" style="max-width:640px"><thead><tr><td><b>What</b></td><td><b>Times</b></td><td><b>Students</b></td></tr></thead><tbody>${rows.map(r => `<tr><td>${r.l}</td><td>${r.tot}</td><td>${r.who}</td></tr>`).join("")}</tbody></table>
+    ${(() => { const a = per.reduce((t, x) => t + (x.u.ai | 0) + (x.u["ai-voice"] | 0), 0), lim = per.reduce((t, x) => t + (x.u["ai-limit"] | 0), 0); return a ? `<p class="hint" style="margin:10px 0 0"><b>AI:</b> ${a} requests in ${usageDays} days (about ${Math.round(a / usageDays)} a day).${lim ? ` ⚠️ ${lim} hit the free limit: if this keeps happening, it's time to look at the Blaze plan.` : " No limit problems. 👍"}</p>` : ""; })()}
     ${topPages.length ? `<p class="hint" style="margin:10px 0 0"><b>Most opened pages:</b> ${topPages.map(([k, v]) => esc(k) + " (" + v + ")").join(" · ")}</p>` : ""}` : `<p class="hint" style="margin:6px 0 0">No data yet. Counting started on November 6, 2026, so give it a few days.</p>`}`;
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
