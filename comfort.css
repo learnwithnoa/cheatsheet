@@ -47,8 +47,8 @@ html.cs-space p,html.cs-space li{margin-bottom:.55em}
 html.cs-space td{padding-top:11px;padding-bottom:11px}
 
 /* --- bionic reading --- */
-.bw b{font-weight:800}
-.bw{font-weight:inherit}
+.bw b{font-weight:800;display:inline!important;margin:0!important;padding:0!important}
+.bw,.bw-line{font-weight:inherit;display:inline}
 html.cs-bionic .bw b{font-weight:900}
 
 /* --- reading ruler (lives on <html>, outside the zoom) --- */

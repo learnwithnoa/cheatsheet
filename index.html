@@ -7,9 +7,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=9">
+<link rel="stylesheet" href="comfort.css?v=10">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=10" defer></script>
+<script src="comfort.js?v=11" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
@@ -2011,8 +2011,8 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
   <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
-  <div class="pr-big"><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Flashcards, sentences and pronunciation</span><span class="esb">Tus palabras</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Vocabulary</b><span>Word sets by Noa: phrasal verbs, work, travel and more</span><span class="esb">Vocabulario</span></button></div></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button></div></div>
+  <div class="pr-big"><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Vocabulary</b><span>Word sets by Noa: phrasal verbs, work, travel and more</span><span class="esb">Vocabulario</span></button><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Flashcards, sentences and pronunciation</span><span class="esb">Tus palabras</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Vocabulary</em></h1><p class="lede">Useful words and expressions, in sets. Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
@@ -3683,6 +3683,20 @@ I ___ English for three years when I was at school. (study)|studied|Consonant + 
 /* ---------- Vocabulary sets (drafted for Noa to review) ----------
    word | simple meaning | example with the word in [brackets] */
 const VOC_SETS=[
+ {id:"expr", ico:"💬", t:"Everyday expressions", sub:"feel like, no big deal, catch up…", w:`
+feel like|to want to do something|I don't [feel like] cooking tonight.
+make sense|to be easy to understand|Does this explanation [make sense]?
+take your time|don't hurry|No rush, [take your time].
+no big deal|not important or serious|Don't worry, it's [no big deal].
+it depends|the answer changes in different situations|Do I like coffee? [It depends] on the day.
+I'm in|I want to join|Pizza tonight? [I'm in]!
+sounds good|I agree with that plan|Meet at 7? [Sounds good].
+hang out|to spend free time with someone|Do you want to [hang out] this weekend?
+catch up|to talk with someone after a long time|Let's get coffee and [catch up].
+on my way|going there right now|I'm [on my way], see you in 10 minutes.
+by the way|used to add a new topic|[By the way], did you see the game?
+make up your mind|to decide|You need to [make up your mind] soon.
+`},
  {id:"phrasal", ico:"🏃", t:"Everyday phrasal verbs", sub:"wake up, find out, give up…", w:`
 wake up|to stop sleeping|I need to [wake up] early tomorrow.
 get up|to get out of bed|On Sundays, I like to [get up] late.
@@ -3696,20 +3710,6 @@ put on|to start wearing clothes|It's cold, so [put on] a jacket.
 take off|to remove clothes or shoes|Please [take off] your shoes at the door.
 run out of|to have no more of something|We always [run out of] coffee on Mondays.
 figure out|to understand or solve something|I can't [figure out] this math problem.
-`},
- {id:"work", ico:"💼", t:"English at work", sub:"deadline, feedback, follow up…", w:`
-deadline|the last day or time to finish something|The [deadline] for the report is Friday.
-meeting|when people get together to talk about work|I have a [meeting] with my boss at 10.
-schedule|a plan of when things will happen|Let me check my [schedule] for next week.
-feedback|comments about how well you did something|My manager gave me great [feedback].
-colleague|a person you work with|My [colleague] helped me with the project.
-task|a piece of work you need to do|My first [task] today is answering emails.
-follow up|to contact someone again about something|I'll [follow up] with the client tomorrow.
-reach out|to contact someone to ask or offer something|Feel free to [reach out] if you have questions.
-set up|to organize or prepare something|Can we [set up] a call for Thursday?
-on track|going as planned|Don't worry, the project is [on track].
-skill|something you are good at because you practiced it|Communication is an important [skill].
-update|new information about something|Can you give me an [update] on the project?
 `},
  {id:"travel", ico:"✈️", t:"Travel", sub:"luggage, layover, check in…", w:`
 book|to reserve a room, a ticket or a table|I want to [book] a hotel near the beach.
@@ -3725,19 +3725,19 @@ get lost|to not know where you are|It's easy to [get lost] in a big city.
 local|from the place you are visiting|We ate at a [local] restaurant.
 itinerary|a plan of the places you will visit|Our [itinerary] includes three cities.
 `},
- {id:"expr", ico:"💬", t:"Everyday expressions", sub:"feel like, no big deal, catch up…", w:`
-feel like|to want to do something|I don't [feel like] cooking tonight.
-make sense|to be easy to understand|Does this explanation [make sense]?
-take your time|don't hurry|No rush, [take your time].
-no big deal|not important or serious|Don't worry, it's [no big deal].
-it depends|the answer changes in different situations|Do I like coffee? [It depends] on the day.
-I'm in|I want to join|Pizza tonight? [I'm in]!
-sounds good|I agree with that plan|Meet at 7? [Sounds good].
-hang out|to spend free time with someone|Do you want to [hang out] this weekend?
-catch up|to talk with someone after a long time|Let's get coffee and [catch up].
-on my way|going there right now|I'm [on my way], see you in 10 minutes.
-by the way|used to add a new topic|[By the way], did you see the game?
-make up your mind|to decide|You need to [make up your mind] soon.
+ {id:"work", ico:"💼", t:"English at work", sub:"deadline, feedback, follow up…", w:`
+deadline|the last day or time to finish something|The [deadline] for the report is Friday.
+meeting|when people get together to talk about work|I have a [meeting] with my boss at 10.
+schedule|a plan of when things will happen|Let me check my [schedule] for next week.
+feedback|comments about how well you did something|My manager gave me great [feedback].
+colleague|a person you work with|My [colleague] helped me with the project.
+task|a piece of work you need to do|My first [task] today is answering emails.
+follow up|to contact someone again about something|I'll [follow up] with the client tomorrow.
+reach out|to contact someone to ask or offer something|Feel free to [reach out] if you have questions.
+set up|to organize or prepare something|Can we [set up] a call for Thursday?
+on track|going as planned|Don't worry, the project is [on track].
+skill|something you are good at because you practiced it|Communication is an important [skill].
+update|new information about something|Can you give me an [update] on the project?
 `}
 ];
 VOC_SETS.forEach(set=>{

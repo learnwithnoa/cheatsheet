@@ -57,7 +57,7 @@
   function boldLen(n) { return n <= 3 ? 1 : n <= 5 ? 2 : Math.ceil(n * 0.45); }
   function skipEl(el) {
     for (let e = el; e && e !== document.body; e = e.parentElement) {
-      if (SKIP.has(e.tagName) || e.isContentEditable || (e.classList && (e.classList.contains("bw") || e.classList.contains("no-bio") || e.classList.contains("mono")))) return true;
+      if (SKIP.has(e.tagName) || e.isContentEditable || (e.classList && (e.classList.contains("bw") || e.classList.contains("bw-line") || e.classList.contains("no-bio") || e.classList.contains("mono")))) return true;
     }
     return false;
   }
@@ -74,6 +74,9 @@
       frag.appendChild(span); last = m.index + w.length;
     }
     if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+    /* in a flex or grid box, keep the line together as one piece so the layout doesn't change */
+    const pd = getComputedStyle(tn.parentNode).display;
+    if (/flex|grid/.test(pd)) { const w = document.createElement("span"); w.className = "bw-line"; w.appendChild(frag); tn.parentNode.replaceChild(w, tn); return; }
     tn.parentNode.replaceChild(frag, tn);
   }
   function bionicIn(scope) {
@@ -86,8 +89,9 @@
   }
   function bionicOff() {
     document.querySelectorAll("span.bw").forEach(s => { const p = s.parentNode; p.replaceChild(document.createTextNode(s.textContent), s); p.normalize && p.normalize(); });
+    document.querySelectorAll("span.bw-line").forEach(s => { const p = s.parentNode; p.replaceChild(document.createTextNode(s.textContent), s); p.normalize && p.normalize(); });
   }
-  function bionicScope() { return document.querySelector("main"); }
+  function bionicScope() { return document.body; }  /* the whole site, including Settings, Music and other panels */
   function bionicRun() {
     if (bioBusy) return; bioBusy = true;
     if (bioObs) bioObs.disconnect();
