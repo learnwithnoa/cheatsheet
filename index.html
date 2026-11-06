@@ -980,6 +980,10 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 .wl-opt[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft)}
 .wl-opt span{color:var(--muted);font-size:14px}
 .wl-adopt{margin-top:12px}
+
+nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;height:18px;box-sizing:border-box;line-height:1;padding:0 0 2px;font-size:12px}
+.park-b .pinfo .pb-feed{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:99px;background:var(--green);color:#fff;font-weight:800;cursor:pointer;pointer-events:auto}
+.park-b .pinfo .pb-feed:focus-visible{outline:3px solid #fff}
 </style>
 
 <header class="top">
@@ -1084,9 +1088,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
     </div>
     <div class="navgroup ng-work"><h4>Work</h4>
       <button class="navbtn" data-go="email">Emails &amp; meetings</button>
-    </div>
-    <div class="navgroup ng-help"><h4>Help</h4>
-      <button class="navbtn fb-nav" data-go="feedback">Send feedback</button>
+      <button class="navbtn" data-go="interview">Job interviews</button>
     </div>
   </nav>
 
@@ -1188,7 +1190,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
   <h2>Add a word</h2>
   <form id="noteForm" class="card note-form" autocomplete="off">
     <div class="field"><label for="nWord">English word / expression</label><input id="nWord" type="text" placeholder="e.g. figure out" spellcheck="false"></div>
-    <div class="field"><label for="nMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="nMeaning" type="text" placeholder="Leave it empty and we\'ll add it for you"></div>
+    <div class="field"><label for="nMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="nMeaning" type="text" placeholder="Leave it empty and we’ll add it for you"></div>
     <div class="field wide"><label for="nExample">Example sentence <span class="opt">(optional)</span></label><input id="nExample" type="text" placeholder="e.g. I couldn't figure out the answer."></div>
     <div class="field wide"><label for="nNote">Notes <span class="opt">(optional)</span></label><input id="nNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
     <div class="note-actions"><button class="pill-btn" type="submit">+ Add word</button><button class="swap" type="button" data-go="words" id="wAllBtn">All my words →</button><span class="count">Tip: press Enter to save</span></div>
@@ -1234,9 +1236,9 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 <section class="view" id="v-words" hidden>
   <h1>My <em>words</em></h1>
   <p class="lede">Every word you save, newest first. Practice them with flashcards or import a list you already have.</p>
-  <div class="note-actions" style="margin-bottom:14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiFill" title="Fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap" type="button" id="aiClean" title="Fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" data-go="quiz">Practice with flashcards →</button></div>
   <p class="ai-status" id="aiStatus" hidden aria-live="polite"></p>
   <div id="slotAwPage" class="page-slot"></div>
+  <div class="note-actions" style="margin:4px 0 14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiFill" title="Fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap" type="button" id="aiClean" title="Fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" data-go="quiz">Practice with flashcards →</button></div>
   <div class="card import-card" id="importCard" hidden>
     <div class="qa-top"><h3>Add many words at once</h3><button class="qa-x" type="button" id="impClose" aria-label="Close">×</button></div>
     <p class="imp-lede">Paste your words in <b>any format</b>: a list, a message, notes from class, a copy from a document… ✨ The AI finds the words, adds the Spanish and skips the ones you already have. You'll see the list before anything is added.</p>
@@ -1347,7 +1349,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
         <button class="pill-btn" id="trBtn" type="button" hidden>Translate here</button>
         <a class="linkbtn" id="lnkGoogle" href="https://translate.google.com/" target="_blank" rel="noopener">Google Translate ↗</a>
         <a class="linkbtn" id="lnkDeepl" href="https://www.deepl.com/translator" target="_blank" rel="noopener">DeepL ↗</a>
-        <a class="linkbtn" id="lnkWR" href="https://www.wordreference.com/" target="_blank" rel="noopener" hidden>WordReference ↗</a>
+        <a class="linkbtn" id="lnkWR" href="https://www.wordreference.com/" target="_blank" rel="noopener">WordReference ↗</a>
       </div>
     </div>
     <div class="card" id="outCard" hidden>
@@ -2012,6 +2014,46 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
   <div class="note warn dismissible"><span class="no">I wait your answer</span> → <span class="ok">I look forward to your reply</span>. And it's <span class="ok">looking forward to hearing</span>, with -ing, not <span class="no">to hear</span>.</div>
 </section>
 
+<!-- ============ JOB INTERVIEWS ============ -->
+<section class="view" id="v-interview" hidden>
+  <h1>Job <em>interviews</em></h1>
+  <p class="lede">The questions you'll almost always hear, how to start your answers, and phrases that give you a few seconds to think.</p>
+  <div class="in-short"><span class="is-tag">In short</span><div><b>Answer</b> the question, give <b>one real example</b>, and <b>connect it</b> to the job. Short and specific beats long and perfect.</div></div>
+  <h2>The classic questions</h2>
+  <div class="grid">
+    <div class="card"><h3>Tell me about yourself.</h3><ul class="clean"><li>I'm a… with five years of experience in…</li><li>Right now, I work at… where I…</li><li>I'm especially good at…</li><li>That's why this role caught my attention.</li></ul></div>
+    <div class="card"><h3>Why do you want this job?</h3><ul class="clean"><li>I've followed your company for a while, and…</li><li>This role is a great fit for my experience in…</li><li>I'm looking for a place where I can…</li></ul></div>
+    <div class="card"><h3>What are your strengths?</h3><ul class="clean"><li>I'm very organized. For example, …</li><li>People often tell me I'm good at…</li><li>One of my strengths is…</li></ul></div>
+    <div class="card"><h3>What's your biggest weakness?</h3><ul class="clean"><li>I used to…, but now I…</li><li>I'm working on… by…</li><li>Sometimes I…, so I've started to…</li></ul></div>
+    <div class="card"><h3>Where do you see yourself in five years?</h3><ul class="clean"><li>I'd like to grow into a role where I…</li><li>I see myself leading…</li><li>I want to keep learning about…</li></ul></div>
+    <div class="card"><h3>Why should we hire you?</h3><ul class="clean"><li>I have the experience you need in…</li><li>I can bring…</li><li>I've already done this kind of work at…</li></ul></div>
+  </div>
+  <h2>Tell a story: the STAR method</h2>
+  <p class="lede">For "Tell me about a time when…" questions. Use the <b>past simple</b> for the story.</p>
+  <div class="grid">
+    <div class="card"><h3>S · Situation</h3><ul class="clean"><li>At my last job, we had a problem with…</li><li>A few months ago, …</li></ul></div>
+    <div class="card"><h3>T · Task</h3><ul class="clean"><li>My job was to…</li><li>I needed to…</li></ul></div>
+    <div class="card"><h3>A · Action</h3><ul class="clean"><li>First, I… Then, I…</li><li>I decided to…</li><li>I talked to… and we…</li></ul></div>
+    <div class="card"><h3>R · Result</h3><ul class="clean"><li>In the end, we…</li><li>As a result, sales went up 20%.</li><li>I learned that…</li></ul></div>
+  </div>
+  <h2>Talk about your experience</h2>
+  <div class="grid">
+    <div class="card"><h3>Until now</h3><ul class="clean"><li>I've worked in sales for six years.</li><li>I've been at my company since 2021.</li><li>I've led teams of up to ten people.</li></ul></div>
+    <div class="card"><h3>In the past</h3><ul class="clean"><li>I was responsible for…</li><li>I managed a budget of…</li><li>I worked closely with…</li></ul></div>
+  </div>
+  <h2>Buy some time</h2>
+  <div class="grid">
+    <div class="card"><h3>Think</h3><ul class="clean"><li>That's a great question.</li><li>Let me think about that for a second.</li><li>Good question. Let me give you an example.</li></ul></div>
+    <div class="card"><h3>Check</h3><ul class="clean"><li>Sorry, could you repeat the question?</li><li>Do you mean…?</li><li>Just to make sure I understand, …</li></ul></div>
+  </div>
+  <h2>Your questions for them</h2>
+  <div class="grid">
+    <div class="card"><h3>Ask</h3><ul class="clean"><li>What does a typical day look like in this role?</li><li>How do you measure success in this position?</li><li>What are the next steps in the process?</li></ul></div>
+    <div class="card"><h3>Finish</h3><ul class="clean"><li>Thank you for your time.</li><li>I really enjoyed our conversation.</li><li>I look forward to hearing from you.</li></ul></div>
+  </div>
+  <div class="note warn dismissible"><span class="no">I work here since 2021</span> → <span class="ok">I've worked here since 2021</span>. And <span class="no">I'm agree</span> → <span class="ok">I agree</span>. Two classics in interviews!</div>
+</section>
+
 <!-- ============ QUIZ ============ -->
 <section class="view" id="v-quiz" hidden>
 <div id="prHub">
@@ -2081,8 +2123,8 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 </div>
 </section>
 
-<footer><div class="foot-row"><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=18" defer></script>
+<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
+<script src="buddy.js?v=19" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2128,7 +2170,6 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
       <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My words</b> and it's organized for you, with meanings and examples.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice them with flashcards.</b> The ones you miss come back sooner, so you spend your time on the hard ones.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">✨</span><div><b>Words grow your buddy,</b> too: more words unlock clothes and colors, and words you learn unlock toys.</div></li>
     </ul>
   </div>
 
@@ -2183,7 +2224,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 <form class="qa card" id="qa" role="dialog" aria-modal="true" aria-labelledby="qaTitle" hidden autocomplete="off">
   <div class="qa-top"><h3 id="qaTitle">Save a word</h3><button class="qa-x" type="button" id="qaClose" aria-label="Close">×</button></div>
   <div class="field"><label for="qaWord">English word / expression</label><input id="qaWord" type="text" spellcheck="false"></div>
-  <div class="field"><label for="qaMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="qaMeaning" type="text" placeholder="Leave it empty and we\'ll add it for you"></div>
+  <div class="field"><label for="qaMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="qaMeaning" type="text" placeholder="Leave it empty and we’ll add it for you"></div>
   <div class="field"><label for="qaExample">Example sentence <span class="opt">(optional)</span></label><input id="qaExample" type="text"></div>
   <div class="field"><label for="qaNote">Notes <span class="opt">(optional)</span></label><input id="qaNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
@@ -2380,9 +2421,8 @@ function updateLinks(){
   trIn.placeholder = sl==="es" ? "Ej: Me cuesta entender cuando hablan rápido" : "E.g. I'm looking forward to it";
   lnkG.href="https://translate.google.com/?sl="+sl+"&tl="+tl+(t?"&text="+encodeURIComponent(t):"")+"&op=translate";
   lnkD.href="https://www.deepl.com/translator#"+sl+"/"+tl+"/"+(t?encodeURIComponent(t).replace(/%2F/g,"%5C%2F"):"");
-  const single=/^[\p{L}'-]+$/u.test(t);
-  lnkW.hidden=!single;
-  if(single) lnkW.href = sl==="es" ? "https://www.wordreference.com/es/en/translation.asp?spen="+encodeURIComponent(t) : "https://www.wordreference.com/es/translation.asp?tranword="+encodeURIComponent(t);
+  lnkW.hidden=false;
+  lnkW.href = !t ? (sl==="es" ? "https://www.wordreference.com/es/en/" : "https://www.wordreference.com/es/") : sl==="es" ? "https://www.wordreference.com/es/en/translation.asp?spen="+encodeURIComponent(t) : "https://www.wordreference.com/es/translation.asp?tranword="+encodeURIComponent(t);
 }
 trIn.addEventListener("input",updateLinks);
 document.getElementById("swapBtn").addEventListener("click",()=>{dir= dir==="es-en"?"en-es":"es-en"; updateLinks();});
@@ -4830,7 +4870,7 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
   }
   addHints();
   // level of each lesson page (shown on the page; in the menu only in beginner mode)
-  const LV={basics:"A1",be:"A1",time:"A1",place:"A1",pronouns:"A1",frequency:"A1",numbers:"A1",tenses:"A2",verbs:"A2",mistakes:"A2",stuck:"A2",conversation:"A2",modals:"A2",compare:"A2",usedto:"A2",domake:"A2",tofor:"A2",quantity:"A2",pronunciation:"A2",false:"A2",summary:"B1",opinions:"B1",linking:"B1",conditionals:"B1",perfect:"B1",gerund:"B1",phrasal:"B1",passive:"B1",email:"B1",reported:"B2"};
+  const LV={interview:"B1",basics:"A1",be:"A1",time:"A1",place:"A1",pronouns:"A1",frequency:"A1",numbers:"A1",tenses:"A2",verbs:"A2",mistakes:"A2",stuck:"A2",conversation:"A2",modals:"A2",compare:"A2",usedto:"A2",domake:"A2",tofor:"A2",quantity:"A2",pronunciation:"A2",false:"A2",summary:"B1",opinions:"B1",linking:"B1",conditionals:"B1",perfect:"B1",gerund:"B1",phrasal:"B1",passive:"B1",email:"B1",reported:"B2"};
   Object.keys(LV).forEach(id=>{
     const v=document.getElementById("v-"+id), h=v&&v.querySelector("h1");
     if(h&&!h.querySelector(".lvl-chip")){ const c=document.createElement("span"); c.className="lvl-chip lvl-"+LV[id].toLowerCase(); c.textContent=LV[id]; c.title="Level "+LV[id]; h.appendChild(c); }
@@ -5570,6 +5610,12 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-interviews", date:"November 6, 2026", title:"Job interviews and feeding friends 🍪", items:[
+    ["💼","Job interviews","a new page in <b>Work</b>: the classic questions, the STAR method, phrases to buy time and questions to ask.","interview"],
+    ["🍪","Feed other buddies","in the <b>Buddy park</b>, tap someone else\u2019s buddy and give it one of your treats (once a day). It gives them +3 friendship.","park"],
+    ["🎨","More colors","every buddy now has 5 colors to unlock, with some new fun ones."],
+    ["🦄","Peek at Glitter","you can now preview the unicorn before you unlock her."]
+  ]},
   {id:"2026-presentperfect", date:"November 6, 2026", title:"Present perfect + works offline 🌍", items:[
     ["🌍","Present perfect","a new grammar module in <b>Practice</b>, with 7 stages, stories, a test out exam and a 🌍 Little globe for your buddy.","quiz"],
     ["📶","Works offline","once you\u2019ve opened the Cheat Sheet, it opens even without internet. Your saved words and notes are there, and everything syncs when you\u2019re back online."],
@@ -5971,6 +6017,14 @@ window.__csPark = {
     const d = new Date(), day = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
     const first = String(user.displayName || "").trim().split(/\s+/)[0] || "";
     await setDoc(doc(db, "park", uid, "hearts", user.uid + "_" + day), { from: user.uid, first, a: a || "", at: serverTimestamp() });
+    return true;
+  },
+  /* feed someone else's buddy: one treat per person per day */
+  async feed(uid, a) {
+    if (!user || uid === user.uid) return false;
+    const d = new Date(), day = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    const first = String(user.displayName || "").trim().split(/\s+/)[0] || "";
+    await setDoc(doc(db, "park", uid, "hearts", user.uid + "_feed_" + day), { from: user.uid, first, a: a || "", kind: "feed", at: serverTimestamp() });
     return true;
   },
   /* collect the love other people sent to my buddy, then clear it */
