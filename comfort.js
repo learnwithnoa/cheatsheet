@@ -4,7 +4,11 @@
 (function () {
   "use strict";
   const KEY = "ncs-comfort";
-  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true, cursor: "default", lookup: true };
+  /* high contrast: follows the device's "Increase contrast" setting until the student chooses */
+  const sysContrast = () => { try { return matchMedia("(prefers-contrast: more)").matches; } catch (e) { return false; } };
+  const contrastOn = () => (S.contrast == null ? sysContrast() : !!S.contrast);
+  try { matchMedia("(prefers-contrast: more)").addEventListener("change", () => { if (S.contrast == null) applyAll(); }); } catch (e) {}
+  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true, cursor: "default", lookup: true, contrast: null };
   const root = document.documentElement;
   const isMain = !!document.getElementById("v-notes");
   let S = Object.assign({}, DEF);
@@ -289,6 +293,7 @@
     root.classList.remove("cs-font-atkinson", "cs-font-lexend", "cs-font-classic", "cs-font-book");
     if (S.font !== "default") { loadFont(S.font); root.classList.add("cs-font-" + S.font); }
     root.classList.toggle("cs-space", !!S.space);
+    root.classList.toggle("cs-contrast", contrastOn());
     ["big", "paw", "pencil", "star"].forEach(c => root.classList.toggle("cs-cur-" + c, S.cursor === c));
     root.classList.toggle("cs-no-inshort", !S.inshort);
     root.classList.toggle("cs-no-read", !S.read);
@@ -326,6 +331,7 @@
             <small style="color:var(--muted);font-size:12.5px;text-align:center">A soft chime plays when the time is up. Keep the tab open.</small></div>` : ""}
         </div>
         <div class="cs-sec"><h4>Calm</h4>
+          ${tog("csContrast", "High contrast", "Stronger text and borders, easier to read in bright light or with low vision. Works with any theme.")}
           ${tog("csCalm", "Calm mode", "No animations, softer colors, and no pop-ups" + (isMain ? " (new updates show as a small dot on “What's new” instead)" : "") + ".")}
         </div>
         <div class="cs-sec"><button class="cs-reset" type="button" id="csResetAll">Reset all settings</button>
@@ -344,6 +350,7 @@
     $("csSmaller").onclick = () => step(-1); $("csBigger").onclick = () => step(1);
     const bind = (id, k) => { const el = $(id); if (el) el.onchange = () => { S[k] = el.checked; save(); applyAll(); }; };
     bind("csLookup", "lookup");
+    if ($("csContrast")) $("csContrast").onchange = e => { S.contrast = e.target.checked; save(); applyAll(); };
     if ($("csCursors")) $("csCursors").onclick = e => { const b = e.target.closest("[data-cscur]"); if (!b) return; S.cursor = b.dataset.cscur; save(); applyAll(); };
     bind("csSpace", "space"); bind("csBionic", "bionic"); bind("csRulerT", "ruler"); bind("csInshort", "inshort"); bind("csRead", "read"); bind("csCalm", "calm");
     if ($("csFocus")) $("csFocus").addEventListener("change", () => { setFocus($("csFocus").checked); applyAll(); if (focusOn()) { open(false); toast("Focus mode on. Tap “Exit focus mode” at the bottom to leave."); } });
@@ -364,7 +371,7 @@
     $("csFontDesc").innerHTML = FONT_DESC[S.font] || FONT_DESC.default;
     $("csSizeTxt").textContent = Math.round(S.size * 100) + "%";
     const set = (id, v) => { const el = $(id); if (el) el.checked = !!v; };
-    set("csLookup", S.lookup !== false);
+    set("csLookup", S.lookup !== false); set("csContrast", contrastOn());
     document.querySelectorAll("[data-cscur]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cscur === (S.cursor || "default"))));
     set("csSpace", S.space); set("csBionic", S.bionic); set("csRulerT", S.ruler); set("csFocus", focusOn()); set("csInshort", S.inshort); set("csRead", S.read); set("csCalm", S.calm);
     paintTimer();
