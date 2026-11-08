@@ -113,45 +113,84 @@ td.act{white-space:nowrap;text-align:right}
 </head>
 <body>
 <style>
-@media (min-width:861px){.layout{grid-template-columns:330px minmax(0,1fr)}}
+:root{--c-green:#3DDC97;--c-amber:#FFB547;--c-sky:#5AB8FF;--c-violet:#B18CFF;--c-pink:#FF7EB6;--c-teal:#2DD4BF;--c-coral:#FF8A65;--c-red:#FF6B6B}
+:root[data-theme="light"],:root[data-theme="sepia"],:root[data-theme="unicorn"]{--c-green:#12935C;--c-amber:#B86E00;--c-sky:#1C6FD1;--c-violet:#7348D8;--c-pink:#C2306F;--c-teal:#0E8C7E;--c-coral:#C4502B;--c-red:#C93A3A}
+@media (min-width:861px){.layout{grid-template-columns:340px minmax(0,1fr)}}
 @media (max-width:640px){header .tag,#saving{display:none}.top{gap:8px;padding:8px 12px}.brand span{font-size:18px}header .btn{padding:6px 10px;font-size:13px}}
-.pk select,#detail select{font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:5px 8px}
-.tbl table{min-width:640px}
-.pk select{width:auto;max-width:220px}
+.tint{--k:var(--c-sky);background:color-mix(in srgb,var(--k) 14%,var(--surface));border:1.5px solid color-mix(in srgb,var(--k) 45%,var(--line))}
+.k-green{--k:var(--c-green)}.k-amber{--k:var(--c-amber)}.k-sky{--k:var(--c-sky)}.k-violet{--k:var(--c-violet)}.k-pink{--k:var(--c-pink)}.k-teal{--k:var(--c-teal)}.k-coral{--k:var(--c-coral)}.k-red{--k:var(--c-red)}
+.kc{color:var(--k)}
+h1.hubt{background:linear-gradient(90deg,var(--c-sky),var(--c-violet) 45%,var(--c-pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat.tint b{color:var(--k)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:0 0 16px}
+.kpi{border-radius:16px;padding:12px 14px}
+.kpi .kl{font:700 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--k)}
+.kpi .kv{font:800 26px var(--display);margin:2px 0 0}
+.kpi .ks{font-size:13px;color:var(--muted)}
+.up{color:var(--c-green);font-weight:800}.down{color:var(--c-red);font-weight:800}
+.panel{border-radius:16px;padding:14px 16px;margin:0 0 16px}
+.panel h2{margin:0 0 8px;font-size:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media (max-width:900px){.two{grid-template-columns:1fr}}
+.mbars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:8px}
+.mbars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font:11px var(--mono);color:var(--muted);height:100%;justify-content:flex-end}
+.mbars i{display:block;width:100%;max-width:42px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--c-green),var(--c-teal))}
+.mbars div.now i{background:linear-gradient(180deg,var(--c-amber),var(--c-coral))}
+.exp{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.exp li{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:10px;background:var(--surface-2);font-size:14px}
+.exp .when{font:700 12px var(--mono);color:var(--c-amber);min-width:62px}
+.exp .amt{margin-left:auto;font-weight:800;color:var(--c-green);white-space:nowrap}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.seg[aria-pressed="true"]{border-color:var(--k,var(--green));background:color-mix(in srgb,var(--k,var(--green)) 20%,var(--surface));color:var(--ink)}
+.stu{border-left:6px solid var(--pc,var(--line))!important;flex-direction:row!important;align-items:center;gap:10px!important}
+.stu .sb{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:800 14px var(--display);color:#0b1220;background:var(--av)}
 .stu .bar{height:6px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin-top:4px}
-.stu .bar i{display:block;height:100%;background:var(--green)}
-.stu .bar i.low{background:#E5A23D}.stu .bar i.out{background:var(--red)}
+.stu .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--c-green),var(--c-teal))}
+.stu .bar i.low{background:var(--c-amber)}.stu .bar i.out{background:var(--c-red)}
 .badge{display:inline-block;font:800 11px var(--body);padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:1px;border:1px solid var(--line)}
-.badge.warn{background:#E5A23D;color:#2a1800;border-color:#E5A23D}.badge.bad{background:var(--red);color:#fff;border-color:var(--red)}.badge.ok{background:var(--green-soft);color:var(--green);border-color:transparent}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
-.dh{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.badge.warn{background:var(--c-amber);color:#2a1800;border-color:transparent}.badge.bad{background:var(--c-red);color:#fff;border-color:transparent}
+.badge.half{background:color-mix(in srgb,var(--c-violet) 25%,transparent);border-color:var(--c-violet)}.badge.tq{background:color-mix(in srgb,var(--c-teal) 25%,transparent);border-color:var(--c-teal)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 14px}
+.dh{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .dh h2{margin:0;flex:1;min-width:200px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
-@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+.chipb{all:unset;cursor:pointer;font:700 12.5px var(--mono);padding:4px 10px;border-radius:999px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}@media (max-width:700px){.grid2{grid-template-columns:1fr}}
 .fld{display:flex;flex-direction:column;gap:4px}
 .fld label{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.fld input,.fld textarea,.fld select,.frm input,.frm select,.frm textarea{font:600 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;width:100%;box-sizing:border-box}
-.fld textarea{min-height:64px;resize:vertical}
-.frm{display:grid;gap:8px;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px}
+.fld input,.fld textarea,.fld select,.frm input,.frm select,.frm textarea,#detail select{font:600 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;width:100%;box-sizing:border-box}
+.fld textarea{min-height:90px;resize:vertical}
+.frm{display:grid;gap:8px;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;border-radius:14px;padding:12px;margin-bottom:14px}
 .frm .w2{grid-column:span 2}.frm .w3{grid-column:span 3}.frm .w6{grid-column:1/-1}
 @media (max-width:760px){.frm{grid-template-columns:1fr 1fr}.frm .w2,.frm .w3{grid-column:1/-1}}
-.pk{border:1.5px solid var(--line);border-left:8px solid var(--pc,var(--line));border-radius:14px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}
+.pk{border:1.5px solid var(--line);border-left:8px solid var(--pc,var(--line));border-radius:14px;padding:12px 14px;margin-bottom:10px;background:color-mix(in srgb,var(--pc,var(--surface)) 9%,var(--surface))}
 .pk .pbar{height:10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin:8px 0 4px}
-.pk .pbar i{display:block;height:100%;background:var(--green)}
-.pk.old{opacity:.75}
+.pk .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--c-green),var(--c-teal))}
+.pk.old{opacity:.72}.pk select{width:auto!important;max-width:240px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+.tbl table{min-width:640px}
 td.sw{width:6px;padding:0;background:var(--pc,transparent)}
 tr.nt td{font-style:italic;color:var(--muted);font-weight:600}
-tr.arch td{opacity:.8}
+tr.arch td{opacity:.85}
+.att{font:700 11.5px var(--body);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.att.Present{background:color-mix(in srgb,var(--c-green) 18%,transparent);color:var(--c-green)}
+.att.Absent,.att.Late{background:color-mix(in srgb,var(--c-red) 18%,transparent);color:var(--c-red)}
+.att.Cancelled{background:color-mix(in srgb,var(--c-amber) 18%,transparent);color:var(--c-amber)}
+.hr{font:700 11.5px var(--mono)}.hr.Priority{color:var(--c-pink)}.hr.Standard{color:var(--c-sky)}
 .alerts{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
-.alerts li{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:10px;background:var(--surface-2)}
+.alerts li{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:10px;border-left:4px solid var(--k);background:color-mix(in srgb,var(--k) 10%,var(--surface-2))}
 .alerts li button{margin-left:auto}
 .ai{font-size:17px;width:22px;text-align:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
 .modal .card{width:min(640px,100%);max-height:90vh;overflow:auto}
-.small{font-size:13px}
-.linkb{color:var(--royal);font-weight:700}
+.small{font-size:13px}.linkb{color:var(--c-sky);font-weight:700}
 .saving{font:12px var(--mono);color:var(--muted)}
+.eng{display:inline-flex;align-items:center;gap:6px;font:800 13px var(--body);padding:4px 10px;border-radius:999px}
+.sortrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+.nextc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nextc li{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:8px 10px;border-radius:10px;background:var(--surface-2)}
+.nextc .t{font:700 12.5px var(--mono);color:var(--c-sky)}
+.prof{white-space:pre-wrap;line-height:1.55}
 </style>
 <header><div class="top">
   <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
@@ -174,12 +213,18 @@ tr.arch td{opacity:.8}
     <p class="lede">You're signed in as <b id="deniedWho"></b>.</p>
   </section>
   <section id="vMain" hidden>
-    <div class="dh"><h1 style="flex:1">Your private students</h1>
+    <div class="dh"><h1 class="hubt" style="flex:1;margin:0">Your private students</h1>
       <div class="row"><button type="button" class="primary" id="addStu">＋ New student</button>
       <button type="button" id="impBtn">⬆ Import file</button><button type="button" id="expBtn">⬇ Backup</button>
       <input type="file" id="impFile" accept=".json,application/json" hidden></div></div>
-    <p class="lede" id="summary">Loading…</p>
-    <div class="news" id="alertsBox" hidden></div>
+    <p class="lede" id="summary" style="margin-top:6px">Loading…</p>
+    <div class="kpis" id="kpis"></div>
+    <div class="tint k-sky panel" id="nextBox" hidden></div>
+    <div class="tint k-amber panel" id="alertsBox" hidden></div>
+    <div class="two">
+      <div class="tint k-green panel" id="moneyBox"></div>
+      <div class="tint k-violet panel" id="expBox"></div>
+    </div>
     <div class="layout">
       <div>
         <input type="search" id="q" placeholder="Search students…" aria-label="Search students">
@@ -195,7 +240,8 @@ tr.arch td{opacity:.8}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
-  getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
+  getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView } from "./hubview.js?v=1";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -218,29 +264,43 @@ $("inBtn").onclick = async () => {
 };
 $("outBtn").onclick = () => signOut(auth);
 
-/* ---------- data ---------- */
-let tUid = null, S = [], cur = null, tab = "classes", filt = "active", editRow = null;
+/* ---------- state ---------- */
+let tUid = null, S = [], cur = null, tab = "classes", filt = "active", editRow = null, clsSort = -1, wSort = "new", roles = {}, usage = {}, meta = null;
 const PRE = "t-hub-";
-const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
-const MES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 };
 const fmtD = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); };
 const fmtShort = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
-const days = (a, b) => Math.round((new Date(b) - new Date(a)) / 864e5);
-const pl = (n, w) => n + " " + w + (n === 1 ? "" : w.endsWith("s") ? "es" : "es".slice(w.endsWith("ss") ? 0 : 1));
+const clp = n => "$" + Math.round(n).toLocaleString("es-CL");
+const pl = (n, w) => n + " " + w + (n === 1 ? "" : /(s|ss|sh|ch|x)$/.test(w) ? "es" : "s");
 const uid = () => Math.random().toString(36).slice(2, 9);
-const COUNTS = new Set(["Present", "Late cancellation", "Absent"]);
 const PCOLORS = ["#d5a6bd", "#b4a7d6", "#9fc5e8", "#a4c2f4", "#a2c4c9", "#b6d7a8", "#ffe599", "#f9cb9c", "#ea9999", "#c8daf8"];
+const AV = ["#3DDC97", "#FFB547", "#5AB8FF", "#B18CFF", "#FF7EB6", "#2DD4BF", "#FF8A65", "#F5D547"];
+const avc = s => AV[[...s.id].reduce((n, c) => n + c.charCodeAt(0), 0) % AV.length];
+const initials = n => n.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+const money = v => { const n = typeof v === "number" ? v : +String(v || "").replace(/[^\d]/g, ""); return n || 0; };
+const weekStart = iso => { const [y, m, d] = iso.split("-").map(Number); const t = new Date(y, m - 1, d); const k = (t.getDay() + 6) % 7; return addDays(iso, -k); };
 
 async function load() {
   $("summary").textContent = "Loading…";
   tUid = auth.currentUser.uid;
   try {
-    const ds = await getDocs(collection(db, "users", tUid, "data"));
-    S = [];
-    ds.forEach(x => { if (!x.id.startsWith(PRE)) return; const v = x.data(); if (v.deleted || typeof v.json !== "string") return; try { S.push(JSON.parse(v.json)); } catch (e) {} });
+    const [ds, rs] = await Promise.all([getDocs(collection(db, "users", tUid, "data")), getDocs(collection(db, "roles")).catch(() => null)]);
+    S = []; meta = null;
+    ds.forEach(x => { const v = x.data(); if (v.deleted || typeof v.json !== "string") return;
+      if (x.id === "t-hubmeta") { try { meta = JSON.parse(v.json); } catch (e) {} return; }
+      if (!x.id.startsWith(PRE)) return; try { S.push(JSON.parse(v.json)); } catch (e) {} });
+    roles = {}; if (rs) rs.forEach(d => { const r = d.data() || {}; if (r.hub) roles[r.hub] = { uid: d.id, ...r }; });
     S.forEach(norm);
+    S.forEach(s => { const r = roles[s.id]; if (r && s.uid !== r.uid) { s.uid = r.uid; save(s, true); } });
     renderAll();
+    loadUsage();
+    publishAll();
+    saveIds();
   } catch (e) { console.error(e); $("loadErr").hidden = false; $("loadErr").textContent = "Couldn't load your students. Refresh to try again."; }
+}
+async function loadUsage() {
+  const linked = S.filter(s => s.uid);
+  await Promise.all(linked.map(async s => { try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-usage")); usage[s.id] = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e) {} }));
+  renderList(); renderDetail();
 }
 function norm(s) {
   s.packs = s.packs || []; s.classes = s.classes || []; s.payments = s.payments || []; s.words = s.words || []; s.other = s.other || []; s.info = s.info || {};
@@ -248,46 +308,41 @@ function norm(s) {
   s.payments.forEach(p => { if (!p.id) p.id = uid(); });
 }
 const pending = new Map();
-function save(s) {
-  s.updatedAt = Date.now();
+function save(s, quiet) {
+  if (!quiet) s.updatedAt = Date.now();
   clearTimeout(pending.get(s.id)); $("saving").textContent = "Saving…";
   pending.set(s.id, setTimeout(async () => {
     pending.delete(s.id);
-    try { await setDoc(doc(db, "users", tUid, "data", PRE + s.id), { json: JSON.stringify(s), deleted: false, at: serverTimestamp() }); if (!pending.size) $("saving").textContent = "Saved ✓"; }
+    try { await setDoc(doc(db, "users", tUid, "data", PRE + s.id), { json: JSON.stringify(s), deleted: false, at: serverTimestamp() }); publish(s); if (!pending.size) $("saving").textContent = "Saved ✓"; }
     catch (e) { console.error(e); $("saving").textContent = "Not saved!"; toast("Couldn't save. Check your connection."); }
   }, 600));
 }
+/* the student's read-only copy */
+const vh = s => { const v = makeView(s); delete v.updated; return JSON.stringify(v); };
+async function publish(s, force) {
+  if (!s.uid) return;
+  const j = vh(s), key = "cs-hubpub-" + s.id; let last = null; try { last = localStorage.getItem(key); } catch (e) {}
+  if (!force && last === j) return;
+  try { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(s)), deleted: false, at: serverTimestamp() }); try { localStorage.setItem(key, j); } catch (e) {} }
+  catch (e) { console.warn("publish", e); }
+}
+function publishAll() { S.forEach(s => publish(s)); }
+/* the nightly helper finds students through this list */
+function saveIds() { const ids = S.map(s => s.id).sort(); if (meta && JSON.stringify(meta.ids || []) === JSON.stringify(ids)) return; meta = Object.assign({}, meta || {}, { ids }); setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(meta), deleted: false, at: serverTimestamp() }).catch(e => console.warn("ids", e)); }
 window.addEventListener("beforeunload", e => { if (pending.size) { e.preventDefault(); e.returnValue = ""; } });
 
-/* ---------- pack maths ---------- */
-function packClasses(s, p) { return s.classes.filter(c => c.kind !== "note" && c.pack === p.id); }
-function packStats(s, p) {
-  const cl = packClasses(s, p).filter(c => COUNTS.has(c.att || "Present"));
-  const used = p.unit === "credits" ? cl.reduce((n, c) => n + (+c.credits || 0), 0) : cl.length;
-  const size = p.size || 0, left = size ? size - used : null;
-  const first = cl.map(c => c.date).filter(Boolean).sort()[0] || "";
-  const pri = cl.filter(c => c.hour === "Priority").length > cl.length / 2;
-  const per = p.unit === "credits" ? (pri ? 4 : 3) : 1;
-  return { done: cl.length, used, size, left, first, per, classesLeft: left == null ? null : Math.floor(Math.max(0, left) / per), pri };
-}
-function deadline(p, first) {
-  if (p.deadlineISO) return p.deadlineISO;
-  const m = /(\d{1,2})\s+([a-záéíóú]+)/i.exec(p.deadline || ""); if (!m || !MES[m[2].toLowerCase()]) return "";
-  const base = first || p.created || today(); let y = +base.slice(0, 4); const mo = MES[m[2].toLowerCase()];
-  let iso = y + "-" + String(mo).padStart(2, "0") + "-" + String(+m[1]).padStart(2, "0");
-  if (iso < base) iso = (y + 1) + iso.slice(4);
-  return iso;
-}
-function curPack(s) { const ps = s.packs.filter(p => !p.archived); return ps[ps.length - 1] || null; }
-function lastClass(s) { return s.classes.filter(c => c.kind !== "note" && c.date).map(c => c.date).sort().pop() || ""; }
+/* ---------- maths ---------- */
 function instAt(p, st) { if (p.size === 36) return st.pri ? 5 : 7; if (p.size === 72) return st.pri ? 9 : 12; return null; }
+function gap(s) { const ds = s.classes.filter(c => c.kind !== "note" && c.date && COUNTS.has(c.att || "Present")).map(c => c.date).sort().slice(-7); if (ds.length < 2) return 7; const g = []; for (let i = 1; i < ds.length; i++) g.push(days(ds[i - 1], ds[i])); g.sort((a, b) => a - b); return Math.max(2, Math.min(14, g[Math.floor(g.length / 2)] || 7)); }
+function nextGuess(s) { const lc = lastClass(s) || today(); let n = addDays(lc, gap(s)); if (n < today()) n = addDays(today(), 1); return n; }
+function packPrice(p) { const n = money(p.price); if (n) return n; return STD_PRICE[p.size] || 0; }
 function alertsFor(s) {
   const out = []; if (s.status !== "active") return out;
   const p = curPack(s);
   if (p && s.kind !== "trueque" && p.size) {
     const st = packStats(s, p);
-    if (st.left <= 0) out.push({ lvl: "bad", i: "🔴", t: `${s.name}: pack used up (${st.used}/${st.size}) — renewal due 48h before the next class` });
-    else if (st.classesLeft <= 1) out.push({ lvl: "warn", i: "🟠", t: `${s.name}: ${st.classesLeft === 1 ? "1 class left" : "less than a class left"} in this pack (${st.left} ${p.unit} left)` });
+    if (st.left <= 0) out.push({ lvl: "bad", i: "🔴", t: `${s.name}: pack used up (${st.used}/${st.size}) · renewal due 48h before the next class` });
+    else if (st.classesLeft <= 1) out.push({ lvl: "warn", i: "🟠", t: `${s.name}: ${st.classesLeft === 1 ? "1 class left" : "less than a class left"} (${st.left} ${p.unit})` });
     if (p.paid === "half") { const at = instAt(p, st); if (at && st.done + 1 >= at) out.push({ lvl: st.done >= at ? "bad" : "warn", i: "💸", t: `${s.name}: 2nd installment due at class ${at} (${st.done} done)` }); }
     if (p.paid === "pending") out.push({ lvl: "bad", i: "💸", t: `${s.name}: pack not paid yet` });
     const dl = deadline(p, st.first); if (dl) { const d = days(today(), dl); if (d < 0 && st.left > 0) out.push({ lvl: "bad", i: "⏰", t: `${s.name}: pack expired ${fmtShort(dl)} with ${st.left} ${p.unit} unused` }); else if (d >= 0 && d <= 7 && st.left > 0) out.push({ lvl: "warn", i: "⏰", t: `${s.name}: pack ends ${fmtShort(dl)} (${d === 0 ? "today" : d === 1 ? "tomorrow" : "in " + d + " days"}), ${st.left} ${p.unit} left` }); }
@@ -295,58 +350,134 @@ function alertsFor(s) {
   const lc = lastClass(s); if (lc && days(lc, today()) >= 14) out.push({ lvl: "info", i: "💤", t: `${s.name}: no class since ${fmtShort(lc)}` });
   return out.map(a => ({ ...a, id: s.id }));
 }
+function engagement(s) {
+  const since = addDays(today(), -60);
+  const cl = s.classes.filter(c => c.kind !== "note" && c.date >= since);
+  const att = cl.filter(c => COUNTS.has(c.att || "Present")), pres = att.filter(c => (c.att || "Present") === "Present").length;
+  const parts = []; let score = 0, max = 0;
+  if (att.length) { const r = pres / att.length; score += r * 40; max += 40; parts.push(`attendance ${Math.round(r * 100)}%`); }
+  const lc = lastClass(s); if (lc) { const d = days(lc, today()); score += d <= 7 ? 30 : d <= 14 ? 20 : d <= 21 ? 10 : 0; max += 30; parts.push(`last class ${d === 0 ? "today" : pl(d, "day") + " ago"}`); }
+  if (s.uid) { const u = usage[s.id] || {}; const act = Object.keys(u).filter(k => k >= addDays(today(), -14) && Object.values(u[k] || {}).some(v => v > 0)).length; score += act >= 5 ? 30 : act >= 2 ? 20 : act >= 1 ? 10 : 0; max += 30; parts.push(`Cheat Sheet ${pl(act, "day")} in 2 weeks`); }
+  if (!max) return null;
+  const pct = Math.round(score / max * 100);
+  return { pct, lvl: pct >= 75 ? "High" : pct >= 50 ? "Medium" : "Low", k: pct >= 75 ? "k-green" : pct >= 50 ? "k-amber" : "k-red", parts };
+}
+function weekStats(off) {
+  const ws = addDays(weekStart(today()), -7 * off), we = addDays(ws, 7);
+  let n = 0; S.forEach(s => s.classes.forEach(c => { if (c.kind !== "note" && c.date >= ws && c.date < we && (c.att || "Present") === "Present") n++; }));
+  return n;
+}
+function monthStats() {
+  const m = today().slice(0, 7); const r = { abs: 0, late: 0, ontime: 0, n: 0 };
+  S.forEach(s => s.classes.forEach(c => { if (c.kind === "note" || !(c.date || "").startsWith(m)) return; r.n++; if (c.att === "Absent") r.abs++; else if (c.att === "Late cancellation") r.late++; else if (c.att === "Cancelled on time") r.ontime++; }));
+  return r;
+}
+function earned() {
+  const by = {}; let usd = 0, usdY = 0; const y = today().slice(0, 4);
+  S.forEach(s => s.payments.forEach(p => { if (!p.date) return; const mo = p.date.slice(0, 7); if (p.cur === "USD") { if (mo === today().slice(0, 7)) usd += money(p.clp ?? p.amount); if (p.date.startsWith(y)) usdY += money(p.clp ?? p.amount); return; } const v = money(p.clp ?? p.amount); if (v) by[mo] = (by[mo] || 0) + v; }));
+  return { by, usd, usdY };
+}
+function expected() {
+  const out = [];
+  S.forEach(s => {
+    if (s.status !== "active" || s.kind === "trueque") return;
+    const p = curPack(s); if (!p || !p.size) return;
+    const st = packStats(s, p), g = gap(s), nx = nextGuess(s), price = packPrice(p);
+    if (p.paid === "pending") out.push({ d: today(), s, t: "Pack payment", v: price });
+    if (p.paid === "half") { const at = instAt(p, st); if (at) out.push({ d: addDays(nx, Math.max(0, at - 1 - st.done) * g), s, t: "2nd installment", v: Math.round(price / 2) }); }
+    const left = Math.max(0, st.classesLeft || 0); out.push({ d: addDays(nx, Math.max(0, left) * g - 2), s, t: "Renewal" + (left ? ` (after ${pl(left, "class")})` : ""), v: STD_PRICE[p.size] || price, guess: true });
+  });
+  out.forEach(x => { if (x.d < today()) x.d = today(); });
+  return out.filter(x => x.d <= addDays(today(), 45)).sort((a, b) => a.d.localeCompare(b.d));
+}
 
 /* ---------- render ---------- */
-function renderAll() { renderSummary(); renderAlerts(); renderFilters(); renderList(); renderDetail(); }
+function renderAll() { renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderFilters(); renderList(); renderDetail(); }
 function renderSummary() {
   const act = S.filter(s => s.status === "active");
-  const wk = S.reduce((n, s) => n + s.classes.filter(c => c.kind !== "note" && c.date && days(c.date, today()) < 7 && days(c.date, today()) >= 0).length, 0);
-  $("summary").textContent = `${act.length} active students · ${wk} classes in the last 7 days · ${S.length} students in total`;
+  $("summary").textContent = `${act.length} active students · ${S.length} students in total`;
+}
+function renderKpis() {
+  const tw = weekStats(0), lw = weekStats(1), ms = monthStats(), e = earned(), mo = today().slice(0, 7);
+  const diff = tw - lw, arrow = diff > 0 ? `<span class="up">▲ ${diff}</span>` : diff < 0 ? `<span class="down">▼ ${-diff}</span>` : "same as";
+  const exp30 = expected().filter(x => x.d <= addDays(today(), 30)).reduce((n, x) => n + x.v, 0);
+  $("kpis").innerHTML = `
+    <div class="kpi tint k-sky"><div class="kl">This week</div><div class="kv">${pl(tw, "class")}</div><div class="ks">≈ ${(tw * 0.75).toFixed(1).replace(".0", "")} h taught · ${arrow} ${diff ? "vs" : ""} last week (${lw})</div></div>
+    <div class="kpi tint k-green"><div class="kl">Paid this month</div><div class="kv">${clp(e.by[mo] || 0)}</div><div class="ks">${e.usd ? "+ US$" + e.usd + " · " : ""}${clp(Object.entries(e.by).filter(([k]) => k.startsWith(mo.slice(0, 4))).reduce((n, [, v]) => n + v, 0))} this year</div></div>
+    <div class="kpi tint k-violet"><div class="kl">Expected · next 30 days</div><div class="kv">${clp(exp30)}</div><div class="ks">installments + likely renewals</div></div>
+    <div class="kpi tint k-coral"><div class="kl">This month</div><div class="kv">${pl(ms.n - ms.abs - ms.late - ms.ontime, "class")}</div><div class="ks">${ms.late} late cancel · ${ms.abs} no-show · ${ms.ontime} on-time cancel</div></div>`;
+}
+function renderNext() {
+  const box = $("nextBox"); const up = meta && Array.isArray(meta.upcoming) ? meta.upcoming.filter(u => (u.start || "") >= new Date(Date.now() - 3600e3).toISOString()).slice(0, 12) : [];
+  box.hidden = !up.length; if (!up.length) return;
+  box.innerHTML = `<h2><span class="kc">📅</span> Coming up</h2><ul class="nextc">${up.map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
+    return `<li><span class="t">${t.toLocaleDateString("en-US", { weekday: "short" })} ${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span><span><b>${esc(s ? s.name : u.name || "")}</b>${lc ? `<span class="muted small"> · last time: ${esc(lc.topics)}${lc.homework ? " · homework: " + esc(lc.homework) : ""}</span>` : ""}</span></li>`; }).join("")}</ul>`;
 }
 function renderAlerts() {
   const al = S.flatMap(alertsFor).sort((a, b) => ({ bad: 0, warn: 1, info: 2 }[a.lvl] - { bad: 0, warn: 1, info: 2 }[b.lvl]));
   const box = $("alertsBox"); box.hidden = !al.length;
-  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔔 Heads-up <span class="news-n">${al.length}</span></h2></div><ul class="alerts">${al.map(a => `<li><span class="ai">${a.i}</span><span>${esc(a.t)}</span><button type="button" class="ib" data-open="${a.id}">Open</button></li>`).join("")}</ul>`;
+  const K = { bad: "var(--c-red)", warn: "var(--c-amber)", info: "var(--c-sky)" };
+  box.innerHTML = `<h2>🔔 Heads-up <span class="news-n">${al.length}</span></h2><ul class="alerts">${al.map(a => `<li style="--k:${K[a.lvl]}"><span class="ai">${a.i}</span><span>${esc(a.t)}</span><button type="button" class="ib" data-open="${a.id}">Open</button></li>`).join("")}</ul>`;
+}
+function renderMoney() {
+  const e = earned(); const ms = []; for (let i = 5; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); ms.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0")); }
+  const mx = Math.max(1, ...ms.map(m => e.by[m] || 0)), now = today().slice(0, 7);
+  $("moneyBox").innerHTML = `<h2>💰 Money in</h2><div class="muted small">Pesos received per month (payments with an amount; ≈ = estimated from the pack price)</div>
+    <div class="mbars">${ms.map(m => `<div class="${m === now ? "now" : ""}" title="${clp(e.by[m] || 0)}"><span>${(e.by[m] || 0) ? Math.round((e.by[m] || 0) / 1000) + "k" : ""}</span><i style="height:${Math.round((e.by[m] || 0) / mx * 80)}px"></i>${new Date(m + "-15").toLocaleDateString("en-US", { month: "short" })}</div>`).join("")}</div>
+    ${e.usdY ? `<p class="muted small" style="margin:8px 0 0">Plus US$${e.usdY} in dollars this year.</p>` : ""}`;
+  const ex = expected();
+  $("expBox").innerHTML = `<h2>📆 Coming in</h2><div class="muted small">Second installments and likely renewals, guessed from each student's pace</div>
+    <ul class="exp" style="margin-top:8px">${ex.slice(0, 10).map(x => `<li><span class="when">${fmtShort(x.d)}</span><span><b>${esc(x.s.name)}</b> <span class="muted">· ${esc(x.t)}</span></span><span class="amt">${x.guess ? "≈" : ""}${clp(x.v)}</span></li>`).join("") || `<li class="muted">Nothing expected in the next 45 days.</li>`}</ul>`;
 }
 function renderFilters() {
   const n = k => k === "all" ? S.length : S.filter(s => s.status === k).length;
-  $("filters").innerHTML = [["active", "Active"], ["paused", "Paused"], ["inactive", "Past"], ["all", "All"]].map(([k, l]) => `<button type="button" class="seg" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
+  $("filters").innerHTML = [["active", "Active", "k-green"], ["paused", "Paused", "k-amber"], ["inactive", "Past", "k-violet"], ["all", "All", "k-sky"]].map(([k, l, c]) => `<button type="button" class="seg ${c}" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
 }
 function renderList() {
   const q = $("q").value.trim().toLowerCase();
   const ls = S.filter(s => (filt === "all" || s.status === filt) && (!q || (s.name + " " + (s.email || "")).toLowerCase().includes(q)))
     .sort((a, b) => (lastClass(b) || "").localeCompare(lastClass(a) || "") || a.name.localeCompare(b.name));
   $("list").innerHTML = ls.map(s => {
-    const p = curPack(s), st = p ? packStats(s, p) : null, al = alertsFor(s);
+    const p = curPack(s), st = p ? packStats(s, p) : null, al = alertsFor(s), en = engagement(s);
     const pct = st && st.size ? Math.min(100, st.used / st.size * 100) : 0;
     const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
     const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
-    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge">trueque</span>' : ""}</b>
-      <span class="meta">${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
-      ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</button>`;
+    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${p && p.color || "var(--line)"}"><span class="av" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
+      <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
+      ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</span></button>`;
   }).join("") || `<p class="muted">No students here.</p>`;
 }
-function S_() { return S.find(s => s.id === cur); }
+const S_ = () => S.find(s => s.id === cur);
+const TABS = [["classes", "Classes", "k-sky"], ["packs", "Packs & payments", "k-green"], ["info", "Profile", "k-violet"], ["words", "Word bank", "k-amber"]];
 function renderDetail() {
   const s = S_(); const box = $("detail");
   if (!s) { box.innerHTML = `<p class="muted">Pick a student on the left.</p>`; return; }
-  const p = curPack(s), st = p ? packStats(s, p) : null;
+  const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
   const links = [s.sheetId ? `<a class="linkb" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/${esc(s.sheetId)}/edit">English Journey ↗</a>` : "", s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", s.email ? `<a class="linkb" href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ""].filter(Boolean).join(" · ");
-  box.innerHTML = `<div class="dh"><h2>${esc(s.name)}</h2>
-    <select id="stStatus" aria-label="Status" style="font:700 14px var(--body);border-radius:999px;padding:6px 10px;background:var(--surface-2);color:var(--ink);border:1.5px solid var(--line)">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "Active", paused: "Paused", inactive: "Past student" }[k]}</option>`).join("")}</select></div>
-    <p class="muted small" style="margin:6px 0 0">${[s.level, s.schedule].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}</p>
-    ${p && st ? `<div class="stats">${st.size ? `<div class="stat"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat"><b>${st.classesLeft}</b><span>classes left (approx.)</span></div>` : ""}<div class="stat"><b>${st.done}</b><span>classes this pack</span></div>${deadline(p, st.first) ? `<div class="stat"><b>${fmtShort(deadline(p, st.first))}</b><span>pack ends</span></div>` : ""}<div class="stat"><b>${s.classes.filter(c => c.kind !== "note").length}</b><span>classes in total</span></div></div>` : ""}
-    <div class="tabs">${[["classes", "Classes"], ["packs", "Packs & payments"], ["info", "Info"], ["words", `Word bank (${s.words.length})`]].concat(s.other.length ? [["other", "Other tabs"]] : []).map(([k, l]) => `<button type="button" class="seg" data-tab="${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>
+  const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
+  box.innerHTML = `<div class="dh"><span class="av" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}</h2>
+    ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
+    <select id="stStatus" aria-label="Status" style="width:auto">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }[k]}</option>`).join("")}</select></div>
+    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Cheat Sheet (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Cheat Sheet account yet: link them in the teacher view.</span>`}</p>
+    <div class="stats">
+      ${p && st && st.size ? `<div class="stat tint k-green"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat tint k-amber"><b>${st.classesLeft}</b><span>${st.classesLeft === 1 ? "class" : "classes"} left (approx.)</span></div>` : ""}
+      ${p && st ? `<div class="stat tint k-sky"><b>${st.done}</b><span>classes this pack</span></div>` : ""}
+      ${p && st && deadline(p, st.first) ? `<div class="stat tint k-pink"><b>${fmtShort(deadline(p, st.first))}</b><span>pack ends</span></div>` : ""}
+      <div class="stat tint k-violet"><b>${s.classes.filter(c => c.kind !== "note").length}</b><span>classes in total</span></div>
+      ${en ? `<div class="stat tint ${en.k}" title="${esc(en.parts.join(" · "))}"><b>${en.lvl}</b><span>engagement · ${esc(en.parts.join(" · "))}</span></div>` : ""}
+    </div>
+    <div class="tabs">${tabs.map(([k, l, c]) => `<button type="button" class="seg ${c}" data-tab="${k}" aria-pressed="${tab === k}">${l}${k === "words" ? ` (${s.words.length})` : ""}</button>`).join("")}</div>
     <div id="tabBody">${({ classes: tClasses, packs: tPacks, info: tInfo, words: tWords, other: tOther }[tab] || tClasses)(s)}</div>`;
 }
 const packOpts = (s, sel) => `<option value="">— no pack —</option>` + s.packs.slice().reverse().map(p => `<option value="${p.id}" ${sel === p.id ? "selected" : ""}>${esc(p.label.slice(0, 60))}${p.archived ? " (old)" : ""}</option>`).join("");
 const sel = (id, opts, v) => `<select id="${id}">${opts.map(o => `<option ${o === v ? "selected" : ""}>${o}</option>`).join("")}</select>`;
+const attB = a => a ? `<span class="att ${esc(String(a).split(" ")[0])}">${esc(a)}</span>` : "";
 function tClasses(s) {
   const p = curPack(s);
-  const rows = s.classes.map((c, i) => ({ c, i })).reverse();
+  const rows = s.classes.slice(); if (clsSort < 0) rows.reverse();
   const pc = id => (s.packs.find(p => p.id === id) || {}).color || "";
-  const body = rows.map(({ c }) => {
-    if (editRow === c.id) return `<tr><td class="sw" style="--pc:${pc(c.pack)}"></td><td colspan="7"><div class="frm" style="margin:0">
+  const body = rows.map(c => {
+    if (editRow === c.id) return `<tr><td class="sw" style="--pc:${pc(c.pack)}"></td><td colspan="7"><div class="frm tint k-sky" style="margin:0">
       <div class="fld"><label>Date</label><input type="date" id="eDate" value="${esc(c.date)}"></div>
       <div class="fld w2"><label>Topics</label><input id="eTop" value="${esc(c.topics)}"></div>
       <div class="fld w3"><label>Homework</label><input id="eHw" value="${esc(c.homework)}"></div>
@@ -355,11 +486,11 @@ function tClasses(s) {
       <div class="fld"><label>Credits</label><input type="number" id="eCr" min="0" max="10" value="${c.credits ?? ""}"></div>
       <div class="fld w2"><label>Pack</label><select id="ePack">${packOpts(s, c.pack)}</select></div>
       <div class="row"><button type="button" class="primary" data-act="saveRow" data-id="${c.id}">Save</button><button type="button" data-act="cancelRow">Cancel</button></div></div></td></tr>`;
-    if (c.kind === "note") return `<tr class="nt"><td class="sw"></td><td class="d"></td><td colspan="5">📝 ${esc(c.topics)}${c.homework ? " — " + esc(c.homework) : ""}</td><td class="act"><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
-    return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}"></td><td class="d">${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td class="d">${esc(c.att || "")}</td><td class="d">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
+    if (c.kind === "note") return `<tr class="nt"><td class="sw"></td><td class="d">${c.date ? fmtShort(c.date) : ""}</td><td colspan="5">📝 ${esc(c.topics)}${c.homework ? " · " + esc(c.homework) : ""}</td><td class="act"><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
+    return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}"></td><td class="d">${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td>${attB(c.att)}</td><td class="hr ${esc(c.hour || "")}">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
   }).join("");
   const hourNow = () => { const h = new Date().getHours(); return h >= 10 && h < 15 ? "Standard" : "Priority"; };
-  return `<form class="frm" id="addClass" autocomplete="off">
+  return `<form class="frm tint k-sky" id="addClass" autocomplete="off">
       <div class="fld"><label>Date</label><input type="date" name="date" value="${today()}" required></div>
       <div class="fld w2"><label>Topics covered</label><input name="topics" placeholder="fabulang: …, convo: …"></div>
       <div class="fld w3"><label>Homework</label><input name="homework" value="${esc((s.classes.filter(c => c.kind !== "note").pop() || {}).homework || "")}"></div>
@@ -369,6 +500,7 @@ function tClasses(s) {
       <div class="fld w2"><label>Pack</label><select name="pack">${packOpts(s, p ? p.id : "")}</select></div>
       <div class="row"><button class="primary" type="submit">＋ Add class</button><button type="button" data-act="addNote">＋ Note</button></div>
     </form>
+    <div class="sortrow"><span class="muted small">Order:</span><button type="button" class="seg k-sky" data-csort="-1" aria-pressed="${clsSort < 0}">Newest first</button><button type="button" class="seg k-sky" data-csort="1" aria-pressed="${clsSort > 0}">Oldest first</button></div>
     <div class="tbl"><table><thead><tr><th></th><th>Date</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
 }
 function tPacks(s) {
@@ -376,58 +508,67 @@ function tPacks(s) {
     const st = packStats(s, p), dl = deadline(p, st.first), pct = st.size ? Math.min(100, st.used / st.size * 100) : 0;
     return `<div class="pk ${p.archived ? "old" : ""}" style="--pc:${p.color || "var(--line)"}">
       <div class="row" style="justify-content:space-between"><b>${esc(p.label)}</b>
-      <span class="row"><select data-paid="${p.id}" aria-label="Paid">${[["full", "Paid"], ["half", "½ paid (2nd installment pending)"], ["pending", "Not paid yet"], ["n/a", "n/a"]].map(([k, l]) => `<option value="${k}" ${p.paid === k ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <span class="row"><select data-paid="${p.id}" aria-label="Paid">${[["full", "✅ Paid"], ["half", "½ paid (2nd installment pending)"], ["pending", "⏳ Not paid yet"], ["n/a", "n/a"]].map(([k, l]) => `<option value="${k}" ${p.paid === k ? "selected" : ""}>${l}</option>`).join("")}</select>
       <button class="ib" data-act="archPack" data-id="${p.id}">${p.archived ? "Mark current" : "Archive"}</button><button class="ib del" data-act="delPack" data-id="${p.id}">✕</button></span></div>
       ${st.size ? `<div class="pbar"><i style="width:${pct}%"></i></div>` : ""}
       <div class="muted small">${st.size ? `${st.used}/${st.size} ${p.unit} used · ` : ""}${pl(st.done, "class")}${st.first ? " · started " + fmtShort(st.first) : ""}${dl ? " · ends " + fmtD(dl) : ""}${p.price ? " · " + esc(p.price) : ""}</div></div>`;
   }).join("");
-  const pays = s.payments.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "")).map(p => `<tr><td class="d">${p.date ? fmtD(p.date) : (p.year || "")}</td><td>${esc(p.what)}</td><td>${esc(p.amount || "")}</td><td>${esc(p.method || "")}</td><td class="act"><button class="ib del" data-act="delPay" data-id="${p.id}">✕</button></td></tr>`).join("");
+  const pays = s.payments.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "")).map(p => `<tr><td class="d">${p.date ? fmtD(p.date) : (p.year || "")}</td><td>${esc(p.what)}</td><td style="color:var(--c-green);font-weight:800">${p.est ? "≈" : ""}${esc(p.amount || "")}</td><td>${esc(p.method || "")}</td><td class="act"><button class="ib del" data-act="delPay" data-id="${p.id}">✕</button></td></tr>`).join("");
+  const isNew = !s.packs.length;
   return `<h3 style="margin:4px 0 8px">Packs</h3>
-    <form class="frm" id="addPack" autocomplete="off">
+    <form class="frm tint k-green" id="addPack" autocomplete="off">
       <div class="fld w2"><label>Pack</label><select name="kind"><option value="12">Pack Básico · 12 créditos</option><option value="36" selected>Pack Intermedio · 36 créditos</option><option value="72">Pack Intensivo · 72 créditos</option><option value="trueque">Trueque (no credits)</option><option value="custom">Other…</option></select></div>
-      <div class="fld"><label>Price</label><input name="price" placeholder="$264.000"></div>
+      <div class="fld"><label>Price</label><input name="price" placeholder="auto"></div>
       <div class="fld"><label>Ends on</label><input type="date" name="deadline"></div>
       <div class="fld"><label>Paid</label><select name="paid"><option value="full">Paid</option><option value="half">½ paid</option><option value="pending">Not yet</option></select></div>
       <div class="row"><button class="primary" type="submit">＋ New pack</button></div>
+      <label class="w6 small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="first" ${isNew ? "checked" : ""}> First pack for a new student: 15% off${" "}(and a first Básico counts every class as standard hours)</label>
       <div class="fld w6" hidden id="customPack"><label>Custom pack name and credits</label><div class="row"><input name="clabel" placeholder="Pack 4 clases ESP" style="flex:2"><input name="csize" type="number" placeholder="credits" style="flex:1"></div></div>
       <p class="hint w6" style="margin:0">A new pack also records the payment below, and older packs are archived automatically.</p>
     </form>
     ${packs || `<p class="muted">No packs yet.</p>`}
     <h3 style="margin:18px 0 8px">Payments</h3>
-    <form class="frm" id="addPay" autocomplete="off">
+    <form class="frm tint k-green" id="addPay" autocomplete="off">
       <div class="fld"><label>Date</label><input type="date" name="date" value="${today()}"></div>
       <div class="fld w2"><label>What</label><input name="what" placeholder="2nd half of pack 36 créditos"></div>
-      <div class="fld"><label>Amount</label><input name="amount" placeholder="$132.000"></div>
+      <div class="fld"><label>Amount (CLP)</label><input name="amount" inputmode="numeric" placeholder="132000"></div>
       <div class="fld"><label>Method</label><select name="method"><option>Transfer</option><option>Global66</option><option>Payoneer</option><option>Remitly</option><option>Other</option></select></div>
       <div class="row"><button class="primary" type="submit">＋ Add</button></div>
     </form>
-    ${s.priceNote || s.boleta ? `<p class="muted small">${s.boleta ? "Boleta " + esc(s.boleta) + " · " : ""}${esc(s.priceNote || "")}</p>` : ""}
+    ${s.priceNote ? `<p class="muted small">${esc(s.priceNote)}</p>` : ""}
     <div class="tbl"><table><thead><tr><th>Date</th><th>What</th><th>Amount</th><th>Method</th><th></th></tr></thead><tbody>${pays || `<tr><td colspan="5" class="muted">No payments recorded.</td></tr>`}</tbody></table></div>`;
 }
 function tInfo(s) {
   const f = (k, l, ta) => `<div class="fld"><label for="f_${k}">${l}</label>${ta ? `<textarea id="f_${k}" data-f="${k}">${esc(s[k] || "")}</textarea>` : `<input id="f_${k}" data-f="${k}" value="${esc(s[k] || "")}">`}</div>`;
   const info = Object.entries(s.info).map(([k, v]) => `<div class="fld"><label>${esc(k)}</label><textarea data-info="${esc(k)}">${esc((v || []).join("\n"))}</textarea></div>`).join("");
-  return `<div class="grid2">${f("name", "Name")}${f("email", "Email")}${f("level", "Level")}${f("schedule", "Schedule")}${f("objective", "Objective", 1)}${f("about", "About them", 1)}
+  return `<div class="grid2">${f("name", "Name")}${f("email", "Email")}${f("level", "Level")}${f("schedule", "Schedule")}
+    <div class="fld" style="grid-column:1/-1"><label for="f_objective">Objective <span class="muted">(the student sees this)</span></label><textarea id="f_objective" data-f="objective">${esc(s.objective || "")}</textarea></div>
+    <div class="fld" style="grid-column:1/-1"><label for="f_about">About them <span class="muted">(only you see this)</span></label><textarea id="f_about" data-f="about" style="min-height:150px">${esc(s.about || "")}</textarea></div>
     <div class="fld"><label>Kind</label><select data-f="kind"><option value="pack" ${s.kind !== "trueque" ? "selected" : ""}>Paying student</option><option value="trueque" ${s.kind === "trueque" ? "selected" : ""}>Trueque</option></select></div>
-    ${f("zoomKey", "Name in Zoom meetings")}${f("boleta", "Boleta no.")}${f("sheetId", "English Journey sheet ID")}${f("folderId", "Drive folder ID")}${info}</div>
+    ${f("boleta", "Boleta reference no. (for the SII)")}${f("zoomKey", "Name in Zoom meetings")}${f("sheetId", "English Journey sheet ID")}${f("folderId", "Drive folder ID")}${info}</div>
     <p class="hint" style="margin-top:12px">Changes save automatically.</p>
     <p style="margin-top:18px"><button type="button" class="ib del" data-act="delStu">Delete this student from the hub</button></p>`;
 }
 function tWords(s) {
-  return s.words.length ? `<div class="tbl"><table><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${s.words.map(w => `<tr><td>${esc(w.w)}</td><td>${esc(w.tr)}</td><td>${esc(w.ex)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">No words in their word bank.</p>`;
+  if (!s.words.length) return `<p class="muted">No words in their word bank.</p>`;
+  let ws = s.words.map((w, i) => ({ ...w, i }));
+  if (wSort === "new") ws.reverse(); else if (wSort === "az") ws.sort((a, b) => a.w.localeCompare(b.w, "en", { sensitivity: "base" })); else if (wSort === "za") ws.sort((a, b) => b.w.localeCompare(a.w, "en", { sensitivity: "base" }));
+  return `<div class="sortrow"><span class="muted small">Order:</span>${[["new", "Newest added"], ["old", "Oldest added"], ["az", "A → Z"], ["za", "Z → A"]].map(([k, l]) => `<button type="button" class="seg k-amber" data-wsort="${k}" aria-pressed="${wSort === k}">${l}</button>`).join("")}</div>
+    <div class="tbl"><table><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${ws.map(w => `<tr><td>${esc(w.w)}</td><td>${esc(w.tr)}</td><td>${esc(w.ex)}</td></tr>`).join("")}</tbody></table></div>`;
 }
-function tOther(s) {
-  return s.other.map(o => `<h3>${esc(o.tab)}</h3><div class="tbl"><table><tbody>${o.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join("");
-}
+function tOther(s) { return s.other.map(o => `<h3>${esc(o.tab)}</h3><div class="tbl"><table><tbody>${o.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join(""); }
 
 /* ---------- events ---------- */
 $("q").oninput = renderList;
 document.addEventListener("click", e => {
   const t = e.target;
-  const fb = t.closest("[data-f]"); if (fb && fb.matches("button")) { filt = fb.dataset.f; renderFilters(); renderList(); return; }
+  const cp = t.closest("[data-copy]"); if (cp) { navigator.clipboard && navigator.clipboard.writeText(cp.dataset.copy).then(() => toast("Copied " + cp.dataset.copy)).catch(() => {}); return; }
+  const fb = t.closest("button[data-f]"); if (fb) { filt = fb.dataset.f; renderFilters(); renderList(); return; }
   const sb = t.closest(".stu"); if (sb) { cur = sb.dataset.s; editRow = null; renderList(); renderDetail(); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); return; }
   const op = t.closest("[data-open]"); if (op) { cur = op.dataset.open; filt = "active"; tab = "packs"; renderFilters(); renderList(); renderDetail(); $("detail").scrollIntoView({ behavior: "smooth" }); return; }
   const tb = t.closest("[data-tab]"); if (tb) { tab = tb.dataset.tab; editRow = null; renderDetail(); return; }
+  const cs = t.closest("[data-csort]"); if (cs) { clsSort = +cs.dataset.csort; renderDetail(); return; }
+  const wsb = t.closest("[data-wsort]"); if (wsb) { wSort = wsb.dataset.wsort; renderDetail(); return; }
   const a = t.closest("[data-act]"); if (!a) return;
   const s = S_(), id = a.dataset.id, act = a.dataset.act;
   if (act === "editRow") { editRow = id; renderDetail(); return; }
@@ -442,46 +583,48 @@ document.addEventListener("click", e => {
     if (act === "delRow") s.classes = s.classes.filter(x => x.id !== id);
     if (act === "delPay") s.payments = s.payments.filter(x => x.id !== id);
     if (act === "delPack") { s.packs = s.packs.filter(x => x.id !== id); s.classes.forEach(c => { if (c.pack === id) c.pack = ""; }); }
-    if (act === "delStu") { deleteDoc(doc(db, "users", tUid, "data", PRE + s.id)).catch(console.error); S = S.filter(x => x.id !== s.id); cur = null; renderAll(); toast("Deleted"); return; }
+    if (act === "delStu") { deleteDoc(doc(db, "users", tUid, "data", PRE + s.id)).catch(console.error); S = S.filter(x => x.id !== s.id); cur = null; renderAll(); saveIds(); toast("Deleted"); return; }
     save(s); refresh(); return;
   }
   if (act === "archPack") { const p = s.packs.find(x => x.id === id); p.archived = !p.archived; save(s); refresh(); return; }
-  if (act === "addNote") { const f = $("addClass"); const txt = f.topics.value.trim(); if (!txt) { f.topics.focus(); toast("Type the note in Topics"); return; } s.classes.push({ id: uid(), kind: "note", topics: txt, homework: "", date: f.date.value }); save(s); refresh(); return; }
+  if (act === "addNote") { const f = $("addClass"); const txt = f.topics.value.trim(); if (!txt) { f.topics.focus(); toast("Type the note in Topics"); return; } s.classes.push({ id: uid(), kind: "note", topics: txt, homework: "", date: f.date.value }); sortClasses(s); save(s); refresh(); return; }
 });
 document.addEventListener("change", e => {
   const t = e.target, s = S_();
   if (t.id === "stStatus") { s.status = t.value; save(s); renderAll(); return; }
   if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s); refresh(); return; }
-  if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") { renderList(); } save(s); return; }
+  if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") renderList(); save(s); return; }
   if (t.dataset.info) { s.info[t.dataset.info] = t.value.split("\n").map(x => x.trim()).filter(Boolean); save(s); return; }
   if (t.name === "kind" && t.form && t.form.id === "addPack") { $("customPack").hidden = t.value !== "custom"; return; }
-  if (t.name === "hour" && t.form && t.form.id === "addClass") return;
 });
 document.addEventListener("submit", e => {
   e.preventDefault(); const f = e.target, s = S_();
   if (f.id === "addClass") {
-    const hour = f.hour.value === "—" ? "" : f.hour.value;
-    let cr = f.credits.value === "" ? null : +f.credits.value;
     const pk = s.packs.find(p => p.id === f.pack.value);
+    let hour = f.hour.value === "—" ? "" : f.hour.value;
+    if (pk && pk.allStd && hour) hour = "Standard";
+    let cr = f.credits.value === "" ? null : +f.credits.value;
     if (cr == null && s.kind !== "trueque" && COUNTS.has(f.att.value)) cr = pk && pk.unit === "classes" ? null : hour === "Priority" ? 4 : hour === "Standard" ? 3 : null;
     if (f.att.value === "Cancelled on time") cr = 0;
     s.classes.push({ id: uid(), kind: "class", date: f.date.value, dateText: "", topics: f.topics.value.trim(), homework: f.homework.value.trim(), att: f.att.value, hour, credits: cr, pack: f.pack.value, tab: "Class Log" });
     sortClasses(s); save(s); refresh(); toast("Class added"); return;
   }
   if (f.id === "addPack") {
-    const k = f.kind.value; let label, size, unit = "credits";
+    const k = f.kind.value, first = f.first.checked; let label, size, unit = "credits";
     if (k === "trueque") { label = "Trueque"; size = null; unit = "classes"; }
     else if (k === "custom") { label = f.clabel.value.trim() || "Pack"; size = +f.csize.value || null; }
     else { size = +k; label = { 12: "Pack Básico 12 créditos", 36: "Pack Intermedio 36 créditos", 72: "Pack Intensivo 72 créditos" }[k]; }
+    let priceN = money(f.price.value) || (STD_PRICE[size] ? Math.round(STD_PRICE[size] * (first ? 0.85 : 1)) : 0);
+    if (first && k !== "trueque") label += " (15% off, first pack)";
     s.packs.forEach(p => p.archived = true);
     const used = new Set(s.packs.map(p => p.color)); const color = PCOLORS.find(c => !used.has(c)) || PCOLORS[s.packs.length % PCOLORS.length];
-    const id = "p" + uid();
-    s.packs.push({ id, label, size, unit, price: f.price.value.trim(), deadline: "", deadlineISO: f.deadline.value, color, paid: k === "trueque" ? "n/a" : f.paid.value, archived: false, created: today() });
-    if (k !== "trueque" && f.paid.value !== "pending") s.payments.push({ id: uid(), date: today(), what: (f.paid.value === "half" ? "Half of " : "") + label, amount: f.price.value.trim() ? (f.paid.value === "half" ? "½ of " : "") + f.price.value.trim() : "", method: "" });
+    s.packs.push({ id: "p" + uid(), label, size, unit, price: priceN ? clp(priceN) : "", deadline: "", deadlineISO: f.deadline.value, color, paid: k === "trueque" ? "n/a" : f.paid.value, archived: false, created: today(), allStd: first && size === 12 });
+    if (k !== "trueque" && f.paid.value !== "pending") { const v = f.paid.value === "half" ? Math.round(priceN / 2) : priceN; s.payments.push({ id: uid(), date: today(), what: (f.paid.value === "half" ? "Half of " : "") + label, amount: v ? clp(v) : "", clp: v || null, method: "" }); }
     save(s); refresh(); toast("Pack added"); return;
   }
   if (f.id === "addPay") {
-    s.payments.push({ id: uid(), date: f.date.value, what: f.what.value.trim(), amount: f.amount.value.trim(), method: f.method.value });
+    const v = money(f.amount.value);
+    s.payments.push({ id: uid(), date: f.date.value, what: f.what.value.trim(), amount: v ? clp(v) : f.amount.value.trim(), clp: v || null, method: f.method.value });
     save(s); refresh(); toast("Payment added"); return;
   }
   if (f.id === "newStu") {
@@ -489,11 +632,11 @@ document.addEventListener("submit", e => {
     let id = name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     if (S.some(x => x.id === id)) id += "-" + uid().slice(0, 3);
     const st = { id, name, status: "active", kind: f.skind.value, email: f.semail.value.trim(), level: f.slevel.value.trim(), schedule: f.ssched.value.trim(), objective: f.sobj.value.trim(), about: "", zoomKey: name.split(" ")[0], sheetId: "", folderId: "", boleta: "", info: {}, packs: [], classes: [], payments: [], words: [], other: [], created: today() };
-    S.push(st); save(st); cur = id; tab = "packs"; filt = "active"; $("modal").hidden = true; renderAll(); toast("Student added — now add their pack"); return;
+    S.push(st); save(st); saveIds(); cur = id; tab = "packs"; filt = "active"; $("modal").hidden = true; renderAll(); toast("Student added: now add their pack"); return;
   }
 });
 function sortClasses(s) { s.classes.sort((a, b) => (a.date || "0").localeCompare(b.date || "0")); }
-function refresh() { renderSummary(); renderAlerts(); renderList(); renderDetail(); }
+function refresh() { renderSummary(); renderKpis(); renderAlerts(); renderMoney(); renderList(); renderDetail(); }
 $("addStu").onclick = () => {
   const m = $("modal"); m.hidden = false;
   m.innerHTML = `<div class="card"><h2 style="margin-top:0">New student</h2><form id="newStu" class="grid2" autocomplete="off">
@@ -523,9 +666,9 @@ $("impFile").onchange = async e => {
   $("mGo").onclick = async () => {
     $("mGo").disabled = true; $("mGo").textContent = "Importing…";
     try {
-      for (const x of list) { norm(x); await setDoc(doc(db, "users", tUid, "data", PRE + x.id), { json: JSON.stringify(x), deleted: false, at: serverTimestamp() }); const i = S.findIndex(s => s.id === x.id); if (i >= 0) S[i] = x; else S.push(x); }
-      m.hidden = true; renderAll(); toast(`Imported ${list.length} students`);
-    } catch (err) { console.error(err); toast("Import stopped — couldn't save. Try again."); $("mGo").disabled = false; $("mGo").textContent = "Import"; }
+      for (const x of list) { norm(x); const old = S.find(s => s.id === x.id); if (old && old.uid && !x.uid) x.uid = old.uid; if (roles[x.id]) x.uid = roles[x.id].uid; await setDoc(doc(db, "users", tUid, "data", PRE + x.id), { json: JSON.stringify(x), deleted: false, at: serverTimestamp() }); const i = S.findIndex(s => s.id === x.id); if (i >= 0) S[i] = x; else S.push(x); }
+      m.hidden = true; renderAll(); publishAll(); saveIds(); loadUsage(); toast(`Imported ${list.length} students`);
+    } catch (err) { console.error(err); toast("Import stopped: couldn't save. Try again."); $("mGo").disabled = false; $("mGo").textContent = "Import"; }
   };
 };
 onAuthStateChanged(auth, u => {

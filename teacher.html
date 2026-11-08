@@ -205,7 +205,7 @@ async function loadTPrefs() {
 function saveTPref(id, val) { if (!tUid) return; setDoc(doc(db, "users", tUid, "data", id), { json: JSON.stringify(val), deleted: false, at: serverTimestamp() }).catch(e => console.warn("save pref", e)); }
 async function load() {
   $("summary").textContent = "Loading…"; $("loadErr").hidden = true;
-  await loadTPrefs();
+  await loadTPrefs(); await loadHubList();
   try {
     const snap = await getDocs(collection(db, "users"));
     const roles = {};
@@ -424,9 +424,27 @@ function buddyCard(b) {
     <div class="muted" style="margin-top:3px">💛 Friendship level ${lv(fpm[b.a])} · 🍪 ${b.t | 0} treats · 🌱 ${(b.gd || []).length} garden flowers</div>
     ${others.length ? `<div class="muted" style="margin-top:3px">Other buddies: ${others.map(k => esc(A.sprites[k].species || A.sprites[k].name) + " 💛" + lv(fpm[k])).join(" · ")}</div>` : ""}</div></div>`;
 }
+document.addEventListener("change", e => { if (e.target.id !== "hubLink") return; const st = students.find(x => x.uid === current); if (!st) return; const old = st.role.hub || ""; const v = e.target.value; saveRole(st, { hub: v }).then(() => linkHub(st, v, old)); });
 async function saveRole(s, patch) {
-  try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved for the Buddy park"); }
+  try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved"); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
+}
+const roleType = r => r.private ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : "club");
+let hubList = [];
+async function loadHubList() { if (!tUid) return; try { const ds = await getDocs(collection(db, "users", tUid, "data")); hubList = []; ds.forEach(x => { if (!x.id.startsWith("t-hub-")) return; const v = x.data(); if (v.deleted) return; try { const j = JSON.parse(v.json); hubList.push(j); } catch (e) {} }); hubList.sort((a, b) => a.name.localeCompare(b.name)); } catch (e) { console.warn("hub list", e); } }
+const norm = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g, "");
+function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.email && norm(h.email) === e) || hubList.find(h => norm(h.name) === norm(s.name)) || hubList.find(h => norm(h.name).split(" ")[0] === norm(s.name).split(" ")[0] && hubList.filter(k => norm(k.name).split(" ")[0] === norm(s.name).split(" ")[0]).length === 1); return m ? m.id : ""; }
+function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
+async function linkHub(s, hubId, oldId) {
+  try {
+    const { makeView } = await import("./hubview.js?v=1");
+    if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
+    if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
+    const h = hubList.find(x => x.id === hubId); if (!h) return;
+    h.uid = s.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + h.id), { json: JSON.stringify(h), deleted: false, at: serverTimestamp() });
+    await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(h)), deleted: false, at: serverTimestamp() });
+    toast("Linked: " + s.name.split(" ")[0] + " can now see “My coaching”");
+  } catch (e) { console.warn(e); toast("Couldn't link the hub page. Try again."); }
 }
 let editW = null, editN = null;
 let tSort = { k: "t", d: -1 }; // newest first
@@ -457,7 +475,9 @@ function renderDetail(s) {
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
     ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
     <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
-      <div class="row" style="margin-top:8px"><button type="button" class="seg" data-role="club" aria-pressed="${s.role.club !== false}">🌼 Club member (middle)</button><button type="button" class="seg" data-role="private" aria-pressed="${s.role.club === false}">🌳 Private student (edges)</button></div>
+      <div class="row" style="margin-top:8px">${(() => { const ty = roleType(s.role); return [["club", "🌼 Club member"], ["private", "🌳 Private student"], ["both", "🌼🌳 Both"]].map(([k, l]) => `<button type="button" class="seg" data-role="${k}" aria-pressed="${ty === k}">${l}</button>`).join(""); })()}</div>
+      <div class="muted small" style="margin-top:6px">Club members sit in the middle of the park, private students at the edges.</div>
+      ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their student hub page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Cheat Sheet menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Cheat Sheet.`}</div></div>` : ""}
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
     ${practiceBox(s)}
     ${(() => { const u = usageSum(s.usage, 7), r = USE_L.filter(([k]) => u[k]).map(([k, l]) => l + ": " + u[k]); return `<div class="parkbox"><b>Last 7 days</b><div class="muted" style="margin-top:4px">${r.length ? r.join(" · ") : "No activity yet (counting started Nov 6, 2026)."}</div></div>`; })()}
@@ -518,7 +538,7 @@ $("detail").addEventListener("click", e => {
   else if ("wcancel" in d) { editW = null; renderDetail(s); }
   else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(), nn = $("enn").value.trim(); if (!w) return; editW = null;
     guarded(s, "ncs-words", list => list.map(x => { if (!(x && x.id === id)) return x; const y = { ...x, w, m, e: ex }; if (nn) y.n = nn; else delete y.n; return y; }), "Word updated"); }
-  else if (d.role) { const club = d.role === "club"; saveRole(s, { club }); }
+  else if (d.role) { const ty = d.role; const patch = { club: ty !== "private", private: ty !== "club" }; if (ty === "club") patch.hub = ""; else if (!s.role.hub) { const g = guessHub(s); if (g) patch.hub = g; } saveRole(s, patch).then(() => linkHub(s, patch.hub === undefined ? s.role.hub : patch.hub, ty === "club" ? s.role.hub : "")); }
   else if (d.wdel) confirmTwice(t, () => guarded(s, "ncs-words", list => list.filter(x => !(x && x.id === d.wdel)), "Word deleted"));
   else if (d.nedit) { editN = d.nedit; renderDetail(s); const i = $("en"); if (i) i.focus(); }
   else if ("ncancel" in d) { editN = null; renderDetail(s); }

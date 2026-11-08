@@ -997,6 +997,33 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .lk-have{color:var(--green);font-weight:700;font-size:14px}
 .lk-chip{all:unset;position:fixed;z-index:70;cursor:pointer;padding:6px 12px;border-radius:99px;background:var(--bright);color:#fff;font-size:14px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.3);white-space:nowrap}
 .lk-chip:focus-visible{outline:3px solid #fff}
+.coach-nav .em-ico,.t-nav .em-ico{font-size:15px}
+a.navbtn.t-nav{text-decoration:none}
+.ch-wrap{--c-g:#3DDC97;--c-a:#FFB547;--c-s:#5AB8FF;--c-v:#B18CFF;--c-p:#FF7EB6}
+html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-theme="unicorn"] .ch-wrap{--c-g:#12935C;--c-a:#B86E00;--c-s:#1C6FD1;--c-v:#7348D8;--c-p:#C2306F}
+.ch-tint{--k:var(--c-s);background:color-mix(in srgb,var(--k) 13%,var(--surface));border:1.5px solid color-mix(in srgb,var(--k) 42%,var(--line));border-radius:16px}
+.ch-g{--k:var(--c-g)}.ch-a{--k:var(--c-a)}.ch-s{--k:var(--c-s)}.ch-v{--k:var(--c-v)}.ch-p{--k:var(--c-p)}
+.ch-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+.ch-stat{padding:12px 14px}.ch-stat b{display:block;font:800 26px var(--display);color:var(--k)}.ch-stat span{font-size:13.5px;color:var(--muted)}
+.ch-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.ch-tab{all:unset;cursor:pointer;font:700 14px var(--body);padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface)}
+.ch-tab[aria-pressed="true"]{border-color:var(--k);background:color-mix(in srgb,var(--k) 18%,var(--surface))}
+.ch-tab:focus-visible{outline:3px solid var(--k)}
+.ch-sort{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px;font-size:13.5px;color:var(--muted)}
+.ch-sort .ch-tab{font-size:13px;padding:5px 11px}
+.ch-list{display:flex;flex-direction:column;gap:8px}
+.ch-cls{padding:10px 14px;border-left:6px solid var(--pc,var(--line));border-radius:12px;background:var(--surface);border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ch-cls .d{font:700 12.5px var(--mono);color:var(--c-s)}
+.ch-cls .t{font-weight:700;margin:2px 0}
+.ch-cls .h{font-size:14px;color:var(--muted)}
+.ch-pill{display:inline-block;font:700 11.5px var(--body);padding:1px 8px;border-radius:999px;margin-left:6px;background:color-mix(in srgb,var(--c-a) 18%,transparent);color:var(--c-a)}
+.ch-pk{padding:12px 14px;margin-bottom:10px;border-left:8px solid var(--pc,var(--line))}
+.ch-bar{height:10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin:8px 0 4px}
+.ch-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--c-g),#2DD4BF)}
+.ch-tbl{width:100%;border-collapse:collapse;font-size:14.5px}.ch-tbl td,.ch-tbl th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.ch-tbl th{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ch-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.ch-goal{padding:14px 16px;white-space:pre-wrap}
 </style>
 
 <header class="top">
@@ -1060,6 +1087,9 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
       <button class="navbtn cn-nav" data-go="park"><span class="w-ico em-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
+      <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>My coaching</span></button>
+      <a class="navbtn cn-nav t-nav" href="teacher.html" id="navTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">🧑‍🏫</span><span>Teacher view</span></a>
+      <a class="navbtn cn-nav t-nav" href="hub.html" id="navHub" hidden><span class="w-ico em-ico" aria-hidden="true">🗂</span><span>Student hub</span></a>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup ng-start"><h4>Essentials</h4>
@@ -1349,6 +1379,59 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
   <p class="lede">Everyone's study buddies, hanging out together. Tap a buddy to see whose it is and send it love: it gets <b>+2 friendship</b> (once a day per buddy). Use <b>− / +</b> to zoom out or in.</p>
   <div class="park" id="parkArea" aria-live="polite"></div>
 </section>
+
+<section class="view" id="v-coaching" hidden>
+  <h1>My <em>coaching</em></h1>
+  <p class="lede">Your private classes with Noa: what you did in each class, your homework, your pack and your word bank. Noa keeps it up to date after your classes.</p>
+  <div class="ch-wrap" id="coachBox"><p class="muted">Loading…</p></div>
+</section>
+<script>
+(function(){
+  const box=document.getElementById("coachBox"); if(!box) return;
+  let tab="classes", cSort=-1, wSort="new";
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fd=iso=>{ if(!iso) return ""; const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"}); };
+  const fs=iso=>{ if(!iso) return ""; const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{month:"short",day:"numeric"}); };
+  function nav(){
+    const v=window.__csHubView, b=document.getElementById("navCoaching"); if(b) b.hidden=!v;
+    const t=!!window.__csTeacher; ["navTeacher","navHub"].forEach(id=>{ const e=document.getElementById(id); if(e) e.hidden=!t; });
+    if(!v && location.hash.replace("#","")==="coaching" && window.csGo) window.csGo("notes");
+  }
+  function render(){
+    const v=window.__csHubView; nav();
+    if(!v){ box.innerHTML='<p class="muted">This page is for Noa’s private students. If you take private classes and don’t see your information, ask Noa to link your account.</p>'; return; }
+    const cur=(v.packs||[]).filter(p=>p.current).slice(-1)[0];
+    const per=cur&&cur.unit==="credits"?((v.classes||[]).filter(c=>c.pack===cur.id&&c.hour==="Priority").length>(v.classes||[]).filter(c=>c.pack===cur.id).length/2?4:3):1;
+    const left=cur&&cur.size?Math.max(0,cur.left):null;
+    const stats=cur&&cur.size?`<div class="ch-stats">
+      <div class="ch-tint ch-g ch-stat"><b>${left}</b><span>${cur.unit} left</span></div>
+      <div class="ch-tint ch-a ch-stat"><b>${Math.floor(left/per)}</b><span>${Math.floor(left/per)===1?"class":"classes"} left (about)</span></div>
+      ${cur.deadline?`<div class="ch-tint ch-p ch-stat"><b>${fs(cur.deadline)}</b><span>your pack ends</span></div>`:""}
+      <div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
+    const tabs=[["classes","My classes","ch-s"],["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"],["words",`Word bank (${(v.words||[]).length})`,"ch-a"]];
+    let body="";
+    const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
+    if(tab==="classes"){
+      const cl=(v.classes||[]).slice(); if(cSort<0) cl.reverse();
+      body=`<div class="ch-sort">Order: <button type="button" class="ch-tab ch-s" data-cs="-1" aria-pressed="${cSort<0}">Newest first</button><button type="button" class="ch-tab ch-s" data-cs="1" aria-pressed="${cSort>0}">Oldest first</button></div>
+      <div class="ch-list">${cl.map(c=>`<div class="ch-cls" style="--pc:${pc(c.pack)}"><div class="d">${c.date?fd(c.date):esc(c.dateText)}${c.att&&c.att!=="Present"?`<span class="ch-pill">${esc(c.att)}</span>`:""}</div><div class="t">${esc(c.topics)||"<span class='muted'>(no notes)</span>"}</div>${c.homework?`<div class="h">📝 Homework: ${esc(c.homework)}</div>`:""}</div>`).join("")||'<p class="muted">No classes yet.</p>'}</div>`;
+    } else if(tab==="pack"){
+      body=(v.packs||[]).slice().reverse().map(p=>{ const pct=p.size?Math.min(100,p.used/p.size*100):0; return `<div class="ch-tint ch-pk" style="--pc:${p.color||"var(--line)"};--k:${p.current?"var(--c-g)":"var(--line)"}"><b>${esc(p.label)}</b>${p.current?' <span class="ch-pill" style="background:color-mix(in srgb,var(--c-g) 20%,transparent);color:var(--c-g)">current</span>':""}${p.paid==="half"?' <span class="ch-pill">½ paid</span>':""}
+        ${p.size?`<div class="ch-bar"><i style="width:${pct}%"></i></div>`:""}<div class="muted" style="font-size:13.5px">${p.size?`${p.used} of ${p.size} ${p.unit} used · `:""}${p.done} ${p.done===1?"class":"classes"}${p.deadline?" · ends "+fd(p.deadline):""}</div></div>`; }).join("")
+        +((v.payments||[]).length?`<h2 style="margin-top:18px">Payments</h2><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Date</th><th>What</th><th>Amount</th></tr></thead><tbody>${(v.payments||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(p=>`<tr><td style="white-space:nowrap">${p.date?fs(p.date):""}</td><td>${esc(p.what)}</td><td style="white-space:nowrap">${esc(p.amount)}</td></tr>`).join("")}</tbody></table></div>`:"");
+    } else if(tab==="goals"){
+      body=`<div class="ch-tint ch-v ch-goal">${v.objective?`<b>Your goal</b>\n${esc(v.objective)}\n\n`:""}${v.level?`<b>Your level</b>: ${esc(v.level)}\n`:""}${v.schedule?`<b>Your schedule</b>: ${esc(v.schedule)}`:""}</div>`;
+    } else {
+      let w=(v.words||[]).slice(); if(wSort==="new") w.reverse(); else if(wSort==="az") w.sort((a,b)=>a.w.localeCompare(b.w,"en",{sensitivity:"base"})); else if(wSort==="za") w.sort((a,b)=>b.w.localeCompare(a.w,"en",{sensitivity:"base"}));
+      body=w.length?`<p class="muted" style="font-size:14px">Words from your English Journey sheet. Your own saved words are in <b>My words</b>.</p><div class="ch-sort">Order: ${[["new","Newest added"],["old","Oldest added"],["az","A → Z"],["za","Z → A"]].map(([k,l])=>`<button type="button" class="ch-tab ch-a" data-ws="${k}" aria-pressed="${wSort===k}">${l}</button>`).join("")}</div><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${w.map(x=>`<tr><td><b>${esc(x.w)}</b></td><td>${esc(x.tr)}</td><td>${esc(x.ex)}</td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No words here yet. Your saved words are in <b>My words</b>.</p>';
+    }
+    box.innerHTML=stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+  }
+  box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); });
+  document.addEventListener("cs-hubview",render); document.addEventListener("cs-teacher",nav);
+  render();
+})();
+</script>
 
 <section class="view" id="v-translate" hidden>
   <h1>Quick <em>translator</em></h1>
@@ -5278,7 +5361,7 @@ try{ history.replaceState({cs:1,v:curView,n:0},"","#"+curView); }catch(e){}
 let stars=LS.get("ncs-stars",[]);
 const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl').forEach(x=>x.remove()); return c.textContent.trim(); };
 document.querySelectorAll(".view").forEach(v=>{
-  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","translate","park"].includes(id)) return;
+  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","translate","park","coaching"].includes(id)) return;
   const h=v.querySelector("h1"); if(!h) return;
   const wrap=document.createElement("div"); wrap.className="vhead";
   h.parentNode.insertBefore(wrap,h); wrap.appendChild(h);
@@ -5286,7 +5369,7 @@ document.querySelectorAll(".view").forEach(v=>{
   wrap.appendChild(b);
 });
 function renderStars(){
-  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","translate","park"].includes(id));
+  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","translate","park","coaching"].includes(id));
   document.querySelectorAll("[data-star]").forEach(b=>{
     const on=stars.includes(b.dataset.star);
     b.setAttribute("aria-pressed",on?"true":"false");
@@ -6100,9 +6183,17 @@ document.addEventListener("visibilitychange", () => {
   if (user && ready && !pending.size) syncDown();   // pick up changes made on another device
 });
 
+/* ---------- private students: "My coaching" (read-only copy written by Noa's student hub) ---------- */
+async function loadHubView() {
+  let v = null;
+  if (user) { try { const d = await getDoc(doc(db, "users", user.uid, "data", "hub-view")); if (d.exists() && !d.data().deleted) v = JSON.parse(d.data().json || "null"); } catch (e) { console.warn("hub view", e); } }
+  window.__csHubView = v; document.dispatchEvent(new CustomEvent("cs-hubview"));
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && user) loadHubView(); });
 onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();
+  loadHubView();
   if (u) syncDown();
   window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } }));
 });
