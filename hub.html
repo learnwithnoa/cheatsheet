@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Student Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono&display=swap">
+<style>
+:root{--bg:#0A1424;--surface:#111E33;--surface-2:#0E1A2D;--line:#22385A;--ink:#E6EEF8;--muted:#9DB1CA;--royal:#8FB0FF;--green:#5AD394;--green-soft:#123726;--red:#F08A82;--sky:#16304F;
+--gloss:linear-gradient(180deg,#4EA8F5 0%,#1E73D0 50%,#173C9E 100%);--display:"Lexend",system-ui,sans-serif;--body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Space Mono",ui-monospace,monospace;color-scheme:dark}
+:root[data-theme="light"]{--bg:#EEF5FC;--surface:#fff;--surface-2:#F5F9FE;--line:#D6E3F2;--ink:#0F2341;--muted:#52667F;--royal:#1D4ED8;--green:#1F9D5C;--green-soft:#D9F5E4;--red:#C2413A;--sky:#D7EAFC;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.5 var(--body)}
+header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px}
+.brand{text-decoration:none;display:flex;flex-direction:column;line-height:1.1}
+.brand small{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.brand span{font:700 22px var(--display);background:var(--gloss);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--green-soft);color:var(--green)}
+.sp{flex:1}
+button,.btn{font:800 14px var(--body);border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+button:hover,.btn:hover{border-color:var(--royal)}
+.primary{border:0;color:#fff;background:linear-gradient(180deg,#4FD18B 0%,#1F9D5C 55%,#167A47 100%)}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+h1{font:700 34px var(--display);margin:4px 0 4px}
+h2{font:700 22px var(--display);margin:22px 0 10px}
+.lede{color:var(--muted);margin:0 0 18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.center{max-width:520px;margin:60px auto;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 220px);overflow:auto;padding-right:4px}
+@media (max-width:860px){.list{max-height:none}}
+.stu{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.stu:hover{border-color:var(--royal)}
+.stu[aria-current="true"]{border-color:var(--green);background:var(--green-soft)}
+.stu b{font-weight:900}
+.stu .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stu .meta{font:12px var(--mono);color:var(--muted)}
+input[type=search]{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;margin-bottom:10px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:8px 14px}
+.stat b{display:block;font:700 24px var(--display)}
+.stat span{font-size:13px;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th{font:700 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);position:sticky;top:0}
+td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{font-weight:800}
+td.d{font:12px var(--mono);color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.note .when{font-weight:900;color:var(--green);margin-bottom:4px}
+.note .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.chip{display:inline-block;font-size:13px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin:0 6px 6px 0}
+.err{color:var(--red);font-weight:800}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-weight:800;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+[hidden]{display:none!important}
+.ed input,.ed textarea,.addf input,.addn textarea{width:100%;font:600 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px}
+.addf{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;margin-bottom:10px;align-items:center}
+@media (max-width:700px){.addf{grid-template-columns:1fr}}
+.addn{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.addn textarea,.note textarea{min-height:110px;resize:vertical}
+.ib{all:unset;cursor:pointer;font:700 12px var(--mono);color:var(--muted);padding:3px 8px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+.ib:hover{color:var(--ink);border-color:var(--line)}
+.ib.del:hover,.ib.sure{color:#fff;background:#C2413A;border-color:#C2413A}
+td.act{white-space:nowrap;text-align:right}
+.sortb{all:unset;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.sortb:hover{color:var(--ink)}
+.sortb:focus-visible{outline:2px solid var(--royal);border-radius:4px}
+.note .nh{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.by{font:11px var(--mono);color:var(--muted)}
+.hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
+
+.parkbox{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0}
+.news{border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 18px;background:var(--surface)}
+.news-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.news-top button{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:700 13px var(--body);cursor:pointer}
+.news-n{font:800 12px var(--body);background:#E5533D;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:3px}
+.news-list{list-style:none;margin:0;padding:0}
+.news-row{display:flex;align-items:center;gap:8px}
+.news-row .news-i{flex:1;min-width:0}
+.kd-btn{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 11px;font:700 12.5px var(--body);cursor:pointer;white-space:nowrap}
+.kd-btn:hover{border-color:var(--green)}
+.kd-done{color:var(--green);font:700 12.5px var(--body);white-space:nowrap;padding:0 8px}
+.kd-comp{margin:6px 0 12px 34px;display:flex;flex-direction:column;gap:8px}
+.kd-comp textarea{width:100%;box-sizing:border-box;font:500 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+@media (max-width:600px){.news-row{flex-wrap:wrap}.kd-comp{margin-left:0}}
+.news-i{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px}
+.news-i:hover{background:var(--surface-2)}
+.news-i:focus-visible{outline:3px solid var(--green)}
+.news-list .fresh .news-i{background:var(--green-soft)}
+.news-list .big .ni{transform:scale(1.2)}
+.ni{font-size:18px;flex:none;width:24px;text-align:center}
+.nd{margin-left:auto;color:var(--muted);font-size:13px;white-space:nowrap}
+.foot-link{background:none;border:0;color:var(--royal);text-decoration:underline;cursor:pointer;font:600 13.5px var(--body);padding:4px 0}
+.bcard{display:flex;gap:12px;align-items:center;margin-top:8px}
+.bsvg{width:72px;height:79px;image-rendering:pixelated;flex:none;background:color-mix(in srgb,var(--green) 10%,var(--surface));border-radius:12px}
+.seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
+.seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
+.pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
+</style>
+<link rel="stylesheet" href="comfort.css?v=12">
+<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
+
+<script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
+<script src="comfort.js?v=14" defer></script>
+</head>
+<body>
+<style>
+@media (min-width:861px){.layout{grid-template-columns:330px minmax(0,1fr)}}
+@media (max-width:640px){header .tag,#saving{display:none}.top{gap:8px;padding:8px 12px}.brand span{font-size:18px}header .btn{padding:6px 10px;font-size:13px}}
+.pk select,#detail select{font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:5px 8px}
+.tbl table{min-width:640px}
+.pk select{width:auto;max-width:220px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.stu .bar{height:6px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin-top:4px}
+.stu .bar i{display:block;height:100%;background:var(--green)}
+.stu .bar i.low{background:#E5A23D}.stu .bar i.out{background:var(--red)}
+.badge{display:inline-block;font:800 11px var(--body);padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:1px;border:1px solid var(--line)}
+.badge.warn{background:#E5A23D;color:#2a1800;border-color:#E5A23D}.badge.bad{background:var(--red);color:#fff;border-color:var(--red)}.badge.ok{background:var(--green-soft);color:var(--green);border-color:transparent}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+.dh{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.dh h2{margin:0;flex:1;min-width:200px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fld input,.fld textarea,.fld select,.frm input,.frm select,.frm textarea{font:600 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;width:100%;box-sizing:border-box}
+.fld textarea{min-height:64px;resize:vertical}
+.frm{display:grid;gap:8px;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px}
+.frm .w2{grid-column:span 2}.frm .w3{grid-column:span 3}.frm .w6{grid-column:1/-1}
+@media (max-width:760px){.frm{grid-template-columns:1fr 1fr}.frm .w2,.frm .w3{grid-column:1/-1}}
+.pk{border:1.5px solid var(--line);border-left:8px solid var(--pc,var(--line));border-radius:14px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}
+.pk .pbar{height:10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin:8px 0 4px}
+.pk .pbar i{display:block;height:100%;background:var(--green)}
+.pk.old{opacity:.75}
+td.sw{width:6px;padding:0;background:var(--pc,transparent)}
+tr.nt td{font-style:italic;color:var(--muted);font-weight:600}
+tr.arch td{opacity:.8}
+.alerts{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.alerts li{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:10px;background:var(--surface-2)}
+.alerts li button{margin-left:auto}
+.ai{font-size:17px;width:22px;text-align:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal .card{width:min(640px,100%);max-height:90vh;overflow:auto}
+.small{font-size:13px}
+.linkb{color:var(--royal);font-weight:700}
+.saving{font:12px var(--mono);color:var(--muted)}
+</style>
+<header><div class="top">
+  <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
+  <span class="tag">Student hub</span>
+  <a class="btn" href="teacher.html" style="margin-left:6px">← Teacher view</a>
+  <div class="sp"></div>
+  <span class="saving" id="saving"></span>
+  <div class="cs-wrap" id="csWrap"></div>
+  <button id="outBtn" type="button" hidden>Sign out</button>
+</div></header>
+<main>
+  <section id="vSign" class="card center" hidden>
+    <h1>Student hub</h1>
+    <p class="lede">Sign in with your Learn with Noa Google account.</p>
+    <button class="primary" id="inBtn" type="button">Sign in with Google</button>
+    <p class="err" id="signErr" hidden></p>
+  </section>
+  <section id="vDenied" class="card center" hidden>
+    <h1>This page is only for Noa</h1>
+    <p class="lede">You're signed in as <b id="deniedWho"></b>.</p>
+  </section>
+  <section id="vMain" hidden>
+    <div class="dh"><h1 style="flex:1">Your private students</h1>
+      <div class="row"><button type="button" class="primary" id="addStu">＋ New student</button>
+      <button type="button" id="impBtn">⬆ Import file</button><button type="button" id="expBtn">⬇ Backup</button>
+      <input type="file" id="impFile" accept=".json,application/json" hidden></div></div>
+    <p class="lede" id="summary">Loading…</p>
+    <div class="news" id="alertsBox" hidden></div>
+    <div class="layout">
+      <div>
+        <input type="search" id="q" placeholder="Search students…" aria-label="Search students">
+        <div class="filters" id="filters"></div>
+        <div class="list" id="list"></div>
+      </div>
+      <div id="detail" class="card"><p class="muted">Pick a student on the left.</p></div>
+    </div>
+  </section>
+  <p class="err" id="loadErr" hidden></p>
+</main>
+<div id="modal" class="modal" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module">
+import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
+  getFirestore, collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
+const TEACHER = "learnwithnoa@gmail.com";
+const app = initializeApp({
+  apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
+  authDomain: "learnwithnoa-cheatsheet.firebaseapp.com",
+  projectId: "learnwithnoa-cheatsheet",
+  storageBucket: "learnwithnoa-cheatsheet.firebasestorage.app",
+  messagingSenderId: "619847241160",
+  appId: "1:619847241160:web:d66edc58b7b143b9ab04fd"
+});
+const auth = getAuth(app), db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const views = ["vSign", "vDenied", "vMain"];
+const showView = v => views.forEach(id => $(id).hidden = id !== v);
+function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2400); }
+$("inBtn").onclick = async () => {
+  const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, p); }
+  catch (e) { if (e && e.code === "auth/popup-blocked") await signInWithRedirect(auth, p); else if (e && e.code !== "auth/popup-closed-by-user") { $("signErr").hidden = false; $("signErr").textContent = "Sign-in didn't work. Try again."; } }
+};
+$("outBtn").onclick = () => signOut(auth);
+
+/* ---------- data ---------- */
+let tUid = null, S = [], cur = null, tab = "classes", filt = "active", editRow = null;
+const PRE = "t-hub-";
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const MES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 };
+const fmtD = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); };
+const fmtShort = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
+const days = (a, b) => Math.round((new Date(b) - new Date(a)) / 864e5);
+const pl = (n, w) => n + " " + w + (n === 1 ? "" : w.endsWith("s") ? "es" : "es".slice(w.endsWith("ss") ? 0 : 1));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const COUNTS = new Set(["Present", "Late cancellation", "Absent"]);
+const PCOLORS = ["#d5a6bd", "#b4a7d6", "#9fc5e8", "#a4c2f4", "#a2c4c9", "#b6d7a8", "#ffe599", "#f9cb9c", "#ea9999", "#c8daf8"];
+
+async function load() {
+  $("summary").textContent = "Loading…";
+  tUid = auth.currentUser.uid;
+  try {
+    const ds = await getDocs(collection(db, "users", tUid, "data"));
+    S = [];
+    ds.forEach(x => { if (!x.id.startsWith(PRE)) return; const v = x.data(); if (v.deleted || typeof v.json !== "string") return; try { S.push(JSON.parse(v.json)); } catch (e) {} });
+    S.forEach(norm);
+    renderAll();
+  } catch (e) { console.error(e); $("loadErr").hidden = false; $("loadErr").textContent = "Couldn't load your students. Refresh to try again."; }
+}
+function norm(s) {
+  s.packs = s.packs || []; s.classes = s.classes || []; s.payments = s.payments || []; s.words = s.words || []; s.other = s.other || []; s.info = s.info || {};
+  s.classes.forEach(c => { if (!c.id) c.id = uid(); });
+  s.payments.forEach(p => { if (!p.id) p.id = uid(); });
+}
+const pending = new Map();
+function save(s) {
+  s.updatedAt = Date.now();
+  clearTimeout(pending.get(s.id)); $("saving").textContent = "Saving…";
+  pending.set(s.id, setTimeout(async () => {
+    pending.delete(s.id);
+    try { await setDoc(doc(db, "users", tUid, "data", PRE + s.id), { json: JSON.stringify(s), deleted: false, at: serverTimestamp() }); if (!pending.size) $("saving").textContent = "Saved ✓"; }
+    catch (e) { console.error(e); $("saving").textContent = "Not saved!"; toast("Couldn't save. Check your connection."); }
+  }, 600));
+}
+window.addEventListener("beforeunload", e => { if (pending.size) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- pack maths ---------- */
+function packClasses(s, p) { return s.classes.filter(c => c.kind !== "note" && c.pack === p.id); }
+function packStats(s, p) {
+  const cl = packClasses(s, p).filter(c => COUNTS.has(c.att || "Present"));
+  const used = p.unit === "credits" ? cl.reduce((n, c) => n + (+c.credits || 0), 0) : cl.length;
+  const size = p.size || 0, left = size ? size - used : null;
+  const first = cl.map(c => c.date).filter(Boolean).sort()[0] || "";
+  const pri = cl.filter(c => c.hour === "Priority").length > cl.length / 2;
+  const per = p.unit === "credits" ? (pri ? 4 : 3) : 1;
+  return { done: cl.length, used, size, left, first, per, classesLeft: left == null ? null : Math.floor(Math.max(0, left) / per), pri };
+}
+function deadline(p, first) {
+  if (p.deadlineISO) return p.deadlineISO;
+  const m = /(\d{1,2})\s+([a-záéíóú]+)/i.exec(p.deadline || ""); if (!m || !MES[m[2].toLowerCase()]) return "";
+  const base = first || p.created || today(); let y = +base.slice(0, 4); const mo = MES[m[2].toLowerCase()];
+  let iso = y + "-" + String(mo).padStart(2, "0") + "-" + String(+m[1]).padStart(2, "0");
+  if (iso < base) iso = (y + 1) + iso.slice(4);
+  return iso;
+}
+function curPack(s) { const ps = s.packs.filter(p => !p.archived); return ps[ps.length - 1] || null; }
+function lastClass(s) { return s.classes.filter(c => c.kind !== "note" && c.date).map(c => c.date).sort().pop() || ""; }
+function instAt(p, st) { if (p.size === 36) return st.pri ? 5 : 7; if (p.size === 72) return st.pri ? 9 : 12; return null; }
+function alertsFor(s) {
+  const out = []; if (s.status !== "active") return out;
+  const p = curPack(s);
+  if (p && s.kind !== "trueque" && p.size) {
+    const st = packStats(s, p);
+    if (st.left <= 0) out.push({ lvl: "bad", i: "🔴", t: `${s.name}: pack used up (${st.used}/${st.size}) — renewal due 48h before the next class` });
+    else if (st.classesLeft <= 1) out.push({ lvl: "warn", i: "🟠", t: `${s.name}: ${st.classesLeft === 1 ? "1 class left" : "less than a class left"} in this pack (${st.left} ${p.unit} left)` });
+    if (p.paid === "half") { const at = instAt(p, st); if (at && st.done + 1 >= at) out.push({ lvl: st.done >= at ? "bad" : "warn", i: "💸", t: `${s.name}: 2nd installment due at class ${at} (${st.done} done)` }); }
+    if (p.paid === "pending") out.push({ lvl: "bad", i: "💸", t: `${s.name}: pack not paid yet` });
+    const dl = deadline(p, st.first); if (dl) { const d = days(today(), dl); if (d < 0 && st.left > 0) out.push({ lvl: "bad", i: "⏰", t: `${s.name}: pack expired ${fmtShort(dl)} with ${st.left} ${p.unit} unused` }); else if (d >= 0 && d <= 7 && st.left > 0) out.push({ lvl: "warn", i: "⏰", t: `${s.name}: pack ends ${fmtShort(dl)} (${d === 0 ? "today" : d === 1 ? "tomorrow" : "in " + d + " days"}), ${st.left} ${p.unit} left` }); }
+  }
+  const lc = lastClass(s); if (lc && days(lc, today()) >= 14) out.push({ lvl: "info", i: "💤", t: `${s.name}: no class since ${fmtShort(lc)}` });
+  return out.map(a => ({ ...a, id: s.id }));
+}
+
+/* ---------- render ---------- */
+function renderAll() { renderSummary(); renderAlerts(); renderFilters(); renderList(); renderDetail(); }
+function renderSummary() {
+  const act = S.filter(s => s.status === "active");
+  const wk = S.reduce((n, s) => n + s.classes.filter(c => c.kind !== "note" && c.date && days(c.date, today()) < 7 && days(c.date, today()) >= 0).length, 0);
+  $("summary").textContent = `${act.length} active students · ${wk} classes in the last 7 days · ${S.length} students in total`;
+}
+function renderAlerts() {
+  const al = S.flatMap(alertsFor).sort((a, b) => ({ bad: 0, warn: 1, info: 2 }[a.lvl] - { bad: 0, warn: 1, info: 2 }[b.lvl]));
+  const box = $("alertsBox"); box.hidden = !al.length;
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔔 Heads-up <span class="news-n">${al.length}</span></h2></div><ul class="alerts">${al.map(a => `<li><span class="ai">${a.i}</span><span>${esc(a.t)}</span><button type="button" class="ib" data-open="${a.id}">Open</button></li>`).join("")}</ul>`;
+}
+function renderFilters() {
+  const n = k => k === "all" ? S.length : S.filter(s => s.status === k).length;
+  $("filters").innerHTML = [["active", "Active"], ["paused", "Paused"], ["inactive", "Past"], ["all", "All"]].map(([k, l]) => `<button type="button" class="seg" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
+}
+function renderList() {
+  const q = $("q").value.trim().toLowerCase();
+  const ls = S.filter(s => (filt === "all" || s.status === filt) && (!q || (s.name + " " + (s.email || "")).toLowerCase().includes(q)))
+    .sort((a, b) => (lastClass(b) || "").localeCompare(lastClass(a) || "") || a.name.localeCompare(b.name));
+  $("list").innerHTML = ls.map(s => {
+    const p = curPack(s), st = p ? packStats(s, p) : null, al = alertsFor(s);
+    const pct = st && st.size ? Math.min(100, st.used / st.size * 100) : 0;
+    const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
+    const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
+    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge">trueque</span>' : ""}</b>
+      <span class="meta">${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
+      ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</button>`;
+  }).join("") || `<p class="muted">No students here.</p>`;
+}
+function S_() { return S.find(s => s.id === cur); }
+function renderDetail() {
+  const s = S_(); const box = $("detail");
+  if (!s) { box.innerHTML = `<p class="muted">Pick a student on the left.</p>`; return; }
+  const p = curPack(s), st = p ? packStats(s, p) : null;
+  const links = [s.sheetId ? `<a class="linkb" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/${esc(s.sheetId)}/edit">English Journey ↗</a>` : "", s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", s.email ? `<a class="linkb" href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ""].filter(Boolean).join(" · ");
+  box.innerHTML = `<div class="dh"><h2>${esc(s.name)}</h2>
+    <select id="stStatus" aria-label="Status" style="font:700 14px var(--body);border-radius:999px;padding:6px 10px;background:var(--surface-2);color:var(--ink);border:1.5px solid var(--line)">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "Active", paused: "Paused", inactive: "Past student" }[k]}</option>`).join("")}</select></div>
+    <p class="muted small" style="margin:6px 0 0">${[s.level, s.schedule].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}</p>
+    ${p && st ? `<div class="stats">${st.size ? `<div class="stat"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat"><b>${st.classesLeft}</b><span>classes left (approx.)</span></div>` : ""}<div class="stat"><b>${st.done}</b><span>classes this pack</span></div>${deadline(p, st.first) ? `<div class="stat"><b>${fmtShort(deadline(p, st.first))}</b><span>pack ends</span></div>` : ""}<div class="stat"><b>${s.classes.filter(c => c.kind !== "note").length}</b><span>classes in total</span></div></div>` : ""}
+    <div class="tabs">${[["classes", "Classes"], ["packs", "Packs & payments"], ["info", "Info"], ["words", `Word bank (${s.words.length})`]].concat(s.other.length ? [["other", "Other tabs"]] : []).map(([k, l]) => `<button type="button" class="seg" data-tab="${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>
+    <div id="tabBody">${({ classes: tClasses, packs: tPacks, info: tInfo, words: tWords, other: tOther }[tab] || tClasses)(s)}</div>`;
+}
+const packOpts = (s, sel) => `<option value="">— no pack —</option>` + s.packs.slice().reverse().map(p => `<option value="${p.id}" ${sel === p.id ? "selected" : ""}>${esc(p.label.slice(0, 60))}${p.archived ? " (old)" : ""}</option>`).join("");
+const sel = (id, opts, v) => `<select id="${id}">${opts.map(o => `<option ${o === v ? "selected" : ""}>${o}</option>`).join("")}</select>`;
+function tClasses(s) {
+  const p = curPack(s);
+  const rows = s.classes.map((c, i) => ({ c, i })).reverse();
+  const pc = id => (s.packs.find(p => p.id === id) || {}).color || "";
+  const body = rows.map(({ c }) => {
+    if (editRow === c.id) return `<tr><td class="sw" style="--pc:${pc(c.pack)}"></td><td colspan="7"><div class="frm" style="margin:0">
+      <div class="fld"><label>Date</label><input type="date" id="eDate" value="${esc(c.date)}"></div>
+      <div class="fld w2"><label>Topics</label><input id="eTop" value="${esc(c.topics)}"></div>
+      <div class="fld w3"><label>Homework</label><input id="eHw" value="${esc(c.homework)}"></div>
+      <div class="fld"><label>Attendance</label>${sel("eAtt", ["Present", "Absent", "Late cancellation", "Cancelled on time"], c.att || "Present")}</div>
+      <div class="fld"><label>Hour type</label>${sel("eHour", ["Standard", "Priority", "—"], c.hour || "—")}</div>
+      <div class="fld"><label>Credits</label><input type="number" id="eCr" min="0" max="10" value="${c.credits ?? ""}"></div>
+      <div class="fld w2"><label>Pack</label><select id="ePack">${packOpts(s, c.pack)}</select></div>
+      <div class="row"><button type="button" class="primary" data-act="saveRow" data-id="${c.id}">Save</button><button type="button" data-act="cancelRow">Cancel</button></div></div></td></tr>`;
+    if (c.kind === "note") return `<tr class="nt"><td class="sw"></td><td class="d"></td><td colspan="5">📝 ${esc(c.topics)}${c.homework ? " — " + esc(c.homework) : ""}</td><td class="act"><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
+    return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}"></td><td class="d">${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td class="d">${esc(c.att || "")}</td><td class="d">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
+  }).join("");
+  const hourNow = () => { const h = new Date().getHours(); return h >= 10 && h < 15 ? "Standard" : "Priority"; };
+  return `<form class="frm" id="addClass" autocomplete="off">
+      <div class="fld"><label>Date</label><input type="date" name="date" value="${today()}" required></div>
+      <div class="fld w2"><label>Topics covered</label><input name="topics" placeholder="fabulang: …, convo: …"></div>
+      <div class="fld w3"><label>Homework</label><input name="homework" value="${esc((s.classes.filter(c => c.kind !== "note").pop() || {}).homework || "")}"></div>
+      <div class="fld"><label>Attendance</label><select name="att"><option>Present</option><option>Absent</option><option>Late cancellation</option><option>Cancelled on time</option></select></div>
+      <div class="fld"><label>Hour type</label><select name="hour">${s.kind === "trueque" ? "<option>—</option>" : ""}<option ${hourNow() === "Standard" ? "selected" : ""}>Standard</option><option ${hourNow() === "Priority" ? "selected" : ""}>Priority</option></select></div>
+      <div class="fld"><label>Credits</label><input type="number" name="credits" min="0" max="10" placeholder="auto"></div>
+      <div class="fld w2"><label>Pack</label><select name="pack">${packOpts(s, p ? p.id : "")}</select></div>
+      <div class="row"><button class="primary" type="submit">＋ Add class</button><button type="button" data-act="addNote">＋ Note</button></div>
+    </form>
+    <div class="tbl"><table><thead><tr><th></th><th>Date</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
+}
+function tPacks(s) {
+  const packs = s.packs.slice().reverse().map(p => {
+    const st = packStats(s, p), dl = deadline(p, st.first), pct = st.size ? Math.min(100, st.used / st.size * 100) : 0;
+    return `<div class="pk ${p.archived ? "old" : ""}" style="--pc:${p.color || "var(--line)"}">
+      <div class="row" style="justify-content:space-between"><b>${esc(p.label)}</b>
+      <span class="row"><select data-paid="${p.id}" aria-label="Paid">${[["full", "Paid"], ["half", "½ paid (2nd installment pending)"], ["pending", "Not paid yet"], ["n/a", "n/a"]].map(([k, l]) => `<option value="${k}" ${p.paid === k ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <button class="ib" data-act="archPack" data-id="${p.id}">${p.archived ? "Mark current" : "Archive"}</button><button class="ib del" data-act="delPack" data-id="${p.id}">✕</button></span></div>
+      ${st.size ? `<div class="pbar"><i style="width:${pct}%"></i></div>` : ""}
+      <div class="muted small">${st.size ? `${st.used}/${st.size} ${p.unit} used · ` : ""}${pl(st.done, "class")}${st.first ? " · started " + fmtShort(st.first) : ""}${dl ? " · ends " + fmtD(dl) : ""}${p.price ? " · " + esc(p.price) : ""}</div></div>`;
+  }).join("");
+  const pays = s.payments.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "")).map(p => `<tr><td class="d">${p.date ? fmtD(p.date) : (p.year || "")}</td><td>${esc(p.what)}</td><td>${esc(p.amount || "")}</td><td>${esc(p.method || "")}</td><td class="act"><button class="ib del" data-act="delPay" data-id="${p.id}">✕</button></td></tr>`).join("");
+  return `<h3 style="margin:4px 0 8px">Packs</h3>
+    <form class="frm" id="addPack" autocomplete="off">
+      <div class="fld w2"><label>Pack</label><select name="kind"><option value="12">Pack Básico · 12 créditos</option><option value="36" selected>Pack Intermedio · 36 créditos</option><option value="72">Pack Intensivo · 72 créditos</option><option value="trueque">Trueque (no credits)</option><option value="custom">Other…</option></select></div>
+      <div class="fld"><label>Price</label><input name="price" placeholder="$264.000"></div>
+      <div class="fld"><label>Ends on</label><input type="date" name="deadline"></div>
+      <div class="fld"><label>Paid</label><select name="paid"><option value="full">Paid</option><option value="half">½ paid</option><option value="pending">Not yet</option></select></div>
+      <div class="row"><button class="primary" type="submit">＋ New pack</button></div>
+      <div class="fld w6" hidden id="customPack"><label>Custom pack name and credits</label><div class="row"><input name="clabel" placeholder="Pack 4 clases ESP" style="flex:2"><input name="csize" type="number" placeholder="credits" style="flex:1"></div></div>
+      <p class="hint w6" style="margin:0">A new pack also records the payment below, and older packs are archived automatically.</p>
+    </form>
+    ${packs || `<p class="muted">No packs yet.</p>`}
+    <h3 style="margin:18px 0 8px">Payments</h3>
+    <form class="frm" id="addPay" autocomplete="off">
+      <div class="fld"><label>Date</label><input type="date" name="date" value="${today()}"></div>
+      <div class="fld w2"><label>What</label><input name="what" placeholder="2nd half of pack 36 créditos"></div>
+      <div class="fld"><label>Amount</label><input name="amount" placeholder="$132.000"></div>
+      <div class="fld"><label>Method</label><select name="method"><option>Transfer</option><option>Global66</option><option>Payoneer</option><option>Remitly</option><option>Other</option></select></div>
+      <div class="row"><button class="primary" type="submit">＋ Add</button></div>
+    </form>
+    ${s.priceNote || s.boleta ? `<p class="muted small">${s.boleta ? "Boleta " + esc(s.boleta) + " · " : ""}${esc(s.priceNote || "")}</p>` : ""}
+    <div class="tbl"><table><thead><tr><th>Date</th><th>What</th><th>Amount</th><th>Method</th><th></th></tr></thead><tbody>${pays || `<tr><td colspan="5" class="muted">No payments recorded.</td></tr>`}</tbody></table></div>`;
+}
+function tInfo(s) {
+  const f = (k, l, ta) => `<div class="fld"><label for="f_${k}">${l}</label>${ta ? `<textarea id="f_${k}" data-f="${k}">${esc(s[k] || "")}</textarea>` : `<input id="f_${k}" data-f="${k}" value="${esc(s[k] || "")}">`}</div>`;
+  const info = Object.entries(s.info).map(([k, v]) => `<div class="fld"><label>${esc(k)}</label><textarea data-info="${esc(k)}">${esc((v || []).join("\n"))}</textarea></div>`).join("");
+  return `<div class="grid2">${f("name", "Name")}${f("email", "Email")}${f("level", "Level")}${f("schedule", "Schedule")}${f("objective", "Objective", 1)}${f("about", "About them", 1)}
+    <div class="fld"><label>Kind</label><select data-f="kind"><option value="pack" ${s.kind !== "trueque" ? "selected" : ""}>Paying student</option><option value="trueque" ${s.kind === "trueque" ? "selected" : ""}>Trueque</option></select></div>
+    ${f("zoomKey", "Name in Zoom meetings")}${f("boleta", "Boleta no.")}${f("sheetId", "English Journey sheet ID")}${f("folderId", "Drive folder ID")}${info}</div>
+    <p class="hint" style="margin-top:12px">Changes save automatically.</p>
+    <p style="margin-top:18px"><button type="button" class="ib del" data-act="delStu">Delete this student from the hub</button></p>`;
+}
+function tWords(s) {
+  return s.words.length ? `<div class="tbl"><table><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${s.words.map(w => `<tr><td>${esc(w.w)}</td><td>${esc(w.tr)}</td><td>${esc(w.ex)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">No words in their word bank.</p>`;
+}
+function tOther(s) {
+  return s.other.map(o => `<h3>${esc(o.tab)}</h3><div class="tbl"><table><tbody>${o.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join("");
+}
+
+/* ---------- events ---------- */
+$("q").oninput = renderList;
+document.addEventListener("click", e => {
+  const t = e.target;
+  const fb = t.closest("[data-f]"); if (fb && fb.matches("button")) { filt = fb.dataset.f; renderFilters(); renderList(); return; }
+  const sb = t.closest(".stu"); if (sb) { cur = sb.dataset.s; editRow = null; renderList(); renderDetail(); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); return; }
+  const op = t.closest("[data-open]"); if (op) { cur = op.dataset.open; filt = "active"; tab = "packs"; renderFilters(); renderList(); renderDetail(); $("detail").scrollIntoView({ behavior: "smooth" }); return; }
+  const tb = t.closest("[data-tab]"); if (tb) { tab = tb.dataset.tab; editRow = null; renderDetail(); return; }
+  const a = t.closest("[data-act]"); if (!a) return;
+  const s = S_(), id = a.dataset.id, act = a.dataset.act;
+  if (act === "editRow") { editRow = id; renderDetail(); return; }
+  if (act === "cancelRow") { editRow = null; renderDetail(); return; }
+  if (act === "saveRow") {
+    const c = s.classes.find(x => x.id === id);
+    Object.assign(c, { date: $("eDate").value, topics: $("eTop").value.trim(), homework: $("eHw").value.trim(), att: $("eAtt").value, hour: $("eHour").value === "—" ? "" : $("eHour").value, credits: $("eCr").value === "" ? null : +$("eCr").value, pack: $("ePack").value });
+    if (c.date) c.dateText = ""; sortClasses(s); editRow = null; save(s); refresh(); return;
+  }
+  if (act === "delRow" || act === "delPack" || act === "delPay" || act === "delStu") {
+    if (!a.classList.contains("sure")) { a.classList.add("sure"); a.dataset.txt = a.textContent; a.textContent = "Sure?"; setTimeout(() => { a.classList.remove("sure"); a.textContent = a.dataset.txt; }, 3000); return; }
+    if (act === "delRow") s.classes = s.classes.filter(x => x.id !== id);
+    if (act === "delPay") s.payments = s.payments.filter(x => x.id !== id);
+    if (act === "delPack") { s.packs = s.packs.filter(x => x.id !== id); s.classes.forEach(c => { if (c.pack === id) c.pack = ""; }); }
+    if (act === "delStu") { deleteDoc(doc(db, "users", tUid, "data", PRE + s.id)).catch(console.error); S = S.filter(x => x.id !== s.id); cur = null; renderAll(); toast("Deleted"); return; }
+    save(s); refresh(); return;
+  }
+  if (act === "archPack") { const p = s.packs.find(x => x.id === id); p.archived = !p.archived; save(s); refresh(); return; }
+  if (act === "addNote") { const f = $("addClass"); const txt = f.topics.value.trim(); if (!txt) { f.topics.focus(); toast("Type the note in Topics"); return; } s.classes.push({ id: uid(), kind: "note", topics: txt, homework: "", date: f.date.value }); save(s); refresh(); return; }
+});
+document.addEventListener("change", e => {
+  const t = e.target, s = S_();
+  if (t.id === "stStatus") { s.status = t.value; save(s); renderAll(); return; }
+  if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s); refresh(); return; }
+  if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") { renderList(); } save(s); return; }
+  if (t.dataset.info) { s.info[t.dataset.info] = t.value.split("\n").map(x => x.trim()).filter(Boolean); save(s); return; }
+  if (t.name === "kind" && t.form && t.form.id === "addPack") { $("customPack").hidden = t.value !== "custom"; return; }
+  if (t.name === "hour" && t.form && t.form.id === "addClass") return;
+});
+document.addEventListener("submit", e => {
+  e.preventDefault(); const f = e.target, s = S_();
+  if (f.id === "addClass") {
+    const hour = f.hour.value === "—" ? "" : f.hour.value;
+    let cr = f.credits.value === "" ? null : +f.credits.value;
+    const pk = s.packs.find(p => p.id === f.pack.value);
+    if (cr == null && s.kind !== "trueque" && COUNTS.has(f.att.value)) cr = pk && pk.unit === "classes" ? null : hour === "Priority" ? 4 : hour === "Standard" ? 3 : null;
+    if (f.att.value === "Cancelled on time") cr = 0;
+    s.classes.push({ id: uid(), kind: "class", date: f.date.value, dateText: "", topics: f.topics.value.trim(), homework: f.homework.value.trim(), att: f.att.value, hour, credits: cr, pack: f.pack.value, tab: "Class Log" });
+    sortClasses(s); save(s); refresh(); toast("Class added"); return;
+  }
+  if (f.id === "addPack") {
+    const k = f.kind.value; let label, size, unit = "credits";
+    if (k === "trueque") { label = "Trueque"; size = null; unit = "classes"; }
+    else if (k === "custom") { label = f.clabel.value.trim() || "Pack"; size = +f.csize.value || null; }
+    else { size = +k; label = { 12: "Pack Básico 12 créditos", 36: "Pack Intermedio 36 créditos", 72: "Pack Intensivo 72 créditos" }[k]; }
+    s.packs.forEach(p => p.archived = true);
+    const used = new Set(s.packs.map(p => p.color)); const color = PCOLORS.find(c => !used.has(c)) || PCOLORS[s.packs.length % PCOLORS.length];
+    const id = "p" + uid();
+    s.packs.push({ id, label, size, unit, price: f.price.value.trim(), deadline: "", deadlineISO: f.deadline.value, color, paid: k === "trueque" ? "n/a" : f.paid.value, archived: false, created: today() });
+    if (k !== "trueque" && f.paid.value !== "pending") s.payments.push({ id: uid(), date: today(), what: (f.paid.value === "half" ? "Half of " : "") + label, amount: f.price.value.trim() ? (f.paid.value === "half" ? "½ of " : "") + f.price.value.trim() : "", method: "" });
+    save(s); refresh(); toast("Pack added"); return;
+  }
+  if (f.id === "addPay") {
+    s.payments.push({ id: uid(), date: f.date.value, what: f.what.value.trim(), amount: f.amount.value.trim(), method: f.method.value });
+    save(s); refresh(); toast("Payment added"); return;
+  }
+  if (f.id === "newStu") {
+    const name = f.sname.value.trim(); if (!name) return;
+    let id = name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    if (S.some(x => x.id === id)) id += "-" + uid().slice(0, 3);
+    const st = { id, name, status: "active", kind: f.skind.value, email: f.semail.value.trim(), level: f.slevel.value.trim(), schedule: f.ssched.value.trim(), objective: f.sobj.value.trim(), about: "", zoomKey: name.split(" ")[0], sheetId: "", folderId: "", boleta: "", info: {}, packs: [], classes: [], payments: [], words: [], other: [], created: today() };
+    S.push(st); save(st); cur = id; tab = "packs"; filt = "active"; $("modal").hidden = true; renderAll(); toast("Student added — now add their pack"); return;
+  }
+});
+function sortClasses(s) { s.classes.sort((a, b) => (a.date || "0").localeCompare(b.date || "0")); }
+function refresh() { renderSummary(); renderAlerts(); renderList(); renderDetail(); }
+$("addStu").onclick = () => {
+  const m = $("modal"); m.hidden = false;
+  m.innerHTML = `<div class="card"><h2 style="margin-top:0">New student</h2><form id="newStu" class="grid2" autocomplete="off">
+    <div class="fld"><label>Name</label><input name="sname" required></div><div class="fld"><label>Email</label><input name="semail" type="email"></div>
+    <div class="fld"><label>Level</label><input name="slevel" placeholder="B1"></div><div class="fld"><label>Schedule</label><input name="ssched" placeholder="Tue 12:00pm, Thu 11:30am"></div>
+    <div class="fld" style="grid-column:1/-1"><label>Objective</label><textarea name="sobj"></textarea></div>
+    <div class="fld"><label>Kind</label><select name="skind"><option value="pack">Paying student</option><option value="trueque">Trueque</option></select></div>
+    <div class="row" style="grid-column:1/-1;justify-content:flex-end"><button type="button" id="mClose">Cancel</button><button class="primary" type="submit">Add student</button></div></form></div>`;
+  m.querySelector("[name=sname]").focus();
+  $("mClose").onclick = () => m.hidden = true;
+};
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") $("modal").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("modal").hidden) $("modal").hidden = true; });
+$("expBtn").onclick = () => {
+  const blob = new Blob([JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), students: S }, null, 1)], { type: "application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "student-hub-backup-" + today() + ".json"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+$("impBtn").onclick = () => $("impFile").click();
+$("impFile").onchange = async e => {
+  const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+  let data; try { data = JSON.parse(await file.text()); } catch (err) { toast("That file isn't a hub file"); return; }
+  const list = Array.isArray(data) ? data : data.students; if (!Array.isArray(list)) { toast("That file isn't a hub file"); return; }
+  const clash = list.filter(x => S.some(s => s.id === x.id)).length;
+  const m = $("modal"); m.hidden = false;
+  m.innerHTML = `<div class="card"><h2 style="margin-top:0">Import ${list.length} students?</h2><p>${clash ? `${clash} of them are already in the hub. Importing replaces them with the version in the file.` : "None of them are in the hub yet."}</p><div class="row" style="justify-content:flex-end"><button type="button" id="mClose">Cancel</button><button type="button" class="primary" id="mGo">Import</button></div></div>`;
+  $("mClose").onclick = () => m.hidden = true;
+  $("mGo").onclick = async () => {
+    $("mGo").disabled = true; $("mGo").textContent = "Importing…";
+    try {
+      for (const x of list) { norm(x); await setDoc(doc(db, "users", tUid, "data", PRE + x.id), { json: JSON.stringify(x), deleted: false, at: serverTimestamp() }); const i = S.findIndex(s => s.id === x.id); if (i >= 0) S[i] = x; else S.push(x); }
+      m.hidden = true; renderAll(); toast(`Imported ${list.length} students`);
+    } catch (err) { console.error(err); toast("Import stopped — couldn't save. Try again."); $("mGo").disabled = false; $("mGo").textContent = "Import"; }
+  };
+};
+onAuthStateChanged(auth, u => {
+  $("outBtn").hidden = !u;
+  if (!u) { showView("vSign"); return; }
+  if ((u.email || "").toLowerCase() !== TEACHER) { $("deniedWho").textContent = u.email || u.displayName || "another account"; showView("vDenied"); return; }
+  showView("vMain"); load();
+});
+</script>
+</body>
+</html>

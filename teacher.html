@@ -115,6 +115,7 @@ td.act{white-space:nowrap;text-align:right}
 <header><div class="top">
   <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
   <span class="tag">Teacher view</span>
+  <a class="btn" href="hub.html" style="margin-left:6px">🗂 Student hub</a>
   <div class="sp"></div>
   <div class="cs-wrap" id="csWrap"></div>
   <button id="outBtn" type="button" hidden>Sign out</button>
@@ -212,6 +213,7 @@ async function load() {
     const list = [];
     await Promise.all(snap.docs.map(async d => {
       const p = d.data() || {};
+      if ((p.email || "").toLowerCase() === TEACHER) return;
       const ds = await getDocs(collection(db, "users", d.id, "data"));
       const data = {};
       ds.forEach(x => { const v = x.data(); if (!v.deleted && typeof v.json === "string") data[x.id] = v.json; });
