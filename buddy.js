@@ -409,7 +409,8 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   /* zoom: 0 = closer, 1 = normal, 2 and 3 = see more of the room (kept on this device) */
   const ZW = [30, 40, 52, 64];
   let zoom = 1; try { const zr = localStorage.getItem("cs-bd-zoom"), z = +zr; if (zr !== null && zr !== "" && z >= 0 && z < ZW.length) zoom = z; } catch (e) {}
-  function zoomBox() { const w = ZW[zoom], h = w * 26 / 40; return `${20 - w / 2} ${26 - h} ${w} ${h}`; }
+  /* zoomed in: centred on the buddy's face (about y = 12); zoomed out: floor stays at the bottom */
+  function zoomBox() { const w = ZW[zoom], h = w * 26 / 40; return `${20 - w / 2} ${Math.min(26 - h, 12 - h / 2)} ${w} ${h}`; }
   function stageSVG(opts) {
     opts = opts || {};
     const toys = ITEMS.filter(i => i.slot === "toy" && isOpen(i) && !(S.toyOff || []).includes(i.id)).map(i => i.id);
@@ -569,7 +570,9 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 @keyframes bdNerv{0%,100%{transform:translateX(0)}50%{transform:translateX(-2px)}}
 .bd-sweat{top:8px;right:4px;font-size:13px;animation:bdSweat 1.6s ease-in forwards}
 @keyframes bdSweat{from{transform:translateY(0);opacity:1}to{transform:translateY(14px);opacity:0}}
-.bd-stbub{position:absolute;left:8px;top:8px;max-width:46%;background:color-mix(in srgb,var(--surface,#fff) 82%,transparent);color:var(--ink,#222);border:1px solid var(--line,#ddd);border-radius:12px 12px 12px 3px;padding:5px 9px;font:700 12px/1.35 var(--body,sans-serif);box-shadow:0 4px 12px rgba(0,0,0,.15);text-align:left;animation:bdPop .25s ease-out;pointer-events:none;backdrop-filter:blur(2px)}
+.bd-stbub{position:absolute;left:6px;top:6px;max-width:46%;background:color-mix(in srgb,var(--surface,#fff) 82%,transparent);color:var(--ink,#222);border:1px solid var(--line,#ddd);border-radius:12px 12px 12px 3px;padding:5px 9px;font:700 12px/1.35 var(--body,sans-serif);box-shadow:0 4px 12px rgba(0,0,0,.15);text-align:left;pointer-events:none;backdrop-filter:blur(2px);transform-origin:bottom right}
+.bd-stbub.in{animation:bdSay .22s ease-out}@keyframes bdSay{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.bd-stbub.in{animation:none}}
 .bd-stbub[hidden]{display:none}
 @keyframes bdPop{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
 html.cs-calm .bd-prop{display:none}
@@ -637,7 +640,15 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   function stageSay(html, ms) {
     const st = document.getElementById("bdStage"); if (!st || modal.hidden || mode !== "main") return;
     let b = st.querySelector(".bd-stbub"); if (!b) { b = document.createElement("div"); b.className = "bd-stbub"; b.setAttribute("role", "status"); st.appendChild(b); }
-    b.innerHTML = html; b.hidden = false; clearTimeout(stTimer); stTimer = setTimeout(() => { b.hidden = true; }, Math.min(ms || 4000, 6000));
+    b.innerHTML = html; b.hidden = false; b.style.left = b.style.top = "6px";
+    /* sit just above-left of the buddy, wherever it is at this zoom */
+    const pg = document.getElementById("bdStgPet");
+    if (pg) { const sr = st.getBoundingClientRect(), pr = pg.getBoundingClientRect(), bw = b.offsetWidth, bh = b.offsetHeight;
+      let L = pr.left - sr.left - bw * .45, T = pr.top - sr.top - bh - 4;
+      if (T < 6) { T = 6; L = pr.left - sr.left - bw - 6; }
+      b.style.left = Math.round(Math.max(6, Math.min(sr.width - bw - 6, L))) + "px"; b.style.top = Math.round(Math.max(6, T)) + "px"; }
+    b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
+    clearTimeout(stTimer); stTimer = setTimeout(() => { b.hidden = true; }, Math.min(ms || 4000, 6000));
   }
   function say(html, acts, ms) {
     if (!modal.hidden && mode === "main") {
