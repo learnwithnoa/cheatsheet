@@ -20,8 +20,12 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py recommend '{"hub":"laura","name":"Laura Porcile","mod":"pp","stage":6,"title":"Present perfect or past simple?","why":"said 'I have seen it yesterday' twice","from":"private class Nov 9"}'
       mod: "ps" (Past simple: 1 Regular verbs, 2 Irregular verbs, 3 Was/were, 4 Negatives, 5 Questions, 6 Mix it up, 7 Tell the story)
            "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
+      or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
            compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
+  HUB_PASSWORD=... python3 hubsync.py idea '{"kind":"grammar"|"words","title":"Future: will vs going to","why":"what keeps coming up","example":"I will go tomorrow (planned)","student":"Laura Porcile"}'
+      an idea for a NEW grammar module / word pack Hibi doesn't have yet; the same title again adds +1 and the student
+  HUB_PASSWORD=... python3 hubsync.py ideas      list them
   HUB_PASSWORD=... python3 hubsync.py add-payment <student-id> '{"date":"2026-11-09","what":"2nd half of Pack 36","clp":112200,"pack":"p1","paid":"full"}'
   HUB_PASSWORD=... python3 hubsync.py add-guide <student-id> '{"title":"Past simple guide","url":"https://docs.google.com/...","date":"2026-11-09"}'
   HUB_PASSWORD=... python3 hubsync.py set-focus <student-id> '{"focus":"what we're working on (the student sees it, written to them)","objective":"(optional) new goal"}'
@@ -270,11 +274,12 @@ def make_view(s, meta=None):
             "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "tz": s.get("tz", ""), "country": s.get("country", ""), "next": ups[0]["start"] if ups else "", "due": due,
             "reports": [view_report(r) for r in (s.get("reports") or [])[-12:] if r and r.get("id")],
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
-            "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
+            "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "pack": r.get("pack", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
 
 
 SITE = "https://learnwithnoa.github.io/cheatsheet/"
+PACKS = ["expr", "phrasal", "travel", "work"]   # word packs on Hibi (Practice → Word packs)
 
 
 def _txt(x, n=1200):
@@ -488,7 +493,9 @@ def main():
         r = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}
         recs = m.get("recs", []); today_s = datetime.date.today().isoformat()
         cutoff = (datetime.date.today() - datetime.timedelta(days=14)).isoformat()
-        dup = any(x.get("hub") == r.get("hub") and x.get("mod") == r.get("mod") and x.get("page") == r.get("page") and x.get("date", "") >= cutoff for x in recs)
+        if r.get("pack") and r["pack"] not in PACKS:
+            print("unknown word pack; use one of", PACKS); return
+        dup = any(x.get("hub") == r.get("hub") and x.get("mod") == r.get("mod") and x.get("page") == r.get("page") and x.get("pack") == r.get("pack") and x.get("date", "") >= cutoff for x in recs)
         if dup:
             print("skip: same tip given in the last 14 days"); return
         r.update({"id": rid(), "date": today_s}); recs.append(r); m["recs"] = recs[-120:]
@@ -496,6 +503,36 @@ def main():
         if r.get("hub"):
             publish_all(tok, tu, m, only={r["hub"]})
         print("ok"); return
+    if cmd == "idea":
+        # an idea for a NEW grammar module or word pack, from what keeps coming up in classes (Noa sees them on Hibi members)
+        d = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}
+        kind = d.get("kind") if d.get("kind") in ("grammar", "words") else "grammar"
+        title = _txt(d.get("title"), 80)
+        if not title:
+            raise SystemExit("idea needs a title")
+        key = norm_name(title).replace(" ", "")
+        ideas = m.get("ideas", [])
+        cur = next((x for x in ideas if x.get("key") == key), None)
+        who = _txt(d.get("student"), 60); today_s = datetime.date.today().isoformat()
+        if cur:
+            if cur.get("status") == "no":
+                print("skip: Noa said not now to this one"); return
+            if who and who not in cur.get("students", []):
+                cur.setdefault("students", []).append(who)
+            ex = _txt(d.get("example"), 160)
+            if ex and ex not in cur.get("examples", []):
+                cur.setdefault("examples", []).append(ex); cur["examples"] = cur["examples"][-6:]
+            cur["count"] = cur.get("count", 1) + 1; cur["last"] = today_s
+            print("ok: +1 for", cur["title"], "(", cur["count"], ")")
+        else:
+            ideas.append({"id": rid(), "key": key, "kind": kind, "title": title, "why": _txt(d.get("why"), 300),
+                          "examples": [x for x in [_txt(d.get("example"), 160)] if x], "students": [who] if who else [],
+                          "count": 1, "first": today_s, "last": today_s, "status": "new"})
+            print("ok: new idea", title)
+        m["ideas"] = ideas[-80:]; set_doc(tok, tu, "t-hubmeta", m); return
+    if cmd == "ideas":
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        print(json.dumps([{k: x.get(k) for k in ("kind", "title", "count", "students", "status")} for x in m.get("ideas", [])], ensure_ascii=False)); return
     if cmd == "set-level":
         # set-level '<name or email>' B1 ['why']   club member's English level (from club class recordings); their Hibi adapts feedback to it
         who, lv = a[1], a[2].upper().replace(" ", "")

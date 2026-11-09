@@ -156,6 +156,7 @@ td.act{white-space:nowrap;text-align:right}
     <div class="news" id="clubBox" hidden></div>
     <div class="news" id="news" hidden></div>
     <div class="news" id="tips" hidden></div>
+    <div class="news" id="ideas" hidden></div>
     <div class="news" id="usage" hidden></div>
     <div class="layout">
       <div>
@@ -269,7 +270,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList(); renderLinks(); renderClub(); renderNews(); renderTips(); renderUsage(); syncPark();
+    renderList(); renderLinks(); renderClub(); renderNews(); renderTips(); renderIdeas(); renderUsage(); syncPark();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -378,6 +379,7 @@ function renderUsage() {
 document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
 /* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
 const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
+const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work" };
 function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
 /* accounts that might be private students, not linked to their Coaching profile yet (this used to live on the Private students page) */
 function renderLinks() {
@@ -402,7 +404,7 @@ document.addEventListener("click", async e => {
     hubMeta = Object.assign({}, hubMeta || {}, { dismissed: ((hubMeta && hubMeta.dismissed) || []).concat(uid) }); saveTPref("t-hubmeta", hubMeta); renderLinks(); toast("Okay, " + st.name.split(" ")[0] + " is club only"); return; }
   const sel = document.querySelector(`[data-lkfor="${uid}"]`); if (!sel || !sel.value) { toast("Pick who this is first"); return; }
   const hubId = sel.value, h = hubList.find(x => x.id === hubId);
-  const { roleFor } = await import("./hubview.js?v=10");
+  const { roleFor } = await import("./hubview.js?v=11");
   if (h && st.email && ![h.email].concat(h.emails || []).some(x => (x || "").toLowerCase() === st.email.toLowerCase())) { if (!h.email) h.email = st.email; else h.emails = (h.emails || []).concat(st.email); }
   await saveRole(st, roleFor(hubId, st.role)); await linkHub(st, hubId, ""); renderLinks();
 });
@@ -440,11 +442,27 @@ function renderTips() {
   box.hidden = !recs.length; if (!recs.length) return;
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips <span class="news-n" style="background:#7348D8">${recs.length}</span></h2></div>
     <p class="muted" style="margin:4px 0 8px">From your classes: mistakes that keep coming up, and what could help.</p>
-    <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : (PAGE_T[r.page] || r.title || r.page);
+    <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : r.pack ? `Word pack: ${PACK_T[r.pack] || r.pack}` : (PAGE_T[r.page] || r.title || r.page);
       return `<li><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
         ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}">💌 Suggest it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
         <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}">✓ Done</button></div></li>`; }).join("")}</ul>`;
 }
+/* ideas for NEW grammar modules / word packs, collected by the nightly wrap-up from what keeps coming up in classes */
+function renderIdeas() {
+  const box = $("ideas"); const all = ((hubMeta && hubMeta.ideas) || []).filter(x => x.status !== "no");
+  box.hidden = !all.length; if (!all.length) return;
+  const ls = all.slice().sort((a, b) => (a.status === "yes") - (b.status === "yes") || (b.count || 1) - (a.count || 1) || (b.last || "").localeCompare(a.last || ""));
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🧱 Ideas to build <span class="news-n" style="background:#12935C">${all.filter(x => x.status !== "yes").length}</span></h2></div>
+    <p class="muted" style="margin:4px 0 8px">Grammar modules and word packs Hibi doesn't have yet, from what keeps coming up in your classes. Tap <b>Build it</b> and ask Claude to make it.</p>
+    <ul class="news-list">${ls.map(x => `<li><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${x.kind === "words" ? "🗂️" : "🧩"}</span>
+      <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${x.kind === "words" ? "word pack" : "grammar module"} · came up ${x.count || 1}×</span>${x.why ? `<br><span style="font-size:13.5px">${esc(x.why)}</span>` : ""}${(x.examples || []).length ? `<br><span class="muted" style="font-size:13px">“${x.examples.slice(-2).map(esc).join("” · “")}”</span>` : ""}${(x.students || []).length ? `<br><span class="muted" style="font-size:12.5px">${x.students.map(esc).join(", ")}</span>` : ""}</span>
+      ${x.status === "yes" ? `<span class="kc k-teal" style="color:var(--c-teal)">✓ Asked to build</span><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="new">Undo</button>` : `<button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="yes">🛠 Build it</button><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="no">✕ Not now</button>`}</div></li>`).join("")}</ul>`;
+}
+document.addEventListener("click", async e => { const b = e.target.closest("[data-idea]"); if (!b) return;
+  try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
+  const x = ((hubMeta && hubMeta.ideas) || []).find(i => i.id === b.dataset.idea); if (!x) return;
+  x.status = b.dataset.st; renderIdeas(); saveTPref("t-hubmeta", hubMeta);
+  toast(x.status === "yes" ? "Noted ✓ Ask Claude to build “" + x.title + "”" : x.status === "no" ? "Hidden. It won't come back." : "Undone"); });
 async function tipDone(id) { const r = hubMeta.recs.find(x => x.id === id); if (r) r.done = Date.now(); renderTips(); try { await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn(e); } }
 document.addEventListener("click", async e => {
   const a = e.target.closest("[data-tiprec],[data-tipmsg],[data-tipdone]"); if (!a) return;
@@ -453,7 +471,7 @@ document.addEventListener("click", async e => {
   const s = tipStudent(r); if (!s) return;
   if (a.dataset.tiprec) { const v = Object.assign({}, s.modrec, { [r.mod]: +r.stage });
     try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; toast("⭐ Recommended to " + s.name.split(" ")[0]); tipDone(id); } catch (err) { toast("Couldn't save. Try again."); } return; }
-  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: the “${PAGE_T[r.page] || r.title}” page in Hibi. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id); }
+  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: ${r.pack ? `the “${PACK_T[r.pack] || r.title}” word pack in Hibi (Practice → Word packs)` : `the “${PAGE_T[r.page] || r.title}” page in Hibi`}. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id); }
 });
 function renderNews() {
   const box = $("news"), ev = newsEvents(), seen = +(localStorage.getItem(NEWS_KEY) || 0), fresh = ev.filter(e => e.t > seen).length;
@@ -552,7 +570,7 @@ function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.em
 function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
 async function linkHub(s, hubId, oldId) {
   try {
-    const { makeView } = await import("./hubview.js?v=10");
+    const { makeView } = await import("./hubview.js?v=11");
     if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
     if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
     const h = hubList.find(x => x.id === hubId); if (!h) return;

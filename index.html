@@ -1258,6 +1258,8 @@ a.ch-rp-res:hover{border-color:var(--k)}
 .ag-btn svg{width:20px;height:20px;flex:none}
 .ag-small{font-size:12.5px!important}
 html.ag-lock,html.ag-lock body{overflow:hidden}
+/* the side menu sticks exactly where it starts, so it doesn't jump 4px when you scroll */
+@media (min-width:901px){nav.side{top:calc(env(safe-area-inset-top,0px) + 78px);max-height:calc(100dvh - 78px - env(safe-area-inset-top,0px) - 16px)}}
 </style>
 
 <header class="top">
@@ -1670,7 +1672,7 @@ html.ag-lock,html.ag-lock body{overflow:hidden}
     const since=sn&&sn.d?sn.d:wk, out=[];
     (v.guides||[]).forEach(g=>{ if(g.date&&g.date>since) out.push({d:g.date,ico:"📄",t:`New guide: <b>${esc(g.title)}</b>`,tab:"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
-    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:""):(t.title||t.page))}</b>`,tab:"top"}); });
+    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
@@ -1719,7 +1721,7 @@ html.ag-lock,html.ag-lock body{overflow:hidden}
       ${newRep?`<div class="ch-tint ch-v ch-card"><div class="ch-k">📈 New progress report</div><div>Your report for <b>${fs(newRep.from)} – ${fs(newRep.to)}</b> is ready.</div><button type="button" class="ch-go" data-rep="${esc(newRep.id)}" style="margin-top:6px">Read it →</button></div>`:""}
       ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
-      ${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip"><button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}
+      ${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}
     </div>`;
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
@@ -2100,6 +2102,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   if(window.__csAuth!=null) on(window.__csAuth);
 })();
 </script>
+
+<script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
@@ -5205,6 +5209,7 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
 
   /* ---- open from elsewhere (notebook "Practice this") ---- */
   window.__prShow=(p,fromPop)=>{ round=null; show(p,fromPop); };
+  window.csVocSet=function(id){ if(!VSET[id]) return; go("quiz",true); round=null; vsCur=id; vsMode="list"; show("vset"); window.scrollTo({top:0}); };
   window.csPractice=function(p,stage,mod){ go("quiz",true); round=null; if(mod) setMod(mod); if(p==="ps"&&stage){ start("ps",stage); } else show(p); };
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-psgo]"); if(!b) return; e.preventDefault(); window.csPractice("ps",+b.dataset.psgo||0,b.dataset.psmod||"ps"); });
   renderHub();
