@@ -19,6 +19,8 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.5 var(--body)}
 header{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
 .top{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px}
+@media (max-width:640px){header .tag,#saving{display:none}.top{gap:8px;padding:8px 12px}.brand span{font-size:18px}header .btn{padding:6px 10px;font-size:13px}}
+@media (max-width:480px){header .bt-l{display:none}}
 .brand{text-decoration:none;display:flex;flex-direction:column;line-height:1.1}
 .brand small{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .brand span{font:700 22px var(--display);background:var(--gloss);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -87,6 +89,11 @@ td.act{white-space:nowrap;text-align:right}
 .news-top button{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:700 13px var(--body);cursor:pointer}
 .news-n{font:800 12px var(--body);background:#E5533D;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:3px}
 .news-list{list-style:none;margin:0;padding:0}
+.cl-hr{display:flex;align-items:center;gap:10px}
+.cl-stats{display:flex;flex-wrap:wrap;gap:6px 18px;margin:6px 0 2px;font-size:14px;color:var(--muted)}.cl-stats b{color:var(--ink);font-size:15px}
+.cl-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 10px}
+.cl-sel{font:700 13.5px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+.cl-n{margin-left:auto}
 .club-t{width:100%;border-collapse:collapse;font-size:14px}.club-t th{text-align:left;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--line)}
 .club-t td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}.club-t .nw{white-space:nowrap}
 .club-t select{font:600 13px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:8px;padding:4px 6px}
@@ -123,7 +130,7 @@ td.act{white-space:nowrap;text-align:right}
 <header><div class="top">
   <a class="brand" href="./"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
   <span class="tag">Hibi members</span>
-  <a class="btn" href="private-students.html" style="margin-left:6px">🎓 Private students</a>
+  <a class="btn" href="private-students.html" style="margin-left:6px" title="Private students">🎓<span class="bt-l"> Private students</span></a>
   <div class="sp"></div>
   <div class="cs-wrap" id="csWrap"></div>
   <button id="outBtn" type="button" hidden>Sign out</button>
@@ -411,14 +418,18 @@ function renderClub() {
   const cnt = k => ms.filter(m => (m.status || "paying") === k).length;
   const shown = clubF === "all" ? ms : clubF === "hibi" ? ms.filter(hib) : ms.filter(m => (m.status || "paying") === clubF);
   const price = m => m.price ? `US$${m.price}/${m.per === "year" ? "yr" : "mo"}` : "";
-  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🌼 Club members <span class="news-n" style="background:#C98A0C">${ms.length}</span></h2><button type="button" id="clubTog">${clubOpen ? "Hide list" : "Show list"}</button></div>
-    <p class="muted" style="margin:4px 0 8px">${CST.filter(([k]) => cnt(k)).map(([k, l]) => `${l} <b>${cnt(k)}</b>`).join(" · ")}${C.asOf ? ` <span class="muted">· from your Skool export (${esc(C.asOf)})</span>` : ""}</p>
-    ${clubOpen ? `<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px">${[["all", "Everyone " + ms.length], ["hibi", "✓ On Hibi " + ms.filter(hib).length]].concat(CST.filter(([k]) => cnt(k)).map(([k, l]) => [k, l + " " + cnt(k)])).map(([k, l]) => `<button type="button" class="seg" data-clf="${k}" aria-pressed="${clubF === k}">${l}</button>`).join("")}</div>
+  const onH = ms.filter(hib).length, stF = clubF !== "all" && clubF !== "hibi" ? clubF : "";
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🌼 Club members <span class="news-n" style="background:#C98A0C">${ms.length}</span></h2><div class="cl-hr">${C.asOf ? `<span class="muted small">Skool export · ${esc(C.asOf)}</span>` : ""}<button type="button" id="clubTog">${clubOpen ? "Hide list" : "Show list"}</button></div></div>
+    <div class="cl-stats"><span><b>${cnt("paying")}</b> paying</span><span><b>${onH}</b> on Hibi</span>${cnt("leaving") ? `<span><b>${cnt("leaving")}</b> not moving over</span>` : ""}</div>
+    ${clubOpen ? `<div class="cl-filters"><button type="button" class="seg" data-clf="all" aria-pressed="${clubF === "all"}">Everyone</button><button type="button" class="seg" data-clf="hibi" aria-pressed="${clubF === "hibi"}">On Hibi</button>
+      <select class="cl-sel" data-clfs aria-label="Filter by status"><option value="">${stF ? "All statuses" : "Status…"}</option>${CST.filter(([k]) => cnt(k)).map(([k, l]) => `<option value="${k}" ${stF === k ? "selected" : ""}>${l} (${cnt(k)})</option>`).join("")}</select>
+      <span class="muted small cl-n">${shown.length} shown</span></div>
     <div style="overflow-x:auto"><table class="club-t"><thead><tr><th>Name</th><th>Plan</th><th>Joined</th><th>Renews</th><th>On Hibi</th><th>Status</th></tr></thead><tbody>${shown.map(m => { const i = C.members.indexOf(m), h = hib(m);
       return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${esc(m.renew || "")}</td><td class="nw">${h ? `✓ <span class="muted small">${h.lastSeen ? ago(h.lastSeen) : ""}</span>` : `<span class="muted">—</span>`}</td>
         <td><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`; }).join("")}</tbody></table></div>` : ""}`;
 }
 document.addEventListener("click", e => { if (e.target.id === "clubTog") { clubOpen = !clubOpen; renderClub(); return; } const f = e.target.closest("[data-clf]"); if (f) { clubF = f.dataset.clf; renderClub(); } });
+document.addEventListener("change", e => { const s = e.target.closest("[data-clfs]"); if (s) { clubF = s.value || "all"; renderClub(); } });
 document.addEventListener("change", async e => { const sl = e.target.closest("[data-clst]"); if (!sl) return;
   const i = +sl.dataset.clst, name = hubMeta.club.members[i].name, v = sl.value;
   try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}

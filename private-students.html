@@ -151,6 +151,7 @@ td.act{white-space:nowrap;text-align:right}
 :root[data-theme="light"],:root[data-theme="sepia"],:root[data-theme="unicorn"]{--c-green:#12935C;--c-amber:#B86E00;--c-sky:#1C6FD1;--c-violet:#7348D8;--c-pink:#C2306F;--c-teal:#0E8C7E;--c-coral:#C4502B;--c-red:#C93A3A}
 @media (min-width:861px){.layout{grid-template-columns:340px minmax(0,1fr)}}
 @media (max-width:640px){header .tag,#saving{display:none}.top{gap:8px;padding:8px 12px}.brand span{font-size:18px}header .btn{padding:6px 10px;font-size:13px}}
+@media (max-width:480px){header .bt-l{display:none}}
 .tint{--k:var(--c-sky);background:color-mix(in srgb,var(--k) 14%,var(--surface));border:1.5px solid color-mix(in srgb,var(--k) 45%,var(--line))}
 .k-green{--k:var(--c-green)}.k-amber{--k:var(--c-amber)}.k-sky{--k:var(--c-sky)}.k-violet{--k:var(--c-violet)}.k-pink{--k:var(--c-pink)}.k-teal{--k:var(--c-teal)}.k-coral{--k:var(--c-coral)}.k-red{--k:var(--c-red)}
 .kc{color:var(--k)}
@@ -243,7 +244,7 @@ tr.arch td{opacity:.85}
 <header><div class="top">
   <a class="brand" href="./"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
   <span class="tag">Private students</span>
-  <a class="btn" href="members.html" style="margin-left:6px">👥 Hibi members</a>
+  <a class="btn" href="members.html" style="margin-left:6px" title="Hibi members">👥<span class="bt-l"> Hibi members</span></a>
   <div class="sp"></div>
   <span class="saving" id="saving"></span>
   <div class="cs-wrap" id="csWrap"></div>
