@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Hibi 日々, your daily English: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}.brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px;min-width:0}.kj{font:700 15px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em;white-space:nowrap}footer .kj{font-size:inherit;font-weight:600}
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}.brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px;min-width:0}.kj{font:700 15px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em;white-space:nowrap}footer .kj{font-size:inherit;font-weight:600}.brand .brand-row>span{font-size:26px}.brand .kj{font-size:17px}@media (max-width:480px){.brand .brand-row>span{font-size:21px}.brand .kj{font-size:14px}}
 </style>
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=15">
@@ -19,7 +19,7 @@
 </head>
 <body data-auth="out">
 <script>try{if(localStorage.getItem("ncs-sync-uid"))document.body.dataset.auth="in";}catch(e){}</script>
-<title>Hibi 日々 · Learn with Noa</title>
+<title>Hibi 日々</title>
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft"){t="sepia";localStorage.setItem("ncs-theme",t);}}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1078,11 +1078,15 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .prt-b:focus-visible,.prt-x:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
 .prt-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:var(--muted);font-size:18px}
 .prt-tip{margin:8px 0 0;font-size:14px;color:var(--muted)}
+.wl-hibi{display:flex;gap:14px;align-items:center;margin:12px 0 4px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--bright) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--bright) 30%,var(--line));font-size:14.5px;line-height:1.5}
+.wl-hibi>b{font:800 30px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--bright);flex:none}
+.wl-tip{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.cn-help{margin:8px 0 0;font-size:13px;color:var(--muted)}
 </style>
 
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="#notes" data-go="notes" aria-label="Hibi, go to Home"><small>Learn with Noa</small><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
+    <a class="brand" href="#notes" data-go="notes" aria-label="Hibi, go to Home"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
     <div class="search" id="searchWrap" role="search">
       <label for="gSearch" class="sr">Search the cheat sheet</label>
       <span class="search-ico" aria-hidden="true"></span>
@@ -1276,9 +1280,10 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   <div id="slotCnHome"><div id="cnEditorBlock">
   <h2 style="margin-top:4px">Class notes</h2>
   <div class="card cn-editor">
-    <div class="cn-top"><label for="freeNotes" class="cn-date" id="cnToday">Today</label><span class="count" id="freeSaved">Your draft is kept until you save it</span></div>
+    <div class="cn-top"><label for="freeNotes" class="cn-date" id="cnToday">Today</label><span class="count" id="freeSaved">Your draft is saved as you type</span></div>
     <textarea id="freeNotes" placeholder="Write your notes for today's class: corrections, things to practice, questions for next class…"></textarea>
-    <div class="note-actions"><button class="pill-btn pill-green" type="button" id="cnSave">Save note</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
+    <div class="note-actions"><button class="swap" type="button" id="cnDraft" title="Keep what you've written here, so you can keep adding to it during class">💾 Save draft</button><button class="pill-btn pill-green" type="button" id="cnSave" title="Add this note to My class notes and start a fresh one">📥 Move to my notes</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
+    <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here (and in your account if you're signed in). When the class is over, press <b>Move to my notes</b>.</p>
     <div id="cnSuggest" class="cn-sug" hidden aria-live="polite"></div>
     <p class="cn-warn dismissible when-out">Saved notes go to <b>My class notes</b>, sorted by date. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to keep them in your account. Until then, they're only saved in this browser.</p>
   </div>
@@ -2447,13 +2452,15 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 
   <div class="wl-step" data-step="0">
     <h2 id="wlTitle">Welcome to <em>Hibi</em> <span lang="ja">日々</span> 👋</h2>
-    <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. It does three jobs:</p>
+    <p class="wl-lede">Your English companion, made by <b>Noa</b>. It does three jobs:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">📚</span><div><b>A quick reference while you speak.</b> Verb tenses, irregular verbs, grammar and phrases for when you're stuck, all short and clear. Keep it open next to Zoom during class.</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📝</span><div><b>Your own English notebook.</b> Save the new words and class notes that matter to <i>you</i>.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>A place to practice.</b> Grammar step by step, vocabulary sets and flashcards with your own words.</div></li>
     </ul>
     <p class="esb">Tu compañero de inglés: referencia rápida, cuaderno personal y práctica.</p>
+    <div class="wl-hibi"><b lang="ja">日々</b><div><b>Why “Hibi”?</b> <i>Hibi</i> (日々) is Japanese for <b>“day by day”</b>. That's how a language grows: a few new words, one class note, one short practice round, every day. Small steps, done daily, add up.</div></div>
+    <p class="wl-tip">🔎 <b>Tip:</b> <b>double-click</b> any word on Hibi (on your phone, <b>press and hold</b>) to see what it means and save it to <b>My words</b>. Select a few words to look up a phrase.</p>
   </div>
 
   <div class="wl-step" data-step="1" hidden>
@@ -4823,20 +4830,24 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
     c.fillStyle="#FFFFFF"; c.font="800 96px "+F; c.fillText("on Hibi 日々",W/2,270);
     let by=330;
     if(useRoom){
-      try{ c.save(); rr(c,60,by,960,624,44); c.clip(); c.imageSmoothingEnabled=false; c.drawImage(await svgImg(window.csBuddy.scene(),960,624),60,by,960,624); c.restore(); rr(c,60,by,960,624,44); c.strokeStyle="rgba(255,255,255,.35)"; c.lineWidth=4; c.stroke(); }catch(e){}
-      by+=624+70; c.fillStyle="#FFFFFF"; c.font="800 50px "+F; c.fillText(st.bname+"  ·  💛 Level "+st.lvl,W/2,by); by+=50;
+      const sh=460, sw=Math.round(sh*40/26), sx=(W-sw)/2;
+      try{ c.save(); rr(c,sx,by,sw,sh,40); c.clip(); c.imageSmoothingEnabled=false; c.drawImage(await svgImg(window.csBuddy.scene(),sw,sh),sx,by,sw,sh); c.restore(); rr(c,sx,by,sw,sh,40); c.strokeStyle="rgba(255,255,255,.35)"; c.lineWidth=4; c.stroke(); }catch(e){}
+      by+=sh+66; c.fillStyle="#FFFFFF"; c.font="800 50px "+F; c.fillText(st.bname+"  ·  💛 Level "+st.lvl,W/2,by); by+=50;
     } else if(st.lvl&&window.csBuddy){
       rr(c,270,by,540,470,48); c.fillStyle="rgba(255,255,255,.1)"; c.fill();
       try{ c.imageSmoothingEnabled=false; c.drawImage(await svgImg(window.csBuddy.portrait(),400,440),370,by+24,340,374); }catch(e){}
       c.fillStyle="#FFFFFF"; c.font="800 50px "+F; c.fillText(st.bname,W/2,by+440); by+=470;
       c.fillStyle="#FFD86B"; c.font="700 40px "+F; c.fillText("💛 Friendship level "+st.lvl,W/2,by+66); by+=96;
     } else by+=20;
-    const ms=modules(st), cw=440, ch=200, gx=50, gy=28, x0=(W-cw*2-gx)/2;
-    if(st.newest){ const y=by+20; rr(c,x0,y,cw*2+gx,120,36); c.fillStyle="rgba(255,255,255,.14)"; c.fill(); c.fillStyle="rgba(255,255,255,.7)"; c.font="600 30px "+F; c.fillText("Newest word this month",W/2,y+46); c.fillStyle="#FFFFFF"; c.font="800 48px "+F; c.fillText("“"+String(st.newest).slice(0,28)+"”",W/2,y+98); by=y+120+8; }
-    const avail=H-180-by, rows=Math.ceil(ms.length/2), chh=Math.min(ch,Math.floor((avail-gy*rows)/Math.max(1,rows)));
+    let ms=modules(st); const cw=440, ch=200, gx=50, gy=28, x0=(W-cw*2-gx)/2, MINH=190;
+    const fits=(n,extra)=>{ const rows=Math.ceil(n/2); return H-180-(by+extra)-gy*rows-20>=rows*MINH; };
+    let showNew=!!st.newest&&fits(ms.length,128);
+    while(ms.length>2&&!fits(ms.length,showNew?128:0)) ms=ms.slice(0,ms.length-(ms.length%2?1:2));
+    if(showNew){ const y=by+20; rr(c,x0,y,cw*2+gx,120,36); c.fillStyle="rgba(255,255,255,.14)"; c.fill(); c.fillStyle="rgba(255,255,255,.7)"; c.font="600 30px "+F; c.fillText("Newest word this month",W/2,y+46); c.fillStyle="#FFFFFF"; c.font="800 48px "+F; c.fillText("“"+String(st.newest).slice(0,28)+"”",W/2,y+98); by=y+120+8; }
+    const avail=H-180-by-20, rows=Math.ceil(ms.length/2), chh=Math.max(MINH,Math.min(ch,Math.floor((avail-gy*rows)/Math.max(1,rows))));
     ms.forEach((k,i)=>{ const last=i===ms.length-1&&ms.length%2===1, x=last?(W-cw)/2:x0+(i%2)*(cw+gx), y=by+20+Math.floor(i/2)*(chh+gy);
       rr(c,x,y,cw,chh,36); c.fillStyle="rgba(255,255,255,.12)"; c.fill();
-      c.fillStyle="#FFFFFF"; c.font="54px "+F; c.fillText(k.ico,x+cw/2,y+chh*.36); c.font="800 68px "+F; c.fillText(k.n,x+cw/2,y+chh*.72); c.fillStyle="rgba(255,255,255,.75)"; c.font="600 30px "+F; c.fillText(k.t,x+cw/2,y+chh*.92); });
+      c.fillStyle="#FFFFFF"; c.font="50px "+F; c.fillText(k.ico,x+cw/2,y+chh*.33); c.font="800 64px "+F; c.fillText(k.n,x+cw/2,y+chh*.66); c.fillStyle="rgba(255,255,255,.75)"; c.font="600 29px "+F; c.fillText(k.t,x+cw/2,y+chh*.87); });
     if(!ms.length){ c.fillStyle="#FFFFFF"; c.font="700 46px "+F; c.fillText("A fresh start.",W/2,by+120); c.fillStyle="rgba(255,255,255,.75)"; c.font="600 36px "+F; c.fillText("Next month is yours 💪",W/2,by+176); }
     c.fillStyle="#FFFFFF"; c.font="700 40px "+F; c.fillText("Hibi 日々 by Noa",W/2,H-110); c.fillStyle="rgba(255,255,255,.7)"; c.font="600 34px "+F; c.fillText("@learnwithnoa",W/2,H-62);
     return cv;
@@ -5458,15 +5469,16 @@ const fmtTime=t=>new Date(t).toLocaleTimeString("en-US",{hour:"numeric",minute:"
 const fmtMonth=t=>new Date(t).toLocaleDateString("en-US",{month:"long",year:"numeric"});
 document.getElementById("cnToday").textContent="Today · "+new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
 freeNotes.value=LS.get("ncs-freenotes","");
-freeNotes.addEventListener("input",()=>{ clearTimeout(freeT); freeT=setTimeout(()=>{ freeSaved.textContent= LS.set("ncs-freenotes",freeNotes.value)?"Draft kept · press Save note when you're done":"This browser blocks storage, so notes won't be kept"; },500); });
+freeNotes.addEventListener("input",()=>{ clearTimeout(freeT); freeT=setTimeout(()=>{ freeSaved.textContent= LS.set("ncs-freenotes",freeNotes.value)?"Draft saved as you type ✓":"This browser blocks storage, so notes won't be kept"; },500); });
+document.getElementById("cnDraft").addEventListener("click",()=>{ clearTimeout(freeT); const ok=LS.set("ncs-freenotes",freeNotes.value); freeSaved.textContent=ok?"Draft saved ✓ "+new Date().toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"This browser blocks storage, so notes won't be kept"; toast(ok?"💾 Draft saved. It stays here until you move it to your notes.":"This browser blocks storage"); });
 document.getElementById("cnSave").addEventListener("click",()=>{
   const text=freeNotes.value.trim();
   if(!text){ toast("Write something first"); freeNotes.focus(); return; }
   cnotes.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),text,t:Date.now()});
   setTimeout(()=>{ if(window.csSuggestWords) window.csSuggestWords(text); },400);
   const ok=LS.set("ncs-classnotes",cnotes);
-  freeNotes.value=""; LS.set("ncs-freenotes",""); freeSaved.textContent="Your draft is kept until you save it";
-  renderCN(); toast(ok?"Note saved to My class notes":"Saved for now, but this browser blocks storage");
+  freeNotes.value=""; LS.set("ncs-freenotes",""); freeSaved.textContent="Your draft is saved as you type";
+  renderCN(); toast(ok?"📥 Moved to My class notes":"Saved for now, but this browser blocks storage");
 });
 function renderCN(){
   const n=cnotes.length;
@@ -6062,6 +6074,16 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-hibi", date:"November 9, 2026", title:"Say hi to Hibi 日々", items:[
+    ["🌱","A new name: Hibi 日々","the Cheat Sheet is now <b>Hibi</b>, Japanese for <b>“day by day”</b>. A little English every day adds up. Same site, same words and notes."],
+    ["⚔️","Duels","club members can challenge each other to a friendly 7-day duel in the <b>Buddy park</b>: word race, first to 15, flashcards or grammar. Winners get treats and fighting gear for their buddy.","park"],
+    ["📸","Your monthly recap, your way","pick a background (even your buddy's room) and it only shows what you actually did."],
+    ["⏱","Study timer on Practice","start a 10, 15 or 25-minute session right from <b>Practice</b>, with a study tip each day.","quiz"],
+    ["📝","Class note drafts","on your Home page, <b>Save draft</b> keeps your notes while you write during class; <b>Move to my notes</b> files them when you're done."],
+    ["🧸","Your buddy's room","drag toys around, hide the ones you don't like, and zoom out to see more of the room."],
+    ["✨","Safer AI word tools","<b>Complete my words</b> and <b>Clean up my words</b> now explain what they do first, never change sentences you wrote without asking, and have an <b>Undo</b> button."],
+    ["🎓","My coaching","private students see their next class, homework, goals, guides and payments, with a 🔔 when something new arrives."]
+  ]},
   {id:"2026-contrast", date:"November 7, 2026", title:"High contrast", items:[
     ["🔆","High contrast","stronger text and borders, with any theme. Turn it on in <b>Settings</b>. If your phone or computer already uses <i>Increase contrast</i>, it turns on by itself."]
   ]},
