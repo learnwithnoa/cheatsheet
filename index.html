@@ -1133,6 +1133,20 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .cs-chk{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line);cursor:pointer}
 .cs-chk input{margin-top:4px;accent-color:#3b82f6}.cs-chk small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .cs-added{margin:6px 0 12px;padding-left:20px}.cs-added li{margin:2px 0;font-weight:700}
+
+/* My English level */
+.pr-lvlbtn{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;width:100%;margin:12px 0 0;padding:12px 16px;border-radius:16px;border:1.5px dashed color-mix(in srgb,#3b82f6 45%,var(--line));background:color-mix(in srgb,#3b82f6 6%,var(--surface));color:var(--ink);font:inherit;font-size:15px;cursor:pointer;text-align:left}
+.pr-lvlbtn:hover{border-style:solid;border-color:#3b82f6}.pr-lvl-go{margin-left:auto;color:#3b82f6;font-weight:700;font-size:13.5px}
+.lvl-now{display:flex;gap:16px;align-items:center;max-width:640px}
+.lvl-big{flex:none;min-width:74px;height:74px;padding:0 10px;border-radius:20px;display:grid;place-items:center;font:900 26px var(--display,inherit);color:#fff;background:linear-gradient(135deg,#3b82f6,#8b5cf6)}
+.lvl-rec{margin-top:8px;font-size:14px;padding:7px 10px;border-radius:10px;background:color-mix(in srgb,#F5B301 12%,transparent)}
+.lvl-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px;max-width:820px}.lvl-opts h3{margin:0 0 4px}
+.lvl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.lvl-q{max-width:560px}.lvl-bar{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0 12px}.lvl-bar i{display:block;height:100%;background:#3b82f6;border-radius:6px}
+.lvl-qt{font-size:19px;font-weight:700;margin:6px 0 12px}.lvl-gap{color:#3b82f6}
+.lvl-ans{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lvl-idk{opacity:.75;font-style:italic}
+.lvl-chip{font:700 14px var(--body,inherit);padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface-2,var(--card));color:var(--ink);cursor:pointer}
+.lvl-chip:hover{border-color:#3b82f6}.lvl-chip[aria-pressed="true"]{background:#3b82f6;border-color:#3b82f6;color:#fff}
 </style>
 
 <header class="top">
@@ -1792,11 +1806,68 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 window.csLevel=function(){
   const v=window.__csHubView, m=v&&String(v.level||"").match(/[ABC][12](?:\s*[–-]\s*[ABC][12])?/i);
   if(m) return {lv:m[0].toUpperCase().replace(/\s+/g,""),src:"coach"};
+  let my=null; try{ my=JSON.parse(localStorage.getItem("ncs-mylevel")||"null"); }catch(e){}
+  if(my&&my.lv) return {lv:String(my.lv),src:my.src||"self"};
   let c=null; try{ c=JSON.parse(localStorage.getItem("cs-cefr")||"null"); }catch(e){}
   if(c&&c.lv) return {lv:String(c.lv),src:"club"};
   let b=null; try{ b=JSON.parse(localStorage.getItem("ncs-level")||"null"); }catch(e){}
   return b==="beginner"?{lv:"A1–A2",src:"self"}:{lv:"",src:""};
 };
+</script>
+
+<script>
+/* My English level: a quick level check (20 questions, A1 to C1) or choose it yourself */
+(function lvlInit(){
+  const box=document.getElementById("lvlBox"); if(!box){ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",lvlInit); return; }
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const BANDS=["A1","A2","B1","B2","C1"];
+  const Q=[
+    ["A1","She ___ a teacher.",["am","is","are"],1],["A1","I ___ coffee every morning.",["drink","drinks","drinking"],0],["A1","There ___ two cats in the garden.",["is","are","be"],1],["A1","___ you like pizza?",["Do","Does","Are"],0],
+    ["A2","Yesterday we ___ to the beach.",["go","went","gone"],1],["A2","My sister is ___ than me.",["more tall","taller","tallest"],1],["A2","I'm ___ to visit my parents this weekend.",["going","go","will"],0],["A2","How ___ money do you have?",["many","much","lot"],1],
+    ["B1","I ___ here since 2020.",["live","have lived","am living"],1],["B1","If it rains tomorrow, we ___ at home.",["stay","will stay","would stay"],1],["B1","The movie was so ___ that I fell asleep.",["bored","boring","bore"],1],["B1","I'm not used to ___ up so early.",["get","getting","got"],1],
+    ["B2","If I ___ more time, I would learn Japanese.",["have","had","would have"],1],["B2","The report ___ by the end of the day.",["will finish","will be finished","is finishing"],1],["B2","She suggested ___ a taxi.",["to take","taking","take"],1],["B2","I wish I ___ said that. It was a mistake.",["didn't","hadn't","wouldn't"],1],
+    ["C1","No sooner ___ arrived than it started to rain.",["I had","had I","did I"],1],["C1","By this time next year, I ___ my degree.",["will finish","will have finished","finish"],1],["C1","The project was a success ___ the tight budget.",["despite","although","even though"],0],["C1","He's the colleague ___ advice I always follow.",["who","whose","whom"],1]
+  ];
+  const get=k=>{ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } };
+  const setMy=v=>{ const j=JSON.stringify(v); try{ localStorage.setItem("ncs-mylevel",j); }catch(e){} if(window.__csOnSet) try{ window.__csOnSet("ncs-mylevel"); }catch(e){} paintNow(); };
+  const fd=t=>new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  let run=null;
+  function paintNow(){ const el=document.getElementById("prLvlNow"); if(!el) return; const L=window.csLevel?window.csLevel():{lv:""}; el.textContent=L.lv?"· "+L.lv:""; }
+  function home(){
+    const L=window.csLevel?window.csLevel():{lv:""}, my=get("ncs-mylevel"), noa=get("cs-cefr"), v=window.__csHubView;
+    const src={coach:"Noa set this as your coach",test:"from your level check"+(my&&my.at?" on "+fd(my.at):""),self:"you chose it",club:"Noa's estimate from the club classes"}[L.src]||"";
+    box.innerHTML=`<div class="card lvl-now"><div class="lvl-big">${L.lv?esc(L.lv):"?"}</div><div><b>${L.lv?"Your level":"No level yet"}</b><div class="muted">${L.lv?esc(src):"Take the level check or choose your level below. Until then, Hibi assumes about B1."}</div>
+      ${noa&&noa.lv&&L.src!=="club"&&!(v&&v.level)?`<div class="lvl-rec">💡 Noa's estimate from the Free Talk Friday classes: <b>${esc(noa.lv)}</b> <button type="button" class="swap" data-lvset="${esc(noa.lv)}" data-lvsrc="club">Use this</button></div>`:""}
+      ${v&&v.level?`<div class="lvl-rec">🎓 As a private student, Noa's level for you is used for feedback. Your check still shows him how you're doing.</div>`:""}</div></div>
+      <div class="lvl-opts"><div class="card"><h3>⏱ Level check</h3><p class="muted">20 quick questions, from easy to hard. About 5 minutes. Tap “I don't know” instead of guessing.</p><button class="pill-btn pill-green" type="button" data-lvstart>Start the level check</button>${my&&my.src==="test"&&my.score!=null?`<p class="muted small" style="margin:8px 0 0">Last time: ${my.score}/20 → ${esc(my.lv)}</p>`:""}</div>
+      <div class="card"><h3>✋ Choose it yourself</h3><p class="muted">Not sure? A2 = simple everyday talk · B1 = you can explain and tell stories · B2 = you discuss most topics with some mistakes · C1 = you're fluent and precise.</p><div class="lvl-chips">${["A1","A2","A2-B1","B1","B1-B2","B2","C1","C2"].map(x=>`<button type="button" class="lvl-chip" data-lvset="${x}" data-lvsrc="self" aria-pressed="${my&&my.src==="self"&&my.lv===x}">${x}</button>`).join("")}</div>${my?`<button type="button" class="foot-link" data-lvclear>Clear my choice</button>`:""}</div></div>`;
+  }
+  function q(){
+    const i=run.i, it=Q[i];
+    box.innerHTML=`<div class="card lvl-q"><div class="quiz-top"><span class="tag">Question ${i+1} of ${Q.length}</span><button class="swap" type="button" data-lvquit>Stop</button></div><div class="lvl-bar"><i style="width:${i/Q.length*100}%"></i></div>
+      <p class="lvl-qt">${esc(it[1]).replace("___","<span class=\"lvl-gap\">___</span>")}</p><div class="lvl-ans">${it[2].map((a,k)=>`<button type="button" class="ps-opt" data-lva="${k}">${esc(a)}</button>`).join("")}<button type="button" class="ps-opt lvl-idk" data-lva="-1">I don't know</button></div></div>`;
+  }
+  function finish(){
+    const c=BANDS.map(b=>Q.filter((x,i)=>x[0]===b&&run.a[i]===x[3]).length), score=c.reduce((n,x)=>n+x,0);
+    let k=-1; for(let i=0;i<BANDS.length;i++){ if(c[i]>=3) k=i; else break; }
+    let lv=k<0?"A1":BANDS[k]; if(k>=0&&k<BANDS.length-1&&c[k+1]===2) lv=BANDS[k]+"-"+BANDS[k+1]; if(k<0&&c[0]===2) lv="A1";
+    setMy({lv,src:"test",score,at:Date.now()}); run=null;
+    try{ document.dispatchEvent(new CustomEvent("cs-leveltest",{detail:{lv,score}})); if(window.csUse) window.csUse("gram"); }catch(e){}
+    box.innerHTML=`<div class="card lvl-now"><div class="lvl-big">${esc(lv)}</div><div><b>Your level check: ${score}/20</b><div class="muted">${BANDS.map((b,i)=>`${b} ${c[i]}/4`).join(" · ")}</div><p style="margin:8px 0 0">Saved! Hibi now gives you feedback for <b>${esc(lv)}</b>. This was a quick grammar check, so if it feels too high or too low, just choose your level yourself.</p>
+      <div class="note-actions" style="margin-top:10px"><button class="pill-btn pill-green" type="button" data-pr="sent">Practice sentences at my level →</button><button class="swap" type="button" data-lvhome>Back</button></div></div></div>`;
+  }
+  box.addEventListener("click",e=>{
+    const t=e.target;
+    if(t.closest("[data-lvstart]")){ run={i:0,a:[]}; q(); return; }
+    if(t.closest("[data-lvquit]")||t.closest("[data-lvhome]")){ run=null; home(); return; }
+    const a=t.closest("[data-lva]"); if(a&&run){ run.a[run.i]=+a.dataset.lva; run.i++; if(run.i>=Q.length) finish(); else q(); return; }
+    const s=t.closest("[data-lvset]"); if(s){ setMy({lv:s.dataset.lvset,src:s.dataset.lvsrc,at:Date.now()}); if(typeof window.toast==="function") window.toast("📊 Level saved: "+s.dataset.lvset); home(); return; }
+    if(t.closest("[data-lvclear]")){ try{ localStorage.removeItem("ncs-mylevel"); }catch(er){} if(window.__csOnSet) try{ window.__csOnSet("ncs-mylevel"); }catch(er){} home(); paintNow(); return; }
+  });
+  const v=document.getElementById("v-quiz"), panel=document.querySelector('[data-pp="level"]');
+  if(panel) new MutationObserver(()=>{ if(!panel.hidden&&!run) home(); }).observe(panel,{attributes:true,attributeFilter:["hidden"]});
+  document.addEventListener("cs-hubview",paintNow); setTimeout(paintNow,1500); paintNow();
+})();
 </script>
 
 <section class="view" id="v-translate" hidden>
@@ -2523,7 +2594,8 @@ window.csLevel=function(){
   <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
-  <div class="pr-big"><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Vocabulary</b><span>Word sets by Noa: phrasal verbs, work, travel and more</span><span class="esb">Vocabulario</span></button><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Flashcards, sentences and pronunciation</span><span class="esb">Tus palabras</span></button></div></div>
+  <div class="pr-big"><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Vocabulary</b><span>Word sets by Noa: phrasal verbs, work, travel and more</span><span class="esb">Vocabulario</span></button><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Flashcards, sentences and pronunciation</span><span class="esb">Tus palabras</span></button></div>
+  <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Vocabulary</em></h1><p class="lede">Useful words and expressions, in sets. Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
@@ -2547,6 +2619,9 @@ window.csLevel=function(){
     </div>
   </div>
   </div>
+<div class="pr-panel" data-pp="level" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My English <em>level</em></h1>
+  <p class="lede">Your level helps Hibi give you fair feedback: the stars for your sentences are <b>for your level</b>, never compared with anyone else. It's not a grade, and you can change it any time.</p>
+  <div id="lvlBox"></div></div>
 <div class="pr-panel" data-pp="sent" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Use it in a <em>sentence</em></h1>
   <p>Write your own sentence with one of your words and get quick feedback. Each sentence gets ⭐ to ⭐⭐⭐ <b>for your level</b> (not compared with anyone else), and your buddy gets 1 to 3 🍪. Like your sentence? Save it as the word's example.</p>
   <div class="card sn-card" id="snCard" style="max-width:560px">
@@ -6250,6 +6325,7 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-sentences", date:"November 9, 2026", title:"Write your own sentences ✍️", items:[
+    ["📊","My English level","take a 5-minute level check or choose your level in <b>Practice → My English level</b>, so your feedback fits you.","quiz"],
     ["⭐","Stars for your sentences","in <b>Practice → Use it in a sentence</b>, every sentence gets 1 to 3 stars <b>for your level</b>, a tip to make the next one richer, and up to 3 🍪 for your buddy.","quiz"],
     ["📌","Your sentence, your example","like the sentence you wrote? Save it as that word's example in <b>My words</b>."],
     ["✍️","Write your own examples","in <b>✨ Complete my words</b>, tick <b>I'll write my own example sentences</b> and the AI leaves them for you.","words"]

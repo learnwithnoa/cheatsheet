@@ -241,7 +241,7 @@ async function load() {
         loveLog: parse(data["ncs-ttlove-log"], []),
         level: parse(data["ncs-level"], "normal"),
         mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), modrec: parse(data["ncs-modrec"], {}) || {},
-        loveLast: parse(data["ncs-ttlove"], ""),
+        loveLast: parse(data["ncs-ttlove"], ""), mylevel: parse(data["ncs-mylevel"], null),
         role: roles[d.id] || {}
       });
     }));
@@ -559,7 +559,7 @@ function renderDetail(s) {
     `<div class="note"><div class="nh"><div class="when">${fmtLong(n.t)}</div><div><button class="ib" data-nedit="${esc(n.id)}" type="button">Edit</button><button class="ib del" data-ndel="${esc(n.id)}" type="button">Delete</button></div></div>
       ${n.by === "teacher" ? `<div class="by">written by you</div>` : ""}<div class="txt">${esc(n.text)}</div></div>`;
   $("detail").innerHTML = `
-    <h2 style="margin-top:0">${esc(s.name)}</h2>
+    <h2 style="margin-top:0">${esc(s.name)}${(() => { const m = s.mylevel, r = s.role || {}; const bits = []; if (r.lv) bits.push("your estimate " + esc(r.lv)); if (m && m.lv) bits.push((m.src === "test" ? "level check " : "they chose ") + esc(m.lv)); return bits.length ? ` <span class="muted" style="font-size:13px;font-weight:600">· 📊 ${bits.join(" · ")}</span>` : ""; })()}</h2>
     <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
     <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:10px;cursor:pointer"><input type="checkbox" id="lvlBeg" ${s.level === "beginner" ? "checked" : ""}> 🌱 Beginner mode (more Spanish, simpler examples, slower voice)</label>
     <div class="row" style="margin-top:10px"><button type="button" class="kd-btn" data-kd="msg-${esc(s.uid)}">💌 Send ${esc(s.name.split(" ")[0])} a message</button></div>
