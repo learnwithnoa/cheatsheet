@@ -998,7 +998,8 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .lk-chip{all:unset;position:fixed;z-index:70;cursor:pointer;padding:6px 12px;border-radius:99px;background:var(--bright);color:#fff;font-size:14px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.3);white-space:nowrap}
 .lk-chip:focus-visible{outline:3px solid #fff}
 .coach-nav .em-ico,.t-nav .em-ico{font-size:15px}
-a.navbtn.t-nav{text-decoration:none}
+a.t-ico{text-decoration:none;font-size:17px;line-height:1;display:inline-flex;align-items:center;justify-content:center;min-width:38px}
+a.t-ico[hidden]{display:none!important}
 .ch-wrap{--c-g:#3DDC97;--c-a:#FFB547;--c-s:#5AB8FF;--c-v:#B18CFF;--c-p:#FF7EB6}
 html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-theme="unicorn"] .ch-wrap{--c-g:#12935C;--c-a:#B86E00;--c-s:#1C6FD1;--c-v:#7348D8;--c-p:#C2306F}
 .ch-tint{--k:var(--c-s);background:color-mix(in srgb,var(--k) 13%,var(--surface));border:1.5px solid color-mix(in srgb,var(--k) 42%,var(--line));border-radius:16px}
@@ -1024,6 +1025,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .ch-tbl th{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .ch-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .ch-goal{padding:14px 16px;white-space:pre-wrap}
+@media (max-width:520px){a.t-ico{display:none!important}}
 </style>
 
 <header class="top">
@@ -1038,6 +1040,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     </div>
     <div class="spacer"></div>
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
+    <a class="theme-btn t-ico" id="navTeacher" href="teacher.html" title="Members (teacher view)" aria-label="Members (teacher view)" hidden>👥</a>
+    <a class="theme-btn t-ico" id="navHub" href="hub.html" title="Coaching (your private students)" aria-label="Coaching (your private students)" hidden>🎓</a>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
@@ -1088,8 +1092,6 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
       <button class="navbtn cn-nav" data-go="park"><span class="w-ico em-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
       <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>My coaching</span></button>
-      <a class="navbtn cn-nav t-nav" href="teacher.html" id="navTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">🧑‍🏫</span><span>Teacher view</span></a>
-      <a class="navbtn cn-nav t-nav" href="hub.html" id="navHub" hidden><span class="w-ico em-ico" aria-hidden="true">🗂</span><span>Student hub</span></a>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup ng-start"><h4>Essentials</h4>
