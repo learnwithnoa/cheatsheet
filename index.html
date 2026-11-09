@@ -1175,6 +1175,16 @@ html .bd{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
 html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
 /* nothing pokes out of the park, so no scrollbar unless you zoom in */
 #parkWorld{overflow:hidden}
+
+/* View as: header drop-down */
+.va-pop{position:fixed;z-index:85;width:min(380px,calc(100vw - 24px));max-height:min(70vh,560px);overflow:auto;padding:14px 16px;box-shadow:0 18px 44px rgba(5,15,30,.35)}
+.va-pop .va-sec{border:0;padding:0;margin:0}
+/* header lines up with the page: search starts where the page column starts, buttons end where it ends */
+@media (min-width:901px){
+  .top-in>.brand{flex:0 0 210px}
+  .top-in>.search{margin-left:16px}
+  .top-in>.search + .spacer{flex:1}
+}
 </style>
 
 <header class="top">
@@ -1655,15 +1665,28 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
     payments:[{date:"2026-10-28",what:"Half of Pack Intermedio 36 créditos",amount:"$132.000"}],words:[{w:"get the hang of",tr:"agarrarle la mano",ex:"I'm getting the hang of it.",i:0}],
     recap:{date:"2026-11-06",summary:"Great class! You told me about your weekend trip and we practised when to use past simple and when to use present perfect. Your sentences with new words were much more natural this time.",talked:["Your weekend trip to the coast","Past simple vs present perfect (“I went” vs “I have been”)","Checking your vocabulary sentences"],vocab:[{w:"get the hang of",tr:"agarrarle la mano",ex:"I'm getting the hang of it."},{w:"worth it",tr:"valer la pena",ex:"The drive was long, but it was worth it."}],homework:"Write 5 sentences with your new words and read chapter 3 of your story.",heads:["Next class is at 1:00pm instead of 12:00pm."]}};
   /* "View as" lives at the top of Settings, only for Noa */
+  /* "View as" has its own 👁 button in the header (Noa only), with a drop-down panel */
   function vaSection(){
-    if(!window.__csTeacher){ const x=document.getElementById("vaSec"); if(x) x.remove(); return; } if(document.getElementById("vaSec")) return;
-    const head=document.querySelector("#csPanel .cs-head"); if(!head) return;
-    const sec=document.createElement("div"); sec.className="cs-sec va-sec"; sec.id="vaSec";
-    sec.innerHTML=`<h4>👁 View the site as… <span class="va-only">only you see this</span></h4><button type="button" class="va-open" id="vaOpen" aria-expanded="false">Choose a student or a generic view</button><div class="va-list" id="vaList" hidden></div>`;
-    head.insertAdjacentElement("afterend",sec);
+    const t=!!window.__csTeacher&&!window.__csPreview;
+    let btn=document.getElementById("vaHdr"), pop=document.getElementById("vaPop");
+    if(!t){ if(btn) btn.hidden=true; if(pop) pop.hidden=true; return; }
+    if(!btn){ const anchor=document.getElementById("navTeacher"); if(!anchor) return;
+      btn=document.createElement("button"); btn.type="button"; btn.id="vaHdr"; btn.className="theme-btn t-ico"; btn.title="View the site as a student"; btn.setAttribute("aria-label","View the site as a student"); btn.setAttribute("aria-expanded","false"); btn.textContent="👁";
+      anchor.insertAdjacentElement("beforebegin",btn); }
+    btn.hidden=false;
+    if(!pop){ pop=document.createElement("div"); pop.id="vaPop"; pop.className="va-pop card"; pop.hidden=true;
+      pop.innerHTML=`<div class="cs-sec va-sec" id="vaSec"><h4>👁 View the site as… <span class="va-only">only you see this</span></h4><button type="button" class="va-open" id="vaOpen" aria-expanded="false">Choose a student or a generic view</button><div class="va-list" id="vaList" hidden></div></div>`;
+      document.body.appendChild(pop); }
   }
-  document.addEventListener("cs-teacher",vaSection); setTimeout(vaSection,1500);
-  document.addEventListener("click",e=>{ if(e.target.closest("#csBtn")) setTimeout(vaSection,0); },true);
+  document.addEventListener("cs-teacher",vaSection); document.addEventListener("cs-preview",vaSection); setTimeout(vaSection,1500);
+  document.addEventListener("click",e=>{
+    const b=e.target.closest("#vaHdr"), pop=document.getElementById("vaPop");
+    if(b&&pop){ const open=pop.hidden; pop.hidden=!open; b.setAttribute("aria-expanded",String(open));
+      if(open){ const r=b.getBoundingClientRect(); pop.style.top=Math.round(r.bottom+8)+"px"; pop.style.right=Math.max(12,Math.round(window.innerWidth-r.right))+"px"; const L=document.getElementById("vaList"); if(L&&L.hidden){ const o=document.getElementById("vaOpen"); if(o) o.click(); } }
+      return; }
+    if(pop&&!pop.hidden&&!e.target.closest("#vaPop")){ pop.hidden=true; const hb=document.getElementById("vaHdr"); if(hb) hb.setAttribute("aria-expanded","false"); }
+  });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const pop=document.getElementById("vaPop"); if(pop&&!pop.hidden){ pop.hidden=true; const hb=document.getElementById("vaHdr"); if(hb){ hb.setAttribute("aria-expanded","false"); hb.focus(); } } } });
   let vaData=null;
   function vaRender(q){
     const L=document.getElementById("vaList"); if(!L||!vaData) return; q=(q||"").toLowerCase().trim();
@@ -1678,7 +1701,7 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
       (q&&!pv.length&&!cl.length?`<p class="muted">Nobody called “${esc(q)}”.</p>`:"");
   }
   function banner(label){ let b=document.getElementById("vaBanner"); if(!label){ if(b) b.remove(); return; } if(!b){ b=document.createElement("div"); b.id="vaBanner"; b.className="va-banner"; document.body.prepend(b); } b.innerHTML=`👁 Viewing as ${esc(label)} <button type="button" id="vaExit">Back to my view</button>`; }
-  function preview(label,view,kind){ window.__csPreview={label,kind:kind||(view?"private":"club")}; window.__csHubView=view; banner(label); document.dispatchEvent(new CustomEvent("cs-hubview")); document.dispatchEvent(new CustomEvent("cs-preview")); const c=document.getElementById("csClose"); if(c) c.click(); if(view){ const b=document.getElementById("navCoaching"); if(b) b.click(); } else { const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); } }
+  function preview(label,view,kind){ window.__csPreview={label,kind:kind||(view?"private":"club")}; window.__csHubView=view; banner(label); document.dispatchEvent(new CustomEvent("cs-hubview")); document.dispatchEvent(new CustomEvent("cs-preview")); const c=document.getElementById("csClose"); if(c) c.click(); const vp=document.getElementById("vaPop"); if(vp) vp.hidden=true; if(view){ const b=document.getElementById("navCoaching"); if(b) b.click(); } else { const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); } }
   /* a real student: load what they saved (words, notes, buddy…) and reload the page showing it, read-only */
   async function realView(label,view,kind,uid,btn){
     if(btn){ btn.disabled=true; btn.textContent="Loading…"; }
