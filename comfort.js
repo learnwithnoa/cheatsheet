@@ -1,6 +1,6 @@
-/* ===== Cheat Sheet · Reading & comfort settings =====
-   Shared by the Cheat Sheet (index.html) and Cheat Sheet members (members.html).
-   Settings live in localStorage "ncs-comfort" (synced to the student's account on the Cheat Sheet). */
+/* ===== Hibi · Reading & comfort settings =====
+   Shared by Hibi (index.html) and Hibi members (members.html).
+   Settings live in localStorage "ncs-comfort" (synced to the student's account on Hibi). */
 (function () {
   "use strict";
   const KEY = "ncs-comfort";
@@ -31,7 +31,7 @@
     default: "<b>Lexend</b> (the default): clean and round, with a little extra space between letters. It was designed to make reading easier and faster.",
     atkinson: "<b>Atkinson Hyperlegible</b>: made for people with low vision. Letters that look alike, like I, l and 1, are easy to tell apart.",
     book: "<b>Book</b> (Literata): a calm, classic font like the ones in printed books and e-readers. Lovely with the Sepia look.",
-    classic: "<b>Classic</b>: the Cheat Sheet's original look, with Nunito for text and playful Sour Gummy for titles. Soft, round and friendly."
+    classic: "<b>Classic</b>: Hibi's original look, with Nunito for text and playful Sour Gummy for titles. Soft, round and friendly."
   };
   /* ---------- fonts (loaded only when chosen) ---------- */
   const FONTS = {
@@ -132,7 +132,7 @@
   }
 
   /* ---------- focus mode ---------- */
-  // the teacher view keeps its own focus setting, so focus mode on the Cheat Sheet doesn't hide the student list
+  // the teacher view keeps its own focus setting, so focus mode on Hibi doesn't hide the student list
   let tFocus = false; try { tFocus = localStorage.getItem("cs-tfocus") === "1"; } catch (e) {}
   const focusOn = () => isMain ? !!S.focus : tFocus;
   function setFocus(v) { if (isMain) { S.focus = v; save(); } else { tFocus = v; try { localStorage.setItem("cs-tfocus", v ? "1" : "0"); } catch (e) {} } }
@@ -146,7 +146,7 @@
     } else if (b) b.hidden = true;
   }
 
-  /* ---------- read aloud (Cheat Sheet only) ---------- */
+  /* ---------- read aloud (Hibi only) ---------- */
   let speaking = null;
   const canSpeak = "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
   function voices() { try { return speechSynthesis.getVoices() || []; } catch (e) { return []; } }
@@ -253,7 +253,7 @@
     document.addEventListener("click", e => { if (e.target.closest("[data-go], .navbtn")) stopReading(); }, true);
   }
 
-  /* ---------- study timer (Cheat Sheet only) ---------- */
+  /* ---------- study timer (Hibi only) ---------- */
   let tLen = 25 * 60, tLeft = 25 * 60, tEnd = 0, tInt = null, tRun = false;
   try { const t = JSON.parse(sessionStorage.getItem("cs-timer") || "null"); if (t) { tLen = t.len; if (t.end && t.end > Date.now()) { tEnd = t.end; tRun = true; } else tLeft = t.left ?? t.len; } } catch (e) {}
   const fmt = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
@@ -274,12 +274,15 @@
   function tPause() { if (!tRun) return; tLeft = Math.max(0, Math.round((tEnd - Date.now()) / 1000)); tRun = false; clearInterval(tInt); tInt = null; tSave(); paintTimer(); }
   function tReset() { tRun = false; clearInterval(tInt); tInt = null; tLeft = tLen; tSave(); paintTimer(); }
   function tSet(min) { tLen = min * 60; tReset(); }
+  /* other parts of the site (Practice page) can start the timer too */
+  window.csTimer = { start(min) { tSet(min); tStart(); }, pause: () => tPause(), resume: () => tStart(), reset: () => tReset(), state: () => ({ run: tRun, left: tRun ? Math.max(0, Math.round((tEnd - Date.now()) / 1000)) : tLeft, len: tLen }) };
   function paintTimer() {
     const d = $("csTime"); if (d) d.textContent = fmt(tLeft);
     const go = $("csTGo"); if (go) go.textContent = tRun ? "Pause" : (tLeft < tLen ? "Resume" : "Start");
     document.querySelectorAll("[data-tmin]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.tmin * 60 === tLen)));
     const chip = $("csTimerChip");
     if (chip) { chip.hidden = !tRun && tLeft === tLen; chip.textContent = (tRun ? "⏱ " : "⏸ ") + fmt(tLeft); }
+    document.dispatchEvent(new CustomEvent("cs-timer"));
   }
 
   /* ---------- calm mode: no surprise pop-ups ---------- */

@@ -3,22 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Your English Cheat Sheet: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
+<meta name="description" content="Hibi 日々, your daily English: verb tenses, irregular verbs, grammar, your words and class notes, by Learn with Noa.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}.brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px;min-width:0}.kj{font:700 15px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em;white-space:nowrap}footer .kj{font-size:inherit;font-weight:600}
+</style>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=14">
+<link rel="stylesheet" href="comfort.css?v=15">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=16" defer></script>
+<script src="comfort.js?v=17" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Cheat Sheet">
+<meta name="apple-mobile-web-app-title" content="Hibi">
 </head>
 <body data-auth="out">
 <script>try{if(localStorage.getItem("ncs-sync-uid"))document.body.dataset.auth="in";}catch(e){}</script>
-<title>Cheat Sheet</title>
+<title>Hibi 日々 · Learn with Noa</title>
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft"){t="sepia";localStorage.setItem("ncs-theme",t);}}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1052,7 +1053,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .ch-guide{display:flex;flex-direction:column;gap:3px;padding:12px 14px;text-decoration:none;color:var(--ink)}.ch-guide span{font-size:13px;color:var(--muted)}
 .ch-guide:hover{border-color:var(--k)}
 
-.vhead .rec-bar{margin-right:6px}.vhead .rec-bar span:first-child{color:inherit}
+.vhead .rec-bar span:first-child{color:inherit}
+.cs-read-row>.star-btn,.cs-read-row>.cs-read{margin:8px 0 0}
 .rec-btn{all:unset;cursor:pointer;font:800 13px var(--body);padding:6px 12px;border-radius:999px;color:#fff;background:linear-gradient(90deg,#7348D8,#C2306F);box-shadow:0 2px 8px rgba(115,72,216,.35)}
 .rec-btn:focus-visible{outline:3px solid var(--royal);outline-offset:2px}
 .rec-f{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.rec-f input{flex:1;min-width:160px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--body)}
@@ -1063,11 +1065,24 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .co-dot{margin-left:auto;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#E5533D;color:#fff;font:800 11px/18px var(--body);text-align:center}
 .ch-news{margin:12px 0 0;padding:12px 16px;border-radius:16px;border:1.5px solid color-mix(in srgb,#E5533D 45%,var(--line));background:color-mix(in srgb,#E5533D 7%,var(--surface))}
 .ch-news-h{display:flex;justify-content:space-between;align-items:center;gap:10px}.ch-news ul{margin:6px 0;padding-left:4px;list-style:none;font-size:14.5px}.ch-news li{margin:3px 0}
+.rc-bgs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rc-bg{all:unset;cursor:pointer;font:700 12.5px var(--body);padding:5px 10px;border-radius:99px;border:1.5px solid var(--line);color:var(--ink)}
+.rc-bg[aria-pressed="true"]{border-color:var(--bright);background:color-mix(in srgb,var(--bright) 16%,transparent)}
+.rc-bg:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+
+.pr-timer{margin:12px 0 16px;padding:12px 16px;border-color:color-mix(in srgb,var(--bright) 40%,var(--line))}
+.prt-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}.prt-btns{display:flex;gap:8px;align-items:center;margin-left:auto}
+.prt-big{font:800 22px var(--mono)}
+.prt-b{all:unset;cursor:pointer;font:800 13.5px var(--body);padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);color:var(--ink);background:var(--surface)}
+.prt-b:hover{border-color:var(--bright)}.prt-b.rec{border-color:var(--bright);background:color-mix(in srgb,var(--bright) 14%,var(--surface))}
+.prt-b:focus-visible,.prt-x:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.prt-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:var(--muted);font-size:18px}
+.prt-tip{margin:8px 0 0;font-size:14px;color:var(--muted)}
 </style>
 
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="#notes" data-go="notes" aria-label="Cheat Sheet, go to Home"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
+    <a class="brand" href="#notes" data-go="notes" aria-label="Hibi, go to Home"><small>Learn with Noa</small><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
     <div class="search" id="searchWrap" role="search">
       <label for="gSearch" class="sr">Search the cheat sheet</label>
       <span class="search-ico" aria-hidden="true"></span>
@@ -1077,7 +1092,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     </div>
     <div class="spacer"></div>
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
-    <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Cheat Sheet members" aria-label="Cheat Sheet members" hidden>👥</a>
+    <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Hibi members" aria-label="Hibi members" hidden>👥</a>
     <a class="theme-btn t-ico" id="navHub" href="coaching.html" title="Coaching (private students)" aria-label="Coaching" hidden>🎓</a>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
@@ -1573,7 +1588,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
       <div class="rec-f"><input type="search" id="recQ" placeholder="Search a name…" autocomplete="off"><div class="rec-chips">${[["all","All"],["private","🌳 Private"],["both","🌳🌼 Both"],["club","🌼 Club"]].map(([k,l],i)=>`<button type="button" data-rk="${k}" aria-pressed="${i?"false":"true"}">${l}</button>`).join("")}</div></div>
       <div class="rec-list" id="recList"><p class="muted">Loading everyone…</p></div>
       <label class="muted" for="recMsg" style="font-size:13px;display:block;margin-top:10px">Message (“{name}” becomes their first name). It pops up with an <b>Open it →</b> button:</label>
-      <textarea id="recMsg" rows="3" style="width:100%;box-sizing:border-box">Hi {name}! 💡 Have a look at the “${esc(title.trim())}” page in your Cheat Sheet. I think it'll really help you. – Noa</textarea>
+      <textarea id="recMsg" rows="3" style="width:100%;box-sizing:border-box">Hi {name}! 💡 Have a look at the “${esc(title.trim())}” page in Hibi. I think it'll really help you. – Noa</textarea>
       <div class="note-actions" style="margin-top:10px"><button class="pill-btn pill-green" type="button" id="recSend" disabled>Send ⭐</button><span class="muted" id="recN" style="font-size:13px">Pick at least one student</span></div>`,{cls:"rec-dlg"});
     const el=dlg.el; let kind="all", q="";
     try{ recPeople=recPeople||await window.__csTeach.people(); }catch(err){ recPeople=[]; }
@@ -1594,6 +1609,32 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     });
   });
   document.addEventListener("click",e=>{ if(e.target.closest("[data-cnseen]")){ markSeen(window.__csHubView); render(); } });
+  /* ---------- ⏱ study timer card on the Practice page ---------- */
+  const TIPS=[
+    "Short, focused sessions beat long ones: your attention drops after about 20–30 minutes. Try 25 minutes, then a 5-minute break.",
+    "Practising a little every day helps you remember more than one long session a week. Scientists call it the spacing effect.",
+    "Testing yourself (flashcards, practice rounds) makes words stick better than re-reading them. It's called retrieval practice.",
+    "Mixing different topics in one session (a bit of grammar, a bit of vocabulary) helps you learn them better than one topic at a time.",
+    "Put your phone in another room while the timer runs. Even a phone face-down on the desk pulls some of your attention."];
+  function timerCard(){
+    const hub=document.getElementById("prHub"); if(!hub) return;
+    let c=document.getElementById("prTimer");
+    if(!c){ c=document.createElement("div"); c.id="prTimer"; c.className="pr-timer card"; const l=hub.querySelector(".esb")||hub.querySelector(".lede"); if(l) l.insertAdjacentElement("afterend",c); else hub.prepend(c); }
+    const T=window.csTimer, st=T?T.state():{run:false,left:0,len:0}, fmt=x=>Math.floor(x/60)+":"+String(x%60).padStart(2,"0");
+    const tip=TIPS[new Date().getDate()%TIPS.length], hide=(()=>{ try{ return localStorage.getItem("cs-prtimer-hide")===new Date().toDateString(); }catch(e){ return false; } })();
+    if(!T){ c.hidden=true; return; }
+    const paused=!st.run&&st.left<st.len;
+    if(hide&&!st.run&&!paused){ c.hidden=true; return; }
+    c.hidden=false;
+    c.innerHTML=st.run||paused?`<div class="prt-row"><span class="prt-big">⏱ ${fmt(st.left)}</span><span class="muted">${st.run?"left in your study session. It keeps going on every page.":"paused"}</span><span class="prt-btns"><button type="button" class="prt-b" data-prt="${st.run?"pause":"resume"}">${st.run?"Pause":"Resume"}</button><button type="button" class="prt-b" data-prt="reset">Stop</button></span></div>`
+      :`<div class="prt-row"><b>⏱ Want to study with a timer?</b><span class="prt-btns">${[10,15,25].map(m=>`<button type="button" class="prt-b${m===25?" rec":""}" data-prt="${m}">${m} min</button>`).join("")}<button type="button" class="prt-x" data-prt="hide" aria-label="Hide for today" title="Hide for today">×</button></span></div><p class="prt-tip">💡 ${esc(tip)}</p>`;
+  }
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-prt]"); if(!b||!window.csTimer) return; const k=b.dataset.prt;
+    if(k==="hide"){ try{ localStorage.setItem("cs-prtimer-hide",new Date().toDateString()); }catch(er){} timerCard(); return; }
+    if(k==="pause") window.csTimer.pause(); else if(k==="resume") window.csTimer.resume(); else if(k==="reset") window.csTimer.reset(); else window.csTimer.start(+k);
+    timerCard(); });
+  let tcT=0; document.addEventListener("cs-timer",()=>{ const now=Date.now(); if(now-tcT<900) return; tcT=now; const v=document.getElementById("v-quiz"); if(v&&!v.hidden) timerCard(); });
+  setTimeout(timerCard,1200); window.addEventListener("hashchange",()=>setTimeout(timerCard,50));
   render();
 })();
 </script>
@@ -1765,7 +1806,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     <div class="card bk-card"><span class="tag" style="background:var(--green-soft);color:var(--green)">step 2 · on the other device</span>
       <h3>Paste it here</h3>
       <p class="fb-help" style="margin:0"><b>Coming from the old Cheat Sheet?</b> Paste what you copied with <b>Copy my notes</b> there.</p>
-      <p class="fb-help" style="margin:0">Open the Cheat Sheet on the other device, come to this page (<b>Back up or move your notes</b>, at the bottom of any page) and paste the code.</p>
+      <p class="fb-help" style="margin:0">Open Hibi on the other device, come to this page (<b>Back up or move your notes</b>, at the bottom of any page) and paste the code.</p>
       <label for="bkIn" class="sr">Paste your backup code</label>
       <textarea id="bkIn" spellcheck="false" placeholder="Paste your backup code here"></textarea>
       <button class="pill-btn pill-green" type="button" id="bkRestore">Restore</button>
@@ -1778,7 +1819,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 <!-- ============ CHANGELOG ============ -->
 <section class="view" id="v-changelog" hidden>
   <h1>What's <em>new</em></h1>
-  <p class="lede">Everything that's been added to your Cheat Sheet, newest first.</p>
+  <p class="lede">Everything that's been added to Hibi, newest first.</p>
   <div id="clList" class="cl-list"></div>
 </section>
 
@@ -2384,8 +2425,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 </div>
 </section>
 
-<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=23" defer></script>
+<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
+<script src="buddy.js?v=24" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -2405,7 +2446,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   <div class="wl-top"><span class="wl-count" id="wlCount">1 of 4</span><button class="qa-x" type="button" id="wlSkip" aria-label="Close the tour">×</button></div>
 
   <div class="wl-step" data-step="0">
-    <h2 id="wlTitle">Welcome to your <em>Cheat Sheet</em> 👋</h2>
+    <h2 id="wlTitle">Welcome to <em>Hibi</em> <span lang="ja">日々</span> 👋</h2>
     <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. It does three jobs:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">📚</span><div><b>A quick reference while you speak.</b> Verb tenses, irregular verbs, grammar and phrases for when you're stuck, all short and clear. Keep it open next to Zoom during class.</div></li>
@@ -2426,7 +2467,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 
   <div class="wl-step" data-step="2" hidden>
     <h2><em>My words</em>: the heart of it 💛</h2>
-    <p class="wl-lede">The words you save are the most important part of the Cheat Sheet. Everything else builds on them.</p>
+    <p class="wl-lede">The words you save are the most important part of Hibi. Everything else builds on them.</p>
     <ul class="wl-list">
       <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My words</b> and it's organized for you, with meanings and examples.</div></li>
@@ -3520,18 +3561,18 @@ window.csDialog=csDialog; /* buddy.js (duels) uses it too */
   let deferred=null;
   const standalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
   window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferred=e; });
-  window.addEventListener("appinstalled",()=>{ deferred=null; toast("🎉 Installed! Find the Cheat Sheet on your home screen."); });
+  window.addEventListener("appinstalled",()=>{ deferred=null; toast("🎉 Installed! Find Hibi on your home screen."); });
   function how(){
     const ua=navigator.userAgent||"", ios=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1), android=/Android/i.test(ua), safariMac=/Macintosh/.test(ua)&&/Safari/.test(ua)&&!/Chrome|Edg|Firefox/.test(ua);
     if(ios) return "<ol><li>Tap the <b>Share</b> button <span aria-hidden=\"true\">⬆︎</span> (at the bottom in Safari, or at the top in Chrome).</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. That's it!</li></ol>";
     if(android) return "<ol><li>Tap your browser's menu <b>⋮</b> (top right).</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li><li>Tap <b>Install</b>.</li></ol>";
     if(safariMac) return "<ol><li>In the menu bar, click <b>File</b>.</li><li>Click <b>Add to Dock…</b></li></ol>";
-    return "<ol><li>Look for the install icon <b>⊕</b> at the right end of the address bar and click it.</li><li>Or open the browser menu <b>⋮</b> and choose <b>Install Cheat Sheet</b> (in Edge: <b>Apps → Install this site as an app</b>).</li></ol>";
+    return "<ol><li>Look for the install icon <b>⊕</b> at the right end of the address bar and click it.</li><li>Or open the browser menu <b>⋮</b> and choose <b>Install Hibi</b> (in Edge: <b>Apps → Install this site as an app</b>).</li></ol>";
   }
   window.csInstall=async function(){
-    if(standalone()){ csDialog('<h3 style="margin-top:0">📲 You\'re already in the app 🎉</h3><p>You opened the Cheat Sheet from your home screen. Nothing else to do!</p>'); return; }
+    if(standalone()){ csDialog('<h3 style="margin-top:0">📲 You\'re already in the app 🎉</h3><p>You opened Hibi from your home screen. Nothing else to do!</p>'); return; }
     if(deferred){ try{ deferred.prompt(); const r=await deferred.userChoice; deferred=null; if(r&&r.outcome==="accepted") return; }catch(e){} }
-    csDialog('<h3 style="margin-top:0">📲 Get the Cheat Sheet app</h3><p>Add the Cheat Sheet to your home screen. It opens like an app, full screen, with your words and notes right there.</p>'+how()+'<p class="muted" style="font-size:13.5px;margin-bottom:0">It\'s free and takes no space. Your words and notes stay synced with your account.</p>');
+    csDialog('<h3 style="margin-top:0">📲 Get the Hibi app</h3><p>Add Hibi to your home screen. It opens like an app, full screen, with your words and notes right there.</p>'+how()+'<p class="muted" style="font-size:13.5px;margin-bottom:0">It\'s free and takes no space. Your words and notes stay synced with your account.</p>');
   };
   document.addEventListener("click",e=>{ if(e.target.closest("[data-install]")){ e.preventDefault(); window.csInstall(); } });
   // Settings panel: add an "Install the app" button
@@ -3539,7 +3580,7 @@ window.csDialog=csDialog; /* buddy.js (duels) uses it too */
     const p=document.getElementById("csPanel"); if(!p||document.getElementById("csInstallSec")) return;
     const secs=p.querySelectorAll(".cs-sec"), last=secs[secs.length-1]; if(!last) return;
     const sec=document.createElement("div"); sec.className="cs-sec"; sec.id="csInstallSec";
-    sec.innerHTML='<h4>App</h4><button class="cs-reset" type="button" data-install style="text-align:left">📲 Install the Cheat Sheet as an app</button><small style="color:var(--muted);font-size:12.5px">Opens from your home screen like a normal app.</small>';
+    sec.innerHTML='<h4>App</h4><button class="cs-reset" type="button" data-install style="text-align:left">📲 Install Hibi as an app</button><small style="color:var(--muted);font-size:12.5px">Opens from your home screen like a normal app.</small>';
     p.insertBefore(sec,last);
   }
   new MutationObserver(inject).observe(document.body,{childList:true,subtree:true}); inject();
@@ -4714,7 +4755,7 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
     let buddy="";
     try{ if(window.csBuddy&&bd.on===true) buddy='<div class="as-row"><span>💛 Buddy friendship</span><b>Level '+window.csBuddy.level()+'</b></div>'; }catch(e){}
     const row=(i,l,v)=>'<div class="as-row"><span>'+i+' '+l+'</span><b>'+v+'</b></div>';
-    box.innerHTML='<h4>Your Cheat Sheet</h4>'+
+    box.innerHTML='<h4>Hibi</h4>'+
       row("📅","Here since",fmtD(joined))+
       row("⏱️","Practice time","≈ "+fmtT(pt.s|0)+'<small>since '+fmtD(pt.since)+'</small>')+
       row("🌱","Study days",days)+
@@ -4738,58 +4779,83 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
   document.addEventListener("cs-fcround",e=>{ if(!(e.detail&&e.detail.n<5)) bump(); });
   function stats(off){
     const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()+off);
-    const y=d.getFullYear(), m=d.getMonth(), k=y+"-"+(m+1);
+    const y=d.getFullYear(), m=d.getMonth(), k=y+"-"+(m+1), kk=y+"-"+String(m+1).padStart(2,"0");
     const inM=t=>{ if(!t) return false; const x=new Date(t); return x.getFullYear()===y&&x.getMonth()===m; };
-    const ws=(LS.get("ncs-words",[])||[]).filter(w=>w&&w.w);
+    const ws=(LS.get("ncs-words",[])||[]).filter(w=>w&&w.w&&!w.sample);
     const bd=LS.get("ncs-buddy",{})||{};
-    const days=(Array.isArray(bd.gd)?bd.gd:[]).filter(g=>String(g).startsWith(k+"-")).length;
+    const gd=(Array.isArray(bd.gd)?bd.gd:[]).map(String).filter(g=>g.startsWith(k+"-")||g.startsWith(kk+"-"));
+    const dayN=[...new Set(gd.map(g=>+g.split("-")[2]))].sort((a,b)=>a-b); let streak=0,run=0,prev=-9; dayN.forEach(n=>{ run=n===prev+1?run+1:1; prev=n; streak=Math.max(streak,run); });
     const fc=LS.get("ncs-fc",{})||{}, learned=Object.values(fc).filter(v=>v>=3).length;
     const md=LS.get("ncs-mods",{})||{}, stars=["ps","pp"].reduce((t,k)=>t+Object.values((md[k]||{}).s||{}).reduce((a,b)=>a+(b|0),0),0);
     const notes=(LS.get("ncs-classnotes",[])||[]).filter(n=>n&&inM(n.t)).length;
-    return {month:MON[m], y, words:ws.filter(w=>inM(w.t)).length, total:ws.length, days, rounds:(LS.get("ncs-mst",{})||{})[k]|0, learned, stars, notes,
-      lvl:(window.csBuddy&&bd.on===true)?window.csBuddy.level():0, bname:(window.csBuddy&&bd.on===true)?window.csBuddy.name():""};
+    const mw=ws.filter(w=>inM(w.t)).sort((a,b)=>(b.t||0)-(a.t||0));
+    const on=window.csBuddy&&bd.on===true;
+    return {month:MON[m], y, words:mw.length, newest:mw[0]?mw[0].w:"", total:ws.length, days:dayN.length, streak, rounds:(LS.get("ncs-mst",{})||{})[k]|0, learned, stars, notes,
+      dw:bd.dw|0, dplay:bd.dplay|0, lvl:on?window.csBuddy.level():0, bname:on?window.csBuddy.name():"", room:on};
   }
+  /* only things they actually did: no zeros */
+  function modules(st){
+    const L=[];
+    const add=(ico,n,one,many)=>{ if(n>0) L.push({ico,n:String(n),t:n===1?one:many}); };
+    add("📚",st.words,"new word","new words");
+    add("🌱",st.days,"study day","study days");
+    if(st.streak>=2) add("🔥",st.streak,"","days in a row");
+    add("🎯",st.rounds,"practice round","practice rounds");
+    add("✅",st.learned,"word learned","words learned");
+    add("🧩",st.stars,"grammar star","grammar stars");
+    add("📝",st.notes,"class note","class notes");
+    add("⚔️",st.dw,"duel win","duel wins");
+    if(!st.words) add("🗂️",st.total,"word in my collection","words in my collection");
+    return L.slice(0,6);
+  }
+  const BG={night:["#0B1226","#16235A","#3A1F5C"],sunset:["#2B1055","#B8336A","#F29A3E"],ocean:["#03203C","#0E5E8A","#1FA2B5"],forest:["#0A2618","#1E5631","#5E8C3E"],candy:["#4B2378","#B02A6B","#E88AB4"]};
+  const BGS=[["room","🏠","My buddy's room"],["night","🌌","Night"],["sunset","🌅","Sunset"],["ocean","🌊","Ocean"],["forest","🌲","Forest"],["candy","🍬","Candy"]];
   function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
-  async function draw(st){
+  const svgImg=async(svg,w,h)=>{ const img=new Image(); img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg.replace("<svg ",'<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" ')); await new Promise((ok,no)=>{ img.onload=ok; img.onerror=no; }); return img; };
+  async function draw(st,bg){
     const W=1080,H=1920, cv=document.createElement("canvas"); cv.width=W; cv.height=H; const c=cv.getContext("2d");
-    const g=c.createLinearGradient(0,0,W,H); g.addColorStop(0,"#0B1226"); g.addColorStop(.55,"#16235A"); g.addColorStop(1,"#3A1F5C"); c.fillStyle=g; c.fillRect(0,0,W,H);
-    for(let i=0;i<70;i++){ c.fillStyle="rgba(255,255,255,"+(Math.random()*.5+.15)+")"; const s=Math.random()*4+1; c.fillRect(Math.random()*W,Math.random()*H*.55,s,s); }
-    const F='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
-    c.textAlign="center"; c.fillStyle="#9FB4FF"; c.font="700 40px "+F; c.fillText("MY "+st.month.toUpperCase()+" "+st.y,W/2,170);
-    c.fillStyle="#FFFFFF"; c.font="800 92px "+F; c.fillText("on the Cheat Sheet",W/2,280);
-    /* buddy */
-    let by=340;
-    if(st.lvl&&window.csBuddy){
-      rr(c,270,by,540,470,48); c.fillStyle="rgba(255,255,255,.08)"; c.fill();
-      try{
-        const svg=window.csBuddy.portrait().replace("<svg ",'<svg xmlns="http://www.w3.org/2000/svg" width="400" height="440" ');
-        const img=new Image(); img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
-        await new Promise((ok,no)=>{ img.onload=ok; img.onerror=no; });
-        c.imageSmoothingEnabled=false; c.drawImage(img,370,by+24,340,374);
-      }catch(e){}
-      c.fillStyle="#FFFFFF"; c.font="800 50px "+F; c.fillText(st.bname,W/2,by+440);
-      by+=470;
-      c.fillStyle="#FFD86B"; c.font="700 40px "+F; c.fillText("💛 Friendship level "+st.lvl,W/2,by+66); by+=100;
-    } else by+=40;
-    /* stat cards */
-    const cards=[["📚",st.words,st.words===1?"new word":"new words"],["🌱",st.days,st.days===1?"study day":"study days"],["🎯",st.rounds,st.rounds===1?"practice round":"practice rounds"],["✅",st.learned,"words learned"],["🧩",st.stars,st.stars===1?"grammar star":"grammar stars"],["📝",st.notes,st.notes===1?"class note":"class notes"]];
-    const cw=440, ch=220, gx=50, x0=(W-cw*2-gx)/2;
-    cards.forEach((k,i)=>{ const x=x0+(i%2)*(cw+gx), y=by+Math.floor(i/2)*(ch+30);
-      rr(c,x,y,cw,ch,36); c.fillStyle="rgba(255,255,255,.1)"; c.fill();
-      c.fillStyle="#FFFFFF"; c.font="60px "+F; c.fillText(k[0],x+cw/2,y+76); c.fillStyle="#FFFFFF"; c.font="800 72px "+F; c.fillText(String(k[1]),x+cw/2,y+154); c.fillStyle="#B9C6F2"; c.font="600 32px "+F; c.fillText(k[2],x+cw/2,y+200); c.fillStyle="#FFFFFF"; });
-    c.fillStyle="#FFFFFF"; c.font="700 40px "+F; c.fillText("Learn with Noa",W/2,H-110); c.fillStyle="#9FB4FF"; c.font="600 34px "+F; c.fillText("@learnwithnoa",W/2,H-62);
+    const useRoom=bg==="room"&&st.room&&window.csBuddy&&window.csBuddy.scene;
+    const cols=BG[useRoom?"night":bg]||BG.night;
+    const g=c.createLinearGradient(0,0,W,H); g.addColorStop(0,cols[0]); g.addColorStop(.55,cols[1]); g.addColorStop(1,cols[2]); c.fillStyle=g; c.fillRect(0,0,W,H);
+    for(let i=0;i<60;i++){ c.fillStyle="rgba(255,255,255,"+(Math.random()*.45+.12)+")"; const s=Math.random()*4+1; c.fillRect(Math.random()*W,Math.random()*H*.5,s,s); }
+    const F='system-ui,-apple-system,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif';
+    c.textAlign="center"; c.fillStyle="rgba(255,255,255,.75)"; c.font="700 40px "+F; c.fillText("MY "+st.month.toUpperCase()+" "+st.y,W/2,160);
+    c.fillStyle="#FFFFFF"; c.font="800 96px "+F; c.fillText("on Hibi 日々",W/2,270);
+    let by=330;
+    if(useRoom){
+      try{ c.save(); rr(c,60,by,960,624,44); c.clip(); c.imageSmoothingEnabled=false; c.drawImage(await svgImg(window.csBuddy.scene(),960,624),60,by,960,624); c.restore(); rr(c,60,by,960,624,44); c.strokeStyle="rgba(255,255,255,.35)"; c.lineWidth=4; c.stroke(); }catch(e){}
+      by+=624+70; c.fillStyle="#FFFFFF"; c.font="800 50px "+F; c.fillText(st.bname+"  ·  💛 Level "+st.lvl,W/2,by); by+=50;
+    } else if(st.lvl&&window.csBuddy){
+      rr(c,270,by,540,470,48); c.fillStyle="rgba(255,255,255,.1)"; c.fill();
+      try{ c.imageSmoothingEnabled=false; c.drawImage(await svgImg(window.csBuddy.portrait(),400,440),370,by+24,340,374); }catch(e){}
+      c.fillStyle="#FFFFFF"; c.font="800 50px "+F; c.fillText(st.bname,W/2,by+440); by+=470;
+      c.fillStyle="#FFD86B"; c.font="700 40px "+F; c.fillText("💛 Friendship level "+st.lvl,W/2,by+66); by+=96;
+    } else by+=20;
+    const ms=modules(st), cw=440, ch=200, gx=50, gy=28, x0=(W-cw*2-gx)/2;
+    if(st.newest){ const y=by+20; rr(c,x0,y,cw*2+gx,120,36); c.fillStyle="rgba(255,255,255,.14)"; c.fill(); c.fillStyle="rgba(255,255,255,.7)"; c.font="600 30px "+F; c.fillText("Newest word this month",W/2,y+46); c.fillStyle="#FFFFFF"; c.font="800 48px "+F; c.fillText("“"+String(st.newest).slice(0,28)+"”",W/2,y+98); by=y+120+8; }
+    const avail=H-180-by, rows=Math.ceil(ms.length/2), chh=Math.min(ch,Math.floor((avail-gy*rows)/Math.max(1,rows)));
+    ms.forEach((k,i)=>{ const last=i===ms.length-1&&ms.length%2===1, x=last?(W-cw)/2:x0+(i%2)*(cw+gx), y=by+20+Math.floor(i/2)*(chh+gy);
+      rr(c,x,y,cw,chh,36); c.fillStyle="rgba(255,255,255,.12)"; c.fill();
+      c.fillStyle="#FFFFFF"; c.font="54px "+F; c.fillText(k.ico,x+cw/2,y+chh*.36); c.font="800 68px "+F; c.fillText(k.n,x+cw/2,y+chh*.72); c.fillStyle="rgba(255,255,255,.75)"; c.font="600 30px "+F; c.fillText(k.t,x+cw/2,y+chh*.92); });
+    if(!ms.length){ c.fillStyle="#FFFFFF"; c.font="700 46px "+F; c.fillText("A fresh start.",W/2,by+120); c.fillStyle="rgba(255,255,255,.75)"; c.font="600 36px "+F; c.fillText("Next month is yours 💪",W/2,by+176); }
+    c.fillStyle="#FFFFFF"; c.font="700 40px "+F; c.fillText("Hibi 日々 by Noa",W/2,H-110); c.fillStyle="rgba(255,255,255,.7)"; c.font="600 34px "+F; c.fillText("@learnwithnoa",W/2,H-62);
     return cv;
   }
   async function open(off){
-    const st=stats(off), cv=await draw(st), url=cv.toDataURL("image/png"), fname="cheat-sheet-"+st.month.toLowerCase()+"-"+st.y+".png";
-    const canShare=!!(navigator.canShare&&window.File);
-    const dl=csDialog('<h3 style="margin:0 0 10px">📸 Your '+esc(st.month)+' recap</h3><img src="'+url+'" alt="Your '+esc(st.month)+' recap" style="width:100%;max-width:300px;display:block;margin:0 auto 12px;border-radius:14px">'+
-      '<p class="muted" style="margin:0 0 12px;font-size:14px">Share it in your Instagram stories and tag <b>@learnwithnoa</b>! 💛</p>'+
-      '<div class="note-actions" style="justify-content:center">'+(canShare?'<button class="pill-btn pill-green" type="button" data-rcshare>Share</button>':"")+'<a class="pill-btn'+(canShare?"":" pill-green")+'" href="'+url+'" download="'+fname+'" style="text-decoration:none">Download</a>'+(off===0?'<button class="swap" type="button" data-rcprev>Last month</button>':'')+'</div>',{cls:"rc-dlg"});
+    const st=stats(off); let bg=localStorage.getItem("ncs-recap-bg")||(st.room?"room":"night"); if(bg==="room"&&!st.room) bg="night";
+    const fname="hibi-"+st.month.toLowerCase()+"-"+st.y+".png", canShare=!!(navigator.canShare&&window.File);
+    const dl=csDialog('<h3 style="margin:0 0 10px">📸 Your '+esc(st.month)+' recap</h3><img id="rcImg" alt="Your '+esc(st.month)+' recap" style="width:100%;max-width:300px;aspect-ratio:9/16;display:block;margin:0 auto 12px;border-radius:14px;background:#16235A">'+
+      '<div class="rc-bgs" role="group" aria-label="Background">'+BGS.filter(b=>b[0]!=="room"||st.room).map(b=>'<button type="button" class="rc-bg" data-rcbg="'+b[0]+'" aria-pressed="'+(b[0]===bg)+'" title="'+b[2]+'"><span aria-hidden="true">'+b[1]+'</span> '+b[2]+'</button>').join("")+'</div>'+
+      '<p class="muted" style="margin:10px 0 12px;font-size:14px">Share it in your Instagram stories and tag <b>@learnwithnoa</b>! 💛</p>'+
+      '<div class="note-actions" style="justify-content:center">'+(canShare?'<button class="pill-btn pill-green" type="button" data-rcshare>Share</button>':"")+'<a class="pill-btn'+(canShare?"":" pill-green")+'" id="rcDl" download="'+fname+'" style="text-decoration:none">Download</a>'+(off===0?'<button class="swap" type="button" data-rcprev>Last month</button>':'')+'</div>',{cls:"rc-dlg"});
+    let url="";
+    const paint=async()=>{ url=(await draw(st,bg)).toDataURL("image/png"); const im=dl.el.querySelector("#rcImg"); if(im) im.src=url; const a=dl.el.querySelector("#rcDl"); if(a) a.href=url; };
+    await paint();
     dl.el.addEventListener("click",async e=>{
+      const b=e.target.closest("[data-rcbg]"); if(b){ bg=b.dataset.rcbg; try{ localStorage.setItem("ncs-recap-bg",bg); }catch(er){} dl.el.querySelectorAll("[data-rcbg]").forEach(x=>x.setAttribute("aria-pressed",x===b)); await paint(); return; }
       if(e.target.closest("[data-rcprev]")){ dl.close(); open(-1); return; }
       if(!e.target.closest("[data-rcshare]")) return;
-      try{ const blob=await (await fetch(url)).blob(); const f=new File([blob],fname,{type:"image/png"}); if(navigator.canShare({files:[f]})) await navigator.share({files:[f],title:"My "+st.month+" on the Cheat Sheet"}); else { const a=document.createElement("a"); a.href=url; a.download=fname; a.click(); } }catch(er){}
+      try{ const blob=await (await fetch(url)).blob(); const f=new File([blob],fname,{type:"image/png"}); if(navigator.canShare({files:[f]})) await navigator.share({files:[f],title:"My "+st.month+" on Hibi"}); else { const a=document.createElement("a"); a.href=url; a.download=fname; a.click(); } }catch(er){}
     });
   }
   window.csRecap=open;
@@ -5820,10 +5886,10 @@ const fbDraft=LS.get("ncs-feedback",{});
 if(fbDraft.msg) fbMsg.value=fbDraft.msg; if(fbDraft.name) fbName.value=fbDraft.name;
 function fbText(){
   const sec=fbOpts.find(o=>o[0]===fbSection.value);
-  return "Cheat Sheet feedback\nType: "+fbType+"\nSection: "+(sec?sec[1]:"General")+(fbName.value.trim()?"\nFrom: "+fbName.value.trim():"")+"\n\n"+fbMsg.value.trim();
+  return "Hibi feedback\nType: "+fbType+"\nSection: "+(sec?sec[1]:"General")+(fbName.value.trim()?"\nFrom: "+fbName.value.trim():"")+"\n\n"+fbMsg.value.trim();
 }
 function fbUpdate(){
-  const t=fbText(), subj="Cheat Sheet feedback: "+fbType;
+  const t=fbText(), subj="Hibi feedback: "+fbType;
   fbGmail.href="https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(FB_MAIL)+"&su="+encodeURIComponent(subj)+"&body="+encodeURIComponent(t);
   LS.set("ncs-feedback",{msg:fbMsg.value,name:fbName.value});
   if(fbMsg.value.trim()) fbErr.hidden=true;
@@ -6011,14 +6077,14 @@ const CHANGELOG=[
   ]},
   {id:"2026-presentperfect", date:"November 6, 2026", title:"Present perfect + works offline 🌍", items:[
     ["🌍","Present perfect","a new grammar module in <b>Practice</b>, with 7 stages, stories, a test out exam and a 🌍 Little globe for your buddy.","quiz"],
-    ["📶","Works offline","once you\u2019ve opened the Cheat Sheet, it opens even without internet. Your saved words and notes are there, and everything syncs when you\u2019re back online."],
+    ["📶","Works offline","once you\u2019ve opened Hibi, it opens even without internet. Your saved words and notes are there, and everything syncs when you\u2019re back online."],
     ["👋","A new welcome tour","tap <b>How this page works</b> at the bottom of any page to see what\u2019s new."]
   ]},
   {id:"2026-smarttranslate", date:"November 6, 2026", title:"A smarter translator 🗣️", items:[
     ["🔁","It knows the language","write in Spanish or English: the translator figures it out by itself.","translate"],
     ["🗣️","How to say it","translations now show an easy way to say the English, like <b>KUMF-ter-buhl</b>.","translate"],
     ["🃏","Save words from flashcards","tap any word in the meaning or example on a flashcard to save it. Tap the words next to it to save a phrase.","quiz"],
-    ["↩️","Back button","your browser\u2019s back button now takes you to the last page you visited on the Cheat Sheet."]
+    ["↩️","Back button","your browser\u2019s back button now takes you to the last page you visited on Hibi."]
   ]},
   {id:"2026-vocab", date:"November 6, 2026", title:"Vocabulary, stories and a new buddy window 🗂️", items:[
     ["🗂️","Vocabulary","a new part of <b>Practice</b>: word sets made by Noa (phrasal verbs, work, travel and everyday expressions), with flashcards and a quiz.","quiz"],
@@ -6061,7 +6127,7 @@ const CHANGELOG=[
   {id:"2026-smartwords", date:"November 5, 2026", title:"Smarter words 🧠", items:[
     ["✨","Every word explained","new words now get their type (noun, verb, phrasal verb…), a simple meaning and an example sentence, all by themselves. Tap <b>✨ Complete my words</b> to do it for the ones you already have.","words"],
     ["📋","Paste anything","<b>+ Add many words</b> now understands any list: a message, notes, a document. You check the words before they're added.","words"],
-    ["📝","Words from your notes","when you save a class note, the Cheat Sheet suggests the new words and expressions in it.","notes"],
+    ["📝","Words from your notes","when you save a class note, Hibi suggests the new words and expressions in it.","notes"],
     ["🧹","Clean up my words","fixes spelling, punctuation and capital letters, fills in what's missing and finds repeated words. Nothing changes until you say yes.","words"],
     ["🌱","Beginner mode","in <b>Settings</b>: more Spanish help, simpler examples and a slower voice. ¡Ideal para empezar!",null],
     ["🌑","Midnight & a new friend","a pure black <b>Midnight</b> theme, and Kero the frog 🐸 joined the study buddies.",null]
@@ -6072,8 +6138,8 @@ const CHANGELOG=[
   {id:"2026-app", date:"November 2, 2026", title:"Practice more, and get the app 📲", items:[
     ["🔁","Words to review today","a new card on your Home page with 5 of your words that need practice. Tap <b>Practice these 5</b>.","notes"],
     ["🎤","Say it out loud","in <b>Practice</b>, say one of your words and see if the computer understands you.","quiz"],
-    ["📲","Install the app","put the Cheat Sheet on your phone's home screen: tap <b>📲 Install the app</b> at the bottom of the page.",null],
-    ["💌","Messages from Noa","Noa can now send you a little message right here in the Cheat Sheet.",null]
+    ["📲","Install the app","put Hibi on your phone's home screen: tap <b>📲 Install the app</b> at the bottom of the page.",null],
+    ["💌","Messages from Noa","Noa can now send you a little message right here in Hibi.",null]
   ]},
   {id:"2026-notebook", date:"November 2, 2026", title:"Your notebook & sentence practice ✍️", items:[
     ["📓","Weekly summaries","in <b>My class notes</b>, a new tab groups your notes by week with a short AI summary: main topics, corrections to remember and new expressions.","notebook"],
@@ -6151,7 +6217,7 @@ const CHANGELOG=[
     ["📚","New grammar","prepositions of place, used to, passive voice, reported speech, and a clearer guide to -ing or to?","place"],
     ["🧭","Easier menu","the menu on the left now scrolls on its own, so you can reach every section without scrolling to the bottom of the page.",null]
   ]},
-  {id:"2026-10-25", date:"October 25, 2026", title:"The Cheat Sheet is here", items:[
+  {id:"2026-10-25", date:"October 25, 2026", title:"Hibi is here", items:[
     ["📌","Everything in one place","verb tenses, irregular verbs, modals, conditionals and much more.","tenses"],
     ["✏️","Your notes and words","save class notes and new words, then practice them.","notes"],
     ["⭐","Make it yours","search everything, star your favorite sections, and pick light or dark mode.",null],
@@ -6182,7 +6248,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 
 <script type="module">
-/* ---------- Cheat Sheet cloud sync (Firebase Auth + Firestore) ----------
+/* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
    Every "ncs-*" key in localStorage is mirrored to users/{uid}/data/{key}.
    First sign-in on a device: local + cloud are merged (nothing lost).
    After that: the cloud is the source of truth, local edits are pushed right away. */
@@ -6298,7 +6364,7 @@ async function syncDown() {
       if (Date.now() - last > 8000) { sessionStorage.setItem("ncs-reload-at", String(Date.now())); location.reload(); return; }
     }
   } catch (e) {
-    console.warn("Cheat Sheet sync failed", e);
+    console.warn("Hibi sync failed", e);
     status("error");
   } finally { syncing = false; }
 }
@@ -6403,7 +6469,7 @@ window.__csTeach = {
   async send(uid, text, go) { await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: String(text).slice(0, 1000), kind: go ? "rec:" + go : "rec", at: serverTimestamp() }); }
 };
 window.__csViewAs = {
-  /* every private student (from Noa's Coaching data) and every Cheat Sheet member */
+  /* every private student (from Noa's Coaching data) and every Hibi member */
   async students() {
     if (!window.__csTeacher || !user) return { priv: [], club: [] };
     const roles = {}, hubUid = {};

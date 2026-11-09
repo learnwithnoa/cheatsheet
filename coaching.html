@@ -133,12 +133,13 @@ td.act{white-space:nowrap;text-align:right}
 .seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
+.brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px}.kj{font:700 14px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em}
 </style>
-<link rel="stylesheet" href="comfort.css?v=14">
+<link rel="stylesheet" href="comfort.css?v=15">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=16" defer></script>
+<script src="comfort.js?v=17" defer></script>
 </head>
 <body>
 <style>
@@ -226,7 +227,7 @@ tr.arch td{opacity:.85}
 .prof{white-space:pre-wrap;line-height:1.55}
 </style>
 <header><div class="top">
-  <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
+  <a class="brand" href="./"><small>Learn with Noa</small><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
   <span class="tag">Private students</span>
   <a class="btn" href="members.html" style="margin-left:6px">👥 Members</a>
   <div class="sp"></div>
@@ -396,7 +397,7 @@ async function publish(s, force) {
   catch (e) { console.warn("publish", e); }
 }
 function publishAll() { S.forEach(s => publish(s)); }
-/* sheet words → the student's "My words" on the Cheat Sheet (once each; if they delete one, it stays deleted) */
+/* sheet words → the student's "My words" on Hibi (once each; if they delete one, it stays deleted) */
 const nw = x => normName(x).replace(/ /g, "");
 async function pushSheetWords(s) {
   if (!s.uid || !s.words.length) return;
@@ -408,7 +409,7 @@ async function pushSheetWords(s) {
   await setDoc(doc(db, "users", s.uid, "data", "ncs-words"), { json: JSON.stringify(list), deleted: false, at: serverTimestamp() });
   appWords[s.id] = list; s.pushedWords = (s.pushedWords || []).concat(add.map(w => w.w)); save(s, true);
 }
-/* link new Cheat Sheet sign-ups to hub students */
+/* link new Hibi sign-ups to hub students */
 async function autoLink() {
   try {
     const us = await getDocs(collection(db, "users")); accounts = [];
@@ -425,7 +426,7 @@ async function doLink(uidv, hubId, auto) {
   rolesByUid[uidv] = Object.assign({}, rolesByUid[uidv], r); roles[hubId] = { uid: uidv, ...rolesByUid[uidv] };
   s.uid = uidv; const a = accounts.find(x => x.uid === uidv);
   if (a && a.email && ![s.email].concat(s.emails || []).some(e => (e || "").toLowerCase() === a.email.toLowerCase())) { if (!s.email) s.email = a.email; else s.emails = (s.emails || []).concat(a.email); }
-  save(s); publish(s, true); if (auto) toast("Linked " + s.name + " to their Cheat Sheet account");
+  save(s); publish(s, true); if (auto) toast("Linked " + s.name + " to their Hibi account");
 }
 function renderLinks(maybe) {
   const dism = new Set((meta && meta.dismissed) || []);
@@ -434,7 +435,7 @@ function renderLinks(maybe) {
     .filter(a => maybe.some(x => x.uid === a.uid) || (rolesByUid[a.uid] && rolesByUid[a.uid].club === false));
   const box = $("linkBox"); box.hidden = !loose.length; if (!loose.length) return;
   const free = S.filter(s => !s.uid && s.status !== "inactive").sort((a, b) => a.name.localeCompare(b.name));
-  box.innerHTML = `<h2>🔗 Cheat Sheet accounts to link</h2><div class="muted small">These accounts might be private students. Pick who they are, or hide them if they're club members only.</div><ul class="alerts">${loose.map(a => { const sug = maybe.filter(x => x.uid === a.uid).map(x => x.hub);
+  box.innerHTML = `<h2>🔗 Hibi accounts to link</h2><div class="muted small">These accounts might be private students. Pick who they are, or hide them if they're club members only.</div><ul class="alerts">${loose.map(a => { const sug = maybe.filter(x => x.uid === a.uid).map(x => x.hub);
     return `<li style="--k:var(--c-teal)"><span><b>${esc(a.name || "(no name)")}</b> <span class="muted small">${esc(a.email)}</span></span><select data-linkfor="${a.uid}" style="margin-left:auto;width:auto"><option value="">Who is this?</option>${free.map(s => `<option value="${s.id}" ${sug[0] === s.id ? "selected" : ""}>${esc(s.name)}${sug.includes(s.id) ? " (suggested)" : ""}</option>`).join("")}</select><button type="button" class="ib" data-dolink="${a.uid}">Link</button><button type="button" class="ib" data-dismiss="${a.uid}">Not private</button></li>`; }).join("")}</ul>`;
 }
 function saveMeta() { setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(meta), deleted: false, at: serverTimestamp() }).catch(e => console.warn("meta", e)); }
@@ -507,7 +508,7 @@ function engagement(s) {
   const parts = []; let score = 0, max = 0;
   if (att.length) { const r = pres / att.length; score += r * 40; max += 40; parts.push(`attendance ${Math.round(r * 100)}%`); }
   const lc = lastClass(s); if (lc) { const d = days(lc, today()); score += d <= 7 ? 30 : d <= 14 ? 20 : d <= 21 ? 10 : 0; max += 30; parts.push(`last class ${d === 0 ? "today" : pl(d, "day") + " ago"}`); }
-  if (s.uid) { const u = usage[s.id] || {}; const act = Object.keys(u).filter(k => k >= addDays(today(), -14) && Object.values(u[k] || {}).some(v => v > 0)).length; score += act >= 5 ? 30 : act >= 2 ? 20 : act >= 1 ? 10 : 0; max += 30; parts.push(`Cheat Sheet ${pl(act, "day")} in 2 weeks`); }
+  if (s.uid) { const u = usage[s.id] || {}; const act = Object.keys(u).filter(k => k >= addDays(today(), -14) && Object.values(u[k] || {}).some(v => v > 0)).length; score += act >= 5 ? 30 : act >= 2 ? 20 : act >= 1 ? 10 : 0; max += 30; parts.push(`Hibi ${pl(act, "day")} in 2 weeks`); }
   if (!max) return null;
   const pct = Math.round(score / max * 100);
   return { pct, lvl: pct >= 75 ? "High" : pct >= 50 ? "Medium" : "Low", k: pct >= 75 ? "k-green" : pct >= 50 ? "k-amber" : "k-red", parts };
@@ -644,13 +645,13 @@ function renderTrends() {
   $("trendBox").innerHTML = `<h2>📈 Trends <span class="muted small" style="font-weight:600">· last 12 months</span></h2>
     <div class="kpis" style="margin:6px 0 10px">
       <div class="kpi tint k-violet"><div class="kl">Private students</div><div class="kv">${act}</div><div class="ks">active now · ${S.length} in the hub</div></div>
-      <div class="kpi tint k-amber"><div class="kl">Club members on the Cheat Sheet</div><div class="kv">${clubOnly + both}</div><div class="ks">${clubOnly} club only · ${both} also private</div></div>
+      <div class="kpi tint k-amber"><div class="kl">Club members on Hibi</div><div class="kv">${clubOnly + both}</div><div class="ks">${clubOnly} club only · ${both} also private</div></div>
       <div class="kpi tint k-sky"><div class="kl">Hours this month</div><div class="kv">${hours[11]} h</div><div class="ks">last month ${hours[10]} h</div></div>
       <div class="kpi tint k-pink"><div class="kl">Standard vs priority</div><div class="kv">${std[11]} · ${pri[11]}</div><div class="ks">classes this month (standard · priority)</div></div>
     </div>
     <div class="two"><div><div class="small" style="margin-bottom:4px">${L("var(--c-sky)", "Hours taught")}${L("var(--c-violet)", "Private students with classes")}</div>${lineSvg(ms, [{ n: "Hours", v: hours, c: "var(--c-sky)" }, { n: "Students", v: studs, c: "var(--c-violet)" }])}</div>
     <div><div class="small" style="margin-bottom:4px">${L("var(--c-teal)", "Standard-hour classes")}${L("var(--c-pink)", "Priority-hour classes")}</div>${lineSvg(ms, [{ n: "Standard", v: std, c: "var(--c-teal)" }, { n: "Priority", v: pri, c: "var(--c-pink)" }])}</div></div>
-    <p class="muted small" style="margin:8px 0 0">Club members only count people signed in to the Cheat Sheet; Skool members aren't here yet.</p>`;
+    <p class="muted small" style="margin:8px 0 0">Club members only count people signed in to Hibi; Skool members aren't here yet.</p>`;
 }
 function renderFilters() {
   const n = k => k === "all" ? S.length : S.filter(s => s.status === k).length;
@@ -707,7 +708,7 @@ function renderDetail() {
   box.innerHTML = `<div class="dh"><span class="av" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}</h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     <select id="stStatus" aria-label="Status" style="width:auto">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }[k]}</option>`).join("")}</select></div>
-    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Cheat Sheet (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Cheat Sheet account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
+    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Hibi (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Hibi account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
     ${since(s) || s.prevCourses ? `<p class="small" style="margin:6px 0 0"><span style="color:var(--c-violet);font-weight:700">${esc(since(s))}</span>${s.prevCourses ? ` <span class="muted">· ${esc(s.prevCourses)}</span>` : ""}</p>` : ""}
     ${bringUp(s)}
     <div class="stats">
@@ -818,13 +819,13 @@ function wordRows(s) {
 }
 function tWords(s) {
   const ws = wordRows(s);
-  if (!ws.length) return `<p class="muted">No words yet.${s.uid ? "" : " Once they're linked, the words they save on the Cheat Sheet show up here too."}</p>`;
+  if (!ws.length) return `<p class="muted">No words yet.${s.uid ? "" : " Once they're linked, the words they save on Hibi show up here too."}</p>`;
   const th = (k, l) => `<th class="sortable" data-wsort="${wSort === k ? { az: "za", za: "az", new: "old", old: "new" }[k] : k}">${l}${wSort === k ? " ↓" : wSort === { az: "za", za: "az", new: "old", old: "new" }[k] ? " ↑" : ""}</th>`;
-  return `<p class="muted small" style="margin:0 0 8px">📱 = in their Cheat Sheet “My words” (your changes go straight to their list) · 📗 = only in their English Journey sheet. Click a column title to sort.</p>
+  return `<p class="muted small" style="margin:0 0 8px">📱 = in their Hibi “My words” (your changes go straight to their list) · 📗 = only in their English Journey sheet. Click a column title to sort.</p>
     <div class="tbl"><table class="wtbl"><thead><tr><th></th>${th("az", "Word")}<th>Type</th><th>Meaning</th><th>Spanish</th><th>Example</th>${th("new", "Added")}<th></th></tr></thead><tbody>${ws.map(w => wEdit === w.key ? `<tr class="editing"><td>${w.src === "app" ? "📱" : "📗"}</td>
       <td><input data-we="w" value="${esc(w.w)}"></td><td><input data-we="pos" value="${esc(w.pos)}" placeholder="noun" style="width:80px"></td><td><textarea data-we="def" rows="2">${esc(w.def)}</textarea></td><td><input data-we="m" value="${esc(w.m)}"></td><td><textarea data-we="e" rows="2">${esc(w.e)}</textarea></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
       <td class="acts"><button type="button" class="ib" data-wsave="${w.key}" title="Save">✓</button><button type="button" class="ib" data-wcancel title="Cancel">✕</button></td></tr>`
-      : `<tr><td title="${w.src === "app" ? "In their Cheat Sheet" : "English Journey sheet"}">${w.src === "app" ? "📱" : "📗"}</td><td><b>${esc(w.w)}</b></td><td class="muted">${esc(w.pos)}</td><td>${esc(w.def)}</td><td>${esc(w.m)}</td><td><i>${esc(w.e)}</i></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
+      : `<tr><td title="${w.src === "app" ? "In their Hibi" : "English Journey sheet"}">${w.src === "app" ? "📱" : "📗"}</td><td><b>${esc(w.w)}</b></td><td class="muted">${esc(w.pos)}</td><td>${esc(w.def)}</td><td>${esc(w.m)}</td><td><i>${esc(w.e)}</i></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
       <td class="acts"><button type="button" class="ib" data-wedit="${w.key}" title="Edit">✏️</button><button type="button" class="ib del" data-wdel="${w.key}" title="Remove">🗑</button></td></tr>`).join("")}</tbody></table></div>`;
 }
 async function saveAppWords(s, label, before) {
@@ -838,7 +839,7 @@ async function wordAct(s, key, kind, vals) {
     if (!s.uid) return; const before = (appWords[s.id] || []).map(x => Object.assign({}, x)); const list = (appWords[s.id] || []).map(x => Object.assign({}, x));
     if (kind === "del") list.splice(i, 1); else { const w = list[i]; Object.assign(w, vals); w.ai = false; }
     appWords[s.id] = list; wEdit = null; renderDetail();
-    try { await saveAppWords(s, kind === "del" ? "Removed “" + before[i].w + "” from their words" : "Saved “" + list[i].w + "”", before); } catch (e) { console.warn(e); appWords[s.id] = before; renderDetail(); toast("Couldn't save to their Cheat Sheet. Try again."); }
+    try { await saveAppWords(s, kind === "del" ? "Removed “" + before[i].w + "” from their words" : "Saved “" + list[i].w + "”", before); } catch (e) { console.warn(e); appWords[s.id] = before; renderDetail(); toast("Couldn't save to their Hibi. Try again."); }
   } else {
     const w = s.words[i]; if (!w) return;
     if (kind === "del") s.words.splice(i, 1); else Object.assign(w, { w: vals.w, pos: vals.pos, def: vals.def, tr: vals.m, ex: vals.e });
@@ -872,7 +873,7 @@ document.addEventListener("click", e => {
   if (t.closest("[data-wcancel]")) { wEdit = null; renderDetail(); return; }
   const ws = t.closest("[data-wsave]"); if (ws) { const v = {}; document.querySelectorAll("tr.editing [data-we]").forEach(x => v[x.dataset.we] = x.value.trim()); if (!v.w) { toast("The word can't be empty"); return; } wordAct(S_(), ws.dataset.wsave, "edit", v); return; }
   const wd = t.closest("[data-wdel]"); if (wd) { const s0 = S_(), row = wordRows(s0).find(x => x.key === wd.dataset.wdel); if (!row) return;
-    if (window.csConfirm) window.csConfirm("Remove “" + esc(row.w) + "”?", row.src === "app" ? "<p>It disappears from their Cheat Sheet “My words”. You can undo it right after.</p>" : "<p>It's removed here (not from the Google Sheet).</p>", "Remove").then(ok => { if (ok) wordAct(s0, wd.dataset.wdel, "del"); }); else wordAct(s0, wd.dataset.wdel, "del"); return; }
+    if (window.csConfirm) window.csConfirm("Remove “" + esc(row.w) + "”?", row.src === "app" ? "<p>It disappears from their Hibi “My words”. You can undo it right after.</p>" : "<p>It's removed here (not from the Google Sheet).</p>", "Remove").then(ok => { if (ok) wordAct(s0, wd.dataset.wdel, "del"); }); else wordAct(s0, wd.dataset.wdel, "del"); return; }
   const un = t.closest("[data-undo]"); if (un) { const h = histGet(), e = h.find(x => x.k === un.dataset.undo); if (e) { e.undone = 1; histPut(h); $("modal").hidden = true; restore(e); } return; }
   const tb = t.closest("[data-tab]"); if (tb) { tab = tb.dataset.tab; editRow = null; renderDetail(); return; }
   const cs = t.closest("[data-csort]"); if (cs) { clsSort = +cs.dataset.csort; renderDetail(); return; }

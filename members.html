@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Cheat Sheet members</title>
+<title>Hibi members</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono&display=swap">
 <style>
@@ -104,17 +104,18 @@ td.act{white-space:nowrap;text-align:right}
 .seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
+.brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px}.kj{font:700 14px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em}
 </style>
-<link rel="stylesheet" href="comfort.css?v=14">
+<link rel="stylesheet" href="comfort.css?v=15">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=16" defer></script>
+<script src="comfort.js?v=17" defer></script>
 </head>
 <body>
 <header><div class="top">
-  <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
-  <span class="tag">Cheat Sheet members</span>
+  <a class="brand" href="./"><small>Learn with Noa</small><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
+  <span class="tag">Hibi members</span>
   <a class="btn" href="coaching.html" style="margin-left:6px">🎓 Coaching</a>
   <div class="sp"></div>
   <div class="cs-wrap" id="csWrap"></div>
@@ -123,7 +124,7 @@ td.act{white-space:nowrap;text-align:right}
 
 <main>
   <section id="vSign" class="card center" hidden>
-    <h1>Cheat Sheet members</h1>
+    <h1>Hibi members</h1>
     <p class="lede">Sign in with your Learn with Noa Google account to see your students' words and notes.</p>
     <button class="primary" id="inBtn" type="button">Sign in with Google</button>
     <p class="err" id="signErr" hidden></p>
@@ -131,11 +132,11 @@ td.act{white-space:nowrap;text-align:right}
 
   <section id="vDenied" class="card center" hidden>
     <h1>This page is only for Noa</h1>
-    <p class="lede">You're signed in as <b id="deniedWho"></b>. Your own words and notes are on the <a href="./" style="color:var(--royal)">Cheat Sheet</a>.</p>
+    <p class="lede">You're signed in as <b id="deniedWho"></b>. Your own words and notes are on the <a href="./" style="color:var(--royal)">Hibi</a>.</p>
   </section>
 
   <section id="vMain" hidden>
-    <h1>Cheat Sheet members</h1>
+    <h1>Hibi members</h1>
     <p class="lede" id="summary">Loading…</p>
     <div class="news" id="news" hidden></div>
     <div class="news" id="tips" hidden></div>
@@ -312,7 +313,7 @@ function newsEvents() {
     const first = esc(s.name.split(" ")[0]);
     const acts = [...s.words.map(w => w.t), ...s.notes.map(n => n.t)].filter(Boolean);
     const joined = Math.min(...[s.firstSeen, ...acts].filter(Boolean));
-    if (isFinite(joined)) ev.push({ t: joined, s, ico: "👋", txt: `<b>${first}</b> joined the Cheat Sheet`, kind: "welcome", eid: s.uid + "-join" });
+    if (isFinite(joined)) ev.push({ t: joined, s, ico: "👋", txt: `<b>${first}</b> joined Hibi`, kind: "welcome", eid: s.uid + "-join" });
     const best = {}; // one milestone per student per day (imports add many words at once)
     const add = (t, m, kind) => { const day = new Date(t).toDateString(), k = kind + day; if (!best[k] || best[k].m < m) best[k] = { t, m, kind }; };
     const ws = s.words.filter(w => w.t).sort((a, b) => a.t - b.t); MILES.forEach(m => { if (ws.length >= m) add(ws[m - 1].t, m, "w"); });
@@ -361,7 +362,7 @@ function renderTips() {
     <p class="muted" style="margin:4px 0 8px">From your classes: mistakes that keep coming up, and what could help.</p>
     <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : (PAGE_T[r.page] || r.title || r.page);
       return `<li><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
-        ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}">💌 Suggest it</button>`) : `<span class="muted" style="font-size:12.5px">not on the Cheat Sheet yet</span>`}
+        ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}">💌 Suggest it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
         <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}">✓ Done</button></div></li>`; }).join("")}</ul>`;
 }
 async function tipDone(id) { const r = hubMeta.recs.find(x => x.id === id); if (r) r.done = Date.now(); renderTips(); try { await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn(e); } }
@@ -372,7 +373,7 @@ document.addEventListener("click", async e => {
   const s = tipStudent(r); if (!s) return;
   if (a.dataset.tiprec) { const v = Object.assign({}, s.modrec, { [r.mod]: +r.stage });
     try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; toast("⭐ Recommended to " + s.name.split(" ")[0]); tipDone(id); } catch (err) { toast("Couldn't save. Try again."); } return; }
-  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: the “${PAGE_T[r.page] || r.title}” page in your Cheat Sheet. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id); }
+  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: the “${PAGE_T[r.page] || r.title}” page in Hibi. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id); }
 });
 function renderNews() {
   const box = $("news"), ev = newsEvents(), seen = +(localStorage.getItem(NEWS_KEY) || 0), fresh = ev.filter(e => e.t > seen).length;
@@ -385,17 +386,17 @@ function renderNews() {
     <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><div class="news-row"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button>${!e.kind ? "" : kdSent()[e.eid] ? `<span class="kd-done">✓ Sent</span>` : `<button type="button" class="kd-btn" data-kd="${esc(e.eid)}">${e.kind === "welcome" ? "👋 Send welcome" : "🎉 Send kudos"}</button>`}</div>${kdOpen === e.eid ? composer(e.eid, kdText(e)) : ""}</li>`).join("")}</ul>
     ${ev.length > 6 ? `<button type="button" id="newsMore" class="foot-link">${newsOpen ? "Show less" : "Show all " + ev.length}</button>` : ""}`;
 }
-/* ---------- kudos & messages: they pop up in the student's Cheat Sheet ---------- */
+/* ---------- kudos & messages: they pop up in the student's Hibi ---------- */
 let kdOpen = null;
 const kdSent = () => { try { return JSON.parse(localStorage.getItem("cs-kudos-sent") || "{}"); } catch (e) { return {}; } };
 function kdText(e) {
   const f = e.s.name.split(" ")[0];
-  if (e.kind === "welcome") return `Welcome to the Cheat Sheet, ${f}! 🎉 I'm so happy you're here. After each class, save your new words and notes here, and they'll be waiting for you on any device. See you in class! – Noa`;
+  if (e.kind === "welcome") return `Welcome to Hibi, ${f}! 🎉 I'm so happy you're here. After each class, save your new words and notes here, and they'll be waiting for you on any device. See you in class! – Noa`;
   if (e.mk === "n") return `Kudos, ${f}! 📝 ${e.m} class notes saved. Going back to your notes is what makes things stick. Proud of you! – Noa`;
-  return `Congrats, ${f}! 📚 You just reached ${e.m} words in your Cheat Sheet. That's real progress, and I can hear it in class. Keep going! – Noa`;
+  return `Congrats, ${f}! 📚 You just reached ${e.m} words in Hibi. That's real progress, and I can hear it in class. Keep going! – Noa`;
 }
 function composer(id, text) {
-  return `<div class="kd-comp"><label class="muted" for="kdTa" style="font-size:13px">It pops up in their Cheat Sheet the next time they open it (signed in). Edit it if you like:</label>
+  return `<div class="kd-comp"><label class="muted" for="kdTa" style="font-size:13px">It pops up in their Hibi the next time they open it (signed in). Edit it if you like:</label>
     <textarea id="kdTa" rows="3">${esc(text)}</textarea>
     <div class="row"><button type="button" class="primary" data-kdsend="${esc(id)}">Send 💌</button><button type="button" data-kdcancel>Cancel</button></div></div>`;
 }
@@ -403,7 +404,7 @@ async function sendMsg(uid, text, kind, eid) {
   try {
     await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: text.slice(0, 1000), kind: kind || "note", at: serverTimestamp() });
     if (eid) { const m = kdSent(); m[eid] = Date.now(); localStorage.setItem("cs-kudos-sent", JSON.stringify(m)); saveTPref("t-kudos-sent", m); }
-    kdOpen = null; toast("Sent! 💌 They'll see it next time they open the Cheat Sheet."); return true;
+    kdOpen = null; toast("Sent! 💌 They'll see it next time they open Hibi."); return true;
   } catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the messages rule isn't in the Firestore rules yet." : "Couldn't send. Try again."); return false; }
 }
 function kdClick(e, rerender) {
@@ -511,12 +512,12 @@ function renderDetail(s) {
     <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
       <div class="row" style="margin-top:8px">${(() => { const ty = roleType(s.role); return [["club", "🌼 Club member"], ["private", "🌳 Private student"], ["both", "🌼🌳 Both"]].map(([k, l]) => `<button type="button" class="seg" data-role="${k}" aria-pressed="${ty === k}">${l}</button>`).join(""); })()}</div>
       <div class="muted small" style="margin-top:6px">Club members sit in the middle of the park, private students at the edges.</div>
-      ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their Coaching page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Cheat Sheet menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Cheat Sheet.`}</div></div>` : ""}
+      ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their Coaching page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Hibi menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Hibi.`}</div></div>` : ""}
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
     ${practiceBox(s)}
     ${(() => { const u = usageSum(s.usage, 7), r = USE_L.filter(([k]) => u[k]).map(([k, l]) => l + ": " + u[k]); return `<div class="parkbox"><b>Last 7 days</b><div class="muted" style="margin-top:4px">${r.length ? r.join(" · ") : "No activity yet (counting started Nov 6, 2026)."}</div></div>`; })()}
     <h2>Words</h2>
-    <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Cheat Sheet the next time they open it or come back to the tab.</p>
+    <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Hibi the next time they open it or come back to the tab.</p>
     <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><input id="an2" placeholder="Notes (optional)" aria-label="Notes"><button class="primary" type="submit">+ Add</button></form>
     ${words.length ? `<div class="row" style="margin-bottom:10px"><button type="button" id="cpW">Copy words (for a sheet)</button></div>
       <div class="tbl"><table><thead><tr>${th("w","Word")}${th("m","Spanish")}${th("e","Example")}${th("n","Notes")}${th("t","Added")}<th></th></tr></thead><tbody>

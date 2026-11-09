@@ -1,4 +1,4 @@
-/* Cheat Sheet study buddy */
+/* Hibi study buddy */
 // 16x16 pixel sprites. 8-char rows are mirrored; 16-char rows are used as-is.
 window.BUDDY_SPRITES={
 max:{name:"Max",species:"Dog",old:"Max",sub:"poodle-schnauzer mix",
@@ -1215,7 +1215,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const msg = h => { el.innerHTML = DECO + `<div class="park-msg"><div>${h}</div></div>`; };
     const P = window.__csPark;
     if (!P) { msg("Opening the park gates… 🌳"); setTimeout(renderPark, 1500); return; }
-    if (!P.signedIn()) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses the Cheat Sheet: club members in the middle, private students around the edges.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
+    if (!P.signedIn()) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses Hibi: club members in the middle, private students around the edges.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
     parkBusy = true; msg("Opening the park gates… 🌳");
     let list = [];
     try { list = await P.list(); }
@@ -1448,7 +1448,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   function duelHelp() {
     if (!window.csDialog) return;
     window.csDialog(`<h3 style="margin-top:0">⚔️ How duels work</h3><p>Challenge another club member to a friendly 7-day duel. It starts when they accept.</p><ul>${Object.values(DT).map(t => `<li>${t.ico} <b>${t.name}</b>: ${esc(t.how)}</li>`).join("")}</ul>
-      <p class="muted" style="font-size:14px">Only words with a meaning <b>and</b> an example sentence count, up to 10 a day. Scores update when each of you opens the Cheat Sheet.</p>
+      <p class="muted" style="font-size:14px">Only words with a meaning <b>and</b> an example sentence count, up to 10 a day. Scores update when each of you opens Hibi.</p>
       <p><b>Prizes:</b> the winner gets <b>+10 🍪</b> (even past the 30 limit) and <b>+15 friendship</b>. A draw gives +5 🍪, and everyone who finishes a duel gets at least +2 🍪.</p>
       <p><b>Duel gear:</b> 🚩 banner after your first duel · 🗡️ sword at 1 win · 🛡️ shield at 3 · ⛑️ knight helmet at 5 · 🏰 armour stand at 10 · 🦸 hero cape for 3 wins in a row.</p>
       <p class="muted" style="font-size:13.5px">You can have up to ${OPEN_MAX} duels at a time, and one at a time with each person.</p>`);
@@ -1483,5 +1483,5 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); setTimeout(duelCheck, 5000); } renderPark(); });
 
   document.addEventListener("cs-teacher", () => { try { paintPet(); if (!modal.hidden) renderModal(); publishPark(); } catch (e) {} });
-  window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
+  window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), scene: () => stageSVG({ plain: true }).replace(/var\(--bd-sky\)/g, "#BFE3FF").replace(/var\(--bd-grass2\)/g, "#8CD47E").replace(/var\(--bd-grass\)/g, "#6CC06A"), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();
