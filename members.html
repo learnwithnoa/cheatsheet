@@ -138,6 +138,7 @@ td.act{white-space:nowrap;text-align:right}
   <section id="vMain" hidden>
     <h1>Hibi members</h1>
     <p class="lede" id="summary">Loading…</p>
+    <div class="news" id="linkBox" hidden></div>
     <div class="news" id="news" hidden></div>
     <div class="news" id="tips" hidden></div>
     <div class="news" id="usage" hidden></div>
@@ -245,7 +246,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList(); renderNews(); renderTips(); renderUsage(); syncPark();
+    renderList(); renderLinks(); renderNews(); renderTips(); renderUsage(); syncPark();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -355,6 +356,33 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"
 /* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
 const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
 function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
+/* accounts that might be private students, not linked to their Coaching profile yet (this used to live on the Private students page) */
+function renderLinks() {
+  const box = $("linkBox"); if (!box) return;
+  const dism = new Set((hubMeta && hubMeta.dismissed) || []);
+  const taken = new Set(hubList.filter(h => h.uid).map(h => h.id).concat(students.map(s => s.role.hub).filter(Boolean)));
+  const free = hubList.filter(h => !taken.has(h.id) && h.status !== "inactive");
+  const first = x => norm(x).split(" ")[0];
+  const sug = s => { const g = guessHub(s); if (g && !taken.has(g)) return g; const f = free.filter(h => first(h.name) && first(h.name) === first(s.name)); return f.length === 1 ? f[0].id : ""; };
+  const loose = students.filter(s => !s.role.hub && !dism.has(s.uid) && !(s.role.club === true && !s.role.private) && (s.role.club === false || s.role.private || free.some(h => first(h.name) && first(h.name) === first(s.name)) || sug(s)));
+  box.hidden = !loose.length; if (!loose.length) { box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔗 Accounts to link <span class="news-n" style="background:#0E9F96">${loose.length}</span></h2></div>
+    <p class="muted" style="margin:4px 0 8px">These Hibi accounts might be private students. Pick who they are so they get their “My coaching” page, or mark them as club only.</p>
+    <ul class="news-list">${loose.map(s => { const g = sug(s); return `<li><div class="news-row" style="flex-wrap:wrap;gap:8px"><span style="flex:1;min-width:180px"><b>${esc(s.name)}</b> <span class="muted small">${esc(s.email)}</span></span>
+      <select data-lkfor="${esc(s.uid)}" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px"><option value="">Who is this?</option>${free.map(h => `<option value="${esc(h.id)}" ${g === h.id ? "selected" : ""}>${esc(h.name)}${g === h.id ? " (suggested)" : ""}</option>`).join("")}</select>
+      <button type="button" class="seg" data-lkgo="${esc(s.uid)}">Link</button><button type="button" class="seg" data-lkclub="${esc(s.uid)}">Club only</button></div></li>`; }).join("")}</ul>`;
+}
+document.addEventListener("click", async e => {
+  const go = e.target.closest("[data-lkgo]"), cl = e.target.closest("[data-lkclub]"); if (!go && !cl) return;
+  const uid = (go || cl).dataset.lkgo || (go || cl).dataset.lkclub; const st = students.find(x => x.uid === uid); if (!st) return;
+  if (cl) { try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
+    hubMeta = Object.assign({}, hubMeta || {}, { dismissed: ((hubMeta && hubMeta.dismissed) || []).concat(uid) }); saveTPref("t-hubmeta", hubMeta); renderLinks(); toast("Okay, " + st.name.split(" ")[0] + " is club only"); return; }
+  const sel = document.querySelector(`[data-lkfor="${uid}"]`); if (!sel || !sel.value) { toast("Pick who this is first"); return; }
+  const hubId = sel.value, h = hubList.find(x => x.id === hubId);
+  const { roleFor } = await import("./hubview.js?v=5");
+  if (h && st.email && ![h.email].concat(h.emails || []).some(x => (x || "").toLowerCase() === st.email.toLowerCase())) { if (!h.email) h.email = st.email; else h.emails = (h.emails || []).concat(st.email); }
+  await saveRole(st, roleFor(hubId, st.role)); await linkHub(st, hubId, ""); renderLinks();
+});
 function renderTips() {
   const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-12).reverse();
   box.hidden = !recs.length; if (!recs.length) return;
