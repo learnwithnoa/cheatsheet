@@ -569,7 +569,7 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 @keyframes bdNerv{0%,100%{transform:translateX(0)}50%{transform:translateX(-2px)}}
 .bd-sweat{top:8px;right:4px;font-size:13px;animation:bdSweat 1.6s ease-in forwards}
 @keyframes bdSweat{from{transform:translateY(0);opacity:1}to{transform:translateY(14px);opacity:0}}
-.bd-stbub{position:absolute;left:50%;top:8px;transform:translateX(-50%);max-width:86%;background:var(--surface,#fff);color:var(--ink,#222);border:1.5px solid var(--line,#ddd);border-radius:12px;padding:6px 10px;font:700 13px/1.35 var(--body,sans-serif);box-shadow:0 6px 16px rgba(0,0,0,.18);text-align:center;animation:bdPop .25s ease-out}
+.bd-stbub{position:absolute;left:8px;top:8px;max-width:46%;background:color-mix(in srgb,var(--surface,#fff) 82%,transparent);color:var(--ink,#222);border:1px solid var(--line,#ddd);border-radius:12px 12px 12px 3px;padding:5px 9px;font:700 12px/1.35 var(--body,sans-serif);box-shadow:0 4px 12px rgba(0,0,0,.15);text-align:left;animation:bdPop .25s ease-out;pointer-events:none;backdrop-filter:blur(2px)}
 .bd-stbub[hidden]{display:none}
 @keyframes bdPop{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
 html.cs-calm .bd-prop{display:none}
@@ -640,7 +640,10 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     b.innerHTML = html; b.hidden = false; clearTimeout(stTimer); stTimer = setTimeout(() => { b.hidden = true; }, Math.min(ms || 4000, 6000));
   }
   function say(html, acts, ms) {
-    if (!modal.hidden && mode === "main") { if (html) setTimeout(() => stageSay(html, ms), 0); return; }
+    if (!modal.hidden && mode === "main") {
+      /* inside the home menu the name/level card is already below the picture: only show what the buddy says, small, in a corner */
+      if (html) { const t = document.createElement("div"); t.innerHTML = html; t.querySelectorAll(".bd-ic").forEach(x => x.remove()); const h = t.innerHTML.trim(); if (h) setTimeout(() => stageSay(h, ms), 0); }
+      return; }
     clearTimeout(bubTimer);
     bub.innerHTML = (html ? `<div class="bd-msg">${html}</div>` : "") + (acts ? `<div class="bd-acts">${acts}</div>` : "");
     bub.hidden = false;
