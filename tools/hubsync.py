@@ -28,6 +28,7 @@ Usage:
        "classes":[{"day":"Mon","ico":"🐾","name":"Deep Dive Monday","title":"Pets, People & Why Animals Feel Safe","teaser":"1-2 lines"}, ...],
        "closing":"light closing line"}   (times and Zoom links come from club-info; add "date"/"time"/"zoom" to a class only if it's different that week)
   HUB_PASSWORD=... python3 hubsync.py club-info '{"schedule":[{"wd":1,"ico":"🧠","name":"Deep Dive Monday","time":"20:00","dur":90,"desc":"...","zoom":"https://..."}],"links":[{"title":"...","url":"https://...","note":"..."}]}'
+  HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h)
   HUB_PASSWORD=... python3 hubsync.py club-sync   give/remove club page access (new sign-ups who match the Skool roster, role changes)
   HUB_PASSWORD=... python3 hubsync.py idea '{"kind":"grammar"|"words","title":"Future: will vs going to","why":"what keeps coming up","example":"I will go tomorrow (planned)","student":"Laura Porcile"}'
       an idea for a NEW grammar module / word pack Hibi doesn't have yet; the same title again adds +1 and the student
@@ -382,8 +383,21 @@ def club_sync(tok, tu, m=None, quiet=False):
             now_s = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             http("PATCH", f"{BASE}/users/{uid}/data/hub-view", {"fields": {"json": {"stringValue": "null"}, "deleted": {"booleanValue": True}, "at": {"timestampValue": now_s}}}, token=tok)
             removed.append(uid)
+    # the club list the database's security rules check for the community wall (clubAccess/{uid})
+    acc_note = "ok"
+    try:
+        accts = {a["uid"]: a for a in get_accounts(tok)}
+        for uid in uids:
+            http("PATCH", f"{BASE}/clubAccess/{uid}", {"fields": {"on": {"booleanValue": True}, "name": {"stringValue": (accts.get(uid) or {}).get("name", "")}}}, token=tok)
+        for uid in before - set(uids):
+            try:
+                http("DELETE", f"{BASE}/clubAccess/{uid}", token=tok)
+            except SystemExit:
+                pass
+    except SystemExit as e:
+        acc_note = "community wall not switched on yet (database rules missing): " + str(e)[:80]
     if not quiet:
-        print(json.dumps({"members": len(uids), "added": len(added), "removed": len(removed)}))
+        print(json.dumps({"members": len(uids), "added": len(added), "removed": len(removed), "wall": acc_note}))
     return uids
 
 
@@ -609,6 +623,25 @@ def main():
         print(json.dumps({"ok": True, "replaced": replaced, "id": post["id"], "members": len(uids), "link": SITE + "#club"})); return
     if cmd == "club-sync":
         club_sync(tok, tu); return
+    if cmd == "club-activity":
+        # new posts/comments/photos on the club community wall in the last N hours (default 24), for the nightly email
+        hours = float(a[1]) if len(a) > 1 else 24
+        since = int((datetime.datetime.now().timestamp() - hours * 3600) * 1000)
+        q = {"structuredQuery": {"from": [{"collectionId": "clubActivity"}], "where": {"fieldFilter": {"field": {"fieldPath": "at"}, "op": "GREATER_THAN", "value": {"integerValue": str(since)}}},
+                                 "orderBy": [{"field": {"fieldPath": "at"}, "direction": "DESCENDING"}], "limit": 100}}
+        try:
+            res = http("POST", f"{BASE}:runQuery", q, token=tok) or []
+        except SystemExit as e:
+            print(json.dumps({"error": "can't read the club wall yet (database rules missing?)", "detail": str(e)[:120]})); return
+        out = []
+        for r in res:
+            d = r.get("document")
+            if not d:
+                continue
+            f = {k: (v.get("stringValue") if "stringValue" in v else v.get("integerValue") if "integerValue" in v else v.get("booleanValue")) for k, v in d.get("fields", {}).items()}
+            out.append({"when": datetime.datetime.fromtimestamp(int(f.get("at") or 0) / 1000).strftime("%a %b %d %H:%M"), "who": f.get("name"), "kind": f.get("kind"),
+                        "where": "weekly post" if re.match(r"^w\d{8}$", f.get("pid") or "") else "wall", "photo": bool(f.get("img")), "text": f.get("text")})
+        print(json.dumps(out, ensure_ascii=False)); return
     if cmd == "idea":
         # an idea for a NEW grammar module or word pack, from what keeps coming up in classes (Noa sees them on Hibi members)
         d = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}

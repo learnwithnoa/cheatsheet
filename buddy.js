@@ -249,7 +249,6 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "shiny", name: "Shiny sparkles", ico: "✨", slot: "fx", w: 400 },
     { id: "night", name: "Night sky", ico: "🌙", slot: "room", w: 500 },
     { id: "rainbow", name: "Rainbow room", ico: "🌈", slot: "room", w: 750 },
-    { id: "cafe", name: "Cozy café", ico: "☕", slot: "room", md: 5 },
     { id: "legend", name: "Legend star", ico: "⭐", slot: "badge", w: 1000 },
     /* learned words (marked "I knew it" 3 times in flashcards) */
     { id: "ball", name: "Toy ball", ico: "⚽", slot: "toy", l: 10 },
@@ -555,6 +554,12 @@ html.cs-calm .bd-pv{animation:none}
 @keyframes msSpinB{0%,49%{opacity:0}50%,100%{opacity:1}}
 @keyframes msNote{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(-3px,-9px);opacity:0}}
 html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-on .ms-disc2,html.cs-calm .ms-on .ms-note{display:none}
+.ms-scene .ms-rain{animation:msRain .7s linear infinite}.ms-scene .ms-rain.r1{animation-delay:-.35s}
+.ms-scene .ms-steam{animation:msSteam 2.6s ease-in-out infinite}
+.ms-on .ms-fl{animation:msTw 1.6s steps(1) infinite}.ms-on .ms-fl:nth-of-type(2n){animation-delay:.8s}
+@keyframes msRain{from{transform:translate(0,0)}to{transform:translate(-1px,12px)}}
+@keyframes msSteam{0%{transform:translateY(0);opacity:.2}50%{opacity:.6}100%{transform:translateY(-2px);opacity:0}}
+@keyframes msTw{0%,49%{opacity:1}50%,100%{opacity:.45}}
 .ms-tip{font-size:12.5px;color:var(--muted,#667);padding:0 12px 8px;line-height:1.35;font-weight:600}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:default;touch-action:none}#bdStgPet{cursor:pointer}
 .bd-stage-wrap{position:relative;max-width:340px;margin:12px auto 10px}.bd-stage-wrap .bd-stage{margin:0}
@@ -1562,24 +1567,65 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); setTimeout(duelCheck, 5000); } renderPark(); });
 
   document.addEventListener("cs-teacher", () => { try { paintPet(); if (!modal.hidden) renderModal(); publishPark(); } catch (e) {} });
-  /* ---------- study music: buddy in its room, with a record player ---------- */
+  /* ---------- study music: the buddy's own lofi study room ----------
+     The window follows the time of day where the student is (their device clock), and it rains outside with the rain sounds. */
+  function skyPhase() { const h = new Date().getHours() + new Date().getMinutes() / 60; return h >= 5 && h < 8 ? "dawn" : h >= 8 && h < 17 ? "day" : h >= 17 && h < 20.5 ? "sunset" : "night"; }
+  const SKY = {
+    dawn: { b: ["#F7B3A3", "#F9C9A6", "#FBE1B5", "#FDEBC8"], wall: "#E9CDB8", wall2: "#E2C2AC", glow: .12, sun: ["#FFE7A8", 20] },
+    day: { b: ["#7EC3F2", "#93CEF5", "#A9D9F7", "#C3E5F9"], wall: "#EBD9C2", wall2: "#E3CFB6", glow: 0, sun: ["#FFF1A8", 5] },
+    sunset: { b: ["#4B3B78", "#B4528A", "#F07E5C", "#F9B565"], wall: "#7A5468", wall2: "#704C60", glow: .3, sun: ["#FFD27A", 22] },
+    night: { b: ["#141A3A", "#1B2350", "#252F63", "#30396E"], wall: "#3A3150", wall2: "#342C49", glow: .45, moon: true }
+  };
+  function studyRoom(rain) {
+    const ph = skyPhase(), K = SKY[ph];
+    let o = ""; const P = (x, y, w, h, c, cls, op) => { o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"${cls ? ` class="${cls}"` : ""}${op != null ? ` opacity="${op}"` : ""}/>`; };
+    /* wall + wainscot + floor */
+    P(-3, 0, 52, 19, K.wall); for (let x = -3; x < 49; x += 4) P(x, 0, 1, 19, K.wall2);
+    P(-3, 15, 52, 4, K.wall2); P(-3, 15, 52, 1, "#8A6A52");
+    P(-3, 19, 52, 8, "#8C5E3C"); for (let x = -3; x < 49; x += 6) P(x, 19, 1, 8, "#7A4F31"); P(-3, 19, 52, 1, "#A87650");
+    P(13, 21, 22, 3, "#C9707A"); P(14, 22, 20, 1, "#E39AA0");
+    /* window with the sky */
+    o += `<clipPath id="msWin"><rect x="0" y="2" width="12" height="11"/></clipPath><g clip-path="url(#msWin)">`;
+    K.b.forEach((c, i) => P(0, 2 + i * 3, 12, 3, rain ? ["#5E6B80", "#6B788C", "#7A869A", "#8792A6"][i] : c));
+    if (!rain && K.sun) { P(7, K.sun[1] === 5 ? 4 : 9, 3, 3, K.sun[0]); }
+    if (!rain && K.moon) { P(8, 4, 2, 2, "#F4F1DE"); P(9, 4, 1, 1, K.b[0]); [[1, 3], [4, 5], [2, 8], [10, 7], [6, 3]].forEach(([x, y]) => P(x, y, 1, 1, "#FFF7C2", "ms-star")); }
+    /* city skyline, lit windows at night */
+    [[0, 9, 3], [3, 7, 2], [5, 10, 3], [8, 8, 2], [10, 9, 2]].forEach(([x, y, w]) => { P(x, y, w, 13 - y, ph === "day" || ph === "dawn" ? "#6E7F99" : "#232842"); if (ph !== "day") P(x + 1, y + 1, 1, 1, "#FFD27A", null, .9); });
+    if (rain) { for (let i = 0; i < 2; i++) { o += `<g class="ms-rain r${i}">`; [[1, 2], [4, 5], [7, 3], [10, 6], [2, 8], [6, 9], [9, 1], [11, 10], [3, 12], [8, 11]].forEach(([x, y]) => P(x, y - 12 * i, .3, 1.4, "#CFE3F5", null, .85)); o += `</g>`; } }
+    o += `</g>`;
+    P(-1, 1, 14, 1, "#5A3B2C"); P(-1, 13, 14, 1.5, "#6B4A36"); P(-1, 1, 1, 13, "#5A3B2C"); P(12, 1, 1, 13, "#5A3B2C"); P(5.5, 2, 1, 11, "#5A3B2C"); P(0, 7, 12, .8, "#5A3B2C");
+    if (rain) [[2, 4], [9, 6], [4, 10], [10, 11]].forEach(([x, y]) => P(x, y, .6, .6, "#E7F1FA", null, .7));
+    /* curtains */
+    P(-2, 0, 2, 15, "#D98C8C"); P(12.5, 0, 2, 15, "#D98C8C"); P(-2, 0, 1, 15, "#C77878"); P(13.5, 0, 1, 15, "#C77878"); P(-3, 0, 19, 1, "#8A5A3A");
+    /* fairy lights */
+    for (let x = 16; x < 47; x += 3) P(x, 1 + (x % 2 ? 1 : 0), 1, 1, ["#FFD27A", "#F2B8C6", "#9ED3F0", "#B9F2A1"][(x / 3 | 0) % 4], "ms-fl", ph === "day" ? .55 : 1);
+    /* shelf with books + plant */
+    P(33, 6, 13, 1, "#7A4F31"); [[34, "#E5533D", 3], [35, "#5AB8FF", 4], [36, "#F5C842", 3], [37, "#7AC77A", 4], [39, "#B18CFF", 3]].forEach(([x, c, h]) => P(x, 6 - h, 1, h, c));
+    P(42, 4, 3, 2, "#C0673A"); P(42, 2, 1, 2, "#4E9F5A"); P(43, 1, 1, 3, "#5DB86A"); P(44, 2, 1, 2, "#4E9F5A");
+    /* desk */
+    P(31, 14, 16, 1.2, "#9C6B43"); P(31, 15.2, 16, .8, "#7A4F31"); P(32, 16, 1, 9, "#7A4F31"); P(45, 16, 1, 9, "#7A4F31");
+    /* lamp + warm glow */
+    P(44, 8, 1, 6, "#3B3B45"); P(42, 7, 4, 2, "#F5C842", "ms-lampshade"); P(43, 9, 2, .6, "#FFE9A8");
+    if (K.glow) o += `<circle cx="43.5" cy="11" r="9" fill="#FFD27A" opacity="${K.glow * .45}"/><circle cx="43.5" cy="11" r="4.5" fill="#FFE9A8" opacity="${K.glow * .5}"/>`;
+    /* mug with steam */
+    P(40, 12, 2, 2, "#F2EEE6"); P(42, 12.5, .7, 1, "#F2EEE6"); P(40.5, 12, 1, .5, "#6B3E2A");
+    o += `<g class="ms-steam">`; P(40.6, 10, .5, 1, "#FFFFFF", null, .5); P(41.2, 9, .5, 1, "#FFFFFF", null, .4); o += `</g>`;
+    /* record player */
+    P(32, 11, 7, 3, "#C0673A"); P(32, 11, 7, .7, "#D98A5C"); P(33, 13.3, 5, .7, "#A55530");
+    o += `<g class="ms-disc1">`; P(33, 10, 4, 1, "#1F1F24"); P(34, 9.4, 2, .6, "#1F1F24"); P(34.6, 10, .8, .8, "#E5533D"); P(33, 10, .8, 1, "#4A4A55"); o += `</g>`;
+    o += `<g class="ms-disc2">`; P(33, 10, 4, 1, "#1F1F24"); P(34, 9.4, 2, .6, "#1F1F24"); P(34.6, 10, .8, .8, "#E5533D"); P(36.2, 10, .8, 1, "#4A4A55"); o += `</g>`;
+    o += `<g class="ms-arm-off">`; P(38, 8, .7, 3, "#C3CCD6"); o += `</g><g class="ms-arm-on">`; P(38, 8, .7, 2, "#C3CCD6"); P(37, 9.5, 1.2, .7, "#C3CCD6"); o += `</g>`;
+    ["n1", "n2", "n3"].forEach((n, i) => { o += `<text class="ms-note ${n}" x="${33 + i * 1.5}" y="8" font-size="3" fill="${["#F5C842", "#F2B8C6", "#9ED3F0"][i]}">${i === 1 ? "♫" : "♪"}</text>`; });
+    /* evening: the whole room gets a little warmer and darker */
+    if (ph === "night") P(-3, 0, 52, 27, "#0B0F2A", null, .18);
+    return o;
+  }
+  const RAINY = new Set(["both", "pianorain", "rain"]);
+  const curMode = () => { const c = document.querySelector('#musicModes [data-mm][aria-checked="true"]'); return c ? c.dataset.mm : ""; };
   function musicScene() {
-    const has = S.on === true && !!S.a;
-    const room = has ? (S.room && byId[S.room] && isOpen(byId[S.room]) ? S.room : null) : "room";
-    let rp = "";
-    const P = (x, y, w, h, c, cls) => { rp += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"${cls ? ` class="${cls}"` : ""}/>`; };
-    /* little table + record player on the right */
-    P(32, 15, 11, 1, "#8A5A3A"); P(32, 16, 11, 1, "#6E4630"); P(33, 17, 1, 9, "#6E4630"); P(41, 17, 1, 9, "#6E4630");
-    P(33, 12, 9, 3, "#C0673A"); P(33, 12, 9, 1, "#D98A5C"); P(34, 14, 7, 1, "#A55530");
-    rp += `<g class="ms-disc1">`; P(34, 11, 5, 1, "#1F1F24"); P(35, 10, 3, 1, "#1F1F24"); P(36, 11, 1, 1, "#E5533D"); P(34, 11, 1, 1, "#4A4A55"); rp += `</g>`;
-    rp += `<g class="ms-disc2">`; P(34, 11, 5, 1, "#1F1F24"); P(35, 10, 3, 1, "#1F1F24"); P(36, 11, 1, 1, "#E5533D"); P(38, 11, 1, 1, "#4A4A55"); rp += `</g>`;
-    rp += `<g class="ms-arm-off">`; P(40, 9, 1, 3, "#C3CCD6"); P(40, 9, 1, 1, "#7D8894"); rp += `</g>`;
-    rp += `<g class="ms-arm-on">`; P(40, 9, 1, 2, "#C3CCD6"); P(39, 10, 1, 1, "#C3CCD6"); P(38, 10, 1, 1, "#7D8894"); rp += `</g>`;
-    rp += `<rect class="ms-lamp" x="41" y="12" width="1" height="1" fill="#5A4632"/>`;
-    ["n1", "n2", "n3"].forEach((n, i) => { rp += `<text class="ms-note ${n}" x="${35 + i}" y="9" font-size="3.4" fill="${["#F5C842", "#F2B8C6", "#9ED3F0"][i]}">${i === 1 ? "♫" : "♪"}</text>`; });
-    const pet = has ? `<g class="ms-pet">${rects(drawPet({}), 8, 0)}<g class="ms-blink">${rects(drawPet({ blink: true }), 8, 0)}</g></g>` : "";
-    const toys = has ? ITEMS.filter(i => i.slot === "toy" && isOpen(i) && !(S.toyOff || []).includes(i.id) && !["lamp", "trophy", "plant"].includes(i.id)).map(i => i.id) : [];
-    return `<svg viewBox="-3 1 47 25" shape-rendering="crispEdges" role="img" aria-label="${has ? esc(nameOf()) + " listening to music" : "A record player"}">${roomSVG(room, toys)}${pet}${rp}</svg>`;
+    const has = S.on === true && !!S.a, rain = RAINY.has(curMode());
+    const pet = has ? `<g class="ms-pet">${rects(drawPet({}), 9, 1)}<g class="ms-blink">${rects(drawPet({ blink: true }), 9, 1)}</g></g>` : "";
+    return `<svg viewBox="-3 0 51 26" shape-rendering="crispEdges" role="img" aria-label="${has ? esc(nameOf()) + " studying with music in a cozy room" : "A cozy study room with a record player"}">${studyRoom(rain)}${pet}</svg>`;
   }
   function paintMusicScene() {
     const btn = document.getElementById("musicPlay"); if (!btn) return;
@@ -1593,20 +1639,19 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const tip = document.createElement("span"); tip.className = "ms-tip"; tip.id = "msTip"; btn.appendChild(tip);
     }
     sc.innerHTML = musicScene();
-    const has = S.on === true && !!S.a, cafe = byId.cafe;
-    const tip = btn.querySelector("#msTip");
-    if (tip) { tip.textContent = !has ? "Adopt a study buddy and it'll listen with you 🐾" : !isOpen(cafe) ? `☕ Study with music on ${cafe.md} different days to unlock the café room (${Math.min(musicDays(), cafe.md)}/${cafe.md})` : ""; tip.hidden = !tip.textContent; }
+    const has = S.on === true && !!S.a, tip = btn.querySelector("#msTip");
+    if (tip) { tip.textContent = has ? "" : "Adopt a study buddy and it'll study here with you 🐾"; tip.hidden = !tip.textContent; }
     sc.classList.toggle("ms-on", btn.getAttribute("aria-pressed") === "true");
   }
   (function musicHook() {
     const btn = document.getElementById("musicPlay"); if (!btn) return;
     paintMusicScene();
-    new MutationObserver(() => {
-      const on = btn.getAttribute("aria-pressed") === "true";
-      const sc = btn.querySelector(".ms-scene"); if (sc) sc.classList.toggle("ms-on", on);
-      if (on && S.on === true) { const d = today(); if (!Array.isArray(S.mud)) S.mud = []; if (!S.mud.includes(d)) { const was = isOpen(byId.cafe); S.mud.push(d); S.mud = S.mud.slice(-60); save(); paintMusicScene(); if (!was && isOpen(byId.cafe)) toastMsg("☕ You unlocked the Cozy café room! Find it in your buddy's Room."); } }
-    }).observe(btn, { attributes: true, attributeFilter: ["aria-pressed"] });
+    new MutationObserver(() => { const sc = btn.querySelector(".ms-scene"); if (sc) sc.classList.toggle("ms-on", btn.getAttribute("aria-pressed") === "true"); })
+      .observe(btn, { attributes: true, attributeFilter: ["aria-pressed"] });
+    const modes = document.getElementById("musicModes");
+    if (modes) new MutationObserver(() => paintMusicScene()).observe(modes, { attributes: true, subtree: true, attributeFilter: ["aria-checked"] });
     const mb = document.getElementById("musicBtn"); if (mb) mb.addEventListener("click", () => setTimeout(paintMusicScene, 0));
+    setInterval(() => { const p = document.getElementById("musicPanel"); if (p && !p.hidden) paintMusicScene(); }, 10 * 60000);
   })();
 
   window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), scene: () => stageSVG({ plain: true }).replace(/var\(--bd-sky\)/g, "#BFE3FF").replace(/var\(--bd-grass2\)/g, "#8CD47E").replace(/var\(--bd-grass\)/g, "#6CC06A"), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };

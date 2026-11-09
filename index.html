@@ -1313,6 +1313,74 @@ html:not([data-theme="light"]):not([data-theme="sepia"]):not([data-theme="unicor
 .hc-go:hover{text-decoration:underline}
 .club-dot{margin-left:auto;font:800 10.5px var(--body);min-width:8px;height:8px;border-radius:999px;background:#E5533D}
 .ag-msg{margin:2px 0 0!important;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#F0A63A 16%,var(--surface));border:1.5px solid color-mix(in srgb,#F0A63A 50%,var(--line));color:var(--ink)!important;font-size:14px!important;text-align:left}
+/* community wall + comments */
+.cl-wall,.cs-th{display:flex;flex-direction:column;gap:10px}
+.cs-th{border:1.5px solid var(--line);background:var(--surface);border-radius:16px;padding:14px 16px}
+.cs-h{margin:0;font-size:16px}.cs-h span{font:700 12px var(--mono);color:var(--muted);margin-left:4px}
+.cs-p{border:1.5px solid var(--line);background:var(--surface);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cs-c{padding:10px 0 6px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.cs-sub .cs-c:first-child{margin-top:4px}
+.cs-top{display:flex;align-items:center;gap:10px}
+.cs-av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:800 13px var(--body);color:#fff}
+.cs-who{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
+.cs-who b{font-size:14.5px}
+.cs-noa{font:800 10.5px var(--body);padding:1px 7px;border-radius:999px;background:#F0A63A;color:#2a1d00}
+.cs-ago{font-size:12.5px;color:var(--muted)}
+.cs-x{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:var(--muted);font-size:13px}
+.cs-x:hover,.cs-x:focus-visible{background:var(--surface-2);color:var(--ink)}
+.cs-txt{margin:0;font-size:15px;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere}
+.cs-txt a{color:var(--royal,#5AB8FF)}
+.cs-imgs{display:grid;gap:6px;grid-template-columns:repeat(2,1fr);max-width:520px}
+.cs-imgs.n1{grid-template-columns:1fr}
+.cs-ph{all:unset;cursor:zoom-in;display:block;border-radius:12px;overflow:hidden;background:var(--surface-2);aspect-ratio:4/3}
+.cs-imgs.n1 .cs-ph{aspect-ratio:auto;max-height:420px}
+.cs-ph img{display:block;width:100%;height:100%;object-fit:cover}
+.cs-imgs.n1 .cs-ph img{height:auto;max-height:420px;object-fit:contain}
+.cs-ph:focus-visible{outline:2px solid var(--royal,#5AB8FF);outline-offset:2px}
+.cs-acts{display:flex;gap:6px;flex-wrap:wrap}
+.cs-act{all:unset;box-sizing:border-box;cursor:pointer;font:700 13px var(--body);padding:5px 11px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;gap:5px}
+.cs-act:hover,.cs-act:focus-within,.cs-act:focus-visible{border-color:color-mix(in srgb,#F0A63A 60%,var(--line))}
+.cs-act.on{border-color:#E5533D;background:color-mix(in srgb,#E5533D 12%,var(--surface))}
+.cs-comp{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.cs-comp textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:44px;font:15px/1.5 var(--body);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:9px 12px}
+.cs-comp textarea:focus{outline:none;border-color:#F0A63A}
+.cs-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cs-msg{flex:1;font-size:13px;color:var(--muted)}
+.cs-send{all:unset;box-sizing:border-box;cursor:pointer;font:800 14px var(--body);padding:8px 18px;border-radius:999px;background:#F0A63A;color:#2a1d00}
+.cs-send:disabled{opacity:.55;cursor:default}.cs-send:focus-visible{outline:2px solid #F0A63A;outline-offset:2px}
+.cs-prev{display:flex;gap:6px;flex-wrap:wrap}.cs-prev:empty{display:none}
+.cs-pv{position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden}
+.cs-pv img{width:100%;height:100%;object-fit:cover}
+.cs-pv button{all:unset;cursor:pointer;position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:11px;display:grid;place-items:center}
+.cs-new{border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line));background:color-mix(in srgb,#F0A63A 7%,var(--surface));border-radius:16px;padding:12px 14px}
+.cs-new .cs-comp{margin:0}
+.cs-empty,.cs-load,.cs-off{margin:0;color:var(--muted);font-size:14px}
+.cs-off{padding:12px 14px;border-radius:12px;border:1.5px dashed var(--line)}
+.cs-lb{position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.cs-lb img{max-width:100%;max-height:100%;border-radius:8px}
+.cs-lb button{all:unset;cursor:pointer;position:fixed;top:14px;right:14px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:18px;display:grid;place-items:center}
+/* left menu: one color per item (Home blue, Club gold, Practice orange-red, notes violet, words teal, translator pink, park green, coaching indigo) */
+nav.side .navbtn[data-go="notes"]{--nc:#4DA3FF;--nc2:#1C6FD1}
+nav.side .navbtn[data-go="club"]{--nc:#F5B83D;--nc2:#C98A0C}
+nav.side .navbtn[data-go="quiz"]{--nc:#FF7A45;--nc2:#D9480F}
+nav.side .navbtn[data-go="classnotes"]{--nc:#B18CFF;--nc2:#7348D8}
+nav.side .navbtn[data-go="words"]{--nc:#2DD4BF;--nc2:#0F8F80}
+nav.side .navbtn[data-go="translate"]{--nc:#FF7EB6;--nc2:#C2306F}
+nav.side .navbtn[data-go="park"]{--nc:#3DDC97;--nc2:#12935C}
+nav.side .navbtn[data-go="coaching"]{--nc:#8FA8FF;--nc2:#3B5BDB}
+:root[data-theme="light"] nav.side .navbtn[data-go],:root[data-theme="sepia"] nav.side .navbtn[data-go],:root[data-theme="unicorn"] nav.side .navbtn[data-go]{--nc:var(--nc2)}
+nav.side .navgroup.mine .navbtn[data-go]{color:var(--nc)}
+nav.side .navgroup.mine .navbtn[data-go]:hover{background:color-mix(in srgb,var(--nc) 14%,transparent)}
+nav.side .navgroup.mine .navbtn[data-go][aria-current="true"]{background:linear-gradient(180deg,color-mix(in srgb,var(--nc) 78%,#fff) 0%,var(--nc2) 100%);color:#fff;border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 8px color-mix(in srgb,var(--nc2) 40%,transparent);text-shadow:0 1px 1px rgba(0,0,0,.25)}
+/* Home keeps its pill shape, now blue */
+nav.side .notes-nav{background:color-mix(in srgb,var(--nc) 13%,transparent);border-color:color-mix(in srgb,var(--nc) 45%,transparent)}
+nav.side .notes-nav:hover{border-color:var(--nc)}
+/* Club: a little special */
+nav.side .club-nav{background:linear-gradient(90deg,color-mix(in srgb,var(--nc) 18%,transparent),color-mix(in srgb,#FF7EB6 10%,transparent));border:1.5px solid color-mix(in srgb,var(--nc) 45%,transparent);border-radius:999px;padding:6px 13px;margin:4px 0}
+nav.side .club-nav:hover{border-color:var(--nc)}
+nav.side .club-nav[aria-current="true"]{background:linear-gradient(100deg,#F7C65A 0%,#E79A1E 60%,#E26A8D 100%)}
+nav.side .club-nav::after{content:"✨";margin-left:auto;font-size:12px;filter:saturate(1.2)}
+nav.side .club-nav .club-dot{margin-left:6px}
 </style>
 
 <header class="top">
@@ -1992,7 +2060,8 @@ html:not([data-theme="light"]):not([data-theme="sepia"]):not([data-theme="unicor
     try{
       const acc=await window.__csTeach.accounts();
       let priv=[]; try{ priv=(await window.__csViewAs.students()).priv||[]; }catch(e){}
-      data={acc,priv}; paint();
+      let club=null; try{ club=window.__clubSocial?await window.__clubSocial.recent():null; }catch(e){}
+      data={acc,priv,club}; paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
   }
   let showAll=false, open=false, undoPrev=null;
@@ -2012,15 +2081,17 @@ html:not([data-theme="light"]):not([data-theme="sepia"]):not([data-theme="unicor
       data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>clocks.push(`<li>🕐 ${esc(r.text)} <a class="tn-go" href="private-students.html#s/${esc(p.key.slice(4))}">Open →</a></li>`))); }
     const unl=data.acc.filter(a=>a.kind==="new").length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
-    const cnt=joins.length+packs.length+clocks.length+(unl?1:0);
+    const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
+    const cnt=joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length;
     b.hidden=false;
     /* closed: a small button that opens it again */
     const bell=`<button type="button" class="tn-bell${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
     if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
     b.className="tn-wrap open";
     const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
-    b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
-      ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
+    b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length||clubNew.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
+      ${clubNew.length?`<h4>Club community</h4><ul>${clubNew.map(a=>`<li>${a.kind==="post"?"📝":"💬"} <b>${esc(a.name)}</b> ${a.kind==="post"?"posted on the wall":/^w\d{8}$/.test(a.pid||"")?"commented on the weekly post":"commented on a post"}${a.img?" 📷":""}${a.text?`: <span class="muted">“${esc(a.text)}”</span>`:""} <span class="muted">· ${ago(a.at)}</span> <a class="tn-go" href="#club" data-go="club">Open →</a></li>`).join("")}</ul>`:""}
+      ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length&&!clubNew.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
       ${older.length?`<button type="button" class="tn-link" data-tn="all">${showAll?"Hide earlier ones":`Show earlier sign-ups (${older.length})`}</button>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
       ${packs.length?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}
@@ -2180,7 +2251,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 
 <section class="view" id="v-club" hidden>
   <h1>Noa's English <em>Club</em></h1>
-  <p class="lede">This week's classes, your Zoom links and past weeks. Only club members can see this page.</p>
+  <p class="lede">This week's classes, the community wall, your Zoom links and past weeks.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
 <script>
@@ -2236,9 +2307,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     nav(); const f=feed();
     if(!f){ box.innerHTML='<p class="cl-empty">This page is for members of Noa’s English Club. If you’re a member and don’t see it, sign in with the email you use for the club or tell Noa.</p>'; return; }
     const ps=posts(f), now=Date.now(), info=f.info||{};
-    const tabs=[["week","This week"],["links","Schedule & links"],["past",`Past weeks${ps.length>1?" ("+(ps.length-1)+")":""}`]];
+    const tabs=[["week","This week"],["wall","Community"],["links","Schedule & links"],["past",`Past weeks${ps.length>1?" ("+(ps.length-1)+")":""}`]];
     let body="";
-    if(tab==="week"){ body=ps[0]?postHTML(f,ps[0],now,true):'<p class="cl-empty">This week’s post isn’t up yet. It usually arrives on Monday.</p>'; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    if(tab==="wall"){ body='<div class="cl-wall" data-wall="1"></div>'; }
+    else if(tab==="week"){ body=ps[0]?postHTML(f,ps[0],now,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:'<p class="cl-empty">This week’s post isn’t up yet. It usually arrives on Monday.</p>'; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
     else if(tab==="links"){
       const sc=(info.schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7));
       const nextDate=wd=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===wd) return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); } };
@@ -2247,16 +2319,140 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         ${(info.links||[]).length?`<div class="cl-sec"><h2>🔗 Useful links</h2>${info.links.map(l=>`<div class="cl-row"><span class="i">${esc(l.ico||"🔗")}</span><span class="t"><b>${esc(l.title)}</b>${l.note?`<span>${esc(l.note)}</span>`:""}</span><a class="cl-join" style="--k:var(--c4)" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a></div>`).join("")}</div>`:""}`;
     } else {
       const old=ps.slice(1);
-      body=old.length?old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>Week of ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}</details>`).join(""):'<p class="cl-empty">Past weeks will collect here, so you can look back at topics and videos.</p>';
+      body=old.length?old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>Week of ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}<div class="cl-thread" data-thread="${esc(p.id)}" data-lazy="1"></div></details>`).join(""):'<p class="cl-empty">Past weeks will collect here, so you can look back at topics and videos.</p>';
     }
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="Club sections">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    if(window.__clubSocial) window.__clubSocial.mount(box);
   }
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-clt]"); if(t){ tab=t.dataset.clt; render(); } });
   document.addEventListener("cs-club",render); document.addEventListener("cs-hubview",nav);
   window.addEventListener("hashchange",()=>{ if(location.hash==="#club") setTimeout(render,0); });
   document.addEventListener("click",e=>{ if(e.target.closest('[data-go="club"]')) setTimeout(render,0); });
-  setInterval(()=>{ if(feed()){ if(!document.hidden) { const v=document.getElementById("v-club"); if(v&&!v.hidden&&tab==="week") render(); else home(); } } },60000);
+  /* keep "Live now" fresh, but never while someone is typing a comment */
+  setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing) render(); else home(); } },60000);
+  window.__clubTab=k=>{ tab=k; render(); };
   render();
+})();
+</script>
+<script>
+/* ---------- Club community: members' posts, comments on the weekly post, photos, likes ----------
+   Everything lives in club-only parts of the database (clubPosts, clubImgs, clubActivity). The database's security
+   rules only let people on the club list read or write there, and only the author (or Noa) can edit/delete. */
+(function(){
+  const NOA="J8D2tjQmBaaA2QN730tSfSrjfm73";
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const linkify=s=>esc(s).replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)"']/g,u=>`<a href="${u}" target="_blank" rel="noopener nofollow">${u.length>48?u.slice(0,45)+"…":u}</a>`);
+  const ago=t=>{ const m=Math.round((Date.now()-t)/6e4); if(m<1) return "just now"; if(m<60) return m+" min ago"; const h=Math.round(m/60); if(h<24) return h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); if(d<7) return d===1?"yesterday":d+" days ago"; return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric"}); };
+  const F=()=>window.__csFire;
+  const me=()=>F()&&F().uid();
+  const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  let state="unknown"; /* unknown | ok | off (rules not switched on) | denied */
+  async function api(method,path,body){
+    const f=F(); if(!f) throw new Error("not ready"); const tok=await f.token(); if(!tok) throw new Error("signin");
+    const r=await fetch(f.base+path,{method,headers:{"Authorization":"Bearer "+tok,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+    if(r.status===403){ state=state==="ok"?"ok":"off"; const e=new Error("denied"); e.code=403; throw e; }
+    if(!r.ok&&r.status!==404) throw new Error("http "+r.status);
+    return r.status===404?null:r.json();
+  }
+  const S=v=>({stringValue:String(v)}), I=v=>({integerValue:String(Math.round(v))});
+  function fromDoc(d){ const o={id:d.name.split("/").pop()}; const f=d.fields||{}; for(const k in f){ const v=f[k]; o[k]=v.stringValue!=null?v.stringValue:v.integerValue!=null?+v.integerValue:v.arrayValue?(v.arrayValue.values||[]).map(x=>x.stringValue):v.booleanValue!=null?v.booleanValue:null; } try{ Object.assign(o,JSON.parse(o.json||"{}")); }catch(e){} return o; }
+  async function query(parent,coll,dir,limit){
+    const res=await api("POST",(parent?"/"+parent:"")+":runQuery",{structuredQuery:{from:[{collectionId:coll}],orderBy:[{field:{fieldPath:"at"},direction:dir}],limit}});
+    state="ok"; return (res||[]).filter(x=>x.document).map(x=>fromDoc(x.document));
+  }
+  /* Noa's guest preview: sample posts, nothing is sent anywhere */
+  const G=()=>!!window.__csGuest, H=h=>Date.now()-h*36e5;
+  const SAMPLE_POSTS=[{id:"s1",uid:"x1",name:"Valentina R.",at:H(3),text:"Does anyone have a good podcast for practicing listening on the bus? 🎧",likes:["a","b"],n:2},{id:"s2",uid:NOA,name:"Noa",at:H(26),text:"Welcome to the new club wall! Ask questions, share wins, post your pet photos 🐾",likes:["a","b","c","d"],n:1}];
+  const SAMPLE_COMM={s1:[{id:"c1",uid:"x2",name:"Daniel S.",at:H(2),text:"6 Minute English from the BBC! Short and easy to follow.",likes:["a"]},{id:"c2",uid:NOA,name:"Noa",at:H(1),text:"Great pick. Culips is also really good for real conversations.",likes:[]}],s2:[{id:"c3",uid:"x3",name:"Laura P.",at:H(20),text:"Love this! 🫰🏻",likes:["a"]}]};
+  const listPosts=()=>G()?Promise.resolve(SAMPLE_POSTS):query("","clubPosts","DESCENDING",50);
+  const listComments=pid=>G()?Promise.resolve(SAMPLE_COMM[pid]||[{id:"c9",uid:"x4",name:"Marcelo T.",at:H(5),text:"This is Kira, she thinks she's a cat 🐶",likes:["a","b","c"]}]):query("clubPosts/"+pid,"comments","ASCENDING",300);
+  async function createDoc(path,id,data){ const fields={uid:S(me()),at:I(Date.now()),name:S(F().name()),json:S(JSON.stringify(data))}; if(path==="clubPosts") { fields.likes={arrayValue:{values:[]}}; fields.n=I(0); fields.lastAt=I(Date.now()); } else fields.likes={arrayValue:{values:[]}};
+    await api("POST","/"+path+"?documentId="+id,{fields}); }
+  async function activity(kind,pid,text,img){ try{ await api("POST","/clubActivity?documentId="+rid(),{fields:{uid:S(me()),at:I(Date.now()),name:S(F().name()),kind:S(kind),pid:S(pid),text:S(String(text||"").slice(0,140)),img:{booleanValue:!!img}}}); }catch(e){} }
+  /* photos: shrunk in the browser to a light JPEG and kept in the database (no separate file storage needed) */
+  function shrink(file){ return new Promise((res,rej)=>{ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{ let w=im.naturalWidth,h=im.naturalHeight; const M=1280; if(Math.max(w,h)>M){ const k=M/Math.max(w,h); w=Math.round(w*k); h=Math.round(h*k); } const c=document.createElement("canvas"); c.width=w; c.height=h; c.getContext("2d").drawImage(im,0,0,w,h); URL.revokeObjectURL(u); let q=.82,d=c.toDataURL("image/jpeg",q); while(d.length>700000&&q>.35){ q-=.12; d=c.toDataURL("image/jpeg",q); } if(d.length>900000){ rej(new Error("too big")); return; } res(d); }; im.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error("not an image")); }; im.src=u; }); }
+  async function uploadImg(file){ const d=await shrink(file), id=rid(); await api("POST","/clubImgs?documentId="+id,{fields:{uid:S(me()),at:I(Date.now()),data:S(d)}}); IMG[id]=d; return id; }
+  const IMG={};
+  async function img(id){ if(IMG[id]) return IMG[id]; const r=await api("GET","/clubImgs/"+id); IMG[id]=r&&r.fields&&r.fields.data?r.fields.data.stringValue:""; return IMG[id]; }
+  function paintImgs(root){ root.querySelectorAll("img[data-img]:not([src])").forEach(async el=>{ try{ const d=await img(el.dataset.img); if(d) el.src=d; else el.closest(".cs-ph")?.remove(); }catch(e){} }); }
+  async function like(path,item){ const mine=me(), L=new Set(item.likes||[]); L.has(mine)?L.delete(mine):L.add(mine); item.likes=[...L];
+    await api("PATCH","/"+path+"?updateMask.fieldPaths=likes",{fields:{likes:{arrayValue:{values:item.likes.map(S)}}}}); }
+  async function del(path){ await api("DELETE","/"+path); }
+  /* ---------- UI ---------- */
+  const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
+  const av=(uid,name)=>{ let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
+  const who=x=>`${av(x.uid,x.name)}<span class="cs-who"><b>${esc(x.name||"Member")}</b>${x.uid===NOA?'<span class="cs-noa">Teacher</span>':""}<span class="cs-ago">${ago(x.at)}</span></span>`;
+  const canDel=x=>x.uid===me()||me()===NOA;
+  const imgs=x=>(x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"";
+  const likeBtn=(x,path)=>{ const n=(x.likes||[]).length, on=(x.likes||[]).includes(me()); return `<button type="button" class="cs-act${on?" on":""}" data-like="${esc(path)}" aria-pressed="${on}">${on?"❤️":"🤍"} ${n||""}</button>`; };
+  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><textarea rows="${kind==="post"?3:2}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-prev"></div><div class="cs-row"><label class="cs-act cs-addph">📷 Photo<input type="file" accept="image/*" multiple hidden></label><span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?"Post":"Comment"}</button></div></form>`; }
+  const OFF='<p class="cs-off">💬 Comments and posts are almost ready. They’ll switch on very soon.</p>';
+  const COMM={};
+  async function mountThread(el){
+    const pid=el.dataset.thread; el.dataset.on="1";
+    if(el.dataset.lazy&&!el.closest("details")?.open){ el.closest("details")?.addEventListener("toggle",()=>mountThread(el),{once:true}); el.dataset.on=""; return; }
+    if(COMM[pid]) paintThread(el,pid,COMM[pid]); else el.innerHTML=`<div class="cs-th"><h3 class="cs-h">💬 Comments</h3><p class="cs-load">Loading…</p></div>`;
+    let list=[]; try{ list=COMM[pid]=await listComments(pid); }catch(e){ el.innerHTML=state==="off"?OFF:'<p class="cs-off">Comments couldn’t load. Check your connection and try again.</p>'; return; }
+    paintThread(el,pid,list);
+  }
+  function commentHTML(pid,c){ const path=`clubPosts/${pid}/comments/${c.id}`; return `<div class="cs-c" data-cid="${esc(c.id)}"><div class="cs-top">${who(c)}${canDel(c)?`<button type="button" class="cs-x" data-del="${esc(path)}" title="Delete" aria-label="Delete">✕</button>`:""}</div>${c.text?`<p class="cs-txt">${linkify(c.text)}</p>`:""}${imgs(c)}<div class="cs-acts">${likeBtn(c,path)}</div></div>`; }
+  function paintThread(el,pid,list){
+    el.innerHTML=`<div class="cs-th"><h3 class="cs-h">💬 Comments${list.length?` <span>${list.length}</span>`:""}</h3>${list.map(c=>commentHTML(pid,c)).join("")||'<p class="cs-empty">No comments yet. Be the first! Photos welcome 📷</p>'}${composer("comment",pid,"Write a comment…")}</div>`;
+    paintImgs(el);
+  }
+  let POSTS=null;
+  async function mountWall(el){
+    el.dataset.on="1"; if(POSTS) paintWall(el); else el.innerHTML='<p class="cs-load">Loading…</p>';
+    try{ POSTS=await listPosts(); }catch(e){ el.innerHTML=state==="off"?OFF:'<p class="cs-off">The wall couldn’t load. Check your connection and try again.</p>'; return; }
+    paintWall(el);
+  }
+  function postHTML(p){ const path=`clubPosts/${p.id}`; return `<article class="cs-p" data-pid="${esc(p.id)}"><div class="cs-top">${who(p)}${canDel(p)?`<button type="button" class="cs-x" data-del="${esc(path)}" title="Delete post" aria-label="Delete post">✕</button>`:""}</div>${p.text?`<p class="cs-txt">${linkify(p.text)}</p>`:""}${imgs(p)}
+      <div class="cs-acts">${likeBtn(p,path)}<button type="button" class="cs-act" data-open="${esc(p.id)}" aria-expanded="false">💬 ${p.n?p.n+" ":""}${p.n===1?"comment":"comments"}</button></div><div class="cs-sub" hidden></div></article>`; }
+  function paintWall(el){
+    el.innerHTML=`<div class="cs-new">${composer("post","","Share something with the club: a question, a photo, a small win…")}</div>${(POSTS||[]).map(postHTML).join("")||'<p class="cs-empty">Nothing here yet. Say hi, ask a question, or share a photo 👋</p>'}`;
+    paintImgs(el);
+  }
+  async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML='<p class="cs-load">Loading…</p>';
+    try{ const list=COMM[pid]=await listComments(pid); sub.innerHTML=list.map(c=>commentHTML(pid,c)).join("")+composer("comment",pid,"Write a comment…"); paintImgs(sub); }catch(e){ sub.innerHTML='<p class="cs-off">Couldn’t load the comments.</p>'; } }
+  function mount(root){ root.querySelectorAll(".cl-thread[data-thread]:not([data-on='1'])").forEach(mountThread); root.querySelectorAll(".cl-wall:not([data-on='1'])").forEach(mountWall); }
+  /* picked photos (up to 4) */
+  const PICK=new WeakMap();
+  document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
+    const pv=form.querySelector(".cs-prev"); pv.innerHTML=arr.map((f,i)=>`<span class="cs-pv"><img src="${URL.createObjectURL(f)}" alt=""><button type="button" data-unpick="${i}" aria-label="Remove photo">✕</button></span>`).join(""); });
+  document.addEventListener("submit",async e=>{ const form=e.target.closest(".cs-comp"); if(!form) return; e.preventDefault();
+    const ta=form.querySelector("textarea"), msg=form.querySelector(".cs-msg"), btn=form.querySelector(".cs-send"), text=ta.value.trim(), files=PICK.get(form)||[];
+    if(!text&&!files.length){ ta.focus(); return; }
+    if(G()){ msg.textContent="Guest preview: posting is off here."; return; }
+    if(!me()){ msg.textContent="Sign in first."; return; }
+    btn.disabled=true; msg.textContent=files.length?"Uploading photo…":"Posting…";
+    try{
+      const ids=[]; for(const f of files){ ids.push(await uploadImg(f)); }
+      const id=rid(), kind=form.dataset.comp, pid=form.dataset.target;
+      if(kind==="post"){ await createDoc("clubPosts",id,{text,imgs:ids}); activity("post",id,text,ids.length); }
+      else { await createDoc(`clubPosts/${pid}/comments`,id,{text,imgs:ids}); activity("comment",pid,text,ids.length);
+        if(!/^w\d{8}$/.test(pid)){ try{ const p=(POSTS||[]).find(x=>x.id===pid); const n=((COMM[pid]||[]).length||0)+1; if(p) p.n=n; await api("PATCH",`/clubPosts/${pid}?updateMask.fieldPaths=n&updateMask.fieldPaths=lastAt`,{fields:{n:I(n),lastAt:I(Date.now())}}); }catch(er){} } }
+      PICK.delete(form); ta.value="";
+      const th=form.closest(".cl-thread"), sub=form.closest(".cs-sub"), wall=form.closest(".cl-wall");
+      if(th) mountThread(th); else if(sub){ const art=sub.closest(".cs-p"); sub.hidden=true; openSub(art,pid); const b=art.querySelector("[data-open]"); if(b){ const n=(COMM[pid]||[]).length+1; b.innerHTML=`💬 ${n} ${n===1?"comment":"comments"}`; } } else if(wall) mountWall(wall);
+      if(typeof window.toast==="function") window.toast(kind==="post"?"Posted ✓":"Comment added ✓");
+    }catch(er){ msg.textContent=er.code===403?"You can’t post here yet.":er.message==="too big"?"That photo is too big. Try another one.":er.message==="not an image"?"That file isn’t a photo.":"Didn’t work. Try again."; btn.disabled=false; return; }
+    btn.disabled=false; msg.textContent=""; });
+  document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)&&e.target.closest(".cs-comp textarea")){ e.preventDefault(); e.target.closest("form").requestSubmit(); } });
+  document.addEventListener("click",async e=>{
+    const t=e.target;
+    const un=t.closest("[data-unpick]"); if(un){ const form=un.closest("form"); const arr=PICK.get(form)||[]; arr.splice(+un.dataset.unpick,1); PICK.set(form,arr); un.parentElement.remove(); form.querySelectorAll("[data-unpick]").forEach((b,i)=>b.dataset.unpick=i); return; }
+    if(G()&&t.closest("[data-like],[data-del]")) return;
+    const lk=t.closest("[data-like]"); if(lk){ const path=lk.dataset.like, parts=path.split("/"); const id=parts.pop(); const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return; try{ await like(path,item); }catch(er){ return; } lk.outerHTML=likeBtn(item,path); return; }
+    const dl=t.closest("[data-del]"); if(dl){ if(!confirm("Delete this? It can't be undone.")) return; const path=dl.dataset.del; try{ await del(path); }catch(er){ if(typeof window.toast==="function") window.toast("Couldn’t delete it."); return; }
+      const parts=path.split("/"); if(parts.length>2){ const pid=parts[1]; COMM[pid]=(COMM[pid]||[]).filter(x=>x.id!==parts[3]); dl.closest(".cs-c").remove(); } else { POSTS=(POSTS||[]).filter(x=>x.id!==parts[1]); dl.closest(".cs-p").remove(); } return; }
+    const op=t.closest("[data-open]"); if(op){ openSub(op.closest(".cs-p"),op.dataset.open); return; }
+    const big=t.closest("[data-big]"); if(big){ const d=IMG[big.dataset.big]; if(!d) return; const o=document.createElement("div"); o.className="cs-lb"; o.setAttribute("role","dialog"); o.setAttribute("aria-label","Photo"); o.innerHTML=`<img src="${d}" alt="Photo"><button type="button" aria-label="Close">✕</button>`; o.addEventListener("click",()=>o.remove()); document.body.appendChild(o); o.querySelector("button").focus(); return; }
+  });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const lb=document.querySelector(".cs-lb"); if(lb) lb.remove(); } });
+  /* Noa's bell: recent club activity */
+  async function recent(){ try{ return await query("","clubActivity","DESCENDING",40); }catch(e){ return null; } }
+  window.__clubSocial={ mount, recent };
+  const b=document.getElementById("clubMain"); if(b) mount(b);
 })();
 </script>
 <section class="view" id="v-translate" hidden>
@@ -3050,7 +3246,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=36" defer></script>
+<script src="buddy.js?v=37" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -7094,6 +7290,13 @@ async function signIn() {
   }
 }
 window.csSignIn = signIn;
+/* for the Club wall: the member's own sign-in token (every read/write still goes through the database's security rules) */
+window.__csFire = {
+  base: "https://firestore.googleapis.com/v1/projects/" + firebaseConfig.projectId + "/databases/(default)/documents",
+  token: async () => auth.currentUser ? auth.currentUser.getIdToken() : null,
+  uid: () => auth.currentUser ? auth.currentUser.uid : null,
+  name: () => auth.currentUser ? (auth.currentUser.displayName || (auth.currentUser.email || "").split("@")[0]) : ""
+};
 async function doSignOut() {
   await flush();
   for (const k of lsKeys()) if (!KEEP_ON_SIGNOUT.has(k)) setRaw(k, null);
