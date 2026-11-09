@@ -173,7 +173,10 @@ h1.hubt{background:linear-gradient(90deg,var(--c-sky),var(--c-violet) 45%,var(--
 .seg[aria-pressed="true"]{border-color:var(--k,var(--green));background:color-mix(in srgb,var(--k,var(--green)) 20%,var(--surface));color:var(--ink)}
 .stu{border-left:6px solid var(--pc,var(--line))!important;flex-direction:row!important;align-items:center;gap:10px!important}
 .stu .sb{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:800 14px var(--display);color:#0b1220;background:var(--av)}
+.av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:800 14px var(--display);color:#0b1220;background:var(--av);position:relative}
+.av.on::after{content:"✓";position:absolute;right:-3px;bottom:-3px;width:15px;height:15px;border-radius:50%;background:#3b82f6;color:#fff;font:900 9.5px/15px system-ui,sans-serif;text-align:center;box-shadow:0 0 0 2px var(--card,#111827)}
+.syncpill{display:inline-block;vertical-align:middle;margin-left:10px;font-family:var(--body,inherit);letter-spacing:0;font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,#3b82f6 18%,transparent);color:#60a5fa;white-space:nowrap}
+.syncpill.off{background:color-mix(in srgb,var(--muted) 14%,transparent);color:var(--muted)}
 .stu .bar{height:6px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin-top:4px}
 .stu .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--c-green),var(--c-teal))}
 .stu .bar i.low{background:var(--c-amber)}.stu .bar i.out{background:var(--c-red)}
@@ -654,12 +657,16 @@ function renderTrends() {
     <p class="muted small" style="margin:8px 0 0">Club members only count people signed in to Hibi; Skool members aren't here yet.</p>`;
 }
 function renderFilters() {
-  const n = k => k === "all" ? S.length : S.filter(s => s.status === k).length;
-  $("filters").innerHTML = [["active", "Active", "k-green"], ["paused", "Paused", "k-amber"], ["inactive", "Past", "k-violet"], ["all", "All", "k-sky"]].map(([k, l, c]) => `<button type="button" class="seg ${c}" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
+  const n = k => k === "all" ? S.length : k === "hibi" ? S.filter(s => s.uid && s.status !== "inactive").length : S.filter(s => s.status === k).length;
+  $("filters").innerHTML = [["active", "Active", "k-green"], ["paused", "Paused", "k-amber"], ["inactive", "Past", "k-violet"], ["all", "All", "k-sky"], ["hibi", "✓ On Hibi", "k-sky"]].map(([k, l, c]) => `<button type="button" class="seg ${c}" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
 }
+/* little "synced with Hibi" mark on the avatar for students who have an account */
+function hibiSeen(s) { const u = usage[s.id] || {}; const d = Object.keys(u).filter(k => Object.values(u[k] || {}).some(v => v > 0)).sort().pop(); return d || ""; }
+function syncTip(s) { if (!s.uid) return "No Hibi account yet"; const d = hibiSeen(s); return "Synced with Hibi" + (d ? " · last active " + new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""); }
+function avSync(s) { return s.uid ? ` on" title="${esc(syncTip(s))}` : ""; }
 function renderList() {
   const q = $("q").value.trim().toLowerCase();
-  const ls = S.filter(s => (filt === "all" || s.status === filt) && (!q || (s.name + " " + (s.email || "") + " " + (s.emails || []).join(" ")).toLowerCase().includes(q)));
+  const ls = S.filter(s => (filt === "all" || (filt === "hibi" ? s.uid && s.status !== "inactive" : s.status === filt)) && (!q || (s.name + " " + (s.email || "") + " " + (s.emails || []).join(" ")).toLowerCase().includes(q)));
   const byName = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" });
   const nx = {}; ls.forEach(s => nx[s.id] = nextClassAt(s));
   const ord = (meta && meta.order) || [];
@@ -672,7 +679,7 @@ function renderList() {
     const pct = st && st.size ? Math.min(100, st.used / st.size * 100) : 0;
     const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
     const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
-    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${p && p.color || "var(--line)"}"><span class="av" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
+    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${p && p.color || "var(--line)"}"><span class="av${avSync(s)}" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
       <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lSort === "next" && nx[s.id] ? " · " + fmtNext(nx[s.id]) : lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
       ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</span></button>`;
   }).join("") || `<p class="muted">No students here.</p>`;
@@ -705,7 +712,7 @@ function renderDetail() {
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
   const links = [s.sheetId ? `<a class="linkb" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/${esc(s.sheetId)}/edit">English Journey ↗</a>` : "", s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
-  box.innerHTML = `<div class="dh"><span class="av" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}</h2>
+  box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     <select id="stStatus" aria-label="Status" style="width:auto">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }[k]}</option>`).join("")}</select></div>
     <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Hibi (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Hibi account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
@@ -975,7 +982,7 @@ function jumpList() {
   const q = normName($("jumpQ").value); const box = $("jumpRes");
   if (!q) { box.hidden = true; return; }
   const hits = S.filter(s => normName(s.name).split(" ").some(w => w.startsWith(q)) || normName(s.name).includes(q)).sort((a, b) => (a.status === "active" ? 0 : 1) - (b.status === "active" ? 0 : 1) || a.name.localeCompare(b.name)).slice(0, 8);
-  box.innerHTML = hits.map((s, i) => `<button type="button" data-jump="${s.id}" class="${i ? "" : "on"}"><span class="av" style="--av:${avc(s)};width:26px;height:26px;font-size:11px">${esc(initials(s.name))}</span>${esc(s.name)}<small>${{ active: "active", paused: "paused", inactive: "past" }[s.status] || ""}</small></button>`).join("") || `<p class="muted small" style="margin:6px">Nobody called “${esc($("jumpQ").value)}”.</p>`;
+  box.innerHTML = hits.map((s, i) => `<button type="button" data-jump="${s.id}" class="${i ? "" : "on"}"><span class="av${avSync(s)}" style="--av:${avc(s)};width:26px;height:26px;font-size:11px">${esc(initials(s.name))}</span>${esc(s.name)}<small>${{ active: "active", paused: "paused", inactive: "past" }[s.status] || ""}</small></button>`).join("") || `<p class="muted small" style="margin:6px">Nobody called “${esc($("jumpQ").value)}”.</p>`;
   box.hidden = false;
 }
 $("jumpQ").addEventListener("input", jumpList);
