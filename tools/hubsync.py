@@ -17,6 +17,11 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..}]}
   HUB_PASSWORD=... python3 hubsync.py add-words <student-id> '[{"w":"word","tr":"meaning","ex":"example"}, ...]'   (skips words already there)
   HUB_PASSWORD=... python3 hubsync.py club <student-id> on|off   (on = private + club member, sits in the middle of the park)
+  HUB_PASSWORD=... python3 hubsync.py recommend '{"hub":"laura","name":"Laura Porcile","mod":"pp","stage":6,"title":"Present perfect or past simple?","why":"said 'I have seen it yesterday' twice","from":"private class Nov 9"}'
+      mod: "ps" (Past simple: 1 Regular verbs, 2 Irregular verbs, 3 Was/were, 4 Negatives, 5 Questions, 6 Mix it up, 7 Tell the story)
+           "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
+      or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
+           compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 """
 import json, os, sys, random, string, datetime, urllib.request, urllib.error
@@ -281,6 +286,15 @@ def main():
         dism = set(m.get("dismissed", []))
         unsure = [x for x in maybe if x["uid"] not in dism]
         print(json.dumps({"linked": done, "needs_noa": unsure}, ensure_ascii=False, indent=1)); return
+    if cmd == "recommend":
+        r = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}
+        recs = m.get("recs", []); today_s = datetime.date.today().isoformat()
+        cutoff = (datetime.date.today() - datetime.timedelta(days=14)).isoformat()
+        dup = any(x.get("hub") == r.get("hub") and x.get("mod") == r.get("mod") and x.get("page") == r.get("page") and x.get("date", "") >= cutoff for x in recs)
+        if dup:
+            print("skip: same tip given in the last 14 days"); return
+        r.update({"id": rid(), "date": today_s}); recs.append(r); m["recs"] = recs[-120:]
+        set_doc(tok, tu, "t-hubmeta", m); print("ok"); return
     if cmd == "set-meta":
         m = get_doc(tok, tu, "t-hubmeta") or {}
         m.update(json.loads(a[1])); m["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()

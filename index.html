@@ -1026,6 +1026,17 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .ch-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .ch-goal{padding:14px 16px;white-space:pre-wrap}
 @media (max-width:520px){a.t-ico{display:none!important}}
+
+@media (min-width:521px){.t-mnav{display:none!important}}
+@media (max-width:520px){.va-wrap{display:none}}
+.va-wrap{position:relative}
+.va-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:60;width:280px;max-height:70vh;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.va-list{display:flex;flex-direction:column;gap:4px}
+.va-list button{all:unset;cursor:pointer;padding:7px 10px;border-radius:10px;font-weight:700;font-size:14px}
+.va-list button:hover,.va-list button:focus-visible{background:var(--surface-2)}
+.va-list .va-h{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+.va-banner{position:sticky;top:0;z-index:70;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 14px;background:linear-gradient(90deg,#7348D8,#C2306F);color:#fff;font-weight:800;font-size:14px}
+.va-banner button{all:unset;cursor:pointer;background:rgba(255,255,255,.2);border-radius:999px;padding:4px 12px;font-weight:800}
 </style>
 
 <header class="top">
@@ -1040,8 +1051,10 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     </div>
     <div class="spacer"></div>
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
-    <a class="theme-btn t-ico" id="navTeacher" href="teacher.html" title="Members (teacher view)" aria-label="Members (teacher view)" hidden>👥</a>
-    <a class="theme-btn t-ico" id="navHub" href="hub.html" title="Coaching (your private students)" aria-label="Coaching (your private students)" hidden>🎓</a>
+    <a class="theme-btn t-ico" id="navTeacher" href="teacher.html" title="Members" aria-label="Members" hidden>👥</a>
+    <a class="theme-btn t-ico" id="navHub" href="hub.html" title="Coaching" aria-label="Coaching" hidden>🎓</a>
+    <div class="va-wrap"><button class="theme-btn t-ico" id="navViewAs" type="button" title="View as a student" aria-label="View as a student" aria-expanded="false" hidden>👁</button>
+      <div class="va-panel card" id="vaPanel" hidden><b>View the site as…</b><div class="va-list" id="vaList"><p class="muted">Loading…</p></div></div></div>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
@@ -1086,6 +1099,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   <nav class="side" aria-label="Sections">
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="teacher.html" id="mnavTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">👥</span><span>Members</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="hub.html" id="mnavHub" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>Coaching</span></button>
       <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
@@ -1396,7 +1411,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   const fs=iso=>{ if(!iso) return ""; const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{month:"short",day:"numeric"}); };
   function nav(){
     const v=window.__csHubView, b=document.getElementById("navCoaching"); if(b) b.hidden=!v;
-    const t=!!window.__csTeacher; ["navTeacher","navHub"].forEach(id=>{ const e=document.getElementById(id); if(e) e.hidden=!t; });
+    const t=!!window.__csTeacher && !window.__csPreview; ["navTeacher","navHub","mnavTeacher","mnavHub"].forEach(id=>{ const e=document.getElementById(id); if(e) e.hidden=!t; });
+    const va=document.getElementById("navViewAs"); if(va) va.hidden=!window.__csTeacher;
     if(!v && location.hash.replace("#","")==="coaching" && window.csGo) window.csGo("notes");
   }
   function render(){
@@ -1431,6 +1447,27 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   }
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); });
   document.addEventListener("cs-hubview",render); document.addEventListener("cs-teacher",nav);
+  /* teacher: shortcuts in the phone menu */
+  document.addEventListener("click",e=>{ const m=e.target.closest(".t-mnav[data-href]"); if(m) location.href=m.dataset.href; });
+  /* teacher: view the site as a student */
+  const SAMPLE={v:1,name:"Alex (example)",level:"B1",schedule:"Tue & Thu 12:00pm",objective:"Speak with more confidence at work and in meetings.",kind:"pack",
+    packs:[{id:"x1",label:"Pack Intermedio 36 créditos",size:36,unit:"credits",used:15,done:5,left:21,deadline:"",paid:"half",current:true,color:"#9fc5e8"}],
+    classes:[["2026-10-30","session zero","read emails, start fabulang"],["2026-11-04","fabulang: the night bus, convo: weekend plans","reading and listening practice"],["2026-11-06","checked vocab sentences, past simple vs present perfect","5 sentences with new words"]].map(([d,t,h])=>({date:d,dateText:"",topics:t,homework:h,att:"Present",hour:"Standard",credits:3,pack:"x1"})),
+    payments:[{date:"2026-10-28",what:"Half of Pack Intermedio 36 créditos",amount:"$132.000"}],words:[{w:"get the hang of",tr:"agarrarle la mano",ex:"I'm getting the hang of it.",i:0}]};
+  const vaBtn=document.getElementById("navViewAs"), vaP=document.getElementById("vaPanel");
+  function banner(label){ let b=document.getElementById("vaBanner"); if(!label){ if(b) b.remove(); return; } if(!b){ b=document.createElement("div"); b.id="vaBanner"; b.className="va-banner"; document.body.prepend(b); } b.innerHTML=`👁 Viewing as ${esc(label)} <button type="button" id="vaExit">Back to my view</button>`; }
+  function preview(label,view){ window.__csPreview={label}; window.__csHubView=view; banner(label); document.dispatchEvent(new CustomEvent("cs-hubview")); if(view){ const b=document.getElementById("navCoaching"); if(b) b.click(); } else { const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); } }
+  document.addEventListener("click",async e=>{
+    if(e.target.closest("#vaExit")){ window.__csPreview=null; banner(null); if(window.__csViewAs) window.__csViewAs.restore(); nav(); const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); return; }
+    const pick=e.target.closest("[data-va]"); if(pick){ vaP.hidden=true; vaBtn.setAttribute("aria-expanded","false"); const k=pick.dataset.va;
+      if(k==="club") preview("a club member",null); else if(k==="private") preview("a private student (example)",SAMPLE); else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE);
+      else { const x=(vaP._list||[]).find(x=>x.uid===k); if(x) preview(x.view.name+(x.both?" (private + club)":" (private)"),x.view); } return; }
+    if(e.target.closest("#navViewAs")){ vaP.hidden=!vaP.hidden; vaBtn.setAttribute("aria-expanded",vaP.hidden?"false":"true"); if(!vaP.hidden){ const L=document.getElementById("vaList");
+      let list=[]; try{ list=window.__csViewAs?await window.__csViewAs.students():[]; }catch(err){}
+      vaP._list=list;
+      L.innerHTML=`<div class="va-h">Generic</div><button type="button" data-va="club">🌼 Club member</button><button type="button" data-va="private">🌳 Private student</button><button type="button" data-va="both">🌼🌳 Both</button>`+(list.length?`<div class="va-h">A real student</div>`+list.map(x=>`<button type="button" data-va="${esc(x.uid)}">${x.both?"🌼🌳":"🌳"} ${esc(x.view.name)}</button>`).join(""):"")+`<p class="muted" style="font-size:12.5px;margin:6px 0 0">You see their “My coaching” page and menu. Your own words and notes stay yours.</p>`; } return; }
+    if(!vaP.hidden && !e.target.closest(".va-wrap")){ vaP.hidden=true; vaBtn.setAttribute("aria-expanded","false"); }
+  });
   render();
 })();
 </script>
@@ -6191,7 +6228,18 @@ async function loadHubView() {
   if (user) { try { const d = await getDoc(doc(db, "users", user.uid, "data", "hub-view")); if (d.exists() && !d.data().deleted) v = JSON.parse(d.data().json || "null"); } catch (e) { console.warn("hub view", e); } }
   window.__csHubView = v; document.dispatchEvent(new CustomEvent("cs-hubview"));
 }
-document.addEventListener("visibilitychange", () => { if (!document.hidden && user) loadHubView(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && user && !window.__csPreview) loadHubView(); });
+/* teacher only: see the site as a student (their "My coaching" copy) */
+window.__csViewAs = {
+  async students() {
+    if (!window.__csTeacher) return [];
+    const rs = await getDocs(collection(db, "roles")); const out = [];
+    await Promise.all(rs.docs.map(async d => { const r = d.data() || {}; if (!r.hub) return;
+      try { const v = await getDoc(doc(db, "users", d.id, "data", "hub-view")); if (v.exists() && !v.data().deleted) out.push({ uid: d.id, both: r.club !== false, view: JSON.parse(v.data().json || "null") }); } catch (e) {} }));
+    return out.filter(x => x.view).sort((a, b) => a.view.name.localeCompare(b.view.name));
+  },
+  restore() { loadHubView(); }
+};
 onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();

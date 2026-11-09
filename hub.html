@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Student Hub</title>
+<title>Coaching</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono&display=swap">
 <style>
@@ -194,7 +194,7 @@ tr.arch td{opacity:.85}
 </style>
 <header><div class="top">
   <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
-  <span class="tag">Student hub</span>
+  <span class="tag">Coaching</span>
   <a class="btn" href="teacher.html" style="margin-left:6px">👥 Members</a>
   <div class="sp"></div>
   <span class="saving" id="saving"></span>
@@ -203,7 +203,7 @@ tr.arch td{opacity:.85}
 </div></header>
 <main>
   <section id="vSign" class="card center" hidden>
-    <h1>Student hub</h1>
+    <h1>Coaching</h1>
     <p class="lede">Sign in with your Learn with Noa Google account.</p>
     <button class="primary" id="inBtn" type="button">Sign in with Google</button>
     <p class="err" id="signErr" hidden></p>
@@ -226,11 +226,12 @@ tr.arch td{opacity:.85}
       <div class="tint k-green panel" id="moneyBox"></div>
       <div class="tint k-violet panel" id="expBox"></div>
     </div>
+    <div class="tint k-sky panel" id="trendBox"></div>
     <div class="layout">
       <div>
         <input type="search" id="q" placeholder="Search students…" aria-label="Search students">
         <div class="filters" id="filters"></div>
-        <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option><option value="last">Most recent class</option><option value="low">Fewest classes left</option><option value="manual">My own order</option></select><span class="muted small" id="lsortHint" hidden>Drag students to reorder</span></div>
+        <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option></select></div>
         <div class="list" id="list"></div>
       </div>
       <div id="detail" class="card"><p class="muted">Pick a student on the left.</p></div>
@@ -295,7 +296,7 @@ async function load() {
     S.forEach(norm);
     S.forEach(s => { const r = roles[s.id]; if (r && s.uid !== r.uid) { s.uid = r.uid; save(s, true); } });
     renderAll();
-    loadRate();
+    loadRate(); fixUsdRates();
     await autoLink();
     loadUsage();
     publishAll();
@@ -377,6 +378,16 @@ function renderLinks(maybe) {
     return `<li style="--k:var(--c-teal)"><span><b>${esc(a.name || "(no name)")}</b> <span class="muted small">${esc(a.email)}</span></span><select data-linkfor="${a.uid}" style="margin-left:auto;width:auto"><option value="">Who is this?</option>${free.map(s => `<option value="${s.id}" ${sug[0] === s.id ? "selected" : ""}>${esc(s.name)}${sug.includes(s.id) ? " (suggested)" : ""}</option>`).join("")}</select><button type="button" class="ib" data-dolink="${a.uid}">Link</button><button type="button" class="ib" data-dismiss="${a.uid}">Not private</button></li>`; }).join("")}</ul>`;
 }
 function saveMeta() { setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(meta), deleted: false, at: serverTimestamp() }).catch(e => console.warn("meta", e)); }
+/* USD → CLP on the day each dollar payment was made (Chile's official dólar observado), saved on the payment */
+async function fixUsdRates() {
+  for (const s of S) { let ch = false;
+    for (const p of s.payments) { if (p.cur !== "USD" || p.rate || !p.date) continue;
+      try { const [y, m, d] = p.date.split("-"); const r = await fetch(`https://mindicador.cl/api/dolar/${d}-${m}-${y}`); const j = await r.json(); let v = j && j.serie && j.serie[0] && j.serie[0].valor;
+        if (!v) { for (let k = 1; k <= 4 && !v; k++) { const dd = addDays(p.date, -k).split("-"); const j2 = await (await fetch(`https://mindicador.cl/api/dolar/${dd[2]}-${dd[1]}-${dd[0]}`)).json(); v = j2 && j2.serie && j2.serie[0] && j2.serie[0].valor; } }
+        if (v) { p.rate = Math.round(v * 100) / 100; ch = true; } } catch (e) { console.warn("usd rate", e); } }
+    if (ch) save(s, true); }
+  renderKpis(); renderMoney(); renderTrends();
+}
 /* USD → CLP (live rate, cached for a day; falls back to ~950) */
 async function loadRate() {
   try { const c = JSON.parse(localStorage.getItem("cs-hub-usd") || "null"); if (c && Date.now() - c.at < 864e5) { usdRate = c.r; return; } } catch (e) {}
@@ -406,8 +417,9 @@ function nextClassAt(s) {
   const up = meta && Array.isArray(meta.upcoming) ? meta.upcoming.filter(u => u.student === s.id && Date.parse(u.start) > now).map(u => Date.parse(u.start)).sort((a, b) => a - b)[0] : null;
   if (up) return { t: up, how: "calendar" };
   if (s.status !== "active") return null;
+  const calOk = meta && Array.isArray(meta.upcoming) && meta.upcoming.some(u => Date.parse(u.start) > now);
+  if (calOk) return null; // the calendar knows the week: no event = no class booked
   const f = fromSchedule(s.schedule); if (f) return { t: f, how: "schedule" };
-  if (lastClass(s)) { const g = nextGuess(s); return { t: Date.parse(g + "T12:00"), how: "guess" }; }
   return null;
 }
 const fmtNext = n => { if (!n) return ""; const d = new Date(n.t), td = new Date(); const dd = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(td.getFullYear(), td.getMonth(), td.getDate())) / 864e5);
@@ -421,7 +433,7 @@ function alertsFor(s) {
     const st = packStats(s, p);
     if (st.left <= 0) out.push({ kind: "renew", lvl: "bad", i: "🔴", t: `${s.name}: pack used up (${st.used}/${st.size}) · renewal due 48h before the next class` });
     else if (st.classesLeft <= 1) out.push({ kind: "renew", lvl: "warn", i: "🟠", t: `${s.name}: ${st.classesLeft === 1 ? "1 class left" : "less than a class left"} (${st.left} ${p.unit})` });
-    if (p.paid === "half") { const at = instAt(p, st); if (at && st.done + 1 >= at) out.push({ kind: "inst", lvl: st.done >= at ? "bad" : "warn", i: "💸", t: `${s.name}: 2nd installment due at class ${at} (${st.done} done)` }); }
+    if (p.paid === "half") { const at = instAt(p, st); if (at && st.done + 1 >= at) out.push({ kind: "inst", lvl: st.done >= at ? "bad" : "warn", i: "💸", t: `${s.name}: 2nd installment due at class #${at} of this pack (next class is #${st.done + 1})` }); }
     if (p.paid === "pending") out.push({ kind: "pending", lvl: "bad", i: "💸", t: `${s.name}: pack not paid yet` });
     const dl = deadline(p, st.first); if (dl) { const d = days(today(), dl); if (d < 0 && st.left > 0) out.push({ lvl: "bad", i: "⏰", t: `${s.name}: pack expired ${fmtShort(dl)} with ${st.left} ${p.unit} unused` }); else if (d >= 0 && d <= 7 && st.left > 0) out.push({ lvl: "warn", i: "⏰", t: `${s.name}: pack ends ${fmtShort(dl)} (${d === 0 ? "today" : d === 1 ? "tomorrow" : "in " + d + " days"}), ${st.left} ${p.unit} left` }); }
   }
@@ -452,7 +464,7 @@ function monthStats() {
 }
 function earned() {
   const by = {}; let usd = 0, usdY = 0; const y = today().slice(0, 4);
-  S.forEach(s => s.payments.forEach(p => { if (!p.date) return; const mo = p.date.slice(0, 7); if (p.cur === "USD") { const u = +p.clp || money(p.amount); if (mo === today().slice(0, 7)) usd += u; if (p.date.startsWith(y)) usdY += u; by[mo] = (by[mo] || 0) + Math.round(u * usdRate); return; } const v = money(p.clp ?? p.amount); if (v) by[mo] = (by[mo] || 0) + v; }));
+  S.forEach(s => s.payments.forEach(p => { if (!p.date) return; const mo = p.date.slice(0, 7); if (p.cur === "USD") { const u = +p.clp || money(p.amount); if (mo === today().slice(0, 7)) usd += u; if (p.date.startsWith(y)) usdY += u; by[mo] = (by[mo] || 0) + Math.round(u * (p.rate || usdRate)); return; } const v = money(p.clp ?? p.amount); if (v) by[mo] = (by[mo] || 0) + v; }));
   return { by, usd, usdY };
 }
 function expected() {
@@ -470,7 +482,7 @@ function expected() {
 }
 
 /* ---------- render ---------- */
-function renderAll() { renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderFilters(); renderList(); renderDetail(); }
+function renderAll() { renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); renderList(); renderDetail(); }
 function renderSummary() {
   const act = S.filter(s => s.status === "active");
   $("summary").textContent = `${act.length} active students · ${S.length} students in total`;
@@ -481,14 +493,14 @@ function renderKpis() {
   const exp30 = expected().filter(x => x.d <= addDays(today(), 30)).reduce((n, x) => n + x.v, 0);
   $("kpis").innerHTML = `
     <div class="kpi tint k-sky"><div class="kl">This week</div><div class="kv">${pl(tw, "class")}</div><div class="ks">≈ ${(tw * 0.75).toFixed(1).replace(".0", "")} h taught · ${arrow} ${diff ? "vs" : ""} last week (${lw})</div></div>
-    <div class="kpi tint k-green"><div class="kl">Paid this month</div><div class="kv">${clp(e.by[mo] || 0)}</div><div class="ks">${e.usd ? "incl. US$" + e.usd + " ≈ " + clp(e.usd * usdRate) + " · " : ""}${clp(Object.entries(e.by).filter(([k]) => k.startsWith(mo.slice(0, 4))).reduce((n, [, v]) => n + v, 0))} this year</div></div>
+    <div class="kpi tint k-green"><div class="kl">Paid this month</div><div class="kv">${clp(e.by[mo] || 0)}</div><div class="ks">${e.usd ? "incl. US$" + e.usd + " · " : ""}${clp(Object.entries(e.by).filter(([k]) => k.startsWith(mo.slice(0, 4))).reduce((n, [, v]) => n + v, 0))} this year</div></div>
     <div class="kpi tint k-violet"><div class="kl">Expected · next 30 days</div><div class="kv">${clp(exp30)}</div><div class="ks">installments + likely renewals</div></div>
     <div class="kpi tint k-coral"><div class="kl">This month</div><div class="kv">${pl(ms.n - ms.abs - ms.late - ms.ontime, "class")}</div><div class="ks">${ms.late} late cancel · ${ms.abs} no-show · ${ms.ontime} on-time cancel</div></div>`;
 }
 function renderNext() {
-  const box = $("nextBox"); const up = meta && Array.isArray(meta.upcoming) ? meta.upcoming.filter(u => (u.start || "") >= new Date(Date.now() - 3600e3).toISOString()).slice(0, 12) : [];
+  const box = $("nextBox"); const up = meta && Array.isArray(meta.upcoming) ? meta.upcoming.filter(u => Date.parse(u.start) > Date.now() - 45 * 60e3 && Date.parse(u.start) < new Date(new Date().setHours(24, 0, 0, 0) + 864e5).getTime()).sort((a, b) => Date.parse(a.start) - Date.parse(b.start)) : [];
   box.hidden = !up.length; if (!up.length) return;
-  box.innerHTML = `<h2><span class="kc">📅</span> Coming up</h2><ul class="nextc">${up.map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
+  box.innerHTML = `<h2><span class="kc">📅</span> Coming up <span class="muted small" style="font-weight:600">· today and tomorrow, from your calendar</span></h2><ul class="nextc">${up.map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
     return `<li><span class="t">${t.toLocaleDateString("en-US", { weekday: "short" })} ${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span><span><b>${esc(s ? s.name : u.name || "")}</b>${lc ? `<span class="muted small"> · last time: ${esc(lc.topics)}${lc.homework ? " · homework: " + esc(lc.homework) : ""}</span>` : ""}</span></li>`; }).join("")}</ul>`;
 }
 const GM = (to, su, body) => "https://mail.google.com/mail/?authuser=" + encodeURIComponent(TEACHER) + "&view=cm&fs=1&to=" + encodeURIComponent(to || "") + "&su=" + encodeURIComponent(su || "") + "&body=" + encodeURIComponent(body || "");
@@ -518,10 +530,40 @@ function renderMoney() {
   const mx = Math.max(1, ...ms.map(m => e.by[m] || 0)), now = today().slice(0, 7);
   $("moneyBox").innerHTML = `<h2>💰 Money in</h2><div class="muted small">Pesos received per month (payments with an amount; ≈ = estimated from the pack price)</div>
     <div class="mbars">${ms.map(m => `<div class="${m === now ? "now" : ""}" title="${clp(e.by[m] || 0)}"><span>${(e.by[m] || 0) ? Math.round((e.by[m] || 0) / 1000) + "k" : ""}</span><i style="height:${Math.round((e.by[m] || 0) / mx * 80)}px"></i>${new Date(m + "-15").toLocaleDateString("en-US", { month: "short" })}</div>`).join("")}</div>
-    ${e.usdY ? `<p class="muted small" style="margin:8px 0 0">Includes US$${e.usdY} this year, counted at today's rate (1 USD ≈ ${clp(usdRate)}).</p>` : ""}`;
+    ${e.usdY ? `<p class="muted small" style="margin:8px 0 0">Includes US$${e.usdY} this year, converted at the dollar rate of each payment day (today: 1 USD ≈ ${clp(usdRate)}).</p>` : ""}`;
   const ex = expected();
   $("expBox").innerHTML = `<h2>📆 Coming in</h2><div class="muted small">Second installments and likely renewals, guessed from each student's pace</div>
     <ul class="exp" style="margin-top:8px">${ex.slice(0, 10).map(x => `<li><span class="when">${fmtShort(x.d)}</span><span><b>${esc(x.s.name)}</b> <span class="muted">· ${esc(x.t)}</span></span><span class="amt">${x.guess ? "≈" : ""}${clp(x.v)}</span></li>`).join("") || `<li class="muted">Nothing expected in the next 45 days.</li>`}</ul>`;
+}
+/* ---------- trends (last 12 months) ---------- */
+function months12() { const out = []; for (let i = 11; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); out.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0")); } return out; }
+function lineSvg(ms, series, h) {
+  const W = 560, H = h || 150, P = 28, mx = Math.max(1, ...series.flatMap(s => s.v));
+  const x = i => P + i * (W - P - 8) / (ms.length - 1), y = v => H - 22 - v / mx * (H - 40);
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="${esc(series.map(s => s.n).join(", "))} per month">
+    ${[0, .5, 1].map(f => `<line x1="${P}" x2="${W - 8}" y1="${y(mx * f)}" y2="${y(mx * f)}" stroke="var(--line)" stroke-dasharray="3 4"/><text x="${P - 6}" y="${y(mx * f) + 4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="var(--mono)">${Math.round(mx * f)}</text>`).join("")}
+    ${series.map(s => `<polyline fill="none" stroke="${s.c}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${s.v.map((v, i) => x(i) + "," + y(v)).join(" ")}"/>${s.v.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="${s.c}"><title>${s.n}: ${v} (${ms[i]})</title></circle>`).join("")}`).join("")}
+    ${ms.map((m, i) => `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="var(--mono)">${new Date(m + "-15").toLocaleDateString("en-US", { month: "short" })}</text>`).join("")}</svg>`;
+}
+function renderTrends() {
+  const ms = months12(), held = c => c.kind !== "note" && c.date && (c.att || "Present") === "Present";
+  const hours = ms.map(m => +(S.reduce((n, s) => n + s.classes.filter(c => held(c) && c.date.startsWith(m)).length, 0) * 0.75).toFixed(1));
+  const studs = ms.map(m => S.filter(s => s.classes.some(c => held(c) && c.date.startsWith(m))).length);
+  const std = ms.map(m => S.reduce((n, s) => n + s.classes.filter(c => held(c) && c.date.startsWith(m) && c.hour === "Standard").length, 0));
+  const pri = ms.map(m => S.reduce((n, s) => n + s.classes.filter(c => held(c) && c.date.startsWith(m) && c.hour === "Priority").length, 0));
+  const rs = Object.values(rolesByUid), clubOnly = rs.filter(r => r.club !== false && !r.private).length, both = rs.filter(r => r.private && r.club).length;
+  const act = S.filter(s => s.status === "active").length;
+  const L = (c, n) => `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px"><i style="width:12px;height:4px;border-radius:2px;background:${c};display:inline-block"></i>${n}</span>`;
+  $("trendBox").innerHTML = `<h2>📈 Trends <span class="muted small" style="font-weight:600">· last 12 months</span></h2>
+    <div class="kpis" style="margin:6px 0 10px">
+      <div class="kpi tint k-violet"><div class="kl">Private students</div><div class="kv">${act}</div><div class="ks">active now · ${S.length} in the hub</div></div>
+      <div class="kpi tint k-amber"><div class="kl">Club members on the Cheat Sheet</div><div class="kv">${clubOnly + both}</div><div class="ks">${clubOnly} club only · ${both} also private</div></div>
+      <div class="kpi tint k-sky"><div class="kl">Hours this month</div><div class="kv">${hours[11]} h</div><div class="ks">last month ${hours[10]} h</div></div>
+      <div class="kpi tint k-pink"><div class="kl">Standard vs priority</div><div class="kv">${std[11]} · ${pri[11]}</div><div class="ks">classes this month (standard · priority)</div></div>
+    </div>
+    <div class="two"><div><div class="small" style="margin-bottom:4px">${L("var(--c-sky)", "Hours taught")}${L("var(--c-violet)", "Private students with classes")}</div>${lineSvg(ms, [{ n: "Hours", v: hours, c: "var(--c-sky)" }, { n: "Students", v: studs, c: "var(--c-violet)" }])}</div>
+    <div><div class="small" style="margin-bottom:4px">${L("var(--c-teal)", "Standard-hour classes")}${L("var(--c-pink)", "Priority-hour classes")}</div>${lineSvg(ms, [{ n: "Standard", v: std, c: "var(--c-teal)" }, { n: "Priority", v: pri, c: "var(--c-pink)" }])}</div></div>
+    <p class="muted small" style="margin:8px 0 0">Club members only count people signed in to the Cheat Sheet; Skool members aren't here yet.</p>`;
 }
 function renderFilters() {
   const n = k => k === "all" ? S.length : S.filter(s => s.status === k).length;
@@ -534,18 +576,15 @@ function renderList() {
   const nx = {}; ls.forEach(s => nx[s.id] = nextClassAt(s));
   const ord = (meta && meta.order) || [];
   const left = s => { const p = curPack(s); const st = p && p.size ? packStats(s, p) : null; return st ? st.classesLeft : 999; };
-  ls.sort(lSort === "name" ? byName
-    : lSort === "last" ? (a, b) => (lastClass(b) || "").localeCompare(lastClass(a) || "") || byName(a, b)
-    : lSort === "low" ? (a, b) => left(a) - left(b) || byName(a, b)
-    : lSort === "manual" ? (a, b) => ((ord.indexOf(a.id) + 1 || 1e4) - (ord.indexOf(b.id) + 1 || 1e4)) || byName(a, b)
-    : (a, b) => ((nx[a.id] ? nx[a.id].t : 9e15) - (nx[b.id] ? nx[b.id].t : 9e15)) || byName(a, b));
-  $("lsort").value = lSort; $("lsortHint").hidden = lSort !== "manual";
+  if (lSort !== "next") lSort = "name";
+  ls.sort(lSort === "name" ? byName : (a, b) => ((nx[a.id] ? nx[a.id].t : 9e15) - (nx[b.id] ? nx[b.id].t : 9e15)) || byName(a, b));
+  $("lsort").value = lSort;
   $("list").innerHTML = ls.map(s => {
     const p = curPack(s), st = p ? packStats(s, p) : null, al = alertsFor(s), en = engagement(s);
     const pct = st && st.size ? Math.min(100, st.used / st.size * 100) : 0;
     const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
     const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
-    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" ${lSort === "manual" ? 'draggable="true"' : ""} style="--pc:${p && p.color || "var(--line)"}"><span class="av" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
+    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${p && p.color || "var(--line)"}"><span class="av" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
       <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lSort === "next" && nx[s.id] ? " · " + fmtNext(nx[s.id]) : lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
       ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</span></button>`;
   }).join("") || `<p class="muted">No students here.</p>`;
@@ -565,6 +604,13 @@ function bringUp(s) {
     <ul style="margin:6px 0 0;padding-left:18px">${auto.map(x => `<li>${esc(x.text)} ${(() => { const u = reminderFor(s, x.a); return u ? `<a class="ib" target="_blank" rel="noopener" href="${u}">✉️ Remind</a>` : ""; })()}</li>`).join("")}${pins.map(x => `<li>${esc(x.text)} <button type="button" class="ib" data-act="pinDone" data-id="${x.id}">✓ Done</button></li>`).join("")}</ul>
     <form id="pinForm" class="row" style="margin-top:6px"><input name="pin" placeholder="e.g. next half pack payment due" style="flex:1;min-width:160px;font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px"><button class="ib" type="submit">＋ Add</button></form></div>`;
 }
+function since(s) {
+  const ds = s.classes.filter(c => c.kind !== "note" && c.date).map(c => c.date).concat(s.payments.map(p => p.date).filter(Boolean)).sort();
+  if (!ds.length) return "";
+  const a = ds[0], mo = Math.max(0, Math.round(days(a, today()) / 30.44)); const y = Math.floor(mo / 12), m = mo % 12;
+  const len = y ? `${y} yr${y > 1 ? "s" : ""}${m ? " " + m + " mo" : ""}` : `${m || "<1"} mo`;
+  return `🎓 Student since ${new Date(a + "T12:00").toLocaleDateString("en-US", { month: "short", year: "numeric" })} (${len})`;
+}
 function renderDetail() {
   const s = S_(); const box = $("detail");
   if (!s) { box.innerHTML = `<p class="muted">Pick a student on the left.</p>`; return; }
@@ -574,7 +620,8 @@ function renderDetail() {
   box.innerHTML = `<div class="dh"><span class="av" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}</h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     <select id="stStatus" aria-label="Status" style="width:auto">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }[k]}</option>`).join("")}</select></div>
-    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Cheat Sheet (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Cheat Sheet account yet. It links by itself when they sign in with their email, or pick them in the teacher view.</span>`}</p>
+    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Cheat Sheet (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Cheat Sheet account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
+    ${since(s) || s.prevCourses ? `<p class="small" style="margin:6px 0 0"><span style="color:var(--c-violet);font-weight:700">${esc(since(s))}</span>${s.prevCourses ? ` <span class="muted">· ${esc(s.prevCourses)}</span>` : ""}</p>` : ""}
     ${bringUp(s)}
     <div class="stats">
       ${p && st && st.size ? `<div class="stat tint k-green"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat tint k-amber"><b>${st.classesLeft}</b><span>${st.classesLeft === 1 ? "class" : "classes"} left (approx.)</span></div>` : ""}
@@ -589,8 +636,9 @@ function renderDetail() {
 const packOpts = (s, sel) => `<option value="">— no pack —</option>` + s.packs.slice().reverse().map(p => `<option value="${p.id}" ${sel === p.id ? "selected" : ""}>${esc(p.label.slice(0, 60))}${p.archived ? " (old)" : ""}</option>`).join("");
 const sel = (id, opts, v) => `<select id="${id}">${opts.map(o => `<option ${o === v ? "selected" : ""}>${o}</option>`).join("")}</select>`;
 const attB = a => a ? `<span class="att ${esc(String(a).split(" ")[0])}">${esc(a)}</span>` : "";
+function classNums(s) { const n = {}, cnt = {}; s.classes.forEach(c => { if (c.kind === "note" || !c.pack || !COUNTS.has(c.att || "Present")) return; cnt[c.pack] = (cnt[c.pack] || 0) + 1; n[c.id] = cnt[c.pack]; }); return n; }
 function tClasses(s) {
-  const p = curPack(s);
+  const p = curPack(s), num = classNums(s);
   const rows = s.classes.slice(); if (clsSort < 0) rows.reverse();
   const pc = id => (s.packs.find(p => p.id === id) || {}).color || "";
   const body = rows.map(c => {
@@ -604,7 +652,7 @@ function tClasses(s) {
       <div class="fld w2"><label>Pack</label><select id="ePack">${packOpts(s, c.pack)}</select></div>
       <div class="row"><button type="button" class="primary" data-act="saveRow" data-id="${c.id}">Save</button><button type="button" data-act="cancelRow">Cancel</button></div></div></td></tr>`;
     if (c.kind === "note") return `<tr class="nt"><td class="sw"></td><td class="d">${c.date ? fmtShort(c.date) : ""}</td><td colspan="5">📝 ${esc(c.topics)}${c.homework ? " · " + esc(c.homework) : ""}</td><td class="act"><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
-    return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}"></td><td class="d">${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td>${attB(c.att)}</td><td class="hr ${esc(c.hour || "")}">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
+    return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}"></td><td class="d"><b style="color:var(--c-violet)">${num[c.id] ? "#" + num[c.id] : ""}</b> ${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td>${attB(c.att)}</td><td class="hr ${esc(c.hour || "")}">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
   }).join("");
   const hourNow = () => { const h = new Date().getHours(); return h >= 10 && h < 15 ? "Standard" : "Priority"; };
   return `<form class="frm tint k-sky" id="addClass" autocomplete="off">
@@ -618,7 +666,7 @@ function tClasses(s) {
       <div class="row"><button class="primary" type="submit">＋ Add class</button><button type="button" data-act="addNote">＋ Note</button></div>
     </form>
     <div class="sortrow"><span class="muted small">Order:</span><button type="button" class="seg k-sky" data-csort="-1" aria-pressed="${clsSort < 0}">Newest first</button><button type="button" class="seg k-sky" data-csort="1" aria-pressed="${clsSort > 0}">Oldest first</button></div>
-    <div class="tbl"><table><thead><tr><th></th><th>Date</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
+    <div class="tbl"><table><thead><tr><th></th><th># · Date</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
 }
 function tPacks(s) {
   const packs = s.packs.slice().reverse().map(p => {
@@ -628,7 +676,7 @@ function tPacks(s) {
       <span class="row"><select data-paid="${p.id}" aria-label="Paid">${[["full", "✅ Paid"], ["half", "½ paid (2nd installment pending)"], ["pending", "⏳ Not paid yet"], ["n/a", "n/a"]].map(([k, l]) => `<option value="${k}" ${p.paid === k ? "selected" : ""}>${l}</option>`).join("")}</select>
       <button class="ib" data-act="archPack" data-id="${p.id}">${p.archived ? "Mark current" : "Archive"}</button><button class="ib del" data-act="delPack" data-id="${p.id}">✕</button></span></div>
       ${st.size ? `<div class="pbar"><i style="width:${pct}%"></i></div>` : ""}
-      <div class="muted small">${st.size ? `${st.used}/${st.size} ${p.unit} used · ` : ""}${pl(st.done, "class")}${st.first ? " · started " + fmtShort(st.first) : ""}${dl ? " · ends " + fmtD(dl) : ""}${p.price ? " · " + esc(p.price) : ""}</div></div>`;
+      <div class="muted small">${st.size ? `${st.used}/${st.size} ${p.unit} used · ` : ""}${pl(st.done, "class")} (#1–#${st.done})${st.first ? " · started " + fmtShort(st.first) : ""}${dl ? " · ends " + fmtD(dl) : ""}${p.price ? " · " + esc(p.price) : ""}</div></div>`;
   }).join("");
   const pays = s.payments.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "")).map(p => `<tr><td class="d">${p.date ? fmtD(p.date) : (p.year || "")}</td><td>${esc(p.what)}</td><td style="color:var(--c-green);font-weight:800">${p.est ? "≈" : ""}${esc(p.amount || "")}</td><td>${esc(p.method || "")}</td><td class="act"><button class="ib del" data-act="delPay" data-id="${p.id}">✕</button></td></tr>`).join("");
   const isNew = !s.packs.length;
@@ -662,6 +710,7 @@ function tInfo(s) {
     <div class="fld" style="grid-column:1/-1"><label for="f_objective">Objective <span class="muted">(the student sees this)</span></label><textarea id="f_objective" data-f="objective">${esc(s.objective || "")}</textarea></div>
     <div class="fld" style="grid-column:1/-1"><label for="f_about">About them <span class="muted">(only you see this)</span></label><textarea id="f_about" data-f="about" style="min-height:150px">${esc(s.about || "")}</textarea></div>
     <div class="fld"><label>Kind</label><select data-f="kind"><option value="pack" ${s.kind !== "trueque" ? "selected" : ""}>Paying student</option><option value="trueque" ${s.kind === "trueque" ? "selected" : ""}>Trueque</option></select></div>
+    <div class="fld" style="grid-column:1/-1"><label for="f_prev">Previous courses with you</label><input id="f_prev" data-f="prevCourses" value="${esc(s.prevCourses || "")}" placeholder="e.g. 2nd course: first one was Jun–Sep 2025"></div>
     <div class="fld"><label for="f_emails">Other emails <span class="muted">(comma between them)</span></label><input id="f_emails" data-emails="1" value="${esc((s.emails || []).join(", "))}"></div>
     ${f("boleta", "Boleta reference no. (for the SII)")}${f("zoomKey", "Name in Zoom meetings")}${f("sheetId", "English Journey sheet ID")}${f("folderId", "Drive folder ID")}${info}</div>
     <p class="hint" style="margin-top:12px">Changes save automatically.</p>
@@ -772,7 +821,7 @@ document.addEventListener("submit", e => {
   }
 });
 function sortClasses(s) { s.classes.sort((a, b) => (a.date || "0").localeCompare(b.date || "0")); }
-function refresh() { renderSummary(); renderKpis(); renderAlerts(); renderMoney(); renderList(); renderDetail(); }
+function refresh() { renderSummary(); renderKpis(); renderAlerts(); renderMoney(); renderTrends(); renderList(); renderDetail(); }
 $("addStu").onclick = () => {
   const m = $("modal"); m.hidden = false;
   m.innerHTML = `<div class="card"><h2 style="margin-top:0">New student</h2><form id="newStu" class="grid2" autocomplete="off">

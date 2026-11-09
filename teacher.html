@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Cheat Sheet · Teacher view</title>
+<title>Cheat Sheet members</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono&display=swap">
 <style>
@@ -114,7 +114,7 @@ td.act{white-space:nowrap;text-align:right}
 <body>
 <header><div class="top">
   <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
-  <span class="tag">Teacher view</span>
+  <span class="tag">Cheat Sheet members</span>
   <a class="btn" href="hub.html" style="margin-left:6px">🎓 Coaching</a>
   <div class="sp"></div>
   <div class="cs-wrap" id="csWrap"></div>
@@ -123,7 +123,7 @@ td.act{white-space:nowrap;text-align:right}
 
 <main>
   <section id="vSign" class="card center" hidden>
-    <h1>Teacher view</h1>
+    <h1>Cheat Sheet members</h1>
     <p class="lede">Sign in with your Learn with Noa Google account to see your students' words and notes.</p>
     <button class="primary" id="inBtn" type="button">Sign in with Google</button>
     <p class="err" id="signErr" hidden></p>
@@ -138,6 +138,7 @@ td.act{white-space:nowrap;text-align:right}
     <h1>Cheat Sheet members</h1>
     <p class="lede" id="summary">Loading…</p>
     <div class="news" id="news" hidden></div>
+    <div class="news" id="tips" hidden></div>
     <div class="news" id="usage" hidden></div>
     <div class="layout">
       <div>
@@ -192,8 +193,10 @@ let students = [], current = null;
 
 /* what you already sent / saw, kept in your own account so every computer knows */
 let tUid = null;
+let hubMeta = null;
 async function loadTPrefs() {
   const u = auth.currentUser; if (!u) return; tUid = u.uid;
+  try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); hubMeta = m.exists() ? JSON.parse(m.data().json || "{}") : null; } catch (e) { hubMeta = null; }
   try {
     const [a, b] = await Promise.all([getDoc(doc(db, "users", tUid, "data", "t-kudos-sent")), getDoc(doc(db, "users", tUid, "data", "t-news-seen"))]);
     const loc = kdSent(); let more = false;
@@ -241,7 +244,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList(); renderNews(); renderUsage(); syncPark();
+    renderList(); renderNews(); renderTips(); renderUsage(); syncPark();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -348,6 +351,29 @@ function renderUsage() {
     ${topPages.length ? `<p class="hint" style="margin:10px 0 0"><b>Most opened pages:</b> ${topPages.map(([k, v]) => esc(k) + " (" + v + ")").join(" · ")}</p>` : ""}` : `<p class="hint" style="margin:6px 0 0">No data yet. Counting started on November 6, 2026, so give it a few days.</p>`}`;
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
+/* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
+const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
+function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
+function renderTips() {
+  const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-12).reverse();
+  box.hidden = !recs.length; if (!recs.length) return;
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips <span class="news-n" style="background:#7348D8">${recs.length}</span></h2></div>
+    <p class="muted" style="margin:4px 0 8px">From your classes: mistakes that keep coming up, and what could help.</p>
+    <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : (PAGE_T[r.page] || r.title || r.page);
+      return `<li><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
+        ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}">💌 Suggest it</button>`) : `<span class="muted" style="font-size:12.5px">not on the Cheat Sheet yet</span>`}
+        <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}">✓ Done</button></div></li>`; }).join("")}</ul>`;
+}
+async function tipDone(id) { const r = hubMeta.recs.find(x => x.id === id); if (r) r.done = Date.now(); renderTips(); try { await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn(e); } }
+document.addEventListener("click", async e => {
+  const a = e.target.closest("[data-tiprec],[data-tipmsg],[data-tipdone]"); if (!a) return;
+  const id = a.dataset.tiprec || a.dataset.tipmsg || a.dataset.tipdone, r = ((hubMeta && hubMeta.recs) || []).find(x => x.id === id); if (!r) return;
+  if (a.dataset.tipdone) { tipDone(id); return; }
+  const s = tipStudent(r); if (!s) return;
+  if (a.dataset.tiprec) { const v = Object.assign({}, s.modrec, { [r.mod]: +r.stage });
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; toast("⭐ Recommended to " + s.name.split(" ")[0]); tipDone(id); } catch (err) { toast("Couldn't save. Try again."); } return; }
+  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: the “${PAGE_T[r.page] || r.title}” page in your Cheat Sheet. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id); }
+});
 function renderNews() {
   const box = $("news"), ev = newsEvents(), seen = +(localStorage.getItem(NEWS_KEY) || 0), fresh = ev.filter(e => e.t > seen).length;
   document.title = (fresh ? "(" + fresh + ") " : "") + baseTitle;
@@ -485,7 +511,7 @@ function renderDetail(s) {
     <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
       <div class="row" style="margin-top:8px">${(() => { const ty = roleType(s.role); return [["club", "🌼 Club member"], ["private", "🌳 Private student"], ["both", "🌼🌳 Both"]].map(([k, l]) => `<button type="button" class="seg" data-role="${k}" aria-pressed="${ty === k}">${l}</button>`).join(""); })()}</div>
       <div class="muted small" style="margin-top:6px">Club members sit in the middle of the park, private students at the edges.</div>
-      ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their student hub page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Cheat Sheet menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Cheat Sheet.`}</div></div>` : ""}
+      ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their Coaching page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Cheat Sheet menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Cheat Sheet.`}</div></div>` : ""}
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
     ${practiceBox(s)}
     ${(() => { const u = usageSum(s.usage, 7), r = USE_L.filter(([k]) => u[k]).map(([k, l]) => l + ": " + u[k]); return `<div class="parkbox"><b>Last 7 days</b><div class="muted" style="margin-top:4px">${r.length ? r.join(" · ") : "No activity yet (counting started Nov 6, 2026)."}</div></div>`; })()}
