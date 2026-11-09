@@ -452,7 +452,12 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-ic-nm{display:inline-flex;align-items:center;gap:4px}
 .duel-board{margin:18px 0 0;padding:16px 18px;border-radius:18px;border:1.5px solid color-mix(in srgb,#C2306F 40%,var(--line,#ddd));background:linear-gradient(135deg,color-mix(in srgb,#C2306F 9%,var(--surface,#fff)),color-mix(in srgb,#F5C842 8%,var(--surface,#fff)))}
 .duel-board[hidden]{display:none}
-.duel-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.duel-h h2{margin:0;font-size:22px}.duel-rec{font-size:14px;color:var(--muted,#666);flex:1}
+.duel-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}.duel-h h2{margin:0;font-size:22px}.duel-rec{font-size:14px;color:var(--muted,#666);flex:1}
+.duel-stats{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}.duel-stats span{font-size:13.5px;padding:4px 12px;border-radius:99px;background:var(--surface,#fff);border:1px solid var(--line,#ddd);color:var(--muted,#666)}.duel-stats b{color:var(--ink,#111);font-size:15px}
+.duel-gh{margin:20px 0 8px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#666)}.duel-gh small{text-transform:none;letter-spacing:0;font-weight:600;margin-left:6px}
+.duel-gearg{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.dgt{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;padding:10px 6px;border-radius:12px;background:var(--surface,#fff);border:1px solid var(--line,#ddd);opacity:.55}
+.dgt.on{opacity:1;border-color:color-mix(in srgb,#F5C842 55%,var(--line,#ddd))}.dgt .dgi{font-size:22px;line-height:1.2}.dgt b{font-size:13px}.dgt small{font-size:11.5px;color:var(--muted,#666);line-height:1.25}
 .duel-board h3{margin:14px 0 6px;font-size:15px}
 .duel-card{padding:10px 12px;border-radius:14px;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);margin:6px 0;font-size:14.5px}
 .duel-card.inc{border-color:#C2306F}.duel-card.mine{border-color:var(--green,#2E8B57)}
@@ -1465,14 +1470,16 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const done = ds.filter(recent).sort((a, b) => b.end - a.end).slice(0, 8);
     const bar = (n, mx) => `<i style="width:${Math.min(100, Math.round(n / Math.max(1, mx) * 100))}%"></i>`;
     const left = d => { const h = Math.max(0, Math.round((d.end - now) / 36e5)); return h > 48 ? Math.round(h / 24) + " days left" : h + " h left"; };
-    box.innerHTML = `<div class="duel-h"><h2>⚔️ Duels</h2><span class="duel-rec">Your record: <b>${S.dw | 0}</b> ${(S.dw | 0) === 1 ? "win" : "wins"} · <b>${S.dl | 0}</b> ${(S.dl | 0) === 1 ? "loss" : "losses"}${(S.dst | 0) >= 2 ? ` · 🔥 ${S.dst} in a row` : ""}</span><button class="bd-b" type="button" data-dhelp="1">How duels work</button></div>
+    box.innerHTML = `<div class="duel-h"><h2>⚔️ Duels</h2><button class="bd-b" type="button" data-dhelp="1">How duels work</button></div>
+      <div class="duel-stats"><span><b>${S.dw | 0}</b> ${(S.dw | 0) === 1 ? "win" : "wins"}</span><span><b>${S.dl | 0}</b> ${(S.dl | 0) === 1 ? "loss" : "losses"}</span>${(S.dst | 0) >= 2 ? `<span>🔥 <b>${S.dst}</b> in a row</span>` : ""}</div>
       ${inc.map(d => `<div class="duel-card inc"><b>${esc(d.fromName)}</b> challenged you to a <b>${DT[d.ty].ico} ${DT[d.ty].name}</b>. <span class="bd-small" style="margin:0">${esc(DT[d.ty].how)}</span><div class="bd-row" style="margin-top:6px"><button class="bd-b go" type="button" data-dacc="${esc(d.id)}">⚔️ Accept</button><button class="bd-b" type="button" data-ddec="${esc(d.id)}">No thanks</button></div></div>`).join("")}
       ${live.length ? `<h3>Live now</h3>${live.map(d => { const mx = d.ty === "first15" ? 15 : Math.max(d.fs, d.ts, 5); return `<div class="duel-card${d.fromMe || d.toMe ? " mine" : ""}"><div class="duel-t">${DT[d.ty].ico} <b>${DT[d.ty].name}</b> <span class="bd-small" style="margin:0">· ${left(d)}</span></div>
         <div class="duel-row"><span>${esc(d.fromName)}</span><span class="duel-bar">${bar(d.fs, mx)}</span><b>${d.fs}</b></div><div class="duel-row"><span>${esc(d.toName)}</span><span class="duel-bar">${bar(d.ts, mx)}</span><b>${d.ts}</b></div></div>`; }).join("")}` : ""}
       ${ds.filter(d => d.fromMe && d.st === "pending").map(d => `<div class="duel-card"><span class="bd-small" style="margin:0">⏳ Waiting for <b>${esc(d.toName)}</b> to accept your ${DT[d.ty].ico} ${DT[d.ty].name}.</span></div>`).join("")}
       ${done.length ? `<h3>Recent winners</h3><ul class="duel-done">${done.map(d => `<li>${d.fs === d.ts ? `🤝 ${esc(d.fromName)} and ${esc(d.toName)} drew` : `🏆 <b>${esc(d.fs > d.ts ? d.fromName : d.toName)}</b> beat ${esc(d.fs > d.ts ? d.toName : d.fromName)}`} · ${DT[d.ty].ico} ${DT[d.ty].name} (${Math.max(d.fs, d.ts)}–${Math.min(d.fs, d.ts)})</li>`).join("")}</ul>` : ""}
       ${!inc.length && !live.length && !done.length && !mineOpen.length ? `<p class="bd-small">No duels yet. Tap someone's buddy in the park, then <b>⚔️ Duel</b> to challenge them!</p>` : mineOpen.length < OPEN_MAX ? `<p class="bd-small">Tap a buddy in the park, then <b>⚔️ Duel</b> to start a new one.</p>` : `<p class="bd-small">You have ${OPEN_MAX} duels going. Finish one to start another.</p>`}
-      <div class="duel-gear"><span class="bd-small" style="margin:0 6px 0 0;font-weight:700">Duel gear:</span>${gearLine()}</div>`;
+      <h3 class="duel-gh">Duel gear <small>${ITEMS.filter(i => (i.dw != null || i.ds != null || i.dp != null) && isOpen(i)).length} of ${ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null).length} unlocked</small></h3>
+      <div class="duel-gearg">${ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null).map(i => `<div class="dgt${isOpen(i) ? " on" : ""}"><span class="dgi" aria-hidden="true">${isOpen(i) ? i.ico : "🔒"}</span><b>${esc(i.name)}</b><small>${isOpen(i) ? "Unlocked" : esc(lockTxt(i))}</small></div>`).join("")}</div>`;
   }
   function duelHelp() {
     if (!window.csDialog) return;
