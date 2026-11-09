@@ -514,8 +514,14 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 .bd-sw button.locked{opacity:.55;font-size:11px;line-height:1;cursor:pointer}
 .bd-sw button.pv,.bd-chip.pv{outline:2.5px dashed var(--ink,#222);outline-offset:2px;opacity:1}
 .bd-chip.locked{opacity:.6}
-.bd-pv{margin:10px 0 -4px;font-size:13.5px;background:color-mix(in srgb,#F5B800 16%,var(--surface,#fff));border:1.5px solid color-mix(in srgb,#F5B800 50%,var(--line,#ddd));border-radius:12px;padding:7px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.bd-pv .bd-b{margin-left:auto;padding:4px 10px}
+.bd-pv{position:absolute;left:6px;right:6px;bottom:6px;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 6px;border-radius:10px;font-size:12.5px;line-height:1.35;color:#fff;background:rgba(15,20,30,.78);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);pointer-events:auto;animation:bdPvIn .18s ease-out}
+.bd-pv b{color:#FFE08A}
+.bd-pv-tag{flex:none;font-weight:800;font-size:11.5px;padding:3px 7px;border-radius:999px;background:#F5B800;color:#2a1d00;white-space:nowrap}
+.bd-pv-txt{flex:1;min-width:0}
+.bd-pv-x{flex:none;all:unset;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.16);font-size:12px}
+.bd-pv-x:hover,.bd-pv-x:focus-visible{background:rgba(255,255,255,.3)}
+@keyframes bdPvIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+html.cs-calm .bd-pv{animation:none}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:default;touch-action:none}#bdStgPet{cursor:pointer}
 .bd-stage-wrap{position:relative;max-width:340px;margin:12px auto 10px}.bd-stage-wrap .bd-stage{margin:0}
 .bd-zoom{position:absolute;right:6px;top:6px;display:flex;flex-direction:column;gap:4px}
@@ -860,7 +866,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (!pv) return "";
     const a = pvAnimal();
     const what = pv.a ? `<b>${esc(SP[pv.a].name)} the ${esc(SP[pv.a].species.toLowerCase())}</b> · unlocks at ${UNI_AT} learned words (you have ${counts().learned})` : pv.c != null ? `<b>${esc(SP[a].colors[pv.c][0])}</b> · unlocks at ${COLOR_AT[pv.c]} words` : (() => { const it = byId[pv.item]; return `<b>${esc(it.name)}</b> · unlocks ${atW(it)}${lockTxt(it)}`; })();
-    return `<div class="bd-pv" role="status">👀 Preview: ${what} <button class="bd-b" type="button" data-m="pvoff">Back to my buddy</button></div>`;
+    /* sits on top of the picture (nothing gets pushed down); the ✕ only outside "adopt", where you're already choosing */
+    return `<div class="bd-pv" role="status"><span class="bd-pv-tag">🔒 Preview</span><span class="bd-pv-txt">${what}</span>${mode === "adopt" ? "" : `<button class="bd-pv-x" type="button" data-m="pvoff" aria-label="Stop previewing" title="Stop previewing">✕</button>`}</div>`;
   }
   function openModal(m) {
     mode = m || "main"; returnFocus = document.activeElement; pv = null; confirmOpen = false; sec = null;
@@ -896,7 +903,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const d = draft, pal = Object.assign({}, SP[d.a].p, (SP[d.a].colors[d.c] || [0, {}])[1]);
       modal.innerHTML = `<div class="bd-top"><h3 id="bdTitle">Adopt a study buddy 🐾</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>
         <p class="bd-small" style="margin-top:8px">A little friend who keeps you company while you study. Feed it treats you earn by saving words and practicing. It never gets sick or sad if you're away, it just naps.</p>
-        ${pvBanner()}<div class="bd-stage">${stageSVG(pv && pv.a ? { a: pv.a, pal: SP[pv.a].p, wear: {}, room: null, plain: true } : { a: d.a, pal: pv && pv.c != null ? palIdx(d.a, pv.c) : pal, wear: {}, room: null, plain: true })}</div>
+        <div class="bd-stage">${stageSVG(pv && pv.a ? { a: pv.a, pal: SP[pv.a].p, wear: {}, room: null, plain: true } : { a: d.a, pal: pv && pv.c != null ? palIdx(d.a, pv.c) : pal, wear: {}, room: null, plain: true })}${pvBanner()}</div>
         <h4>Choose your buddy</h4>${animalGrid(d.a, d.c)}${swatches(d.a, d.c)}
         <h4>Give it a name</h4><div class="bd-name"><input id="bdNameIn" type="text" maxlength="16" placeholder="${esc(SP[d.a].name)}" value="${esc(d.n)}" aria-label="Your buddy's name" autocomplete="off"></div>
         <div class="bd-foot"><button class="bd-link" type="button" data-m="nothanks">No thanks</button><button class="bd-b go" type="button" data-m="adopt">Adopt ${esc(d.n.trim() || SP[d.a].name)}!</button></div>`;
@@ -916,7 +923,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const newIn = slots => ITEMS.filter(i => slots.includes(i.slot) && isOpen(i) && !seen.has(i.id)).length;
     const nb = n => n ? ` <span class="bd-new">${n} NEW</span>` : "";
     const top = `<div class="bd-top"><h3 id="bdTitle">${sec ? SECT[sec] : "🏠 " + esc(nameOf()) + "'s home"}</h3><span class="bd-topr">${sec !== "settings" ? `<button class="bd-x bd-set-ico" type="button" data-sec="settings" aria-label="Buddy settings" title="Settings: sounds, seasonal outfits, hide">⚙️</button>` : ""}<button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></span></div>`;
-    const stage = `${pvBanner()}<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="Tap your buddy to pet it · drag a toy to move it">${stageSVG(pvOpts())}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}${S.tp && Object.keys(S.tp).length ? ` <button class="bd-link" type="button" data-m="toyreset">Put toys back</button>` : ""}</p>` : ""}`;
+    const stage = `<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="Tap your buddy to pet it · drag a toy to move it">${stageSVG(pvOpts())}${pvBanner()}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}${S.tp && Object.keys(S.tp).length ? ` <button class="bd-link" type="button" data-m="toyreset">Put toys back</button>` : ""}</p>` : ""}`;
     const foot = `<div class="bd-foot">${sec ? `<button class="bd-link" type="button" data-m="back">← Back</button>` : `<span></span>`}<button class="bd-b go" type="button" data-m="save">${dirty() ? "Save changes" : "Save"}</button></div>`;
     const confirmBox = confirmOpen ? `<div class="bd-confirm" role="alertdialog" aria-labelledby="bdCfT"><p id="bdCfT"><b>Save your changes?</b><br>Your changes won't be saved unless you tap <b>Save</b>.</p><div class="bd-row" style="justify-content:flex-end"><button class="bd-b" type="button" data-m="keep" style="background:transparent">Keep editing</button><button class="bd-b" type="button" data-m="discard">Don't save</button><button class="bd-b go" type="button" data-m="save">Save</button></div></div>` : "";
     let body = "";
@@ -1021,7 +1028,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (m && ["save", "discard", "keep", "back"].includes(m.dataset.m)) {
       const a = m.dataset.m;
       if (a === "save") {
-        if (pv) { const box = modal.querySelector(".bd-pv"); const what = pv.a ? `${SP[pv.a].name} is still locked` : pv.c != null ? `That color is still locked` : `That item is still locked`; let er = modal.querySelector(".bd-err"); if (!er) { er = document.createElement("p"); er.className = "bd-err"; er.setAttribute("role", "alert"); (box || modal.querySelector(".bd-foot")).insertAdjacentElement(box ? "afterend" : "beforebegin", er); } er.innerHTML = `🔒 <b>${what}</b>, so it can't be saved yet. Tap <b>Back to my buddy</b> and choose one you've unlocked.`; return; }
+        if (pv) { const box = modal.querySelector(".bd-pv"); const what = pv.a ? `${SP[pv.a].name} is still locked` : pv.c != null ? `That color is still locked` : `That item is still locked`; let er = modal.querySelector(".bd-err"); if (!er) { er = document.createElement("p"); er.className = "bd-err"; er.setAttribute("role", "alert"); (box || modal.querySelector(".bd-foot")).insertAdjacentElement(box ? "afterend" : "beforebegin", er); } er.innerHTML = `🔒 <b>${what}</b>, so it can't be saved yet. Choose one you've unlocked.`; return; }
         const was = dirty(); commit();
         if (sec) { sec = null; base = pickCos(S); renderModal(); modal.scrollTop = 0; const f = modal.querySelector(".bd-tile"); if (f) f.focus(); if (was) toastMsg("Saved ✓"); return; }
         reallyClose(); if (was) toastMsg("Saved ✓"); return; }

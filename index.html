@@ -1240,6 +1240,24 @@ a.ch-rp-res:hover{border-color:var(--k)}
 .ch-rp-recs a:hover{border-color:var(--k)}
 .ch-rep-f{margin-top:12px}
 .ch-rep{scroll-margin-top:84px}@media (max-width:900px){.ch-rep{scroll-margin-top:130px}}
+/* header: longer search box, tagline lined up with the logo */
+@media (min-width:701px){.search{max-width:540px}.top-in>.search{flex:1 1 540px}}
+.brand .brand-tag{align-self:baseline;margin-left:3px;line-height:1}
+/* required sign-in screen */
+#authGate{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto}
+#authGate[hidden]{display:none}
+.ag-card{width:100%;max-width:430px;background:var(--surface);border:1.5px solid var(--line);border-radius:22px;padding:28px 24px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:12px;align-items:center}
+.ag-logo{font:800 34px var(--display,var(--body));color:var(--royal,#3B82F6);display:flex;align-items:baseline;gap:8px}
+.ag-logo small{font:500 20px var(--body);color:var(--muted)}
+.ag-card h2{margin:0;font-size:22px;text-wrap:balance}
+.ag-card p{margin:0;color:var(--muted);font-size:15px;line-height:1.55;text-wrap:pretty}
+.ag-es{font-size:14px!important}
+.ag-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 22px;border-radius:999px;background:#fff;color:#1f1f1f;border:1.5px solid #dadce0;font:700 16px var(--body);margin-top:6px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.ag-btn:hover{box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.ag-btn:focus-visible{outline:3px solid var(--royal,#3B82F6);outline-offset:3px}
+.ag-btn svg{width:20px;height:20px;flex:none}
+.ag-small{font-size:12.5px!important}
+html.ag-lock,html.ag-lock body{overflow:hidden}
 </style>
 
 <header class="top">
@@ -2051,6 +2069,38 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} if(location.hash!=="#notes") history.replaceState(null,"","#notes"); location.reload(); },true);
 </script>
 
+<script>
+/* Hibi needs a Google account: until someone signs in, a sign-in screen covers everything (it comes before the welcome card) */
+(function(){
+  if(window.__csPreview) return;
+  const G='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+  let gate=null;
+  function show(){
+    if(window.__csPreview) return;
+    if(!gate){
+      gate=document.createElement("div"); gate.id="authGate"; gate.setAttribute("role","dialog"); gate.setAttribute("aria-modal","true"); gate.setAttribute("aria-labelledby","agTitle");
+      gate.innerHTML=`<div class="ag-card"><div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
+        <h2 id="agTitle">Sign in to start</h2>
+        <p>Hibi saves your words, class notes and buddy to your Google account, so they're always there, on any device.</p>
+        <p class="ag-es" lang="es">Inicia sesión con tu cuenta de Google para usar Hibi. Así tus palabras, apuntes y tu mascota quedan guardados.</p>
+        <button type="button" class="ag-btn" data-signin>${G}<span>Continue with Google</span></button>
+        <p class="ag-small">Hibi only uses your name and email to save your progress. Noa never sees your password.</p></div>`;
+      document.body.appendChild(gate);
+    }
+    gate.hidden=false; document.documentElement.classList.add("ag-lock");
+    [...document.body.children].forEach(el=>{ if(el!==gate&&!el.matches("script")) el.inert=true; });
+    setTimeout(()=>{ const b=gate.querySelector(".ag-btn"); if(b) b.focus(); },50);
+  }
+  function hide(){
+    if(gate) gate.hidden=true; document.documentElement.classList.remove("ag-lock");
+    [...document.body.children].forEach(el=>{ if(el!==gate) el.inert=false; });
+  }
+  const on=s=>{ if(s) hide(); else show(); };
+  window.addEventListener("cs-auth",e=>on(!!(e.detail&&e.detail.signedIn)));
+  if(window.__csAuth!=null) on(window.__csAuth);
+})();
+</script>
+
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
   <p class="lede">Write a word or sentence in Spanish <i>or</i> English and tap <b>Translate here</b>. It figures out the language for you, and shows you how to say the English part. You can also open it in Google Translate or DeepL.</p>
@@ -2842,7 +2892,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=33" defer></script>
+<script src="buddy.js?v=34" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -6513,7 +6563,8 @@ document.getElementById("wlNotes").addEventListener("click",()=>{ closeWelcome()
 wlBd.addEventListener("click",closeWelcome);
 wl.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); closeWelcome(); } });
 document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) openWelcome(); });
-if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
+(function(){ let done=false; const go=()=>{ if(done||LS.get("ncs-welcomed",0)) return; done=true; setTimeout(openWelcome,400); };
+  if(window.__csAuth===true||window.__csPreview) go(); window.addEventListener("cs-auth",e=>{ if(e.detail&&e.detail.signedIn) go(); }); })();
 
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
@@ -6993,12 +7044,12 @@ window.__csViewAs = {
 onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();
-  if (VA) { window.__csHubView = VA.view || null; document.dispatchEvent(new CustomEvent("cs-hubview")); window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
+  if (VA) { window.__csHubView = VA.view || null; document.dispatchEvent(new CustomEvent("cs-hubview")); window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
   loadHubView();
   /* the English level Noa set for club members (from club class recordings), for level-adapted feedback */
   if (u) getDoc(doc(db, "roles", u.uid)).then(d => { const r = d.exists() ? d.data() || {} : {}; try { if (r.lv) localStorage.setItem("cs-cefr", JSON.stringify({ lv: r.lv })); else localStorage.removeItem("cs-cefr"); } catch (e) {} }).catch(() => {});
   if (u) syncDown();
-  window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } }));
+  window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } }));
 });
 
 /* ---------- buddy park: everyone's buddy look (no words or notes) at park/{uid} ---------- */
