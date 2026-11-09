@@ -23,6 +23,12 @@ Usage:
       or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
            compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
+  HUB_PASSWORD=... python3 hubsync.py club-post @/tmp/club-post.json   this week's club post, straight to club members' Hibi (Club page + Home card):
+      {"week":"2026-11-09" (the Monday),"title":"...","intro":"short hello + announcements (plain text)",
+       "classes":[{"day":"Mon","ico":"🐾","name":"Deep Dive Monday","title":"Pets, People & Why Animals Feel Safe","teaser":"1-2 lines"}, ...],
+       "closing":"light closing line"}   (times and Zoom links come from club-info; add "date"/"time"/"zoom" to a class only if it's different that week)
+  HUB_PASSWORD=... python3 hubsync.py club-info '{"schedule":[{"wd":1,"ico":"🧠","name":"Deep Dive Monday","time":"20:00","dur":90,"desc":"...","zoom":"https://..."}],"links":[{"title":"...","url":"https://...","note":"..."}]}'
+  HUB_PASSWORD=... python3 hubsync.py club-sync   give/remove club page access (new sign-ups who match the Skool roster, role changes)
   HUB_PASSWORD=... python3 hubsync.py idea '{"kind":"grammar"|"words","title":"Future: will vs going to","why":"what keeps coming up","example":"I will go tomorrow (planned)","student":"Laura Porcile"}'
       an idea for a NEW grammar module / word pack Hibi doesn't have yet; the same title again adds +1 and the student
   HUB_PASSWORD=... python3 hubsync.py ideas      list them
@@ -272,6 +278,7 @@ def make_view(s, meta=None):
             "payments": [{"date": p.get("date", ""), "what": p.get("what", ""), "amount": p.get("amount", "")} for p in s.get("payments", [])],
             "words": [{"w": w.get("w", ""), "tr": w.get("tr", ""), "ex": w.get("ex", ""), "i": i} for i, w in enumerate(s.get("words", []))],
             "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "tz": s.get("tz", ""), "country": s.get("country", ""), "next": ups[0]["start"] if ups else "", "due": due,
+            "club": (meta.get("clubFeed") or None) if s.get("uid") and s.get("uid") in (meta.get("clubUids") or []) else None,
             "reports": [view_report(r) for r in (s.get("reports") or [])[-12:] if r and r.get("id")],
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "pack": r.get("pack", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
@@ -327,6 +334,77 @@ def clean_report(d):
 
 def view_report(r):
     return {k: r.get(k) for k in ("id", "from", "to", "sessions", "snapshot", "clicking", "topics", "patterns", "focus", "resource", "recordings", "month", "closing", "at")}
+
+
+def club_member_uids(tok, tu, m, students=None):
+    """Who gets the club page: explicit club role, 'both' private students, or a Hibi account matching the Skool roster. Noa too."""
+    roles, accounts = get_roles(tok), get_accounts(tok)
+    roster = (m.get("club") or {}).get("members") or []
+    r_emails = {norm_email(x.get("email", "")) for x in roster if x.get("email")}
+    r_names = {norm_name(x.get("name", "")) for x in roster if x.get("name")}
+    out = {tu}
+    for acc in accounts:
+        uid = acc["uid"]; r = roles.get(uid) or {}
+        if r.get("club") is True:
+            out.add(uid); continue
+        if r.get("club") is False:
+            continue
+        if r.get("hub"):
+            if r["hub"] in BOTH_DEFAULT:
+                out.add(uid)
+            continue
+        if (acc.get("email") and norm_email(acc["email"]) in r_emails) or (acc.get("name") and len(norm_name(acc["name"]).split()) >= 2 and norm_name(acc["name"]) in r_names):
+            out.add(uid)
+    return sorted(out), roles
+
+
+def club_sync(tok, tu, m=None, quiet=False):
+    m = m or get_doc(tok, tu, "t-hubmeta") or {}
+    uids, roles = club_member_uids(tok, tu, m)
+    before = set(m.get("clubUids") or [])
+    m["clubUids"] = uids; set_doc(tok, tu, "t-hubmeta", m)
+    feed = m.get("clubFeed") or {}
+    hub_of = {u: (r or {}).get("hub") for u, r in roles.items() if (r or {}).get("hub")}
+    now = int(datetime.datetime.now().timestamp() * 1000)
+    added, removed = [], []
+    for uid in sorted(set(uids) | before):
+        on = uid in uids
+        if hub_of.get(uid):
+            s = get_doc(tok, tu, "t-hub-" + hub_of[uid])
+            if s and s.get("uid") == uid:
+                publish(tok, tu, s, m)
+                (added if on and uid not in before else removed if not on else []).append(uid)
+                continue
+        if on:
+            set_doc(tok, uid, "hub-view", {"v": 1, "clubOnly": True, "club": feed, "updated": now})
+            if uid not in before: added.append(uid)
+        else:
+            now_s = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            http("PATCH", f"{BASE}/users/{uid}/data/hub-view", {"fields": {"json": {"stringValue": "null"}, "deleted": {"booleanValue": True}, "at": {"timestampValue": now_s}}}, token=tok)
+            removed.append(uid)
+    if not quiet:
+        print(json.dumps({"members": len(uids), "added": len(added), "removed": len(removed)}))
+    return uids
+
+
+def clean_club_post(d):
+    week = str(d.get("week") or "")[:10]; datetime.date.fromisoformat(week)
+    cls = []
+    for c in (d.get("classes") or [])[:8]:
+        if not isinstance(c, dict):
+            continue
+        x = {"day": _txt(c.get("day"), 10), "ico": _txt(c.get("ico"), 8), "name": _txt(c.get("name"), 80), "title": _txt(c.get("title"), 140), "teaser": _txt(c.get("teaser"), 600)}
+        if c.get("date"):
+            x["date"] = str(c["date"])[:10]; datetime.date.fromisoformat(x["date"])
+        if c.get("time"):
+            x["time"] = _txt(c["time"], 5)
+        if c.get("wd") is not None:
+            x["wd"] = int(c["wd"])
+        if _url(c.get("zoom")):
+            x["zoom"] = _url(c["zoom"])
+        cls.append(x)
+    return {"id": "w" + week.replace("-", ""), "week": week, "title": _txt(d.get("title"), 160), "intro": str(d.get("intro") or "").strip()[:2500],
+            "classes": cls, "closing": str(d.get("closing") or "").strip()[:800], "at": datetime.date.today().isoformat()}
 
 
 def report_link(rid):
@@ -503,6 +581,34 @@ def main():
         if r.get("hub"):
             publish_all(tok, tu, m, only={r["hub"]})
         print("ok"); return
+    if cmd == "club-info":
+        # the weekly schedule (with Zoom links) and useful links on the club page
+        d = json.loads(a[1]) if not a[1].startswith("@") else json.load(open(a[1][1:], encoding="utf-8"))
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        feed = m.get("clubFeed") or {}
+        info = feed.get("info") or {}
+        if "schedule" in d:
+            info["schedule"] = [{"wd": int(x["wd"]), "ico": _txt(x.get("ico"), 8), "name": _txt(x.get("name"), 80), "time": _txt(x.get("time") or "20:00", 5), "dur": int(x.get("dur") or 90),
+                                 "host": _txt(x.get("host"), 60), "desc": _txt(x.get("desc"), 300), "zoom": _url(x.get("zoom"))} for x in d["schedule"]]
+        if "links" in d:
+            info["links"] = [{"ico": _txt(x.get("ico"), 8), "title": _txt(x.get("title"), 80), "url": _url(x.get("url")), "note": _txt(x.get("note"), 200)} for x in d["links"] if _url(x.get("url"))]
+        feed["info"] = info; m["clubFeed"] = feed
+        club_sync(tok, tu, m); return
+    if cmd == "club-post":
+        # this week's post, straight to every club member's Hibi (Club page + Home card). Same week again = replaces it.
+        raw = a[1]
+        d = json.load(sys.stdin) if raw == "-" else json.load(open(raw[1:], encoding="utf-8")) if raw.startswith("@") else json.loads(raw)
+        post = clean_club_post(d)
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        feed = m.get("clubFeed") or {}
+        ps = [x for x in (feed.get("posts") or []) if x.get("id") != post["id"]]
+        replaced = len(ps) != len(feed.get("posts") or [])
+        ps.append(post); ps.sort(key=lambda x: x.get("week", "")); feed["posts"] = ps[-12:]
+        m["clubFeed"] = feed
+        uids = club_sync(tok, tu, m, quiet=True)
+        print(json.dumps({"ok": True, "replaced": replaced, "id": post["id"], "members": len(uids), "link": SITE + "#club"})); return
+    if cmd == "club-sync":
+        club_sync(tok, tu); return
     if cmd == "idea":
         # an idea for a NEW grammar module or word pack, from what keeps coming up in classes (Noa sees them on Hibi members)
         d = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}

@@ -249,6 +249,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "shiny", name: "Shiny sparkles", ico: "✨", slot: "fx", w: 400 },
     { id: "night", name: "Night sky", ico: "🌙", slot: "room", w: 500 },
     { id: "rainbow", name: "Rainbow room", ico: "🌈", slot: "room", w: 750 },
+    { id: "cafe", name: "Cozy café", ico: "☕", slot: "room", md: 5 },
     { id: "legend", name: "Legend star", ico: "⭐", slot: "badge", w: 1000 },
     /* learned words (marked "I knew it" 3 times in flashcards) */
     { id: "ball", name: "Toy ball", ico: "⚽", slot: "toy", l: 10 },
@@ -297,10 +298,11 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   }
   /* Noa (the teacher account) has everything unlocked and a best-friends buddy */
   const TCH = () => window.__csTeacher === true;
+  const musicDays = () => Array.isArray(S.mud) ? S.mud.length : 0;
   const modDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
-  const isOpen = it => { if (TCH()) return true; if (it.m) return modDone(it.m); if (it.dw != null) return (S.dw | 0) >= it.dw; if (it.ds != null) return (S.dbs | 0) >= it.ds; if (it.dp != null) return (S.dplay | 0) >= it.dp; const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
-  const lockTxt = it => it.m ? "when you finish " + it.mt : it.dw != null ? "after " + it.dw + " duel " + (it.dw === 1 ? "win" : "wins") : it.ds != null ? "after " + it.ds + " duel wins in a row" : it.dp != null ? "after your first duel" : it.w != null ? it.w + " words" : it.l + " learned words";
-  const atW = it => it.m || it.dw != null || it.ds != null || it.dp != null ? "" : "at ";
+  const isOpen = it => { if (TCH()) return true; if (it.m) return modDone(it.m); if (it.md != null) return musicDays() >= it.md; if (it.dw != null) return (S.dw | 0) >= it.dw; if (it.ds != null) return (S.dbs | 0) >= it.ds; if (it.dp != null) return (S.dplay | 0) >= it.dp; const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
+  const lockTxt = it => it.md != null ? `after studying with music on ${it.md} different days (you have ${Math.min(musicDays(), it.md)})` : it.m ? "when you finish " + it.mt : it.dw != null ? "after " + it.dw + " duel " + (it.dw === 1 ? "win" : "wins") : it.ds != null ? "after " + it.ds + " duel wins in a row" : it.dp != null ? "after your first duel" : it.w != null ? it.w + " words" : it.l + " learned words";
+  const atW = it => it.m || it.md != null || it.dw != null || it.ds != null || it.dp != null ? "" : "at ";
   const needTxt = it => it.m ? "⏪" : it.dw != null ? "⚔️" + it.dw : it.ds != null ? "🔥" + it.ds : it.dp != null ? "⚔️" : it.w != null ? it.w : it.l;
   const animal = () => SP[S.a] ? S.a : "max";
   const palette = () => { const d = SP[animal()], c = d.colors[S.c | 0] || d.colors[0]; return Object.assign({}, d.p, c[1]); };
@@ -372,6 +374,15 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       R(2, 3, 9, 8, "#7A5A3A"); R(3, 4, 7, 6, "#9ED3F0"); R(6, 4, 1, 6, "#7A5A3A"); R(3, 7, 7, 1, "#7A5A3A"); R(3, 4, 2, 1, "#FFFFFF");
       R(41, 4, 7, 9, "#7A5A3A"); R(42, 5, 5, 7, "#F2B8C6"); R(44, 7, 1, 3, "#E5533D"); R(X0, -6, RW, 1, "#E3C9A2");
       R(X0, 19, RW, 7, "#C89463"); for (let x = X0; x < X0 + RW; x += 7) R(x, 19, 1, 7, "#B07E50"); R(10, 23, 20, 2, "#E5533D"); R(11, 23, 18, 1, "#F07A66");
+    } else if (roomId === "cafe") {
+      R(X0, Y0, RW, RH, "#5B3A29"); for (let x = X0; x < X0 + RW; x += 3) R(x, Y0, 1, 35, "#53352A");
+      R(X0, 6, RW, 13, "#7A4E36"); R(X0, 6, RW, 1, "#94643F");
+      R(1, -2, 12, 7, "#3B2A20"); R(2, -1, 10, 5, "#9ED3F0"); R(2, 2, 10, 2, "#BFE3F5"); R(7, -1, 1, 5, "#3B2A20"); R(2, -1, 3, 1, "#FFFFFF");
+      R(1, -3, 12, 1, "#C2306F"); for (let x = 1; x < 13; x += 2) R(x, -3, 1, 1, "#F2B8C6");
+      R(30, -1, 9, 7, "#2E3A2F"); R(30, -1, 9, 1, "#8A6A3A"); R(31, 1, 4, 1, "#F5F1E6"); R(31, 3, 6, 1, "#F5F1E6"); R(36, 1, 2, 1, "#F5C842"); R(31, 5, 3, 1, "#F2B8C6");
+      [[-6, -16], [16, -16], [46, -16]].forEach(([x]) => { R(x + 1, -16, 1, 9, "#2A1C14"); R(x - 1, -7, 5, 2, "#E8A23A"); R(x, -5, 3, 1, "#FFE08A"); });
+      R(X0, 19, RW, 7, "#9C6B43"); for (let x = X0; x < X0 + RW; x += 5) R(x, 19, 1, 7, "#86593A"); R(X0, 19, RW, 1, "#B07E50");
+      R(-12, 10, 10, 9, "#4A2E21"); R(-12, 10, 10, 1, "#C9A26B"); R(-10, 7, 3, 3, "#D9D9D9"); R(-9, 6, 1, 1, "#9AA3AD"); R(-6, 8, 2, 2, "#FFFFFF"); R(-5, 7, 1, 1, "#C9A26B");
     } else if (roomId === "night") {
       R(X0, Y0, RW, RH, "#1B2350"); R(X0, 10, RW, 9, "#232E66");
       [[3, 2], [9, 5], [15, 1], [22, 4], [27, 2], [35, 6], [6, 9], [18, 8], [31, 10], [12, 12], [37, 13], [2, 14], [-6, 3], [-11, -8], [-3, -13], [7, -5], [19, -11], [28, -6], [44, -9], [50, 2], [46, 12], [-9, 15], [52, -14], [38, -2]].forEach(([x, y]) => R(x, y, 1, 1, "#FFFFFF"));
@@ -522,6 +533,29 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 .bd-pv-x:hover,.bd-pv-x:focus-visible{background:rgba(255,255,255,.3)}
 @keyframes bdPvIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 html.cs-calm .bd-pv{animation:none}
+/* study music: your buddy in its room with a record player */
+.music-play.ms-has{display:flex!important;flex-direction:column;align-items:stretch;gap:0;padding:0!important;overflow:hidden;border-radius:16px!important;width:100%}
+.ms-scene{display:block;position:relative;line-height:0;--bd-sky:color-mix(in srgb,var(--green,#2E8B57) 8%,var(--surface,#fff));--bd-grass:color-mix(in srgb,var(--green,#2E8B57) 24%,var(--surface,#fff));--bd-grass2:color-mix(in srgb,var(--green,#2E8B57) 38%,var(--surface,#fff))}
+.ms-scene svg{display:block;width:100%;height:auto;image-rendering:pixelated}
+.ms-cap{display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;font-weight:800}
+.ms-scene .ms-pet{animation:msBreathe 3.2s steps(1) infinite}
+.ms-scene .ms-blink{opacity:0;animation:msBlink 5s steps(1) infinite}
+.ms-scene .ms-disc2,.ms-scene .ms-note{display:none}
+.ms-scene .ms-arm-on{display:none}
+.ms-on .ms-pet{animation:msNod .5s steps(1) infinite}
+.ms-on .ms-disc1{animation:msSpinA .6s steps(1) infinite}.ms-on .ms-disc2{display:inline;animation:msSpinB .6s steps(1) infinite}
+.ms-on .ms-arm-off{display:none}.ms-on .ms-arm-on{display:inline}
+.ms-on .ms-note{display:inline;animation:msNote 2.4s linear infinite}
+.ms-on .ms-note.n2{animation-delay:.8s}.ms-on .ms-note.n3{animation-delay:1.6s}
+.ms-on .ms-lamp{fill:#FFE08A}
+@keyframes msBreathe{0%,70%{transform:none}71%,100%{transform:translateY(.4px)}}
+@keyframes msBlink{0%,94%{opacity:0}95%,100%{opacity:1}}
+@keyframes msNod{0%,49%{transform:none}50%,100%{transform:translateY(.6px)}}
+@keyframes msSpinA{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes msSpinB{0%,49%{opacity:0}50%,100%{opacity:1}}
+@keyframes msNote{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(-3px,-9px);opacity:0}}
+html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-on .ms-disc2,html.cs-calm .ms-on .ms-note{display:none}
+.ms-tip{font-size:12.5px;color:var(--muted,#667);padding:0 12px 8px;line-height:1.35;font-weight:600}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:default;touch-action:none}#bdStgPet{cursor:pointer}
 .bd-stage-wrap{position:relative;max-width:340px;margin:12px auto 10px}.bd-stage-wrap .bd-stage{margin:0}
 .bd-zoom{position:absolute;right:6px;top:6px;display:flex;flex-direction:column;gap:4px}
@@ -1528,5 +1562,52 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); setTimeout(duelCheck, 5000); } renderPark(); });
 
   document.addEventListener("cs-teacher", () => { try { paintPet(); if (!modal.hidden) renderModal(); publishPark(); } catch (e) {} });
+  /* ---------- study music: buddy in its room, with a record player ---------- */
+  function musicScene() {
+    const has = S.on === true && !!S.a;
+    const room = has ? (S.room && byId[S.room] && isOpen(byId[S.room]) ? S.room : null) : "room";
+    let rp = "";
+    const P = (x, y, w, h, c, cls) => { rp += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"${cls ? ` class="${cls}"` : ""}/>`; };
+    /* little table + record player on the right */
+    P(32, 15, 11, 1, "#8A5A3A"); P(32, 16, 11, 1, "#6E4630"); P(33, 17, 1, 9, "#6E4630"); P(41, 17, 1, 9, "#6E4630");
+    P(33, 12, 9, 3, "#C0673A"); P(33, 12, 9, 1, "#D98A5C"); P(34, 14, 7, 1, "#A55530");
+    rp += `<g class="ms-disc1">`; P(34, 11, 5, 1, "#1F1F24"); P(35, 10, 3, 1, "#1F1F24"); P(36, 11, 1, 1, "#E5533D"); P(34, 11, 1, 1, "#4A4A55"); rp += `</g>`;
+    rp += `<g class="ms-disc2">`; P(34, 11, 5, 1, "#1F1F24"); P(35, 10, 3, 1, "#1F1F24"); P(36, 11, 1, 1, "#E5533D"); P(38, 11, 1, 1, "#4A4A55"); rp += `</g>`;
+    rp += `<g class="ms-arm-off">`; P(40, 9, 1, 3, "#C3CCD6"); P(40, 9, 1, 1, "#7D8894"); rp += `</g>`;
+    rp += `<g class="ms-arm-on">`; P(40, 9, 1, 2, "#C3CCD6"); P(39, 10, 1, 1, "#C3CCD6"); P(38, 10, 1, 1, "#7D8894"); rp += `</g>`;
+    rp += `<rect class="ms-lamp" x="41" y="12" width="1" height="1" fill="#5A4632"/>`;
+    ["n1", "n2", "n3"].forEach((n, i) => { rp += `<text class="ms-note ${n}" x="${35 + i}" y="9" font-size="3.4" fill="${["#F5C842", "#F2B8C6", "#9ED3F0"][i]}">${i === 1 ? "♫" : "♪"}</text>`; });
+    const pet = has ? `<g class="ms-pet">${rects(drawPet({}), 8, 0)}<g class="ms-blink">${rects(drawPet({ blink: true }), 8, 0)}</g></g>` : "";
+    const toys = has ? ITEMS.filter(i => i.slot === "toy" && isOpen(i) && !(S.toyOff || []).includes(i.id) && !["lamp", "trophy", "plant"].includes(i.id)).map(i => i.id) : [];
+    return `<svg viewBox="-3 1 47 25" shape-rendering="crispEdges" role="img" aria-label="${has ? esc(nameOf()) + " listening to music" : "A record player"}">${roomSVG(room, toys)}${pet}${rp}</svg>`;
+  }
+  function paintMusicScene() {
+    const btn = document.getElementById("musicPlay"); if (!btn) return;
+    let sc = btn.querySelector(".ms-scene");
+    if (!sc) {
+      btn.classList.add("ms-has");
+      const cap = document.createElement("span"); cap.className = "ms-cap";
+      [...btn.childNodes].forEach(n => cap.appendChild(n));
+      sc = document.createElement("span"); sc.className = "ms-scene"; sc.setAttribute("aria-hidden", "true");
+      btn.appendChild(sc); btn.appendChild(cap);
+      const tip = document.createElement("span"); tip.className = "ms-tip"; tip.id = "msTip"; btn.appendChild(tip);
+    }
+    sc.innerHTML = musicScene();
+    const has = S.on === true && !!S.a, cafe = byId.cafe;
+    const tip = btn.querySelector("#msTip");
+    if (tip) { tip.textContent = !has ? "Adopt a study buddy and it'll listen with you 🐾" : !isOpen(cafe) ? `☕ Study with music on ${cafe.md} different days to unlock the café room (${Math.min(musicDays(), cafe.md)}/${cafe.md})` : ""; tip.hidden = !tip.textContent; }
+    sc.classList.toggle("ms-on", btn.getAttribute("aria-pressed") === "true");
+  }
+  (function musicHook() {
+    const btn = document.getElementById("musicPlay"); if (!btn) return;
+    paintMusicScene();
+    new MutationObserver(() => {
+      const on = btn.getAttribute("aria-pressed") === "true";
+      const sc = btn.querySelector(".ms-scene"); if (sc) sc.classList.toggle("ms-on", on);
+      if (on && S.on === true) { const d = today(); if (!Array.isArray(S.mud)) S.mud = []; if (!S.mud.includes(d)) { const was = isOpen(byId.cafe); S.mud.push(d); S.mud = S.mud.slice(-60); save(); paintMusicScene(); if (!was && isOpen(byId.cafe)) toastMsg("☕ You unlocked the Cozy café room! Find it in your buddy's Room."); } }
+    }).observe(btn, { attributes: true, attributeFilter: ["aria-pressed"] });
+    const mb = document.getElementById("musicBtn"); if (mb) mb.addEventListener("click", () => setTimeout(paintMusicScene, 0));
+  })();
+
   window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), scene: () => stageSVG({ plain: true }).replace(/var\(--bd-sky\)/g, "#BFE3FF").replace(/var\(--bd-grass2\)/g, "#8CD47E").replace(/var\(--bd-grass\)/g, "#6CC06A"), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };
 })();

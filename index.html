@@ -1260,6 +1260,58 @@ a.ch-rp-res:hover{border-color:var(--k)}
 html.ag-lock,html.ag-lock body{overflow:hidden}
 /* the side menu sticks exactly where it starts, so it doesn't jump 4px when you scroll */
 @media (min-width:901px){nav.side{top:calc(env(safe-area-inset-top,0px) + 78px);max-height:calc(100dvh - 78px - env(safe-area-inset-top,0px) - 16px)}}
+.cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
+html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
+.cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.cl-tab{all:unset;cursor:pointer;font:700 14px var(--body);padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.cl-tab[aria-pressed="true"]{border-color:var(--c1);background:color-mix(in srgb,var(--c1) 16%,var(--surface))}
+.cl-tab:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.cl-post{border:1.5px solid color-mix(in srgb,var(--c1) 40%,var(--line));background:color-mix(in srgb,var(--c1) 8%,var(--surface));border-radius:18px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.cl-post h2{margin:0;font-size:20px;line-height:1.3;text-wrap:balance}
+.cl-meta{font:700 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c1)}
+.cl-intro{margin:0;font-size:15.5px;line-height:1.6;white-space:pre-line}
+.cl-classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.cl-cls{--k:var(--c2);border:1.5px solid color-mix(in srgb,var(--k) 38%,var(--line));background:var(--surface);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.cl-cls.k1{--k:var(--c3)}.cl-cls.k2{--k:var(--c2)}.cl-cls.k3{--k:var(--c4)}.cl-cls.k4{--k:var(--c1)}
+.cl-cls.past{opacity:.6}
+.cl-when{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.cl-when b{color:var(--k);font:700 12px var(--mono);letter-spacing:.05em;text-transform:uppercase}
+.cl-live{font:800 11px var(--body);padding:2px 8px;border-radius:999px;background:#E5533D;color:#fff}
+.cl-today{font:800 11px var(--body);padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--k) 22%,transparent);color:var(--k)}
+.cl-cls h3{margin:0;font-size:16px;line-height:1.35}
+.cl-cls p{margin:0;font-size:14px;line-height:1.5;color:var(--ink)}
+.cl-join{all:unset;box-sizing:border-box;cursor:pointer;align-self:flex-start;margin-top:4px;font:800 13.5px var(--body);padding:7px 13px;border-radius:999px;background:color-mix(in srgb,var(--k) 18%,var(--surface));border:1.5px solid color-mix(in srgb,var(--k) 50%,var(--line));color:var(--ink);text-decoration:none}
+.cl-join:hover{border-color:var(--k)}.cl-join:focus-visible{outline:2px solid var(--k);outline-offset:2px}
+.cl-closing{margin:0;font-size:15px;line-height:1.55;font-style:italic;white-space:pre-line}
+.cl-sec{border:1.5px solid var(--line);background:var(--surface);border-radius:16px;padding:16px}
+.cl-sec h2{margin:0 0 10px;font-size:17px}
+.cl-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.cl-row:first-of-type{border-top:0}
+.cl-row .i{font-size:22px;flex:none;width:30px;text-align:center}
+.cl-row .t{flex:1;min-width:200px}
+.cl-row .t b{display:block;font-size:15px}
+.cl-row .t span{font-size:13.5px;color:var(--muted)}
+.cl-note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.cl-past{border:1.5px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.cl-past>summary{cursor:pointer;list-style:none;padding:12px 14px;display:flex;justify-content:space-between;gap:10px;font-weight:700}
+.cl-past>summary::-webkit-details-marker{display:none}
+.cl-past>summary span{color:var(--muted);font-weight:500;font-size:13.5px;white-space:nowrap}
+.cl-past[open]>summary{border-bottom:1px solid var(--line)}
+.cl-past .cl-post{border:0;border-radius:0;background:transparent}
+.cl-empty{padding:18px;text-align:center;color:var(--muted)}
+/* Home card */
+.hc-club{border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line));background:color-mix(in srgb,#F0A63A 9%,var(--surface));border-radius:18px;padding:14px 16px;margin:0 0 14px;display:flex;flex-direction:column;gap:8px}
+.hc-club .hc-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.hc-club .hc-h b{font-size:16px}
+.hc-new{font:800 11px var(--body);padding:2px 8px;border-radius:999px;background:#E5533D;color:#fff;margin-left:6px;vertical-align:2px}
+.hc-list{display:flex;flex-direction:column;gap:4px;font-size:14px}
+.hc-list div{display:flex;gap:8px;align-items:baseline}
+.hc-list .d{font:700 11.5px var(--mono);letter-spacing:.02em;color:var(--muted);flex:none;width:100px;white-space:nowrap;text-transform:uppercase}
+.hc-list .past{opacity:.55}
+.hc-go{all:unset;cursor:pointer;font:800 14px var(--body);color:#B86E00}
+html:not([data-theme="light"]):not([data-theme="sepia"]):not([data-theme="unicorn"]) .hc-go{color:#F5C46B}
+.hc-go:hover{text-decoration:underline}
+.club-dot{margin-left:auto;font:800 10.5px var(--body);min-width:8px;height:8px;border-radius:999px;background:#E5533D}
 </style>
 
 <header class="top">
@@ -1323,6 +1375,7 @@ html.ag-lock,html.ag-lock body{overflow:hidden}
       <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2"/><circle cx="16.8" cy="9.5" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.4 1.4 5 4.6"/></svg><span>Hibi members</span></button>
       <button class="navbtn cn-nav t-mnav" type="button" data-href="private-students.html" id="mnavHub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>Private students</span></button>
       <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>My coaching</span></button>
+      <button class="navbtn cn-nav club-nav" data-go="club" id="navClub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.2V15.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M17 9.5h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v2.7l-3.4-2.7H12"/></svg><span>Club</span></button>
       <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
@@ -1424,6 +1477,7 @@ html.ag-lock,html.ag-lock body{overflow:hidden}
 <section class="view" id="v-notes" hidden>
   <h1>Your <em>home</em></h1>
   <p class="lede">Your word of the day, class notes and new words, all in one place.</p>
+  <div id="homeClub" hidden></div>
   <div class="today" id="todayBox">
     <div class="card today-word">
       <div class="td-top"><span class="tag td-tag">Word of the day</span><span class="count" id="tdDate"></span></div>
@@ -2105,6 +2159,87 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
+<section class="view" id="v-club" hidden>
+  <h1>Noa's English <em>Club</em></h1>
+  <p class="lede">This week's classes, your Zoom links and past weeks. Only club members can see this page.</p>
+  <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
+</section>
+<script>
+(function(){
+  const box=document.getElementById("clubMain"); if(!box) return;
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const TZ="America/Santiago", WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const SEEN="cs-club-seen";
+  let tab="week";
+  const feed=()=>{ if(window.__csPreview&&window.__csPreview.kind==="private") return null; return window.__csClub||null; };
+  const posts=f=>((f&&f.posts)||[]).filter(p=>p&&p.week).slice().sort((a,b)=>b.week.localeCompare(a.week));
+  const seen=()=>{ try{ return localStorage.getItem(SEEN)||""; }catch(e){ return ""; } };
+  const markSeen=id=>{ try{ localStorage.setItem(SEEN,id); }catch(e){} };
+  /* class times are Chile time; show the member's own time too when it's different */
+  function tzOff(tz,d){ const p=new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(d).reduce((o,x)=>(o[x.type]=x.value,o),{}); return (Date.UTC(+p.year,+p.month-1,+p.day,+p.hour%24,+p.minute)-d.getTime())/60000; }
+  function chileAt(iso,hm){ const [y,m,d]=iso.split("-").map(Number), [h,mi]=String(hm||"20:00").split(":").map(Number); let t=Date.UTC(y,m-1,d,h,mi); t-=tzOff(TZ,new Date(t))*60000; t=Date.UTC(y,m-1,d,h,mi)-tzOff(TZ,new Date(t))*60000; return new Date(t); }
+  const fmtT=(d,tz)=>d.toLocaleTimeString("en-US",Object.assign({hour:"numeric",minute:"2-digit"},tz?{timeZone:tz}:{}));
+  const myTz=(()=>{ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone||TZ; }catch(e){ return TZ; } })();
+  function timeTxt(d){ const ch=fmtT(d,TZ); if(tzOff(myTz,d)===tzOff(TZ,d)) return ch+" (Chile)"; return ch+" Chile · "+fmtT(d)+" your time"; }
+  const fd=iso=>{ const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}); };
+  function sched(f,wd){ return ((f&&f.info&&f.info.schedule)||[]).find(s=>s.wd===wd)||null; }
+  function weekDates(week){ const [y,m,d]=week.split("-").map(Number); return i=>{ const x=new Date(y,m-1,d+i); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }; }
+  function classesOf(f,p){
+    const at=weekDates(p.week);
+    return (p.classes||[]).map((c,i)=>{ const wd=c.wd!=null?c.wd:Math.max(0,WD.indexOf(String(c.day||"").slice(0,3))); const s=sched(f,wd)||{}; const date=c.date||at((wd+6)%7); const start=chileAt(date,c.time||s.time||"20:00"); const end=new Date(start.getTime()+((c.dur||s.dur||90)*60000));
+      return Object.assign({},s,c,{wd,date,start,end,ico:c.ico||s.ico||"📅",name:c.name||s.name||"",zoom:c.zoom||s.zoom||"",k:"k"+(((wd===1?1:wd===3?2:wd===4?3:4)))}); });
+  }
+  function clsCard(c,now){
+    const live=now>=c.start.getTime()-10*60000&&now<=c.end.getTime(), past=now>c.end.getTime(), today=new Date(c.start).toDateString()===new Date(now).toDateString();
+    return `<div class="cl-cls ${c.k}${past?" past":""}"><div class="cl-when"><b>${c.ico} ${esc(fd(c.date))}</b><span>${esc(timeTxt(c.start))}</span>${live?'<span class="cl-live">● Live now</span>':today&&!past?'<span class="cl-today">Today</span>':""}</div>
+      <h3>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</h3>${c.teaser?`<p>${esc(c.teaser)}</p>`:""}
+      ${c.zoom&&!past?`<a class="cl-join" href="${esc(c.zoom)}" target="_blank" rel="noopener">${live?"🎥 Join now":"🎥 Zoom link"}</a>`:""}</div>`;
+  }
+  function postHTML(f,p,now,head){
+    return `<article class="cl-post">${head?`<div class="cl-meta">Week of ${esc(fd(p.week))}</div>`:""}${p.title?`<h2>${esc(p.title)}</h2>`:""}${p.intro?`<p class="cl-intro">${esc(p.intro)}</p>`:""}
+      ${(p.classes||[]).length?`<div class="cl-classes">${classesOf(f,p).map(c=>clsCard(c,now)).join("")}</div>`:""}${p.closing?`<p class="cl-closing">${esc(p.closing)}</p>`:""}</article>`;
+  }
+  function nav(){
+    const f=feed(), b=document.getElementById("navClub"); if(b){ b.hidden=!f; const ps=posts(f); let dot=b.querySelector(".club-dot"); const n=ps[0]&&ps[0].id!==seen()&&!window.__csPreview; if(n&&!dot){ dot=document.createElement("span"); dot.className="club-dot"; dot.title="New this week"; b.appendChild(dot); } else if(!n&&dot) dot.remove(); }
+    home();
+  }
+  function home(){
+    const hc=document.getElementById("homeClub"); if(!hc) return; const f=feed(), p=posts(f)[0];
+    if(!f||!p){ hc.hidden=true; return; }
+    const now=Date.now(), cl=classesOf(f,p), isNew=p.id!==seen();
+    const next=cl.find(c=>now<=c.end.getTime());
+    hc.hidden=false; hc.className="hc-club";
+    hc.innerHTML=`<div class="hc-h"><b>🌼 This week in the club${isNew&&!window.__csPreview?'<span class="hc-new">NEW</span>':""}</b><button type="button" class="hc-go" data-go="club">Open →</button></div>
+      <div class="hc-list">${cl.map(c=>`<div class="${now>c.end.getTime()?"past":""}"><span class="d">${c.ico} ${WD[c.wd]} ${esc(fmtT(c.start,TZ).replace(":00",""))}</span><span>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</span></div>`).join("")}</div>
+      ${next&&next.zoom&&now>=next.start.getTime()-10*60000?`<a class="cl-join" style="--k:#E5533D" href="${esc(next.zoom)}" target="_blank" rel="noopener">🎥 ${esc(next.name)} is live: join now</a>`:""}`;
+  }
+  function render(){
+    nav(); const f=feed();
+    if(!f){ box.innerHTML='<p class="cl-empty">This page is for members of Noa’s English Club. If you’re a member and don’t see it, sign in with the email you use for the club or tell Noa.</p>'; return; }
+    const ps=posts(f), now=Date.now(), info=f.info||{};
+    const tabs=[["week","This week"],["links","Schedule & links"],["past",`Past weeks${ps.length>1?" ("+(ps.length-1)+")":""}`]];
+    let body="";
+    if(tab==="week"){ body=ps[0]?postHTML(f,ps[0],now,true):'<p class="cl-empty">This week’s post isn’t up yet. It usually arrives on Monday.</p>'; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    else if(tab==="links"){
+      const sc=(info.schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7));
+      const nextDate=wd=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===wd) return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); } };
+      body=`<div class="cl-sec"><h2>🗓 Every week</h2>${sc.map(s=>{ const st=chileAt(nextDate(s.wd),s.time); return `<div class="cl-row"><span class="i">${s.ico||"📅"}</span><span class="t"><b>${esc(s.name)}</b><span>${["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"][s.wd]} · ${esc(timeTxt(st))} · ${s.dur||90} min${s.host?" · with "+esc(s.host):""}</span>${s.desc?`<br><span>${esc(s.desc)}</span>`:""}</span>${s.zoom?`<a class="cl-join" style="--k:var(--c2)" href="${esc(s.zoom)}" target="_blank" rel="noopener">🎥 Zoom link</a>`:""}</div>`; }).join("")}
+        <p class="cl-note">All classes are optional and open to every level. The Zoom links stay the same every week.</p></div>
+        ${(info.links||[]).length?`<div class="cl-sec"><h2>🔗 Useful links</h2>${info.links.map(l=>`<div class="cl-row"><span class="i">${esc(l.ico||"🔗")}</span><span class="t"><b>${esc(l.title)}</b>${l.note?`<span>${esc(l.note)}</span>`:""}</span><a class="cl-join" style="--k:var(--c4)" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a></div>`).join("")}</div>`:""}`;
+    } else {
+      const old=ps.slice(1);
+      body=old.length?old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>Week of ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}</details>`).join(""):'<p class="cl-empty">Past weeks will collect here, so you can look back at topics and videos.</p>';
+    }
+    box.innerHTML=`<div class="cl-tabs" role="group" aria-label="Club sections">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+  }
+  box.addEventListener("click",e=>{ const t=e.target.closest("[data-clt]"); if(t){ tab=t.dataset.clt; render(); } });
+  document.addEventListener("cs-club",render); document.addEventListener("cs-hubview",nav);
+  window.addEventListener("hashchange",()=>{ if(location.hash==="#club") setTimeout(render,0); });
+  document.addEventListener("click",e=>{ if(e.target.closest('[data-go="club"]')) setTimeout(render,0); });
+  setInterval(()=>{ if(feed()){ if(!document.hidden) { const v=document.getElementById("v-club"); if(v&&!v.hidden&&tab==="week") render(); else home(); } } },60000);
+  render();
+})();
+</script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
   <p class="lede">Write a word or sentence in Spanish <i>or</i> English and tap <b>Translate here</b>. It figures out the language for you, and shows you how to say the English part. You can also open it in Google Translate or DeepL.</p>
@@ -2896,7 +3031,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=35" defer></script>
+<script src="buddy.js?v=36" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -5817,7 +5952,7 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
   }
   addHints();
   /* beginner mode: each page's description in Spanish (the English one hides) */
-  const LEDE_ES={"tenses": "Escribe cualquier verbo y elige un sujeto. Los 12 tiempos se actualizan solos, en afirmativo (+), negativo (−) y pregunta (?).", "verbs": "Busca en inglés o en español. Toca <span class=\"mono\">see tenses</span> para ver un verbo en los 12 tiempos.", "notes": "Tu palabra del día, tus apuntes de clase y tus palabras nuevas, todo en un solo lugar.", "feedback": "¿Falta algo, algo es confuso o no funciona? Cuéntame. Leo todos los mensajes y los uso para mejorar esta página. Escribirlo en inglés es buena práctica, pero en español también está bien.", "words": "Todas las palabras que guardas, las más nuevas primero. Practícalas con tarjetas o agrega una lista que ya tengas.", "classnotes": "Escribe aquí o en tu página de inicio los apuntes de hoy. Cada nota que guardas aparece abajo, la más nueva primero.", "notebook": "Tus mismos apuntes, agrupados por semana, con un resumen corto de cada semana: los temas, las correcciones para recordar y las expresiones nuevas. Toca <b>+ save</b> para agregar una expresión a tus palabras.", "park": "Las mascotas de estudio de todos, juntas. Toca una para ver de quién es y mandarle cariño: gana <b>+2 de amistad</b> (una vez al día por mascota). Usa <b>− / +</b> para alejar o acercar.", "coaching": "Tus clases privadas con Noa: tu próxima clase, la tarea, tus metas, guías y tu pack. Noa lo actualiza después de cada clase.", "translate": "Escribe una palabra o frase en español <i>o</i> en inglés y toca <b>Translate here</b>. Reconoce el idioma solo y te muestra cómo se pronuncia el inglés. También puedes abrirlo en Google Translate o DeepL.", "mistakes": "Los errores más comunes de quienes hablan español, y cómo corregirlos. Todos los cometemos, así que tranquilo: solo intenta darte cuenta.", "place": "Para lugares, piensa en <b>in</b> como dentro de un espacio, <b>on</b> como sobre una superficie o una línea, y <b>at</b> como un punto en el mapa. Para movimiento, la preposición muestra la dirección.", "usedto": "Se ven casi iguales, pero significan tres cosas distintas. El truco: después de <b>be used to</b> y <b>get used to</b> va un sustantivo o un verbo + -ing.", "passive": "Usa la voz pasiva cuando la acción importa más que quién la hizo, o cuando no sabes quién fue. <b>Estructura: be + participio.</b> Solo el verbo <i>be</i> cambia de tiempo.", "reported": "Cómo contarle a alguien lo que dijo otra persona. Normalmente el verbo da un paso atrás en el pasado.", "backup": "¿No has iniciado sesión? Tus palabras, apuntes y secciones favoritas viven solo en este navegador. Usa esta página para guardar una copia o pasar todo a otro computador, navegador o a tu teléfono. O simplemente inicia sesión con Google y todo se sincroniza solo.", "changelog": "Todo lo que se ha agregado a Hibi, lo más nuevo primero.", "be": "Un verbo con dos significados en español: <b>ser</b> y <b>estar</b>. Se usa para identidad, sentimientos, lugar, edad y descripciones.", "modals": "Modal + verbo base. Sin <b>to</b>, sin <b>-s</b>, sin <b>-ed</b>: <span class=\"ok\">she can swim</span> · <span class=\"no\">she cans swim</span> · <span class=\"no\">she can to swim</span>", "domake": "Los dos significan <b>hacer</b>. La regla rápida: <b>do</b> es para actividades y tareas; <b>make</b> es para crear o producir algo. Después hay combinaciones que simplemente se aprenden.", "time": "Piénsalo de grande a pequeño. <b>In</b> para periodos largos, <b>on</b> para días, <b>at</b> para momentos exactos.", "tofor": "Los dos pueden ser <b>para</b> o <b>a</b> en español, por eso confunden. Aquí ves cuándo se usa cada uno.", "pronouns": "Lee cada fila de izquierda a derecha: la misma persona, con distinta función en la oración.", "quantity": "Primero pregúntate: ¿se puede contar? <i>One apple, two apples</i> = contable. <i>Water, information, advice, money</i> = incontable (siempre en singular).", "frequency": "¿Con qué frecuencia lo haces?", "conversation": "Una conversación no es una entrevista de trabajo. Responde, agrega algo más y haz una pregunta de vuelta. Conectar es más importante que responder perfecto.", "linking": "Los conectores que de verdad vas a usar, agrupados por lo que hacen. Empieza con los dos primeros de cada grupo.", "false": "Parecen palabras en español, pero no lo son.", "basics": "El inglés es estricto con el orden de las palabras. En español puedes moverlas; en inglés casi no.", "summary": "Úsalo cuando me cuentes del podcast, video o historia que escuchaste o leíste. Sigue este orden y no te vas a perder.", "stuck": "No te cambies al español. Usa una de estas frases y sigue. Quedarse pegado es normal; lo importante es salir en inglés.", "opinions": "Formas de decir lo que piensas, estar de acuerdo y no estarlo, sin sonar mal educado.", "conditionals": "Elige un ejemplo o escribe el tuyo. Los cuatro condicionales se actualizan abajo para que los compares lado a lado.", "perfect": "La pregunta clave: <b>¿digo (o sé) cuándo pasó?</b> Si la respuesta es sí, past simple. Si hablas de tu vida hasta ahora, present perfect.", "gerund": "Cuando un verbo va después de otro, el segundo toma una de dos formas: el <b>gerundio</b> (verbo + -ing) o el <b>infinitivo</b> (to + verbo). Depende del primer verbo.", "phrasal": "Verbo + una palabrita = un significado nuevo. Estos son los que vas a escuchar todos los días. Busca en inglés o en español.", "compare": "Comparativo = comparar dos cosas (<i>bigger than</i>). Superlativo = el que más de un grupo (<i>the biggest</i>).", "pronunciation": "Palabras que confunden a casi todos. Toca 🔊 para escucharlas. La parte en <b>negrita</b> es la sílaba acentuada.", "numbers": "El inglés usa el punto y la coma al revés que en Chile. Esto confunde a mucha gente en reuniones.", "email": "Frases listas para copiar y pegar en el trabajo. Neutras y profesionales, sin sonar rígidas.", "interview": "Las preguntas que casi siempre te van a hacer, cómo empezar tus respuestas y frases para ganar unos segundos para pensar.", "quiz": "Elige qué quieres practicar hoy. Cada ronda que terminas ayuda a tu mascota y a tu meta de la semana."};
+  const LEDE_ES={"club": "Las clases de esta semana, tus links de Zoom y las semanas anteriores. Solo los miembros del club ven esta página.", "tenses": "Escribe cualquier verbo y elige un sujeto. Los 12 tiempos se actualizan solos, en afirmativo (+), negativo (−) y pregunta (?).", "verbs": "Busca en inglés o en español. Toca <span class=\"mono\">see tenses</span> para ver un verbo en los 12 tiempos.", "notes": "Tu palabra del día, tus apuntes de clase y tus palabras nuevas, todo en un solo lugar.", "feedback": "¿Falta algo, algo es confuso o no funciona? Cuéntame. Leo todos los mensajes y los uso para mejorar esta página. Escribirlo en inglés es buena práctica, pero en español también está bien.", "words": "Todas las palabras que guardas, las más nuevas primero. Practícalas con tarjetas o agrega una lista que ya tengas.", "classnotes": "Escribe aquí o en tu página de inicio los apuntes de hoy. Cada nota que guardas aparece abajo, la más nueva primero.", "notebook": "Tus mismos apuntes, agrupados por semana, con un resumen corto de cada semana: los temas, las correcciones para recordar y las expresiones nuevas. Toca <b>+ save</b> para agregar una expresión a tus palabras.", "park": "Las mascotas de estudio de todos, juntas. Toca una para ver de quién es y mandarle cariño: gana <b>+2 de amistad</b> (una vez al día por mascota). Usa <b>− / +</b> para alejar o acercar.", "coaching": "Tus clases privadas con Noa: tu próxima clase, la tarea, tus metas, guías y tu pack. Noa lo actualiza después de cada clase.", "translate": "Escribe una palabra o frase en español <i>o</i> en inglés y toca <b>Translate here</b>. Reconoce el idioma solo y te muestra cómo se pronuncia el inglés. También puedes abrirlo en Google Translate o DeepL.", "mistakes": "Los errores más comunes de quienes hablan español, y cómo corregirlos. Todos los cometemos, así que tranquilo: solo intenta darte cuenta.", "place": "Para lugares, piensa en <b>in</b> como dentro de un espacio, <b>on</b> como sobre una superficie o una línea, y <b>at</b> como un punto en el mapa. Para movimiento, la preposición muestra la dirección.", "usedto": "Se ven casi iguales, pero significan tres cosas distintas. El truco: después de <b>be used to</b> y <b>get used to</b> va un sustantivo o un verbo + -ing.", "passive": "Usa la voz pasiva cuando la acción importa más que quién la hizo, o cuando no sabes quién fue. <b>Estructura: be + participio.</b> Solo el verbo <i>be</i> cambia de tiempo.", "reported": "Cómo contarle a alguien lo que dijo otra persona. Normalmente el verbo da un paso atrás en el pasado.", "backup": "¿No has iniciado sesión? Tus palabras, apuntes y secciones favoritas viven solo en este navegador. Usa esta página para guardar una copia o pasar todo a otro computador, navegador o a tu teléfono. O simplemente inicia sesión con Google y todo se sincroniza solo.", "changelog": "Todo lo que se ha agregado a Hibi, lo más nuevo primero.", "be": "Un verbo con dos significados en español: <b>ser</b> y <b>estar</b>. Se usa para identidad, sentimientos, lugar, edad y descripciones.", "modals": "Modal + verbo base. Sin <b>to</b>, sin <b>-s</b>, sin <b>-ed</b>: <span class=\"ok\">she can swim</span> · <span class=\"no\">she cans swim</span> · <span class=\"no\">she can to swim</span>", "domake": "Los dos significan <b>hacer</b>. La regla rápida: <b>do</b> es para actividades y tareas; <b>make</b> es para crear o producir algo. Después hay combinaciones que simplemente se aprenden.", "time": "Piénsalo de grande a pequeño. <b>In</b> para periodos largos, <b>on</b> para días, <b>at</b> para momentos exactos.", "tofor": "Los dos pueden ser <b>para</b> o <b>a</b> en español, por eso confunden. Aquí ves cuándo se usa cada uno.", "pronouns": "Lee cada fila de izquierda a derecha: la misma persona, con distinta función en la oración.", "quantity": "Primero pregúntate: ¿se puede contar? <i>One apple, two apples</i> = contable. <i>Water, information, advice, money</i> = incontable (siempre en singular).", "frequency": "¿Con qué frecuencia lo haces?", "conversation": "Una conversación no es una entrevista de trabajo. Responde, agrega algo más y haz una pregunta de vuelta. Conectar es más importante que responder perfecto.", "linking": "Los conectores que de verdad vas a usar, agrupados por lo que hacen. Empieza con los dos primeros de cada grupo.", "false": "Parecen palabras en español, pero no lo son.", "basics": "El inglés es estricto con el orden de las palabras. En español puedes moverlas; en inglés casi no.", "summary": "Úsalo cuando me cuentes del podcast, video o historia que escuchaste o leíste. Sigue este orden y no te vas a perder.", "stuck": "No te cambies al español. Usa una de estas frases y sigue. Quedarse pegado es normal; lo importante es salir en inglés.", "opinions": "Formas de decir lo que piensas, estar de acuerdo y no estarlo, sin sonar mal educado.", "conditionals": "Elige un ejemplo o escribe el tuyo. Los cuatro condicionales se actualizan abajo para que los compares lado a lado.", "perfect": "La pregunta clave: <b>¿digo (o sé) cuándo pasó?</b> Si la respuesta es sí, past simple. Si hablas de tu vida hasta ahora, present perfect.", "gerund": "Cuando un verbo va después de otro, el segundo toma una de dos formas: el <b>gerundio</b> (verbo + -ing) o el <b>infinitivo</b> (to + verbo). Depende del primer verbo.", "phrasal": "Verbo + una palabrita = un significado nuevo. Estos son los que vas a escuchar todos los días. Busca en inglés o en español.", "compare": "Comparativo = comparar dos cosas (<i>bigger than</i>). Superlativo = el que más de un grupo (<i>the biggest</i>).", "pronunciation": "Palabras que confunden a casi todos. Toca 🔊 para escucharlas. La parte en <b>negrita</b> es la sílaba acentuada.", "numbers": "El inglés usa el punto y la coma al revés que en Chile. Esto confunde a mucha gente en reuniones.", "email": "Frases listas para copiar y pegar en el trabajo. Neutras y profesionales, sin sonar rígidas.", "interview": "Las preguntas que casi siempre te van a hacer, cómo empezar tus respuestas y frases para ganar unos segundos para pensar.", "quiz": "Elige qué quieres practicar hoy. Cada ronda que terminas ayuda a tu mascota y a tu meta de la semana."};
   document.querySelectorAll("section.view").forEach(v=>{ const id=v.id.replace(/^v-/,""), t=LEDE_ES[id], l=v.querySelector("p.lede:not(.lede-es)"); if(!t||!l||v.querySelector(".lede-es")) return;
     const p=document.createElement("p"); p.className="lede lede-es"; p.lang="es"; p.innerHTML=t; l.insertAdjacentElement("afterend",p); });
   /* Thought for today, in Spanish too (translated once, then remembered) */
@@ -6991,7 +7126,14 @@ document.addEventListener("visibilitychange", () => {
 async function loadHubView() {
   let v = null;
   if (user) { try { const d = await getDoc(doc(db, "users", user.uid, "data", "hub-view")); if (d.exists() && !d.data().deleted) v = JSON.parse(d.data().json || "null"); } catch (e) { console.warn("hub view", e); } }
-  window.__csHubView = v; document.dispatchEvent(new CustomEvent("cs-hubview"));
+  setHubView(v);
+}
+/* one private copy per person: private students get "My coaching" in it, club members get the club feed (club-only members get just that) */
+function setHubView(v) {
+  window.__csClub = v && v.club ? v.club : null;
+  window.__csHubView = v && !v.clubOnly ? v : null;
+  document.dispatchEvent(new CustomEvent("cs-club"));
+  document.dispatchEvent(new CustomEvent("cs-hubview"));
 }
 document.addEventListener("visibilitychange", () => { if (!document.hidden && user && !window.__csPreview) loadHubView(); });
 /* teacher only: see the site as a student (their "My coaching" copy) */
@@ -7049,7 +7191,7 @@ window.__csViewAs = {
 onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();
-  if (VA) { window.__csHubView = VA.view || null; document.dispatchEvent(new CustomEvent("cs-hubview")); window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
+  if (VA) { setHubView(VA.view || null); window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
   loadHubView();
   /* the English level Noa set for club members (from club class recordings), for level-adapted feedback */
   if (u) getDoc(doc(db, "roles", u.uid)).then(d => { const r = d.exists() ? d.data() || {} : {}; try { if (r.lv) localStorage.setItem("cs-cefr", JSON.stringify({ lv: r.lv })); else localStorage.removeItem("cs-cefr"); } catch (e) {} }).catch(() => {});
