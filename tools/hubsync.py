@@ -205,7 +205,7 @@ def fab_level(s):
     if s.get("fabLevel"):
         return lv(s["fabLevel"])
     said = re.findall(r"fabulang\s*\(?\s*([abc][12])\b", _recent_text(s))
-    return said[-1] if said else lv(s.get("level"))
+    return said[-1] if said else lv(s.get("cefr") or s.get("level"))
 
 
 def res_for(s):
@@ -243,7 +243,7 @@ def make_view(s, meta=None):
         st = pack_stats(s, p)
         packs.append({"id": p["id"], "label": p.get("label", ""), "size": p.get("size"), "unit": p.get("unit"), "used": st["used"], "done": st["done"],
                       "left": st["left"], "deadline": deadline(p, st["first"]), "paid": p.get("paid"), "current": not p.get("archived"), "color": p.get("color", "")})
-    return {"v": 1, "name": s["name"], "level": s.get("level", ""), "schedule": s.get("schedule", ""), "objective": s.get("objective", ""), "kind": s.get("kind", "pack"),
+    return {"v": 1, "name": s["name"], "level": s.get("cefr") or s.get("level", ""), "schedule": s.get("schedule", ""), "objective": s.get("objective", ""), "kind": s.get("kind", "pack"),
             "packs": packs,
             "classes": [{k: c.get(k, "" if k != "credits" else None) for k in ("date", "dateText", "topics", "homework", "att", "hour", "credits", "pack")}
                         for c in s.get("classes", []) if c.get("kind") != "note"],

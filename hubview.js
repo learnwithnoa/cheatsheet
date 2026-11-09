@@ -49,7 +49,7 @@ export function fabLevel(s) {
   const lv = x => { const m = String(x || "").match(/\b([abc][12])\b/i); return m ? m[1].toLowerCase() : ""; };
   if (s && s.fabLevel) return lv(s.fabLevel);
   const said = [...recentText(s).matchAll(/fabulang\s*\(?\s*([abc][12])\b/g)].pop();
-  return said ? said[1] : lv(s && s.level);
+  return said ? said[1] : lv(s && (s.cefr || s.level));
 }
 export const RES_ALL = s => {
   const lv = fabLevel(s);
@@ -101,7 +101,7 @@ export function makeView(s, meta) {
     return { id: p.id, label: p.label, size: p.size || null, unit: p.unit, used: st.used, done: st.done, left: st.left, deadline: deadline(p, st.first), paid: p.paid, current: !p.archived, color: p.color || "" };
   });
   return {
-    v: 1, name: s.name, level: s.level || "", schedule: s.schedule || "", objective: s.objective || "", kind: s.kind || "pack",
+    v: 1, name: s.name, level: s.cefr || s.level || "", schedule: s.schedule || "", objective: s.objective || "", kind: s.kind || "pack",
     packs,
     classes: (s.classes || []).filter(c => c.kind !== "note").map(c => ({ date: c.date || "", dateText: c.dateText || "", topics: c.topics || "", homework: c.homework || "", att: c.att || "", hour: c.hour || "", credits: c.credits ?? null, pack: c.pack || "" })),
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),

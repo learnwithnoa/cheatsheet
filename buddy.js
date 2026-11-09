@@ -287,7 +287,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   function publishPark() {
     const P = window.__csPark; if (!P || !P.signedIn()) return;
     if (S.on !== true || !S.a) { P.publish({ on: false }); return; }
-    P.publish({ on: true, a: S.a, c: S.c | 0, n: String(S.n || "").slice(0, 16), head: S.head || null, face: S.face || null, neck: S.neck || null, lvl: typeof level === "function" ? level() : 1, words: counts().words, shiny: !!(S.shiny && S.mw >= 400), ...(typeof duelPub === "function" ? duelPub() : {}) });
+    P.publish({ on: true, a: S.a, c: S.c | 0, n: String(S.n || "").slice(0, 16), head: S.head || null, face: S.face || null, neck: S.neck || null, lvl: typeof level === "function" ? level() : 1, cefr: (window.csLevel && window.csLevel().lv) || "", words: counts().words, shiny: !!(S.shiny && S.mw >= 400), ...(typeof duelPub === "function" ? duelPub() : {}) });
   }
   function counts() {
     let words = 0, learned = 0;
@@ -1246,7 +1246,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const msg = h => { el.innerHTML = DECO + `<div class="park-msg"><div>${h}</div></div>`; };
     const P = window.__csPark;
     if (!P) { msg("Opening the park gates… 🌳"); setTimeout(renderPark, 1500); return; }
-    if (!P.signedIn()) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses Hibi: club members in the middle, private students around the edges.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
+    if (!P.signedIn()) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses Hibi: all roaming around together.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
     parkBusy = true; msg("Opening the park gates… 🌳");
     let list = [];
     try { list = await P.list(); }
@@ -1257,16 +1257,15 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     list = list.filter(x => !x.me && x.on && SP[x.a] && !(x.role && x.role.hidden));
     if (S.on === true && S.a) list.push({ me: true, words: counts().words, a: S.a, c: S.c | 0, n: S.n, head: S.head, face: S.face, neck: S.neck, lvl: level(), role: mine ? mine.role : {}, first: "" });
     if (!list.length) { msg(`The park is empty right now. <b>Adopt a buddy</b> to be the first one here! 🥚<br><button class="bd-b go" type="button" data-park="adopt" style="margin-top:10px">Adopt a buddy</button>`); return; }
-    const club = list.filter(x => !(x.role && x.role.club === false)), priv = list.filter(x => x.role && x.role.club === false);
+    /* everyone roams the whole park: start spread out, each one where there's the most room */
     const pos = [];
-    club.forEach((x, i) => { const n = club.length; if (n === 1) { pos.push([x, 50, 54]); return; } const inner = n > 7 && i % 2; const ang = i / n * Math.PI * 2 - Math.PI / 2; const r = inner ? .45 : 1; pos.push([x, 50 + Math.cos(ang) * 19 * r, 54 + Math.sin(ang) * 17 * r]); });
-    priv.forEach((x, i) => { const n = priv.length; const ang = i / n * Math.PI * 2 + Math.PI / 4; pos.push([x, Math.max(9, Math.min(91, 50 + Math.cos(ang) * 39)), Math.max(24, Math.min(84, 55 + Math.sin(ang) * 30))]); });
+    list.forEach(x => { let best = null, bestD = -1; for (let k = 0; k < 14; k++) { const p = spot(); const d = pos.reduce((m, o) => Math.min(m, Math.hypot((p[0] - o[1]) * 1.2, p[1] - o[2])), 999); if (d > bestD) { bestD = d; best = p; } } pos.push([x, best[0], best[1]]); });
     const wc = x => (x.me ? counts().words : x.words | 0);
     if (!document.getElementById("parkLegend")) el.insertAdjacentHTML("beforebegin", `<p class="park-legend" id="parkLegend">✨ The glow shows friendship: <span class="lg1">silver</span> at level 4, <span class="lg2">gold</span> at level 7, <span class="lg3">rainbow</span> at level 10.</p>`);
     el.innerHTML = `<div class="park-zoom" role="group" aria-label="Zoom"><button type="button" data-pz="-1" aria-label="Zoom out">−</button><button type="button" data-pz="0" aria-label="Fit the whole park">⤢</button><button type="button" data-pz="1" aria-label="Zoom in">+</button></div>
       <div class="park-vp" id="parkVp"><div class="park-world" id="parkWorld">${DECO}${pos.map(([x, l, t]) => {
       const bn = (x.n && String(x.n).trim() && String(x.n).trim() !== SP[x.a].old ? String(x.n).trim() : SP[x.a].name), owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
-      const info = `<span class="pi-1"><b>${esc(bn)}</b>${owner ? ` <small>· ${esc(owner)}</small>` : ""}</span><span class="pi-2">📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}</span>`;
+      const info = `<span class="pi-1"><b>${esc(bn)}</b>${owner ? ` <small>· ${esc(owner)}</small>` : ""}</span><span class="pi-2">📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}${(() => { const c = x.me ? (window.csLevel ? window.csLevel().lv : "") : (x.cefr || (x.role && x.role.lv) || ""); return c ? ` · 📊 ${esc(String(c).slice(0, 7))}` : ""; })()}</span>`;
       const lv = x.lvl | 0 || 1, tier = lv >= 10 ? 3 : lv >= 7 ? 2 : lv >= 4 ? 1 : 0;
       return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}<span class="pi-3">${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && !(window.__csPreview && window.__csPreview.kind === "private") ? `<span class="pb-feed pb-duel" role="button" tabindex="0" data-duel="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Challenge ${esc(x.first || bn)} to a duel">⚔️ Duel</span>` : ""}</span></span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;
@@ -1294,8 +1293,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   let parkTick = null;
   const calm = () => document.documentElement.classList.contains("cs-calm") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   function spot(zone) {
-    if (zone === "p") { const a = Math.random() * Math.PI * 2, r = .82 + Math.random() * .2; return [Math.max(7, Math.min(93, 50 + Math.cos(a) * 39 * r)), Math.max(24, Math.min(86, 55 + Math.sin(a) * 30 * r))]; }
-    const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * .95; return [50 + Math.cos(a) * 23 * r, 54 + Math.sin(a) * 20 * r];
+    return [8 + Math.random() * 84, 24 + Math.random() * 62];
   }
   /* try a few spots and take the one with the most room around it */
   function freeSpot(b) {
