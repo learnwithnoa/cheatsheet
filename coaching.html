@@ -68,6 +68,7 @@ tr:last-child td{border-bottom:0}
 .nextc .linkb{all:unset;cursor:pointer}.nextc .linkb:hover b{text-decoration:underline}
 .nx-note{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
 .club-m{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}.club-m h3{margin:0 0 8px;font-size:16px}
+.club-who{font-size:13.5px;margin-top:8px;display:flex;flex-direction:column;gap:3px}.club-who span[title]{cursor:help}
 .club-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.club-k div{padding:8px 10px;border-radius:10px;background:var(--surface-2)}.club-k b{display:block;font-size:18px}.club-k span{font-size:12px;color:var(--muted)}
 .toast button{all:unset;cursor:pointer;margin-left:12px;text-decoration:underline;font-weight:800}
 .hubbar{position:sticky;top:var(--hdr,60px);z-index:30;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;margin:6px 0 4px;background:var(--bg)}
@@ -133,11 +134,11 @@ td.act{white-space:nowrap;text-align:right}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 </style>
-<link rel="stylesheet" href="comfort.css?v=13">
+<link rel="stylesheet" href="comfort.css?v=14">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=15" defer></script>
+<script src="comfort.js?v=16" defer></script>
 </head>
 <body>
 <style>
@@ -284,7 +285,7 @@ tr.arch td{opacity:.85}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName } from "./hubview.js?v=3";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName } from "./hubview.js?v=4";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -605,14 +606,15 @@ function renderMoney() {
     <div class="mbars">${ms.map(m => `<div class="${m === now ? "now" : ""}" title="${clp(e.by[m] || 0)}"><span>${(e.by[m] || 0) ? Math.round((e.by[m] || 0) / 1000) + "k" : ""}</span><i style="height:${Math.round((e.by[m] || 0) / mx * 80)}px"></i>${new Date(m + "-15").toLocaleDateString("en-US", { month: "short" })}</div>`).join("")}</div>
     ${e.usdY ? `<p class="muted small" style="margin:8px 0 0">Includes US$${e.usdY} this year, converted at the dollar rate of each payment day (today: 1 USD ≈ ${clp(usdRate)}).</p>` : ""}`;
   const C = meta && meta.club; if (C && Array.isArray(C.members)) {
-    const ms2 = C.members, pay = ms2.filter(x => x.status === "paying" || x.status === "leaving"), mo = x => x.per === "year" ? x.price / 12 : x.price;
+    const ms2 = C.members, pay = ms2.filter(x => /paying|leaving|ask|watch/.test(x.status)), mo = x => x.per === "year" ? x.price / 12 : x.price;
     const gross = pay.reduce((n, x) => n + mo(x), 0), leaving = ms2.filter(x => x.status === "leaving"), after = gross - leaving.reduce((n, x) => n + mo(x), 0), fee = C.fee || 0;
     const soon = pay.filter(x => x.renew && x.renew >= today() && x.renew <= addDays(today(), 14)).sort((a, b) => a.renew.localeCompare(b.renew));
     const priv = e.by[now] || 0, clubClp = Math.round(gross * (1 - fee) * usdRate);
     $("moneyBox").insertAdjacentHTML("beforeend", `<div class="club-m"><h3>🌼 Club (Skool)</h3>
-      <div class="club-k"><div><b>US$${Math.round(gross)}</b><span>a month (before Skool's ${Math.round(fee * 100)}%)</span></div><div><b>≈ ${clp(clubClp)}</b><span>a month after the fee</span></div><div><b>${ms2.filter(x => x.status === "paying").length}</b><span>paying · ${ms2.filter(x => /free|trial|direct/.test(x.status)).length} free/trial</span></div></div>
+      <div class="club-k"><div><b>US$${Math.round(gross)}</b><span>a month (before Skool's ${Math.round(fee * 100)}%)</span></div><div><b>≈ ${clp(clubClp)}</b><span>a month after the fee</span></div><div><b>${ms2.filter(x => /paying|ask|watch/.test(x.status)).length}</b><span>paying · ${ms2.filter(x => /free|trial|direct/.test(x.status)).length} free/trial</span></div></div>
       <p class="muted small" style="margin:6px 0">This month so far: private ${clp(priv)} + club ≈ ${clp(clubClp)} = <b>≈ ${clp(priv + clubClp)}</b>. After the move (without the ${leaving.length} leaving): US$${Math.round(after)}/month.</p>
       ${soon.length ? `<div class="muted small" style="font-weight:700;margin-top:6px">Renewing in the next 2 weeks</div><ul class="exp">${soon.map(x => `<li><span class="when">${fmtShort(x.renew)}</span><span>${esc(x.name)}${x.status === "leaving" ? ' <span class="muted">(leaving)</span>' : ""}</span><span class="amt">US$${x.price}</span></li>`).join("")}</ul>` : ""}
+      <div class="club-who">${[["leaving", "🚪 Not moving over"], ["ask", "❓ Ask before the move"], ["watch", "👀 Only if they start coming"], ["trial", "🧪 On a trial"]].map(([k, l]) => { const g = ms2.filter(x => x.status === k); return g.length ? `<div><b>${l}</b> <span class="muted">${g.map(x => `<span title="${esc(x.note || "")}">${esc(x.name)}</span>`).join(", ")}</span></div>` : ""; }).join("")}</div>
       <p class="muted small" style="margin:6px 0 0">From your Skool export (${esc(C.asOf || "")}). Prices are what Skool charges; I'll update this when you send a new export.</p></div>`);
   }
   const ex = expected();

@@ -8,7 +8,7 @@
   const sysContrast = () => { try { return matchMedia("(prefers-contrast: more)").matches; } catch (e) { return false; } };
   const contrastOn = () => (S.contrast == null ? sysContrast() : !!S.contrast);
   try { matchMedia("(prefers-contrast: more)").addEventListener("change", () => { if (S.contrast == null) applyAll(); }); } catch (e) {}
-  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true, cursor: "default", lookup: true, contrast: null };
+  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true, cursor: "default", lookup: true, contrast: null, accent: "blue" };
   const root = document.documentElement;
   const isMain = !!document.getElementById("v-notes");
   let S = Object.assign({}, DEF);
@@ -297,6 +297,7 @@
     ["big", "paw", "pencil", "star"].forEach(c => root.classList.toggle("cs-cur-" + c, S.cursor === c));
     root.classList.toggle("cs-no-inshort", !S.inshort);
     root.classList.toggle("cs-no-read", !S.read);
+    root.classList.toggle("cs-green", S.accent === "green");
     applyCalm(); applyFocus(); applyRuler(); applyBionic();
     paintPanel();
   }
@@ -309,7 +310,8 @@
     host.innerHTML = `<button class="cs-btn" id="csBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="csPanel" title="Reading & comfort settings"><span class="cs-ico" aria-hidden="true">⚙</span><span class="cs-txt">Settings</span></button>
       <div class="cs-panel" id="csPanel" role="dialog" aria-label="Reading and comfort settings" hidden>
         <div class="cs-head"><h3>Reading &amp; comfort</h3><button class="cs-x" id="csClose" type="button" aria-label="Close">×</button></div>
-        <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>
+        <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div>
+          <div class="cs-curl"><b style="font-weight:800">Menu &amp; button colour</b><div class="cs-seg" id="csAccent"><button type="button" data-csacc="blue"><span aria-hidden="true">🔵</span> Blue</button><button type="button" data-csacc="green"><span aria-hidden="true">🟢</span> Green (classic)</button></div></div></div>
         <div class="cs-sec"><h4>Reading</h4>
           <div class="cs-size"><button type="button" id="csSmaller" aria-label="Smaller text">A−</button><span id="csSizeTxt">100%</span><button type="button" id="csBigger" aria-label="Bigger text">A+</button></div>
           <div class="cs-seg two" id="csFonts"><button type="button" data-csfont="default" style="font-family:'Lexend',sans-serif">Lexend</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="book" style="font-family:'Literata',Georgia,serif">Book</button><button type="button" data-csfont="classic" style="font-family:'Nunito',sans-serif">Classic</button></div>
@@ -351,6 +353,7 @@
     const bind = (id, k) => { const el = $(id); if (el) el.onchange = () => { S[k] = el.checked; save(); applyAll(); }; };
     bind("csLookup", "lookup");
     if ($("csContrast")) $("csContrast").onchange = e => { S.contrast = e.target.checked; save(); applyAll(); };
+    if ($("csAccent")) $("csAccent").onclick = e => { const b = e.target.closest("[data-csacc]"); if (!b) return; S.accent = b.dataset.csacc; save(); applyAll(); paintPanel(); };
     if ($("csCursors")) $("csCursors").onclick = e => { const b = e.target.closest("[data-cscur]"); if (!b) return; S.cursor = b.dataset.cscur; save(); applyAll(); };
     bind("csSpace", "space"); bind("csBionic", "bionic"); bind("csRulerT", "ruler"); bind("csInshort", "inshort"); bind("csRead", "read"); bind("csCalm", "calm");
     if ($("csFocus")) $("csFocus").addEventListener("change", () => { setFocus($("csFocus").checked); applyAll(); if (focusOn()) { open(false); toast("Focus mode on. Tap “Exit focus mode” at the bottom to leave."); } });
@@ -372,6 +375,7 @@
     $("csSizeTxt").textContent = Math.round(S.size * 100) + "%";
     const set = (id, v) => { const el = $(id); if (el) el.checked = !!v; };
     set("csLookup", S.lookup !== false); set("csContrast", contrastOn());
+    document.querySelectorAll("[data-csacc]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.csacc === (S.accent || "blue"))));
     document.querySelectorAll("[data-cscur]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cscur === (S.cursor || "default"))));
     set("csSpace", S.space); set("csBionic", S.bionic); set("csRulerT", S.ruler); set("csFocus", focusOn()); set("csInshort", S.inshort); set("csRead", S.read); set("csCalm", S.calm);
     paintTimer();

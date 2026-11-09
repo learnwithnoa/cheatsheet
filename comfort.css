@@ -171,3 +171,12 @@ html.cs-contrast :is(.muted,.hint,.esb,.pr-sub,.ps-kind,.vs-ex,.tr-also,.lk-ex){
 .csc-a button{all:unset;cursor:pointer;padding:8px 16px;border-radius:999px;font-weight:800;font-size:14.5px;border:1.5px solid var(--line,#ddd)}
 .csc-a .csc-y{background:var(--green,#2E8B57);border-color:var(--green,#2E8B57);color:#fff}
 .csc-a button:focus-visible{outline:3px solid var(--royal,#5AB8FF);outline-offset:2px}
+
+/* Clickable things are blue; green stays for "done" and "saved". Settings → "Menu & button colour: Green (classic)" brings the old look back. */
+:root:not(.cs-green) .cn-nav{color:var(--bright)}
+:root:not(.cs-green) .cn-nav:hover{background:color-mix(in srgb,var(--bright) 14%,transparent)}
+:root:not(.cs-green) .cn-nav[aria-current="true"]{background:var(--gloss);color:#fff}
+:root:not(.cs-green) .fab{background:linear-gradient(180deg,#5FB4FF 0%,#1E8CF0 48%,#1D4ED8 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 18px rgba(30,140,240,.35)}
+:root:not(.cs-green) .bd-b.go{background:linear-gradient(180deg,#5FB4FF 0%,#1E8CF0 55%,#1D4ED8 100%);border-color:#1D6FE0;color:#fff}
+:root:not(.cs-green) .park-b .pinfo .pb-feed:not(.pb-duel){background:var(--bright)}
+@media (max-width:900px){:root:not(.cs-green) nav.side .cn-nav{border-color:color-mix(in srgb,var(--bright) 45%,var(--line))}}

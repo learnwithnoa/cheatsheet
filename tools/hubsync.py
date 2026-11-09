@@ -22,6 +22,7 @@ Usage:
            "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
            compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
+  HUB_PASSWORD=... python3 hubsync.py add-payment <student-id> '{"date":"2026-11-09","what":"2nd half of Pack 36","clp":112200,"pack":"p1","paid":"full"}'
   HUB_PASSWORD=... python3 hubsync.py add-guide <student-id> '{"title":"Past simple guide","url":"https://docs.google.com/...","date":"2026-11-09"}'
   HUB_PASSWORD=... python3 hubsync.py set-focus <student-id> '{"focus":"what we're working on (the student sees it, written to them)","objective":"(optional) new goal"}'
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
@@ -241,7 +242,7 @@ def summary(s):
 
 # ---- linking (same rules as hubview.js matchAccounts) ----
 import unicodedata, re as _re
-BOTH_DEFAULT = ["laura", "felipe-torres"]
+BOTH_DEFAULT = ["laura", "felipe-torres", "belen"]
 HELPER_EMAIL = EMAIL
 
 
@@ -387,6 +388,22 @@ def main():
     data = json.loads(a[2]) if len(a) > 2 else {}
     if cmd == "merge":
         s.update(data); save(tok, tu, s); print("ok"); return
+    if cmd == "add-payment":
+        # {"date":"YYYY-MM-DD","what":"2nd half of pack 36","clp":112200,"usd":null,"method":"transfer","pack":"<pack id or empty>","paid":"full|half|"}
+        amt = data.get("clp")
+        if any(p.get("date") == data["date"] and (p.get("clp") == amt or not amt) for p in s.get("payments", [])):
+            print("skip: a payment on that date with that amount is already there"); return
+        pay = {"id": rid(), "date": data["date"], "what": data.get("what", "Payment"), "clp": amt,
+               "amount": ("$" + format(int(amt), ",").replace(",", ".")) if amt else (("US$" + str(data["usd"])) if data.get("usd") else ""),
+               "cur": "USD" if data.get("usd") and not amt else "CLP", "method": data.get("method", "transfer"), "src": "nightly"}
+        if data.get("usd") and not amt:
+            pay["usd"] = data["usd"]
+        s.setdefault("payments", []).append(pay)
+        if data.get("pack") and data.get("paid"):
+            for p in s.get("packs", []):
+                if p.get("id") == data["pack"]:
+                    p["paid"] = data["paid"]
+        save(tok, tu, s); print("ok"); return
     if cmd == "add-guide":
         g = {"title": data.get("title", "Guide"), "url": data["url"], "date": data.get("date") or datetime.date.today().isoformat()}
         if any(x.get("url") == g["url"] for x in s.get("guides", [])):

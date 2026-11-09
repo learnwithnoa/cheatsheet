@@ -105,11 +105,11 @@ td.act{white-space:nowrap;text-align:right}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 </style>
-<link rel="stylesheet" href="comfort.css?v=13">
+<link rel="stylesheet" href="comfort.css?v=14">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=15" defer></script>
+<script src="comfort.js?v=16" defer></script>
 </head>
 <body>
 <header><div class="top">
@@ -471,7 +471,7 @@ function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.em
 function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
 async function linkHub(s, hubId, oldId) {
   try {
-    const { makeView } = await import("./hubview.js?v=3");
+    const { makeView } = await import("./hubview.js?v=4");
     if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
     if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
     const h = hubList.find(x => x.id === hubId); if (!h) return;

@@ -56,7 +56,7 @@ export function makeView(s, meta) {
 /* ---------- linking Cheat Sheet accounts to hub students ---------- */
 export const normEmail = e => { e = String(e || "").trim().toLowerCase(); const [u, d] = e.split("@"); if (!d) return e; return (d === "gmail.com" || d === "googlemail.com" ? u.split("+")[0].replace(/\./g, "") + "@gmail.com" : e); };
 export const normName = n => String(n || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
-export const BOTH_DEFAULT = ["laura", "felipe-torres"];
+export const BOTH_DEFAULT = ["laura", "felipe-torres", "belen"];
 /* accounts: [{uid,name,email}], roles: {uid:{...}} → {sure:[{uid,hub}], maybe:[{uid,hub,why}]} */
 export function matchAccounts(students, accounts, roles) {
   const linkedHubs = new Set(Object.values(roles).map(r => r && r.hub).filter(Boolean));
