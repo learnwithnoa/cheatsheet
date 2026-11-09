@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Private students · Coaching</title>
+<title>Private students · Hibi 日々</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono&display=swap">
 <style>
@@ -249,7 +249,7 @@ tr.arch td{opacity:.85}
 </div></header>
 <main>
   <section id="vSign" class="card center" hidden>
-    <h1>Coaching</h1>
+    <h1>Private students</h1>
     <p class="lede">Sign in with your Learn with Noa Google account.</p>
     <button class="primary" id="inBtn" type="button">Sign in with Google</button>
     <p class="err" id="signErr" hidden></p>
@@ -298,6 +298,15 @@ tr.arch td{opacity:.85}
 </main>
 <div id="modal" class="modal" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=31"></script>
+<script>
+/* your study buddy as the tab icon here too (same as on Hibi) */
+(function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
+  let svg=A.svg({a:b.a,pal:A.palFor(b.a,b.c),wear:{head:b.head,face:b.face,neck:b.neck},plain:true});
+  svg=svg.replace(/<svg[^>]*>/,'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 2.5 19 19">');
+  document.querySelectorAll('link[rel~="icon"]').forEach((l,i)=>{ if(i===0){ l.setAttribute("type","image/svg+xml"); l.setAttribute("href","data:image/svg+xml,"+encodeURIComponent(svg)); } else l.removeAttribute("href"); });
+}catch(e){} })();
+</script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
