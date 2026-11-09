@@ -220,7 +220,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   const ORDER = ["max", "miki", "cat", "chicken", "llama", "capybara", "pudu", "frog", "axolotl", "unicorn"];
 
   /* accessories: slot, unlocked at N saved words (w) or N learned words (l) */
-  const AP = { r: "#E5533D", R: "#A8321F", y: "#F5C842", Y: "#D9A520", w: "#FFFFFF", k: "#1E1712", K: "#4A4A55", g: "#3BA776", G: "#2A7D54", b: "#3B6FD9", p: "#F37BA5", P: "#D9527F", v: "#8E5CD9", V: "#6B3FB5", u: "#6FB6F2", o: "#F5A623", c: "#F6E7CF", h: "#E8C987", H: "#B8924A", n: "#F28C28", N: "#C96A12" };
+  const AP = { s: "#C3CCD6", S: "#7D8894", r: "#E5533D", R: "#A8321F", y: "#F5C842", Y: "#D9A520", w: "#FFFFFF", k: "#1E1712", K: "#4A4A55", g: "#3BA776", G: "#2A7D54", b: "#3B6FD9", p: "#F37BA5", P: "#D9527F", v: "#8E5CD9", V: "#6B3FB5", u: "#6FB6F2", o: "#F5A623", c: "#F6E7CF", h: "#E8C987", H: "#B8924A", n: "#F28C28", N: "#C96A12" };
   /* seasonal hats: worn automatically on those dates (students can turn this off) */
   function easter(y) { const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1; return new Date(y, mo - 1, da); }
   const SEASONS = [
@@ -258,7 +258,14 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "trophy", name: "Trophy", ico: "🏆", slot: "toy", l: 200 },
     /* grammar modules: finish every stage */
     { id: "hourglass", name: "Magic hourglass", ico: "⏳", slot: "toy", m: "ps", mt: "Past simple" },
-    { id: "globe", name: "Little globe", ico: "🌍", slot: "toy", m: "pp", mt: "Present perfect" }
+    { id: "globe", name: "Little globe", ico: "🌍", slot: "toy", m: "pp", mt: "Present perfect" },
+    /* duels (club members): fighting gear */
+    { id: "dbanner", name: "Duel banner", ico: "🚩", slot: "toy", dp: 1 },
+    { id: "sword", name: "Wooden sword", ico: "🗡️", slot: "toy", dw: 1 },
+    { id: "shield", name: "Shield", ico: "🛡️", slot: "toy", dw: 3 },
+    { id: "helmet", name: "Knight helmet", ico: "⛑️", slot: "head", dw: 5, px: ["...yy...", "..ssss..", ".ssSSss.", "sSkkkkSs", "sS....Ss"] },
+    { id: "armour", name: "Armour stand", ico: "🏰", slot: "toy", dw: 10 },
+    { id: "cape", name: "Hero cape", ico: "🦸", slot: "neck", ds: 3, px: ["rrrrrrrr", "rRrrrrRr", "rr....rr"] }
   ];
   const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
@@ -268,7 +275,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   if (S.a === "unicorn") S.ua = true;
   /* Pancho lost the lilac color (everyone has 5 now): move saved llama colors to the right spot */
   if (!S.lm2) { const fix = o => { if (o && o.a === "llama") { if (o.c === 3) o.c = 0; else if ((o.c | 0) > 3) o.c = o.c - 1; } }; fix(S); S.lm2 = 1; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
-  const COS = ["a", "c", "n", "head", "face", "neck", "room", "shiny", "seas", "snd", "toyOff"];
+  const COS = ["a", "c", "n", "head", "face", "neck", "room", "shiny", "seas", "snd", "toyOff", "tp"];
   let base = null; /* the saved look, while the buddy window has unsaved edits */
   const pickCos = o => { const r = {}; COS.forEach(k => r[k] = o[k]); return r; };
   const dirty = () => !!base && COS.some(k => JSON.stringify(S[k] == null ? null : S[k]) !== JSON.stringify(base[k] == null ? null : base[k]));
@@ -280,7 +287,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   function publishPark() {
     const P = window.__csPark; if (!P || !P.signedIn()) return;
     if (S.on !== true || !S.a) { P.publish({ on: false }); return; }
-    P.publish({ on: true, a: S.a, c: S.c | 0, n: String(S.n || "").slice(0, 16), head: S.head || null, face: S.face || null, neck: S.neck || null, lvl: typeof level === "function" ? level() : 1, words: counts().words, shiny: !!(S.shiny && S.mw >= 400) });
+    P.publish({ on: true, a: S.a, c: S.c | 0, n: String(S.n || "").slice(0, 16), head: S.head || null, face: S.face || null, neck: S.neck || null, lvl: typeof level === "function" ? level() : 1, words: counts().words, shiny: !!(S.shiny && S.mw >= 400), ...(typeof duelPub === "function" ? duelPub() : {}) });
   }
   function counts() {
     let words = 0, learned = 0;
@@ -291,8 +298,10 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   /* Noa (the teacher account) has everything unlocked and a best-friends buddy */
   const TCH = () => window.__csTeacher === true;
   const modDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
-  const isOpen = it => { if (TCH()) return true; if (it.m) return modDone(it.m); const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
-  const lockTxt = it => it.m ? "when you finish " + it.mt : it.w != null ? it.w + " words" : it.l + " learned words";
+  const isOpen = it => { if (TCH()) return true; if (it.m) return modDone(it.m); if (it.dw != null) return (S.dw | 0) >= it.dw; if (it.ds != null) return (S.dbs | 0) >= it.ds; if (it.dp != null) return (S.dplay | 0) >= it.dp; const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
+  const lockTxt = it => it.m ? "when you finish " + it.mt : it.dw != null ? "after " + it.dw + " duel " + (it.dw === 1 ? "win" : "wins") : it.ds != null ? "after " + it.ds + " duel wins in a row" : it.dp != null ? "after your first duel" : it.w != null ? it.w + " words" : it.l + " learned words";
+  const atW = it => it.m || it.dw != null || it.ds != null || it.dp != null ? "" : "at ";
+  const needTxt = it => it.m ? "⏪" : it.dw != null ? "⚔️" + it.dw : it.ds != null ? "🔥" + it.ds : it.dp != null ? "⚔️" : it.w != null ? it.w : it.l;
   const animal = () => SP[S.a] ? S.a : "max";
   const palette = () => { const d = SP[animal()], c = d.colors[S.c | 0] || d.colors[0]; return Object.assign({}, d.p, c[1]); };
   const nameOf = () => { const n = S.n && String(S.n).trim(), sp = SP[animal()]; return n && n !== sp.old ? n : sp.name; };
@@ -355,27 +364,35 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   }
   /* rooms (shown in the buddy panel) */
   function roomSVG(roomId, toys) {
-    const RW = 40, RH = 26; let r = "";
+    /* drawn wider than the default view (x -14..54, y -16..26) so you can zoom out */
+    const X0 = -14, Y0 = -16, RW = 68, RH = 42; let r = "";
     const R = (x, y, w, h, c) => { r += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`; };
     if (roomId === "room") {
-      R(0, 0, RW, RH, "#F6E7CF"); for (let y = 2; y < 19; y += 4) for (let x = (y % 8 ? 2 : 4); x < RW; x += 4) R(x, y, 1, 1, "#EBD3B0");
+      R(X0, Y0, RW, RH, "#F6E7CF"); for (let y = -14; y < 19; y += 4) for (let x = X0 + ((y + 16) % 8 ? 2 : 4); x < X0 + RW; x += 4) R(x, y, 1, 1, "#EBD3B0");
       R(2, 3, 9, 8, "#7A5A3A"); R(3, 4, 7, 6, "#9ED3F0"); R(6, 4, 1, 6, "#7A5A3A"); R(3, 7, 7, 1, "#7A5A3A"); R(3, 4, 2, 1, "#FFFFFF");
-      R(0, 19, RW, 7, "#C89463"); for (let x = 0; x < RW; x += 7) R(x, 19, 1, 7, "#B07E50"); R(10, 23, 20, 2, "#E5533D"); R(11, 23, 18, 1, "#F07A66");
+      R(41, 4, 7, 9, "#7A5A3A"); R(42, 5, 5, 7, "#F2B8C6"); R(44, 7, 1, 3, "#E5533D"); R(X0, -6, RW, 1, "#E3C9A2");
+      R(X0, 19, RW, 7, "#C89463"); for (let x = X0; x < X0 + RW; x += 7) R(x, 19, 1, 7, "#B07E50"); R(10, 23, 20, 2, "#E5533D"); R(11, 23, 18, 1, "#F07A66");
     } else if (roomId === "night") {
-      R(0, 0, RW, RH, "#1B2350"); R(0, 10, RW, 9, "#232E66");
-      [[3, 2], [9, 5], [15, 1], [22, 4], [27, 2], [35, 6], [6, 9], [18, 8], [31, 10], [12, 12], [37, 13], [2, 14]].forEach(([x, y]) => R(x, y, 1, 1, "#FFFFFF"));
-      R(31, 2, 4, 4, "#FFF3C4"); R(33, 2, 2, 2, "#1B2350"); R(0, 19, RW, 7, "#2A3A5A"); R(0, 19, RW, 1, "#3B4F78");
+      R(X0, Y0, RW, RH, "#1B2350"); R(X0, 10, RW, 9, "#232E66");
+      [[3, 2], [9, 5], [15, 1], [22, 4], [27, 2], [35, 6], [6, 9], [18, 8], [31, 10], [12, 12], [37, 13], [2, 14], [-6, 3], [-11, -8], [-3, -13], [7, -5], [19, -11], [28, -6], [44, -9], [50, 2], [46, 12], [-9, 15], [52, -14], [38, -2]].forEach(([x, y]) => R(x, y, 1, 1, "#FFFFFF"));
+      R(31, 2, 4, 4, "#FFF3C4"); R(33, 2, 2, 2, "#1B2350"); R(X0, 19, RW, 7, "#2A3A5A"); R(X0, 19, RW, 1, "#3B4F78");
     } else if (roomId === "rainbow") {
-      R(0, 0, RW, RH, "#CDEBFF"); const C = ["#F2716B", "#F9A35C", "#F9D25C", "#6FD39A", "#6FB6F2", "#B48CF0"];
-      for (let y = 0; y < 19; y++) for (let x = 0; x < RW; x++) { const d = Math.hypot(x - 19.5, (y - 21) * 1.15); const i = Math.floor((19 - d) / 1.6); if (i >= 0 && i < C.length) R(x, y, 1, 1, C[i]); }
-      R(0, 19, RW, 7, "#7ED07E"); R(0, 19, RW, 1, "#9BE09B");
+      R(X0, Y0, RW, RH, "#CDEBFF"); const C = ["#F2716B", "#F9A35C", "#F9D25C", "#6FD39A", "#6FB6F2", "#B48CF0"];
+      for (let y = Y0; y < 19; y++) for (let x = X0; x < X0 + RW; x++) { const d = Math.hypot(x - 19.5, (y - 21) * 1.15); const i = Math.floor((19 - d) / 1.6); if (i >= 0 && i < C.length) R(x, y, 1, 1, C[i]); }
+      [[-10, -10], [44, -12], [-4, -4], [48, 6]].forEach(([x, y]) => { R(x, y, 6, 2, "#FFFFFF"); R(x + 1, y - 1, 3, 1, "#FFFFFF"); });
+      R(X0, 19, RW, 7, "#7ED07E"); R(X0, 19, RW, 1, "#9BE09B");
     } else {
-      R(0, 0, RW, RH, "var(--bd-sky)"); R(0, 20, RW, 6, "var(--bd-grass)"); R(0, 20, RW, 1, "var(--bd-grass2)");
+      R(X0, Y0, RW, RH, "var(--bd-sky)"); R(X0, 20, RW, 6, "var(--bd-grass)"); R(X0, 20, RW, 1, "var(--bd-grass2)");
+      [[-10, -9], [42, -12], [24, -6]].forEach(([x, y]) => { R(x, y, 6, 2, "color-mix(in srgb,var(--bd-sky) 40%,#fff)"); R(x + 1, y - 1, 3, 1, "color-mix(in srgb,var(--bd-sky) 40%,#fff)"); });
     }
     const T = { globe: [3, 1, ["...w...", "..bbb..", ".bggbb.", "bbgbbgb", "bgggbbb", ".bbggb.", "..bbb..", "...k...", "..kkk.."], { b: "#4A90E2", g: "#58C26B", k: "#8A6A3A", w: "#FFF3A0" }], hourglass: [30, 1, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
       plant: [34, 14, ["g.g.", ".gg.", "gggg", ".gg.", "oooo", ".oo."], { g: "#3BA776", o: "#C0673A" }], lamp: [1, 11, ["yyyy", "yyyy", ".kk.", ".k..", ".k..", ".k..", ".k..", "kkk."], { y: "#F9D25C", k: "#4A3A2A" }],
-      trophy: [28, 19, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }] };
-    toys.forEach(t => { const d = T[t]; if (!d) return; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(d[0] + dx, d[1] + dy, 1, 1, d[3][ch]); })); });
+      trophy: [28, 19, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }],
+      dbanner: [36, 3, ["k....", "krrrr", "krwrr", "krrrr", "k.rr.", "k....", "k....", "k...."], { k: "#5A4632", r: "#C2306F", w: "#F5C842" }],
+      sword: [24, 18, ["....w", "...s.", "..s..", "hs...", ".h..."], { w: "#FFFFFF", s: "#C9A26B", h: "#7A5A3A" }],
+      shield: [20, 20, ["bbbbb", "bybyb", "bbybb", ".bbb.", "..b.."], { b: "#3B6FD9", y: "#F5C842" }],
+      armour: [-6, 12, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
+    toys.forEach(t => { const d = T[t]; if (!d) return; const at = (S.tp && S.tp[t]) || [d[0], d[1]]; r += `<g class="bd-toy" data-toyg="${t}"><rect x="${at[0] - .5}" y="${at[1] - .5}" width="${d[2][0].length + 1}" height="${d[2].length + 1}" fill="transparent"/>`; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(at[0] + dx, at[1] + dy, 1, 1, d[3][ch]); })); r += `</g>`; });
     return r;
   }
   function gardenSVG() {
@@ -389,11 +406,15 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     return r;
   }
   function markStudy() { const d = today(); if (!Array.isArray(S.gd)) S.gd = []; if (S.gd[S.gd.length - 1] === d || S.gd.includes(d)) return false; S.gd.push(d); save(); return true; }
+  /* zoom: 0 = closer, 1 = normal, 2 and 3 = see more of the room (kept on this device) */
+  const ZW = [30, 40, 52, 64];
+  let zoom = 1; try { const z = +localStorage.getItem("cs-bd-zoom"); if (z >= 0 && z < ZW.length) zoom = z; } catch (e) {}
+  function zoomBox() { const w = ZW[zoom], h = w * 26 / 40; return `${20 - w / 2} ${26 - h} ${w} ${h}`; }
   function stageSVG(opts) {
     opts = opts || {};
     const toys = ITEMS.filter(i => i.slot === "toy" && isOpen(i) && !(S.toyOff || []).includes(i.id)).map(i => i.id);
     const room = opts.room !== undefined ? opts.room : S.room;
-    return `<svg class="bd-stage-svg" viewBox="0 0 40 26" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}<g class="bd-stg-pet" id="${opts.plain ? "" : "bdStgPet"}">${rects(drawPet(opts), 10, 0)}</g>${opts.plain ? "" : gardenSVG()}</svg>`;
+    return `<svg class="bd-stage-svg" viewBox="${opts.plain ? "0 0 40 26" : zoomBox()}" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}<g class="bd-stg-pet" id="${opts.plain ? "" : "bdStgPet"}">${rects(drawPet(opts), 10, 0)}</g>${opts.plain ? "" : gardenSVG()}</svg>`;
   }
 
   if (window.__bdRender) { window.csBuddyArt = { svg: petSVG, sprites: SP, palFor: (a, c) => Object.assign({}, SP[a].p, ((SP[a].colors[c | 0] || SP[a].colors[0])[1])), LV: [0, 20, 50, 100, 170, 260, 380, 530, 720, 950] }; return; }
@@ -428,6 +449,19 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-b small{font-size:11px;opacity:.8;font-weight:700}
 .bd-gear{all:unset;cursor:pointer;font-size:15px;line-height:1;padding:3px 5px;border-radius:8px}.bd-gear:hover,.bd-gear:focus-visible{background:color-mix(in srgb,var(--green,#2E8B57) 18%,transparent);outline:none}
 .bd-ic-nm{display:inline-flex;align-items:center;gap:4px}
+.duel-board{margin:18px 0 0;padding:16px 18px;border-radius:18px;border:1.5px solid color-mix(in srgb,#C2306F 40%,var(--line,#ddd));background:linear-gradient(135deg,color-mix(in srgb,#C2306F 9%,var(--surface,#fff)),color-mix(in srgb,#F5C842 8%,var(--surface,#fff)))}
+.duel-board[hidden]{display:none}
+.duel-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.duel-h h2{margin:0;font-size:22px}.duel-rec{font-size:14px;color:var(--muted,#666);flex:1}
+.duel-board h3{margin:14px 0 6px;font-size:15px}
+.duel-card{padding:10px 12px;border-radius:14px;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);margin:6px 0;font-size:14.5px}
+.duel-card.inc{border-color:#C2306F}.duel-card.mine{border-color:var(--green,#2E8B57)}
+.duel-t{margin-bottom:4px}.duel-row{display:grid;grid-template-columns:minmax(60px,110px) 1fr 30px;gap:8px;align-items:center;font-size:14px}
+.duel-bar{height:9px;border-radius:99px;background:var(--surface-2,#eee);overflow:hidden}.duel-bar i{display:block;height:100%;background:linear-gradient(90deg,#C2306F,#F5C842);border-radius:99px}
+.duel-done{margin:0;padding-left:18px;font-size:14px}.duel-done li{margin:3px 0}
+.duel-gear{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}.dg{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--surface-2,#eee);opacity:.6}.dg.on{opacity:1;background:color-mix(in srgb,#F5C842 30%,var(--surface,#fff))}
+.duel-pick{display:flex;flex-direction:column;gap:6px}.duel-opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line,#ddd);cursor:pointer}
+.duel-opt:has(input:checked){border-color:#C2306F;background:color-mix(in srgb,#C2306F 8%,transparent)}.duel-opt span{display:flex;flex-direction:column;gap:2px}.duel-opt small{color:var(--muted,#666);font-size:13px}
+.pb-duel{background:linear-gradient(90deg,#C2306F,#E58A2E)!important;color:#fff!important}
 .bd-bub .bd-msg+.bd-acts{margin-top:8px}
 .bd-b{all:unset;box-sizing:border-box;cursor:pointer;font:800 13px var(--body,sans-serif);padding:6px 10px;border-radius:999px;border:1.5px solid var(--line,#ddd);background:var(--surface-2,var(--surface,#fff));color:var(--ink,#222);white-space:nowrap}
 .bd-b:hover{border-color:var(--green,#2E8B57)}
@@ -475,7 +509,15 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 .bd-chip.locked{opacity:.6}
 .bd-pv{margin:10px 0 -4px;font-size:13.5px;background:color-mix(in srgb,#F5B800 16%,var(--surface,#fff));border:1.5px solid color-mix(in srgb,#F5B800 50%,var(--line,#ddd));border-radius:12px;padding:7px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .bd-pv .bd-b{margin-left:auto;padding:4px 10px}
-.bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer}
+.bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer;touch-action:none}
+.bd-stage-wrap{position:relative;max-width:340px;margin:12px auto 10px}.bd-stage-wrap .bd-stage{margin:0}
+.bd-zoom{position:absolute;right:6px;top:6px;display:flex;flex-direction:column;gap:4px}
+.bd-zoom button{all:unset;box-sizing:border-box;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--surface,#fff) 85%,transparent);border:1px solid var(--line,#ddd);font:800 15px var(--body,sans-serif);color:var(--ink,#222)}
+.bd-zoom button:disabled{opacity:.35;cursor:default}
+.bd-toy{cursor:grab}.bd-toy.dragging{cursor:grabbing;opacity:.85}
+.bd-moving .bd-stage-svg{cursor:crosshair;outline:2px dashed var(--green,#2E8B57);outline-offset:-2px}
+.bd-movehint{margin:0 0 8px;text-align:center}
+.bd-topr{display:flex;align-items:center;gap:2px}.bd-set-ico{font-size:18px;padding:4px 7px}
 .bd-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .bd-name input{font:800 17px var(--body,sans-serif);color:var(--ink,#222);background:transparent;border:1.5px dashed var(--line,#ddd);border-radius:10px;padding:5px 9px;width:12ch;min-width:0}
 .bd-treats{font:800 14px var(--body,sans-serif);white-space:nowrap}
@@ -773,17 +815,18 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const a = b.dataset.bd;
     if (a === "feed") feed(); else if (a === "pet") petIt(); else if (a === "open") { hideBub(); openModal(); } else if (a === "min") setMin(true);
     else if (a === "adopt") { hideBub(); openModal("adopt"); } else if (a === "later") { hideBub(); }
+    else if (a === "duels") { hideBub(); if (window.csGo) window.csGo("park"); setTimeout(() => { const d = $("duelBoard"); if (d) d.scrollIntoView({ behavior: "smooth", block: "start" }); }, 900); }
   });
 
   /* ---------- panel ---------- */
-  let mode = "main", draft = null, returnFocus = null, pv = null, sec = null, confirmOpen = false;
+  let mode = "main", draft = null, returnFocus = null, pv = null, sec = null, confirmOpen = false, moving = null, toyDrag = null;
   const SECT = { wardrobe: "👕 Wardrobe", room: "🏠 Room", buddy: "🐾 Change buddy", progress: "📈 Progress", settings: "⚙️ Settings" };
   const pvAnimal = () => (pv && pv.a ? pv.a : mode === "adopt" ? draft.a : animal());
   const palIdx = (a, c) => Object.assign({}, SP[a].p, (SP[a].colors[c | 0] || SP[a].colors[0])[1]);
   function pvBanner() {
     if (!pv) return "";
     const a = pvAnimal();
-    const what = pv.a ? `<b>${esc(SP[pv.a].name)} the ${esc(SP[pv.a].species.toLowerCase())}</b> · unlocks at ${UNI_AT} learned words (you have ${counts().learned})` : pv.c != null ? `<b>${esc(SP[a].colors[pv.c][0])}</b> · unlocks at ${COLOR_AT[pv.c]} words` : (() => { const it = byId[pv.item]; return `<b>${esc(it.name)}</b> · unlocks ${it.m ? "" : "at "}${lockTxt(it)}`; })();
+    const what = pv.a ? `<b>${esc(SP[pv.a].name)} the ${esc(SP[pv.a].species.toLowerCase())}</b> · unlocks at ${UNI_AT} learned words (you have ${counts().learned})` : pv.c != null ? `<b>${esc(SP[a].colors[pv.c][0])}</b> · unlocks at ${COLOR_AT[pv.c]} words` : (() => { const it = byId[pv.item]; return `<b>${esc(it.name)}</b> · unlocks ${atW(it)}${lockTxt(it)}`; })();
     return `<div class="bd-pv" role="status">👀 Preview: ${what} <button class="bd-b" type="button" data-m="pvoff">Back to my buddy</button></div>`;
   }
   function openModal(m) {
@@ -793,7 +836,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     renderModal(); back.hidden = false; modal.hidden = false;
     setTimeout(() => { const f = modal.querySelector(mode === "adopt" ? ".bd-animal[aria-pressed=true]" : "#bdClose"); if (f) f.focus(); }, 30);
   }
-  function reallyClose() { pv = null; confirmOpen = false; sec = null; base = null; modal.hidden = true; back.hidden = true; if (returnFocus && returnFocus.focus) try { returnFocus.focus(); } catch (e) {} }
+  function reallyClose() { moving = null; toyDrag = null; pv = null; confirmOpen = false; sec = null; base = null; modal.hidden = true; back.hidden = true; if (returnFocus && returnFocus.focus) try { returnFocus.focus(); } catch (e) {} }
   function closeModal() {
     if (mode !== "adopt" && dirty()) { confirmOpen = true; renderModal(); const b = modal.querySelector('.bd-confirm [data-m="save"]'); if (b) b.focus(); return; }
     reallyClose();
@@ -833,14 +876,14 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const seen = new Set(S.seen || []);
     const chip = (it, slot) => {
       const open = isOpen(it), on = S[slot] === it.id;
-      return `<button type="button" data-wear="${slot}" data-item="${it.id}" aria-pressed="${on}" ${open ? "" : 'aria-disabled="true" data-locked="1"'} class="bd-chip${open ? "" : " locked"}${pv && pv.item === it.id ? " pv" : ""}" title="${open ? esc(it.name) : "Tap to preview · unlocks " + (it.m ? "" : "at ") + lockTxt(it)}">${open ? it.ico : "🔒"} ${esc(it.name)}${open ? (seen.has(it.id) ? "" : ' <span class="bd-new">NEW</span>') : ` <small>· ${it.m ? "⏪" : it.w != null ? it.w : it.l}</small>`}</button>`;
+      return `<button type="button" data-wear="${slot}" data-item="${it.id}" aria-pressed="${on}" ${open ? "" : 'aria-disabled="true" data-locked="1"'} class="bd-chip${open ? "" : " locked"}${pv && pv.item === it.id ? " pv" : ""}" title="${open ? esc(it.name) : "Tap to preview · unlocks " + atW(it) + lockTxt(it)}">${open ? it.ico : "🔒"} ${esc(it.name)}${open ? (seen.has(it.id) ? "" : ' <span class="bd-new">NEW</span>') : ` <small>· ${needTxt(it)}</small>`}</button>`;
     };
     const slotRow = (slot, label) => `<div style="margin-bottom:10px"><div class="bd-small" style="margin:0 0 5px;font-weight:700">${label}</div><div class="bd-row"><button class="bd-chip" type="button" data-wear="${slot}" data-item="" aria-pressed="${!S[slot]}">${slot === "room" ? "🌱 Garden" : "None"}</button>${ITEMS.filter(i => i.slot === slot).map(i => chip(i, slot === "room" ? "room" : slot)).join("")}</div></div>`;
     const legend = isOpen(byId.legend), l = level();
     const newIn = slots => ITEMS.filter(i => slots.includes(i.slot) && isOpen(i) && !seen.has(i.id)).length;
     const nb = n => n ? ` <span class="bd-new">${n} NEW</span>` : "";
-    const top = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}${l >= 10 ? "💛 " : ""}${sec ? SECT[sec] : "Your study buddy"}</h3><button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></div>`;
-    const stage = `${pvBanner()}<div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}" id="bdStage" title="Tap to pet">${stageSVG(pvOpts())}</div>`;
+    const top = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}${l >= 10 ? "💛 " : ""}${sec ? SECT[sec] : "Your study buddy"}</h3><span class="bd-topr">${sec !== "settings" ? `<button class="bd-x bd-set-ico" type="button" data-sec="settings" aria-label="Buddy settings" title="Settings: sounds, seasonal outfits, hide">⚙️</button>` : ""}<button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></span></div>`;
+    const stage = `${pvBanner()}<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="Tap to pet · drag a toy to move it">${stageSVG(pvOpts())}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}${S.tp && Object.keys(S.tp).length ? ` <button class="bd-link" type="button" data-m="toyreset">Put toys back</button>` : ""}</p>` : ""}`;
     const foot = `<div class="bd-foot">${sec ? `<button class="bd-link" type="button" data-m="back">← Back</button>` : `<span></span>`}<button class="bd-b go" type="button" data-m="save">${dirty() ? "Save changes" : "Save"}</button></div>`;
     const confirmBox = confirmOpen ? `<div class="bd-confirm" role="alertdialog" aria-labelledby="bdCfT"><p id="bdCfT"><b>Save your changes?</b><br>Your changes won't be saved unless you tap <b>Save</b>.</p><div class="bd-row" style="justify-content:flex-end"><button class="bd-b" type="button" data-m="keep" style="background:transparent">Keep editing</button><button class="bd-b" type="button" data-m="discard">Don't save</button><button class="bd-b go" type="button" data-m="save">Save</button></div></div>` : "";
     let body = "";
@@ -853,9 +896,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       <div class="bd-tiles">
         ${tile("wardrobe", "👕", "Wardrobe", "Hats, glasses & more" + nb(newIn(["head", "face", "neck"])))}
         ${tile("room", "🏠", "Room", "Background, toys & garden" + nb(newIn(["room", "toy"])))}
-        ${tile("buddy", "🐾", "Change buddy", "Animal & color")}
         ${tile("progress", "📈", "Progress", `${c.words} words · ${c.learned} learned`)}
-        ${tile("settings", "⚙️", "Settings", "Sounds, outfits & more")}
+        ${tile("buddy", "🐾", "Change buddy", "Animal & color")}
       </div>`;
     } else if (sec === "wardrobe") {
       body = `${slotRow("head", "Head")}${slotRow("face", "Face")}${slotRow("neck", "Neck")}
@@ -864,7 +906,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     } else if (sec === "room") {
       const n = (S.gd || []).length, toys = ITEMS.filter(i => i.slot === "toy");
       body = `${slotRow("room", "Background")}
-      <div class="bd-small" style="margin:4px 0 5px;font-weight:700">Toys</div><div class="bd-row">${toys.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${t.m ? "" : "at "}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${t.m ? "⏪" : t.l}</small></span>`).join("")}</div>
+      <div class="bd-small" style="margin:4px 0 5px;font-weight:700">Toys</div><div class="bd-row">${toys.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${atW(t)}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${needTxt(t)}</small></span>`).join("")}</div>
       <p class="bd-small">Tap a toy to put it away or bring it back. New toys show up in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass and 🌍 globe come from finishing grammar modules.</p>
       <p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows on every day you study. Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`;
     } else if (sec === "buddy") {
@@ -880,6 +922,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       ${nextL ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.learned, prevL ? prevL.l : 0, nextL.l)}%"></i></div>` : ""}
       <div class="bd-prog">⏪ <b>Past simple:</b> ${modDone("ps") ? "⏳ Magic hourglass unlocked! ✨" : `finish it in Practice to get the ⏳ <b>Magic hourglass</b>`}</div>
       <div class="bd-prog">🌍 <b>Present perfect:</b> ${modDone("pp") ? "🌍 Little globe unlocked! ✨" : `finish it in Practice to get the 🌍 <b>Little globe</b>`}</div>
+      ${canDuel(duelMeRole) ? `<h4>Duels ⚔️</h4><div class="bd-prog"><b>${S.dw | 0}</b> ${(S.dw | 0) === 1 ? "win" : "wins"} · <b>${S.dl | 0}</b> ${(S.dl | 0) === 1 ? "loss" : "losses"}${(S.dbs | 0) >= 2 ? ` · best streak 🔥 ${S.dbs}` : ""}</div><div class="duel-gear">${gearLine()}</div>` : ""}
       <h4>How to earn treats 🍪</h4>
       <ul class="bd-earn"><li>Save a new word: <b>+1</b> (up to 10 a day)</li><li>Finish a flashcard round of 5+ cards: <b>+3</b> (up to 5 a day)</li><li>Finish a grammar round: <b>+2</b> (up to 3 a day)</li><li>Write a good sentence: <b>+1</b> (up to 5 a day)</li><li>Say it out loud: <b>+1</b> (up to 3 a day)</li><li>Weekly goal: <b>+5</b> · Rare park treat: <b>+2</b></li></ul>
       <p class="bd-small">Your jar holds ${MAXT} treats, and your buddy eats up to ${FEED_PER_DAY} a day.</p>`;
@@ -894,6 +937,32 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     // everything visible in the panel counts as seen
     if (sec === "wardrobe" || sec === "room") { const sl = sec === "wardrobe" ? ["head", "face", "neck", "fx", "badge"] : ["room", "toy"]; const add = ITEMS.filter(i => isOpen(i) && sl.includes(i.slot) && !seen.has(i.id)).map(i => i.id); if (add.length) { S.seen = [...seen, ...add]; save(); } }
   }
+  /* move toys: drag them in the picture, or tap one and then tap its new spot */
+  let toyJust = false;
+  function svgPt(e) { const sv = modal.querySelector(".bd-stage-svg"); if (!sv || !sv.getScreenCTM()) return null; const p = sv.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(sv.getScreenCTM().inverse()); }
+  const toySize = id => { const g = modal.querySelector(`[data-toyg="${id}"] rect`); return g ? [+g.getAttribute("width") - 1, +g.getAttribute("height") - 1] : [4, 4]; };
+  function placeToy(id, pt, off) {
+    const [w, h] = toySize(id); off = off || [w / 2, h / 2];
+    const x = Math.round(Math.max(-14, Math.min(54 - w, pt.x - off[0]))), y = Math.round(Math.max(-16, Math.min(26 - h, pt.y - off[1])));
+    S.tp = Object.assign({}, S.tp || {}, { [id]: [x, y] }); save();
+  }
+  modal.addEventListener("pointerdown", e => {
+    const tg = e.target.closest("#bdStage [data-toyg]"); if (!tg || pv) return;
+    const pt = svgPt(e), r = tg.querySelector("rect"); if (!pt) return;
+    toyDrag = { id: tg.dataset.toyg, x: e.clientX, y: e.clientY, off: [pt.x - (+r.getAttribute("x") + .5), pt.y - (+r.getAttribute("y") + .5)], on: false, g: tg };
+    e.preventDefault();
+  });
+  window.addEventListener("pointermove", e => {
+    if (!toyDrag) return;
+    if (!toyDrag.on && Math.hypot(e.clientX - toyDrag.x, e.clientY - toyDrag.y) < 6) return;
+    toyDrag.on = true; const p0 = svgPt({ clientX: toyDrag.x, clientY: toyDrag.y }), p1 = svgPt(e); if (!p0 || !p1) return;
+    toyDrag.g.setAttribute("transform", `translate(${p1.x - p0.x} ${p1.y - p0.y})`); toyDrag.g.classList.add("dragging");
+  });
+  window.addEventListener("pointerup", e => {
+    if (!toyDrag) return; const d = toyDrag; toyDrag = null; if (!d.on) return;
+    const pt = svgPt(e); if (pt) placeToy(d.id, pt, d.off); moving = null; toyJust = true; setTimeout(() => toyJust = false, 60);
+    const sc = modal.scrollTop; renderModal(); modal.scrollTop = sc; const sb = modal.querySelector('.bd-foot [data-m="save"]'); if (sb) sb.textContent = dirty() ? "Save changes" : "Save";
+  });
   modal.addEventListener("click", e => {
     if (e.target.closest("#bdClose")) { closeModal(); return; }
     const pick = e.target.closest("[data-pick]"), col = e.target.closest("[data-col]"), m = e.target.closest("[data-m]"), w = e.target.closest("[data-wear]");
@@ -927,7 +996,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       if (a === "keep") { confirmOpen = false; renderModal(); return; }
       if (a === "back") { sec = null; pv = null; renderModal(); const f = modal.querySelector(".bd-tile"); if (f) f.focus(); return; }
     }
-    const st = e.target.closest("[data-sec]"); if (st) { sec = st.dataset.sec; pv = null; renderModal(); modal.scrollTop = 0; const f = modal.querySelector('[data-m="back"]'); if (f) f.focus(); return; }
+    const st = e.target.closest("[data-sec]"); if (st) { moving = null; sec = st.dataset.sec; pv = null; renderModal(); modal.scrollTop = 0; const f = modal.querySelector('[data-m="back"]'); if (f) f.focus(); return; }
     if (e.target.closest("[data-unilock]")) { pv = { a: "unicorn" }; renderModal(); const f = modal.querySelector("[data-unilock]"); if (f) f.focus(); return; }
     if (pick) { pv = null; S.a = pick.dataset.pick; S.c = 0; save(); renderModal(); modal.querySelector(`[data-pick="${S.a}"]`).focus(); return; }
     if (m && m.dataset.m === "pvoff") { pv = null; renderModal(); return; }
@@ -938,7 +1007,15 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (w) { const slot = w.dataset.wear; S[slot] = w.dataset.item || null; save(); renderModal(); const f = modal.querySelector(`[data-wear="${slot}"][data-item="${w.dataset.item}"]`); if (f) f.focus(); return; }
     const ty = e.target.closest("[data-toy]");
     if (ty) { const id = ty.dataset.toy, off = new Set(S.toyOff || []); off.has(id) ? off.delete(id) : off.add(id); S.toyOff = [...off]; save(); renderModal(); const f = modal.querySelector(`[data-toy="${id}"]`); if (f) f.focus(); return; }
-    if (e.target.closest("#bdStage")) { petIt(); return; }
+    const zb = e.target.closest("[data-zoom]");
+    if (zb) { zoom = Math.max(0, Math.min(ZW.length - 1, zoom + +zb.dataset.zoom)); try { localStorage.setItem("cs-bd-zoom", zoom); } catch (er) {} const sc = modal.scrollTop; renderModal(); modal.scrollTop = sc; const f = modal.querySelector(`[data-zoom="${zb.dataset.zoom}"]`); if (f && !f.disabled) f.focus(); return; }
+    if (m && m.dataset.m === "toyreset") { S.tp = null; moving = null; save(); renderModal(); return; }
+    if (e.target.closest("#bdStage")) {
+      if (toyJust) return;
+      const tg = e.target.closest("[data-toyg]");
+      if (moving) { const pt = svgPt(e); if (pt) placeToy(moving, pt); moving = null; renderModal(); return; }
+      if (tg) { moving = tg.dataset.toyg; renderModal(); return; }
+      petIt(); return; }
     if (m) {
       const a = m.dataset.m;
       if (a === "feed") feed(); else if (a === "pet") petIt(); else if (a === "close") closeModal();
@@ -993,6 +1070,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     save(); wake(); hop(); fx(["✍️", "💛", "✨"]);
     say((e.detail && e.detail.result === "great" ? "What a sentence! 🎉" : "Nice try, you're close! 👍") + (gave ? " +1 🍪" : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3500);
   });
+  document.addEventListener("cs-modround", () => { if (!S.grd || S.grd[0] !== today()) S.grd = [today(), 0]; if (S.grd[1] < 5) { S.grd[1]++; S.gr = (S.gr | 0) + 1; save(); } });
   document.addEventListener("cs-modround", e => {
     if (S.on !== true) return;
     const d = e.detail || {};
@@ -1142,6 +1220,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     try { list = await P.list(); }
     catch (e) { parkBusy = false; msg(/permission/i.test(String(e && (e.code || e.message))) ? "The park isn't open yet. Check back soon! 🌳" : `Couldn't load the park. <button class="bd-b" type="button" data-park="retry">Try again</button>`); return; }
     parkBusy = false;
+    const listAll = list.slice();
     const mine = list.find(x => x.me);
     list = list.filter(x => !x.me && x.on && SP[x.a] && !(x.role && x.role.hidden));
     if (S.on === true && S.a) list.push({ me: true, words: counts().words, a: S.a, c: S.c | 0, n: S.n, head: S.head, face: S.face, neck: S.neck, lvl: level(), role: mine ? mine.role : {}, first: "" });
@@ -1157,9 +1236,10 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const bn = (x.n && String(x.n).trim() && String(x.n).trim() !== SP[x.a].old ? String(x.n).trim() : SP[x.a].name), owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
       const info = `${owner ? `<b>${esc(owner)}</b>` : ""}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}<br>📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}`;
       const lv = x.lvl | 0 || 1, tier = lv >= 10 ? 3 : lv >= 7 ? 2 : lv >= 4 ? 1 : 0;
-      return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}</span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
+      return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && !(window.__csPreview && window.__csPreview.kind === "private") ? `<span class="pb-feed pb-duel" role="button" tabindex="0" data-duel="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Challenge ${esc(x.first || bn)} to a duel">⚔️ Duel</span>` : ""}</span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;
     applyZoom(false); startPark(); dropTreat();
+    try { duelSync(listAll); } catch (e) { console.warn("duels", e); }
   }
   /* ---------- park: zoom ---------- */
   const ZL = [0.6, 0.8, 1, 1.35, 1.8, 2.4];
@@ -1252,6 +1332,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   document.addEventListener("click", e => {
     const pb = e.target.closest(".park-b");
+    const dz = e.target.closest("[data-duel]"); if (dz) { e.preventDefault(); e.stopPropagation(); duelDialog(dz.dataset.duel, dz.dataset.first); return; }
     if (pb && e.target.closest("[data-feed]")) { e.preventDefault(); e.stopPropagation(); clearTimeout(pb._it); pb._it = setTimeout(() => pb.classList.remove("show-info"), 4000); feedOther(pb); ["🍪", "💛", "🍪"].forEach((ch, i) => setTimeout(() => parkFx(pb, ch), i * 130)); return; }
     if (pb && pb.dataset.a) animalSound(pb.dataset.a);
     if (pb && !pb.classList.contains("me") && pb.dataset.uid) sendLove(pb);
@@ -1266,7 +1347,139 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (a.dataset.park === "signin" && window.csSignIn) window.csSignIn(); else if (a.dataset.park === "retry") renderPark(); else if (a.dataset.park === "adopt") openModal("adopt");
   });
   (function watchPark() { const v = $("v-park"); if (!v) return; new MutationObserver(() => { if (!v.hidden) renderPark(); }).observe(v, { attributes: true, attributeFilter: ["hidden"] }); if (!v.hidden) renderPark(); })();
-  window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); } renderPark(); });
+  /* ---------- ⚔️ duels: club members (and "both") challenge each other for 7 days ----------
+     Everything lives in each person's own park doc: dz = challenges I sent, da = ones I accepted,
+     dn = ones I declined, dsc = my score in each duel. Both sides work out the winner the same way. */
+  const DAY = 864e5, DUEL_LEN = 7 * DAY, OPEN_MAX = 3;
+  const DT = {
+    race: { ico: "📚", name: "Word race", how: "Who saves more new words in 7 days?" },
+    first15: { ico: "🏁", name: "First to 15", how: "The first one to save 15 new words wins (7 days max)." },
+    cards: { ico: "🃏", name: "Flashcard duel", how: "Who learns more words in flashcards in 7 days? (✓ I knew it, 3 times on a word)" },
+    gram: { ico: "🧠", name: "Grammar duel", how: "Who finishes more grammar practice rounds in 7 days? (up to 5 a day count)" }
+  };
+  const canDuel = r => !(r && r.private && r.club === false) && !(r && r.hidden);
+  let duelList = null, duelMeRole = null, lastDuelCheck = 0;
+  function wordsSince(st, en) {
+    let w = []; try { w = JSON.parse(localStorage.getItem("ncs-words") || "[]") || []; } catch (e) {}
+    const per = {}; w.forEach(x => { if (!x || !x.w || !x.t || x.t < st || x.t > en || !(x.m || x.def) || !x.e) return; const d = new Date(x.t).toDateString(); per[d] = (per[d] || 0) + 1; });
+    return Object.values(per).reduce((n, v) => n + Math.min(10, v), 0);
+  }
+  function myScore(d) {
+    if (!d || !d.st) return 0; const en = d.st + DUEL_LEN;
+    if (d.ty === "cards") return Math.max(0, counts().learned - (d.lb | 0));
+    if (d.ty === "gram") return Math.max(0, (S.gr | 0) - (d.gb | 0));
+    const n = wordsSince(d.st, en); return d.ty === "first15" ? Math.min(15, n) : n;
+  }
+  function duelPub() {
+    const now = Date.now(), dsc = {};
+    Object.entries(S.dd || {}).forEach(([id, d]) => { if (d.st && !(S.dr || {})[id]) dsc[id] = myScore(d); });
+    return { dz: (S.dz || []).filter(x => now - x.at < 10 * DAY), da: S.da || {}, dn: (S.dn || []).slice(-20), dsc, dw: S.dw | 0, dl: S.dl | 0 };
+  }
+  /* all duels I can see, from everyone's park docs */
+  function duelsFrom(list) {
+    const by = {}; list.forEach(x => { by[x.me ? "me" : x.uid] = x; });
+    const P = window.__csPark, meUid = (P && P.uid && P.uid()) || (by.me || {}).uid, meDoc = Object.assign({}, by.me || {}, { uid: meUid }), out = [], now = Date.now();
+    const docs = list.filter(x => !x.me).concat([Object.assign({}, meDoc, { me: true, dz: S.dz || [] })]);
+    docs.forEach(x => (x.dz || []).forEach(z => {
+      const fromMe = !!x.me, toMe = z.to === meUid;
+      const T = toMe ? meDoc : docs.find(y => y.uid === z.to); if (!T) return;
+      const acc = toMe ? (S.da || {})[z.id] : (T.da || {})[z.id], dec = (toMe ? S.dn || [] : T.dn || []).includes(z.id);
+      const fromName = fromMe ? "You" : x.first || "Someone", toName = toMe ? "You" : T.first || "Someone";
+      const end = acc ? acc + DUEL_LEN : 0;
+      const fs = fromMe ? myScore((S.dd || {})[z.id]) : ((x.dsc || {})[z.id] | 0), ts = toMe ? myScore((S.dd || {})[z.id]) : ((T.dsc || {})[z.id] | 0);
+      let st = dec ? "declined" : !acc ? (now - z.at > 3 * DAY ? "expired" : "pending") : now > end || (z.ty === "first15" && (fs >= 15 || ts >= 15)) ? "done" : "live";
+      out.push({ id: z.id, ty: z.ty, from: fromMe ? meUid : x.uid, to: z.to, fromName, toName, fromMe, toMe, at: z.at, acc, end, fs, ts, st });
+    }));
+    return out;
+  }
+  function award(d) {
+    S.dr = S.dr || {}; if (S.dr[d.id]) return;
+    const mine = d.fromMe ? d.fs : d.ts, theirs = d.fromMe ? d.ts : d.fs, opp = d.fromMe ? d.toName : d.fromName;
+    const res = mine > theirs ? "w" : mine < theirs ? "l" : "d"; S.dr[d.id] = res;
+    S.dplay = (S.dplay | 0) + 1; const before = ITEMS.filter(i => (i.dw != null || i.ds != null || i.dp != null) && isOpen(i)).map(i => i.id);
+    if (res === "w") { S.dw = (S.dw | 0) + 1; S.dst = (S.dst | 0) + 1; S.dbs = Math.max(S.dbs | 0, S.dst); S.t = Math.min(MAXT + 15, (S.t | 0) + 10); addFP(15); }
+    else if (res === "l") { S.dl = (S.dl | 0) + 1; S.dst = 0; S.t = Math.min(MAXT + 15, (S.t | 0) + 2); }
+    else { S.t = Math.min(MAXT + 15, (S.t | 0) + 5); }
+    const gear = ITEMS.filter(i => (i.dw != null || i.ds != null || i.dp != null) && isOpen(i) && !before.includes(i.id));
+    save(); wake(); hop(); fx(res === "w" ? ["🏆", "⚔️", "🏆"] : ["💛", "⚔️", "💛"]);
+    say(`${res === "w" ? `🏆 <b>You won</b> your ${DT[d.ty].name.toLowerCase()} against ${esc(opp)} (${mine}–${theirs})! +10 🍪 +15 friendship` : res === "l" ? `⚔️ ${esc(opp)} won your ${DT[d.ty].name.toLowerCase()} (${theirs}–${mine}). Good fight! +2 🍪` : `🤝 Your ${DT[d.ty].name.toLowerCase()} with ${esc(opp)} is a draw (${mine}–${theirs}). +5 🍪`}${gear.length ? `<br>🎁 New: <b>${gear.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>` : ""}`, `<button class="bd-b go" type="button" data-bd="duels">See duels</button>`, 11000);
+  }
+  function duelSync(list) {
+    if (!list || !window.__csPark) return; lastDuelCheck = Date.now();
+    const meDoc = list.find(x => x.me) || {}; duelMeRole = meDoc.role || {}; duelList = list;
+    const ds = duelsFrom(list); S.dd = S.dd || {}; let ch = false;
+    ds.forEach(d => {
+      if (!(d.fromMe || d.toMe)) return;
+      const mine = S.dd[d.id];
+      if (d.acc && mine && !mine.st) { mine.st = d.acc; ch = true; }
+      if (d.st === "done" && mine && mine.st && !(S.dr || {})[d.id]) award(d);
+      if ((d.st === "declined" || d.st === "expired") && mine && !mine.gone) { mine.gone = 1; ch = true; }
+    });
+    const fresh = ds.filter(d => d.toMe && d.st === "pending" && !(S.seenDz || []).includes(d.id));
+    if (fresh.length) { S.seenDz = (S.seenDz || []).concat(fresh.map(d => d.id)).slice(-40); ch = true;
+      const d = fresh[0]; say(`⚔️ <b>${esc(d.fromName)}</b> challenged you to a <b>${DT[d.ty].ico} ${DT[d.ty].name}</b>!`, `<button class="bd-b go" type="button" data-bd="duels">See the challenge</button>`, 12000); }
+    if (ch) save();
+    renderDuels(ds);
+  }
+  async function duelCheck() { const P = window.__csPark; if (!P || !P.signedIn() || Date.now() - lastDuelCheck < 6e5) return; try { duelSync(await P.list()); } catch (e) {} }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(duelCheck, 2000); });
+  const gearLine = () => ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null).map(i => `<span class="dg${isOpen(i) ? " on" : ""}" title="${esc(i.name)}${isOpen(i) ? " (unlocked)" : " · unlocks " + lockTxt(i)}">${isOpen(i) ? i.ico : "🔒"} ${esc(i.name)}</span>`).join("");
+  function renderDuels(ds) {
+    const area = $("parkArea"); if (!area) return;
+    let box = $("duelBoard"); if (!box) { box = document.createElement("section"); box.id = "duelBoard"; box.className = "duel-board"; area.insertAdjacentElement("afterend", box); }
+    if (!canDuel(duelMeRole) || window.__csPreview && window.__csPreview.kind === "private") { box.hidden = true; return; }
+    box.hidden = false; const now = Date.now(), recent = d => d.st === "done" && d.end && now - d.end < 14 * DAY;
+    const inc = ds.filter(d => d.toMe && d.st === "pending" && !(S.da || {})[d.id]);
+    const mineOpen = ds.filter(d => (d.fromMe || d.toMe) && (d.st === "pending" || d.st === "live"));
+    const live = ds.filter(d => d.st === "live").sort((a, b) => (b.fromMe || b.toMe) - (a.fromMe || a.toMe));
+    const done = ds.filter(recent).sort((a, b) => b.end - a.end).slice(0, 8);
+    const bar = (n, mx) => `<i style="width:${Math.min(100, Math.round(n / Math.max(1, mx) * 100))}%"></i>`;
+    const left = d => { const h = Math.max(0, Math.round((d.end - now) / 36e5)); return h > 48 ? Math.round(h / 24) + " days left" : h + " h left"; };
+    box.innerHTML = `<div class="duel-h"><h2>⚔️ Duels</h2><span class="duel-rec">Your record: <b>${S.dw | 0}</b> ${(S.dw | 0) === 1 ? "win" : "wins"} · <b>${S.dl | 0}</b> ${(S.dl | 0) === 1 ? "loss" : "losses"}${(S.dst | 0) >= 2 ? ` · 🔥 ${S.dst} in a row` : ""}</span><button class="bd-b" type="button" data-dhelp="1">How duels work</button></div>
+      ${inc.map(d => `<div class="duel-card inc"><b>${esc(d.fromName)}</b> challenged you to a <b>${DT[d.ty].ico} ${DT[d.ty].name}</b>. <span class="bd-small" style="margin:0">${esc(DT[d.ty].how)}</span><div class="bd-row" style="margin-top:6px"><button class="bd-b go" type="button" data-dacc="${esc(d.id)}">⚔️ Accept</button><button class="bd-b" type="button" data-ddec="${esc(d.id)}">No thanks</button></div></div>`).join("")}
+      ${live.length ? `<h3>Live now</h3>${live.map(d => { const mx = d.ty === "first15" ? 15 : Math.max(d.fs, d.ts, 5); return `<div class="duel-card${d.fromMe || d.toMe ? " mine" : ""}"><div class="duel-t">${DT[d.ty].ico} <b>${DT[d.ty].name}</b> <span class="bd-small" style="margin:0">· ${left(d)}</span></div>
+        <div class="duel-row"><span>${esc(d.fromName)}</span><span class="duel-bar">${bar(d.fs, mx)}</span><b>${d.fs}</b></div><div class="duel-row"><span>${esc(d.toName)}</span><span class="duel-bar">${bar(d.ts, mx)}</span><b>${d.ts}</b></div></div>`; }).join("")}` : ""}
+      ${ds.filter(d => d.fromMe && d.st === "pending").map(d => `<div class="duel-card"><span class="bd-small" style="margin:0">⏳ Waiting for <b>${esc(d.toName)}</b> to accept your ${DT[d.ty].ico} ${DT[d.ty].name}.</span></div>`).join("")}
+      ${done.length ? `<h3>Recent winners</h3><ul class="duel-done">${done.map(d => `<li>${d.fs === d.ts ? `🤝 ${esc(d.fromName)} and ${esc(d.toName)} drew` : `🏆 <b>${esc(d.fs > d.ts ? d.fromName : d.toName)}</b> beat ${esc(d.fs > d.ts ? d.toName : d.fromName)}`} · ${DT[d.ty].ico} ${DT[d.ty].name} (${Math.max(d.fs, d.ts)}–${Math.min(d.fs, d.ts)})</li>`).join("")}</ul>` : ""}
+      ${!inc.length && !live.length && !done.length && !mineOpen.length ? `<p class="bd-small">No duels yet. Tap someone's buddy in the park, then <b>⚔️ Duel</b> to challenge them!</p>` : mineOpen.length < OPEN_MAX ? `<p class="bd-small">Tap a buddy in the park, then <b>⚔️ Duel</b> to start a new one.</p>` : `<p class="bd-small">You have ${OPEN_MAX} duels going. Finish one to start another.</p>`}
+      <div class="duel-gear"><span class="bd-small" style="margin:0 6px 0 0;font-weight:700">Duel gear:</span>${gearLine()}</div>`;
+  }
+  function duelHelp() {
+    if (!window.csDialog) return;
+    window.csDialog(`<h3 style="margin-top:0">⚔️ How duels work</h3><p>Challenge another club member to a friendly 7-day duel. It starts when they accept.</p><ul>${Object.values(DT).map(t => `<li>${t.ico} <b>${t.name}</b>: ${esc(t.how)}</li>`).join("")}</ul>
+      <p class="muted" style="font-size:14px">Only words with a meaning <b>and</b> an example sentence count, up to 10 a day. Scores update when each of you opens the Cheat Sheet.</p>
+      <p><b>Prizes:</b> the winner gets <b>+10 🍪</b> (even past the 30 limit) and <b>+15 friendship</b>. A draw gives +5 🍪, and everyone who finishes a duel gets at least +2 🍪.</p>
+      <p><b>Duel gear:</b> 🚩 banner after your first duel · 🗡️ sword at 1 win · 🛡️ shield at 3 · ⛑️ knight helmet at 5 · 🏰 armour stand at 10 · 🦸 hero cape for 3 wins in a row.</p>
+      <p class="muted" style="font-size:13.5px">You can have up to ${OPEN_MAX} duels at a time, and one at a time with each person.</p>`);
+  }
+  function duelDialog(uid, first) {
+    if (!window.csDialog) return;
+    const ds = duelList ? duelsFrom(duelList) : [], open = ds.filter(d => (d.fromMe || d.toMe) && (d.st === "pending" || d.st === "live"));
+    if (open.some(d => d.from === uid || d.to === uid)) { toastMsg(`You already have a duel with ${first || "them"} ⚔️`); return; }
+    if (open.length >= OPEN_MAX) { toastMsg(`You have ${OPEN_MAX} duels going. Finish one first ⚔️`); return; }
+    const dlg = window.csDialog(`<h3 style="margin-top:0">⚔️ Challenge ${esc(first || "them")}</h3><p class="muted" style="margin-top:0">Pick a 7-day duel. It starts when ${esc(first || "they")} accept${first ? "s" : ""}.</p><div class="duel-pick">${Object.entries(DT).map(([k, t], i) => `<label class="duel-opt"><input type="radio" name="dty" value="${k}" ${i ? "" : "checked"}><span><b>${t.ico} ${t.name}</b><small>${esc(t.how)}</small></span></label>`).join("")}</div><div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" type="button" data-dgo="1">Send challenge ⚔️</button><button class="swap" type="button" data-dx="1">Cancel</button></div>`);
+    dlg.el.addEventListener("click", e => {
+      if (e.target.closest("[data-dx]")) { dlg.close(); return; }
+      if (!e.target.closest("[data-dgo]")) return;
+      const ty = (dlg.el.querySelector("input[name=dty]:checked") || {}).value || "race";
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+      S.dz = (S.dz || []).concat({ id, to: uid, ty, at: Date.now() }).slice(-10);
+      S.dd = Object.assign({}, S.dd || {}, { [id]: { ty, lb: counts().learned, gb: S.gr | 0, st: 0 } });
+      save(); publishPark(); dlg.close(); toastMsg(`⚔️ Challenge sent to ${first || "them"}!`); lastDuelCheck = 0; setTimeout(renderPark, 1800);
+    });
+  }
+  document.addEventListener("click", e => {
+    if (e.target.closest("[data-dhelp]")) { duelHelp(); return; }
+    const ac = e.target.closest("[data-dacc]"), dc = e.target.closest("[data-ddec]");
+    if (ac) { const id = ac.dataset.dacc, d = (duelList ? duelsFrom(duelList) : []).find(x => x.id === id); if (!d) return;
+      const open = duelsFrom(duelList).filter(x => (x.fromMe || x.toMe) && x.st === "live");
+      if (open.length >= OPEN_MAX) { toastMsg(`You have ${OPEN_MAX} duels going. Finish one first ⚔️`); return; }
+      const now = Date.now(); S.da = Object.assign({}, S.da || {}, { [id]: now }); S.dd = Object.assign({}, S.dd || {}, { [id]: { ty: d.ty, lb: counts().learned, gb: S.gr | 0, st: now } });
+      save(); publishPark(); toastMsg(`⚔️ Duel on! Good luck against ${d.fromName}.`); hop(); fx(["⚔️", "💪", "⚔️"]); lastDuelCheck = 0; setTimeout(renderPark, 1800); return; }
+    if (dc) { S.dn = (S.dn || []).concat(dc.dataset.ddec).slice(-20); save(); publishPark(); toastMsg("No problem 👍"); setTimeout(renderPark, 1500); }
+  });
+
+  window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); setTimeout(duelCheck, 5000); } renderPark(); });
 
   document.addEventListener("cs-teacher", () => { try { paintPet(); if (!modal.hidden) renderModal(); publishPark(); } catch (e) {} });
   window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, reload() { S = load(); visible(); } };

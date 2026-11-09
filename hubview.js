@@ -28,8 +28,14 @@ export function deadline(p, first) {
 export function curPack(s) { const ps = (s.packs || []).filter(p => !p.archived); return ps[ps.length - 1] || null; }
 export function lastClass(s) { return (s.classes || []).filter(c => c.kind !== "note" && c.date && COUNTS.has(c.att || "Present")).map(c => c.date).sort().pop() || ""; }
 
-/* What the student sees: no private notes, no boleta, no email, no "about them". */
-export function makeView(s) {
+export function instAt(p, st) { if (p.size === 36) return st.pri ? 5 : 7; if (p.size === 72) return st.pri ? 9 : 12; return null; }
+/* What the student sees: no private notes, no boleta, no email, no "about them".
+   meta (optional) = Noa's t-hubmeta: next class from his calendar + practice tips. */
+export function makeView(s, meta) {
+  meta = meta || {};
+  const cp = curPack(s), cst = cp ? packStats(s, cp) : null, now = Date.now();
+  const due = cp && cst && s.kind !== "trueque" && cp.size ? { label: cp.label, half: cp.paid === "half", pending: cp.paid === "pending", instAt: cp.paid === "half" ? instAt(cp, cst) : null, nextNo: cst.done + 1, left: cst.left, classesLeft: cst.classesLeft, unit: cp.unit } : null;
+  const up = (meta.upcoming || []).filter(u => u && u.student === s.id && Date.parse(u.start) > now - 36e5).sort((a, b) => Date.parse(a.start) - Date.parse(b.start))[0];
   const packs = (s.packs || []).map(p => {
     const st = packStats(s, p);
     return { id: p.id, label: p.label, size: p.size || null, unit: p.unit, used: st.used, done: st.done, left: st.left, deadline: deadline(p, st.first), paid: p.paid, current: !p.archived, color: p.color || "" };
@@ -39,6 +45,9 @@ export function makeView(s) {
     packs,
     classes: (s.classes || []).filter(c => c.kind !== "note").map(c => ({ date: c.date || "", dateText: c.dateText || "", topics: c.topics || "", homework: c.homework || "", att: c.att || "", hour: c.hour || "", credits: c.credits ?? null, pack: c.pack || "" })),
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),
+    focus: s.focus || "", next: up ? up.start : "", due,
+    guides: (s.guides || []).filter(g => g && g.url).map(g => ({ title: g.title || "Guide", url: g.url, date: g.date || "" })),
+    tips: (meta.recs || []).filter(r => r && r.hub === s.id && !r.done).slice(-5).map(r => ({ title: r.title || "", mod: r.mod || "", stage: r.stage || null, page: r.page || "", why: r.why || "", date: r.date || "" })),
     words: (s.words || []).map((w, i) => ({ w: w.w, tr: w.tr || "", ex: w.ex || "", i })),
     updated: Date.now()
   };

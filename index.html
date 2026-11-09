@@ -7,9 +7,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=12">
+<link rel="stylesheet" href="comfort.css?v=13">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=14" defer></script>
+<script src="comfort.js?v=15" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1D4ED8">
@@ -949,7 +949,7 @@ html.cs-beginner .nav-lvl.lvl-a1{background:#2E9A62}
 @keyframes auraHue{to{filter:hue-rotate(360deg)}}
 @keyframes auraTw{0%,100%{opacity:0;transform:scale(.6)}50%{opacity:1;transform:scale(1.1)}}
 html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
-.park-legend{font-size:13px;color:var(--muted);margin:0 0 8px}
+.park-legend{display:block;gap:0;font-size:13px;color:var(--muted);margin:0 0 8px}
 .park-legend .lg1{color:#B8C7E6;font-weight:700}.park-legend .lg2{color:#E0A100;font-weight:700}
 .park-legend .lg3{font-weight:700;background:linear-gradient(90deg,#ff6fb5,#ffb347,#6fd3ff,#8cff9e);-webkit-background-clip:text;background-clip:text;color:transparent}
 
@@ -1028,15 +1028,29 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 @media (max-width:520px){a.t-ico{display:none!important}}
 
 @media (min-width:521px){.t-mnav{display:none!important}}
-@media (max-width:520px){.va-wrap{display:none}}
-.va-wrap{position:relative}
-.va-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:60;width:280px;max-height:70vh;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-.va-list{display:flex;flex-direction:column;gap:4px}
+.va-sec h4{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.va-only{font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:2px 8px}
+.va-open{all:unset;box-sizing:border-box;cursor:pointer;width:100%;padding:9px 12px;border-radius:12px;border:1.5px solid var(--line);font-weight:700;font-size:14px;background:linear-gradient(90deg,color-mix(in srgb,#7348D8 14%,var(--surface)),color-mix(in srgb,#C2306F 12%,var(--surface)))}
+.va-open[aria-expanded="true"]{border-color:#7348D8}
+.va-list{display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:46vh;overflow:auto}
+.va-list input[type=search]{box-sizing:border-box;width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--body)}
+.va-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px}
 .va-list button{all:unset;cursor:pointer;padding:7px 10px;border-radius:10px;font-weight:700;font-size:14px}
 .va-list button:hover,.va-list button:focus-visible{background:var(--surface-2)}
 .va-list .va-h{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
 .va-banner{position:sticky;top:0;z-index:70;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 14px;background:linear-gradient(90deg,#7348D8,#C2306F);color:#fff;font-weight:800;font-size:14px}
 .va-banner button{all:unset;cursor:pointer;background:rgba(255,255,255,.2);border-radius:999px;padding:4px 12px;font-weight:800}
+
+.ch-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:14px 0 0}
+.ch-card{padding:14px 16px;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.45}
+.ch-card>b{font-size:17px}
+.ch-k{font:700 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--k)}
+.ch-hw{font-size:14px}.ch-hw span{display:block;font-weight:800;font-size:12.5px;color:var(--muted)}
+.ch-tip{display:flex;flex-direction:column;gap:1px}.ch-tip small{color:var(--muted);font-size:12.5px}
+.ch-go{all:unset;cursor:pointer;font-weight:800;color:var(--k);font-size:14.5px}.ch-go:hover{text-decoration:underline}
+.ch-guides{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.ch-guide{display:flex;flex-direction:column;gap:3px;padding:12px 14px;text-decoration:none;color:var(--ink)}.ch-guide span{font-size:13px;color:var(--muted)}
+.ch-guide:hover{border-color:var(--k)}
 </style>
 
 <header class="top">
@@ -1053,8 +1067,6 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
     <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Cheat Sheet members" aria-label="Cheat Sheet members" hidden>👥</a>
     <a class="theme-btn t-ico" id="navHub" href="coaching.html" title="Coaching (private students)" aria-label="Coaching" hidden>🎓</a>
-    <div class="va-wrap"><button class="theme-btn t-ico" id="navViewAs" type="button" title="View as a student" aria-label="View as a student" aria-expanded="false" hidden>👁</button>
-      <div class="va-panel card" id="vaPanel" hidden><b>View the site as…</b><div class="va-list" id="vaList"><p class="muted">Loading…</p></div></div></div>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
@@ -1399,7 +1411,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 
 <section class="view" id="v-coaching" hidden>
   <h1>My <em>coaching</em></h1>
-  <p class="lede">Your private classes with Noa: what you did in each class, your homework, and your pack. Noa keeps it up to date after your classes.</p>
+  <p class="lede">Your private classes with Noa: your next class, homework, goals, guides and your pack. Noa keeps it up to date after your classes.</p>
   <div class="ch-wrap" id="coachBox"><p class="muted">Loading…</p></div>
 </section>
 <script>
@@ -1412,8 +1424,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   function nav(){
     const v=window.__csHubView, b=document.getElementById("navCoaching"); if(b) b.hidden=!v;
     const t=!!window.__csTeacher && !window.__csPreview; ["navTeacher","navHub","mnavTeacher","mnavHub"].forEach(id=>{ const e=document.getElementById(id); if(e) e.hidden=!t; });
-    const va=document.getElementById("navViewAs"); if(va) va.hidden=!window.__csTeacher;
-    if(!v && location.hash.replace("#","")==="coaching" && window.csGo) window.csGo("notes");
+        if(!v && location.hash.replace("#","")==="coaching" && window.csGo) window.csGo("notes");
   }
   function render(){
     const v=window.__csHubView; nav();
@@ -1421,12 +1432,29 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     const cur=(v.packs||[]).filter(p=>p.current).slice(-1)[0];
     const per=cur&&cur.unit==="credits"?((v.classes||[]).filter(c=>c.pack===cur.id&&c.hour==="Priority").length>(v.classes||[]).filter(c=>c.pack===cur.id).length/2?4:3):1;
     const left=cur&&cur.size?Math.max(0,cur.left):null;
+    const held=(v.classes||[]).filter(c=>c.att==="Present"||!c.att);
+    let streak=0; for(const c of (v.classes||[]).slice().reverse()){ if(c.att==="Present"||!c.att) streak++; else if(c.att==="Cancelled on time") continue; else break; }
     const stats=cur&&cur.size?`<div class="ch-stats">
       <div class="ch-tint ch-g ch-stat"><b>${left}</b><span>${cur.unit} left</span></div>
       <div class="ch-tint ch-a ch-stat"><b>${Math.floor(left/per)}</b><span>${Math.floor(left/per)===1?"class":"classes"} left (about)</span></div>
       ${cur.deadline?`<div class="ch-tint ch-p ch-stat"><b>${fs(cur.deadline)}</b><span>your pack ends</span></div>`:""}
-      <div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
-    const tabs=[["classes","My classes","ch-s"],["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]];
+      <div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div>
+      <div class="ch-tint ch-s ch-stat"><b>${Math.round(held.length*0.75)}</b><span>hours of English together</span></div>
+      ${streak>=3?`<div class="ch-tint ch-g ch-stat"><b>🔥 ${streak}</b><span>classes in a row</span></div>`:""}</div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
+    const tabs=[["classes","My classes","ch-s"],["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]].concat((v.guides||[]).length?[["guides",`Guides (${v.guides.length})`,"ch-a"]]:[]);
+    /* top: next class + homework, what's due, little stats */
+    const lastHw=((v.classes||[]).slice().reverse().find(c=>c.homework)||{}).homework||"";
+    let nextTxt=""; if(v.next){ const d=new Date(v.next); if(!isNaN(d)) nextTxt=d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}); }
+    const du=v.due; let dueTxt="";
+    if(du){ if(du.pending) dueTxt=`Your pack (<b>${esc(du.label)}</b>) isn’t paid yet. Please pay before your next class.`;
+      else if(du.left!=null&&du.left<=0) dueTxt=`Your pack is used up. To keep your spot, renew it <b>at least 48 hours before your next class</b>.`;
+      else if(du.classesLeft!=null&&du.classesLeft<=1) dueTxt=`You have about <b>${du.classesLeft} ${du.classesLeft===1?"class":"classes"}</b> left. To keep your spot, renew <b>at least 48 hours before your next class</b>.`;
+      else if(du.half&&du.instAt) dueTxt=du.nextNo>=du.instAt?`Your <b>2nd payment</b> is due now (class #${du.instAt} of this pack).`:`Your <b>2nd payment</b> is due at class <b>#${du.instAt}</b> of this pack. Your next class is #${du.nextNo}.`; }
+    const top=`<div class="ch-top">
+      <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}</div>
+      ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
+      ${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip"><button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}
+    </div>`;
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
     if(tab==="classes"){
@@ -1438,12 +1466,14 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
         ${p.size?`<div class="ch-bar"><i style="width:${pct}%"></i></div>`:""}<div class="muted" style="font-size:13.5px">${p.size?`${p.used} of ${p.size} ${p.unit} used · `:""}${p.done} ${p.done===1?"class":"classes"}${p.deadline?" · ends "+fd(p.deadline):""}</div></div>`; }).join("")
         +((v.payments||[]).length?`<h2 style="margin-top:18px">Payments</h2><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Date</th><th>What</th><th>Amount</th></tr></thead><tbody>${(v.payments||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(p=>`<tr><td style="white-space:nowrap">${p.date?fs(p.date):""}</td><td>${esc(p.what)}</td><td style="white-space:nowrap">${esc(p.amount)}</td></tr>`).join("")}</tbody></table></div>`:"");
     } else if(tab==="goals"){
-      body=`<div class="ch-tint ch-v ch-goal">${v.objective?`<b>Your goal</b>\n${esc(v.objective)}\n\n`:""}${v.level?`<b>Your level</b>: ${esc(v.level)}\n`:""}${v.schedule?`<b>Your schedule</b>: ${esc(v.schedule)}`:""}</div>`;
+      body=`<div class="ch-tint ch-v ch-goal">${v.objective?`<b>🎯 Your goal</b>\n${esc(v.objective)}\n\n`:""}${v.focus?`<b>🛠 What we're working on</b>\n${esc(v.focus)}\n\n`:""}${v.level?`<b>Your level</b>: ${esc(v.level)}\n`:""}${v.schedule?`<b>Your schedule</b>: ${esc(v.schedule)}`:""}</div>`;
+    } else if(tab==="guides"){
+      body=`<p class="muted" style="font-size:14px">Study guides and class recaps Noa made for you.</p><div class="ch-guides">${(v.guides||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(g=>`<a class="ch-tint ch-a ch-guide" href="${esc(g.url)}" target="_blank" rel="noopener"><b>📄 ${esc(g.title)}</b><span>${g.date?fd(g.date):""}</span></a>`).join("")}</div>`;
     } else {
       let w=(v.words||[]).slice(); if(wSort==="new") w.reverse(); else if(wSort==="az") w.sort((a,b)=>a.w.localeCompare(b.w,"en",{sensitivity:"base"})); else if(wSort==="za") w.sort((a,b)=>b.w.localeCompare(a.w,"en",{sensitivity:"base"}));
       body=w.length?`<p class="muted" style="font-size:14px">Words from your English Journey sheet. Your own saved words are in <b>My words</b>.</p><div class="ch-sort">Order: ${[["new","Newest added"],["old","Oldest added"],["az","A → Z"],["za","Z → A"]].map(([k,l])=>`<button type="button" class="ch-tab ch-a" data-ws="${k}" aria-pressed="${wSort===k}">${l}</button>`).join("")}</div><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${w.map(x=>`<tr><td><b>${esc(x.w)}</b></td><td>${esc(x.tr)}</td><td>${esc(x.ex)}</td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No words here yet. Your saved words are in <b>My words</b>.</p>';
     }
-    box.innerHTML=stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    box.innerHTML=top+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); });
   document.addEventListener("cs-hubview",render); document.addEventListener("cs-teacher",nav);
@@ -1454,19 +1484,43 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     packs:[{id:"x1",label:"Pack Intermedio 36 créditos",size:36,unit:"credits",used:15,done:5,left:21,deadline:"",paid:"half",current:true,color:"#9fc5e8"}],
     classes:[["2026-10-30","session zero","read emails, start fabulang"],["2026-11-04","fabulang: the night bus, convo: weekend plans","reading and listening practice"],["2026-11-06","checked vocab sentences, past simple vs present perfect","5 sentences with new words"]].map(([d,t,h])=>({date:d,dateText:"",topics:t,homework:h,att:"Present",hour:"Standard",credits:3,pack:"x1"})),
     payments:[{date:"2026-10-28",what:"Half of Pack Intermedio 36 créditos",amount:"$132.000"}],words:[{w:"get the hang of",tr:"agarrarle la mano",ex:"I'm getting the hang of it.",i:0}]};
-  const vaBtn=document.getElementById("navViewAs"), vaP=document.getElementById("vaPanel");
+  /* "View as" lives at the top of Settings, only for Noa */
+  function vaSection(){
+    if(!window.__csTeacher){ const x=document.getElementById("vaSec"); if(x) x.remove(); return; } if(document.getElementById("vaSec")) return;
+    const head=document.querySelector("#csPanel .cs-head"); if(!head) return;
+    const sec=document.createElement("div"); sec.className="cs-sec va-sec"; sec.id="vaSec";
+    sec.innerHTML=`<h4>👁 View the site as… <span class="va-only">only you see this</span></h4><button type="button" class="va-open" id="vaOpen" aria-expanded="false">Choose a student or a generic view</button><div class="va-list" id="vaList" hidden></div>`;
+    head.insertAdjacentElement("afterend",sec);
+  }
+  document.addEventListener("cs-teacher",vaSection); setTimeout(vaSection,1500);
+  document.addEventListener("click",e=>{ if(e.target.closest("#csBtn")) setTimeout(vaSection,0); },true);
+  let vaData=null;
+  function vaRender(q){
+    const L=document.getElementById("vaList"); if(!L||!vaData) return; q=(q||"").toLowerCase().trim();
+    const m=n=>!q||String(n).toLowerCase().includes(q);
+    const pv=vaData.priv.filter(x=>m(x.view.name)), cl=vaData.club.filter(x=>m(x.name));
+    const act=pv.filter(x=>x.status!=="inactive"&&x.status!=="past"), old=pv.filter(x=>!act.includes(x));
+    const pb=x=>`<button type="button" data-va="${esc(x.key)}">${x.both?"🌳🌼":"🌳"} ${esc(x.view.name)}</button>`;
+    L.querySelector(".va-res").innerHTML=(q?"":`<div class="va-h">Generic</div><div class="va-grid"><button type="button" data-va="club">🌼 Club member</button><button type="button" data-va="private">🌳 Private student</button><button type="button" data-va="both">🌳🌼 Both</button></div>`)+
+      (act.length?`<div class="va-h">Private students (${act.length})</div><div class="va-grid">${act.map(pb).join("")}</div>`:"")+
+      (old.length?`<div class="va-h">Past private students (${old.length})</div><div class="va-grid">${old.map(pb).join("")}</div>`:"")+
+      (cl.length?`<div class="va-h">Club members (${cl.length})</div><div class="va-grid">${cl.map(x=>`<button type="button" data-va="${esc(x.key)}">🌼 ${esc(x.name)}</button>`).join("")}</div>`:"")+
+      (q&&!pv.length&&!cl.length?`<p class="muted">Nobody called “${esc(q)}”.</p>`:"");
+  }
   function banner(label){ let b=document.getElementById("vaBanner"); if(!label){ if(b) b.remove(); return; } if(!b){ b=document.createElement("div"); b.id="vaBanner"; b.className="va-banner"; document.body.prepend(b); } b.innerHTML=`👁 Viewing as ${esc(label)} <button type="button" id="vaExit">Back to my view</button>`; }
-  function preview(label,view){ window.__csPreview={label}; window.__csHubView=view; banner(label); document.dispatchEvent(new CustomEvent("cs-hubview")); if(view){ const b=document.getElementById("navCoaching"); if(b) b.click(); } else { const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); } }
+  function preview(label,view,kind){ window.__csPreview={label,kind:kind||(view?"private":"club")}; window.__csHubView=view; banner(label); document.dispatchEvent(new CustomEvent("cs-hubview")); document.dispatchEvent(new CustomEvent("cs-preview")); const c=document.getElementById("csClose"); if(c) c.click(); if(view){ const b=document.getElementById("navCoaching"); if(b) b.click(); } else { const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); } }
+  document.addEventListener("input",e=>{ if(e.target.id==="vaQ") vaRender(e.target.value); });
   document.addEventListener("click",async e=>{
-    if(e.target.closest("#vaExit")){ window.__csPreview=null; banner(null); if(window.__csViewAs) window.__csViewAs.restore(); nav(); const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); return; }
-    const pick=e.target.closest("[data-va]"); if(pick){ vaP.hidden=true; vaBtn.setAttribute("aria-expanded","false"); const k=pick.dataset.va;
-      if(k==="club") preview("a club member",null); else if(k==="private") preview("a private student (example)",SAMPLE); else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE);
-      else { const x=(vaP._list||[]).find(x=>x.uid===k); if(x) preview(x.view.name+(x.both?" (private + club)":" (private)"),x.view); } return; }
-    if(e.target.closest("#navViewAs")){ vaP.hidden=!vaP.hidden; vaBtn.setAttribute("aria-expanded",vaP.hidden?"false":"true"); if(!vaP.hidden){ const L=document.getElementById("vaList");
-      let list=[]; try{ list=window.__csViewAs?await window.__csViewAs.students():[]; }catch(err){}
-      vaP._list=list;
-      L.innerHTML=`<div class="va-h">Generic</div><button type="button" data-va="club">🌼 Club member</button><button type="button" data-va="private">🌳 Private student</button><button type="button" data-va="both">🌼🌳 Both</button>`+(list.length?`<div class="va-h">A real student</div>`+list.map(x=>`<button type="button" data-va="${esc(x.uid)}">${x.both?"🌼🌳":"🌳"} ${esc(x.view.name)}</button>`).join(""):"")+`<p class="muted" style="font-size:12.5px;margin:6px 0 0">You see their “My coaching” page and menu. Your own words and notes stay yours.</p>`; } return; }
-    if(!vaP.hidden && !e.target.closest(".va-wrap")){ vaP.hidden=true; vaBtn.setAttribute("aria-expanded","false"); }
+    if(e.target.closest("#vaExit")){ window.__csPreview=null; banner(null); if(window.__csViewAs) window.__csViewAs.restore(); document.dispatchEvent(new CustomEvent("cs-preview")); nav(); const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); return; }
+    const pick=e.target.closest("[data-va]"); if(pick){ const k=pick.dataset.va;
+      if(k==="club") preview("a club member",null,"club"); else if(k==="private") preview("a private student (example)",SAMPLE,"private"); else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE,"both");
+      else if(k.startsWith("hub:")){ const x=vaData.priv.find(x=>x.key===k); if(x) preview(x.view.name+(x.both?" (private + club)":" (private)"),x.view,x.both?"both":"private"); }
+      else { const x=vaData.club.find(x=>x.key===k); if(x) preview(x.name+" (club)",null,"club"); }
+      return; }
+    const op=e.target.closest("#vaOpen"); if(op){ const L=document.getElementById("vaList"); L.hidden=!L.hidden; op.setAttribute("aria-expanded",L.hidden?"false":"true"); if(L.hidden) return;
+      L.innerHTML=`<input type="search" id="vaQ" placeholder="Search a name…" autocomplete="off"><div class="va-res"><p class="muted">Loading everyone…</p></div>`;
+      try{ vaData=window.__csViewAs?await window.__csViewAs.students():{priv:[],club:[]}; }catch(err){ vaData={priv:[],club:[]}; }
+      vaRender(""); const q=document.getElementById("vaQ"); if(q) q.focus(); return; }
   });
   render();
 })();
@@ -2259,7 +2313,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=22" defer></script>
+<script src="buddy.js?v=23" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -4918,13 +4972,37 @@ window.addEventListener("cs-sample-ready",()=>{ if(enrQ.size) runEnrich(); });
 const _addWordPlain=addWord;
 addWord=function(){ const before=words.length, r=_addWordPlain.apply(this,arguments); if(words.length>before) queueEnrich([words[words.length-1].id]); return r; };
 
+/* ---------- safety net for the AI tools: explain first, then keep an undo copy ---------- */
+const UNDO_KEY="cs-words-undo";
+function wordsSnapshot(what){ try{ localStorage.setItem(UNDO_KEY,JSON.stringify({t:Date.now(),what,words})); }catch(e){} showUndo(); }
+function undoInfo(){ try{ const u=JSON.parse(localStorage.getItem(UNDO_KEY)||"null"); if(u&&Array.isArray(u.words)&&Date.now()-u.t<7*864e5) return u; }catch(e){} return null; }
+function showUndo(){
+  let b=document.getElementById("aiUndo"); const u=undoInfo(), anchor=document.getElementById("aiClean");
+  if(!anchor) return;
+  if(!b){ b=document.createElement("button"); b.className="swap"; b.type="button"; b.id="aiUndo"; anchor.insertAdjacentElement("afterend",b); }
+  b.hidden=!u; if(u) { b.textContent="↩ Undo "+(u.what==="clean"?"clean up":"complete"); b.title="Put your words back the way they were before "+(u.what==="clean"?"🧹 Clean up my words":"✨ Complete my words")+" ("+new Date(u.t).toLocaleString()+")"; }
+}
+function undoWords(){
+  const u=undoInfo(); if(!u){ toast("Nothing to undo"); return; }
+  const d=csDialog('<h3 style="margin-top:0">↩ Undo?</h3><p>Your words go back to how they were on <b>'+esc(new Date(u.t).toLocaleString())+'</b>, before '+(u.what==="clean"?"🧹 <b>Clean up my words</b>":"✨ <b>Complete my words</b>")+'.</p><p class="muted" style="font-size:13.5px">Words you added after that stay in your list.</p><div class="note-actions"><button class="pill-btn pill-green" type="button" data-u="y">Yes, undo</button><button class="swap" type="button" data-u="n">Cancel</button></div>');
+  d.el.addEventListener("click",e=>{ const b=e.target.closest("[data-u]"); if(!b) return; d.close(); if(b.dataset.u!=="y") return;
+    const old=new Set(u.words.map(x=>x.id)), added=words.filter(x=>!old.has(x.id));
+    words=u.words.concat(added); saveWordsNow(); try{ localStorage.removeItem(UNDO_KEY); }catch(er){} showUndo();
+    const st=document.getElementById("aiStatus"); if(st){ st.hidden=false; st.textContent="↩ Undone. Your words are back the way they were."; } toast("Undone ↩"); });
+}
+function askFirst(title,html,go,label){
+  const d=csDialog('<h3 style="margin-top:0">'+title+'</h3>'+html+'<p class="muted" style="font-size:13.5px">If you don\'t like the result, you can undo it afterwards with <b>↩ Undo</b>.</p><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="y">'+label+'</button><button class="swap" type="button" data-a="n">Cancel</button></div>');
+  d.el.addEventListener("click",e=>{ const b=e.target.closest("[data-a]"); if(!b) return; d.close(); if(b.dataset.a==="y") go(); });
+}
+setTimeout(showUndo,0);
+
 /* "Complete my words": fill in everything that's missing, in small batches */
 async function completeAll(btn){
   const list=words.filter(needsInfo);
   const st=document.getElementById("aiStatus");
   if(!list.length){ st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
   if(!aiOK()){ st.hidden=false; st.textContent="The AI is still loading. Try again in a few seconds."; return; }
-  btn.disabled=true; st.hidden=false; let done=0;
+  btn.disabled=true; st.hidden=false; let done=0; wordsSnapshot("complete");
   try{
     for(let i=0;i<list.length;i+=20){ st.textContent="✨ Filling in your words… "+Math.min(i,list.length)+" of "+list.length; done+=await enrichBatch(list.slice(i,i+20)); }
     st.textContent="✓ Done! "+done+(done===1?" word":" words")+" now have a translation, meaning, word type and example. Anything you wrote yourself stayed the same.";
@@ -5023,11 +5101,12 @@ async function cleanUp(btn){
     for(let i=0;i<list.length;i+=40){
       if(!document.body.contains(dlg.el)) return;
       const p2=prog(); if(p2) p2.textContent="✨ Checking words "+(i+1)+"–"+Math.min(i+40,list.length)+" of "+list.length+"…";
-      const chunk=list.slice(i,i+40).map(x=>({id:x.id,w:x.w,m:x.m||"",e:x.e||""}));
+      const chunk=list.slice(i,i+40).map(x=>({id:x.id,w:x.w,m:x.m||"",e:x.e||"",own:!!(x.e&&!x.aiEx)}));
       const p="You are checking a Spanish-speaking learner's English vocabulary list. For each item: w = English word/expression, m = Spanish meaning, e = example sentence.\n"+
         "Find ONLY real problems and suggest fixes:\n- spelling mistakes (English or Spanish)\n- capital letters: w lowercase unless it's a name or 'I'; example sentences start with a capital letter\n- punctuation: example sentences end with . ? or !; no stray symbols\n- a wrong Spanish meaning\n- grammar mistakes in the example\n- missing m: add the Spanish meaning\n- missing e: add a short example. "+exampleRule()+"\n"+
+        "Example sentences the student wrote themselves (own=true) are theirs: only touch them if they have a clear mistake (wrong word, broken grammar, nonsense). Never rewrite them just to sound nicer.\n"+
         "Do NOT rewrite things that are already correct, and don't change the meaning. Reply with ONLY a JSON array of changes like [{\"id\":\"...\",\"field\":\"w\" or \"m\" or \"e\",\"to\":\"the corrected text\",\"why\":\"very short reason, max 6 words\"}]. If nothing needs fixing, reply [].\n\nWORDS:\n"+JSON.stringify(chunk);
-      try{ const r=await window.__csSample(p); const arr=aiJSON(r&&r.text); if(Array.isArray(arr)) arr.forEach(c=>{ const x=words.find(w=>w.id===c.id); if(!x||!["w","m","e"].includes(c.field)) return; const from=String(x[c.field]||""), to=String(c.to||"").trim(); if(!to||to===from) return; fixes.push({id:c.id,field:c.field,from,to:to.slice(0,220),why:String(c.why||"").slice(0,60)}); }); else failed=true; }
+      try{ const r=await window.__csSample(p); const arr=aiJSON(r&&r.text); if(Array.isArray(arr)) arr.forEach(c=>{ const x=words.find(w=>w.id===c.id); if(!x||!["w","m","e"].includes(c.field)) return; const from=String(x[c.field]||""), to=String(c.to||"").trim(); if(!to||to===from) return; fixes.push({id:c.id,field:c.field,from,to:to.slice(0,220),why:String(c.why||"").slice(0,60),own:c.field==="e"&&!!from&&!x.aiEx}); }); else failed=true; }
       catch(e){ console.warn(e); failed=true; }
     }
   } else failed=true;
@@ -5036,13 +5115,14 @@ async function cleanUp(btn){
   const fieldName={w:"word",m:"Spanish",e:"example"};
   const wName=id=>{ const x=words.find(w=>w.id===id); return x?x.w:""; };
   body.innerHTML='<p>Here\'s what I\'d change. <b>Nothing changes until you press Apply.</b> Untick anything you want to keep as it is.</p>'+
-    (fixes.length?'<h4>✏️ Fixes ('+fixes.length+')</h4><div class="cu-list">'+fixes.map((f,i)=>'<label class="cu-row"><input type="checkbox" data-fx="'+i+'" checked><span><b>'+esc(wName(f.id))+'</b> · '+fieldName[f.field]+(f.why?' <small>('+esc(f.why)+')</small>':'')+'<br>'+(f.from?'<del>'+esc(f.from)+'</del> → ':'<i>missing</i> → ')+'<ins>'+esc(f.to)+'</ins></span></label>').join("")+'</div>':'')+
+    (fixes.some(f=>!f.own)?'<h4>✏️ Fixes ('+fixes.filter(f=>!f.own).length+')</h4><div class="cu-list">'+fixes.map((f,i)=>f.own?'':'<label class="cu-row"><input type="checkbox" data-fx="'+i+'" checked><span><b>'+esc(wName(f.id))+'</b> · '+fieldName[f.field]+(f.why?' <small>('+esc(f.why)+')</small>':'')+'<br>'+(f.from?'<del>'+esc(f.from)+'</del> → ':'<i>missing</i> → ')+'<ins>'+esc(f.to)+'</ins></span></label>').join("")+'</div>':'')+
+    (fixes.some(f=>f.own)?'<h4>✍️ Your own sentences ('+fixes.filter(f=>f.own).length+')</h4><p class="muted" style="font-size:13.5px;margin-top:0">These are sentences you wrote, and it looks like they have a mistake. <b>They stay exactly as you wrote them</b> unless you tick one.</p><div class="cu-list">'+fixes.map((f,i)=>!f.own?'':'<label class="cu-row"><input type="checkbox" data-fx="'+i+'"><span><b>'+esc(wName(f.id))+'</b>'+(f.why?' <small>('+esc(f.why)+')</small>':'')+'<br><del>'+esc(f.from)+'</del> → <ins>'+esc(f.to)+'</ins></span></label>').join("")+'</div>':'')+
     (dups.length?'<h4>🗂 Repeated words ('+dups.length+')</h4><div class="cu-list">'+dups.map((d,i)=>'<label class="cu-row"><input type="checkbox" data-dp="'+i+'" checked><span><b>'+esc(d.keep.w)+'</b> is in your list '+(d.drop.length+1)+' times. Keep one and combine their details.</span></label>').join("")+'</div>':'')+
     (failed?'<p class="muted" style="font-size:13px">The AI couldn\'t check every word right now, so some spelling fixes may be missing.</p>':'')+
     '<div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" type="button" id="cuApply">Apply changes</button><button class="swap" type="button" id="cuNo">Cancel</button></div>';
   body.querySelector("#cuNo").addEventListener("click",dlg.close);
   body.querySelector("#cuApply").addEventListener("click",()=>{
-    try{ sessionStorage.setItem("cs-words-undo",JSON.stringify(words)); }catch(e){}
+    wordsSnapshot("clean");
     let nf=0, nd=0;
     body.querySelectorAll("[data-fx]:checked").forEach(c=>{ const f=fixes[+c.dataset.fx], x=words.find(w=>w.id===f.id); if(x){ x[f.field]=f.to; if(f.field==="w"){ delete x.pos; delete x.def; delete x.ai; } nf++; } });
     const drop=new Set();
@@ -5050,14 +5130,17 @@ async function cleanUp(btn){
     words=words.filter(x=>!drop.has(x.id));
     saveWordsNow(); dlg.close();
     const st=document.getElementById("aiStatus"); st.hidden=false;
-    st.innerHTML="✓ Cleaned up: "+nf+(nf===1?" fix":" fixes")+(nd?" · "+nd+" repeated "+(nd===1?"word":"words")+" removed":"")+'. <button class="foot-link" type="button" id="cuUndo">Undo</button>';
+    st.innerHTML="✓ Cleaned up: "+nf+(nf===1?" fix":" fixes")+(nd?" · "+nd+" repeated "+(nd===1?"word":"words")+" removed":"")+'. Changed your mind? Tap <b>↩ Undo clean up</b>.';
     toast("Your words are cleaned up ✨");
   });
 }
 document.addEventListener("click",e=>{
-  if(e.target.closest("#aiFill")) completeAll(e.target.closest("#aiFill"));
-  else if(e.target.closest("#aiClean")) cleanUp(e.target.closest("#aiClean"));
-  else if(e.target.closest("#cuUndo")){ try{ const u=JSON.parse(sessionStorage.getItem("cs-words-undo")||"null"); if(Array.isArray(u)){ words=u; saveWordsNow(); sessionStorage.removeItem("cs-words-undo"); document.getElementById("aiStatus").textContent="↩ Undone. Your words are back the way they were."; } }catch(err){} }
+  const f=e.target.closest("#aiFill"), c=e.target.closest("#aiClean");
+  if(f){ const n=words.filter(needsInfo).length;
+    if(!n){ const st=document.getElementById("aiStatus"); st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
+    askFirst("✨ Complete my words",'<p>The AI fills in what\'s <b>missing</b> in '+n+(n===1?" word":" words")+': the Spanish translation, a simple meaning, the word type and an example sentence.</p><p><b>It never changes anything you already wrote</b>, including your own example sentences.</p>',()=>completeAll(f),"Yes, complete them"); }
+  else if(c) askFirst("🧹 Clean up my words",'<p>The AI checks your words for spelling, punctuation, capital letters and repeated words, and fills in missing translations.</p><p>It shows you every change first, and <b>nothing changes until you press Apply</b>. Sentences you wrote yourself are only suggested if they have a clear mistake, and they stay as they are unless you tick them.</p>',()=>cleanUp(c),"Check my words");
+  else if(e.target.closest("#aiUndo")) undoWords();
 });
 
 window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
@@ -6032,6 +6115,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
+import { makeView } from "./hubview.js?v=3";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -6211,7 +6295,10 @@ btn.addEventListener("click", () => {
 $("authClose").addEventListener("click", () => { panel.hidden = true; btn.setAttribute("aria-expanded", "false"); btn.focus(); });
 panel.addEventListener("keydown", e => { if (e.key === "Escape") { panel.hidden = true; btn.focus(); } });
 document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest(".auth-wrap")) panel.hidden = true; });
-$("authOut").addEventListener("click", () => { $("authOutConfirm").hidden = false; $("authOutBox").hidden = true; });
+$("authOut").addEventListener("click", async () => {
+  if (!window.csConfirm) { $("authOutConfirm").hidden = false; $("authOutBox").hidden = true; return; }
+  if (await window.csConfirm("Sign out?", "<p>Your words, notes and buddy are saved in your account. Sign back in with Google anytime to get them back.</p>", "Sign out")) doSignOut();
+});
 $("authOutNo").addEventListener("click", () => { $("authOutConfirm").hidden = true; $("authOutBox").hidden = false; });
 $("authOutYes").addEventListener("click", doSignOut);
 document.addEventListener("click", e => { if (e.target.closest("[data-signin]")) { e.preventDefault(); signIn(); } });
@@ -6231,12 +6318,24 @@ async function loadHubView() {
 document.addEventListener("visibilitychange", () => { if (!document.hidden && user && !window.__csPreview) loadHubView(); });
 /* teacher only: see the site as a student (their "My coaching" copy) */
 window.__csViewAs = {
+  /* every private student (from Noa's Coaching data) and every Cheat Sheet member */
   async students() {
-    if (!window.__csTeacher) return [];
-    const rs = await getDocs(collection(db, "roles")); const out = [];
-    await Promise.all(rs.docs.map(async d => { const r = d.data() || {}; if (!r.hub) return;
-      try { const v = await getDoc(doc(db, "users", d.id, "data", "hub-view")); if (v.exists() && !v.data().deleted) out.push({ uid: d.id, both: r.club !== false, view: JSON.parse(v.data().json || "null") }); } catch (e) {} }));
-    return out.filter(x => x.view).sort((a, b) => a.view.name.localeCompare(b.view.name));
+    if (!window.__csTeacher || !user) return { priv: [], club: [] };
+    const roles = {}, hubUid = {};
+    try { (await getDocs(collection(db, "roles"))).forEach(d => { const r = d.data() || {}; roles[d.id] = r; if (r.hub) hubUid[r.hub] = d.id; }); } catch (e) {}
+    let meta = {}; const priv = [];
+    try {
+      const ds = await getDocs(collection(db, "users", user.uid, "data"));
+      ds.forEach(d => { const v = d.data() || {}; if (v.deleted || typeof v.json !== "string") return; if (d.id === "t-hubmeta") { try { meta = JSON.parse(v.json) || {}; } catch (e) {} } });
+      ds.forEach(d => { const v = d.data() || {}; if (!d.id.startsWith("t-hub-") || v.deleted || typeof v.json !== "string") return;
+        try { const s = JSON.parse(v.json); if (!s || !s.name) return; const uid = hubUid[s.id] || s.uid || ""; const r = roles[uid] || {};
+          priv.push({ key: "hub:" + s.id, uid, both: !!(uid && r.club === true), status: s.status || "active", view: makeView(s, meta) }); } catch (e) {} });
+    } catch (e) { console.warn("view as: students", e); }
+    const club = [];
+    try { (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {};
+      if (d.id === user.uid || r.private || r.hub || r.hidden) return; club.push({ key: "uid:" + d.id, uid: d.id, name: p.name || p.email || "(no name)" }); }); } catch (e) {}
+    const by = (a, b) => a.localeCompare(b);
+    return { priv: priv.sort((a, b) => by(a.view.name, b.view.name)), club: club.sort((a, b) => by(a.name, b.name)) };
   },
   restore() { loadHubView(); }
 };
@@ -6252,12 +6351,13 @@ onAuthStateChanged(auth, u => {
 let parkTimer = null;
 window.__csPark = {
   signedIn: () => !!user,
+  uid: () => user ? user.uid : "",
   publish(b) {
     if (!user) return;
     clearTimeout(parkTimer);
     parkTimer = setTimeout(() => {
       const first = String(user.displayName || "").trim().split(/\s+/)[0] || "";
-      setDoc(doc(db, "park", user.uid), Object.assign({ first, at: serverTimestamp() }, b)).catch(e => console.warn("park", e));
+      setDoc(doc(db, "park", user.uid), Object.assign({ first, at: serverTimestamp() }, b)).then(() => { window.__csParkErr = ""; }).catch(e => { window.__csParkErr = String(e && (e.code || e.message)); console.warn("park", e); });
     }, 1500);
   },
   async list() {

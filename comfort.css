@@ -164,3 +164,10 @@ html.cs-contrast :focus-visible{outline:3px solid currentColor!important;outline
 html.cs-contrast :is(.locked,[aria-disabled="true"],.ps-stage.locked,.bd-animal.locked){opacity:.85!important}
 html.cs-contrast ::placeholder{color:var(--muted);opacity:1}
 html.cs-contrast :is(.muted,.hint,.esb,.pr-sub,.ps-kind,.vs-ex,.tr-also,.lk-ex){color:var(--muted)!important;opacity:1!important}
+.csc-bd{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+.csc{width:min(400px,100%);background:var(--surface,#fff);color:var(--ink,#222);border:1.5px solid var(--line,#ddd);border-radius:18px;padding:20px 20px 16px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.csc h3{margin:0 0 8px;font-size:19px}.csc-b{font-size:15px;line-height:1.5;color:var(--muted,#555)}.csc-b p{margin:0 0 8px}
+.csc-a{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.csc-a button{all:unset;cursor:pointer;padding:8px 16px;border-radius:999px;font-weight:800;font-size:14.5px;border:1.5px solid var(--line,#ddd)}
+.csc-a .csc-y{background:var(--green,#2E8B57);border-color:var(--green,#2E8B57);color:#fff}
+.csc-a button:focus-visible{outline:3px solid var(--royal,#5AB8FF);outline-offset:2px}

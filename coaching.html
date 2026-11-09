@@ -59,7 +59,25 @@ tr:last-child td{border-bottom:0}
 .chip{display:inline-block;font-size:13px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin:0 6px 6px 0}
 .err{color:var(--red);font-weight:800}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-weight:800;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
-.toast.show{opacity:1}
+.toast.show{opacity:1;pointer-events:auto}
+.toast button{all:unset;cursor:pointer;margin-left:12px;text-decoration:underline;font-weight:800}
+.hubbar{position:sticky;top:0;z-index:40;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;margin:6px 0 4px;background:var(--bg)}
+.hubtabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface-2);border:1.5px solid var(--line)}
+.hubtabs button{all:unset;cursor:pointer;padding:7px 14px;border-radius:999px;font:800 14px var(--body);color:var(--muted)}
+.hubtabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.jump{position:relative;flex:1;min-width:180px;max-width:360px}
+.jump input{box-sizing:border-box;width:100%;font:600 14.5px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px}
+.jump input:focus{border-color:var(--c-sky);outline:none}
+.jump-res{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-height:60vh;overflow:auto}
+.jump-res button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;padding:7px 9px;border-radius:10px;font:700 14px var(--body)}
+.jump-res button:hover,.jump-res button.on{background:var(--surface-2)}
+.jump-res small{color:var(--muted);font-weight:600;margin-left:auto}
+.histb{all:unset;cursor:pointer;padding:7px 12px;border-radius:999px;border:1.5px solid var(--line);font:700 13.5px var(--body);background:var(--surface-2)}
+.backb{all:unset;cursor:pointer;font:800 14px var(--body);color:var(--c-sky);padding:6px 2px;margin-bottom:8px;display:inline-block}
+#stList .list{max-height:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+th.sortable{cursor:pointer;user-select:none;white-space:nowrap}th.sortable:hover{color:var(--c-sky)}
+.hist li{display:flex;gap:10px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--line)}.hist ul{list-style:none;margin:8px 0 0;padding:0;max-height:60vh;overflow:auto}
+.hist .when{font:600 12px var(--mono);color:var(--muted);white-space:nowrap}.hist .what{flex:1}
 [hidden]{display:none!important}
 .ed input,.ed textarea,.addf input,.addn textarea{width:100%;font:600 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px}
 .addf{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;margin-bottom:10px;align-items:center}
@@ -105,11 +123,11 @@ td.act{white-space:nowrap;text-align:right}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 </style>
-<link rel="stylesheet" href="comfort.css?v=12">
+<link rel="stylesheet" href="comfort.css?v=13">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=14" defer></script>
+<script src="comfort.js?v=15" defer></script>
 </head>
 <body>
 <style>
@@ -221,6 +239,12 @@ tr.arch td{opacity:.85}
       <div class="row"><button type="button" class="primary" id="addStu">＋ New student</button>
       <button type="button" id="impBtn">⬆ Import file</button><button type="button" id="expBtn">⬇ Backup</button>
       <input type="file" id="impFile" accept=".json,application/json" hidden></div></div>
+    <div class="hubbar" id="hubbar">
+      <div class="hubtabs" role="tablist"><button type="button" role="tab" data-view="overview" id="tabOv">📊 Overview</button><button type="button" role="tab" data-view="students" id="tabSt">🎓 Students</button></div>
+      <div class="jump"><input type="search" id="jumpQ" placeholder="Jump to a student…" aria-label="Jump to a student" autocomplete="off"><div class="jump-res" id="jumpRes" hidden></div></div>
+      <button type="button" class="histb" id="histBtn" title="Undo changes: see everything you changed recently">🕘 Undo / history</button>
+    </div>
+    <div id="ovView">
     <p class="lede" id="summary" style="margin-top:6px">Loading…</p>
     <div class="kpis" id="kpis"></div>
     <div class="tint k-sky panel" id="nextBox" hidden></div>
@@ -231,14 +255,15 @@ tr.arch td{opacity:.85}
       <div class="tint k-violet panel" id="expBox"></div>
     </div>
     <div class="tint k-sky panel" id="trendBox"></div>
-    <div class="layout">
-      <div>
+    </div>
+    <div id="stView" hidden>
+    <div id="stList">
         <input type="search" id="q" placeholder="Search students…" aria-label="Search students">
         <div class="filters" id="filters"></div>
         <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option></select></div>
         <div class="list" id="list"></div>
-      </div>
-      <div id="detail" class="card"><p class="muted">Pick a student on the left.</p></div>
+    </div>
+    <div id="stDetail" hidden><button type="button" class="backb" id="backBtn">← All students</button><div id="detail" class="card"></div></div>
     </div>
   </section>
   <p class="err" id="loadErr" hidden></p>
@@ -248,7 +273,7 @@ tr.arch td{opacity:.85}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName } from "./hubview.js?v=2";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName } from "./hubview.js?v=3";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -263,13 +288,13 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const views = ["vSign", "vDenied", "vMain"];
 const showView = v => views.forEach(id => $(id).hidden = id !== v);
-function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2400); }
+function toast(t, undo) { const el = $("toast"); el.textContent = t; if (undo) { const b = document.createElement("button"); b.type = "button"; b.textContent = "Undo"; b.onclick = () => { el.classList.remove("show"); undo(); }; el.appendChild(b); } el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), undo ? 7000 : 2400); }
 $("inBtn").onclick = async () => {
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
   try { await signInWithPopup(auth, p); }
   catch (e) { if (e && e.code === "auth/popup-blocked") await signInWithRedirect(auth, p); else if (e && e.code !== "auth/popup-closed-by-user") { $("signErr").hidden = false; $("signErr").textContent = "Sign-in didn't work. Try again."; } }
 };
-$("outBtn").onclick = () => signOut(auth);
+$("outBtn").onclick = async () => { const ok = window.csConfirm ? await window.csConfirm("Sign out?", "<p>You can sign back in anytime with your Google account.</p>", "Sign out") : confirm("Sign out?"); if (ok) signOut(auth); };
 
 /* ---------- state ---------- */
 let tUid = null, S = [], cur = null, tab = "classes", filt = "active", editRow = null, clsSort = -1, wSort = "new", roles = {}, rolesByUid = {}, usage = {}, appWords = {}, meta = null, accounts = [], usdRate = 950, lSort = "name";
@@ -297,7 +322,7 @@ async function load() {
       if (x.id === "t-hubmeta") { try { meta = JSON.parse(v.json); } catch (e) {} return; }
       if (!x.id.startsWith(PRE)) return; try { S.push(JSON.parse(v.json)); } catch (e) {} });
     roles = {}; rolesByUid = {}; if (rs) rs.forEach(d => { const r = d.data() || {}; rolesByUid[d.id] = r; if (r.hub) roles[r.hub] = { uid: d.id, ...r }; });
-    S.forEach(norm);
+    S.forEach(norm); S.forEach(s => snap[s.id] = ser(s));
     S.forEach(s => { const r = roles[s.id]; if (r && s.uid !== r.uid) { s.uid = r.uid; save(s, true); } });
     renderAll();
     loadRate(); fixUsdRates();
@@ -320,9 +345,28 @@ function norm(s) {
   s.classes.forEach(c => { if (!c.id) c.id = uid(); });
   s.payments.forEach(p => { if (!p.id) p.id = uid(); });
 }
+/* ---------- undo: every change you make here is kept on this device (last 60) ---------- */
+const HKEY = "cs-hub-hist", snap = {};
+const ser = s => JSON.stringify(s, (k, v) => k[0] === "_" ? undefined : v);
+const histGet = () => { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch (e) { return []; } };
+function histPut(h) { h = h.slice(-60); for (;;) { try { localStorage.setItem(HKEY, JSON.stringify(h)); return; } catch (e) { if (h.length <= 1) return; h = h.slice(Math.ceil(h.length / 4)); } } }
+function remember(s, label, before) { if (before == null) return; const h = histGet(); h.push({ k: Date.now() + Math.random().toString(36).slice(2, 5), at: Date.now(), id: s.id, name: s.name, label: label || "Changed something", before }); histPut(h); }
+function restore(e) {
+  const old = JSON.parse(e.before), i = S.findIndex(x => x.id === old.id);
+  if (i >= 0) S[i] = old; else { S.push(old); saveIds(); }
+  save(old, false, "Undid: " + e.label); cur = cur && S.some(x => x.id === cur) ? cur : null; renderAll(); toast("↩ Undone: " + e.label);
+}
+function undoLast(id) { const h = histGet(); for (let i = h.length - 1; i >= 0; i--) if (!h[i].undone && (!id || h[i].id === id)) { h[i].undone = 1; histPut(h); restore(h[i]); return; } toast("Nothing to undo"); }
+function showHist() {
+  const h = histGet().slice().reverse();
+  $("modal").innerHTML = `<div class="card hist" role="dialog" aria-label="History"><div class="dh"><h2 style="flex:1;margin:0">🕘 Undo / history</h2><button type="button" class="ib" data-act="closeModal">✕</button></div>
+    <p class="muted small" style="margin:6px 0 0">Everything you changed on this page (newest first). <b>Undo</b> puts that student back exactly how they were before that change. Deleted students and packs come back too.</p>
+    <ul>${h.map(e => `<li><span class="when">${new Date(e.at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span><span class="what"><b>${esc(e.name)}</b> · ${esc(e.label)}${e.undone ? ' <span class="muted">(undone)</span>' : ""}</span><button type="button" class="ib" data-undo="${e.k}">↩ Undo</button></li>`).join("") || `<li class="muted">Nothing yet. Changes you make show up here.</li>`}</ul></div>`;
+  $("modal").hidden = false;
+}
 const pending = new Map();
-function save(s, quiet) {
-  if (!quiet) s.updatedAt = Date.now();
+function save(s, quiet, label) {
+  if (!quiet) { s.updatedAt = Date.now(); const now = ser(s); if (snap[s.id] && snap[s.id] !== now) { remember(s, label, snap[s.id]); if (label) toast(label, () => undoLast(s.id)); } snap[s.id] = now; }
   clearTimeout(pending.get(s.id)); $("saving").textContent = "Saving…";
   pending.set(s.id, setTimeout(async () => {
     pending.delete(s.id);
@@ -331,12 +375,12 @@ function save(s, quiet) {
   }, 600));
 }
 /* the student's read-only copy */
-const vh = s => { const v = makeView(s); delete v.updated; return JSON.stringify(v); };
+const vh = s => { const v = makeView(s, meta); delete v.updated; return JSON.stringify(v); };
 async function publish(s, force) {
   if (!s.uid) return;
   const j = vh(s), key = "cs-hubpub-" + s.id; let last = null; try { last = localStorage.getItem(key); } catch (e) {}
   if (!force && last === j) return;
-  try { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(s)), deleted: false, at: serverTimestamp() }); try { localStorage.setItem(key, j); } catch (e) {} }
+  try { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(s, meta)), deleted: false, at: serverTimestamp() }); try { localStorage.setItem(key, j); } catch (e) {} }
   catch (e) { console.warn("publish", e); }
 }
 function publishAll() { S.forEach(s => publish(s)); }
@@ -486,7 +530,7 @@ function expected() {
 }
 
 /* ---------- render ---------- */
-function renderAll() { renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); renderList(); renderDetail(); }
+function renderAll() { renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); route(); }
 function renderSummary() {
   const act = S.filter(s => s.status === "active");
   $("summary").textContent = `${act.length} active students · ${S.length} students in total`;
@@ -618,7 +662,7 @@ function since(s) {
 }
 function renderDetail() {
   const s = S_(); const box = $("detail");
-  if (!s) { box.innerHTML = `<p class="muted">Pick a student on the left.</p>`; return; }
+  if (!s) { box.innerHTML = ""; return; }
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
   const links = [s.sheetId ? `<a class="linkb" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/${esc(s.sheetId)}/edit">English Journey ↗</a>` : "", s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
@@ -665,13 +709,12 @@ function tClasses(s) {
       <div class="fld w2"><label>Topics covered</label><input name="topics" placeholder="fabulang: …, convo: …"></div>
       <div class="fld w3"><label>Homework</label><input name="homework" value="${esc((s.classes.filter(c => c.kind !== "note").pop() || {}).homework || "")}"></div>
       <div class="fld"><label>Attendance</label><select name="att"><option>Present</option><option>Absent</option><option>Late cancellation</option><option>Cancelled on time</option></select></div>
-      <div class="fld"><label>Hour type</label><select name="hour">${s.kind === "trueque" ? "<option>—</option>" : ""}<option ${hourNow() === "Standard" ? "selected" : ""}>Standard</option><option ${hourNow() === "Priority" ? "selected" : ""}>Priority</option></select></div>
+      <div class="fld"><label>Hour type</label><select name="hour">${s.kind === "trueque" ? "<option>—</option>" : ""}<option ${s.alwaysStd || hourNow() === "Standard" ? "selected" : ""}>Standard</option><option ${!s.alwaysStd && hourNow() === "Priority" ? "selected" : ""}>Priority</option></select></div>
       <div class="fld"><label>Credits</label><input type="number" name="credits" min="0" max="10" placeholder="auto"></div>
       <div class="fld w2"><label>Pack</label><select name="pack">${packOpts(s, p ? p.id : "")}</select></div>
       <div class="row"><button class="primary" type="submit">＋ Add class</button><button type="button" data-act="addNote">＋ Note</button></div>
     </form>
-    <div class="sortrow"><span class="muted small">Order:</span><button type="button" class="seg k-sky" data-csort="-1" aria-pressed="${clsSort < 0}">Newest first</button><button type="button" class="seg k-sky" data-csort="1" aria-pressed="${clsSort > 0}">Oldest first</button></div>
-    <div class="tbl"><table><thead><tr><th title="Class number in its pack">#</th><th>Date</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
+    <div class="tbl"><table><thead><tr><th title="Class number in its pack">#</th><th class="sortable" data-csort="${-clsSort}" title="Click to show ${clsSort < 0 ? "oldest" : "newest"} first" aria-sort="${clsSort < 0 ? "descending" : "ascending"}">Date ${clsSort < 0 ? "↓" : "↑"}</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
 }
 function tPacks(s) {
   const packs = s.packs.slice().reverse().map(p => {
@@ -713,7 +756,12 @@ function tInfo(s) {
   const info = Object.entries(s.info).map(([k, v]) => `<div class="fld"><label>${esc(k)}</label><textarea data-info="${esc(k)}">${esc((v || []).join("\n"))}</textarea></div>`).join("");
   return `<div class="grid2">${f("name", "Name")}${f("email", "Email")}${f("level", "Level")}${f("schedule", "Schedule")}
     <div class="fld" style="grid-column:1/-1"><label for="f_objective">Objective <span class="muted">(the student sees this)</span></label><textarea id="f_objective" data-f="objective">${esc(s.objective || "")}</textarea></div>
+    <div class="fld" style="grid-column:1/-1"><label for="f_focus">What we're working on <span class="muted">(the student sees this in “My goals”, so write it to them)</span></label><textarea id="f_focus" data-f="focus" placeholder="e.g. Short answers with the right helper verb (Yes, I did / No, I won't), -ed endings…">${esc(s.focus || "")}</textarea></div>
+    <div class="fld" style="grid-column:1/-1"><label>Guides & recaps <span class="muted">(the student sees these links)</span></label>
+      <div class="guides">${(s.guides || []).map((g, i) => `<div class="row" style="gap:6px;margin:3px 0"><a class="linkb" href="${esc(g.url)}" target="_blank" rel="noopener">📄 ${esc(g.title)}</a><span class="muted small">${g.date ? fmtShort(g.date) : ""}</span><button type="button" class="ib del" data-act="delGuide" data-id="${i}">✕</button></div>`).join("") || `<span class="muted small">None yet. The nightly wrap-up adds every guide it makes.</span>`}</div>
+      <form id="addGuide" class="row" style="gap:6px;margin-top:6px"><input name="gt" placeholder="Title" style="flex:1;min-width:140px"><input name="gu" placeholder="https://docs.google.com/…" style="flex:2;min-width:180px"><button class="ib" type="submit">＋ Add</button></form></div>
     <div class="fld" style="grid-column:1/-1"><label for="f_about">About them <span class="muted">(only you see this)</span></label><textarea id="f_about" data-f="about" style="min-height:150px">${esc(s.about || "")}</textarea></div>
+    <div class="fld"><label>Hour rule</label><select data-f="alwaysStdSel"><option value="" ${s.alwaysStd ? "" : "selected"}>Normal (by time of day)</option><option value="1" ${s.alwaysStd ? "selected" : ""}>Always standard hours</option></select></div>
     <div class="fld"><label>Kind</label><select data-f="kind"><option value="pack" ${s.kind !== "trueque" ? "selected" : ""}>Paying student</option><option value="trueque" ${s.kind === "trueque" ? "selected" : ""}>Trueque</option></select></div>
     <div class="fld" style="grid-column:1/-1"><label for="f_prev">Previous courses with you</label><input id="f_prev" data-f="prevCourses" value="${esc(s.prevCourses || "")}" placeholder="e.g. 2nd course: first one was Jun–Sep 2025"></div>
     <div class="fld"><label for="f_emails">Other emails <span class="muted">(comma between them)</span></label><input id="f_emails" data-emails="1" value="${esc((s.emails || []).join(", "))}"></div>
@@ -747,8 +795,14 @@ document.addEventListener("click", e => {
   const t = e.target;
   const cp = t.closest("[data-copy]"); if (cp) { navigator.clipboard && navigator.clipboard.writeText(cp.dataset.copy).then(() => toast("Copied " + cp.dataset.copy)).catch(() => {}); return; }
   const fb = t.closest("button[data-f]"); if (fb) { filt = fb.dataset.f; renderFilters(); renderList(); return; }
-  const sb = t.closest(".stu"); if (sb) { cur = sb.dataset.s; editRow = null; renderList(); renderDetail(); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); return; }
-  const op = t.closest("[data-open]"); if (op) { cur = op.dataset.open; filt = "active"; tab = "packs"; renderFilters(); renderList(); renderDetail(); $("detail").scrollIntoView({ behavior: "smooth" }); return; }
+  const sb = t.closest(".stu"); if (sb) { openStu(sb.dataset.s); return; }
+  const op = t.closest("[data-open]"); if (op) { tab = "packs"; openStu(op.dataset.open); return; }
+  const vw = t.closest("[data-view]"); if (vw) { go(vw.dataset.view); return; }
+  const jr = t.closest("[data-jump]"); if (jr) { $("jumpQ").value = ""; $("jumpRes").hidden = true; openStu(jr.dataset.jump); return; }
+  if (!t.closest(".jump")) $("jumpRes").hidden = true;
+  if (t.closest("#backBtn")) { go("students"); return; }
+  if (t.closest("#histBtn")) { showHist(); return; }
+  const un = t.closest("[data-undo]"); if (un) { const h = histGet(), e = h.find(x => x.k === un.dataset.undo); if (e) { e.undone = 1; histPut(h); $("modal").hidden = true; restore(e); } return; }
   const tb = t.closest("[data-tab]"); if (tb) { tab = tb.dataset.tab; editRow = null; renderDetail(); return; }
   const cs = t.closest("[data-csort]"); if (cs) { clsSort = +cs.dataset.csort; renderDetail(); return; }
   const wsb = t.closest("[data-wsort]"); if (wsb) { wSort = wsb.dataset.wsort; renderDetail(); return; }
@@ -756,6 +810,8 @@ document.addEventListener("click", e => {
   const ds = t.closest("[data-dismiss]"); if (ds) { meta = Object.assign({}, meta || {}, { dismissed: ((meta && meta.dismissed) || []).concat(ds.dataset.dismiss) }); saveMeta(); autoLink(); return; }
   const a = t.closest("[data-act]"); if (!a) return;
   const s = S_(), id = a.dataset.id, act = a.dataset.act;
+  if (act === "closeModal") { $("modal").hidden = true; return; }
+  if (act === "delGuide") { const g = (s.guides || [])[+id]; if (!g) return; s.guides.splice(+id, 1); save(s, false, "Removed guide " + g.title); renderDetail(); return; }
   if (act === "editRow") { editRow = id; renderDetail(); return; }
   if (act === "pinOpen") { s._pinOpen = true; renderDetail(); const i = document.querySelector("#pinForm input"); if (i) i.focus(); return; }
   if (act === "pinDone") { const x = (s.pins || []).find(x => x.id === id); if (x) x.done = today(); save(s); renderDetail(); return; }
@@ -763,41 +819,43 @@ document.addEventListener("click", e => {
   if (act === "saveRow") {
     const c = s.classes.find(x => x.id === id);
     Object.assign(c, { date: $("eDate").value, topics: $("eTop").value.trim(), homework: $("eHw").value.trim(), att: $("eAtt").value, hour: $("eHour").value === "—" ? "" : $("eHour").value, credits: $("eCr").value === "" ? null : +$("eCr").value, pack: $("ePack").value });
-    if (c.date) c.dateText = ""; sortClasses(s); editRow = null; save(s); refresh(); return;
+    if (c.date) c.dateText = ""; sortClasses(s); editRow = null; save(s, false, "Edited class " + (c.date ? fmtShort(c.date) : "")); refresh(); return;
   }
   if (act === "delRow" || act === "delPack" || act === "delPay" || act === "delStu") {
     if (!a.classList.contains("sure")) { a.classList.add("sure"); a.dataset.txt = a.textContent; a.textContent = "Sure?"; setTimeout(() => { a.classList.remove("sure"); a.textContent = a.dataset.txt; }, 3000); return; }
     if (act === "delRow") s.classes = s.classes.filter(x => x.id !== id);
     if (act === "delPay") s.payments = s.payments.filter(x => x.id !== id);
     if (act === "delPack") { s.packs = s.packs.filter(x => x.id !== id); s.classes.forEach(c => { if (c.pack === id) c.pack = ""; }); }
-    if (act === "delStu") { deleteDoc(doc(db, "users", tUid, "data", PRE + s.id)).catch(console.error); S = S.filter(x => x.id !== s.id); cur = null; renderAll(); saveIds(); toast("Deleted"); return; }
-    save(s); refresh(); return;
+    if (act === "delStu") { remember(s, "Deleted the student", ser(s)); deleteDoc(doc(db, "users", tUid, "data", PRE + s.id)).catch(console.error); delete snap[s.id]; S = S.filter(x => x.id !== s.id); go("students"); saveIds(); toast("Deleted " + s.name, () => undoLast(s.id)); return; }
+    save(s, false, { delRow: "Deleted a class", delPay: "Deleted a payment", delPack: "Deleted a pack" }[act]); refresh(); return;
   }
-  if (act === "archPack") { const p = s.packs.find(x => x.id === id); p.archived = !p.archived; save(s); refresh(); return; }
+  if (act === "archPack") { const p = s.packs.find(x => x.id === id); p.archived = !p.archived; save(s, false, (p.archived ? "Archived " : "Un-archived ") + p.label); refresh(); return; }
   if (act === "addNote") { const f = $("addClass"); const txt = f.topics.value.trim(); if (!txt) { f.topics.focus(); toast("Type the note in Topics"); return; } s.classes.push({ id: uid(), kind: "note", topics: txt, homework: "", date: f.date.value }); sortClasses(s); save(s); refresh(); return; }
 });
 document.addEventListener("change", e => {
   const t = e.target, s = S_();
   if (t.id === "mailPick") { s._mail = t.value; $("mailLink").href = GM(t.value); $("mailLink").textContent = "✉️ " + t.value; return; }
   if (t.dataset.emails) { s.emails = t.value.split(/[,;\s]+/).map(x => x.trim()).filter(x => x.includes("@")); save(s); return; }
-  if (t.id === "stStatus") { s.status = t.value; save(s); renderAll(); return; }
-  if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s); refresh(); return; }
-  if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") renderList(); save(s); return; }
+  if (t.id === "stStatus") { s.status = t.value; save(s, false, "Status → " + t.value); renderAll(); return; }
+  if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s, false, "Payment status → " + t.value); refresh(); return; }
+  if (t.dataset.f === "alwaysStdSel") { s.alwaysStd = t.value === "1"; save(s, false, s.alwaysStd ? "Always standard hours" : "Hours by time of day"); renderDetail(); return; }
+  if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") renderList(); save(s, false, "Edited " + (t.closest(".fld") && t.closest(".fld").querySelector("label") ? t.closest(".fld").querySelector("label").textContent.toLowerCase() : t.dataset.f)); return; }
   if (t.dataset.info) { s.info[t.dataset.info] = t.value.split("\n").map(x => x.trim()).filter(Boolean); save(s); return; }
   if (t.name === "kind" && t.form && t.form.id === "addPack") { $("customPack").hidden = t.value !== "custom"; return; }
 });
 document.addEventListener("submit", e => {
   e.preventDefault(); const f = e.target, s = S_();
+  if (f.id === "addGuide") { const u = f.gu.value.trim(); if (!/^https?:\/\//.test(u)) { toast("Paste the link (https://…)"); return; } s.guides = (s.guides || []).concat({ title: f.gt.value.trim() || "Guide", url: u, date: today() }); save(s, false, "Added guide"); renderDetail(); return; }
   if (f.id === "pinForm") { const v = f.pin.value.trim(); if (!v) return; s.pins = (s.pins || []).concat({ id: uid(), text: v, at: today() }); delete s._pinOpen; save(s); renderDetail(); toast("Pinned"); return; }
   if (f.id === "addClass") {
     const pk = s.packs.find(p => p.id === f.pack.value);
     let hour = f.hour.value === "—" ? "" : f.hour.value;
-    if (pk && pk.allStd && hour) hour = "Standard";
+    if ((pk && pk.allStd || s.alwaysStd) && hour) hour = "Standard";
     let cr = f.credits.value === "" ? null : +f.credits.value;
     if (cr == null && s.kind !== "trueque" && COUNTS.has(f.att.value)) cr = pk && pk.unit === "classes" ? null : hour === "Priority" ? 4 : hour === "Standard" ? 3 : null;
     if (f.att.value === "Cancelled on time") cr = 0;
     s.classes.push({ id: uid(), kind: "class", date: f.date.value, dateText: "", topics: f.topics.value.trim(), homework: f.homework.value.trim(), att: f.att.value, hour, credits: cr, pack: f.pack.value, tab: "Class Log" });
-    sortClasses(s); save(s); refresh(); toast("Class added"); return;
+    sortClasses(s); save(s, false, "Added class " + fmtShort(f.date.value)); refresh(); return;
   }
   if (f.id === "addPack") {
     const k = f.kind.value, first = f.first.checked; let label, size, unit = "credits";
@@ -810,21 +868,52 @@ document.addEventListener("submit", e => {
     const used = new Set(s.packs.map(p => p.color)); const color = PCOLORS.find(c => !used.has(c)) || PCOLORS[s.packs.length % PCOLORS.length];
     s.packs.push({ id: "p" + uid(), label, size, unit, price: priceN ? clp(priceN) : "", deadline: "", deadlineISO: f.deadline.value, color, paid: k === "trueque" ? "n/a" : f.paid.value, archived: false, created: today(), allStd: first && size === 12 });
     if (k !== "trueque" && f.paid.value !== "pending") { const v = f.paid.value === "half" ? Math.round(priceN / 2) : priceN; s.payments.push({ id: uid(), date: today(), what: (f.paid.value === "half" ? "Half of " : "") + label, amount: v ? clp(v) : "", clp: v || null, method: "" }); }
-    save(s); refresh(); toast("Pack added"); return;
+    save(s, false, "Added " + label); refresh(); return;
   }
   if (f.id === "addPay") {
     const v = money(f.amount.value);
     s.payments.push({ id: uid(), date: f.date.value, what: f.what.value.trim(), amount: v ? clp(v) : f.amount.value.trim(), clp: v || null, method: f.method.value });
-    save(s); refresh(); toast("Payment added"); return;
+    save(s, false, "Added payment " + (v ? clp(v) : "")); refresh(); return;
   }
   if (f.id === "newStu") {
     const name = f.sname.value.trim(); if (!name) return;
     let id = name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     if (S.some(x => x.id === id)) id += "-" + uid().slice(0, 3);
     const st = { id, name, status: "active", kind: f.skind.value, email: f.semail.value.trim(), level: f.slevel.value.trim(), schedule: f.ssched.value.trim(), objective: f.sobj.value.trim(), about: "", zoomKey: name.split(" ")[0], sheetId: "", folderId: "", boleta: "", info: {}, packs: [], classes: [], payments: [], words: [], other: [], created: today() };
-    S.push(st); save(st); saveIds(); cur = id; tab = "packs"; filt = "active"; $("modal").hidden = true; renderAll(); toast("Student added: now add their pack"); return;
+    S.push(st); snap[st.id] = ser(st); save(st, true); saveIds(); tab = "packs"; filt = "active"; $("modal").hidden = true; renderAll(); openStu(id); toast("Student added: now add their pack"); return;
   }
 });
+/* ---------- screens: Overview, Students list, one student (#s/<id>) ---------- */
+let hubView = "students"; try { hubView = localStorage.getItem("cs-hub-view") === "overview" ? "overview" : "students"; } catch (e) {}
+function go(v) { const h = v === "overview" ? "#overview" : "#students"; if (location.hash !== h) location.hash = h; else route(); }
+function openStu(id) { const h = "#s/" + encodeURIComponent(id); if (location.hash !== h) location.hash = h; else route(); }
+function route() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h.startsWith("s/") && S.some(x => x.id === h.slice(2))) { if (cur !== h.slice(2)) { cur = h.slice(2); editRow = null; } hubView = "students"; }
+  else { cur = null; if (h === "overview" || h === "students") hubView = h; }
+  try { localStorage.setItem("cs-hub-view", hubView); } catch (e) {}
+  $("ovView").hidden = hubView !== "overview"; $("stView").hidden = hubView !== "students";
+  $("stList").hidden = !!cur; $("stDetail").hidden = !cur;
+  $("tabOv").setAttribute("aria-selected", hubView === "overview"); $("tabSt").setAttribute("aria-selected", hubView === "students");
+  renderList(); renderDetail(); window.scrollTo(0, 0);
+}
+addEventListener("hashchange", route);
+function jumpList() {
+  const q = normName($("jumpQ").value); const box = $("jumpRes");
+  if (!q) { box.hidden = true; return; }
+  const hits = S.filter(s => normName(s.name).split(" ").some(w => w.startsWith(q)) || normName(s.name).includes(q)).sort((a, b) => (a.status === "active" ? 0 : 1) - (b.status === "active" ? 0 : 1) || a.name.localeCompare(b.name)).slice(0, 8);
+  box.innerHTML = hits.map((s, i) => `<button type="button" data-jump="${s.id}" class="${i ? "" : "on"}"><span class="av" style="--av:${avc(s)};width:26px;height:26px;font-size:11px">${esc(initials(s.name))}</span>${esc(s.name)}<small>${{ active: "active", paused: "paused", inactive: "past" }[s.status] || ""}</small></button>`).join("") || `<p class="muted small" style="margin:6px">Nobody called “${esc($("jumpQ").value)}”.</p>`;
+  box.hidden = false;
+}
+$("jumpQ").addEventListener("input", jumpList);
+$("jumpQ").addEventListener("focus", jumpList);
+$("jumpQ").addEventListener("keydown", e => {
+  const bs = [...$("jumpRes").querySelectorAll("[data-jump]")], i = bs.findIndex(b => b.classList.contains("on"));
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!bs.length) return; bs.forEach(b => b.classList.remove("on")); bs[(i + (e.key === "ArrowDown" ? 1 : -1) + bs.length) % bs.length].classList.add("on"); }
+  else if (e.key === "Enter") { e.preventDefault(); const b = bs[i >= 0 ? i : 0]; if (b) { $("jumpQ").value = ""; $("jumpRes").hidden = true; $("jumpQ").blur(); openStu(b.dataset.jump); } }
+  else if (e.key === "Escape") { $("jumpRes").hidden = true; }
+});
+document.addEventListener("keydown", e => { if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || "")) { e.preventDefault(); $("jumpQ").focus(); } });
 function sortClasses(s) { s.classes.sort((a, b) => (a.date || "0").localeCompare(b.date || "0")); }
 function refresh() { renderSummary(); renderKpis(); renderAlerts(); renderMoney(); renderTrends(); renderList(); renderDetail(); }
 $("addStu").onclick = () => {
@@ -833,6 +922,7 @@ $("addStu").onclick = () => {
     <div class="fld"><label>Name</label><input name="sname" required></div><div class="fld"><label>Email</label><input name="semail" type="email"></div>
     <div class="fld"><label>Level</label><input name="slevel" placeholder="B1"></div><div class="fld"><label>Schedule</label><input name="ssched" placeholder="Tue 12:00pm, Thu 11:30am"></div>
     <div class="fld" style="grid-column:1/-1"><label>Objective</label><textarea name="sobj"></textarea></div>
+    <div class="fld"><label>Hour rule</label><select data-f="alwaysStdSel"><option value="" ${s.alwaysStd ? "" : "selected"}>Normal (by time of day)</option><option value="1" ${s.alwaysStd ? "selected" : ""}>Always standard hours</option></select></div>
     <div class="fld"><label>Kind</label><select name="skind"><option value="pack">Paying student</option><option value="trueque">Trueque</option></select></div>
     <div class="row" style="grid-column:1/-1;justify-content:flex-end"><button type="button" id="mClose">Cancel</button><button class="primary" type="submit">Add student</button></div></form></div>`;
   m.querySelector("[name=sname]").focus();
@@ -856,7 +946,7 @@ $("impFile").onchange = async e => {
   $("mGo").onclick = async () => {
     $("mGo").disabled = true; $("mGo").textContent = "Importing…";
     try {
-      for (const x of list) { norm(x); const old = S.find(s => s.id === x.id); if (old && old.uid && !x.uid) x.uid = old.uid; if (roles[x.id]) x.uid = roles[x.id].uid; await setDoc(doc(db, "users", tUid, "data", PRE + x.id), { json: JSON.stringify(x), deleted: false, at: serverTimestamp() }); const i = S.findIndex(s => s.id === x.id); if (i >= 0) S[i] = x; else S.push(x); }
+      for (const x of list) { norm(x); const old = S.find(s => s.id === x.id); if (old && old.uid && !x.uid) x.uid = old.uid; if (roles[x.id]) x.uid = roles[x.id].uid; await setDoc(doc(db, "users", tUid, "data", PRE + x.id), { json: JSON.stringify(x), deleted: false, at: serverTimestamp() }); if (old) remember(old, "Replaced by an imported file", ser(old)); snap[x.id] = ser(x); const i = S.findIndex(s => s.id === x.id); if (i >= 0) S[i] = x; else S.push(x); }
       m.hidden = true; renderAll(); publishAll(); saveIds(); await autoLink(); loadUsage(); renderAll(); toast(`Imported ${list.length} students`);
     } catch (err) { console.error(err); toast("Import stopped: couldn't save. Try again."); $("mGo").disabled = false; $("mGo").textContent = "Import"; }
   };

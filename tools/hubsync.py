@@ -22,6 +22,8 @@ Usage:
            "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
            compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
+  HUB_PASSWORD=... python3 hubsync.py add-guide <student-id> '{"title":"Past simple guide","url":"https://docs.google.com/...","date":"2026-11-09"}'
+  HUB_PASSWORD=... python3 hubsync.py set-focus <student-id> '{"focus":"what we're working on (the student sees it, written to them)","objective":"(optional) new goal"}'
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 """
 import json, os, sys, random, string, datetime, urllib.request, urllib.error
@@ -49,13 +51,41 @@ def http(method, url, body=None, token=None):
         raise SystemExit(f"HTTP {e.code} on {method} {url.split('?')[0]}: {e.read().decode()[:400]}")
 
 
+TOKEN_CACHE = os.path.join(os.environ.get("TMPDIR", "/tmp"), "hubsync-token.json")
+
+
 def login():
+    """Sign in once and reuse the token (~55 min) so many commands in a row don't hit Firebase's sign-in limit."""
+    import time
+    try:
+        with open(TOKEN_CACHE) as f:
+            c = json.load(f)
+        if c.get("exp", 0) > time.time() + 60:
+            return c["tok"]
+        if c.get("refresh"):
+            r = http("POST", f"https://securetoken.googleapis.com/v1/token?key={API_KEY}", {"grant_type": "refresh_token", "refresh_token": c["refresh"]})
+            if r and r.get("id_token"):
+                _cache(r["id_token"], r.get("refresh_token", c["refresh"]), int(r.get("expires_in", 3600)))
+                return r["id_token"]
+    except (OSError, ValueError, SystemExit):
+        pass
     pw = os.environ.get("HUB_PASSWORD")
     if not pw:
         raise SystemExit("Set HUB_PASSWORD")
     r = http("POST", f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}",
              {"email": EMAIL, "password": pw, "returnSecureToken": True})
+    _cache(r["idToken"], r.get("refreshToken", ""), int(r.get("expiresIn", 3600)))
     return r["idToken"]
+
+
+def _cache(tok, refresh, ttl):
+    import time
+    try:
+        fd = os.open(TOKEN_CACHE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            json.dump({"tok": tok, "refresh": refresh, "exp": time.time() + ttl - 300}, f)
+    except OSError:
+        pass
 
 
 def teacher_uid(tok):
@@ -106,10 +136,10 @@ def pack_stats(s, p):
     size = p.get("size") or 0
     left = size - used if size else None
     first = min([c["date"] for c in cl if c.get("date")] or [""])
-    pri = (sum(1 for c in cl if c.get("hour") == "Priority") > len(cl) / 2) if cl else False
+    pri = (sum(1 for c in cl if c.get("hour") == "Priority") > len(cl) / 2) if cl else ("priority" in (p.get("label") or "").lower())
     per = (4 if pri else 3) if p.get("unit") == "credits" else 1
     return {"done": len(cl), "used": used, "size": size, "left": left, "first": first, "per": per,
-            "classesLeft": None if left is None else max(0, left) // per}
+            "classesLeft": None if left is None else max(0, left) // per, "pri": pri}
 
 
 def deadline(p, first):
@@ -131,7 +161,31 @@ def cur_pack(s):
     return ps[-1] if ps else None
 
 
-def make_view(s):
+def inst_at(p, st):
+    if p.get("size") == 36:
+        return 5 if st["pri"] else 7
+    if p.get("size") == 72:
+        return 9 if st["pri"] else 12
+    return None
+
+
+def make_view(s, meta=None):
+    meta = meta or {}
+    cp = cur_pack(s)
+    cst = pack_stats(s, cp) if cp else None
+    due = None
+    if cp and cst and s.get("kind") != "trueque" and cp.get("size"):
+        due = {"label": cp.get("label", ""), "half": cp.get("paid") == "half", "pending": cp.get("paid") == "pending",
+               "instAt": inst_at(cp, cst) if cp.get("paid") == "half" else None, "nextNo": cst["done"] + 1,
+               "left": cst["left"], "classesLeft": cst["classesLeft"], "unit": cp.get("unit")}
+    now = datetime.datetime.now(datetime.timezone.utc)
+    def ts(x):
+        try:
+            return datetime.datetime.fromisoformat(x.replace("Z", "+00:00"))
+        except Exception:
+            return None
+    ups = sorted([u for u in meta.get("upcoming", []) if u and u.get("student") == s["id"] and ts(u.get("start", "")) and ts(u["start"]) > now - datetime.timedelta(hours=1)], key=lambda u: ts(u["start"]))
+    tips = [r for r in meta.get("recs", []) if r and r.get("hub") == s["id"] and not r.get("done")][-5:]
     packs = []
     for p in s.get("packs", []):
         st = pack_stats(s, p)
@@ -143,14 +197,33 @@ def make_view(s):
                         for c in s.get("classes", []) if c.get("kind") != "note"],
             "payments": [{"date": p.get("date", ""), "what": p.get("what", ""), "amount": p.get("amount", "")} for p in s.get("payments", [])],
             "words": [{"w": w.get("w", ""), "tr": w.get("tr", ""), "ex": w.get("ex", ""), "i": i} for i, w in enumerate(s.get("words", []))],
+            "focus": s.get("focus", ""), "next": ups[0]["start"] if ups else "", "due": due,
+            "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
+            "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
 
 
-def save(tok, tu, s):
+def save(tok, tu, s, meta=None):
     s["updatedAt"] = int(datetime.datetime.now().timestamp() * 1000)
     set_doc(tok, tu, "t-hub-" + s["id"], s)
+    publish(tok, tu, s, meta)
+
+
+def publish(tok, tu, s, meta=None):
+    """Refresh the student's read-only copy (needs Noa's meta for next class + tips)."""
     if s.get("uid"):
-        set_doc(tok, s["uid"], "hub-view", make_view(s))
+        if meta is None:
+            meta = get_doc(tok, tu, "t-hubmeta") or {}
+        set_doc(tok, s["uid"], "hub-view", make_view(s, meta))
+
+
+def publish_all(tok, tu, meta, only=None):
+    for sid in (meta.get("ids") or []):
+        if only and sid not in only:
+            continue
+        s = get_doc(tok, tu, "t-hub-" + sid)
+        if s and s.get("uid"):
+            publish(tok, tu, s, meta)
 
 
 def rid():
@@ -294,11 +367,17 @@ def main():
         if dup:
             print("skip: same tip given in the last 14 days"); return
         r.update({"id": rid(), "date": today_s}); recs.append(r); m["recs"] = recs[-120:]
-        set_doc(tok, tu, "t-hubmeta", m); print("ok"); return
+        set_doc(tok, tu, "t-hubmeta", m)
+        if r.get("hub"):
+            publish_all(tok, tu, m, only={r["hub"]})
+        print("ok"); return
     if cmd == "set-meta":
         m = get_doc(tok, tu, "t-hubmeta") or {}
-        m.update(json.loads(a[1])); m["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        set_doc(tok, tu, "t-hubmeta", m); print("ok"); return
+        upd = json.loads(a[1]); m.update(upd); m["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        set_doc(tok, tu, "t-hubmeta", m)
+        if "upcoming" in upd:
+            publish_all(tok, tu, m)  # students see their next class
+        print("ok"); return
     sid = a[1]
     s = get_doc(tok, tu, "t-hub-" + sid)
     if s is None:
@@ -308,6 +387,16 @@ def main():
     data = json.loads(a[2]) if len(a) > 2 else {}
     if cmd == "merge":
         s.update(data); save(tok, tu, s); print("ok"); return
+    if cmd == "add-guide":
+        g = {"title": data.get("title", "Guide"), "url": data["url"], "date": data.get("date") or datetime.date.today().isoformat()}
+        if any(x.get("url") == g["url"] for x in s.get("guides", [])):
+            print("skip: guide already listed"); return
+        s.setdefault("guides", []).append(g); save(tok, tu, s); print("ok"); return
+    if cmd == "set-focus":
+        s["focus"] = data.get("focus", s.get("focus", ""))
+        if data.get("objective"):
+            s["objective"] = data["objective"]
+        save(tok, tu, s); print("ok"); return
     if cmd == "add-words":
         have = {norm_name(w.get("w", "")).replace(" ", "") for w in s.get("words", [])}
         now = int(datetime.datetime.now().timestamp() * 1000)
@@ -330,8 +419,10 @@ def main():
             pack = data.get("pack") or (p["id"] if p else "")
             pk = next((x for x in s.get("packs", []) if x["id"] == pack), None)
             hour = data.get("hour", "")
-            if pk and pk.get("allStd") and hour:
-                hour = "Standard"
+            if (pk and pk.get("allStd") or s.get("alwaysStd")) and hour:
+                hour = "Standard"  # first Pack Básico, or a student who always pays standard (Laura, José)
+                if data.get("credits") == 4:
+                    data["credits"] = 3
             att = data.get("att") or "Present"
             cr = data.get("credits")
             if cr is None and s.get("kind") != "trueque" and att in COUNTS and not (pk and pk.get("unit") == "classes"):

@@ -387,3 +387,17 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
+
+/* Small "are you sure?" pop-up shared by every page: csConfirm(title, html, yesLabel) -> Promise<boolean> */
+window.csConfirm = function (title, html, yes, no) {
+  return new Promise(res => {
+    const bd = document.createElement("div"); bd.className = "csc-bd";
+    bd.innerHTML = `<div class="csc" role="alertdialog" aria-modal="true" aria-labelledby="cscT"><h3 id="cscT">${title}</h3><div class="csc-b">${html || ""}</div><div class="csc-a"><button type="button" data-c="0">${no || "Cancel"}</button><button type="button" data-c="1" class="csc-y">${yes || "Yes"}</button></div></div>`;
+    const back = document.activeElement;
+    const done = v => { bd.remove(); document.removeEventListener("keydown", key, true); if (back && back.focus) try { back.focus(); } catch (e) {} res(v); };
+    const key = e => { if (e.key === "Escape") { e.preventDefault(); done(false); } };
+    bd.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (b) done(b.dataset.c === "1"); else if (e.target === bd) done(false); });
+    document.addEventListener("keydown", key, true);
+    document.body.appendChild(bd); setTimeout(() => { const b = bd.querySelector('[data-c="0"]'); if (b) b.focus(); }, 30);
+  });
+};
