@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Cheat Sheet members</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono&display=swap">
+<style>
+:root{--bg:#0A1424;--surface:#111E33;--surface-2:#0E1A2D;--line:#22385A;--ink:#E6EEF8;--muted:#9DB1CA;--royal:#8FB0FF;--green:#5AD394;--green-soft:#123726;--red:#F08A82;--sky:#16304F;
+--gloss:linear-gradient(180deg,#4EA8F5 0%,#1E73D0 50%,#173C9E 100%);--display:"Lexend",system-ui,sans-serif;--body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Space Mono",ui-monospace,monospace;color-scheme:dark}
+:root[data-theme="light"]{--bg:#EEF5FC;--surface:#fff;--surface-2:#F5F9FE;--line:#D6E3F2;--ink:#0F2341;--muted:#52667F;--royal:#1D4ED8;--green:#1F9D5C;--green-soft:#D9F5E4;--red:#C2413A;--sky:#D7EAFC;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.5 var(--body)}
+header{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px}
+.brand{text-decoration:none;display:flex;flex-direction:column;line-height:1.1}
+.brand small{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.brand span{font:700 22px var(--display);background:var(--gloss);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--green-soft);color:var(--green)}
+.sp{flex:1}
+button,.btn{font:800 14px var(--body);border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+button:hover,.btn:hover{border-color:var(--royal)}
+.primary{border:0;color:#fff;background:linear-gradient(180deg,#4FD18B 0%,#1F9D5C 55%,#167A47 100%)}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+h1{font:700 34px var(--display);margin:4px 0 4px}
+h2{font:700 22px var(--display);margin:22px 0 10px}
+.lede{color:var(--muted);margin:0 0 18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.center{max-width:520px;margin:60px auto;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 220px);overflow:auto;padding-right:4px}
+@media (max-width:860px){.list{max-height:none}}
+.stu{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.stu:hover{border-color:var(--royal)}
+.stu[aria-current="true"]{border-color:var(--green);background:var(--green-soft)}
+.stu b{font-weight:900}
+.stu .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stu .meta{font:12px var(--mono);color:var(--muted)}
+input[type=search]{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;margin-bottom:10px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:8px 14px}
+.stat b{display:block;font:700 24px var(--display)}
+.stat span{font-size:13px;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th{font:700 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);position:sticky;top:0}
+td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{font-weight:800}
+td.d{font:12px var(--mono);color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.note .when{font-weight:900;color:var(--green);margin-bottom:4px}
+.note .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.chip{display:inline-block;font-size:13px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin:0 6px 6px 0}
+.err{color:var(--red);font-weight:800}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-weight:800;padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+[hidden]{display:none!important}
+.ed input,.ed textarea,.addf input,.addn textarea{width:100%;font:600 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px}
+.addf{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;margin-bottom:10px;align-items:center}
+@media (max-width:700px){.addf{grid-template-columns:1fr}}
+.addn{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.addn textarea,.note textarea{min-height:110px;resize:vertical}
+.ib{all:unset;cursor:pointer;font:700 12px var(--mono);color:var(--muted);padding:3px 8px;border-radius:8px;border:1px solid transparent;white-space:nowrap}
+.ib:hover{color:var(--ink);border-color:var(--line)}
+.ib.del:hover,.ib.sure{color:#fff;background:#C2413A;border-color:#C2413A}
+td.act{white-space:nowrap;text-align:right}
+.sortb{all:unset;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.sortb:hover{color:var(--ink)}
+.sortb:focus-visible{outline:2px solid var(--royal);border-radius:4px}
+.note .nh{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.by{font:11px var(--mono);color:var(--muted)}
+.hint{font-size:13px;color:var(--muted);margin:-4px 0 12px}
+
+.parkbox{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:14px 0}
+.news{border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 18px;background:var(--surface)}
+.news-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.news-top button{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:700 13px var(--body);cursor:pointer}
+.news-n{font:800 12px var(--body);background:#E5533D;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:3px}
+.news-list{list-style:none;margin:0;padding:0}
+.news-row{display:flex;align-items:center;gap:8px}
+.news-row .news-i{flex:1;min-width:0}
+.kd-btn{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 11px;font:700 12.5px var(--body);cursor:pointer;white-space:nowrap}
+.kd-btn:hover{border-color:var(--green)}
+.kd-done{color:var(--green);font:700 12.5px var(--body);white-space:nowrap;padding:0 8px}
+.kd-comp{margin:6px 0 12px 34px;display:flex;flex-direction:column;gap:8px}
+.kd-comp textarea{width:100%;box-sizing:border-box;font:500 14.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+@media (max-width:600px){.news-row{flex-wrap:wrap}.kd-comp{margin-left:0}}
+.news-i{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px}
+.news-i:hover{background:var(--surface-2)}
+.news-i:focus-visible{outline:3px solid var(--green)}
+.news-list .fresh .news-i{background:var(--green-soft)}
+.news-list .big .ni{transform:scale(1.2)}
+.ni{font-size:18px;flex:none;width:24px;text-align:center}
+.nd{margin-left:auto;color:var(--muted);font-size:13px;white-space:nowrap}
+.foot-link{background:none;border:0;color:var(--royal);text-decoration:underline;cursor:pointer;font:600 13.5px var(--body);padding:4px 0}
+.bcard{display:flex;gap:12px;align-items:center;margin-top:8px}
+.bsvg{width:72px;height:79px;image-rendering:pixelated;flex:none;background:color-mix(in srgb,var(--green) 10%,var(--surface));border-radius:12px}
+.seg{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font:700 13.5px var(--body);cursor:pointer}
+.seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
+.pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
+</style>
+<link rel="stylesheet" href="comfort.css?v=12">
+<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
+
+<script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
+<script src="comfort.js?v=14" defer></script>
+</head>
+<body>
+<header><div class="top">
+  <a class="brand" href="./"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
+  <span class="tag">Cheat Sheet members</span>
+  <a class="btn" href="coaching.html" style="margin-left:6px">🎓 Coaching</a>
+  <div class="sp"></div>
+  <div class="cs-wrap" id="csWrap"></div>
+  <button id="outBtn" type="button" hidden>Sign out</button>
+</div></header>
+
+<main>
+  <section id="vSign" class="card center" hidden>
+    <h1>Cheat Sheet members</h1>
+    <p class="lede">Sign in with your Learn with Noa Google account to see your students' words and notes.</p>
+    <button class="primary" id="inBtn" type="button">Sign in with Google</button>
+    <p class="err" id="signErr" hidden></p>
+  </section>
+
+  <section id="vDenied" class="card center" hidden>
+    <h1>This page is only for Noa</h1>
+    <p class="lede">You're signed in as <b id="deniedWho"></b>. Your own words and notes are on the <a href="./" style="color:var(--royal)">Cheat Sheet</a>.</p>
+  </section>
+
+  <section id="vMain" hidden>
+    <h1>Cheat Sheet members</h1>
+    <p class="lede" id="summary">Loading…</p>
+    <div class="news" id="news" hidden></div>
+    <div class="news" id="tips" hidden></div>
+    <div class="news" id="usage" hidden></div>
+    <div class="layout">
+      <div>
+        <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
+        <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
+        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option></select></div>
+        <div class="row" style="margin-bottom:10px"><button type="button" id="reload">↻ Refresh</button><span class="muted" id="loadedAt" style="font-size:13px"></span></div>
+        <div class="list" id="list"></div>
+      </div>
+      <div id="detail" class="card"><p class="muted">Pick a student on the left to see their words and notes.</p></div>
+    </div>
+  </section>
+
+  <p class="err" id="loadErr" hidden></p>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=21"></script>
+<script type="module">
+import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
+  getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
+
+const TEACHER = "learnwithnoa@gmail.com";
+const app = initializeApp({
+  apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
+  authDomain: "learnwithnoa-cheatsheet.firebaseapp.com",
+  projectId: "learnwithnoa-cheatsheet",
+  storageBucket: "learnwithnoa-cheatsheet.firebasestorage.app",
+  messagingSenderId: "619847241160",
+  appId: "1:619847241160:web:d66edc58b7b143b9ab04fd"
+});
+const auth = getAuth(app), db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const views = ["vSign", "vDenied", "vMain"];
+const showView = v => views.forEach(id => $(id).hidden = id !== v);
+function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
+
+$("inBtn").onclick = async () => {
+  const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, p); }
+  catch (e) { if (e && e.code === "auth/popup-blocked") await signInWithRedirect(auth, p); else if (e && e.code !== "auth/popup-closed-by-user") { $("signErr").hidden = false; $("signErr").textContent = "Sign-in didn't work. Try again."; } }
+};
+$("outBtn").onclick = () => signOut(auth);
+
+const fmtDate = t => t ? new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+const fmtLong = t => t ? new Date(t).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "";
+const ago = t => { if (!t) return "never"; const d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? "today" : d === 1 ? "yesterday" : d + " days ago"; };
+const parse = (s, d) => { try { const v = JSON.parse(s); return v ?? d; } catch (e) { return d; } };
+
+let students = [], current = null;
+
+/* what you already sent / saw, kept in your own account so every computer knows */
+let tUid = null;
+let hubMeta = null;
+async function loadTPrefs() {
+  const u = auth.currentUser; if (!u) return; tUid = u.uid;
+  try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); hubMeta = m.exists() ? JSON.parse(m.data().json || "{}") : null; } catch (e) { hubMeta = null; }
+  try {
+    const [a, b] = await Promise.all([getDoc(doc(db, "users", tUid, "data", "t-kudos-sent")), getDoc(doc(db, "users", tUid, "data", "t-news-seen"))]);
+    const loc = kdSent(); let more = false;
+    if (a.exists()) { const c = JSON.parse(a.data().json || "{}") || {}; Object.keys(c).forEach(k => { if (!(loc[k] >= c[k])) loc[k] = c[k]; }); localStorage.setItem("cs-kudos-sent", JSON.stringify(loc)); }
+    Object.keys(loc).forEach(k => { if (!(a.exists() && (JSON.parse(a.data().json || "{}") || {})[k])) more = true; });
+    if (more) saveTPref("t-kudos-sent", loc);
+    const ls = +(localStorage.getItem(NEWS_KEY) || 0), cs = b.exists() ? +(JSON.parse(b.data().json || "0") || 0) : 0;
+    if (cs > ls) localStorage.setItem(NEWS_KEY, String(cs)); else if (ls > cs) saveTPref("t-news-seen", ls);
+  } catch (e) { console.warn("teacher prefs", e); }
+}
+function saveTPref(id, val) { if (!tUid) return; setDoc(doc(db, "users", tUid, "data", id), { json: JSON.stringify(val), deleted: false, at: serverTimestamp() }).catch(e => console.warn("save pref", e)); }
+async function load() {
+  $("summary").textContent = "Loading…"; $("loadErr").hidden = true;
+  await loadTPrefs(); await loadHubList();
+  try {
+    const snap = await getDocs(collection(db, "users"));
+    const roles = {};
+    try { (await getDocs(collection(db, "roles"))).forEach(d => { roles[d.id] = d.data() || {}; }); } catch (e) { console.warn("roles", e); }
+    const list = [];
+    await Promise.all(snap.docs.map(async d => {
+      const p = d.data() || {};
+      if ((p.email || "").toLowerCase() === TEACHER) return;
+      const ds = await getDocs(collection(db, "users", d.id, "data"));
+      const data = {};
+      ds.forEach(x => { const v = x.data(); if (!v.deleted && typeof v.json === "string") data[x.id] = v.json; });
+      list.push({
+        uid: d.id, name: p.name || "(no name)", email: p.email || "",
+        firstSeen: p.firstSeen && p.firstSeen.toMillis ? p.firstSeen.toMillis() : 0,
+        lastSeen: p.lastSeen && p.lastSeen.toMillis ? p.lastSeen.toMillis() : 0,
+        words: parse(data["ncs-words"], []).filter(w => w && w.w),
+        notes: parse(data["ncs-classnotes"], []).filter(n => n && n.text),
+        draft: parse(data["ncs-freenotes"], ""),
+        stars: parse(data["ncs-stars"], []),
+        sheet: parse(data["ncs-sheet"], ""),
+        buddy: parse(data["ncs-buddy"], null),
+        loveLog: parse(data["ncs-ttlove-log"], []),
+        level: parse(data["ncs-level"], "normal"),
+        mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), modrec: parse(data["ncs-modrec"], {}) || {},
+        loveLast: parse(data["ncs-ttlove"], ""),
+        role: roles[d.id] || {}
+      });
+    }));
+    list.sort((a, b) => b.lastSeen - a.lastSeen);
+    students = list.filter(s => s.email.toLowerCase() !== TEACHER);
+    const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
+    $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
+    $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    renderList(); renderNews(); renderTips(); renderUsage(); syncPark();
+    if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
+  } catch (e) {
+    console.warn(e);
+    $("summary").textContent = "";
+    $("loadErr").hidden = false;
+    $("loadErr").textContent = /permission/i.test(String(e && (e.code || e.message))) ?
+      "Firebase said no. The teacher rule isn't in the Firestore rules yet (Firestore Database → Rules)." :
+      "Couldn't load the students. Check your connection and press Refresh.";
+  }
+}
+$("reload").onclick = load;
+
+function renderList() {
+  const q = $("q").value.trim().toLowerCase();
+  const kind = $("tKind").value, srt = $("tSortSel").value;
+  const shown = students.filter(s => (!q || (s.name + " " + s.email).toLowerCase().includes(q)) && (kind === "all" || roleType(s.role) === kind));
+  const nm = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" });
+  shown.sort(srt === "za" ? (a, b) => nm(b, a) : srt === "seen" ? (a, b) => b.lastSeen - a.lastSeen || nm(a, b) : srt === "new" ? (a, b) => b.firstSeen - a.firstSeen || nm(a, b) : srt === "words" ? (a, b) => b.words.length - a.words.length || nm(a, b) : nm);
+  $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
+      <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
+      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
+    : `<p class="muted">${students.length ? "No match." : "No one has signed in yet."}</p>`;
+}
+$("q").oninput = renderList;
+try { $("tSortSel").value = localStorage.getItem("cs-t-sort") || "az"; $("tKind").value = localStorage.getItem("cs-t-kind") || "all"; } catch (e) {}
+$("tSortSel").onchange = () => { try { localStorage.setItem("cs-t-sort", $("tSortSel").value); } catch (e) {} renderList(); };
+$("tKind").onchange = () => { try { localStorage.setItem("cs-t-kind", $("tKind").value); } catch (e) {} renderList(); };
+$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); };
+
+/* ---------- editing (writes go straight to the student's account) ---------- */
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+async function change(s, key, fn) {
+  // read the latest copy first so we don't overwrite something the student just saved
+  const ref = doc(db, "users", s.uid, "data", key);
+  const snap = await getDoc(ref);
+  const cur = snap.exists() && !snap.data().deleted ? parse(snap.data().json, []) : [];
+  const next = fn(Array.isArray(cur) ? cur : []);
+  await setDoc(ref, { json: JSON.stringify(next), deleted: false, at: serverTimestamp() });
+  if (key === "ncs-words") s.words = next.filter(w => w && w.w); else s.notes = next.filter(n => n && n.text);
+  renderList(); renderDetail(s);
+}
+async function guarded(s, key, fn, msg) {
+  try { await change(s, key, fn); toast(msg); }
+  catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the edit rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
+}
+/* ---------- keep the Buddy park up to date with every student's buddy ---------- */
+const PARK_LV = [0, 20, 50, 100, 170, 260, 380, 530, 720, 950];
+function syncPark() {
+  students.forEach(s => {
+    const b = s.buddy; if (!b || !b.a) return;
+    const fpm = b.fpm || (b.fp != null ? { [b.a]: b.fp } : {});
+    let lvl = 1; PARK_LV.forEach((t, i) => { if (((fpm[b.a]) | 0) >= t) lvl = i + 1; });
+    setDoc(doc(db, "park", s.uid), {
+      on: b.on === true, a: b.a, c: b.c | 0, n: String(b.n || "").slice(0, 16), head: b.head || null, face: b.face || null, neck: b.neck || null,
+      lvl, words: s.words.length, first: s.name.split(" ")[0] || "", at: serverTimestamp()
+    }, { merge: true }).catch(e => console.warn("park sync", s.name, e && e.code));
+  });
+}
+/* ---------- student news: who joined, who hit a milestone ---------- */
+const MILES = [10, 25, 50, 100, 150, 200, 300, 400, 500, 750, 1000], NOTE_MILES = [5, 10, 25, 50, 100];
+const NEWS_KEY = "cs-tnews-seen", baseTitle = document.title;
+function newsEvents() {
+  const ev = [], since = Date.now() - 45 * 864e5;
+  students.forEach(s => {
+    const first = esc(s.name.split(" ")[0]);
+    const acts = [...s.words.map(w => w.t), ...s.notes.map(n => n.t)].filter(Boolean);
+    const joined = Math.min(...[s.firstSeen, ...acts].filter(Boolean));
+    if (isFinite(joined)) ev.push({ t: joined, s, ico: "👋", txt: `<b>${first}</b> joined the Cheat Sheet`, kind: "welcome", eid: s.uid + "-join" });
+    const best = {}; // one milestone per student per day (imports add many words at once)
+    const add = (t, m, kind) => { const day = new Date(t).toDateString(), k = kind + day; if (!best[k] || best[k].m < m) best[k] = { t, m, kind }; };
+    const ws = s.words.filter(w => w.t).sort((a, b) => a.t - b.t); MILES.forEach(m => { if (ws.length >= m) add(ws[m - 1].t, m, "w"); });
+    const ns = s.notes.filter(n => n.t).sort((a, b) => a.t - b.t); NOTE_MILES.forEach(m => { if (ns.length >= m) add(ns[m - 1].t, m, "n"); });
+    // ✨ Send love on the Thought for today
+    const ll = Array.isArray(s.loveLog) ? s.loveLog.filter(x => x && x.t) : [];
+    if (ll.length) ll.forEach(x => ev.push({ t: x.t, s, ico: "✨", txt: `<b>${first}</b> sent love to the Thought for today${x.tt ? `: <i>“${esc(String(x.tt).slice(0, 70))}${String(x.tt).length > 70 ? "…" : ""}”</i>` : ""}` }));
+    else if (typeof s.loveLast === "string" && s.loveLast) { const pr = s.loveLast.split("-").map(Number); if (pr.length === 3) ev.push({ t: new Date(pr[0], pr[1] - 1, pr[2], 12).getTime(), s, ico: "✨", txt: `<b>${first}</b> sent love to the Thought for today` }); }
+    Object.values(best).forEach(b => ev.push({ t: b.t, s, ico: b.kind === "w" ? "📚" : "📝", txt: `<b>${first}</b> reached <b>${b.m} ${b.kind === "w" ? "words" : "class notes"}</b>`, big: b.kind === "w" && b.m >= 100, kind: "kudos", m: b.m, mk: b.kind, eid: s.uid + "-" + b.kind + b.m }));
+  });
+  return ev.filter(e => e.t >= since).sort((a, b) => b.t - a.t);
+}
+let newsOpen = false;
+const USE_L = [["word", "📚 Words saved"], ["flash", "🃏 Flashcard rounds"], ["gram", "🧩 Grammar rounds"], ["vocab", "🗂️ Vocabulary quizzes"], ["vcards", "🗂️ Vocabulary flashcards"], ["irr", "🔁 Irregular verbs rounds"], ["sentence", "✍️ Sentences checked"], ["say", "🎤 Said out loud"], ["translate", "⇄ Translations"],
+  ["ai", "🤖 AI requests (text)"], ["ai-voice", "🔊 AI voice (iPhone)"], ["ai-limit", "⚠️ AI hit the limit"], ["ai-fail", "⚠️ AI failed (other)"], ["lookup", "🔎 Word lookups"],
+  ["p:classnotes", "📝 Opened My class notes"], ["p:notebook", "📓 Opened weekly summaries"], ["p:park", "🌳 Opened Buddy park"], ["p:quiz", "🎯 Opened Practice"]];
+let usageDays = 7;
+function usageSum(u, days) {
+  const out = {}, cut = Date.now() - days * 864e5;
+  Object.keys(u || {}).forEach(d => { const t = new Date(d).getTime(); if (!(t >= cut - 864e5)) return; Object.entries(u[d] || {}).forEach(([k, v]) => out[k] = (out[k] | 0) + (v | 0)); });
+  return out;
+}
+function renderUsage() {
+  const box = $("usage"); if (!box) return;
+  const per = students.map(s => ({ s, u: usageSum(s.usage, usageDays) }));
+  const any = per.some(x => Object.keys(x.u).length);
+  box.hidden = false;
+  const rows = USE_L.map(([k, l]) => { const tot = per.reduce((t, x) => t + (x.u[k] | 0), 0), who = per.filter(x => x.u[k]).length; return { k, l, tot, who }; }).filter(r => r.tot);
+  const pages = {}; per.forEach(x => Object.entries(x.u).forEach(([k, v]) => { if (k.startsWith("p:") && !USE_L.some(z => z[0] === k)) pages[k.slice(2)] = (pages[k.slice(2)] | 0) + v; }));
+  const topPages = Object.entries(pages).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const active = per.filter(x => Object.keys(x.u).length).length;
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">📊 How students use the site</h2><div><button type="button" class="seg" data-ud="7" aria-pressed="${usageDays === 7}">7 days</button> <button type="button" class="seg" data-ud="30" aria-pressed="${usageDays === 30}">30 days</button></div></div>
+    ${any ? `<p class="hint" style="margin:6px 0 10px">${active} of ${students.length} students used it in the last ${usageDays} days. Counting started on November 6, 2026.</p>
+    <table class="pstbl" style="max-width:640px"><thead><tr><td><b>What</b></td><td><b>Times</b></td><td><b>Students</b></td></tr></thead><tbody>${rows.map(r => `<tr><td>${r.l}</td><td>${r.tot}</td><td>${r.who}</td></tr>`).join("")}</tbody></table>
+    ${(() => { const a = per.reduce((t, x) => t + (x.u.ai | 0) + (x.u["ai-voice"] | 0), 0), lim = per.reduce((t, x) => t + (x.u["ai-limit"] | 0), 0); return a ? `<p class="hint" style="margin:10px 0 0"><b>AI:</b> ${a} requests in ${usageDays} days (about ${Math.round(a / usageDays)} a day).${lim ? ` ⚠️ ${lim} hit the free limit: if this keeps happening, it's time to look at the Blaze plan.` : " No limit problems. 👍"}</p>` : ""; })()}
+    ${topPages.length ? `<p class="hint" style="margin:10px 0 0"><b>Most opened pages:</b> ${topPages.map(([k, v]) => esc(k) + " (" + v + ")").join(" · ")}</p>` : ""}` : `<p class="hint" style="margin:6px 0 0">No data yet. Counting started on November 6, 2026, so give it a few days.</p>`}`;
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
+/* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
+const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
+function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
+function renderTips() {
+  const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-12).reverse();
+  box.hidden = !recs.length; if (!recs.length) return;
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips <span class="news-n" style="background:#7348D8">${recs.length}</span></h2></div>
+    <p class="muted" style="margin:4px 0 8px">From your classes: mistakes that keep coming up, and what could help.</p>
+    <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : (PAGE_T[r.page] || r.title || r.page);
+      return `<li><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
+        ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}">💌 Suggest it</button>`) : `<span class="muted" style="font-size:12.5px">not on the Cheat Sheet yet</span>`}
+        <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}">✓ Done</button></div></li>`; }).join("")}</ul>`;
+}
+async function tipDone(id) { const r = hubMeta.recs.find(x => x.id === id); if (r) r.done = Date.now(); renderTips(); try { await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn(e); } }
+document.addEventListener("click", async e => {
+  const a = e.target.closest("[data-tiprec],[data-tipmsg],[data-tipdone]"); if (!a) return;
+  const id = a.dataset.tiprec || a.dataset.tipmsg || a.dataset.tipdone, r = ((hubMeta && hubMeta.recs) || []).find(x => x.id === id); if (!r) return;
+  if (a.dataset.tipdone) { tipDone(id); return; }
+  const s = tipStudent(r); if (!s) return;
+  if (a.dataset.tiprec) { const v = Object.assign({}, s.modrec, { [r.mod]: +r.stage });
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; toast("⭐ Recommended to " + s.name.split(" ")[0]); tipDone(id); } catch (err) { toast("Couldn't save. Try again."); } return; }
+  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: the “${PAGE_T[r.page] || r.title}” page in your Cheat Sheet. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id); }
+});
+function renderNews() {
+  const box = $("news"), ev = newsEvents(), seen = +(localStorage.getItem(NEWS_KEY) || 0), fresh = ev.filter(e => e.t > seen).length;
+  document.title = (fresh ? "(" + fresh + ") " : "") + baseTitle;
+  if (!ev.length) { box.hidden = true; return; }
+  box.hidden = false;
+  const shown = newsOpen ? ev : ev.slice(0, 6);
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔔 Student news${fresh ? ` <span class="news-n">${fresh} new</span>` : ""}</h2>${fresh ? `<button type="button" id="newsSeen">Mark all as seen</button>` : ""}</div>
+    <p class="muted" style="margin:4px 0 8px">New students, milestones and ✨ love from the last 45 days. Great things to celebrate in class 🎉</p>
+    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><div class="news-row"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button>${!e.kind ? "" : kdSent()[e.eid] ? `<span class="kd-done">✓ Sent</span>` : `<button type="button" class="kd-btn" data-kd="${esc(e.eid)}">${e.kind === "welcome" ? "👋 Send welcome" : "🎉 Send kudos"}</button>`}</div>${kdOpen === e.eid ? composer(e.eid, kdText(e)) : ""}</li>`).join("")}</ul>
+    ${ev.length > 6 ? `<button type="button" id="newsMore" class="foot-link">${newsOpen ? "Show less" : "Show all " + ev.length}</button>` : ""}`;
+}
+/* ---------- kudos & messages: they pop up in the student's Cheat Sheet ---------- */
+let kdOpen = null;
+const kdSent = () => { try { return JSON.parse(localStorage.getItem("cs-kudos-sent") || "{}"); } catch (e) { return {}; } };
+function kdText(e) {
+  const f = e.s.name.split(" ")[0];
+  if (e.kind === "welcome") return `Welcome to the Cheat Sheet, ${f}! 🎉 I'm so happy you're here. After each class, save your new words and notes here, and they'll be waiting for you on any device. See you in class! – Noa`;
+  if (e.mk === "n") return `Kudos, ${f}! 📝 ${e.m} class notes saved. Going back to your notes is what makes things stick. Proud of you! – Noa`;
+  return `Congrats, ${f}! 📚 You just reached ${e.m} words in your Cheat Sheet. That's real progress, and I can hear it in class. Keep going! – Noa`;
+}
+function composer(id, text) {
+  return `<div class="kd-comp"><label class="muted" for="kdTa" style="font-size:13px">It pops up in their Cheat Sheet the next time they open it (signed in). Edit it if you like:</label>
+    <textarea id="kdTa" rows="3">${esc(text)}</textarea>
+    <div class="row"><button type="button" class="primary" data-kdsend="${esc(id)}">Send 💌</button><button type="button" data-kdcancel>Cancel</button></div></div>`;
+}
+async function sendMsg(uid, text, kind, eid) {
+  try {
+    await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: text.slice(0, 1000), kind: kind || "note", at: serverTimestamp() });
+    if (eid) { const m = kdSent(); m[eid] = Date.now(); localStorage.setItem("cs-kudos-sent", JSON.stringify(m)); saveTPref("t-kudos-sent", m); }
+    kdOpen = null; toast("Sent! 💌 They'll see it next time they open the Cheat Sheet."); return true;
+  } catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the messages rule isn't in the Firestore rules yet." : "Couldn't send. Try again."); return false; }
+}
+function kdClick(e, rerender) {
+  const o = e.target.closest("[data-kd]"); if (o) { kdOpen = o.dataset.kd; rerender(); const t = $("kdTa"); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } return true; }
+  if (e.target.closest("[data-kdcancel]")) { kdOpen = null; rerender(); return true; }
+  const sb = e.target.closest("[data-kdsend]");
+  if (sb) {
+    const id = sb.dataset.kdsend, text = ($("kdTa").value || "").trim(); if (!text) return true;
+    let uid, kind, eid = null;
+    if (id.startsWith("msg-")) { uid = id.slice(4); kind = "note"; }
+    else { const ev = newsEvents().find(x => x.eid === id); if (!ev) return true; uid = ev.s.uid; kind = ev.kind; eid = id; }
+    sb.disabled = true; sendMsg(uid, text, kind, eid).then(() => { renderNews(); const s = students.find(x => x.uid === current); if (s) renderDetail(s); });
+    return true;
+  }
+  return false;
+}
+$("news").addEventListener("click", e => {
+  if (kdClick(e, renderNews)) return;
+  if (e.target.closest("#newsSeen")) { const now = Date.now(); localStorage.setItem(NEWS_KEY, String(now)); saveTPref("t-news-seen", now); renderNews(); return; }
+  if (e.target.closest("#newsMore")) { newsOpen = !newsOpen; renderNews(); return; }
+  const b = e.target.closest("[data-news]"); if (!b) return;
+  current = b.dataset.news; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
+});
+const PS_T = ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"];
+function weekKeyT() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] } };
+function modBlock(s, id) {
+  const T = MODT[id], p = s.mods[id] || {}, b = p.b || {}, st = p.s || {}, rec = s.modrec[id] || 0;
+  const tot = T.stages.reduce((t, _, i) => t + (st[i + 1] | 0), 0), tOut = p.to && p.to.sc >= 15;
+  const star = n => `<span class="pstars">${"★".repeat(n)}<span>${"★".repeat(3 - n)}</span></span>`;
+  const open = n => n === 1 || tOut || (b[n - 1] | 0) >= 7;
+  return `<div style="margin-top:8px"><b>${esc(T.name)}</b>${tOut ? ` <span class="chip">🎓 Tested out</span>` : ""} <span class="muted">${tot} / ${T.stages.length * 3} ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
+    <table class="pstbl"><tbody>${T.stages.map((t, i) => { const n = i + 1; return `<tr><td>${n}. ${esc(t)}</td><td>${b[n] != null ? star(st[n] | 0) + ` <span class="muted">best ${b[n]}/10</span>` : `<span class="muted">${tOut ? star(st[n] | 0) + " tested out" : open(n) ? "not tried" : "🔒 locked"}</span>`}</td><td><button type="button" class="seg" data-psrec="${n}" data-mod="${id}" aria-pressed="${rec === n}">${rec === n ? "⭐ Recommended" : "Recommend"}</button></td></tr>`; }).join("")}</tbody></table></div>`;
+}
+function practiceBox(s) {
+  const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
+  const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
+  return `<div class="parkbox"><b>Practice</b>${modBlock(s, "ps")}${modBlock(s, "pp")}
+    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
+    <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. Tap it again to remove it.</p></div>`;
+}
+function buddyCard(b) {
+  const A = window.csBuddyArt;
+  if (!b || !b.a || !A || !A.sprites[b.a]) return ` <span class="muted">· ${b && b.on === false ? "they turned their buddy off" : "no buddy yet"}</span>`;
+  const lv = p => { let l = 1; A.LV.forEach((t, i) => { if ((p | 0) >= t) l = i + 1; }); return l; };
+  const fpm = b.fpm || (b.fp != null ? { [b.a]: b.fp } : {});
+  const others = Object.keys(fpm).filter(k => k !== b.a && A.sprites[k] && fpm[k] > 0);
+  const name = (b.n && String(b.n).trim() && String(b.n).trim() !== A.sprites[b.a].old ? String(b.n).trim() : A.sprites[b.a].name);
+  const color = (A.sprites[b.a].colors[b.c | 0] || A.sprites[b.a].colors[0])[0];
+  return `<div class="bcard">${A.svg({ a: b.a, pal: A.palFor(b.a, b.c), wear: { head: b.head, face: b.face, neck: b.neck }, plain: true, cls: "bsvg" })}
+    <div><b style="font-size:16px">${esc(name)}</b> <span class="muted">· ${esc(A.sprites[b.a].species || A.sprites[b.a].name)}, ${esc(color)}${b.on === false ? " · turned off" : ""}</span>
+    <div class="muted" style="margin-top:3px">💛 Friendship level ${lv(fpm[b.a])} · 🍪 ${b.t | 0} treats · 🌱 ${(b.gd || []).length} garden flowers</div>
+    ${others.length ? `<div class="muted" style="margin-top:3px">Other buddies: ${others.map(k => esc(A.sprites[k].species || A.sprites[k].name) + " 💛" + lv(fpm[k])).join(" · ")}</div>` : ""}</div></div>`;
+}
+document.addEventListener("change", e => { if (e.target.id !== "hubLink") return; const st = students.find(x => x.uid === current); if (!st) return; const old = st.role.hub || ""; const v = e.target.value; saveRole(st, { hub: v }).then(() => linkHub(st, v, old)); });
+async function saveRole(s, patch) {
+  try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved"); }
+  catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
+}
+const roleType = r => r.private ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : "club");
+let hubList = [];
+async function loadHubList() { if (!tUid) return; try { const ds = await getDocs(collection(db, "users", tUid, "data")); hubList = []; ds.forEach(x => { if (!x.id.startsWith("t-hub-")) return; const v = x.data(); if (v.deleted) return; try { const j = JSON.parse(v.json); hubList.push(j); } catch (e) {} }); hubList.sort((a, b) => a.name.localeCompare(b.name)); } catch (e) { console.warn("hub list", e); } }
+const norm = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g, "");
+function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.email && norm(h.email) === e) || hubList.find(h => norm(h.name) === norm(s.name)) || hubList.find(h => norm(h.name).split(" ")[0] === norm(s.name).split(" ")[0] && hubList.filter(k => norm(k.name).split(" ")[0] === norm(s.name).split(" ")[0]).length === 1); return m ? m.id : ""; }
+function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
+async function linkHub(s, hubId, oldId) {
+  try {
+    const { makeView } = await import("./hubview.js?v=1");
+    if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
+    if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
+    const h = hubList.find(x => x.id === hubId); if (!h) return;
+    h.uid = s.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + h.id), { json: JSON.stringify(h), deleted: false, at: serverTimestamp() });
+    await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(h)), deleted: false, at: serverTimestamp() });
+    toast("Linked: " + s.name.split(" ")[0] + " can now see “My coaching”");
+  } catch (e) { console.warn(e); toast("Couldn't link the hub page. Try again."); }
+}
+let editW = null, editN = null;
+let tSort = { k: "t", d: -1 }; // newest first
+
+function renderDetail(s) {
+  if (!s) return;
+  const wk = v => String(v || "").toLowerCase().replace(/^(to|a|an|the)\s+/, "").trim();
+  const words = [...s.words].sort((a, b) => tSort.k === "t" ? ((a.t || 0) - (b.t || 0)) * tSort.d
+    : wk(a[tSort.k]).localeCompare(wk(b[tSort.k]), "en", { sensitivity: "base" }) * tSort.d);
+  const th = (k, label) => `<th><button class="sortb" type="button" data-tsort="${k}" aria-label="Sort by ${label}">${label}${tSort.k === k ? (tSort.d > 0 ? " ▲" : " ▼") : ""}</button></th>`;
+  const notes = [...s.notes].sort((a, b) => (b.t || 0) - (a.t || 0));
+  const wRow = w => editW === w.id ?
+    `<tr class="ed"><td><input id="ew" value="${esc(w.w)}"></td><td><input id="em" value="${esc(w.m)}"></td><td><input id="ee" value="${esc(w.e)}"></td><td><input id="enn" value="${esc(w.n || "")}"></td><td class="d">${fmtDate(w.t)}</td>
+      <td class="act"><button class="ib" data-wsave="${esc(w.id)}" type="button">Save</button><button class="ib" data-wcancel type="button">Cancel</button></td></tr>` :
+    `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}</td><td>${esc(w.n || "")}</td><td class="d">${fmtDate(w.t)}${w.by === "teacher" ? `<div class="by">added by you</div>` : ""}</td>
+      <td class="act"><button class="ib" data-wedit="${esc(w.id)}" type="button">Edit</button><button class="ib del" data-wdel="${esc(w.id)}" type="button">Delete</button></td></tr>`;
+  const nCard = n => editN === n.id ?
+    `<div class="note ed"><div class="when">${fmtLong(n.t)}</div><textarea id="en">${esc(n.text)}</textarea>
+      <div class="row" style="margin-top:8px"><button class="primary" data-nsave="${esc(n.id)}" type="button">Save note</button><button data-ncancel type="button">Cancel</button></div></div>` :
+    `<div class="note"><div class="nh"><div class="when">${fmtLong(n.t)}</div><div><button class="ib" data-nedit="${esc(n.id)}" type="button">Edit</button><button class="ib del" data-ndel="${esc(n.id)}" type="button">Delete</button></div></div>
+      ${n.by === "teacher" ? `<div class="by">written by you</div>` : ""}<div class="txt">${esc(n.text)}</div></div>`;
+  $("detail").innerHTML = `
+    <h2 style="margin-top:0">${esc(s.name)}</h2>
+    <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
+    <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:10px;cursor:pointer"><input type="checkbox" id="lvlBeg" ${s.level === "beginner" ? "checked" : ""}> 🌱 Beginner mode (more Spanish, simpler examples, slower voice)</label>
+    <div class="row" style="margin-top:10px"><button type="button" class="kd-btn" data-kd="msg-${esc(s.uid)}">💌 Send ${esc(s.name.split(" ")[0])} a message</button></div>
+    ${kdOpen === "msg-" + s.uid ? composer("msg-" + s.uid, "Hi " + s.name.split(" ")[0] + "! ") : ""}
+    <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
+    ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
+    <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
+      <div class="row" style="margin-top:8px">${(() => { const ty = roleType(s.role); return [["club", "🌼 Club member"], ["private", "🌳 Private student"], ["both", "🌼🌳 Both"]].map(([k, l]) => `<button type="button" class="seg" data-role="${k}" aria-pressed="${ty === k}">${l}</button>`).join(""); })()}</div>
+      <div class="muted small" style="margin-top:6px">Club members sit in the middle of the park, private students at the edges.</div>
+      ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their Coaching page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Cheat Sheet menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Cheat Sheet.`}</div></div>` : ""}
+      <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
+    ${practiceBox(s)}
+    ${(() => { const u = usageSum(s.usage, 7), r = USE_L.filter(([k]) => u[k]).map(([k, l]) => l + ": " + u[k]); return `<div class="parkbox"><b>Last 7 days</b><div class="muted" style="margin-top:4px">${r.length ? r.join(" · ") : "No activity yet (counting started Nov 6, 2026)."}</div></div>`; })()}
+    <h2>Words</h2>
+    <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Cheat Sheet the next time they open it or come back to the tab.</p>
+    <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><input id="an2" placeholder="Notes (optional)" aria-label="Notes"><button class="primary" type="submit">+ Add</button></form>
+    ${words.length ? `<div class="row" style="margin-bottom:10px"><button type="button" id="cpW">Copy words (for a sheet)</button></div>
+      <div class="tbl"><table><thead><tr>${th("w","Word")}${th("m","Spanish")}${th("e","Example")}${th("n","Notes")}${th("t","Added")}<th></th></tr></thead><tbody>
+      ${words.map(wRow).join("")}</tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}
+    <h2>Class notes</h2>
+    <div class="addn"><textarea id="an" placeholder="Write a class note for them (it's saved with today's date)…" aria-label="New class note"></textarea><div><button class="primary" id="addN" type="button">+ Add note</button></div></div>
+    ${notes.length ? notes.map(nCard).join("") : `<p class="muted">No class notes saved yet.</p>`}
+    ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
+    ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
+  $("detail").querySelectorAll("[data-psrec]").forEach(btn => btn.onclick = async () => {
+    const n = +btn.dataset.psrec, md = btn.dataset.mod || "ps", v = Object.assign({}, s.modrec); if (v[md] === n) delete v[md]; else v[md] = n;
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; renderDetail(s); toast(v[md] === n ? "⭐ " + MODT[md].name + " stage " + n + " recommended for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Recommendation removed"); }
+    catch (e) { console.warn(e); toast("Couldn't save. Try again."); }
+  });
+  const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });
+  const lb = $("lvlBeg"); if (lb) lb.onchange = async () => {
+    const v = lb.checked ? "beginner" : "normal";
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-level"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.level = v; toast(lb.checked ? "🌱 Beginner mode on for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Beginner mode off"); }
+    catch (e) { console.warn(e); lb.checked = !lb.checked; toast("Couldn't save. Try again."); }
+  };
+  const cp = $("cpW");
+  if (cp) cp.onclick = async () => {
+    const clean = v => String(v || "").replace(/[\t\n\r]+/g, " ").trim();
+    const tsv = words.map(w => [clean(w.w), clean(w.m), clean(w.e), clean(w.n)].join("\t")).join("\n");
+    try { await navigator.clipboard.writeText(tsv); toast("Copied " + words.length + " words. Paste them into a sheet."); } catch (e) { toast("Couldn't copy. Select the table and copy it."); }
+  };
+  $("addW").onsubmit = e => {
+    e.preventDefault();
+    const w = $("aw").value.trim(), m = $("am").value.trim(), ex = $("ae").value.trim(), nn = $("an2").value.trim(); if (!w) { $("aw").focus(); return; }
+    guarded(s, "ncs-words", list => list.some(x => x && String(x.w).trim().toLowerCase() === w.toLowerCase()) ? list : list.concat([Object.assign({ id: newId(), w, m, e: ex, t: Date.now(), by: "teacher" }, nn ? { n: nn } : {})]), "Word added");
+  };
+  $("addN").onclick = () => {
+    const text = $("an").value.trim(); if (!text) { $("an").focus(); return; }
+    guarded(s, "ncs-classnotes", list => list.concat([{ id: newId(), t: Date.now(), text, by: "teacher" }]), "Note added");
+  };
+}
+
+/* row buttons */
+let sureT = null;
+function confirmTwice(btn, go) {
+  if (btn.classList.contains("sure")) { clearTimeout(sureT); go(); return; }
+  document.querySelectorAll(".ib.sure").forEach(b => { b.classList.remove("sure"); b.textContent = "Delete"; });
+  btn.classList.add("sure"); btn.textContent = "Sure?";
+  sureT = setTimeout(() => { btn.classList.remove("sure"); btn.textContent = "Delete"; }, 3000);
+}
+$("detail").addEventListener("click", e => {
+  const s = students.find(x => x.uid === current); if (!s) return;
+  if (kdClick(e, () => renderDetail(s))) return;
+  const t = e.target.closest("button"); if (!t) return;
+  const d = t.dataset;
+  if (d.tsort) { const k = d.tsort; tSort = tSort.k === k ? { k, d: -tSort.d } : { k, d: k === "t" ? -1 : 1 }; renderDetail(s); return; }
+  if (d.wedit) { editW = d.wedit; renderDetail(s); const i = $("ew"); if (i) i.focus(); }
+  else if ("wcancel" in d) { editW = null; renderDetail(s); }
+  else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(), nn = $("enn").value.trim(); if (!w) return; editW = null;
+    guarded(s, "ncs-words", list => list.map(x => { if (!(x && x.id === id)) return x; const y = { ...x, w, m, e: ex }; if (nn) y.n = nn; else delete y.n; return y; }), "Word updated"); }
+  else if (d.role) { const ty = d.role; const patch = { club: ty !== "private", private: ty !== "club" }; if (ty === "club") patch.hub = ""; else if (!s.role.hub) { const g = guessHub(s); if (g) patch.hub = g; } saveRole(s, patch).then(() => linkHub(s, patch.hub === undefined ? s.role.hub : patch.hub, ty === "club" ? s.role.hub : "")); }
+  else if (d.wdel) confirmTwice(t, () => guarded(s, "ncs-words", list => list.filter(x => !(x && x.id === d.wdel)), "Word deleted"));
+  else if (d.nedit) { editN = d.nedit; renderDetail(s); const i = $("en"); if (i) i.focus(); }
+  else if ("ncancel" in d) { editN = null; renderDetail(s); }
+  else if (d.nsave) { const id = d.nsave, text = $("en").value.trim(); if (!text) return; editN = null;
+    guarded(s, "ncs-classnotes", list => list.map(x => x && x.id === id ? { ...x, text } : x), "Note updated"); }
+  else if (d.ndel) confirmTwice(t, () => guarded(s, "ncs-classnotes", list => list.filter(x => !(x && x.id === d.ndel)), "Note deleted"));
+});
+$("list").addEventListener("click", () => { editW = null; editN = null; }, true);
+
+onAuthStateChanged(auth, u => {
+  $("outBtn").hidden = !u;
+  if (!u) { showView("vSign"); return; }
+  if ((u.email || "").toLowerCase() !== TEACHER) { $("deniedWho").textContent = u.email || u.displayName || "another account"; showView("vDenied"); return; }
+  showView("vMain"); load();
+});
+</script>
+</body>
+</html>

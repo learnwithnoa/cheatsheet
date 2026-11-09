@@ -268,7 +268,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   if (S.a === "unicorn") S.ua = true;
   /* Pancho lost the lilac color (everyone has 5 now): move saved llama colors to the right spot */
   if (!S.lm2) { const fix = o => { if (o && o.a === "llama") { if (o.c === 3) o.c = 0; else if ((o.c | 0) > 3) o.c = o.c - 1; } }; fix(S); S.lm2 = 1; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
-  const COS = ["a", "c", "n", "head", "face", "neck", "room", "shiny", "seas", "snd"];
+  const COS = ["a", "c", "n", "head", "face", "neck", "room", "shiny", "seas", "snd", "toyOff"];
   let base = null; /* the saved look, while the buddy window has unsaved edits */
   const pickCos = o => { const r = {}; COS.forEach(k => r[k] = o[k]); return r; };
   const dirty = () => !!base && COS.some(k => JSON.stringify(S[k] == null ? null : S[k]) !== JSON.stringify(base[k] == null ? null : base[k]));
@@ -391,7 +391,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   function markStudy() { const d = today(); if (!Array.isArray(S.gd)) S.gd = []; if (S.gd[S.gd.length - 1] === d || S.gd.includes(d)) return false; S.gd.push(d); save(); return true; }
   function stageSVG(opts) {
     opts = opts || {};
-    const toys = ITEMS.filter(i => i.slot === "toy" && isOpen(i)).map(i => i.id);
+    const toys = ITEMS.filter(i => i.slot === "toy" && isOpen(i) && !(S.toyOff || []).includes(i.id)).map(i => i.id);
     const room = opts.room !== undefined ? opts.room : S.room;
     return `<svg class="bd-stage-svg" viewBox="0 0 40 26" shape-rendering="crispEdges" role="img" aria-label="${esc(nameOf())}">${roomSVG(room, toys)}<g class="bd-stg-pet" id="${opts.plain ? "" : "bdStgPet"}">${rects(drawPet(opts), 10, 0)}</g>${opts.plain ? "" : gardenSVG()}</svg>`;
   }
@@ -422,7 +422,12 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 @keyframes bdTw{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:1;transform:scale(1.1)}}
 .bd-bub{pointer-events:auto;background:var(--surface,#fff);color:var(--ink,#222);border:1.5px solid var(--line,#ddd);border-radius:14px 14px 4px 14px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:9px 11px;font:600 13.5px/1.4 var(--body,sans-serif);max-width:270px;margin-bottom:34px}
 .bd-bub[hidden]{display:none}
-.bd-bub .bd-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.bd-bub .bd-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;align-items:center}
+.bd-acts-l{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.bd-bub .bd-tuck{margin-left:auto;padding:6px 9px}
+.bd-b small{font-size:11px;opacity:.8;font-weight:700}
+.bd-gear{all:unset;cursor:pointer;font-size:15px;line-height:1;padding:3px 5px;border-radius:8px}.bd-gear:hover,.bd-gear:focus-visible{background:color-mix(in srgb,var(--green,#2E8B57) 18%,transparent);outline:none}
+.bd-ic-nm{display:inline-flex;align-items:center;gap:4px}
 .bd-bub .bd-msg+.bd-acts{margin-top:8px}
 .bd-b{all:unset;box-sizing:border-box;cursor:pointer;font:800 13px var(--body,sans-serif);padding:6px 10px;border-radius:999px;border:1.5px solid var(--line,#ddd);background:var(--surface-2,var(--surface,#fff));color:var(--ink,#222);white-space:nowrap}
 .bd-b:hover{border-color:var(--green,#2E8B57)}
@@ -535,7 +540,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
 .bd.at-tr{bottom:auto;top:calc(86px + env(safe-area-inset-top,0px));align-items:flex-start}
 @media (min-width:901px){.bd.at-bl,.bd.at-ml{left:calc(max(0px,(100vw - 1280px) / 2) + 262px)}}
 .bd-ic{margin:-2px 0 8px;padding-bottom:8px;border-bottom:1px solid var(--line,#ddd)}
-.bd-ic-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.bd-ic-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .bd-ic-top span{font-size:12px;opacity:.8}
 .bd-ic .bd-bar{margin:5px 0 4px}
 .bd-ic-sub{font-size:12px;opacity:.8}
@@ -599,7 +604,10 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (ms !== 0) bubTimer = setTimeout(() => { bub.hidden = true; }, ms || 5000);
   }
   function hideBub() { clearTimeout(bubTimer); bub.hidden = true; }
-  const menuActs = () => `<button class="bd-b go" type="button" data-bd="feed">🍪 Feed (${S.t | 0})</button><button class="bd-b" type="button" data-bd="pet">✋ Pet</button><button class="bd-b" type="button" data-bd="open">⚙ ${esc(nameOf())}</button><button class="bd-b" type="button" data-bd="min" aria-label="Tuck your buddy away" title="Tuck away">🐾</button>`;
+  const petsLeft = () => Math.max(0, 5 - (S.pd && S.pd[0] === today() ? S.pd[1] : 0));
+  const gearBtn = () => `<button class="bd-gear" type="button" data-bd="open" aria-label="${esc(nameOf())}'s settings" title="Settings">⚙️</button>`;
+  /* Feed + Pet on the left, tuck away on the right. Pass gear=true when the message has no name card (the gear lives next to the name). */
+  const menuActs = gear => `<span class="bd-acts-l"><button class="bd-b go" type="button" data-bd="feed">🍪 Feed (${S.t | 0})</button><button class="bd-b" type="button" data-bd="pet" title="${petsLeft() ? petsLeft() + " more pets today give friendship points" : "You can always pet, friendship points come back tomorrow"}">✋ Pet${petsLeft() ? ` (${petsLeft()})` : ""}</button>${gear ? gearBtn() : ""}</span><button class="bd-b bd-tuck" type="button" data-bd="min" aria-label="Tuck your buddy away" title="Tuck away">🐾</button>`;
 
   /* ---------- friendship ---------- */
   const LV = [0, 20, 50, 100, 170, 260, 380, 530, 720, 950];
@@ -635,7 +643,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     [2, yawn],
     [4, () => anim("bd-look", 2200)],
     [5, () => { prop("🦋", "bd-fly", 4200); setTimeout(() => anim("bd-look", 2200), 800); }],
-    [6, () => { if (!isOpen(byId.ball)) return false; prop("⚽", "bd-ball", 2400); setTimeout(hop, 500); }],
+    [6, () => { if (!isOpen(byId.ball) || (S.toyOff || []).includes("ball")) return false; prop("⚽", "bd-ball", 2400); setTimeout(hop, 500); }],
     [9, () => { anim("bd-spin", 900); setTimeout(hop, 900); }]
   ];
   function idleTick() {
@@ -702,7 +710,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const l = level(), p = fpOf(), nxt = LV[l], fed = S.fd && S.fd[0] === today() ? S.fd[1] : 0;
     const mood = fed >= FEED_PER_DAY ? "full 😋" : fed === 0 && (S.t | 0) > 0 ? "a little hungry 🍪" : "happy 😊";
     const pct = nxt ? Math.max(4, Math.round((p - LV[l - 1]) / (nxt - LV[l - 1]) * 100)) : 100;
-    return `<div class="bd-ic"><div class="bd-ic-top"><b>${esc(nameOf())}</b><span>Level ${l} 💛</span></div><div class="bd-bar" aria-hidden="true"><i style="width:${pct}%"></i></div><div class="bd-ic-sub">Feeling ${mood} · 🍪 ${S.t | 0}/${MAXT}${nxt ? ` · next: ${esc(LV_WHAT[l])}` : " · best friends!"}</div></div>`;
+    return `<div class="bd-ic"><div class="bd-ic-top"><span class="bd-ic-nm"><b>${esc(nameOf())}</b>${gearBtn()}</span><span>Level ${l} 💛</span></div><div class="bd-bar" aria-hidden="true"><i style="width:${pct}%"></i></div><div class="bd-ic-sub">Feeling ${mood} · 🍪 ${S.t | 0}/${MAXT}${nxt ? ` · next: ${esc(LV_WHAT[l])}` : " · best friends!"}</div></div>`;
   }
   function pvOpts(extra) {
     if (pv && pv.a) return Object.assign({ a: pv.a, pal: SP[pv.a].p, wear: {} }, extra || {});
@@ -728,7 +736,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (!(S.t > 0)) { say("No treats left. Save a new word or finish a flashcard round to earn more 🍪", `<button class="bd-b" type="button" data-bd="open">How it works</button>`, 6500); return; }
     S.t -= 1; S.fd = [today(), (S.fd && S.fd[0] === today() ? S.fd[1] : 0) + 1]; addFP(3);
     hop(); fx(["🍪", "😋", "💛"]);
-    say(["Nom nom! 😋", "Yum, thank you!", "Delicious 🍪", "*happy crunching*"][Math.floor(Math.random() * 4)], menuActs(), 4000);
+    say(infoLine() + ["Nom nom! 😋", "Yum, thank you!", "Delicious 🍪", "*happy crunching*"][Math.floor(Math.random() * 4)], menuActs(), 4500);
     refreshPanel('[data-m="feed"]', ["🍪", "😋", "💛"]);
   }
   function setMin(v) { S.min = !!v; save(); hideBub(); visible(); if (!v) { petBtn.focus(); hop(); } else mini.focus(); }
@@ -856,8 +864,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     } else if (sec === "room") {
       const n = (S.gd || []).length, toys = ITEMS.filter(i => i.slot === "toy");
       body = `${slotRow("room", "Background")}
-      <div class="bd-small" style="margin:4px 0 5px;font-weight:700">Toys</div><div class="bd-row">${toys.map(t => `<span class="bd-chip${isOpen(t) ? "" : " locked"}" title="${isOpen(t) ? esc(t.name) : "Unlocks " + (t.m ? "" : "at ") + lockTxt(t)}">${isOpen(t) ? t.ico : "🔒"} ${esc(t.name)}${isOpen(t) ? "" : ` <small>· ${t.m ? "⏪" : t.l}</small>`}</span>`).join("")}</div>
-      <p class="bd-small">Toys appear in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass and 🌍 globe come from finishing grammar modules.</p>
+      <div class="bd-small" style="margin:4px 0 5px;font-weight:700">Toys</div><div class="bd-row">${toys.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${t.m ? "" : "at "}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${t.m ? "⏪" : t.l}</small></span>`).join("")}</div>
+      <p class="bd-small">Tap a toy to put it away or bring it back. New toys show up in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass and 🌍 globe come from finishing grammar modules.</p>
       <p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows on every day you study. Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`;
     } else if (sec === "buddy") {
       body = `${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}<p class="bd-small">Each buddy has its own friendship level. Your treats, words and unlocks are shared by all of them.</p>`;
@@ -901,7 +909,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
         favKey = ""; S.on = true; S.hi = today(); S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
         if (S.t == null) S.t = START_T; if (S.mw == null) S.mw = counts().words; S.min = false; S.seen = ITEMS.filter(isOpen).map(i => i.id);
         save(); closeModal(); visible(); hop(); fx(["💛", "🎉", "💛"]);
-        say(`Hi! I'm <b>${esc(nameOf())}</b> 👋 I brought ${S.t} treats. Tap me anytime.`, menuActs(), 7000);
+        say(`Hi! I'm <b>${esc(nameOf())}</b> 👋 I brought ${S.t} treats. Tap me anytime.`, menuActs(true), 7000);
         updateToggle();
         return;
       }
@@ -912,7 +920,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const a = m.dataset.m;
       if (a === "save") {
         if (pv) { const box = modal.querySelector(".bd-pv"); const what = pv.a ? `${SP[pv.a].name} is still locked` : pv.c != null ? `That color is still locked` : `That item is still locked`; let er = modal.querySelector(".bd-err"); if (!er) { er = document.createElement("p"); er.className = "bd-err"; er.setAttribute("role", "alert"); (box || modal.querySelector(".bd-foot")).insertAdjacentElement(box ? "afterend" : "beforebegin", er); } er.innerHTML = `🔒 <b>${what}</b>, so it can't be saved yet. Tap <b>Back to my buddy</b> and choose one you've unlocked.`; return; }
-        const was = dirty(); commit(); reallyClose(); if (was) toastMsg("Saved ✓"); return; }
+        const was = dirty(); commit();
+        if (sec) { sec = null; base = pickCos(S); renderModal(); modal.scrollTop = 0; const f = modal.querySelector(".bd-tile"); if (f) f.focus(); if (was) toastMsg("Saved ✓"); return; }
+        reallyClose(); if (was) toastMsg("Saved ✓"); return; }
       if (a === "discard") { Object.assign(S, base); commit(); reallyClose(); return; }
       if (a === "keep") { confirmOpen = false; renderModal(); return; }
       if (a === "back") { sec = null; pv = null; renderModal(); const f = modal.querySelector(".bd-tile"); if (f) f.focus(); return; }
@@ -926,6 +936,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (pick || col || w) pv = null;
     if (col) { S.c = +col.dataset.col; save(); renderModal(); modal.querySelector(`[data-col="${S.c}"]`).focus(); return; }
     if (w) { const slot = w.dataset.wear; S[slot] = w.dataset.item || null; save(); renderModal(); const f = modal.querySelector(`[data-wear="${slot}"][data-item="${w.dataset.item}"]`); if (f) f.focus(); return; }
+    const ty = e.target.closest("[data-toy]");
+    if (ty) { const id = ty.dataset.toy, off = new Set(S.toyOff || []); off.has(id) ? off.delete(id) : off.add(id); S.toyOff = [...off]; save(); renderModal(); const f = modal.querySelector(`[data-toy="${id}"]`); if (f) f.focus(); return; }
     if (e.target.closest("#bdStage")) { petIt(); return; }
     if (m) {
       const a = m.dataset.m;
@@ -958,7 +970,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       wake(); hop();
       if (unlocked.length) { fx(["🎉", "✨", "🎉"]); say(`🎉 New for ${esc(nameOf())}: <b>${unlocked.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>!`, `<button class="bd-b go" type="button" data-bd="open">Try it on</button>`, 9000); }
       else if (S.t > old) { if (level() >= 3) anim("bd-dance", 1300); fx("🍪", 1); say(`+${S.t - old} 🍪 Nice word!`, "", 2600); }
-      else say("Treat jar's full (30) 🍪 Time for a snack?", menuActs(), 4000);
+      else say("Treat jar's full (30) 🍪 Time for a snack?", menuActs(true), 4000);
     }
   }
   document.addEventListener("cs-said", () => {

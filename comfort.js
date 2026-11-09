@@ -1,5 +1,5 @@
 /* ===== Cheat Sheet · Reading & comfort settings =====
-   Shared by the Cheat Sheet (index.html) and the teacher view (teacher.html).
+   Shared by the Cheat Sheet (index.html) and Cheat Sheet members (members.html).
    Settings live in localStorage "ncs-comfort" (synced to the student's account on the Cheat Sheet). */
 (function () {
   "use strict";

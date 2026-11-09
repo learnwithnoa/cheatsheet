@@ -1051,8 +1051,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     </div>
     <div class="spacer"></div>
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
-    <a class="theme-btn t-ico" id="navTeacher" href="teacher.html" title="Members" aria-label="Members" hidden>👥</a>
-    <a class="theme-btn t-ico" id="navHub" href="hub.html" title="Coaching" aria-label="Coaching" hidden>🎓</a>
+    <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Cheat Sheet members" aria-label="Cheat Sheet members" hidden>👥</a>
+    <a class="theme-btn t-ico" id="navHub" href="coaching.html" title="Coaching (private students)" aria-label="Coaching" hidden>🎓</a>
     <div class="va-wrap"><button class="theme-btn t-ico" id="navViewAs" type="button" title="View as a student" aria-label="View as a student" aria-expanded="false" hidden>👁</button>
       <div class="va-panel card" id="vaPanel" hidden><b>View the site as…</b><div class="va-list" id="vaList"><p class="muted">Loading…</p></div></div></div>
     <div class="music-wrap">
@@ -1087,7 +1087,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
         <p class="auth-status" id="authStatus"></p>
         <div class="auth-stats" id="authStats"></div>
         <p class="music-note">Your words, class notes, stars and flashcard progress save to your Google account automatically. Sign in with the same account on your phone or another computer to see them there.</p>
-        <a class="swap" id="teacherLink" href="teacher.html" hidden style="text-decoration:none;align-self:flex-start">📋 Teacher view →</a>
+        <a class="swap" id="teacherLink" href="members.html" hidden style="text-decoration:none;align-self:flex-start">👥 Cheat Sheet members →</a>
         <div id="authOutBox"><button class="swap" type="button" id="authOut">Sign out</button></div>
         <div class="confirm-bar" id="authOutConfirm" hidden><p><b>Sign out?</b> Your notes stay safe in your Google account. They'll be removed from this device until you sign in again.</p><div class="note-actions"><button class="pill-btn" type="button" id="authOutYes">Sign out</button><button class="swap" type="button" id="authOutNo">Cancel</button></div></div>
       </div>
@@ -1099,14 +1099,14 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   <nav class="side" aria-label="Sections">
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
-      <button class="navbtn cn-nav t-mnav" type="button" data-href="teacher.html" id="mnavTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">👥</span><span>Members</span></button>
-      <button class="navbtn cn-nav t-mnav" type="button" data-href="hub.html" id="mnavHub" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>Coaching</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">👥</span><span>Members</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="coaching.html" id="mnavHub" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>Coaching</span></button>
+      <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>My coaching</span></button>
       <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
       <button class="navbtn cn-nav" data-go="park"><span class="w-ico em-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
-      <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>My coaching</span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup ng-start"><h4>Essentials</h4>
@@ -1399,7 +1399,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 
 <section class="view" id="v-coaching" hidden>
   <h1>My <em>coaching</em></h1>
-  <p class="lede">Your private classes with Noa: what you did in each class, your homework, your pack and your word bank. Noa keeps it up to date after your classes.</p>
+  <p class="lede">Your private classes with Noa: what you did in each class, your homework, and your pack. Noa keeps it up to date after your classes.</p>
   <div class="ch-wrap" id="coachBox"><p class="muted">Loading…</p></div>
 </section>
 <script>
@@ -1426,7 +1426,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
       <div class="ch-tint ch-a ch-stat"><b>${Math.floor(left/per)}</b><span>${Math.floor(left/per)===1?"class":"classes"} left (about)</span></div>
       ${cur.deadline?`<div class="ch-tint ch-p ch-stat"><b>${fs(cur.deadline)}</b><span>your pack ends</span></div>`:""}
       <div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
-    const tabs=[["classes","My classes","ch-s"],["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"],["words",`Word bank (${(v.words||[]).length})`,"ch-a"]];
+    const tabs=[["classes","My classes","ch-s"],["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]];
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
     if(tab==="classes"){
@@ -2259,7 +2259,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div></footer>
-<script src="buddy.js?v=21" defer></script>
+<script src="buddy.js?v=22" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
