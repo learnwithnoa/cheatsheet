@@ -1,7 +1,7 @@
 /* Cheat Sheet offline support: always try the network first (so updates show up right away),
    and fall back to the last saved copy when there's no internet. */
 const CACHE = "cs-offline-v2";
-const CORE = ["./", "./index.html", "./comfort.css?v=15", "./comfort.js?v=17", "./buddy.js?v=29", "./ios-sound.js?v=2", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
+const CORE = ["./", "./index.html", "./comfort.css?v=16", "./comfort.js?v=18", "./buddy.js?v=29", "./ios-sound.js?v=2", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(CORE.map(u => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
 });

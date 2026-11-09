@@ -180,3 +180,14 @@ html.cs-contrast :is(.muted,.hint,.esb,.pr-sub,.ps-kind,.vs-ex,.tr-also,.lk-ex){
 :root:not(.cs-green) .bd-b.go{background:linear-gradient(180deg,#5FB4FF 0%,#1E8CF0 55%,#1D4ED8 100%);border-color:#1D6FE0;color:#fff}
 :root:not(.cs-green) .park-b .pinfo .pb-feed:not(.pb-duel){background:var(--bright)}
 @media (max-width:900px){:root:not(.cs-green) nav.side .cn-nav{border-color:color-mix(in srgb,var(--bright) 45%,var(--line))}}
+
+/* menu in folding groups */
+.cs-navg nav.side .nfg h4{margin:0 0 2px}
+.nfg-h{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 6px 3px 0;border-radius:8px;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit}
+.nfg-h:hover{color:var(--ink)}.nfg-h:focus-visible{outline:2px solid var(--ng);outline-offset:2px}
+.nfg-n{font-size:10px;opacity:.7;margin-left:auto}
+.nfg-c{transition:transform .15s;font-size:11px}
+.nfg.folded .nfg-c{transform:rotate(-90deg)}
+@media (min-width:901px){ .nfg.folded > .navbtn{display:none} }
+.nfg .navbtn .w-ico{display:none}
+@media (max-width:900px){ .nfg-n,.nfg-c{display:none} }

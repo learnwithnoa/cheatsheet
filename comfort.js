@@ -8,7 +8,7 @@
   const sysContrast = () => { try { return matchMedia("(prefers-contrast: more)").matches; } catch (e) { return false; } };
   const contrastOn = () => (S.contrast == null ? sysContrast() : !!S.contrast);
   try { matchMedia("(prefers-contrast: more)").addEventListener("change", () => { if (S.contrast == null) applyAll(); }); } catch (e) {}
-  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true, cursor: "default", lookup: true, contrast: null, accent: "blue" };
+  const DEF = { size: 1, font: "default", space: false, bionic: false, ruler: false, focus: false, calm: false, inshort: true, read: true, cursor: "default", lookup: true, contrast: null, accent: "blue", menu: "grouped" };
   const root = document.documentElement;
   const isMain = !!document.getElementById("v-notes");
   let S = Object.assign({}, DEF);
@@ -306,6 +306,43 @@
   }
   window.csComfort = { get: () => Object.assign({}, S), apply: applyAll };
 
+  /* ---------- menu: topic pages in folding groups (Settings → Menu layout → Classic list undoes it) ---------- */
+  const NAV_GROUPS = [
+    ["start", "Essentials", "ng-start", ["basics", "be", "tenses", "verbs", "mistakes"]],
+    ["grammar", "Grammar notes", "ng-grammar", ["pronouns", "time", "place", "tofor", "quantity", "frequency", "compare", "gerund", "usedto", "perfect", "modals", "conditionals", "passive", "reported"]],
+    ["words", "Words & sounds", "ng-words", ["phrasal", "domake", "false", "linking", "pronunciation", "numbers"]],
+    ["life", "Real life", "ng-work", ["conversation", "opinions", "email", "interview"]],
+    ["tools", "Tools", "ng-speaking", ["translate", "summary", "stuck"]]
+  ];
+  const FOLD_K = "cs-nav-fold", FOLD_DEF = { grammar: true, words: true, life: false, tools: false, start: false };
+  function navFold() { try { return Object.assign({}, FOLD_DEF, JSON.parse(localStorage.getItem(FOLD_K) || "{}")); } catch (e) { return Object.assign({}, FOLD_DEF); } }
+  function groupMenu() {
+    if ((S.menu || "grouped") !== "grouped") return;
+    const nav = document.querySelector("nav.side"); if (!nav || nav.dataset.grouped) return;
+    const btn = id => nav.querySelector(`.navgroup:not(.starred) .navbtn[data-go="${id}"]`);
+    if (!btn("basics")) return;
+    nav.dataset.grouped = "1"; document.documentElement.classList.add("cs-navg");
+    const tr = btn("translate"); if (tr) tr.classList.remove("cn-nav");
+    const old = [...nav.querySelectorAll(".navgroup[class*='ng-']")];
+    const fold = navFold();
+    NAV_GROUPS.forEach(([k, label, cls, ids]) => {
+      const g = document.createElement("div"); g.className = "navgroup nfg " + cls; g.dataset.ng = k;
+      const items = ids.map(btn).filter(Boolean);
+      g.innerHTML = `<h4><button type="button" class="nfg-h" aria-expanded="true"><span>${label}</span><span class="nfg-n">${items.length}</span><span class="nfg-c" aria-hidden="true">▾</span></button></h4>`;
+      items.forEach(b => g.appendChild(b));
+      g.classList.toggle("folded", !!fold[k]); g.querySelector(".nfg-h").setAttribute("aria-expanded", String(!fold[k]));
+      nav.appendChild(g);
+    });
+    old.forEach(g => { [...g.querySelectorAll(".navbtn")].forEach(b => nav.querySelector(".nfg[data-ng='start']").appendChild(b)); g.remove(); });
+    nav.addEventListener("click", e => { const h = e.target.closest(".nfg-h"); if (!h) return; e.preventDefault(); e.stopPropagation();
+      const g = h.closest(".nfg"), k = g.dataset.ng, f = navFold(); f[k] = !g.classList.contains("folded"); g.classList.toggle("folded", f[k]); h.setAttribute("aria-expanded", String(!f[k]));
+      try { localStorage.setItem(FOLD_K, JSON.stringify(f)); } catch (er) {} });
+    /* open the group of the page you're on */
+    const openCur = () => { const c = nav.querySelector(".nfg .navbtn[aria-current='true']"); const g = c && c.closest(".nfg.folded"); if (g) { g.classList.remove("folded"); g.querySelector(".nfg-h").setAttribute("aria-expanded", "true"); } };
+    new MutationObserver(openCur).observe(nav, { subtree: true, attributes: true, attributeFilter: ["aria-current"] }); openCur();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", groupMenu); else groupMenu();
+
   /* ---------- the panel ---------- */
   function tog(id, label, sub) { return `<label class="cs-tog"><input type="checkbox" id="${id}"><span><b>${label}</b>${sub ? `<small>${sub}</small>` : ""}</span></label>`; }
   function buildPanel() {
@@ -314,7 +351,8 @@
       <div class="cs-panel" id="csPanel" role="dialog" aria-label="Reading and comfort settings" hidden>
         <div class="cs-head"><h3>Reading &amp; comfort</h3><button class="cs-x" id="csClose" type="button" aria-label="Close">×</button></div>
         <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div>
-          <div class="cs-curl"><b style="font-weight:800">Menu &amp; button colour</b><div class="cs-seg" id="csAccent"><button type="button" data-csacc="blue"><span aria-hidden="true">🔵</span> Blue</button><button type="button" data-csacc="green"><span aria-hidden="true">🟢</span> Green (classic)</button></div></div></div>
+          <div class="cs-curl"><b style="font-weight:800">Menu &amp; button colour</b><div class="cs-seg" id="csAccent"><button type="button" data-csacc="blue"><span aria-hidden="true">🔵</span> Blue</button><button type="button" data-csacc="green"><span aria-hidden="true">🟢</span> Green (classic)</button></div></div>
+          <div class="cs-curl"><b style="font-weight:800">Menu layout</b><div class="cs-seg" id="csMenu"><button type="button" data-csmenu="grouped"><span aria-hidden="true">📂</span> Folding groups</button><button type="button" data-csmenu="classic"><span aria-hidden="true">📜</span> Classic list</button></div></div></div>
         <div class="cs-sec"><h4>Reading</h4>
           <div class="cs-size"><button type="button" id="csSmaller" aria-label="Smaller text">A−</button><span id="csSizeTxt">100%</span><button type="button" id="csBigger" aria-label="Bigger text">A+</button></div>
           <div class="cs-seg two" id="csFonts"><button type="button" data-csfont="default" style="font-family:'Lexend',sans-serif">Lexend</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="book" style="font-family:'Literata',Georgia,serif">Book</button><button type="button" data-csfont="classic" style="font-family:'Nunito',sans-serif">Classic</button></div>
@@ -356,6 +394,7 @@
     const bind = (id, k) => { const el = $(id); if (el) el.onchange = () => { S[k] = el.checked; save(); applyAll(); }; };
     bind("csLookup", "lookup");
     if ($("csContrast")) $("csContrast").onchange = e => { S.contrast = e.target.checked; save(); applyAll(); };
+    if ($("csMenu")) $("csMenu").onclick = e => { const b = e.target.closest("[data-csmenu]"); if (!b || b.dataset.csmenu === (S.menu || "grouped")) return; S.menu = b.dataset.csmenu; save(); location.reload(); };
     if ($("csAccent")) $("csAccent").onclick = e => { const b = e.target.closest("[data-csacc]"); if (!b) return; S.accent = b.dataset.csacc; save(); applyAll(); paintPanel(); };
     if ($("csCursors")) $("csCursors").onclick = e => { const b = e.target.closest("[data-cscur]"); if (!b) return; S.cursor = b.dataset.cscur; save(); applyAll(); };
     bind("csSpace", "space"); bind("csBionic", "bionic"); bind("csRulerT", "ruler"); bind("csInshort", "inshort"); bind("csRead", "read"); bind("csCalm", "calm");
@@ -378,6 +417,7 @@
     $("csSizeTxt").textContent = Math.round(S.size * 100) + "%";
     const set = (id, v) => { const el = $(id); if (el) el.checked = !!v; };
     set("csLookup", S.lookup !== false); set("csContrast", contrastOn());
+    document.querySelectorAll("[data-csmenu]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.csmenu === (S.menu || "grouped"))));
     document.querySelectorAll("[data-csacc]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.csacc === (S.accent || "blue"))));
     document.querySelectorAll("[data-cscur]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cscur === (S.cursor || "default"))));
     set("csSpace", S.space); set("csBionic", S.bionic); set("csRulerT", S.ruler); set("csFocus", focusOn()); set("csInshort", S.inshort); set("csRead", S.read); set("csCalm", S.calm);
