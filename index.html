@@ -1312,6 +1312,7 @@ html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-th
 html:not([data-theme="light"]):not([data-theme="sepia"]):not([data-theme="unicorn"]) .hc-go{color:#F5C46B}
 .hc-go:hover{text-decoration:underline}
 .club-dot{margin-left:auto;font:800 10.5px var(--body);min-width:8px;height:8px;border-radius:999px;background:#E5533D}
+.ag-msg{margin:2px 0 0!important;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#F0A63A 16%,var(--surface));border:1.5px solid color-mix(in srgb,#F0A63A 50%,var(--line));color:var(--ink)!important;font-size:14px!important;text-align:left}
 </style>
 
 <header class="top">
@@ -2157,6 +2158,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         <p>Hibi saves your words, class notes and buddy to your Google account, so they're always there, on any device.</p>
         <p class="ag-es" lang="es">Inicia sesión con tu cuenta de Google para usar Hibi. Así tus palabras, apuntes y tu mascota quedan guardados.</p>
         <button type="button" class="ag-btn" data-signin>${G}<span>Continue with Google</span></button>
+        <p class="ag-msg" id="agMsg" role="alert" hidden></p>
         <p class="ag-small">Hibi only uses your name and email to save your progress. Noa never sees your password.</p></div>`;
       document.body.appendChild(gate);
     }
@@ -7072,11 +7074,22 @@ async function checkInbox() {
 }
 
 /* ---------- sign in / out ---------- */
+/* Google's "redirect" sign-in breaks on iPhones (Safari keeps the two sites' storage apart: "missing initial state"),
+   and inside Instagram/WhatsApp/Facebook browsers. So: always the pop-up; if it's blocked, ask for one more tap;
+   in an app's built-in browser, explain how to open Hibi in Safari/Chrome. Redirect only as a last resort off iOS. */
+const UA = navigator.userAgent || "";
+const IS_IOS = /iPhone|iPad|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const IN_APP = /Instagram|FBAN|FBAV|FB_IAB|Line\/|WhatsApp|Snapchat|TikTok|musical_ly|; wv\)/i.test(UA);
+let popupTries = 0;
 async function signIn() {
+  if (IN_APP) { alertMsg(IS_IOS ? "Google sign-in doesn't work inside this app's browser. Tap ··· or the share icon and choose \"Open in Safari\" (or copy the link into Safari), then sign in there." : "Google sign-in doesn't work inside this app's browser. Tap ⋮ and choose \"Open in Chrome\" (or copy the link into Chrome), then sign in there."); return; }
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
-  try { await signInWithPopup(auth, p); }
+  try { await signInWithPopup(auth, p); popupTries = 0; }
   catch (e) {
-    if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) { await signInWithRedirect(auth, p); }
+    const blocked = e && e.code === "auth/popup-blocked", unsupported = e && e.code === "auth/operation-not-supported-in-this-environment";
+    if (blocked && ++popupTries < 3) { alertMsg("Your browser stopped the Google window. Tap \"Continue with Google\" once more."); }
+    else if ((blocked || unsupported) && !IS_IOS) { await signInWithRedirect(auth, p); }
+    else if (blocked || unsupported) { alertMsg("Your browser blocked the Google window. Allow pop-ups for this site (Settings → Safari → turn off Block Pop-ups), or open Hibi in Safari, then try again."); }
     else if (e && e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") { alertMsg("Sign-in didn't work. Please try again in a moment."); console.warn(e); }
   }
 }
@@ -7091,7 +7104,7 @@ async function doSignOut() {
 getRedirectResult(auth).catch(() => {});
 
 /* ---------- UI ---------- */
-function alertMsg(t) { const el = $("authStatus"); if (el) el.textContent = t; try { const tst = document.getElementById("toast"); tst.textContent = t; tst.classList.add("show"); setTimeout(() => tst.classList.remove("show"), 3000); } catch (e) {} }
+function alertMsg(t) { const el = $("authStatus"); if (el) el.textContent = t; const ag = document.getElementById("agMsg"); if (ag) { ag.textContent = t; ag.hidden = false; } try { const tst = document.getElementById("toast"); tst.textContent = t; tst.classList.add("show"); setTimeout(() => tst.classList.remove("show"), 3000); } catch (e) {} }
 let lastStatus = "out";
 function status(st) {
   lastStatus = st;
