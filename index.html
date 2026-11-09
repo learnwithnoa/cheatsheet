@@ -1150,6 +1150,11 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 /* even button rows: secondary buttons match the main button's height */
 .note-actions>.swap,.note-actions>.pill-btn,.note-actions>a.swap{min-height:33px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;line-height:1.2}
 .note-actions:has(>.sp-mic)>.swap{min-height:39px}
+
+/* "In short" in Spanish in beginner mode */
+.is-es-pre{display:none}
+.cs-beginner .in-short .is-es-pre{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:var(--ink)}
+.cs-beginner .in-short .is-tag::after{content:" · En resumen"}
 </style>
 
 <header class="top">
@@ -5594,8 +5599,12 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
   });
   // "In short" boxes: Spanish version on request (beginner mode)
   let isCache=LS.get("cs-is-es",{})||{};
+  /* written Spanish versions, shown right away in beginner mode */
+  const IS_ES={"tenses": "<b>Simple</b> = hechos y hábitos · <b>continuous</b> (be + -ing) = algo en progreso · <b>perfect</b> (have + participio) = conectado con un momento posterior.", "verbs": "La mayoría de los verbos solo agregan <b>-ed</b>. Los irregulares cambian: go → <b>went</b> → <b>gone</b>. La columna 2 es el pasado (I went); la columna 3 va después de have (I've gone).", "mistakes": "Los más importantes: <b>I'm 30</b> (no \"I have 30\"), <b>I agree</b> (no \"I'm agree\"), <b>explain to me</b> (no \"explain me\"). Fíjate en ellos, sin estrés.", "place": "<b>in</b> = dentro de un espacio · <b>on</b> = sobre una superficie o una línea · <b>at</b> = un punto, o donde pasa algo.", "usedto": "<b>used to + verbo</b> = un hábito del pasado (solía) · <b>be used to + -ing</b> = estar acostumbrado · <b>get used to + -ing</b> = acostumbrarse.", "passive": "<b>be + participio</b>. Úsala cuando la acción importa más que quién la hizo: <i>My phone was stolen.</i> (Me robaron el teléfono.)", "reported": "Mueve el verbo un paso hacia atrás: \"I <b>am</b> tired\" → She said she <b>was</b> tired. <b>Say</b> algo · <b>tell</b> algo a alguien.", "be": "<b>be</b> = ser y estar. También se usa para la edad y las sensaciones: <b>I'm 30</b>, <b>I'm hungry</b> (no \"I have\").", "modals": "Modal + verbo base, sin <i>to</i>, sin <i>-s</i> y sin <i>-ed</i>: <b>She can swim.</b> can = poder/saber · should = consejo · must = obligación · might = quizás.", "domake": "<b>do</b> = actividades y tareas (do homework) · <b>make</b> = crear o producir algo (make dinner, make a decision).", "time": "<b>in</b> = periodos largos (in May) · <b>on</b> = días y fechas (on Monday) · <b>at</b> = horas exactas (at 3:00). Nada antes de next, last, this o every.", "tofor": "<b>to</b> = destino, quién lo recibe, propósito + verbo (I'm here <b>to learn</b>) · <b>for</b> = beneficio, duración, propósito + sustantivo (<b>for dinner</b>).", "pronouns": "La misma persona, distinta función: <b>I · me · my · mine · myself</b>. No confundas your/you're, its/it's, their/they're.", "quantity": "¿Se puede contar? <b>Contable</b> → many, a few. <b>Incontable</b> (water, advice, money) → much, a little. <b>A lot of</b> sirve para los dos.", "frequency": "always, usually, often y never van <b>antes del verbo principal</b> pero <b>después de be</b>: I always study · He is always late.", "conversation": "<b>Responde</b>, <b>agrega un poquito más</b> y <b>haz una pregunta de vuelta</b>. Ese es todo el truco.", "linking": "Aprende uno o dos de cada grupo y úsalos de verdad. Con <b>however</b> o <b>therefore</b>: punto o punto y coma antes, coma después.", "false": "Se parecen al español pero significan otra cosa: <b>actually</b> ≠ actualmente (= en realidad) · <b>embarrassed</b> ≠ embarazada (= avergonzado) · <b>library</b> ≠ librería (= biblioteca).", "basics": "En inglés siempre necesitas un sujeto, y el orden es <b>Sujeto + Verbo + Objeto</b>: <i>It's raining · She reads a book.</i>", "summary": "<b>Qué era</b> → <b>idea principal</b> → <b>2 o 3 detalles</b> → <b>tu opinión</b> → <b>lo que no entendiste</b>.", "stuck": "Quédate en inglés: <b>descríbelo</b> (It's a kind of…), <b>gana tiempo</b> (Let me think…) o <b>pregunta</b> (How do you say…?).", "opinions": "<b>I think…</b> · <b>I see your point, but…</b> · <b>I'm not sure about that.</b> No estés de acuerdo con la idea, no con la persona.", "conditionals": "<b>If + presente, will</b> = futuro real · <b>If + pasado, would</b> = imaginario · <b>If + had done, would have</b> = un pasado que no pasó. Nunca uses <i>will</i> ni <i>would</i> en la parte del if.", "perfect": "¿Dices <b>cuándo</b>? → past simple (I went <b>last year</b>). Tu vida hasta ahora, sin decir cuándo → present perfect (I've been there <b>twice</b>).", "gerund": "<b>-ing</b> después de preposiciones y de verbos como enjoy, avoid, finish · <b>to + verbo</b> después de want, need, decide, hope.", "phrasal": "Verbo + palabrita = un significado nuevo. Apréndelos como una sola palabra: <b>look for</b> = buscar · <b>find out</b> = averiguar.", "compare": "Adjetivos cortos: <b>-er / the -est</b> (cheaper, the cheapest). Largos: <b>more / the most</b>. good → better → the best.", "pronunciation": "La <b>sílaba acentuada</b> es la que suena más fuerte. Si aciertas con el acento, te entienden, aunque tengas acento.", "numbers": "En inglés se usa <b>punto</b> para los decimales y <b>coma</b> para los miles: 1.5 = one point five · 10,000 = ten thousand.", "email": "Empieza amable, di <b>por qué escribes</b>, pide algo <b>con claridad</b> y cierra con un <b>próximo paso</b>.", "interview": "<b>Responde</b> la pregunta, da <b>un ejemplo real</b> y <b>conéctalo</b> con el trabajo. Corto y concreto es mejor que largo y perfecto."};
   document.querySelectorAll(".in-short").forEach(b=>{
-    if(b.querySelector(".is-es")) return;
+    if(b.querySelector(".is-es,.is-es-pre")) return;
+    const sec=b.closest("section.view"), id=sec&&sec.id.replace(/^v-/,"");
+    if(id&&IS_ES[id]){ const d=document.createElement("div"); d.className="is-es-pre"; d.lang="es"; d.innerHTML=IS_ES[id]; (b.querySelector(":scope > div")||b).appendChild(d); return; }
     const btn=document.createElement("button"); btn.type="button"; btn.className="is-es"; btn.textContent="Ver en español";
     const out=document.createElement("div"); out.className="is-es-txt"; out.lang="es"; out.hidden=true;
     b.appendChild(btn); b.appendChild(out);
@@ -6505,7 +6514,7 @@ const CHANGELOG=[
     ["💬","Feedback","send feedback anytime from the bottom of any page.","feedback"]
   ]}
 ];
-const CL_POP=CHANGELOG.find(e=>!e.quiet), CL_LATEST=CL_POP.id;
+const CL_POP=CHANGELOG.find(e=>!e.quiet), CL_LATEST=CL_POP.id; window.__csClLatest=CL_LATEST;
 function clItems(e){
   return '<ul class="cl-items">'+e.items.map(([ic,b,t,go])=>'<li><span class="cl-ic" aria-hidden="true">'+ic+'</span><div><b>'+b+':</b> '+t+(go?' <button class="foot-link cl-go" type="button" '+(go==="music"?'data-openmusic':'data-go="'+go+'"')+'>'+(go==="music"?'Try it':'Open')+' →</button>':'')+'</div></li>').join("")+'</ul>';
 }
@@ -6625,7 +6634,9 @@ async function syncDown() {
     for (const k of keys) {
       if (!isSynced(k)) continue;
       const l = getRaw(k), c = (k in cloud) ? cloud[k] : null;
-      const v = first ? mergeKey(k, l, c) : (c != null ? c : l);
+      let v = first ? mergeKey(k, l, c) : (c != null ? c : l);
+      /* never bring back an older "What's new" version: that made the pop-up show again (and again) after closing it */
+      if (k === "ncs-seen-version" && l != null && window.__csClLatest && l === JSON.stringify(window.__csClLatest)) v = l;
       if (v !== l) { setRaw(k, v); changed = true; }
       if (v != null && v !== c) toPush.push(k);
     }
