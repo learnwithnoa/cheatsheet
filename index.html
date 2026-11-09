@@ -1098,6 +1098,20 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .ch-rc-save{flex:none;font:inherit;font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
 .ch-rc-save:hover:not(:disabled){border-color:var(--accent,#3b82f6)}
 .ch-rc-save:disabled{color:var(--c-g);cursor:default;opacity:1}
+
+/* Noa's notifications on Home */
+.tn-box{margin:0 0 16px;padding:14px 18px;border-radius:16px;border:1.5px solid color-mix(in srgb,#3b82f6 45%,var(--line));background:color-mix(in srgb,#3b82f6 7%,var(--surface))}
+.tn-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tn-h b{font-size:16px}
+.tn-only{font-size:11.5px;font-weight:700;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:1px 8px}
+.tn-btn{font:inherit;font-size:13px;font-weight:700;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.tn-btn:hover{border-color:#3b82f6}
+.tn-box h4{margin:10px 0 4px;font-size:12.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tn-box ul{margin:0;padding:0;list-style:none;font-size:14.5px}.tn-box li{margin:4px 0}
+.tn-line{margin:8px 0 0;font-size:14.5px}
+.tn-go{font-weight:700;color:#3b82f6;text-decoration:none;white-space:nowrap}.tn-go:hover{text-decoration:underline}
+.tn-k{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:4px;white-space:nowrap}
+.tn-p{background:color-mix(in srgb,#8b5cf6 20%,transparent);color:#a78bfa}.tn-b{background:color-mix(in srgb,#14b8a6 20%,transparent);color:#2dd4bf}
+.tn-c{background:color-mix(in srgb,#3b82f6 20%,transparent);color:#60a5fa}.tn-n{background:color-mix(in srgb,#f59e0b 20%,transparent);color:#fbbf24}
 </style>
 
 <header class="top">
@@ -1680,6 +1694,54 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   let tcT=0; document.addEventListener("cs-timer",()=>{ const now=Date.now(); if(now-tcT<900) return; tcT=now; const v=document.getElementById("v-quiz"); if(v&&!v.hidden) timerCard(); });
   setTimeout(timerCard,1200); window.addEventListener("hashchange",()=>setTimeout(timerCard,50));
   render();
+})();
+</script>
+
+<script>
+/* Noa only: notifications at the top of Home (new sign-ups, packs that need attention) */
+(function(){
+  const SEEN="ncs-tnotif-seen", HIDE="cs-tnotif-hide";
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const ago=t=>{ const m=Math.round((Date.now()-t)/6e4); if(m<60) return m<=1?"just now":m+" min ago"; const h=Math.round(m/60); if(h<24) return h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); return d===1?"yesterday":d+" days ago"; };
+  const dkey=()=>new Date().toDateString();
+  let busy=false, data=null;
+  function box(){ let b=document.getElementById("tNotif"); if(!b){ const home=document.getElementById("todayBox"); if(!home) return null; b=document.createElement("div"); b.id="tNotif"; b.className="tn-box"; home.parentNode.insertBefore(b,home); } return b; }
+  async function load(){
+    const b0=document.getElementById("tNotif");
+    if(!window.__csTeacher||window.__csPreview||!window.__csTeach||!window.__csTeach.accounts){ if(b0) b0.remove(); return; }
+    if(busy) return; busy=true;
+    try{
+      const acc=await window.__csTeach.accounts();
+      let priv=[]; try{ priv=(await window.__csViewAs.students()).priv||[]; }catch(e){}
+      data={acc,priv}; paint();
+    }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
+  }
+  function paint(){
+    const b=box(); if(!b||!data) return;
+    let seen=0; try{ seen=+JSON.parse(localStorage.getItem(SEEN)||"0")||0; }catch(e){}
+    const since=Math.max(seen,Date.now()-14*864e5);
+    const KIND={private:["private student","tn-p"],both:["private + club","tn-b"],club:["club member","tn-c"],new:["private, not linked yet","tn-n"]};
+    const joins=data.acc.filter(a=>a.first&&a.first>since).sort((a,b)=>b.first-a.first);
+    const packs=[];
+    data.priv.filter(p=>p.status!=="inactive"&&p.status!=="paused").forEach(p=>{ const v=p.view||{}, du=v.due; if(!du) return; const nm=esc(v.name), id=esc(p.key.slice(4));
+      let t=""; if(du.pending) t=`<b>${nm}</b>: pack not paid yet`; else if(du.left!=null&&du.left<=0) t=`<b>${nm}</b>: pack used up`; else if(du.classesLeft!=null&&du.classesLeft<=1) t=`<b>${nm}</b>: ${du.classesLeft} class left in the pack`; else if(du.half&&du.instAt&&du.nextNo>=du.instAt) t=`<b>${nm}</b>: 2nd payment due`;
+      if(t) packs.push(`<li>💳 ${t} <a class="tn-go" href="coaching.html#s/${id}">Open →</a></li>`); });
+    const unl=data.acc.filter(a=>a.kind==="new").length;
+    let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
+    if((!joins.length&&!packs.length&&!unl)||(hid&&!joins.length)){ b.hidden=true; return; }
+    b.hidden=false;
+    b.innerHTML=`<div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${joins.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Hide for today</button></div>
+      ${joins.length?`<h4>New on Hibi</h4><ul>${joins.map(a=>`<li>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`).join("")}</ul>`:""}
+      ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
+      ${packs.length&&!hid?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}`;
+  }
+  document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return;
+    if(t.dataset.tn==="seen"){ try{ localStorage.setItem(SEEN,JSON.stringify(Date.now())); }catch(er){} if(window.__csOnSet) try{ window.__csOnSet(SEEN); }catch(er){} }
+    else { try{ localStorage.setItem(HIDE,dkey()); localStorage.setItem(SEEN,JSON.stringify(Date.now())); }catch(er){} if(window.__csOnSet) try{ window.__csOnSet(SEEN); }catch(er){} }
+    paint(); });
+  document.addEventListener("cs-teacher",()=>setTimeout(load,300));
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
+  window.__csNotifLoad=load; setTimeout(load,2000);
 })();
 </script>
 
@@ -6527,6 +6589,16 @@ window.__csTeach = {
     const out = []; (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", kind: r.private ? (r.club === false ? "private" : "both") : "club" }); });
     return out.sort((a, b) => a.name.localeCompare(b.name));
+  },
+  /* Home notifications: every account with when it joined / was last here, plus its role */
+  async accounts() {
+    if (!window.__csTeacher || !user) return [];
+    const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
+    const ms = t => t && t.toMillis ? t.toMillis() : 0, out = [];
+    (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
+      out.push({ uid: d.id, name: p.name || p.email || "(no name)", email: p.email || "", first: ms(p.firstSeen), last: ms(p.lastSeen),
+        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === false ? "new" : "club") }); });
+    return out;
   },
   async send(uid, text, go) { await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: String(text).slice(0, 1000), kind: go ? "rec:" + go : "rec", at: serverTimestamp() }); }
 };
