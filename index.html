@@ -1173,6 +1173,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 html .bd{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
 @media (max-width:640px){html .bd{bottom:calc(14px + env(safe-area-inset-bottom,0px))}}
 html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
+/* nothing pokes out of the park, so no scrollbar unless you zoom in */
+#parkWorld{overflow:hidden}
 </style>
 
 <header class="top">
