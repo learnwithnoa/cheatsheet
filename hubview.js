@@ -45,7 +45,7 @@ export function makeView(s, meta) {
     packs,
     classes: (s.classes || []).filter(c => c.kind !== "note").map(c => ({ date: c.date || "", dateText: c.dateText || "", topics: c.topics || "", homework: c.homework || "", att: c.att || "", hour: c.hour || "", credits: c.credits ?? null, pack: c.pack || "" })),
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),
-    focus: s.focus || "", next: up ? up.start : "", due,
+    focus: s.focus || "", recap: s.recap || null, next: up ? up.start : "", due,
     guides: (s.guides || []).filter(g => g && g.url).map(g => ({ title: g.title || "Guide", url: g.url, date: g.date || "" })),
     tips: (meta.recs || []).filter(r => r && r.hub === s.id && !r.done).slice(-5).map(r => ({ title: r.title || "", mod: r.mod || "", stage: r.stage || null, page: r.page || "", why: r.why || "", date: r.date || "" })),
     words: (s.words || []).map((w, i) => ({ w: w.w, tr: w.tr || "", ex: w.ex || "", i })),

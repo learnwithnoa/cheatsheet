@@ -472,7 +472,7 @@ function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.em
 function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
 async function linkHub(s, hubId, oldId) {
   try {
-    const { makeView } = await import("./hubview.js?v=4");
+    const { makeView } = await import("./hubview.js?v=5");
     if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
     if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
     const h = hubList.find(x => x.id === hubId); if (!h) return;

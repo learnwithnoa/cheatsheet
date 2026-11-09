@@ -1082,6 +1082,22 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .wl-hibi>b{font:800 30px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--bright);flex:none}
 .wl-tip{margin:10px 0 0;font-size:14px;color:var(--muted)}
 .cn-help{margin:8px 0 0;font-size:13px;color:var(--muted)}
+
+/* last-class mini recap on My coaching */
+.ch-recap{margin:12px 0 0;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.ch-rc-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.ch-rc-h b{font-size:16px}
+.ch-rc-sum{margin:0;font-size:15px;line-height:1.55}
+.ch-rc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 20px}
+.ch-rc-grid h4{margin:0 0 6px;font-size:13px;font-weight:800;color:var(--muted);text-transform:none}
+.ch-rc-grid ul{margin:0;padding-left:18px;font-size:14.5px;line-height:1.5}
+.ch-rc-grid p{margin:0;font-size:14.5px;line-height:1.5}
+.ch-rc-words{display:flex;flex-direction:column;gap:6px}
+.ch-rc-w{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:color-mix(in srgb,var(--bg) 55%,transparent);font-size:14.5px}
+.ch-rc-w small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.ch-rc-save{flex:none;font:inherit;font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.ch-rc-save:hover:not(:disabled){border-color:var(--accent,#3b82f6)}
+.ch-rc-save:disabled{color:var(--c-g);cursor:default;opacity:1}
 </style>
 
 <header class="top">
@@ -1461,6 +1477,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     (v.guides||[]).forEach(g=>{ if(g.date&&g.date>since) out.push({d:g.date,ico:"📄",t:`New guide: <b>${esc(g.title)}</b>`,tab:"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
     (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:""):(t.title||t.page))}</b>`,tab:"top"}); });
+    if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
     return out.sort((a,b)=>b.d.localeCompare(a.d)).slice(0,6);
   }
@@ -1502,6 +1519,19 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
       ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
       ${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip"><button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}
     </div>`;
+    const rc=v.recap; let recapBox="";
+    if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
+      let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
+      const voc=(rc.vocab||[]).filter(x=>x&&x.w), unsaved=voc.filter(x=>!have.has(x.w.toLowerCase().trim())).length;
+      recapBox=`<div class="ch-recap ch-tint ch-s" id="chRecap"><div class="ch-rc-h"><div><div class="ch-k">📼 Your last class</div><b>${fd(rc.date)}</b></div>${voc.length&&unsaved?`<button type="button" class="ch-go" data-rcall="1">＋ Save all ${unsaved} ${unsaved===1?"word":"words"}</button>`:""}</div>
+        ${rc.summary?`<p class="ch-rc-sum">${esc(rc.summary)}</p>`:""}
+        <div class="ch-rc-grid">
+        ${(rc.talked||[]).length?`<div><h4>💬 What we talked about</h4><ul>${rc.talked.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
+        ${voc.length?`<div><h4>✨ New words</h4><div class="ch-rc-words">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w"><div><b>${esc(x.w)}</b>${x.tr?` <span class="muted">· ${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
+        ${rc.homework?`<div><h4>📝 Homework for next class</h4><p>${esc(rc.homework)}</p></div>`:""}
+        ${(rc.heads||[]).length?`<div class="ch-rc-heads"><h4>📌 Don’t forget</h4><ul>${rc.heads.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
+        </div></div>`;
+    }
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
     if(tab==="classes"){
@@ -1522,8 +1552,16 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     }
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
-    box.innerHTML=newsBox+top+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    box.innerHTML=newsBox+top+recapBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
+  box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
+    const one=e.target.closest("[data-rcw]"), all=e.target.closest("[data-rcall]"); if(!one&&!all) return;
+    if(typeof window.csAddWord!=="function") return; const voc=(rv.vocab||[]).filter(x=>x&&x.w);
+    let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(er){}
+    const list=(one?[voc[+one.dataset.rcw]]:voc).filter(x=>x&&!have.has(x.w.toLowerCase().trim())); let n=0;
+    list.forEach(x=>{ if(window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; });
+    if(n>1&&typeof window.toast==="function") window.toast(`Saved ${n} words to My words ✓`);
+    render(); });
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); });
   document.addEventListener("cs-hubview",render); document.addEventListener("cs-teacher",nav);
   /* teacher: shortcuts in the phone menu */
@@ -1532,7 +1570,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   const SAMPLE={v:1,name:"Alex (example)",level:"B1",schedule:"Tue & Thu 12:00pm",objective:"Speak with more confidence at work and in meetings.",kind:"pack",
     packs:[{id:"x1",label:"Pack Intermedio 36 créditos",size:36,unit:"credits",used:15,done:5,left:21,deadline:"",paid:"half",current:true,color:"#9fc5e8"}],
     classes:[["2026-10-30","session zero","read emails, start fabulang"],["2026-11-04","fabulang: the night bus, convo: weekend plans","reading and listening practice"],["2026-11-06","checked vocab sentences, past simple vs present perfect","5 sentences with new words"]].map(([d,t,h])=>({date:d,dateText:"",topics:t,homework:h,att:"Present",hour:"Standard",credits:3,pack:"x1"})),
-    payments:[{date:"2026-10-28",what:"Half of Pack Intermedio 36 créditos",amount:"$132.000"}],words:[{w:"get the hang of",tr:"agarrarle la mano",ex:"I'm getting the hang of it.",i:0}]};
+    payments:[{date:"2026-10-28",what:"Half of Pack Intermedio 36 créditos",amount:"$132.000"}],words:[{w:"get the hang of",tr:"agarrarle la mano",ex:"I'm getting the hang of it.",i:0}],
+    recap:{date:"2026-11-06",summary:"Great class! You told me about your weekend trip and we practised when to use past simple and when to use present perfect. Your sentences with new words were much more natural this time.",talked:["Your weekend trip to the coast","Past simple vs present perfect (“I went” vs “I have been”)","Checking your vocabulary sentences"],vocab:[{w:"get the hang of",tr:"agarrarle la mano",ex:"I'm getting the hang of it."},{w:"worth it",tr:"valer la pena",ex:"The drive was long, but it was worth it."}],homework:"Write 5 sentences with your new words and read chapter 3 of your story.",heads:["Next class is at 1:00pm instead of 12:00pm."]}};
   /* "View as" lives at the top of Settings, only for Noa */
   function vaSection(){
     if(!window.__csTeacher){ const x=document.getElementById("vaSec"); if(x) x.remove(); return; } if(document.getElementById("vaSec")) return;
@@ -5122,6 +5161,7 @@ window.addEventListener("cs-sample-ready",()=>{ if(enrQ.size) runEnrich(); });
 /* every word added from now on gets its details */
 const _addWordPlain=addWord;
 addWord=function(){ const before=words.length, r=_addWordPlain.apply(this,arguments); if(words.length>before) queueEnrich([words[words.length-1].id]); return r; };
+window.csAddWord=function(){ return addWord.apply(this,arguments); };
 
 /* ---------- safety net for the AI tools: explain first, then keep an undo copy ---------- */
 const UNDO_KEY="cs-words-undo";
@@ -6277,7 +6317,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { makeView } from "./hubview.js?v=4";
+import { makeView } from "./hubview.js?v=5";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",

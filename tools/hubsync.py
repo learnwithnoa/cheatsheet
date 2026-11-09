@@ -25,6 +25,8 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py add-payment <student-id> '{"date":"2026-11-09","what":"2nd half of Pack 36","clp":112200,"pack":"p1","paid":"full"}'
   HUB_PASSWORD=... python3 hubsync.py add-guide <student-id> '{"title":"Past simple guide","url":"https://docs.google.com/...","date":"2026-11-09"}'
   HUB_PASSWORD=... python3 hubsync.py set-focus <student-id> '{"focus":"what we're working on (the student sees it, written to them)","objective":"(optional) new goal"}'
+  HUB_PASSWORD=... python3 hubsync.py set-recap <student-id> '{"date":"2026-11-09","summary":"2-3 sentences to the student","talked":["topic",...],
+      "vocab":[{"w":"word","tr":"meaning","ex":"example"}],"homework":"...","heads":["reminder",...]}'   (mini recap on My coaching; keeps only the newest class)
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 """
 import json, os, sys, random, string, datetime, urllib.request, urllib.error
@@ -198,7 +200,7 @@ def make_view(s, meta=None):
                         for c in s.get("classes", []) if c.get("kind") != "note"],
             "payments": [{"date": p.get("date", ""), "what": p.get("what", ""), "amount": p.get("amount", "")} for p in s.get("payments", [])],
             "words": [{"w": w.get("w", ""), "tr": w.get("tr", ""), "ex": w.get("ex", ""), "i": i} for i, w in enumerate(s.get("words", []))],
-            "focus": s.get("focus", ""), "next": ups[0]["start"] if ups else "", "due": due,
+            "focus": s.get("focus", ""), "recap": s.get("recap") or None, "next": ups[0]["start"] if ups else "", "due": due,
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
@@ -409,6 +411,15 @@ def main():
         if any(x.get("url") == g["url"] for x in s.get("guides", [])):
             print("skip: guide already listed"); return
         s.setdefault("guides", []).append(g); save(tok, tu, s); print("ok"); return
+    if cmd == "set-recap":
+        # mini recap of the latest class, shown on the student's My coaching page
+        if s.get("recap") and (s["recap"].get("date") or "") > data.get("date", ""):
+            print("skip: a newer recap is already there"); return
+        s["recap"] = {"date": data["date"], "summary": data.get("summary", ""),
+                      "talked": [t for t in data.get("talked", []) if t][:6],
+                      "vocab": [{"w": w["w"], "tr": w.get("tr", ""), "ex": w.get("ex", "")} for w in data.get("vocab", []) if w.get("w")][:10],
+                      "homework": data.get("homework", ""), "heads": [t for t in data.get("heads", []) if t][:4]}
+        save(tok, tu, s); print("ok"); return
     if cmd == "set-focus":
         s["focus"] = data.get("focus", s.get("focus", ""))
         if data.get("objective"):
