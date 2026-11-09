@@ -1381,6 +1381,17 @@ nav.side .club-nav:hover{border-color:var(--nc)}
 nav.side .club-nav[aria-current="true"]{background:linear-gradient(100deg,#F7C65A 0%,#E79A1E 60%,#E26A8D 100%)}
 nav.side .club-nav::after{content:"✨";margin-left:auto;font-size:12px;filter:saturate(1.2)}
 nav.side .club-nav .club-dot{margin-left:6px}
+.cs-gif{max-width:280px;border-radius:12px;overflow:hidden;line-height:0}.cs-gif img{width:100%;height:auto;display:block}
+.cs-gifbtn{font-weight:900;letter-spacing:.04em}
+.cs-gifpick{border:1.5px solid var(--line);border-radius:14px;background:var(--bg);padding:10px;display:flex;flex-direction:column;gap:8px}
+.cs-gtop{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cs-gq{flex:1;min-width:160px;font:15px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 14px}
+.cs-gq:focus{outline:none;border-color:#F0A63A}
+.cs-giphy{font:800 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cs-gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;max-height:260px;overflow-y:auto}
+.cs-gi{all:unset;cursor:pointer;border-radius:8px;overflow:hidden;aspect-ratio:1;background:var(--surface-2);line-height:0}
+.cs-gi img{width:100%;height:100%;object-fit:cover}
+.cs-gi:focus-visible{outline:2px solid #F0A63A;outline-offset:1px}
 </style>
 
 <header class="top">
@@ -2340,6 +2351,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
    rules only let people on the club list read or write there, and only the author (or Noa) can edit/delete. */
 (function(){
   const NOA="J8D2tjQmBaaA2QN730tSfSrjfm73";
+  const GIPHY_KEY="VFTSkGppzLMC3vvhvEjVsyeV8DT5AlPp"; /* GIPHY web key (public by design); the GIF button stays hidden while this is empty */
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const linkify=s=>esc(s).replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)"']/g,u=>`<a href="${u}" target="_blank" rel="noopener nofollow">${u.length>48?u.slice(0,45)+"…":u}</a>`);
   const ago=t=>{ const m=Math.round((Date.now()-t)/6e4); if(m<1) return "just now"; if(m<60) return m+" min ago"; const h=Math.round(m/60); if(h<24) return h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); if(d<7) return d===1?"yesterday":d+" days ago"; return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric"}); };
@@ -2383,9 +2395,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const av=(uid,name)=>{ let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
   const who=x=>`${av(x.uid,x.name)}<span class="cs-who"><b>${esc(x.name||"Member")}</b>${x.uid===NOA?'<span class="cs-noa">Teacher</span>':""}<span class="cs-ago">${ago(x.at)}</span></span>`;
   const canDel=x=>x.uid===me()||me()===NOA;
-  const imgs=x=>(x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"";
+  const gifs=x=>(x.gifs||[]).filter(g=>g&&/^https:\/\/media\d*\.giphy\.com\//.test(g.u)).map(g=>`<div class="cs-gif"><img src="${esc(g.u)}" alt="${esc(g.t||"GIF")}" loading="lazy"${g.w&&g.h?` width="${+g.w}" height="${+g.h}"`:""}></div>`).join("");
+  const imgs=x=>gifs(x)+((x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"");
   const likeBtn=(x,path)=>{ const n=(x.likes||[]).length, on=(x.likes||[]).includes(me()); return `<button type="button" class="cs-act${on?" on":""}" data-like="${esc(path)}" aria-pressed="${on}">${on?"❤️":"🤍"} ${n||""}</button>`; };
-  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><textarea rows="${kind==="post"?3:2}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-prev"></div><div class="cs-row"><label class="cs-act cs-addph">📷 Photo<input type="file" accept="image/*" multiple hidden></label><span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?"Post":"Comment"}</button></div></form>`; }
+  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><textarea rows="${kind==="post"?3:2}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><label class="cs-act cs-addph">📷 Photo<input type="file" accept="image/*" multiple hidden></label>${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?"Post":"Comment"}</button></div></form>`; }
   const OFF='<p class="cs-off">💬 Comments and posts are almost ready. They’ll switch on very soon.</p>';
   const COMM={};
   async function mountThread(el){
@@ -2420,23 +2433,42 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
     const pv=form.querySelector(".cs-prev"); pv.innerHTML=arr.map((f,i)=>`<span class="cs-pv"><img src="${URL.createObjectURL(f)}" alt=""><button type="button" data-unpick="${i}" aria-label="Remove photo">✕</button></span>`).join(""); });
   document.addEventListener("submit",async e=>{ const form=e.target.closest(".cs-comp"); if(!form) return; e.preventDefault();
-    const ta=form.querySelector("textarea"), msg=form.querySelector(".cs-msg"), btn=form.querySelector(".cs-send"), text=ta.value.trim(), files=PICK.get(form)||[];
-    if(!text&&!files.length){ ta.focus(); return; }
+    const ta=form.querySelector("textarea"), msg=form.querySelector(".cs-msg"), btn=form.querySelector(".cs-send"), text=ta.value.trim(), files=PICK.get(form)||[], gif=GIF.get(form);
+    if(!text&&!files.length&&!gif){ ta.focus(); return; }
     if(G()){ msg.textContent="Guest preview: posting is off here."; return; }
     if(!me()){ msg.textContent="Sign in first."; return; }
     btn.disabled=true; msg.textContent=files.length?"Uploading photo…":"Posting…";
     try{
       const ids=[]; for(const f of files){ ids.push(await uploadImg(f)); }
       const id=rid(), kind=form.dataset.comp, pid=form.dataset.target;
-      if(kind==="post"){ await createDoc("clubPosts",id,{text,imgs:ids}); activity("post",id,text,ids.length); }
-      else { await createDoc(`clubPosts/${pid}/comments`,id,{text,imgs:ids}); activity("comment",pid,text,ids.length);
+      const data={text,imgs:ids}; if(gif) data.gifs=[gif];
+      if(kind==="post"){ await createDoc("clubPosts",id,data); activity("post",id,text||(gif?"(GIF)":""),ids.length); }
+      else { await createDoc(`clubPosts/${pid}/comments`,id,data); activity("comment",pid,text||(gif?"(GIF)":""),ids.length);
         if(!/^w\d{8}$/.test(pid)){ try{ const p=(POSTS||[]).find(x=>x.id===pid); const n=((COMM[pid]||[]).length||0)+1; if(p) p.n=n; await api("PATCH",`/clubPosts/${pid}?updateMask.fieldPaths=n&updateMask.fieldPaths=lastAt`,{fields:{n:I(n),lastAt:I(Date.now())}}); }catch(er){} } }
-      PICK.delete(form); ta.value="";
+      PICK.delete(form); GIF.delete(form); ta.value="";
       const th=form.closest(".cl-thread"), sub=form.closest(".cs-sub"), wall=form.closest(".cl-wall");
       if(th) mountThread(th); else if(sub){ const art=sub.closest(".cs-p"); sub.hidden=true; openSub(art,pid); const b=art.querySelector("[data-open]"); if(b){ const n=(COMM[pid]||[]).length+1; b.innerHTML=`💬 ${n} ${n===1?"comment":"comments"}`; } } else if(wall) mountWall(wall);
       if(typeof window.toast==="function") window.toast(kind==="post"?"Posted ✓":"Comment added ✓");
     }catch(er){ msg.textContent=er.code===403?"You can’t post here yet.":er.message==="too big"?"That photo is too big. Try another one.":er.message==="not an image"?"That file isn’t a photo.":"Didn’t work. Try again."; btn.disabled=false; return; }
     btn.disabled=false; msg.textContent=""; });
+  /* GIF picker (GIPHY): trending when it opens, search after you stop typing; results cached so the free key's limit lasts */
+  const GIF=new WeakMap(), GCACHE={};
+  async function giphy(q){ const k=(q||"").trim().toLowerCase(); if(GCACHE[k]) return GCACHE[k];
+    const u=k?`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_KEY}&q=${encodeURIComponent(k)}&limit=24&rating=pg&lang=en&bundle=messaging_non_clips`:`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_KEY}&limit=24&rating=pg&bundle=messaging_non_clips`;
+    const r=await fetch(u); if(!r.ok) throw new Error("giphy "+r.status); const j=await r.json();
+    return GCACHE[k]=(j.data||[]).map(g=>{ const s=g.images&&(g.images.fixed_width_small||g.images.fixed_width), b=g.images&&(g.images.fixed_width||g.images.downsized); return s&&b?{s:s.url,u:b.url,w:+b.width||0,h:+b.height||0,t:g.title||"GIF"}:null; }).filter(Boolean); }
+  function gifGrid(pick,list){ const grid=pick.querySelector(".cs-gg"); grid.innerHTML=list.length?list.map((g,i)=>`<button type="button" class="cs-gi" data-gifi="${i}" aria-label="${esc(g.t)}"><img src="${esc(g.s)}" alt="" loading="lazy"></button>`).join(""):'<p class="cs-empty">No GIFs found. Try another word.</p>'; pick._list=list; }
+  async function gifLoad(pick,q){ const grid=pick.querySelector(".cs-gg"); grid.innerHTML='<p class="cs-load">Loading…</p>'; try{ gifGrid(pick,await giphy(q)); }catch(e){ grid.innerHTML='<p class="cs-off">GIFs couldn\u2019t load right now. Try again in a bit.</p>'; } }
+  function gifShow(form){ const g=GIF.get(form), pv=form.querySelector(".cs-prev"); pv.querySelectorAll(".cs-pvg").forEach(x=>x.remove()); if(g) pv.insertAdjacentHTML("beforeend",`<span class="cs-pv cs-pvg"><img src="${esc(g.s||g.u)}" alt="GIF"><button type="button" data-ungif="1" aria-label="Remove GIF">✕</button></span>`); }
+  let gTimer=null;
+  document.addEventListener("input",e=>{ const inp=e.target.closest(".cs-gq"); if(!inp) return; clearTimeout(gTimer); const pick=inp.closest(".cs-gifpick"), q=inp.value.trim(); gTimer=setTimeout(()=>{ if(q.length===1) return; gifLoad(pick,q); },650); });
+  document.addEventListener("click",e=>{
+    const op=e.target.closest("[data-gifopen]"); if(op){ const form=op.closest("form"), pick=form.querySelector(".cs-gifpick"); const show=pick.hidden; pick.hidden=!show; op.setAttribute("aria-expanded",String(show));
+      if(show&&!pick.dataset.ready){ pick.dataset.ready="1"; pick.innerHTML=`<div class="cs-gtop"><input class="cs-gq" type="search" placeholder="Search GIFs" aria-label="Search GIFs"><span class="cs-giphy">Powered by GIPHY</span></div><div class="cs-gg"></div>`; gifLoad(pick,""); }
+      if(show) setTimeout(()=>pick.querySelector(".cs-gq")?.focus(),50); return; }
+    const gi=e.target.closest("[data-gifi]"); if(gi){ const pick=gi.closest(".cs-gifpick"), form=pick.closest("form"), g=(pick._list||[])[+gi.dataset.gifi]; if(!g) return; GIF.set(form,g); gifShow(form); pick.hidden=true; form.querySelector("[data-gifopen]")?.setAttribute("aria-expanded","false"); return; }
+    const ug=e.target.closest("[data-ungif]"); if(ug){ const form=ug.closest("form"); GIF.delete(form); gifShow(form); return; }
+  });
   document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)&&e.target.closest(".cs-comp textarea")){ e.preventDefault(); e.target.closest("form").requestSubmit(); } });
   document.addEventListener("click",async e=>{
     const t=e.target;
