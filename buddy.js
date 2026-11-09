@@ -510,7 +510,7 @@ html.cs-calm .bd-stage .bd-stg-pet{animation:none}
 .bd-chip.locked{opacity:.6}
 .bd-pv{margin:10px 0 -4px;font-size:13.5px;background:color-mix(in srgb,#F5B800 16%,var(--surface,#fff));border:1.5px solid color-mix(in srgb,#F5B800 50%,var(--line,#ddd));border-radius:12px;padding:7px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .bd-pv .bd-b{margin-left:auto;padding:4px 10px}
-.bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer;touch-action:none}
+.bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:default;touch-action:none}#bdStgPet{cursor:pointer}
 .bd-stage-wrap{position:relative;max-width:340px;margin:12px auto 10px}.bd-stage-wrap .bd-stage{margin:0}
 .bd-zoom{position:absolute;right:6px;top:6px;display:flex;flex-direction:column;gap:4px}
 .bd-zoom button{all:unset;box-sizing:border-box;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--surface,#fff) 85%,transparent);border:1px solid var(--line,#ddd);font:800 15px var(--body,sans-serif);color:var(--ink,#222)}
@@ -887,7 +887,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const newIn = slots => ITEMS.filter(i => slots.includes(i.slot) && isOpen(i) && !seen.has(i.id)).length;
     const nb = n => n ? ` <span class="bd-new">${n} NEW</span>` : "";
     const top = `<div class="bd-top"><h3 id="bdTitle">${sec ? SECT[sec] : "🏠 " + esc(nameOf()) + "'s home"}</h3><span class="bd-topr">${sec !== "settings" ? `<button class="bd-x bd-set-ico" type="button" data-sec="settings" aria-label="Buddy settings" title="Settings: sounds, seasonal outfits, hide">⚙️</button>` : ""}<button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></span></div>`;
-    const stage = `${pvBanner()}<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="Tap to pet · drag a toy to move it">${stageSVG(pvOpts())}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}${S.tp && Object.keys(S.tp).length ? ` <button class="bd-link" type="button" data-m="toyreset">Put toys back</button>` : ""}</p>` : ""}`;
+    const stage = `${pvBanner()}<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="Tap your buddy to pet it · drag a toy to move it">${stageSVG(pvOpts())}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}${S.tp && Object.keys(S.tp).length ? ` <button class="bd-link" type="button" data-m="toyreset">Put toys back</button>` : ""}</p>` : ""}`;
     const foot = `<div class="bd-foot">${sec ? `<button class="bd-link" type="button" data-m="back">← Back</button>` : `<span></span>`}<button class="bd-b go" type="button" data-m="save">${dirty() ? "Save changes" : "Save"}</button></div>`;
     const confirmBox = confirmOpen ? `<div class="bd-confirm" role="alertdialog" aria-labelledby="bdCfT"><p id="bdCfT"><b>Save your changes?</b><br>Your changes won't be saved unless you tap <b>Save</b>.</p><div class="bd-row" style="justify-content:flex-end"><button class="bd-b" type="button" data-m="keep" style="background:transparent">Keep editing</button><button class="bd-b" type="button" data-m="discard">Don't save</button><button class="bd-b go" type="button" data-m="save">Save</button></div></div>` : "";
     let body = "";
@@ -1019,7 +1019,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const tg = e.target.closest("[data-toyg]");
       if (moving) { const pt = svgPt(e); if (pt) placeToy(moving, pt); moving = null; renderModal(); return; }
       if (tg) { moving = tg.dataset.toyg; renderModal(); return; }
-      petIt(); return; }
+      if (e.target.closest("#bdStgPet")) petIt(); /* only a tap on the buddy itself pets it */
+      return; }
     if (m) {
       const a = m.dataset.m;
       if (a === "feed") feed(); else if (a === "pet") petIt(); else if (a === "close") closeModal();
