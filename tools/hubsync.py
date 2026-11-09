@@ -27,6 +27,8 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py set-focus <student-id> '{"focus":"what we're working on (the student sees it, written to them)","objective":"(optional) new goal"}'
   HUB_PASSWORD=... python3 hubsync.py set-recap <student-id> '{"date":"2026-11-09","summary":"2-3 sentences to the student","talked":["topic",...],
       "vocab":[{"w":"word","tr":"meaning","ex":"example"}],"homework":"...","heads":["reminder",...]}'   (mini recap on My coaching; keeps only the newest class)
+  HUB_PASSWORD=... python3 hubsync.py resources <student-id> add|remove fabulang|chatterbox|simplified|tedideas|tedtalks|slow
+      (class resources on My coaching; until Noa or this sets them, they're guessed from the recent class notes)
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 """
 import json, os, re, sys, random, string, datetime, urllib.request, urllib.error
@@ -172,13 +174,40 @@ def inst_at(p, st):
     return None
 
 
+def _recent_text(s):
+    return " | ".join((c.get("topics") or "") + " " + (c.get("homework") or "") for c in [c for c in s.get("classes", []) if c and c.get("kind") != "note"][-12:]).lower()
+
+
+RES_KEYS = ["fabulang", "chatterbox", "simplified", "tedideas", "tedtalks", "slow"]
+
+
+def res_detect(s):
+    t = _recent_text(s); out = []
+    if "fabulang" in t: out.append("fabulang")
+    if re.search(r"chatter ?box", t): out.append("chatterbox")
+    if "simplified" in t or ("culips" in t and not re.search(r"chatter ?box", t)): out.append("simplified")
+    if re.search(r"ideas\.?\s?ted|ted ideas", t): out.append("tedideas")
+    if re.search(r"ted talk|\bted\.com/talks", t): out.append("tedtalks")
+    if "slow english" in t or s.get("slowUrl"): out.append("slow")
+    return out
+
+
+def res_keys(s):
+    return list(s["res"]) if isinstance(s.get("res"), list) else res_detect(s)
+
+
 def fab_level(s):
-    m = re.search(r"\b([abc][12])\b", str(s.get("fabLevel") or s.get("level") or ""), re.I)
-    return m.group(1).lower() if m else ""
+    def lv(x):
+        m = re.search(r"\b([abc][12])\b", str(x or ""), re.I)
+        return m.group(1).lower() if m else ""
+    if s.get("fabLevel"):
+        return lv(s["fabLevel"])
+    said = re.findall(r"fabulang\s*\(?\s*([abc][12])\b", _recent_text(s))
+    return said[-1] if said else lv(s.get("level"))
 
 
 def res_for(s):
-    lv = fab_level(s); hide = set(s.get("resHide") or [])
+    lv = fab_level(s); keep = set(res_keys(s))
     out = [
         {"k": "fabulang", "ico": "📖", "name": "Fabulang", "note": ("Stories at your level (" + lv.upper() + ")") if lv else "Short stories to read and listen to", "url": "https://www.fabulang.com/en/en" + ("/" + lv if lv else "")},
         {"k": "chatterbox", "ico": "🎧", "name": "Culips · Chatterbox", "note": "Natural conversations", "url": "https://esl.culips.com/category/chatter-box/"},
@@ -187,7 +216,7 @@ def res_for(s):
         {"k": "tedtalks", "ico": "🎤", "name": "TED Talks", "note": "Talks with subtitles", "url": "https://www.ted.com/talks"},
         {"k": "slow", "ico": "🐢", "name": "Slow English Podcast", "note": "Your playlist" if s.get("slowUrl") else "Pick the playlist for your level", "url": s.get("slowUrl") or "https://www.youtube.com/@Slow_English_Podcast/playlists"},
     ]
-    return [r for r in out if r["k"] not in hide]
+    return [r for r in out if r["k"] in keep]
 
 
 def make_view(s, meta=None):
@@ -425,7 +454,7 @@ def main():
         raise SystemExit(f"No hub student '{sid}'")
     if cmd == "get":
         print(json.dumps(s, ensure_ascii=False, indent=1)); return
-    data = json.loads(a[2]) if len(a) > 2 else {}
+    data = json.loads(a[2]) if len(a) > 2 and cmd != "resources" else {}
     if cmd == "merge":
         s.update(data); save(tok, tu, s); print("ok"); return
     if cmd == "add-payment":
@@ -458,6 +487,17 @@ def main():
                       "vocab": [{"w": w["w"], "tr": w.get("tr", ""), "ex": w.get("ex", "")} for w in data.get("vocab", []) if w.get("w")][:10],
                       "homework": data.get("homework", ""), "heads": [t for t in data.get("heads", []) if t][:4]}
         save(tok, tu, s); print("ok"); return
+    if cmd == "resources":
+        # resources <id> add|remove <key>   (keys: fabulang chatterbox simplified tedideas tedtalks slow)
+        op, key = a[2], a[3]
+        if key not in RES_KEYS:
+            print("unknown key; use one of", RES_KEYS); return
+        cur = res_keys(s)
+        if op == "add" and key not in cur: cur.append(key)
+        elif op == "remove" and key in cur: cur.remove(key)
+        else:
+            print("no change:", cur); return
+        s["res"] = [k for k in RES_KEYS if k in cur]; save(tok, tu, s); print("ok", s["res"]); return
     if cmd == "set-focus":
         s["focus"] = data.get("focus", s.get("focus", ""))
         if data.get("objective"):

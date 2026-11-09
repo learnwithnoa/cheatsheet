@@ -1561,8 +1561,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
         ${(rc.heads||[]).length?`<div class="ch-rc-heads"><h4>📌 Don’t forget</h4><ul>${rc.heads.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
         </div></div>`;
     }
-    const lvm=String(v.level||"").match(/\b([abc][12])\b/i), lv=lvm?lvm[1].toLowerCase():"";
-    const res=v.resources||[["📖","Fabulang",lv?"Stories at your level ("+lv.toUpperCase()+")":"Short stories to read and listen to","https://www.fabulang.com/en/en"+(lv?"/"+lv:"")],["🎧","Culips · Chatterbox","Natural conversations","https://esl.culips.com/category/chatter-box/"],["🎧","Culips · Simplified Speech","Clear, slower English","https://esl.culips.com/category/simplified-speech/"],["💡","TED Ideas","Short articles","https://ideas.ted.com/"],["🎤","TED Talks","Talks with subtitles","https://www.ted.com/talks"],["🐢","Slow English Podcast","Pick the playlist for your level","https://www.youtube.com/@Slow_English_Podcast/playlists"]].map(([ico,name,note,url])=>({ico,name,note,url}));
+    const res=v.resources||[];
     const resBox=res.length?`<div class="ch-res ch-tint ch-a"><div class="ch-k">🧰 Class resources</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">The websites we use in class. Tap one to open it.</p><div class="ch-resl">${res.map(r=>`<a class="ch-resb" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">${r.ico}</span><span><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span></a>`).join("")}</div></div>`:"";
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
@@ -1776,7 +1775,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
   /* clock-change helper (also used by My coaching) */
-  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=7").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
+  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=8").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
 </script>
 
@@ -6414,7 +6413,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { makeView, tzReminders } from "./hubview.js?v=7";
+import { makeView, tzReminders } from "./hubview.js?v=8";
 window.__csTzRem = tzReminders;
 
 const firebaseConfig = {

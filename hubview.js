@@ -32,9 +32,27 @@ export function instAt(p, st) { if (p.size === 36) return st.pri ? 5 : 7; if (p.
 /* What the student sees: no private notes, no boleta, no email, no "about them".
    meta (optional) = Noa's t-hubmeta: next class from his calendar + practice tips. */
 /* the websites Noa uses in class (shown to the student on My coaching and to Noa on their page) */
-export function fabLevel(s) { const m = String((s && (s.fabLevel || s.level)) || "").match(/\b([abc][12])\b/i); return m ? m[1].toLowerCase() : ""; }
-export function resFor(s) {
-  const lv = fabLevel(s), hide = new Set(((s && s.resHide) || []));
+/* which sites a student uses: Noa's explicit list (s.res), or else what recent class notes mention */
+const recentText = s => ((s && s.classes) || []).filter(c => c && c.kind !== "note").slice(-12).map(c => (c.topics || "") + " " + (c.homework || "")).join(" | ").toLowerCase();
+export function resDetect(s) {
+  const t = recentText(s), out = [];
+  if (/fabulang/.test(t)) out.push("fabulang");
+  if (/chatter ?box/.test(t)) out.push("chatterbox");
+  if (/simplified/.test(t) || (/culips/.test(t) && !/chatter ?box/.test(t))) out.push("simplified");
+  if (/ideas\.?\s?ted|ted ideas|ideas\.ted/.test(t)) out.push("tedideas");
+  if (/ted talk|\bted\.com\/talks/.test(t)) out.push("tedtalks");
+  if (/slow english/.test(t) || (s && s.slowUrl)) out.push("slow");
+  return out;
+}
+export function resKeys(s) { return Array.isArray(s && s.res) ? s.res.slice() : resDetect(s); }
+export function fabLevel(s) {
+  const lv = x => { const m = String(x || "").match(/\b([abc][12])\b/i); return m ? m[1].toLowerCase() : ""; };
+  if (s && s.fabLevel) return lv(s.fabLevel);
+  const said = [...recentText(s).matchAll(/fabulang\s*\(?\s*([abc][12])\b/g)].pop();
+  return said ? said[1] : lv(s && s.level);
+}
+export const RES_ALL = s => {
+  const lv = fabLevel(s);
   return [
     { k: "fabulang", ico: "📖", name: "Fabulang", note: lv ? "Stories at your level (" + lv.toUpperCase() + ")" : "Short stories to read and listen to", url: "https://www.fabulang.com/en/en" + (lv ? "/" + lv : "") },
     { k: "chatterbox", ico: "🎧", name: "Culips · Chatterbox", note: "Natural conversations", url: "https://esl.culips.com/category/chatter-box/" },
@@ -42,8 +60,9 @@ export function resFor(s) {
     { k: "tedideas", ico: "💡", name: "TED Ideas", note: "Short articles", url: "https://ideas.ted.com/" },
     { k: "tedtalks", ico: "🎤", name: "TED Talks", note: "Talks with subtitles", url: "https://www.ted.com/talks" },
     { k: "slow", ico: "🐢", name: "Slow English Podcast", note: s && s.slowUrl ? "Your playlist" : "Pick the playlist for your level", url: (s && s.slowUrl) || "https://www.youtube.com/@Slow_English_Podcast/playlists" }
-  ].filter(r => !hide.has(r.k));
-}
+  ];
+};
+export function resFor(s) { const k = new Set(resKeys(s)); return RES_ALL(s).filter(r => k.has(r.k)); }
 /* clock changes: Chile and a foreign student's own country (so Noa remembers to talk about the class time) */
 export const NOA_TZ = "America/Santiago";
 export function tzOffset(tz, t) {

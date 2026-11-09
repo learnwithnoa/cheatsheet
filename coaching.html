@@ -296,7 +296,7 @@ tr.arch td{opacity:.85}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=7";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=8";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -358,7 +358,7 @@ async function load() {
 async function loadUsage() {
   const linked = S.filter(s => s.uid);
   await Promise.all(linked.map(async s => {
-    try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-usage")); usage[s.id] = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e) {}
+    try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-usage")); const raw = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}, u = {}; Object.keys(raw).forEach(k => { const m = String(k).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); u[m ? m[1] + "-" + m[2].padStart(2, "0") + "-" + m[3].padStart(2, "0") : k] = raw[k]; }); usage[s.id] = u; } catch (e) {}
     try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-words")); const w = d.exists() && !d.data().deleted ? JSON.parse(d.data().json || "[]") || [] : []; appWords[s.id] = Array.isArray(w) ? w : []; await pushSheetWords(s); } catch (e) { console.warn("words", e); }
   }));
   renderList(); renderDetail();
@@ -671,7 +671,8 @@ function renderFilters() {
   $("filters").innerHTML = [["active", "Active", "k-green"], ["paused", "Paused", "k-amber"], ["inactive", "Past", "k-violet"], ["all", "All", "k-sky"], ["hibi", "✓ On Hibi", "k-sky"]].map(([k, l, c]) => `<button type="button" class="seg ${c}" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
 }
 /* little "synced with Hibi" mark on the avatar for students who have an account */
-function hibiSeen(s) { const u = usage[s.id] || {}; const d = Object.keys(u).filter(k => Object.values(u[k] || {}).some(v => v > 0)).sort().pop(); return d || ""; }
+function hibiSeen(s) { const u = usage[s.id] || {}; const iso = k => { const m = String(k).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); return m ? m[1] + "-" + m[2].padStart(2, "0") + "-" + m[3].padStart(2, "0") : ""; };
+  const d = Object.keys(u).filter(k => Object.values(u[k] || {}).some(v => v > 0)).map(iso).filter(Boolean).sort().pop(); return d || ""; }
 function syncTip(s) { if (!s.uid) return "No Hibi account yet"; const d = hibiSeen(s); return "Synced with Hibi" + (d ? " · last active " + new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""); }
 function avSync(s) { return s.uid ? ` on" title="${esc(syncTip(s))}` : ""; }
 function renderList() {
@@ -725,7 +726,7 @@ function renderDetail() {
   box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     <select id="stStatus" aria-label="Status" style="width:auto">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }[k]}</option>`).join("")}</select></div>
-    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}${links ? "<br>" + links : ""}<span class="resrow">${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}</span>${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Hibi (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Hibi account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
+    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}${links ? "<br>" + links : ""}<span class="resrow" ${resFor(s).length ? "" : "hidden"}>${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}</span>${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Hibi (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Hibi account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
     ${since(s) || s.prevCourses ? `<p class="small" style="margin:6px 0 0"><span style="color:var(--c-violet);font-weight:700">${esc(since(s))}</span>${s.prevCourses ? ` <span class="muted">· ${esc(s.prevCourses)}</span>` : ""}</p>` : ""}
     ${bringUp(s)}
     <div class="stats">
@@ -821,7 +822,7 @@ function tInfo(s) {
     <div class="fld"><label for="f_country">Country <span class="muted">(for the clock-change reminders)</span></label><input id="f_country" data-f="country" placeholder="e.g. Germany" value="${esc(s.country || "")}"></div>
     <div class="fld"><label for="f_fabLevel">Fabulang level <span class="muted">(their Resources link)</span></label><select id="f_fabLevel" data-f="fabLevel"><option value="">Auto${fabLevel(Object.assign({}, s, { fabLevel: "" })) ? " (" + fabLevel(Object.assign({}, s, { fabLevel: "" })).toUpperCase() + ", from their level)" : " (all levels)"}</option>${["a1", "a2", "b1", "b2", "c1", "c2"].map(l => `<option value="${l}" ${s.fabLevel === l ? "selected" : ""}>${l.toUpperCase()}</option>`).join("")}</select></div>
     <div class="fld"><label for="f_slowUrl">Slow English playlist link <span class="muted">(paste the playlist for their level)</span></label><input id="f_slowUrl" data-f="slowUrl" placeholder="https://www.youtube.com/playlist?list=…" value="${esc(s.slowUrl || "")}"></div>
-    <div class="fld" style="grid-column:1/-1"><label>Resources they see on My coaching</label><div class="reschk">${resFor(Object.assign({}, s, { resHide: [] })).map(r => `<label><input type="checkbox" data-reshide="${r.k}" ${(s.resHide || []).includes(r.k) ? "" : "checked"}> ${r.ico} ${esc(r.name)}</label>`).join("")}</div></div>
+    <div class="fld" style="grid-column:1/-1"><label>Resources they see on My coaching <span class="muted">${Array.isArray(s.res) ? "(set by you or the nightly wrap-up)" : "(guessed from recent class notes until you change it)"}</span></label><div class="reschk">${RES_ALL(s).map(r => `<label><input type="checkbox" data-reskey="${r.k}" ${resKeys(s).includes(r.k) ? "checked" : ""}> ${r.ico} ${esc(r.name)}</label>`).join("")}</div></div>
     <div class="fld"><label>Hour rule</label><select data-f="alwaysStdSel"><option value="" ${s.alwaysStd ? "" : "selected"}>Normal (by time of day)</option><option value="1" ${s.alwaysStd ? "selected" : ""}>Always standard hours</option></select></div>
     <div class="fld"><label>Kind</label><select data-f="kind"><option value="pack" ${s.kind !== "trueque" ? "selected" : ""}>Paying student</option><option value="trueque" ${s.kind === "trueque" ? "selected" : ""}>Trueque</option></select></div>
     <div class="fld" style="grid-column:1/-1"><label for="f_prev">Previous courses with you</label><input id="f_prev" data-f="prevCourses" value="${esc(s.prevCourses || "")}" placeholder="e.g. 2nd course: first one was Jun–Sep 2025"></div>
@@ -932,7 +933,7 @@ document.addEventListener("change", e => {
   if (t.dataset.emails) { s.emails = t.value.split(/[,;\s]+/).map(x => x.trim()).filter(x => x.includes("@")); save(s); return; }
   if (t.id === "stStatus") { s.status = t.value; save(s, false, "Status → " + t.value); renderAll(); return; }
   if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s, false, "Payment status → " + t.value); refresh(); return; }
-  if (t.dataset.reshide) { const k = t.dataset.reshide, h = new Set(s.resHide || []); if (t.checked) h.delete(k); else h.add(k); s.resHide = [...h]; save(s, false, (t.checked ? "Showing " : "Hiding ") + k); renderDetail(); return; }
+  if (t.dataset.reskey) { const k = t.dataset.reskey, cur = new Set(resKeys(s)); if (t.checked) cur.add(k); else cur.delete(k); s.res = RES_ALL(s).map(r => r.k).filter(x => cur.has(x)); delete s.resHide; save(s, false, (t.checked ? "Showing " : "Hiding ") + k); renderDetail(); return; }
   if (t.dataset.f === "alwaysStdSel") { s.alwaysStd = t.value === "1"; save(s, false, s.alwaysStd ? "Always standard hours" : "Hours by time of day"); renderDetail(); return; }
   if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") renderList(); save(s, false, "Edited " + (t.closest(".fld") && t.closest(".fld").querySelector("label") ? t.closest(".fld").querySelector("label").textContent.toLowerCase() : t.dataset.f)); return; }
   if (t.dataset.info) { s.info[t.dataset.info] = t.value.split("\n").map(x => x.trim()).filter(Boolean); save(s); return; }
