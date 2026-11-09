@@ -1211,6 +1211,35 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
 .tn-wrap .tn-box{position:absolute;top:calc(100% + 8px);right:0;width:min(480px,calc(100vw - 32px));max-height:min(70vh,600px);overflow:auto;margin:0;box-shadow:0 18px 44px rgba(5,15,30,.35);background:var(--surface)}
 @media (max-width:640px){.tn-bell .tn-bl{display:none}}
 .ch-no{display:inline-block;min-width:30px;margin-right:8px;padding:1px 7px;border-radius:8px;background:var(--pc,var(--line));color:#0b1220;font:800 12.5px var(--mono,monospace);text-align:center}
+
+/* progress reports on My coaching */
+.ch-reps{display:flex;flex-direction:column;gap:10px}
+.ch-rep{overflow:hidden}
+.ch-rep-h{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 16px;cursor:pointer}
+.ch-rep-h>span:first-child{display:flex;flex-direction:column;gap:2px}
+.ch-rep-h b{font-size:16.5px}.ch-rep-h small{color:var(--muted);font-size:13px}
+.ch-rep-h:focus-visible{outline:2px solid var(--k);outline-offset:-3px;border-radius:14px}
+.ch-rep-car{font-size:18px;color:var(--k)}
+.ch-rep-b{padding:0 16px 14px;display:flex;flex-direction:column;gap:4px}
+.ch-rp-snap{margin:0 0 4px;font-size:16px;line-height:1.6}
+.ch-rp-sec{padding-top:10px;border-top:1px dashed color-mix(in srgb,var(--k) 30%,var(--line));margin-top:6px}
+.ch-rp-sec h4{margin:0 0 8px;font-size:14px;font-weight:800}
+.ch-rp-sec ul{margin:0;padding-left:18px;font-size:14.5px;line-height:1.55}
+.ch-rp-sec p{margin:0;font-size:14.5px;line-height:1.55}
+.ch-rp-win,.ch-rp-foc{padding:8px 11px;border-radius:10px;background:color-mix(in srgb,var(--bg) 55%,transparent);margin:0 0 6px;font-size:14.5px;line-height:1.5}
+.ch-rp-win small{display:block;color:var(--muted);font-size:13.5px;margin-top:3px;font-style:italic}
+.ch-rp-foc div{margin-top:3px}
+.ch-rp-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ch-rp-chips span{font-size:13.5px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card)}
+.ch-rp-res{display:block;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none}
+a.ch-rp-res:hover{border-color:var(--k)}
+.ch-rp-res small{display:block;color:var(--muted);font-size:13.5px;margin-top:3px}
+.ch-rp-close{margin:12px 0 0;font-style:italic;font-size:15px;line-height:1.55}
+.ch-rp-recs{display:flex;flex-wrap:wrap;gap:6px}
+.ch-rp-recs a{font-size:13.5px;font-weight:700;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none}
+.ch-rp-recs a:hover{border-color:var(--k)}
+.ch-rep-f{margin-top:12px}
+.ch-rep{scroll-margin-top:84px}@media (max-width:900px){.ch-rep{scroll-margin-top:130px}}
 </style>
 
 <header class="top">
@@ -1578,7 +1607,40 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
 <script>
 (function(){
   const box=document.getElementById("coachBox"); if(!box) return;
-  let tab="classes", cSort=-1, wSort="new";
+  let tab="classes", cSort=-1, wSort="new", openRep=null;
+  /* progress reports: ?report=<id>#coaching from the email opens that report */
+  const REP_P="cs-open-report", REP_READ="cs-rep-read";
+  try{ const q=new URLSearchParams(location.search).get("report"); if(q){ sessionStorage.setItem(REP_P,q.replace(/[^\w-]/g,"").slice(0,30)); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
+  const repRead=()=>{ try{ return JSON.parse(localStorage.getItem(REP_READ)||"[]")||[]; }catch(e){ return []; } };
+  const markRepRead=id=>{ try{ const r=repRead(); if(!r.includes(id)){ r.push(id); localStorage.setItem(REP_READ,JSON.stringify(r.slice(-40))); } }catch(e){} };
+  const repsOf=v=>((v&&v.reports)||[]).filter(r=>r&&r.id).slice().sort((a,b)=>(b.to||"").localeCompare(a.to||""));
+  function repHTML(r,forPrint){
+    const L=(arr,f)=>(arr||[]).length?arr.map(f).join(""):"";
+    return `${r.snapshot?`<p class="ch-rp-snap">${esc(r.snapshot)}</p>`:""}
+      ${(r.clicking||[]).length?`<div class="ch-rp-sec"><h4>✅ What’s clicking</h4>${L(r.clicking,c=>`<div class="ch-rp-win"><b>${esc(c.win)}</b>${c.example?`<small>${esc(c.example)}</small>`:""}</div>`)}</div>`:""}
+      ${(r.topics||[]).length?`<div class="ch-rp-sec"><h4>💬 Topics we covered</h4><div class="ch-rp-chips">${L(r.topics,x=>`<span>${esc(x)}</span>`)}</div></div>`:""}
+      ${(r.patterns||[]).length?`<div class="ch-rp-sec"><h4>🔎 Speaking patterns worth noting</h4><ul>${L(r.patterns,x=>`<li>${esc(x)}</li>`)}</ul></div>`:""}
+      ${(r.focus||[]).length?`<div class="ch-rp-sec"><h4>🎯 What to focus on next</h4>${L(r.focus,f=>`<div class="ch-rp-foc"><b>${esc(f.area)}</b>${f.tip?`<div>💡 ${esc(f.tip)}</div>`:""}</div>`)}</div>`:""}
+      ${r.resource?`<div class="ch-rp-sec"><h4>📚 Resource pick</h4>${r.resource.url&&!forPrint?`<a class="ch-rp-res" href="${esc(r.resource.url)}" target="_blank" rel="noopener"><b>${esc(r.resource.title)} ↗</b>${r.resource.why?`<small>${esc(r.resource.why)}</small>`:""}</a>`:`<div class="ch-rp-res"><b>${esc(r.resource.title)}</b>${r.resource.url?`<small>${esc(r.resource.url)}</small>`:""}${r.resource.why?`<small>${esc(r.resource.why)}</small>`:""}</div>`}</div>`:""}
+      ${r.month?`<div class="ch-rp-sec"><h4>🔭 Zooming out: your month at a glance</h4><p>${esc(r.month)}</p></div>`:""}
+      ${r.closing?`<p class="ch-rp-close">${esc(r.closing)}<br>— Noa</p>`:""}
+      ${(r.recordings||[]).length&&!forPrint?`<div class="ch-rp-sec"><h4>🎥 Your class recordings</h4><div class="ch-rp-recs">${L(r.recordings,x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">▶ ${esc(x.label||("Class on "+fs(x.date)))}</a>`)}</div></div>`:""}`;
+  }
+  function printRep(r){
+    const w=window.open("","_blank"); if(!w){ if(window.toast) window.toast("Allow pop-ups to print"); return; }
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>Progress report · ${esc(fs(r.from))} – ${esc(fs(r.to))}<\/title><style>body{font:15px/1.55 system-ui,sans-serif;color:#111;max-width:720px;margin:32px auto;padding:0 20px}h1{font-size:22px;margin:0 0 4px}h4{margin:18px 0 6px;font-size:15px}.m{color:#555;margin:0 0 14px}.ch-rp-snap{font-size:16px}.ch-rp-win,.ch-rp-foc,.ch-rp-res{margin:0 0 8px}.ch-rp-win small,.ch-rp-res small{display:block;color:#555}.ch-rp-chips span{display:inline-block;border:1px solid #ccc;border-radius:99px;padding:1px 9px;margin:0 4px 4px 0;font-size:13px}.ch-rp-close{font-style:italic;margin-top:20px}<\/style><h1>Your progress report</h1><p class="m">${esc(window.__csHubView&&window.__csHubView.name||"")} · ${esc(fd(r.from))} – ${esc(fd(r.to))} · ${r.sessions} ${r.sessions===1?"class":"classes"}</p>${repHTML(r,true)}`);
+    w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },300);
+  }
+  function takePending(v){
+    let p=null; try{ p=sessionStorage.getItem(REP_P); }catch(e){} if(!p) return;
+    if(!v){ return; }
+    try{ sessionStorage.removeItem(REP_P); }catch(e){}
+    const reps=repsOf(v); if(!reps.length) return;
+    const r=reps.find(x=>x.id===p)||reps[0]; tab="reports"; openRep=r.id;
+    if(location.hash!=="#coaching") location.hash="#coaching";
+    setTimeout(()=>{ const el=document.getElementById("rep-"+r.id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); },120);
+  }
+  setTimeout(()=>{ let p=null; try{ p=sessionStorage.getItem(REP_P); }catch(e){} if(p&&!window.__csHubView&&typeof window.toast==="function") window.toast("Sign in with Google to see your progress report 📈"); },5000);
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const fd=iso=>{ if(!iso) return ""; const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"}); };
   const fs=iso=>{ if(!iso) return ""; const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{month:"short",day:"numeric"}); };
@@ -1591,6 +1653,7 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
     (v.guides||[]).forEach(g=>{ if(g.date&&g.date>since) out.push({d:g.date,ico:"📄",t:`New guide: <b>${esc(g.title)}</b>`,tab:"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
     (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:""):(t.title||t.page))}</b>`,tab:"top"}); });
+    repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
     return out.sort((a,b)=>b.d.localeCompare(a.d)).slice(0,6);
@@ -1607,6 +1670,7 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
   function render(){
     const v=window.__csHubView; nav();
     if(!v){ box.innerHTML='<p class="muted">This page is for Noa’s private students. If you take private classes and don’t see your information, ask Noa to link your account.</p>'; return; }
+    takePending(v);
     const cur=(v.packs||[]).filter(p=>p.current).slice(-1)[0];
     const per=cur&&cur.unit==="credits"?((v.classes||[]).filter(c=>c.pack===cur.id&&c.hour==="Priority").length>(v.classes||[]).filter(c=>c.pack===cur.id).length/2?4:3):1;
     const left=cur&&cur.size?Math.max(0,cur.left):null;
@@ -1619,7 +1683,10 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
       <div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div>
       <div class="ch-tint ch-s ch-stat"><b>${Math.round(held.length*0.75)}</b><span>hours of English together</span></div>
       ${streak>=3?`<div class="ch-tint ch-g ch-stat"><b>🔥 ${streak}</b><span>classes in a row</span></div>`:""}</div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
-    const tabs=[["classes","My classes","ch-s"],["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]].concat((v.guides||[]).length?[["guides",`Guides (${v.guides.length})`,"ch-a"]]:[]);
+    const reps=repsOf(v);
+    const tabs=[["classes","My classes","ch-s"]].concat(reps.length?[["reports",`Progress reports (${reps.length})`,"ch-v"]]:[]).concat([["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]]).concat((v.guides||[]).length?[["guides",`Guides (${v.guides.length})`,"ch-a"]]:[]);
+    if(tab==="reports"&&!reps.length) tab="classes";
+    const newRep=reps[0]&&!repRead().includes(reps[0].id)&&tab!=="reports"?reps[0]:null;
     /* top: next class + homework, what's due, little stats */
     const lastHw=((v.classes||[]).slice().reverse().find(c=>c.homework)||{}).homework||"";
     let nextTxt=""; if(v.next){ const d=new Date(v.next); if(!isNaN(d)) nextTxt=d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}); }
@@ -1631,6 +1698,7 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
       else if(du.half&&du.instAt) dueTxt=du.nextNo>=du.instAt?`Your <b>2nd payment</b> is due now (class #${du.instAt} of this pack).`:`Your <b>2nd payment</b> is due at class <b>#${du.instAt}</b> of this pack. Your next class is #${du.nextNo}.`; }
     const top=`<div class="ch-top">
       <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}</div>
+      ${newRep?`<div class="ch-tint ch-v ch-card"><div class="ch-k">📈 New progress report</div><div>Your report for <b>${fs(newRep.from)} – ${fs(newRep.to)}</b> is ready.</div><button type="button" class="ch-go" data-rep="${esc(newRep.id)}" style="margin-top:6px">Read it →</button></div>`:""}
       ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
       ${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip"><button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}
@@ -1656,6 +1724,10 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
       const cl=(v.classes||[]).slice(); const pn={}, num=new Map(); cl.forEach(c=>{ const k=c.pack||"_"; pn[k]=(pn[k]||0)+1; num.set(c,pn[k]); }); const multi=Object.keys(pn).length>1; if(cSort<0) cl.reverse();
       body=`<div class="ch-sort">Order: <button type="button" class="ch-tab ch-s" data-cs="-1" aria-pressed="${cSort<0}">Newest first</button><button type="button" class="ch-tab ch-s" data-cs="1" aria-pressed="${cSort>0}">Oldest first</button></div>
       <div class="ch-list">${cl.map(c=>`<div class="ch-cls" style="--pc:${pc(c.pack)}"><div class="d"><span class="ch-no" title="${multi?"Class number in this pack":"Class number"}">#${num.get(c)}</span>${c.date?fd(c.date):esc(c.dateText)}${c.att&&c.att!=="Present"?`<span class="ch-pill">${esc(c.att)}</span>`:""}</div><div class="t">${esc(c.topics)||"<span class='muted'>(no notes)</span>"}</div>${c.homework?`<div class="h">📝 Homework: ${esc(c.homework)}</div>`:""}</div>`).join("")||'<p class="muted">No classes yet.</p>'}</div>`;
+    } else if(tab==="reports"){
+      if(openRep!=="__none"&&(!openRep||!reps.some(r=>r.id===openRep))) openRep=reps[0].id;
+      if(openRep!=="__none") markRepRead(openRep);
+      body=`<p class="muted" style="font-size:14px">Every few weeks Noa looks back at your classes: what’s working, what to focus on next, and a resource just for you.</p><div class="ch-reps">${reps.map(r=>{ const o=r.id===openRep; return `<div class="ch-rep ch-tint ch-v" id="rep-${esc(r.id)}"><button type="button" class="ch-rep-h" data-rep="${esc(r.id)}" aria-expanded="${o}"><span><span class="ch-k">📈 Progress report</span><b>${fs(r.from)} – ${fs(r.to)}</b><small>${r.sessions} ${r.sessions===1?"class":"classes"}</small></span><span class="ch-rep-car" aria-hidden="true">${o?"▾":"▸"}</span></button>${o?`<div class="ch-rep-b">${repHTML(r)}<div class="ch-rep-f"><button type="button" class="ch-go" data-repprint="${esc(r.id)}">🖨 Print or save as PDF</button></div></div>`:""}</div>`; }).join("")}</div>`;
     } else if(tab==="pack"){
       body=(v.packs||[]).slice().reverse().map(p=>{ const pct=p.size?Math.min(100,p.used/p.size*100):0; return `<div class="ch-tint ch-pk" style="--pc:${p.color||"var(--line)"};--k:${p.current?"var(--c-g)":"var(--line)"}"><b>${esc(p.label)}</b>${p.current?' <span class="ch-pill" style="background:color-mix(in srgb,var(--c-g) 20%,transparent);color:var(--c-g)">current</span>':""}${p.paid==="half"?' <span class="ch-pill">½ paid</span>':""}
         ${p.size?`<div class="ch-bar"><i style="width:${pct}%"></i></div>`:""}<div class="muted" style="font-size:13.5px">${p.size?`${p.used} of ${p.size} ${p.unit} used · `:""}${p.done} ${p.done===1?"class":"classes"}${p.deadline?" · ends "+fd(p.deadline):""}</div></div>`; }).join("")
@@ -1680,6 +1752,10 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
     list.forEach(x=>{ if(window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; });
     if(n>1&&typeof window.toast==="function") window.toast(`Saved ${n} words to My words ✓`);
     render(); });
+  box.addEventListener("click",e=>{ const v=window.__csHubView; const pr=e.target.closest("[data-repprint]"); if(pr&&v){ const r=repsOf(v).find(x=>x.id===pr.dataset.repprint); if(r) printRep(r); return; }
+    const b=e.target.closest("[data-rep]"); if(!b||!v) return; const id=b.dataset.rep;
+    if(tab==="reports"&&openRep===id&&b.classList.contains("ch-rep-h")) openRep="__none"; else { openRep=id; tab="reports"; }
+    render(); const el=document.getElementById("rep-"+id); if(el&&!b.classList.contains("ch-rep-h")) el.scrollIntoView({behavior:"smooth",block:"start"}); });
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); });
   document.addEventListener("cs-hubview",render); document.addEventListener("cs-teacher",nav);
   /* teacher: shortcuts in the phone menu */
@@ -6442,6 +6518,9 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-reports", date:"November 9, 2026", title:"Progress reports on My coaching 📈", quiet:true, items:[
+    ["📈","Your progress reports","private students: your every-3-weeks progress report now lives in <b>My coaching → Progress reports</b>. Read it, open your class recordings, or print it.","coaching"]
+  ]},
   {id:"2026-sentences", date:"November 9, 2026", title:"Write your own sentences ✍️", items:[
     ["📊","My English level","take a 5-minute level check or choose your level in <b>Practice → My English level</b>, so your feedback fits you.","quiz"],
     ["⭐","Stars for your sentences","in <b>Practice → Use it in a sentence</b>, every sentence gets 1 to 3 stars <b>for your level</b>, a tip to make the next one richer, and up to 3 🍪 for your buddy.","quiz"],

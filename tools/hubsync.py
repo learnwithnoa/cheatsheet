@@ -31,7 +31,25 @@ Usage:
       (class resources on My coaching; until Noa or this sets them, they're guessed from the recent class notes)
   HUB_PASSWORD=... python3 hubsync.py set-level '<Hibi name or email>' B1 ['short reason']   club member's level from club recordings
   HUB_PASSWORD=... python3 hubsync.py add-doc <student-id> '{"title":"Session Zero plan","url":"https://www.notion.so/..."}'   (only Noa sees these)
+  HUB_PASSWORD=... python3 hubsync.py add-report <student-id> @/tmp/report.json   progress report on the student's My coaching page (see REPORT below);
+      prints the link to put in the student's email. Same "to" date again = replaces that report.
+  HUB_PASSWORD=... python3 hubsync.py reports <student-id>             list a student's reports (id, period)
+  HUB_PASSWORD=... python3 hubsync.py del-report <student-id> <report-id>
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
+
+Any '<json>' argument can also be @/path/to/file.json or - (read from stdin).
+
+REPORT json (write everything TO the student, "you", at their level; plain text, no markdown):
+  {"from":"2026-10-19","to":"2026-11-09","sessions":5,
+   "snapshot":"2-3 sentences",
+   "clicking":[{"win":"what's working","example":"real example from class"}, ...]   (3-4),
+   "topics":["...", ...],
+   "patterns":["...", ...],
+   "focus":[{"area":"...","tip":"one concrete tip"}, ...]   (2-3),
+   "resource":{"title":"...","url":"https://...","why":"..."},
+   "recordings":[{"date":"2026-10-21","url":"https://zoom.us/rec/share/..."}, ...],
+   "month":"(optional) Zooming out: your month at a glance",
+   "closing":"short warm note"}
 """
 import json, os, re, sys, random, string, datetime, urllib.request, urllib.error
 
@@ -250,9 +268,64 @@ def make_view(s, meta=None):
             "payments": [{"date": p.get("date", ""), "what": p.get("what", ""), "amount": p.get("amount", "")} for p in s.get("payments", [])],
             "words": [{"w": w.get("w", ""), "tr": w.get("tr", ""), "ex": w.get("ex", ""), "i": i} for i, w in enumerate(s.get("words", []))],
             "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "tz": s.get("tz", ""), "country": s.get("country", ""), "next": ups[0]["start"] if ups else "", "due": due,
+            "reports": [view_report(r) for r in (s.get("reports") or [])[-12:] if r and r.get("id")],
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
+
+
+SITE = "https://learnwithnoa.github.io/cheatsheet/"
+
+
+def _txt(x, n=1200):
+    return re.sub(r"[ \t]+", " ", str(x or "")).strip()[:n]
+
+
+def _url(x):
+    x = str(x or "").strip()
+    return x if re.match(r"^https://", x) else ""
+
+
+def clean_report(d):
+    def day(x):
+        x = str(x or "").strip()[:10]
+        datetime.date.fromisoformat(x)  # raises on a bad date
+        return x
+    out = {"id": "r" + day(d["to"]).replace("-", ""), "from": day(d["from"]), "to": day(d["to"]),
+           "sessions": int(d.get("sessions") or len(d.get("recordings") or [])),
+           "snapshot": _txt(d.get("snapshot"), 900),
+           "clicking": [], "topics": [_txt(x, 200) for x in (d.get("topics") or []) if _txt(x)][:12],
+           "patterns": [_txt(x, 500) for x in (d.get("patterns") or []) if _txt(x)][:6],
+           "focus": [], "resource": None, "recordings": [],
+           "month": _txt(d.get("month"), 1500), "closing": _txt(d.get("closing"), 600),
+           "at": datetime.date.today().isoformat()}
+    for c in (d.get("clicking") or [])[:6]:
+        c = c if isinstance(c, dict) else {"win": c}
+        if _txt(c.get("win")):
+            out["clicking"].append({"win": _txt(c.get("win"), 400), "example": _txt(c.get("example"), 400)})
+    for f in (d.get("focus") or [])[:4]:
+        f = f if isinstance(f, dict) else {"area": f}
+        if _txt(f.get("area")):
+            out["focus"].append({"area": _txt(f.get("area"), 300), "tip": _txt(f.get("tip"), 500)})
+    r = d.get("resource") or {}
+    if isinstance(r, dict) and _txt(r.get("title")):
+        out["resource"] = {"title": _txt(r.get("title"), 200), "url": _url(r.get("url")), "why": _txt(r.get("why"), 400)}
+    for x in (d.get("recordings") or [])[:20]:
+        if isinstance(x, dict) and _url(x.get("url")):
+            out["recordings"].append({"date": str(x.get("date") or "")[:10], "url": _url(x["url"]), "label": _txt(x.get("label"), 80)})
+    if not out["snapshot"]:
+        raise SystemExit("A report needs at least a snapshot.")
+    if out["from"] > out["to"]:
+        raise SystemExit("from is after to")
+    return out
+
+
+def view_report(r):
+    return {k: r.get(k) for k in ("id", "from", "to", "sessions", "snapshot", "clicking", "topics", "patterns", "focus", "resource", "recordings", "month", "closing", "at")}
+
+
+def report_link(rid):
+    return SITE + "?report=" + rid + "#coaching"
 
 
 def save(tok, tu, s, meta=None):
@@ -474,7 +547,12 @@ def main():
         raise SystemExit(f"No hub student '{sid}'")
     if cmd == "get":
         print(json.dumps(s, ensure_ascii=False, indent=1)); return
-    data = json.loads(a[2]) if len(a) > 2 and cmd != "resources" else {}
+    raw = a[2] if len(a) > 2 and cmd not in ("resources", "del-report") else ""
+    if raw == "-":
+        raw = sys.stdin.read()          # json from stdin (avoids shell quoting trouble with apostrophes)
+    elif raw.startswith("@"):
+        raw = open(raw[1:], encoding="utf-8").read()   # json from a file: @/tmp/report.json
+    data = json.loads(raw) if raw else {}
     if cmd == "merge":
         s.update(data); save(tok, tu, s); print("ok"); return
     if cmd == "add-payment":
@@ -518,6 +596,23 @@ def main():
         else:
             print("no change:", cur); return
         s["res"] = [k for k in RES_KEYS if k in cur]; save(tok, tu, s); print("ok", s["res"]); return
+    if cmd == "add-report":
+        r = clean_report(data)
+        reps = [x for x in (s.get("reports") or []) if x.get("id") != r["id"]]
+        replaced = len(reps) != len(s.get("reports") or [])
+        reps.append(r); reps.sort(key=lambda x: x.get("to", ""))
+        s["reports"] = reps; save(tok, tu, s)
+        print(json.dumps({"ok": True, "replaced": replaced, "id": r["id"], "link": report_link(r["id"]),
+                          "onHibi": bool(s.get("uid")),
+                          "note": "" if s.get("uid") else "This student isn't linked to a Hibi account yet, so they can't see it until they sign in. Use the Google Doc fallback for the email."}, ensure_ascii=False)); return
+    if cmd == "reports":
+        print(json.dumps([{"id": x["id"], "from": x.get("from"), "to": x.get("to"), "sessions": x.get("sessions"), "link": report_link(x["id"])} for x in s.get("reports") or []], ensure_ascii=False)); return
+    if cmd == "del-report":
+        before = len(s.get("reports") or [])
+        s["reports"] = [x for x in (s.get("reports") or []) if x.get("id") != a[2]]
+        if len(s["reports"]) == before:
+            print("no report with id", a[2]); return
+        save(tok, tu, s); print("ok"); return
     if cmd == "add-doc":
         # Noa-only document link (Notion lesson plan etc.) on the student's hub page; students never see these
         d = {"title": data.get("title", "Document"), "url": data["url"], "date": data.get("date") or datetime.date.today().isoformat()}
