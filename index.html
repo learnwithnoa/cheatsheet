@@ -7,8 +7,19 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231D4ED8'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='white'%3ECS%3C/text%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}.brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px;min-width:0}.kj{font:700 15px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em;white-space:nowrap}footer .kj{font-size:inherit;font-weight:600}.brand .brand-row>span{font-size:26px}.brand .kj{font-size:17px}@media (max-width:480px){.brand .brand-row>span{font-size:21px}.brand .kj{font-size:14px}}
 </style>
+<script>
+/* Noa's "View as" a real student: show their own saved words, notes and buddy, read-only (nothing is written to Noa's or their account) */
+(function(){ try{ const raw=sessionStorage.getItem("cs-viewas"); if(!raw) return; const va=JSON.parse(raw); if(!va||!va.data) return; window.__csViewAsMode=va; const ov=va.data;
+  const KEEP=new Set(["ncs-theme","ncs-welcomed","ncs-seen-version","ncs-comfort","ncs-sync-uid","ncs-music-mode","ncs-music-vol","ncs-music-bal"]);
+  const theirs=k=>typeof k==="string"&&((k.indexOf("ncs-")===0&&!KEEP.has(k))||k==="cs-cefr");
+  const P=Storage.prototype, g=P.getItem, s=P.setItem, r=P.removeItem, ls=window.localStorage;
+  P.getItem=function(k){ return this===ls&&theirs(k)?(Object.prototype.hasOwnProperty.call(ov,k)?ov[k]:null):g.call(this,k); };
+  P.setItem=function(k,v){ if(this===ls&&theirs(k)){ ov[k]=String(v); return; } return s.call(this,k,v); };
+  P.removeItem=function(k){ if(this===ls&&theirs(k)){ delete ov[k]; return; } return r.call(this,k); };
+}catch(e){} })();
+</script>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=16">
+<link rel="stylesheet" href="comfort.css?v=17">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
 <script src="comfort.js?v=18" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -1658,13 +1669,24 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   }
   function banner(label){ let b=document.getElementById("vaBanner"); if(!label){ if(b) b.remove(); return; } if(!b){ b=document.createElement("div"); b.id="vaBanner"; b.className="va-banner"; document.body.prepend(b); } b.innerHTML=`👁 Viewing as ${esc(label)} <button type="button" id="vaExit">Back to my view</button>`; }
   function preview(label,view,kind){ window.__csPreview={label,kind:kind||(view?"private":"club")}; window.__csHubView=view; banner(label); document.dispatchEvent(new CustomEvent("cs-hubview")); document.dispatchEvent(new CustomEvent("cs-preview")); const c=document.getElementById("csClose"); if(c) c.click(); if(view){ const b=document.getElementById("navCoaching"); if(b) b.click(); } else { const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); } }
+  /* a real student: load what they saved (words, notes, buddy…) and reload the page showing it, read-only */
+  async function realView(label,view,kind,uid,btn){
+    if(btn){ btn.disabled=true; btn.textContent="Loading…"; }
+    let data={}; try{ data=window.__csViewAs&&window.__csViewAs.data?await window.__csViewAs.data(uid):{}; }catch(err){ console.warn(err); }
+    try{ sessionStorage.setItem("cs-viewas",JSON.stringify({label,kind,view,uid,data,at:Date.now()})); }catch(err){ if(typeof window.toast==="function") window.toast("Their data is too big to preview here"); preview(label,view,kind); return; }
+    location.hash=view?"#coaching":"#notes"; location.reload();
+  }
+  if(window.__csViewAsMode){ const va=window.__csViewAsMode; window.__csPreview={label:va.label,kind:va.kind||(va.view?"private":"club"),real:true}; window.__csHubView=va.view||null;
+    const show=()=>{ banner(va.label+" · their own words, notes and buddy (read-only)"); nav(); document.dispatchEvent(new CustomEvent("cs-preview")); };
+    if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",show); else show(); }
   document.addEventListener("input",e=>{ if(e.target.id==="vaQ") vaRender(e.target.value); });
   document.addEventListener("click",async e=>{
+    if(e.target.closest("#vaExit")&&window.__csViewAsMode){ try{ sessionStorage.removeItem("cs-viewas"); }catch(er){} location.hash="#notes"; location.reload(); return; }
     if(e.target.closest("#vaExit")){ window.__csPreview=null; banner(null); if(window.__csViewAs) window.__csViewAs.restore(); document.dispatchEvent(new CustomEvent("cs-preview")); nav(); const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); return; }
     const pick=e.target.closest("[data-va]"); if(pick){ const k=pick.dataset.va;
       if(k==="club") preview("a club member",null,"club"); else if(k==="private") preview("a private student (example)",SAMPLE,"private"); else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE,"both");
-      else if(k.startsWith("hub:")){ const x=vaData.priv.find(x=>x.key===k); if(x) preview(x.view.name+(x.both?" (private + club)":" (private)"),x.view,x.both?"both":"private"); }
-      else { const x=vaData.club.find(x=>x.key===k); if(x) preview(x.name+" (club)",null,"club"); }
+      else if(k.startsWith("hub:")){ const x=vaData.priv.find(x=>x.key===k); if(x){ const lb=x.view.name+(x.both?" (private + club)":" (private)"); if(x.uid) realView(lb,x.view,x.both?"both":"private",x.uid,pick); else preview(lb+" · not on Hibi yet, so no words or notes",x.view,x.both?"both":"private"); } }
+      else { const x=vaData.club.find(x=>x.key===k); if(x) realView(x.name+" (club)",null,"club",x.uid,pick); }
       return; }
     const op=e.target.closest("#vaOpen"); if(op){ const L=document.getElementById("vaList"); L.hidden=!L.hidden; op.setAttribute("aria-expanded",L.hidden?"false":"true"); if(L.hidden) return;
       L.innerHTML=`<input type="search" id="vaQ" placeholder="Search a name…" autocomplete="off"><div class="va-res"><p class="muted">Loading everyone…</p></div>`;
@@ -6614,7 +6636,10 @@ async function flush() {
   try { await Promise.all(ks.map(pushKey)); status("synced"); }
   catch (e) { ks.forEach(k => pending.add(k)); status("error"); timer = setTimeout(flush, 5000); }
 }
+/* Noa's "View as": a student's saved data, read-only, nothing is synced or written */
+const VA = window.__csViewAsMode || null;
 window.__csOnSet = k => {
+  if (VA) return;
   if (!user || !ready || !isSynced(k)) return;
   pending.add(k); status("saving");
   clearTimeout(timer); timer = setTimeout(flush, 700);
@@ -6664,6 +6689,7 @@ async function syncDown() {
 
 /* ---------- messages from Noa (inbox/{uid}/msgs) ---------- */
 async function checkInbox() {
+  if (VA) return;
   if (!user || !window.csShowKudos) return;
   try {
     const snap = await getDocs(collection(db, "inbox", user.uid, "msgs"));
@@ -6791,11 +6817,20 @@ window.__csViewAs = {
     const by = (a, b) => a.localeCompare(b);
     return { priv: priv.sort((a, b) => by(a.view.name, b.view.name)), club: club.sort((a, b) => by(a.name, b.name)) };
   },
-  restore() { loadHubView(); }
+  restore() { loadHubView(); },
+  /* everything a student saved on Hibi (words, notes, buddy…), to look at it read-only */
+  async data(uid) {
+    if (!window.__csTeacher || !user || !uid) return {};
+    const out = {};
+    (await getDocs(collection(db, "users", uid, "data"))).forEach(d => { const x = d.data() || {}; if (d.id.startsWith("ncs-") && !x.deleted && typeof x.json === "string") out[d.id] = x.json; });
+    try { const r = await getDoc(doc(db, "roles", uid)); const lv = r.exists() && (r.data() || {}).lv; if (lv) out["cs-cefr"] = JSON.stringify({ lv }); } catch (e) {}
+    return out;
+  }
 };
 onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();
+  if (VA) { window.__csHubView = VA.view || null; document.dispatchEvent(new CustomEvent("cs-hubview")); window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
   loadHubView();
   /* the English level Noa set for club members (from club class recordings), for level-adapted feedback */
   if (u) getDoc(doc(db, "roles", u.uid)).then(d => { const r = d.exists() ? d.data() || {} : {}; try { if (r.lv) localStorage.setItem("cs-cefr", JSON.stringify({ lv: r.lv })); else localStorage.removeItem("cs-cefr"); } catch (e) {} }).catch(() => {});
@@ -6809,7 +6844,7 @@ window.__csPark = {
   signedIn: () => !!user,
   uid: () => user ? user.uid : "",
   publish(b) {
-    if (!user) return;
+    if (!user || VA) return;
     clearTimeout(parkTimer);
     parkTimer = setTimeout(() => {
       const first = String(user.displayName || "").trim().split(/\s+/)[0] || "";
@@ -6825,7 +6860,7 @@ window.__csPark = {
   },
   /* send love to someone else's buddy: one per person per day (the rules enforce it) */
   async heart(uid, a) {
-    if (!user || uid === user.uid) return false;
+    if (!user || VA || uid === user.uid) return false;
     const d = new Date(), day = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
     const first = String(user.displayName || "").trim().split(/\s+/)[0] || "";
     await setDoc(doc(db, "park", uid, "hearts", user.uid + "_" + day), { from: user.uid, first, a: a || "", at: serverTimestamp() });
@@ -6833,7 +6868,7 @@ window.__csPark = {
   },
   /* feed someone else's buddy: one treat per person per day */
   async feed(uid, a) {
-    if (!user || uid === user.uid) return false;
+    if (!user || VA || uid === user.uid) return false;
     const d = new Date(), day = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
     const first = String(user.displayName || "").trim().split(/\s+/)[0] || "";
     await setDoc(doc(db, "park", uid, "hearts", user.uid + "_feed_" + day), { from: user.uid, first, a: a || "", kind: "feed", at: serverTimestamp() });
@@ -6841,7 +6876,7 @@ window.__csPark = {
   },
   /* collect the love other people sent to my buddy, then clear it */
   async claim() {
-    if (!user) return [];
+    if (!user || VA) return [];
     const snap = await getDocs(collection(db, "park", user.uid, "hearts"));
     const out = [];
     await Promise.all(snap.docs.map(async d => { out.push(d.data() || {}); try { await deleteDoc(d.ref); } catch (e) {} }));
