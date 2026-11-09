@@ -1112,6 +1112,10 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .tn-k{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:4px;white-space:nowrap}
 .tn-p{background:color-mix(in srgb,#8b5cf6 20%,transparent);color:#a78bfa}.tn-b{background:color-mix(in srgb,#14b8a6 20%,transparent);color:#2dd4bf}
 .tn-c{background:color-mix(in srgb,#3b82f6 20%,transparent);color:#60a5fa}.tn-n{background:color-mix(in srgb,#f59e0b 20%,transparent);color:#fbbf24}
+.tn-mini{margin:0 0 12px;display:flex;justify-content:flex-end}
+.tn-num{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:#E5533D;color:#fff;font-size:11.5px;line-height:18px;text-align:center}
+.tn-link{margin:6px 0 0;padding:0;border:0;background:none;font:inherit;font-size:13.5px;font-weight:700;color:#3b82f6;cursor:pointer}.tn-link:hover{text-decoration:underline}
+.tn-old{opacity:.6}
 </style>
 
 <header class="top">
@@ -1716,28 +1720,39 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
       data={acc,priv}; paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
   }
+  let showAll=false, open=false, undoPrev=null;
+  function getSeen(){ try{ return +JSON.parse(localStorage.getItem(SEEN)||"0")||0; }catch(e){ return 0; } }
+  function setSeen(v){ try{ localStorage.setItem(SEEN,JSON.stringify(v)); }catch(e){} if(window.__csOnSet) try{ window.__csOnSet(SEEN); }catch(e){} }
   function paint(){
     const b=box(); if(!b||!data) return;
-    let seen=0; try{ seen=+JSON.parse(localStorage.getItem(SEEN)||"0")||0; }catch(e){}
-    const since=Math.max(seen,Date.now()-14*864e5);
+    const seen=getSeen(), wk=Date.now()-14*864e5, since=Math.max(seen,wk);
     const KIND={private:["private student","tn-p"],both:["private + club","tn-b"],club:["club member","tn-c"],new:["private, not linked yet","tn-n"]};
-    const joins=data.acc.filter(a=>a.first&&a.first>since).sort((a,b)=>b.first-a.first);
+    const all=data.acc.filter(a=>a.first&&a.first>wk).sort((a,b)=>b.first-a.first);
+    const joins=all.filter(a=>a.first>since), older=all.filter(a=>a.first<=since);
     const packs=[];
     data.priv.filter(p=>p.status!=="inactive"&&p.status!=="paused").forEach(p=>{ const v=p.view||{}, du=v.due; if(!du) return; const nm=esc(v.name), id=esc(p.key.slice(4));
       let t=""; if(du.pending) t=`<b>${nm}</b>: pack not paid yet`; else if(du.left!=null&&du.left<=0) t=`<b>${nm}</b>: pack used up`; else if(du.classesLeft!=null&&du.classesLeft<=1) t=`<b>${nm}</b>: ${du.classesLeft} class left in the pack`; else if(du.half&&du.instAt&&du.nextNo>=du.instAt) t=`<b>${nm}</b>: 2nd payment due`;
       if(t) packs.push(`<li>💳 ${t} <a class="tn-go" href="coaching.html#s/${id}">Open →</a></li>`); });
     const unl=data.acc.filter(a=>a.kind==="new").length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
-    if((!joins.length&&!packs.length&&!unl)||(hid&&!joins.length)){ b.hidden=true; return; }
+    const cnt=joins.length+packs.length+(unl?1:0);
     b.hidden=false;
-    b.innerHTML=`<div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${joins.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Hide for today</button></div>
-      ${joins.length?`<h4>New on Hibi</h4><ul>${joins.map(a=>`<li>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`).join("")}</ul>`:""}
+    /* closed: a small button that opens it again */
+    if(!open&&(hid||!cnt)){ b.className="tn-mini"; b.innerHTML=`<button type="button" class="tn-btn" data-tn="open">🔔 Notifications${cnt?` <span class="tn-num">${cnt}</span>`:""}</button>`; return; }
+    b.className="tn-box";
+    const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
+    b.innerHTML=`<div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
+      ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
+      ${older.length?`<button type="button" class="tn-link" data-tn="all">${showAll?"Hide earlier ones":`Show earlier sign-ups (${older.length})`}</button>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
-      ${packs.length&&!hid?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}`;
+      ${packs.length?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}`;
   }
-  document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return;
-    if(t.dataset.tn==="seen"){ try{ localStorage.setItem(SEEN,JSON.stringify(Date.now())); }catch(er){} if(window.__csOnSet) try{ window.__csOnSet(SEEN); }catch(er){} }
-    else { try{ localStorage.setItem(HIDE,dkey()); localStorage.setItem(SEEN,JSON.stringify(Date.now())); }catch(er){} if(window.__csOnSet) try{ window.__csOnSet(SEEN); }catch(er){} }
+  document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return; const k=t.dataset.tn;
+    if(k==="open"){ open=true; try{ localStorage.removeItem(HIDE); }catch(er){} }
+    else if(k==="all") showAll=!showAll;
+    else if(k==="seen"){ undoPrev=getSeen(); setSeen(Date.now()); open=true; }
+    else if(k==="undo"){ setSeen(undoPrev||0); undoPrev=null; open=true; }
+    else if(k==="hide"){ open=false; undoPrev=null; try{ localStorage.setItem(HIDE,dkey()); }catch(er){} }
     paint(); });
   document.addEventListener("cs-teacher",()=>setTimeout(load,300));
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
