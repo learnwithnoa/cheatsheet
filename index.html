@@ -2126,9 +2126,26 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </script>
 
 <script>
+/* Noa's guest link: ?guest=hb7k2q (plain) or ?guest=hb7k2q&as=club (club member with a sample week) skips the sign-in screen in that tab */
+(function(){
+  const K="cs-guest";
+  try{ const q=new URLSearchParams(location.search); if(q.get("guest")==="hb7k2q"){ sessionStorage.setItem(K,q.get("as")==="club"?"club":"plain"); history.replaceState(null,"",location.pathname+(location.hash||"")); } }catch(e){}
+  let g=null; try{ g=sessionStorage.getItem(K); }catch(e){}
+  if(!g) return;
+  window.__csGuest=g;
+  const SAMPLE_CLUB={info:{schedule:[{wd:1,ico:"🧠",name:"Deep Dive Monday",time:"20:00",dur:90,desc:"A thought-provoking topic, usually with a short video, then we talk about it."},{wd:3,ico:"🃏",name:"Wildcard Wednesday",time:"20:00",dur:90,desc:"Games and activities, pure speaking, no formal teaching."},{wd:4,ico:"💬",name:"Word Up Thursday",time:"20:00",dur:90,desc:"About 6 phrasal verbs, idioms or expressions on a theme, then conversation using them."},{wd:5,ico:"😎",name:"Free Talk Friday",time:"14:30",dur:60,host:"Laura",desc:"Relaxed conversation to close the week."}],links:[]},
+    posts:[{id:"wsample",week:(()=>{ const d=new Date(), m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7)); return m.getFullYear()+"-"+String(m.getMonth()+1).padStart(2,"0")+"-"+String(m.getDate()).padStart(2,"0"); })(),title:"✨ This week in the club (sample)",intro:"This is a sample week, so you can see how the Club page looks. Real members see the real post and Zoom links here.",
+      classes:[{day:"Mon",ico:"🐾",name:"Deep Dive Monday",title:"A sample topic",teaser:"One or two lines about the class."},{day:"Wed",ico:"🎤",name:"Wildcard Wednesday",title:"A sample game",teaser:"One or two lines about the class."},{day:"Thu",ico:"🐴",name:"Word Up Thursday",title:"Sample expressions",teaser:"One or two lines about the class."},{day:"Fri",ico:"😎",name:"Free Talk Friday",title:"with Laura",teaser:"Relaxed conversation to close the week."}],closing:"See you in class! 🫰🏻"}]};
+  if(g==="club"){ const put=()=>{ if(!window.__csClub){ window.__csClub=SAMPLE_CLUB; document.dispatchEvent(new CustomEvent("cs-club")); } }; document.addEventListener("cs-club",()=>setTimeout(put,0)); setTimeout(put,300); }
+  const bar=()=>{ if(document.getElementById("guestBar")) return; const d=document.createElement("div"); d.id="guestBar"; d.setAttribute("role","status");
+    d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;background:#1f2937;color:#fff;font:600 13px system-ui,sans-serif;padding:8px 10px 8px 14px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;max-width:calc(100vw - 24px)";
+    d.innerHTML=`<span>👀 Guest preview${g==="club"?" · club member (sample week)":""} · nothing is saved to an account</span><button type="button" style="all:unset;cursor:pointer;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px">Exit</button>`;
+    d.querySelector("button").onclick=()=>{ try{ sessionStorage.removeItem(K); }catch(e){} location.reload(); }; document.body.appendChild(d); };
+  if(document.body) bar(); else document.addEventListener("DOMContentLoaded",bar);
+})();
 /* Hibi needs a Google account: until someone signs in, a sign-in screen covers everything (it comes before the welcome card) */
 (function(){
-  if(window.__csPreview) return;
+  if(window.__csPreview||window.__csGuest) return;
   const G='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
   let gate=null;
   function show(){
@@ -6704,7 +6721,7 @@ wlBd.addEventListener("click",closeWelcome);
 wl.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); closeWelcome(); } });
 document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) openWelcome(); });
 (function(){ let done=false; const go=()=>{ if(done||LS.get("ncs-welcomed",0)) return; done=true; setTimeout(openWelcome,400); };
-  if(window.__csAuth===true||window.__csPreview) go(); window.addEventListener("cs-auth",e=>{ if(e.detail&&e.detail.signedIn) go(); }); })();
+  if(window.__csAuth===true||window.__csPreview||window.__csGuest) go(); window.addEventListener("cs-auth",e=>{ if(e.detail&&e.detail.signedIn) go(); }); })();
 
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
