@@ -878,6 +878,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   function reallyClose() { moving = null; toyDrag = null; pv = null; confirmOpen = false; sec = null; base = null; modal.hidden = true; back.hidden = true; if (returnFocus && returnFocus.focus) try { returnFocus.focus(); } catch (e) {} }
   function closeModal() {
+    /* closing again while "Save your changes?" is showing = Don't save */
+    if (confirmOpen && mode !== "adopt" && base) { Object.assign(S, base); commit(); reallyClose(); return; }
     if (mode !== "adopt" && dirty()) { confirmOpen = true; renderModal(); const b = modal.querySelector('.bd-confirm [data-m="save"]'); if (b) b.focus(); return; }
     reallyClose();
   }

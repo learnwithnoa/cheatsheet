@@ -1242,7 +1242,7 @@ a.ch-rp-res:hover{border-color:var(--k)}
 .ch-rep{scroll-margin-top:84px}@media (max-width:900px){.ch-rep{scroll-margin-top:130px}}
 /* header: longer search box, tagline lined up with the logo */
 @media (min-width:701px){.search{max-width:540px}.top-in>.search{flex:1 1 540px}}
-.brand .brand-tag{align-self:baseline;margin-left:3px;line-height:1}
+.brand .brand-row{align-items:center}.brand .brand-row .kj{position:relative;top:-1px}.brand .brand-tag{align-self:center;margin-left:6px;line-height:1}
 /* required sign-in screen */
 #authGate{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto}
 #authGate[hidden]{display:none}
@@ -2892,7 +2892,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=34" defer></script>
+<script src="buddy.js?v=35" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
