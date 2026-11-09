@@ -1,5 +1,5 @@
 /* Shared hub maths + the read-only copy a private student sees ("hub-view").
-   Used by coaching.html (Private students) and members.html (when linking a student). */
+   Used by private-students.html (Private students) and members.html (when linking a student). */
 export const COUNTS = new Set(["Present", "Late cancellation", "Absent"]);
 export const STD_PRICE = { 12: 100000, 36: 264000, 72: 480000 };
 export const MES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 };

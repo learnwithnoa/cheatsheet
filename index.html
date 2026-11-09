@@ -1183,7 +1183,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     <div class="spacer"></div>
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
     <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Hibi members" aria-label="Hibi members" hidden>👥</a>
-    <a class="theme-btn t-ico" id="navHub" href="coaching.html" title="Private students" aria-label="Private students" hidden>🎓</a>
+    <a class="theme-btn t-ico" id="navHub" href="private-students.html" title="Private students" aria-label="Private students" hidden>🎓</a>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
@@ -1227,8 +1227,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   <nav class="side" aria-label="Sections">
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
-      <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">👥</span><span>Members</span></button>
-      <button class="navbtn cn-nav t-mnav" type="button" data-href="coaching.html" id="mnavHub" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>Private students</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">👥</span><span>Hibi members</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="private-students.html" id="mnavHub" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>Private students</span></button>
       <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>My coaching</span></button>
       <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
@@ -1799,9 +1799,9 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     const packs=[];
     data.priv.filter(p=>p.status!=="inactive"&&p.status!=="paused").forEach(p=>{ const v=p.view||{}, du=v.due; if(!du) return; const nm=esc(v.name), id=esc(p.key.slice(4));
       let t=""; if(du.pending) t=`<b>${nm}</b>: pack not paid yet`; else if(du.left!=null&&du.left<=0) t=`<b>${nm}</b>: pack used up`; else if(du.classesLeft!=null&&du.classesLeft<=1) t=`<b>${nm}</b>: ${du.classesLeft} class left in the pack`; else if(du.half&&du.instAt&&du.nextNo>=du.instAt) t=`<b>${nm}</b>: 2nd payment due`;
-      if(t) packs.push(`<li>💳 ${t} <a class="tn-go" href="coaching.html#s/${id}">Open →</a></li>`); });
+      if(t) packs.push(`<li>💳 ${t} <a class="tn-go" href="private-students.html#s/${id}">Open →</a></li>`); });
     const clocks=[]; if(typeof window.__csTzRem==="function"){ const td=new Date(), ti=td.getFullYear()+"-"+String(td.getMonth()+1).padStart(2,"0")+"-"+String(td.getDate()).padStart(2,"0");
-      data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>clocks.push(`<li>🕐 ${esc(r.text)} <a class="tn-go" href="coaching.html#s/${esc(p.key.slice(4))}">Open →</a></li>`))); }
+      data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>clocks.push(`<li>🕐 ${esc(r.text)} <a class="tn-go" href="private-students.html#s/${esc(p.key.slice(4))}">Open →</a></li>`))); }
     const unl=data.acc.filter(a=>a.kind==="new").length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
     const cnt=joins.length+packs.length+clocks.length+(unl?1:0);
