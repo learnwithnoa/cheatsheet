@@ -30,6 +30,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py resources <student-id> add|remove fabulang|chatterbox|simplified|tedideas|tedtalks|slow
       (class resources on My coaching; until Noa or this sets them, they're guessed from the recent class notes)
   HUB_PASSWORD=... python3 hubsync.py set-level '<Hibi name or email>' B1 ['short reason']   club member's level from club recordings
+  HUB_PASSWORD=... python3 hubsync.py add-doc <student-id> '{"title":"Session Zero plan","url":"https://www.notion.so/..."}'   (only Noa sees these)
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 """
 import json, os, re, sys, random, string, datetime, urllib.request, urllib.error
@@ -517,6 +518,12 @@ def main():
         else:
             print("no change:", cur); return
         s["res"] = [k for k in RES_KEYS if k in cur]; save(tok, tu, s); print("ok", s["res"]); return
+    if cmd == "add-doc":
+        # Noa-only document link (Notion lesson plan etc.) on the student's hub page; students never see these
+        d = {"title": data.get("title", "Document"), "url": data["url"], "date": data.get("date") or datetime.date.today().isoformat()}
+        if any(x.get("url") == d["url"] for x in s.get("docs", [])):
+            print("skip: already listed"); return
+        s.setdefault("docs", []).append(d); save(tok, tu, s); print("ok"); return
     if cmd == "set-focus":
         s["focus"] = data.get("focus", s.get("focus", ""))
         if data.get("objective"):
