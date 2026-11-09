@@ -220,6 +220,7 @@ tr.arch td{opacity:.85}
     <p class="lede" id="summary" style="margin-top:6px">Loading…</p>
     <div class="kpis" id="kpis"></div>
     <div class="tint k-sky panel" id="nextBox" hidden></div>
+    <div class="tint k-teal panel" id="linkBox" hidden></div>
     <div class="tint k-amber panel" id="alertsBox" hidden></div>
     <div class="two">
       <div class="tint k-green panel" id="moneyBox"></div>
@@ -229,6 +230,7 @@ tr.arch td{opacity:.85}
       <div>
         <input type="search" id="q" placeholder="Search students…" aria-label="Search students">
         <div class="filters" id="filters"></div>
+        <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option><option value="last">Most recent class</option><option value="low">Fewest classes left</option><option value="manual">My own order</option></select><span class="muted small" id="lsortHint" hidden>Drag students to reorder</span></div>
         <div class="list" id="list"></div>
       </div>
       <div id="detail" class="card"><p class="muted">Pick a student on the left.</p></div>
@@ -241,7 +243,7 @@ tr.arch td{opacity:.85}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView } from "./hubview.js?v=1";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName } from "./hubview.js?v=2";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -265,7 +267,8 @@ $("inBtn").onclick = async () => {
 $("outBtn").onclick = () => signOut(auth);
 
 /* ---------- state ---------- */
-let tUid = null, S = [], cur = null, tab = "classes", filt = "active", editRow = null, clsSort = -1, wSort = "new", roles = {}, usage = {}, meta = null;
+let tUid = null, S = [], cur = null, tab = "classes", filt = "active", editRow = null, clsSort = -1, wSort = "new", roles = {}, rolesByUid = {}, usage = {}, appWords = {}, meta = null, accounts = [], usdRate = 950, lSort = "name";
+try { lSort = localStorage.getItem("cs-hub-lsort") || "name"; } catch (e) {}
 const PRE = "t-hub-";
 const fmtD = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); };
 const fmtShort = iso => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
@@ -288,10 +291,12 @@ async function load() {
     ds.forEach(x => { const v = x.data(); if (v.deleted || typeof v.json !== "string") return;
       if (x.id === "t-hubmeta") { try { meta = JSON.parse(v.json); } catch (e) {} return; }
       if (!x.id.startsWith(PRE)) return; try { S.push(JSON.parse(v.json)); } catch (e) {} });
-    roles = {}; if (rs) rs.forEach(d => { const r = d.data() || {}; if (r.hub) roles[r.hub] = { uid: d.id, ...r }; });
+    roles = {}; rolesByUid = {}; if (rs) rs.forEach(d => { const r = d.data() || {}; rolesByUid[d.id] = r; if (r.hub) roles[r.hub] = { uid: d.id, ...r }; });
     S.forEach(norm);
     S.forEach(s => { const r = roles[s.id]; if (r && s.uid !== r.uid) { s.uid = r.uid; save(s, true); } });
     renderAll();
+    loadRate();
+    await autoLink();
     loadUsage();
     publishAll();
     saveIds();
@@ -299,7 +304,10 @@ async function load() {
 }
 async function loadUsage() {
   const linked = S.filter(s => s.uid);
-  await Promise.all(linked.map(async s => { try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-usage")); usage[s.id] = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e) {} }));
+  await Promise.all(linked.map(async s => {
+    try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-usage")); usage[s.id] = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e) {}
+    try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-words")); const w = d.exists() && !d.data().deleted ? JSON.parse(d.data().json || "[]") || [] : []; appWords[s.id] = Array.isArray(w) ? w : []; await pushSheetWords(s); } catch (e) { console.warn("words", e); }
+  }));
   renderList(); renderDetail();
 }
 function norm(s) {
@@ -313,7 +321,7 @@ function save(s, quiet) {
   clearTimeout(pending.get(s.id)); $("saving").textContent = "Saving…";
   pending.set(s.id, setTimeout(async () => {
     pending.delete(s.id);
-    try { await setDoc(doc(db, "users", tUid, "data", PRE + s.id), { json: JSON.stringify(s), deleted: false, at: serverTimestamp() }); publish(s); if (!pending.size) $("saving").textContent = "Saved ✓"; }
+    try { await setDoc(doc(db, "users", tUid, "data", PRE + s.id), { json: JSON.stringify(s, (k, v) => k[0] === "_" ? undefined : v), deleted: false, at: serverTimestamp() }); publish(s); if (!pending.size) $("saving").textContent = "Saved ✓"; }
     catch (e) { console.error(e); $("saving").textContent = "Not saved!"; toast("Couldn't save. Check your connection."); }
   }, 600));
 }
@@ -327,24 +335,94 @@ async function publish(s, force) {
   catch (e) { console.warn("publish", e); }
 }
 function publishAll() { S.forEach(s => publish(s)); }
+/* sheet words → the student's "My words" on the Cheat Sheet (once each; if they delete one, it stays deleted) */
+const nw = x => normName(x).replace(/ /g, "");
+async function pushSheetWords(s) {
+  if (!s.uid || !s.words.length) return;
+  const have = new Set((appWords[s.id] || []).map(w => nw(w.w))), done = new Set((s.pushedWords || []).map(nw));
+  const add = s.words.filter(w => w.w && !have.has(nw(w.w)) && !done.has(nw(w.w)));
+  if (!add.length) return;
+  const now = Date.now();
+  const list = (appWords[s.id] || []).concat(add.map((w, i) => ({ id: now.toString(36) + i.toString(36) + Math.random().toString(36).slice(2, 5), w: w.w.trim(), m: (w.tr || "").trim(), e: (w.ex || "").trim(), t: now, src: "sheet" })));
+  await setDoc(doc(db, "users", s.uid, "data", "ncs-words"), { json: JSON.stringify(list), deleted: false, at: serverTimestamp() });
+  appWords[s.id] = list; s.pushedWords = (s.pushedWords || []).concat(add.map(w => w.w)); save(s, true);
+}
+/* link new Cheat Sheet sign-ups to hub students */
+async function autoLink() {
+  try {
+    const us = await getDocs(collection(db, "users")); accounts = [];
+    us.forEach(d => { const p = d.data() || {}; accounts.push({ uid: d.id, name: p.name || "", email: p.email || "", firstSeen: p.firstSeen && p.firstSeen.toMillis ? p.firstSeen.toMillis() : 0 }); });
+    const m = matchAccounts(S, accounts, rolesByUid);
+    for (const x of m.sure) await doLink(x.uid, x.hub, true);
+    renderLinks(m.maybe);
+  } catch (e) { console.warn("autolink", e); }
+}
+async function doLink(uidv, hubId, auto) {
+  const s = S.find(x => x.id === hubId); if (!s) return;
+  const r = roleFor(hubId, rolesByUid[uidv]);
+  await setDoc(doc(db, "roles", uidv), Object.assign({}, r, { at: serverTimestamp() }), { merge: true });
+  rolesByUid[uidv] = Object.assign({}, rolesByUid[uidv], r); roles[hubId] = { uid: uidv, ...rolesByUid[uidv] };
+  s.uid = uidv; const a = accounts.find(x => x.uid === uidv);
+  if (a && a.email && ![s.email].concat(s.emails || []).some(e => (e || "").toLowerCase() === a.email.toLowerCase())) { if (!s.email) s.email = a.email; else s.emails = (s.emails || []).concat(a.email); }
+  save(s); publish(s, true); if (auto) toast("Linked " + s.name + " to their Cheat Sheet account");
+}
+function renderLinks(maybe) {
+  const dism = new Set((meta && meta.dismissed) || []);
+  const linkedU = new Set(Object.keys(rolesByUid).filter(k => rolesByUid[k].hub));
+  const loose = accounts.filter(a => !linkedU.has(a.uid) && (a.email || "").toLowerCase() !== TEACHER && !dism.has(a.uid) && !(rolesByUid[a.uid] && rolesByUid[a.uid].club === true && !rolesByUid[a.uid].private))
+    .filter(a => maybe.some(x => x.uid === a.uid) || (rolesByUid[a.uid] && rolesByUid[a.uid].club === false));
+  const box = $("linkBox"); box.hidden = !loose.length; if (!loose.length) return;
+  const free = S.filter(s => !s.uid && s.status !== "inactive").sort((a, b) => a.name.localeCompare(b.name));
+  box.innerHTML = `<h2>🔗 Cheat Sheet accounts to link</h2><div class="muted small">These accounts might be private students. Pick who they are, or hide them if they're club members only.</div><ul class="alerts">${loose.map(a => { const sug = maybe.filter(x => x.uid === a.uid).map(x => x.hub);
+    return `<li style="--k:var(--c-teal)"><span><b>${esc(a.name || "(no name)")}</b> <span class="muted small">${esc(a.email)}</span></span><select data-linkfor="${a.uid}" style="margin-left:auto;width:auto"><option value="">Who is this?</option>${free.map(s => `<option value="${s.id}" ${sug[0] === s.id ? "selected" : ""}>${esc(s.name)}${sug.includes(s.id) ? " (suggested)" : ""}</option>`).join("")}</select><button type="button" class="ib" data-dolink="${a.uid}">Link</button><button type="button" class="ib" data-dismiss="${a.uid}">Not private</button></li>`; }).join("")}</ul>`;
+}
+function saveMeta() { setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(meta), deleted: false, at: serverTimestamp() }).catch(e => console.warn("meta", e)); }
+/* USD → CLP (live rate, cached for a day; falls back to ~950) */
+async function loadRate() {
+  try { const c = JSON.parse(localStorage.getItem("cs-hub-usd") || "null"); if (c && Date.now() - c.at < 864e5) { usdRate = c.r; return; } } catch (e) {}
+  try { const r = await fetch("https://open.er-api.com/v6/latest/USD"); const j = await r.json(); if (j && j.rates && j.rates.CLP) { usdRate = j.rates.CLP; try { localStorage.setItem("cs-hub-usd", JSON.stringify({ r: usdRate, at: Date.now() })); } catch (e) {} renderKpis(); renderMoney(); } } catch (e) {}
+}
 /* the nightly helper finds students through this list */
-function saveIds() { const ids = S.map(s => s.id).sort(); if (meta && JSON.stringify(meta.ids || []) === JSON.stringify(ids)) return; meta = Object.assign({}, meta || {}, { ids }); setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(meta), deleted: false, at: serverTimestamp() }).catch(e => console.warn("ids", e)); }
+function saveIds() { const ids = S.map(s => s.id).sort(); if (meta && JSON.stringify(meta.ids || []) === JSON.stringify(ids)) return; meta = Object.assign({}, meta || {}, { ids }); saveMeta(); }
 window.addEventListener("beforeunload", e => { if (pending.size) { e.preventDefault(); e.returnValue = ""; } });
 
 /* ---------- maths ---------- */
 function instAt(p, st) { if (p.size === 36) return st.pri ? 5 : 7; if (p.size === 72) return st.pri ? 9 : 12; return null; }
 function gap(s) { const ds = s.classes.filter(c => c.kind !== "note" && c.date && COUNTS.has(c.att || "Present")).map(c => c.date).sort().slice(-7); if (ds.length < 2) return 7; const g = []; for (let i = 1; i < ds.length; i++) g.push(days(ds[i - 1], ds[i])); g.sort((a, b) => a - b); return Math.max(2, Math.min(14, g[Math.floor(g.length / 2)] || 7)); }
 function nextGuess(s) { const lc = lastClass(s) || today(); let n = addDays(lc, gap(s)); if (n < today()) n = addDays(today(), 1); return n; }
+/* when is their next class? calendar first, then the schedule text, then their usual pace */
+const DOW = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+function fromSchedule(sch) {
+  const txt = String(sch || "").toLowerCase(); if (!txt || /^flexible/.test(txt)) return null;
+  const parts = txt.replace(/\(.*?\)/g, "").split(/,|&| and /); let lastTime = null; const slots = [];
+  for (let i = parts.length - 1; i >= 0; i--) { const pt = parts[i]; const tm = /(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/.exec(pt); if (tm) { let h = +tm[1]; const mi = +(tm[2] || 0); if (tm[3] === "pm" && h < 12) h += 12; if (tm[3] === "am" && h === 12) h = 0; if (!tm[3] && h < 8) h += 12; lastTime = [h, mi]; } const d = /(sun|mon|tue|wed|thu|fri|sat)/.exec(pt); if (d && lastTime) slots.push([DOW[d[1]], lastTime[0], lastTime[1]]); }
+  if (!slots.length) return null;
+  const now = new Date(); let best = null;
+  slots.forEach(([dw, h, mi]) => { for (let k = 0; k < 8; k++) { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + k, h, mi); if (d.getDay() === dw && d > now - 45 * 60e3) { if (!best || d < best) best = d; break; } } });
+  return best ? best.getTime() : null;
+}
+function nextClassAt(s) {
+  const now = Date.now() - 45 * 60e3;
+  const up = meta && Array.isArray(meta.upcoming) ? meta.upcoming.filter(u => u.student === s.id && Date.parse(u.start) > now).map(u => Date.parse(u.start)).sort((a, b) => a - b)[0] : null;
+  if (up) return { t: up, how: "calendar" };
+  if (s.status !== "active") return null;
+  const f = fromSchedule(s.schedule); if (f) return { t: f, how: "schedule" };
+  if (lastClass(s)) { const g = nextGuess(s); return { t: Date.parse(g + "T12:00"), how: "guess" }; }
+  return null;
+}
+const fmtNext = n => { if (!n) return ""; const d = new Date(n.t), td = new Date(); const dd = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(td.getFullYear(), td.getMonth(), td.getDate())) / 864e5);
+  const day = dd === 0 ? "today" : dd === 1 ? "tomorrow" : d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  return n.how === "guess" ? "next ~" + day : "next " + day + " " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }); };
 function packPrice(p) { const n = money(p.price); if (n) return n; return STD_PRICE[p.size] || 0; }
 function alertsFor(s) {
   const out = []; if (s.status !== "active") return out;
   const p = curPack(s);
   if (p && s.kind !== "trueque" && p.size) {
     const st = packStats(s, p);
-    if (st.left <= 0) out.push({ lvl: "bad", i: "🔴", t: `${s.name}: pack used up (${st.used}/${st.size}) · renewal due 48h before the next class` });
-    else if (st.classesLeft <= 1) out.push({ lvl: "warn", i: "🟠", t: `${s.name}: ${st.classesLeft === 1 ? "1 class left" : "less than a class left"} (${st.left} ${p.unit})` });
-    if (p.paid === "half") { const at = instAt(p, st); if (at && st.done + 1 >= at) out.push({ lvl: st.done >= at ? "bad" : "warn", i: "💸", t: `${s.name}: 2nd installment due at class ${at} (${st.done} done)` }); }
-    if (p.paid === "pending") out.push({ lvl: "bad", i: "💸", t: `${s.name}: pack not paid yet` });
+    if (st.left <= 0) out.push({ kind: "renew", lvl: "bad", i: "🔴", t: `${s.name}: pack used up (${st.used}/${st.size}) · renewal due 48h before the next class` });
+    else if (st.classesLeft <= 1) out.push({ kind: "renew", lvl: "warn", i: "🟠", t: `${s.name}: ${st.classesLeft === 1 ? "1 class left" : "less than a class left"} (${st.left} ${p.unit})` });
+    if (p.paid === "half") { const at = instAt(p, st); if (at && st.done + 1 >= at) out.push({ kind: "inst", lvl: st.done >= at ? "bad" : "warn", i: "💸", t: `${s.name}: 2nd installment due at class ${at} (${st.done} done)` }); }
+    if (p.paid === "pending") out.push({ kind: "pending", lvl: "bad", i: "💸", t: `${s.name}: pack not paid yet` });
     const dl = deadline(p, st.first); if (dl) { const d = days(today(), dl); if (d < 0 && st.left > 0) out.push({ lvl: "bad", i: "⏰", t: `${s.name}: pack expired ${fmtShort(dl)} with ${st.left} ${p.unit} unused` }); else if (d >= 0 && d <= 7 && st.left > 0) out.push({ lvl: "warn", i: "⏰", t: `${s.name}: pack ends ${fmtShort(dl)} (${d === 0 ? "today" : d === 1 ? "tomorrow" : "in " + d + " days"}), ${st.left} ${p.unit} left` }); }
   }
   const lc = lastClass(s); if (lc && days(lc, today()) >= 14) out.push({ lvl: "info", i: "💤", t: `${s.name}: no class since ${fmtShort(lc)}` });
@@ -374,7 +452,7 @@ function monthStats() {
 }
 function earned() {
   const by = {}; let usd = 0, usdY = 0; const y = today().slice(0, 4);
-  S.forEach(s => s.payments.forEach(p => { if (!p.date) return; const mo = p.date.slice(0, 7); if (p.cur === "USD") { if (mo === today().slice(0, 7)) usd += money(p.clp ?? p.amount); if (p.date.startsWith(y)) usdY += money(p.clp ?? p.amount); return; } const v = money(p.clp ?? p.amount); if (v) by[mo] = (by[mo] || 0) + v; }));
+  S.forEach(s => s.payments.forEach(p => { if (!p.date) return; const mo = p.date.slice(0, 7); if (p.cur === "USD") { const u = +p.clp || money(p.amount); if (mo === today().slice(0, 7)) usd += u; if (p.date.startsWith(y)) usdY += u; by[mo] = (by[mo] || 0) + Math.round(u * usdRate); return; } const v = money(p.clp ?? p.amount); if (v) by[mo] = (by[mo] || 0) + v; }));
   return { by, usd, usdY };
 }
 function expected() {
@@ -403,7 +481,7 @@ function renderKpis() {
   const exp30 = expected().filter(x => x.d <= addDays(today(), 30)).reduce((n, x) => n + x.v, 0);
   $("kpis").innerHTML = `
     <div class="kpi tint k-sky"><div class="kl">This week</div><div class="kv">${pl(tw, "class")}</div><div class="ks">≈ ${(tw * 0.75).toFixed(1).replace(".0", "")} h taught · ${arrow} ${diff ? "vs" : ""} last week (${lw})</div></div>
-    <div class="kpi tint k-green"><div class="kl">Paid this month</div><div class="kv">${clp(e.by[mo] || 0)}</div><div class="ks">${e.usd ? "+ US$" + e.usd + " · " : ""}${clp(Object.entries(e.by).filter(([k]) => k.startsWith(mo.slice(0, 4))).reduce((n, [, v]) => n + v, 0))} this year</div></div>
+    <div class="kpi tint k-green"><div class="kl">Paid this month</div><div class="kv">${clp(e.by[mo] || 0)}</div><div class="ks">${e.usd ? "incl. US$" + e.usd + " ≈ " + clp(e.usd * usdRate) + " · " : ""}${clp(Object.entries(e.by).filter(([k]) => k.startsWith(mo.slice(0, 4))).reduce((n, [, v]) => n + v, 0))} this year</div></div>
     <div class="kpi tint k-violet"><div class="kl">Expected · next 30 days</div><div class="kv">${clp(exp30)}</div><div class="ks">installments + likely renewals</div></div>
     <div class="kpi tint k-coral"><div class="kl">This month</div><div class="kv">${pl(ms.n - ms.abs - ms.late - ms.ontime, "class")}</div><div class="ks">${ms.late} late cancel · ${ms.abs} no-show · ${ms.ontime} on-time cancel</div></div>`;
 }
@@ -413,18 +491,34 @@ function renderNext() {
   box.innerHTML = `<h2><span class="kc">📅</span> Coming up</h2><ul class="nextc">${up.map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
     return `<li><span class="t">${t.toLocaleDateString("en-US", { weekday: "short" })} ${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span><span><b>${esc(s ? s.name : u.name || "")}</b>${lc ? `<span class="muted small"> · last time: ${esc(lc.topics)}${lc.homework ? " · homework: " + esc(lc.homework) : ""}</span>` : ""}</span></li>`; }).join("")}</ul>`;
 }
+const GM = (to, su, body) => "https://mail.google.com/mail/?authuser=" + encodeURIComponent(TEACHER) + "&view=cm&fs=1&to=" + encodeURIComponent(to || "") + "&su=" + encodeURIComponent(su || "") + "&body=" + encodeURIComponent(body || "");
+function reminderFor(s, a) {
+  const p = curPack(s), st = p ? packStats(s, p) : null, first = s.name.split(" ")[0], es = /franco/i.test(s.id);
+  if (!p || !st) return null;
+  let su, b;
+  if (a.kind === "inst") { const at = instAt(p, st); su = es ? "Segunda cuota de tu pack" : "Second payment for your pack";
+    b = es ? `Hola ${first}!\n\nTe escribo para recordarte que la segunda cuota de tu pack (${clp(Math.round(packPrice(p) / 2))}) corresponde en la clase ${at}. Puedes hacer la transferencia cuando te acomode antes de esa clase.\n\nGracias!\nNoa`
+      : `Hi ${first}!\n\nJust a friendly reminder: the second payment for your pack (${clp(Math.round(packPrice(p) / 2))}) is due by class ${at}. You can send it any time before that class.\n\nThanks!\nNoa`; }
+  else if (a.kind === "renew") { su = es ? "Renovación de tu pack" : "Renewing your pack";
+    b = es ? `Hola ${first}!\n\nTu pack está casi terminado (te quedan ${Math.max(0, st.left)} créditos). Para mantener tu horario, la renovación se paga al menos 48 horas antes de tu próxima clase. Qué pack te gustaría tomar ahora?\n\nUn abrazo,\nNoa`
+      : `Hi ${first}!\n\nYour pack is almost used up (${Math.max(0, st.left)} credits left). To keep your spot, renewals are paid at least 48 hours before your next class. Which pack would you like next?\n\nTalk soon,\nNoa`; }
+  else if (a.kind === "pending") { su = es ? "Pago de tu pack" : "Payment for your pack";
+    b = es ? `Hola ${first}!\n\nTe recuerdo el pago de tu pack (${p.price || clp(packPrice(p))}). Avísame cuando esté listo.\n\nGracias!\nNoa` : `Hi ${first}!\n\nJust a reminder about the payment for your pack (${p.price || clp(packPrice(p))}). Let me know once it's done.\n\nThanks!\nNoa`; }
+  else return null;
+  return GM(s.email, su, b);
+}
 function renderAlerts() {
   const al = S.flatMap(alertsFor).sort((a, b) => ({ bad: 0, warn: 1, info: 2 }[a.lvl] - { bad: 0, warn: 1, info: 2 }[b.lvl]));
   const box = $("alertsBox"); box.hidden = !al.length;
   const K = { bad: "var(--c-red)", warn: "var(--c-amber)", info: "var(--c-sky)" };
-  box.innerHTML = `<h2>🔔 Heads-up <span class="news-n">${al.length}</span></h2><ul class="alerts">${al.map(a => `<li style="--k:${K[a.lvl]}"><span class="ai">${a.i}</span><span>${esc(a.t)}</span><button type="button" class="ib" data-open="${a.id}">Open</button></li>`).join("")}</ul>`;
+  box.innerHTML = `<h2>🔔 Heads-up <span class="news-n">${al.length}</span></h2><ul class="alerts">${al.map(a => `<li style="--k:${K[a.lvl]}"><span class="ai">${a.i}</span><span>${esc(a.t)}</span>${(() => { const s = S.find(x => x.id === a.id), u = s && reminderFor(s, a); return u ? `<a class="ib" style="margin-left:auto" target="_blank" rel="noopener" href="${u}" title="Opens a ready-to-send email in Gmail">✉️ Remind</a>` : ""; })()}<button type="button" class="ib" data-open="${a.id}" ${(() => { const s = S.find(x => x.id === a.id); return s && reminderFor(s, a) ? 'style="margin-left:0"' : ""; })()}>Open</button></li>`).join("")}</ul>`;
 }
 function renderMoney() {
   const e = earned(); const ms = []; for (let i = 5; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); ms.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0")); }
   const mx = Math.max(1, ...ms.map(m => e.by[m] || 0)), now = today().slice(0, 7);
   $("moneyBox").innerHTML = `<h2>💰 Money in</h2><div class="muted small">Pesos received per month (payments with an amount; ≈ = estimated from the pack price)</div>
     <div class="mbars">${ms.map(m => `<div class="${m === now ? "now" : ""}" title="${clp(e.by[m] || 0)}"><span>${(e.by[m] || 0) ? Math.round((e.by[m] || 0) / 1000) + "k" : ""}</span><i style="height:${Math.round((e.by[m] || 0) / mx * 80)}px"></i>${new Date(m + "-15").toLocaleDateString("en-US", { month: "short" })}</div>`).join("")}</div>
-    ${e.usdY ? `<p class="muted small" style="margin:8px 0 0">Plus US$${e.usdY} in dollars this year.</p>` : ""}`;
+    ${e.usdY ? `<p class="muted small" style="margin:8px 0 0">Includes US$${e.usdY} this year, counted at today's rate (1 USD ≈ ${clp(usdRate)}).</p>` : ""}`;
   const ex = expected();
   $("expBox").innerHTML = `<h2>📆 Coming in</h2><div class="muted small">Second installments and likely renewals, guessed from each student's pace</div>
     <ul class="exp" style="margin-top:8px">${ex.slice(0, 10).map(x => `<li><span class="when">${fmtShort(x.d)}</span><span><b>${esc(x.s.name)}</b> <span class="muted">· ${esc(x.t)}</span></span><span class="amt">${x.guess ? "≈" : ""}${clp(x.v)}</span></li>`).join("") || `<li class="muted">Nothing expected in the next 45 days.</li>`}</ul>`;
@@ -435,30 +529,53 @@ function renderFilters() {
 }
 function renderList() {
   const q = $("q").value.trim().toLowerCase();
-  const ls = S.filter(s => (filt === "all" || s.status === filt) && (!q || (s.name + " " + (s.email || "")).toLowerCase().includes(q)))
-    .sort((a, b) => (lastClass(b) || "").localeCompare(lastClass(a) || "") || a.name.localeCompare(b.name));
+  const ls = S.filter(s => (filt === "all" || s.status === filt) && (!q || (s.name + " " + (s.email || "") + " " + (s.emails || []).join(" ")).toLowerCase().includes(q)));
+  const byName = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" });
+  const nx = {}; ls.forEach(s => nx[s.id] = nextClassAt(s));
+  const ord = (meta && meta.order) || [];
+  const left = s => { const p = curPack(s); const st = p && p.size ? packStats(s, p) : null; return st ? st.classesLeft : 999; };
+  ls.sort(lSort === "name" ? byName
+    : lSort === "last" ? (a, b) => (lastClass(b) || "").localeCompare(lastClass(a) || "") || byName(a, b)
+    : lSort === "low" ? (a, b) => left(a) - left(b) || byName(a, b)
+    : lSort === "manual" ? (a, b) => ((ord.indexOf(a.id) + 1 || 1e4) - (ord.indexOf(b.id) + 1 || 1e4)) || byName(a, b)
+    : (a, b) => ((nx[a.id] ? nx[a.id].t : 9e15) - (nx[b.id] ? nx[b.id].t : 9e15)) || byName(a, b));
+  $("lsort").value = lSort; $("lsortHint").hidden = lSort !== "manual";
   $("list").innerHTML = ls.map(s => {
     const p = curPack(s), st = p ? packStats(s, p) : null, al = alertsFor(s), en = engagement(s);
     const pct = st && st.size ? Math.min(100, st.used / st.size * 100) : 0;
     const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
     const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
-    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${p && p.color || "var(--line)"}"><span class="av" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
-      <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
+    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" ${lSort === "manual" ? 'draggable="true"' : ""} style="--pc:${p && p.color || "var(--line)"}"><span class="av" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
+      <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lSort === "next" && nx[s.id] ? " · " + fmtNext(nx[s.id]) : lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
       ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</span></button>`;
   }).join("") || `<p class="muted">No students here.</p>`;
 }
 const S_ = () => S.find(s => s.id === cur);
 const TABS = [["classes", "Classes", "k-sky"], ["packs", "Packs & payments", "k-green"], ["info", "Profile", "k-violet"], ["words", "Word bank", "k-amber"]];
+function emailUI(s) {
+  const all = [s.email].concat(s.emails || []).filter(Boolean); if (!all.length) return "";
+  const pick = s._mail && all.includes(s._mail) ? s._mail : all[0];
+  return `<a class="linkb" id="mailLink" target="_blank" rel="noopener" href="${GM(pick)}" title="Write in Gmail">✉️ ${esc(pick)}</a>${all.length > 1 ? ` <select id="mailPick" aria-label="Choose email" style="width:auto;font:600 12.5px var(--body);padding:2px 6px;border-radius:8px">${all.map(e => `<option ${e === pick ? "selected" : ""}>${esc(e)}</option>`).join("")}</select>` : ""}`;
+}
+function bringUp(s) {
+  const auto = alertsFor(s).filter(a => a.kind).map(a => ({ auto: true, text: a.t.replace(s.name + ": ", ""), a }));
+  const pins = (s.pins || []).filter(x => !x.done);
+  if (!auto.length && !pins.length && !s._pinOpen) return `<div class="row" style="margin-top:8px"><button type="button" class="ib" data-act="pinOpen">📌 Add something to bring up in class</button></div>`;
+  return `<div class="tint k-coral" style="border-radius:12px;padding:10px 12px;margin-top:10px"><b style="color:var(--c-coral)">📌 Bring up in class</b>
+    <ul style="margin:6px 0 0;padding-left:18px">${auto.map(x => `<li>${esc(x.text)} ${(() => { const u = reminderFor(s, x.a); return u ? `<a class="ib" target="_blank" rel="noopener" href="${u}">✉️ Remind</a>` : ""; })()}</li>`).join("")}${pins.map(x => `<li>${esc(x.text)} <button type="button" class="ib" data-act="pinDone" data-id="${x.id}">✓ Done</button></li>`).join("")}</ul>
+    <form id="pinForm" class="row" style="margin-top:6px"><input name="pin" placeholder="e.g. next half pack payment due" style="flex:1;min-width:160px;font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px"><button class="ib" type="submit">＋ Add</button></form></div>`;
+}
 function renderDetail() {
   const s = S_(); const box = $("detail");
   if (!s) { box.innerHTML = `<p class="muted">Pick a student on the left.</p>`; return; }
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
-  const links = [s.sheetId ? `<a class="linkb" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/${esc(s.sheetId)}/edit">English Journey ↗</a>` : "", s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", s.email ? `<a class="linkb" href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ""].filter(Boolean).join(" · ");
+  const links = [s.sheetId ? `<a class="linkb" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/${esc(s.sheetId)}/edit">English Journey ↗</a>` : "", s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
   box.innerHTML = `<div class="dh"><span class="av" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}</h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     <select id="stStatus" aria-label="Status" style="width:auto">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }[k]}</option>`).join("")}</select></div>
-    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Cheat Sheet (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Cheat Sheet account yet: link them in the teacher view.</span>`}</p>
+    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Cheat Sheet (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Cheat Sheet account yet. It links by itself when they sign in with their email, or pick them in the teacher view.</span>`}</p>
+    ${bringUp(s)}
     <div class="stats">
       ${p && st && st.size ? `<div class="stat tint k-green"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat tint k-amber"><b>${st.classesLeft}</b><span>${st.classesLeft === 1 ? "class" : "classes"} left (approx.)</span></div>` : ""}
       ${p && st ? `<div class="stat tint k-sky"><b>${st.done}</b><span>classes this pack</span></div>` : ""}
@@ -466,7 +583,7 @@ function renderDetail() {
       <div class="stat tint k-violet"><b>${s.classes.filter(c => c.kind !== "note").length}</b><span>classes in total</span></div>
       ${en ? `<div class="stat tint ${en.k}" title="${esc(en.parts.join(" · "))}"><b>${en.lvl}</b><span>engagement · ${esc(en.parts.join(" · "))}</span></div>` : ""}
     </div>
-    <div class="tabs">${tabs.map(([k, l, c]) => `<button type="button" class="seg ${c}" data-tab="${k}" aria-pressed="${tab === k}">${l}${k === "words" ? ` (${s.words.length})` : ""}</button>`).join("")}</div>
+    <div class="tabs">${tabs.map(([k, l, c]) => `<button type="button" class="seg ${c}" data-tab="${k}" aria-pressed="${tab === k}">${l}${k === "words" ? ` (${new Set(s.words.map(w => nw(w.w)).concat((appWords[s.id] || []).map(w => nw(w && w.w)))).size})` : ""}</button>`).join("")}</div>
     <div id="tabBody">${({ classes: tClasses, packs: tPacks, info: tInfo, words: tWords, other: tOther }[tab] || tClasses)(s)}</div>`;
 }
 const packOpts = (s, sel) => `<option value="">— no pack —</option>` + s.packs.slice().reverse().map(p => `<option value="${p.id}" ${sel === p.id ? "selected" : ""}>${esc(p.label.slice(0, 60))}${p.archived ? " (old)" : ""}</option>`).join("");
@@ -545,21 +662,33 @@ function tInfo(s) {
     <div class="fld" style="grid-column:1/-1"><label for="f_objective">Objective <span class="muted">(the student sees this)</span></label><textarea id="f_objective" data-f="objective">${esc(s.objective || "")}</textarea></div>
     <div class="fld" style="grid-column:1/-1"><label for="f_about">About them <span class="muted">(only you see this)</span></label><textarea id="f_about" data-f="about" style="min-height:150px">${esc(s.about || "")}</textarea></div>
     <div class="fld"><label>Kind</label><select data-f="kind"><option value="pack" ${s.kind !== "trueque" ? "selected" : ""}>Paying student</option><option value="trueque" ${s.kind === "trueque" ? "selected" : ""}>Trueque</option></select></div>
+    <div class="fld"><label for="f_emails">Other emails <span class="muted">(comma between them)</span></label><input id="f_emails" data-emails="1" value="${esc((s.emails || []).join(", "))}"></div>
     ${f("boleta", "Boleta reference no. (for the SII)")}${f("zoomKey", "Name in Zoom meetings")}${f("sheetId", "English Journey sheet ID")}${f("folderId", "Drive folder ID")}${info}</div>
     <p class="hint" style="margin-top:12px">Changes save automatically.</p>
     <p style="margin-top:18px"><button type="button" class="ib del" data-act="delStu">Delete this student from the hub</button></p>`;
 }
 function tWords(s) {
-  if (!s.words.length) return `<p class="muted">No words in their word bank.</p>`;
-  let ws = s.words.map((w, i) => ({ ...w, i }));
+  const sheetN = new Set(s.words.map(w => nw(w.w)));
+  let ws = s.words.map((w, i) => ({ w: w.w, tr: w.tr, ex: w.ex, i, t: w.t || 0, src: "sheet" }));
+  (appWords[s.id] || []).forEach(w => { if (!w || !w.w) return; if (sheetN.has(nw(w.w))) return; ws.push({ w: w.w, tr: w.m || "", ex: w.e || "", t: w.t || 0, i: 1e6 + (w.t || 0), src: "app" }); });
+  if (!ws.length) return `<p class="muted">No words yet.${s.uid ? "" : " Once they're linked, the words they save on the Cheat Sheet show up here too."}</p>`;
+  ws.sort((a, b) => (a.t || 0) - (b.t || 0) || a.i - b.i);
   if (wSort === "new") ws.reverse(); else if (wSort === "az") ws.sort((a, b) => a.w.localeCompare(b.w, "en", { sensitivity: "base" })); else if (wSort === "za") ws.sort((a, b) => b.w.localeCompare(a.w, "en", { sensitivity: "base" }));
   return `<div class="sortrow"><span class="muted small">Order:</span>${[["new", "Newest added"], ["old", "Oldest added"], ["az", "A → Z"], ["za", "Z → A"]].map(([k, l]) => `<button type="button" class="seg k-amber" data-wsort="${k}" aria-pressed="${wSort === k}">${l}</button>`).join("")}</div>
-    <div class="tbl"><table><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${ws.map(w => `<tr><td>${esc(w.w)}</td><td>${esc(w.tr)}</td><td>${esc(w.ex)}</td></tr>`).join("")}</tbody></table></div>`;
+    <p class="muted small" style="margin:0 0 8px">📗 = from their English Journey sheet (also copied into their Cheat Sheet “My words”) · 📱 = saved by them on the Cheat Sheet${s.uid ? "" : " (once linked)"}</p>
+    <div class="tbl"><table><thead><tr><th></th><th>Word</th><th>Meaning</th><th>Example</th><th>Added</th></tr></thead><tbody>${ws.map(w => `<tr><td title="${w.src === "app" ? "Cheat Sheet" : "English Journey sheet"}">${w.src === "app" ? "📱" : "📗"}</td><td>${esc(w.w)}</td><td>${esc(w.tr)}</td><td>${esc(w.ex)}</td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td></tr>`).join("")}</tbody></table></div>`;
 }
 function tOther(s) { return s.other.map(o => `<h3>${esc(o.tab)}</h3><div class="tbl"><table><tbody>${o.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join(""); }
 
 /* ---------- events ---------- */
 $("q").oninput = renderList;
+$("lsort").onchange = e => { lSort = e.target.value; try { localStorage.setItem("cs-hub-lsort", lSort); } catch (er) {} renderList(); };
+let dragId = null;
+$("list").addEventListener("dragstart", e => { const b = e.target.closest(".stu"); if (!b) return; dragId = b.dataset.s; e.dataTransfer.effectAllowed = "move"; });
+$("list").addEventListener("dragover", e => { if (dragId) e.preventDefault(); });
+$("list").addEventListener("drop", e => { e.preventDefault(); const b = e.target.closest(".stu"); if (!b || !dragId || b.dataset.s === dragId) return;
+  const ids = [...$("list").querySelectorAll(".stu")].map(x => x.dataset.s).filter(x => x !== dragId); ids.splice(ids.indexOf(b.dataset.s), 0, dragId);
+  const rest = ((meta && meta.order) || []).filter(x => !ids.includes(x)); meta = Object.assign({}, meta || {}, { order: ids.concat(rest) }); saveMeta(); dragId = null; renderList(); });
 document.addEventListener("click", e => {
   const t = e.target;
   const cp = t.closest("[data-copy]"); if (cp) { navigator.clipboard && navigator.clipboard.writeText(cp.dataset.copy).then(() => toast("Copied " + cp.dataset.copy)).catch(() => {}); return; }
@@ -569,9 +698,13 @@ document.addEventListener("click", e => {
   const tb = t.closest("[data-tab]"); if (tb) { tab = tb.dataset.tab; editRow = null; renderDetail(); return; }
   const cs = t.closest("[data-csort]"); if (cs) { clsSort = +cs.dataset.csort; renderDetail(); return; }
   const wsb = t.closest("[data-wsort]"); if (wsb) { wSort = wsb.dataset.wsort; renderDetail(); return; }
+  const dl = t.closest("[data-dolink]"); if (dl) { const sel = document.querySelector(`[data-linkfor="${dl.dataset.dolink}"]`); if (!sel || !sel.value) { toast("Pick who this is first"); return; } doLink(dl.dataset.dolink, sel.value).then(() => { autoLink(); renderAll(); toast("Linked"); }); return; }
+  const ds = t.closest("[data-dismiss]"); if (ds) { meta = Object.assign({}, meta || {}, { dismissed: ((meta && meta.dismissed) || []).concat(ds.dataset.dismiss) }); saveMeta(); autoLink(); return; }
   const a = t.closest("[data-act]"); if (!a) return;
   const s = S_(), id = a.dataset.id, act = a.dataset.act;
   if (act === "editRow") { editRow = id; renderDetail(); return; }
+  if (act === "pinOpen") { s._pinOpen = true; renderDetail(); const i = document.querySelector("#pinForm input"); if (i) i.focus(); return; }
+  if (act === "pinDone") { const x = (s.pins || []).find(x => x.id === id); if (x) x.done = today(); save(s); renderDetail(); return; }
   if (act === "cancelRow") { editRow = null; renderDetail(); return; }
   if (act === "saveRow") {
     const c = s.classes.find(x => x.id === id);
@@ -591,6 +724,8 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const t = e.target, s = S_();
+  if (t.id === "mailPick") { s._mail = t.value; $("mailLink").href = GM(t.value); $("mailLink").textContent = "✉️ " + t.value; return; }
+  if (t.dataset.emails) { s.emails = t.value.split(/[,;\s]+/).map(x => x.trim()).filter(x => x.includes("@")); save(s); return; }
   if (t.id === "stStatus") { s.status = t.value; save(s); renderAll(); return; }
   if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s); refresh(); return; }
   if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") renderList(); save(s); return; }
@@ -599,6 +734,7 @@ document.addEventListener("change", e => {
 });
 document.addEventListener("submit", e => {
   e.preventDefault(); const f = e.target, s = S_();
+  if (f.id === "pinForm") { const v = f.pin.value.trim(); if (!v) return; s.pins = (s.pins || []).concat({ id: uid(), text: v, at: today() }); delete s._pinOpen; save(s); renderDetail(); toast("Pinned"); return; }
   if (f.id === "addClass") {
     const pk = s.packs.find(p => p.id === f.pack.value);
     let hour = f.hour.value === "—" ? "" : f.hour.value;
@@ -667,7 +803,7 @@ $("impFile").onchange = async e => {
     $("mGo").disabled = true; $("mGo").textContent = "Importing…";
     try {
       for (const x of list) { norm(x); const old = S.find(s => s.id === x.id); if (old && old.uid && !x.uid) x.uid = old.uid; if (roles[x.id]) x.uid = roles[x.id].uid; await setDoc(doc(db, "users", tUid, "data", PRE + x.id), { json: JSON.stringify(x), deleted: false, at: serverTimestamp() }); const i = S.findIndex(s => s.id === x.id); if (i >= 0) S[i] = x; else S.push(x); }
-      m.hidden = true; renderAll(); publishAll(); saveIds(); loadUsage(); toast(`Imported ${list.length} students`);
+      m.hidden = true; renderAll(); publishAll(); saveIds(); await autoLink(); loadUsage(); renderAll(); toast(`Imported ${list.length} students`);
     } catch (err) { console.error(err); toast("Import stopped: couldn't save. Try again."); $("mGo").disabled = false; $("mGo").textContent = "Import"; }
   };
 };

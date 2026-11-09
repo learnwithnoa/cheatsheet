@@ -135,13 +135,15 @@ td.act{white-space:nowrap;text-align:right}
   </section>
 
   <section id="vMain" hidden>
-    <h1>Your students</h1>
+    <h1>Cheat Sheet members</h1>
     <p class="lede" id="summary">Loading…</p>
     <div class="news" id="news" hidden></div>
     <div class="news" id="usage" hidden></div>
     <div class="layout">
       <div>
-        <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search students">
+        <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
+        <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
+        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option></select></div>
         <div class="row" style="margin-bottom:10px"><button type="button" id="reload">↻ Refresh</button><span class="muted" id="loadedAt" style="font-size:13px"></span></div>
         <div class="list" id="list"></div>
       </div>
@@ -237,7 +239,7 @@ async function load() {
     list.sort((a, b) => b.lastSeen - a.lastSeen);
     students = list.filter(s => s.email.toLowerCase() !== TEACHER);
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
-    $("summary").textContent = students.length + (students.length === 1 ? " student has" : " students have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
+    $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     renderList(); renderNews(); renderUsage(); syncPark();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
@@ -254,13 +256,19 @@ $("reload").onclick = load;
 
 function renderList() {
   const q = $("q").value.trim().toLowerCase();
-  const shown = students.filter(s => !q || (s.name + " " + s.email).toLowerCase().includes(q));
+  const kind = $("tKind").value, srt = $("tSortSel").value;
+  const shown = students.filter(s => (!q || (s.name + " " + s.email).toLowerCase().includes(q)) && (kind === "all" || roleType(s.role) === kind));
+  const nm = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" });
+  shown.sort(srt === "za" ? (a, b) => nm(b, a) : srt === "seen" ? (a, b) => b.lastSeen - a.lastSeen || nm(a, b) : srt === "new" ? (a, b) => b.firstSeen - a.firstSeen || nm(a, b) : srt === "words" ? (a, b) => b.words.length - a.words.length || nm(a, b) : nm);
   $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
       <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
-      <span class="meta">${s.role.club === false ? "🌳 Private" : "🌼 Club"} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
-    : `<p class="muted">${students.length ? "No match." : "No students have signed in yet."}</p>`;
+      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
+    : `<p class="muted">${students.length ? "No match." : "No one has signed in yet."}</p>`;
 }
 $("q").oninput = renderList;
+try { $("tSortSel").value = localStorage.getItem("cs-t-sort") || "az"; $("tKind").value = localStorage.getItem("cs-t-kind") || "all"; } catch (e) {}
+$("tSortSel").onchange = () => { try { localStorage.setItem("cs-t-sort", $("tSortSel").value); } catch (e) {} renderList(); };
+$("tKind").onchange = () => { try { localStorage.setItem("cs-t-kind", $("tKind").value); } catch (e) {} renderList(); };
 $("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); };
 
 /* ---------- editing (writes go straight to the student's account) ---------- */

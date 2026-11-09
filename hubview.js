@@ -43,3 +43,32 @@ export function makeView(s) {
     updated: Date.now()
   };
 }
+
+/* ---------- linking Cheat Sheet accounts to hub students ---------- */
+export const normEmail = e => { e = String(e || "").trim().toLowerCase(); const [u, d] = e.split("@"); if (!d) return e; return (d === "gmail.com" || d === "googlemail.com" ? u.split("+")[0].replace(/\./g, "") + "@gmail.com" : e); };
+export const normName = n => String(n || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
+export const BOTH_DEFAULT = ["laura", "felipe-torres"];
+/* accounts: [{uid,name,email}], roles: {uid:{...}} → {sure:[{uid,hub}], maybe:[{uid,hub,why}]} */
+export function matchAccounts(students, accounts, roles) {
+  const linkedHubs = new Set(Object.values(roles).map(r => r && r.hub).filter(Boolean));
+  const free = students.filter(s => !linkedHubs.has(s.id) && s.status !== "inactive");
+  const sure = [], maybe = [];
+  accounts.forEach(a => {
+    if (!a || !a.uid || (roles[a.uid] && roles[a.uid].hub) || normEmail(a.email) === "learnwithnoa@gmail.com") return;
+    const em = normEmail(a.email), nm = normName(a.name);
+    const byEmail = free.filter(s => [s.email].concat(s.emails || []).filter(Boolean).some(e => normEmail(e) === em));
+    if (byEmail.length === 1) { sure.push({ uid: a.uid, hub: byEmail[0].id, why: "email" }); return; }
+    const full = free.filter(s => { const sn = normName(s.name); return sn && nm && (sn === nm || (sn.split(" ").length > 1 && nm.includes(sn)) || (nm.split(" ").length > 1 && sn.includes(nm))); });
+    if (full.length === 1) { sure.push({ uid: a.uid, hub: full[0].id, why: "name" }); return; }
+    const first = nm.split(" ")[0]; const f1 = first ? free.filter(s => normName(s.name).split(" ")[0] === first) : [];
+    if (f1.length >= 1) f1.forEach(s => maybe.push({ uid: a.uid, hub: s.id, why: "first name" }));
+  });
+  // never two accounts on the same student automatically
+  const seen = {}; sure.forEach(x => seen[x.hub] = (seen[x.hub] || 0) + 1);
+  return { sure: sure.filter(x => seen[x.hub] === 1), maybe: maybe.concat(sure.filter(x => seen[x.hub] > 1)) };
+}
+export function roleFor(hubId, old) {
+  old = old || {};
+  const club = old.club === true ? true : old.club === false ? false : BOTH_DEFAULT.includes(hubId);
+  return { club, private: true, hub: hubId };
+}
