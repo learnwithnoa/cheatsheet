@@ -20,9 +20,9 @@
 }catch(e){} })();
 </script>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=18">
+<link rel="stylesheet" href="comfort.css?v=19">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=20" defer></script>
+<script src="comfort.js?v=21" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -1045,7 +1045,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .va-only{font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:2px 8px}
 .va-open{all:unset;box-sizing:border-box;cursor:pointer;width:100%;padding:9px 12px;border-radius:12px;border:1.5px solid var(--line);font-weight:700;font-size:14px;background:linear-gradient(90deg,color-mix(in srgb,#7348D8 14%,var(--surface)),color-mix(in srgb,#C2306F 12%,var(--surface)))}
 .va-open[aria-expanded="true"]{border-color:#7348D8}
-.va-list{display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:46vh;overflow:auto}
+.va-list{display:flex;flex-direction:column;gap:4px;margin-top:10px}
 .va-list input[type=search]{box-sizing:border-box;width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--body)}
 .va-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px}
 .va-list button{all:unset;cursor:pointer;padding:7px 10px;border-radius:10px;font-weight:700;font-size:14px}
@@ -1413,6 +1413,29 @@ nav.side .club-nav.locked{background:color-mix(in srgb,var(--nc) 8%,transparent)
 .cl-join-btn:hover{filter:brightness(1.05)}.cl-join-btn:focus-visible{outline:3px solid #F0A63A;outline-offset:3px}
 .cl-lock-week{border:1.5px solid var(--line);background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .cl-lock-week h2{margin:0;font-size:18px}
+.va-guest{margin-top:4px;padding-top:0;border-top:0;padding-bottom:10px;border-bottom:1px solid var(--line)}
+/* wall upgrades: reactions, edit, pins, new markers */
+.cs-rx{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cs-rxadd{position:relative;display:inline-flex}
+.cs-rxpal{position:absolute;bottom:calc(100% + 6px);left:0;display:flex;gap:2px;padding:5px 6px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:5}
+.cs-rxpal[hidden]{display:none}
+.cs-rxpal button{all:unset;cursor:pointer;font-size:20px;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;transition:transform .1s}
+.cs-rxpal button:hover,.cs-rxpal button:focus-visible{transform:scale(1.25);background:var(--surface-2)}
+html.cs-calm .cs-rxpal button{transition:none}
+.cs-tools{display:flex;gap:2px}
+.cs-edit{display:flex;flex-direction:column;gap:8px}
+.cs-edit textarea{width:100%;box-sizing:border-box;resize:vertical;font:15px/1.5 var(--body);color:var(--ink);background:var(--bg);border:1.5px solid #F0A63A;border-radius:12px;padding:9px 12px}
+.cs-at{color:#F0A63A}
+.cs-flags{display:flex;gap:6px}
+.cs-pin,.cs-newf{font:800 11px var(--body);padding:2px 8px;border-radius:999px}
+.cs-pin{background:color-mix(in srgb,#F0A63A 22%,var(--surface));color:#F0A63A}
+.cs-newf{background:#E5533D;color:#fff}
+.cs-p.pinned{border-color:color-mix(in srgb,#F0A63A 55%,var(--line))}
+.cs-p.isnew{box-shadow:0 0 0 2px color-mix(in srgb,#E5533D 45%,transparent)}
+.cl-unread{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:#E5533D;color:#fff;font:800 11px var(--body);vertical-align:1px}
+.cl-unread[hidden]{display:none}
+.hc-wall{all:unset;cursor:pointer;align-self:flex-start;font:800 13.5px var(--body);padding:6px 12px;border-radius:999px;background:color-mix(in srgb,#E5533D 14%,var(--surface));border:1.5px solid color-mix(in srgb,#E5533D 45%,var(--line))}
+.hc-wall[hidden]{display:none}
 </style>
 
 <header class="top">
@@ -1952,22 +1975,23 @@ nav.side .club-nav.locked{background:color-mix(in srgb,var(--nc) 8%,transparent)
       anchor.insertAdjacentElement("beforebegin",btn); }
     btn.hidden=false;
     if(!pop){ pop=document.createElement("div"); pop.id="vaPop"; pop.className="va-pop card"; pop.hidden=true;
-      pop.innerHTML=`<div class="cs-sec va-sec" id="vaSec"><h4>👁 View the site as… <span class="va-only">only you see this</span></h4><button type="button" class="va-open" id="vaOpen" aria-expanded="false">Choose a student or a generic view</button><div class="va-list" id="vaList" hidden></div>
-        <div class="va-guest"><div class="va-h">Guest links <span class="va-only">open in an incognito window, no sign-in</span></div>
-          ${[["New member","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q"],["Club member (sample week)","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q&as=club#club"]].map(([l,u])=>`<div class="va-gl"><span>${l}</span><button type="button" class="va-copy" data-vacopy="${u}">Copy link</button></div>`).join("")}
-          <small class="muted">Your browser can't open incognito by itself, so copy the link and paste it in a private window.</small></div></div>`;
+      pop.innerHTML=`<div class="cs-sec va-sec" id="vaSec"><h4>👁 View the site as…</h4>
+        <div class="va-guest"><div class="va-h">Guest links</div>
+          ${[["New member","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q"],["Club member (sample week)","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q&as=club#club"]].map(([l,u])=>`<div class="va-gl"><span>${l}</span><button type="button" class="va-copy" data-vacopy="${u}">Copy link</button></div>`).join("")}</div>
+        <div class="va-list" id="vaList"><div class="va-res"><p class="muted">Loading everyone…</p></div></div></div>`;
       document.body.appendChild(pop); }
   }
   document.addEventListener("cs-teacher",vaSection); document.addEventListener("cs-preview",vaSection); setTimeout(vaSection,1500);
   document.addEventListener("click",e=>{
     const b=e.target.closest("#vaHdr"), pop=document.getElementById("vaPop");
     if(b&&pop){ const open=pop.hidden; pop.hidden=!open; b.setAttribute("aria-expanded",String(open));
-      if(open){ const r=b.getBoundingClientRect(); pop.style.top=Math.round(r.bottom+8)+"px"; pop.style.right=Math.max(12,Math.round(window.innerWidth-r.right))+"px"; const L=document.getElementById("vaList"); if(L&&L.hidden){ const o=document.getElementById("vaOpen"); if(o) o.click(); } }
+      if(open){ const r=b.getBoundingClientRect(); pop.style.top=Math.round(r.bottom+8)+"px"; pop.style.right=Math.max(12,Math.round(window.innerWidth-r.right))+"px"; vaLoad(); }
       return; }
     if(pop&&!pop.hidden&&!e.target.closest("#vaPop")){ pop.hidden=true; const hb=document.getElementById("vaHdr"); if(hb) hb.setAttribute("aria-expanded","false"); }
   });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const pop=document.getElementById("vaPop"); if(pop&&!pop.hidden){ pop.hidden=true; const hb=document.getElementById("vaHdr"); if(hb){ hb.setAttribute("aria-expanded","false"); hb.focus(); } } } });
   let vaData=null;
+  async function vaLoad(){ if(vaData){ vaRender(""); return; } try{ vaData=window.__csViewAs?await window.__csViewAs.students():{priv:[],club:[]}; }catch(err){ vaData={priv:[],club:[]}; } vaRender(""); }
   function vaRender(q){
     const L=document.getElementById("vaList"); if(!L||!vaData) return; q=(q||"").toLowerCase().trim();
     const m=n=>!q||String(n).toLowerCase().includes(q);
@@ -2334,9 +2358,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(!f||!p){ hc.hidden=true; return; }
     const now=Date.now(), cl=classesOf(f,p), isNew=p.id!==seen();
     const next=cl.find(c=>now<=c.end.getTime());
-    hc.hidden=false; hc.className="hc-club";
+    hc.hidden=false; hc.className="hc-club"; setTimeout(homeWall,0);
     hc.innerHTML=`<div class="hc-h"><b>🌼 This week in the club${isNew&&!window.__csPreview?'<span class="hc-new">NEW</span>':""}</b><button type="button" class="hc-go" data-go="club">Open →</button></div>
       <div class="hc-list">${cl.map(c=>`<div class="${now>c.end.getTime()?"past":""}"><span class="d">${c.ico} ${WD[c.wd]} ${esc(fmtT(c.start,TZ).replace(":00",""))}</span><span>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</span></div>`).join("")}</div>
+      <button type="button" class="hc-wall" data-hcwall="1" hidden></button>
       ${next&&next.zoom&&now>=next.start.getTime()-10*60000?`<a class="cl-join" style="--k:#E5533D" href="${esc(next.zoom)}" target="_blank" rel="noopener">🎥 ${esc(next.name)} is live: join now</a>`:""}`;
   }
   /* not a club member: a locked page with what the club is, how to join, and this week's topics (no Zoom links) */
@@ -2356,12 +2381,14 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       ${p?`<div class="cl-lock-week"><div class="cl-meta">This week’s classes · preview</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
   }
+  async function homeWall(){ const b=document.querySelector("#homeClub [data-hcwall]"); if(!b||!window.__clubSocial) return; const n=await window.__clubSocial.unread(); b.hidden=!n; b.textContent=`💬 ${n} new on the community wall →`; }
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-hcwall]")){ tab="wall"; location.hash="#club"; setTimeout(render,0); } });
   function render(){
     { const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=!feed(); }
     nav(); const f=feed();
     if(!f){ locked(); return; }
     const ps=posts(f), now=Date.now(), info=f.info||{};
-    const tabs=[["week","This week"],["wall","Community"],["links","Schedule & links"],["past",`Past weeks${ps.length>1?" ("+(ps.length-1)+")":""}`]];
+    const tabs=[["week","This week"],["wall",'Community <span class="cl-unread" data-unread hidden></span>'],["links","Schedule & links"],["past",`Past weeks${ps.length>1?" ("+(ps.length-1)+")":""}`]];
     let body="";
     if(tab==="wall"){ body='<div class="cl-wall" data-wall="1"></div>'; }
     else if(tab==="week"){ body=ps[0]?postHTML(f,ps[0],now,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:'<p class="cl-empty">This week’s post isn’t up yet. It usually arrives on Monday.</p>'; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
@@ -2376,7 +2403,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       body=old.length?old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>Week of ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}<div class="cl-thread" data-thread="${esc(p.id)}" data-lazy="1"></div></details>`).join(""):'<p class="cl-empty">Past weeks will collect here, so you can look back at topics and videos.</p>';
     }
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="Club sections">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
-    if(window.__clubSocial) window.__clubSocial.mount(box);
+    if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
   }
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-clt]"); if(t){ tab=t.dataset.clt; render(); } });
   document.addEventListener("cs-club",render); document.addEventListener("cs-hubview",nav); window.addEventListener("cs-auth",()=>{ pubTried=false; setTimeout(render,0); });
@@ -2430,17 +2457,26 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const IMG={};
   async function img(id){ if(IMG[id]) return IMG[id]; const r=await api("GET","/clubImgs/"+id); IMG[id]=r&&r.fields&&r.fields.data?r.fields.data.stringValue:""; return IMG[id]; }
   function paintImgs(root){ root.querySelectorAll("img[data-img]:not([src])").forEach(async el=>{ try{ const d=await img(el.dataset.img); if(d) el.src=d; else el.closest(".cs-ph")?.remove(); }catch(e){} }); }
-  async function like(path,item){ const mine=me(), L=new Set(item.likes||[]); L.has(mine)?L.delete(mine):L.add(mine); item.likes=[...L];
+  const RX=["❤️","😂","😮","👏","🔥","🙏"];
+  const rxOf=v=>{ const i=String(v).indexOf("|"); return i<0?[v,"❤️"]:[v.slice(0,i),v.slice(i+1)]; };
+  async function react(path,item,emo){ const mine=me(); const prev=(item.likes||[]).map(rxOf).find(([u])=>u===mine);
+    const rest=(item.likes||[]).filter(v=>rxOf(v)[0]!==mine); item.likes=prev&&prev[1]===emo?rest:rest.concat([mine+"|"+emo]);
     await api("PATCH","/"+path+"?updateMask.fieldPaths=likes",{fields:{likes:{arrayValue:{values:item.likes.map(S)}}}}); }
+  async function editDoc(path,item,text){ const data={text,imgs:item.imgs||[],edited:Date.now()}; if(item.gifs) data.gifs=item.gifs;
+    await api("PATCH","/"+path+"?updateMask.fieldPaths=json",{fields:{json:S(JSON.stringify(data))}}); item.text=text; item.edited=data.edited; }
   async function del(path){ await api("DELETE","/"+path); }
   /* ---------- UI ---------- */
   const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
   const av=(uid,name)=>{ let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
-  const who=x=>`${av(x.uid,x.name)}<span class="cs-who"><b>${esc(x.name||"Member")}</b>${x.uid===NOA?'<span class="cs-noa">Teacher</span>':""}<span class="cs-ago">${ago(x.at)}</span></span>`;
+  const who=x=>`${av(x.uid,x.name)}<span class="cs-who"><b>${esc(x.name||"Member")}</b>${x.uid===NOA?'<span class="cs-noa">Teacher</span>':""}<span class="cs-ago">${ago(x.at)}${x.edited?" · edited":""}</span></span>`;
   const canDel=x=>x.uid===me()||me()===NOA;
+  const canEdit=x=>x.uid===me()&&!G();
+  const tools=(x,path,isPost)=>`<span class="cs-tools">${canEdit(x)?`<button type="button" class="cs-x" data-edit="${esc(path)}" title="Edit" aria-label="Edit">✏️</button>`:""}${canDel(x)?`<button type="button" class="cs-x" data-del="${esc(path)}" title="${isPost?"Delete post":"Delete"}" aria-label="${isPost?"Delete post":"Delete"}">✕</button>`:""}</span>`;
+  const txtHTML=s=>linkify(s).replace(/(^|\s)@([A-ZÁÉÍÓÚÑ][\wáéíóúñ]+)/g,'$1<b class="cs-at">@$2</b>');
   const gifs=x=>(x.gifs||[]).filter(g=>g&&/^https:\/\/media\d*\.giphy\.com\//.test(g.u)).map(g=>`<div class="cs-gif"><img src="${esc(g.u)}" alt="${esc(g.t||"GIF")}" loading="lazy"${g.w&&g.h?` width="${+g.w}" height="${+g.h}"`:""}></div>`).join("");
   const imgs=x=>gifs(x)+((x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"");
-  const likeBtn=(x,path)=>{ const n=(x.likes||[]).length, on=(x.likes||[]).includes(me()); return `<button type="button" class="cs-act${on?" on":""}" data-like="${esc(path)}" aria-pressed="${on}">${on?"❤️":"🤍"} ${n||""}</button>`; };
+  const likeBtn=(x,path)=>{ const c={}; let mine=null; (x.likes||[]).forEach(v=>{ const [u,e]=rxOf(v); c[e]=(c[e]||0)+1; if(u===me()) mine=e; });
+    return `<span class="cs-rx" data-rxpath="${esc(path)}">${RX.filter(e=>c[e]).map(e=>`<button type="button" class="cs-act${mine===e?" on":""}" data-rx="${e}" aria-pressed="${mine===e}" aria-label="${e} ${c[e]}">${e} ${c[e]}</button>`).join("")}<span class="cs-rxadd"><button type="button" class="cs-act cs-rxbtn" data-rxopen="1" aria-label="Add a reaction" aria-expanded="false">${mine?"":"🤍 "}＋</button><span class="cs-rxpal" hidden>${RX.map(e=>`<button type="button" data-rx="${e}" aria-label="React ${e}">${e}</button>`).join("")}</span></span></span>`; };
   function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><textarea rows="${kind==="post"?3:2}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><label class="cs-act cs-addph">📷 Photo<input type="file" accept="image/*" multiple hidden></label>${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?"Post":"Comment"}</button></div></form>`; }
   const OFF='<p class="cs-off">💬 Comments and posts are almost ready. They’ll switch on very soon.</p>';
   const COMM={};
@@ -2451,21 +2487,34 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     let list=[]; try{ list=COMM[pid]=await listComments(pid); }catch(e){ el.innerHTML=state==="off"?OFF:'<p class="cs-off">Comments couldn’t load. Check your connection and try again.</p>'; return; }
     paintThread(el,pid,list);
   }
-  function commentHTML(pid,c){ const path=`clubPosts/${pid}/comments/${c.id}`; return `<div class="cs-c" data-cid="${esc(c.id)}"><div class="cs-top">${who(c)}${canDel(c)?`<button type="button" class="cs-x" data-del="${esc(path)}" title="Delete" aria-label="Delete">✕</button>`:""}</div>${c.text?`<p class="cs-txt">${linkify(c.text)}</p>`:""}${imgs(c)}<div class="cs-acts">${likeBtn(c,path)}</div></div>`; }
+  function commentHTML(pid,c){ const path=`clubPosts/${pid}/comments/${c.id}`; return `<div class="cs-c" data-cid="${esc(c.id)}"><div class="cs-top">${who(c)}${tools(c,path,false)}</div>${c.text?`<p class="cs-txt">${txtHTML(c.text)}</p>`:'<p class="cs-txt" hidden></p>'}${imgs(c)}<div class="cs-acts">${likeBtn(c,path)}<button type="button" class="cs-act" data-reply="${esc(String(c.name||"").split(/\s+/)[0])}">↩ Reply</button></div></div>`; }
   function paintThread(el,pid,list){
     el.innerHTML=`<div class="cs-th"><h3 class="cs-h">💬 Comments${list.length?` <span>${list.length}</span>`:""}</h3>${list.map(c=>commentHTML(pid,c)).join("")||'<p class="cs-empty">No comments yet. Be the first! Photos welcome 📷</p>'}${composer("comment",pid,"Write a comment…")}</div>`;
     paintImgs(el);
   }
-  let POSTS=null;
+  let POSTS=null, PINS=[], NEWIDS=new Set(), SEEN_AT=0;
+  const WSEEN="cs-wall-seen";
+  const getSeen=()=>{ try{ return +localStorage.getItem(WSEEN)||0; }catch(e){ return 0; } };
+  const setSeen=v=>{ try{ localStorage.setItem(WSEEN,String(v)); }catch(e){} };
+  async function loadPins(){ if(G()){ PINS=["s2"]; return; } try{ const r=await api("GET","/clubPublic/pins"); PINS=r&&r.fields&&r.fields.json?(JSON.parse(r.fields.json.stringValue).ids||[]):[]; }catch(e){ PINS=[]; } }
+  async function savePins(){ await api("PATCH","/clubPublic/pins",{fields:{json:S(JSON.stringify({ids:PINS}))}}); }
+  const isNew=(p,seen)=>seen&&((p.at>seen&&p.uid!==me())||(p.lastAt>seen&&p.lastAt>p.at+2000));
+  /* how many posts are new or have new comments since you last opened Community (for the tab and the Home card) */
+  async function unread(){ if(G()) return 1; try{ if(!POSTS) POSTS=await listPosts(); }catch(e){ return 0; } const s=getSeen(); if(!s){ return 0; } return POSTS.filter(p=>isNew(p,s)).length; }
   async function mountWall(el){
     el.dataset.on="1"; if(POSTS) paintWall(el); else el.innerHTML='<p class="cs-load">Loading…</p>';
-    try{ POSTS=await listPosts(); }catch(e){ el.innerHTML=state==="off"?OFF:'<p class="cs-off">The wall couldn’t load. Check your connection and try again.</p>'; return; }
-    paintWall(el);
+    try{ const [ps]=await Promise.all([listPosts(),loadPins()]); POSTS=ps; }catch(e){ el.innerHTML=state==="off"?OFF:'<p class="cs-off">The wall couldn’t load. Check your connection and try again.</p>'; return; }
+    SEEN_AT=getSeen(); NEWIDS=new Set(POSTS.filter(p=>isNew(p,SEEN_AT)).map(p=>p.id)); if(G()) NEWIDS=new Set(["s1"]);
+    paintWall(el); if(!G()) setSeen(Date.now()); badge(0);
   }
-  function postHTML(p){ const path=`clubPosts/${p.id}`; return `<article class="cs-p" data-pid="${esc(p.id)}"><div class="cs-top">${who(p)}${canDel(p)?`<button type="button" class="cs-x" data-del="${esc(path)}" title="Delete post" aria-label="Delete post">✕</button>`:""}</div>${p.text?`<p class="cs-txt">${linkify(p.text)}</p>`:""}${imgs(p)}
-      <div class="cs-acts">${likeBtn(p,path)}<button type="button" class="cs-act" data-open="${esc(p.id)}" aria-expanded="false">💬 ${p.n?p.n+" ":""}${p.n===1?"comment":"comments"}</button></div><div class="cs-sub" hidden></div></article>`; }
+  function badge(n){ document.querySelectorAll("[data-unread]").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":String(n); }); }
+  async function refreshBadge(){ const n=await unread(); const onWall=document.querySelector(".cl-wall[data-on='1']"); badge(onWall?0:n); return n; }
+  function postHTML(p){ const path=`clubPosts/${p.id}`, pin=PINS.includes(p.id), nw=NEWIDS.has(p.id);
+    return `<article class="cs-p${pin?" pinned":""}${nw?" isnew":""}" data-pid="${esc(p.id)}">${pin||nw?`<div class="cs-flags">${pin?'<span class="cs-pin">📌 Pinned</span>':""}${nw?`<span class="cs-newf">${p.at>SEEN_AT&&p.uid!==me()?"New":"New comments"}</span>`:""}</div>`:""}<div class="cs-top">${who(p)}${tools(p,path,true)}</div>${p.text?`<p class="cs-txt">${txtHTML(p.text)}</p>`:'<p class="cs-txt" hidden></p>'}${imgs(p)}
+      <div class="cs-acts">${likeBtn(p,path)}<button type="button" class="cs-act" data-open="${esc(p.id)}" aria-expanded="false">💬 ${p.n?p.n+" ":""}${p.n===1?"comment":"comments"}</button>${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pin="${esc(p.id)}">${pin?"📌 Unpin":"📌 Pin"}</button>`:""}</div><div class="cs-sub" hidden></div></article>`; }
   function paintWall(el){
-    el.innerHTML=`<div class="cs-new">${composer("post","","Share something with the club: a question, a photo, a small win…")}</div>${(POSTS||[]).map(postHTML).join("")||'<p class="cs-empty">Nothing here yet. Say hi, ask a question, or share a photo 👋</p>'}`;
+    const list=(POSTS||[]).slice().sort((a,b)=>(PINS.includes(b.id)-PINS.includes(a.id))||(b.at-a.at));
+    el.innerHTML=`<div class="cs-new">${composer("post","","Share something with the club: a question, a photo, a small win…")}</div>${list.map(postHTML).join("")||'<p class="cs-empty">Nothing here yet. Say hi, ask a question, or share a photo 👋</p>'}`;
     paintImgs(el);
   }
   async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML='<p class="cs-load">Loading…</p>';
@@ -2491,6 +2540,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       PICK.delete(form); GIF.delete(form); ta.value="";
       const th=form.closest(".cl-thread"), sub=form.closest(".cs-sub"), wall=form.closest(".cl-wall");
       if(th) mountThread(th); else if(sub){ const art=sub.closest(".cs-p"); sub.hidden=true; openSub(art,pid); const b=art.querySelector("[data-open]"); if(b){ const n=(COMM[pid]||[]).length+1; b.innerHTML=`💬 ${n} ${n===1?"comment":"comments"}`; } } else if(wall) mountWall(wall);
+      setSeen(Date.now());
       if(typeof window.toast==="function") window.toast(kind==="post"?"Posted ✓":"Comment added ✓");
     }catch(er){ msg.textContent=er.code===403?"You can’t post here yet.":er.message==="too big"?"That photo is too big. Try another one.":er.message==="not an image"?"That file isn’t a photo.":"Didn’t work. Try again."; btn.disabled=false; return; }
     btn.disabled=false; msg.textContent=""; });
@@ -2516,8 +2566,25 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",async e=>{
     const t=e.target;
     const un=t.closest("[data-unpick]"); if(un){ const form=un.closest("form"); const arr=PICK.get(form)||[]; arr.splice(+un.dataset.unpick,1); PICK.set(form,arr); un.parentElement.remove(); form.querySelectorAll("[data-unpick]").forEach((b,i)=>b.dataset.unpick=i); return; }
-    if(G()&&t.closest("[data-like],[data-del]")) return;
-    const lk=t.closest("[data-like]"); if(lk){ const path=lk.dataset.like, parts=path.split("/"); const id=parts.pop(); const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return; try{ await like(path,item); }catch(er){ return; } lk.outerHTML=likeBtn(item,path); return; }
+    const ro=t.closest("[data-rxopen]"); if(ro){ const pal=ro.parentElement.querySelector(".cs-rxpal"); const o=pal.hidden; document.querySelectorAll(".cs-rxpal").forEach(x=>{ x.hidden=true; }); pal.hidden=!o; ro.setAttribute("aria-expanded",String(o)); return; }
+    if(!t.closest(".cs-rxadd")) document.querySelectorAll(".cs-rxpal:not([hidden])").forEach(x=>x.hidden=true);
+    if(G()&&t.closest("[data-rx],[data-del],[data-edit],[data-pin]")) return;
+    const rx=t.closest("[data-rx]"); if(rx){ const wrap=rx.closest("[data-rxpath]"), path=wrap.dataset.rxpath, parts=path.split("/"), id=parts[parts.length-1];
+      const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
+      try{ await react(path,item,rx.dataset.rx); }catch(er){ return; } wrap.outerHTML=likeBtn(item,path); return; }
+    const rp=t.closest("[data-reply]"); if(rp){ const box=rp.closest(".cs-th,.cs-sub"), ta=box&&box.querySelector(".cs-comp textarea"); if(ta){ const tag="@"+rp.dataset.reply+" "; if(!ta.value.startsWith(tag)) ta.value=tag+ta.value; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } return; }
+    const ed=t.closest("[data-edit]"); if(ed){ const path=ed.dataset.edit, parts=path.split("/"), id=parts[parts.length-1];
+      const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
+      const card=ed.closest(".cs-c,.cs-p"), p=card.querySelector(":scope > .cs-txt"); if(!p||card.querySelector(".cs-edit")) return;
+      p.hidden=true; p.insertAdjacentHTML("afterend",`<div class="cs-edit"><textarea rows="3" maxlength="3000" aria-label="Edit">${esc(item.text||"")}</textarea><div class="cs-row"><span class="cs-msg" role="status"></span><button type="button" class="cs-act" data-edcancel="1">Cancel</button><button type="button" class="cs-send" data-edsave="${esc(path)}">Save</button></div></div>`);
+      const ta=card.querySelector(".cs-edit textarea"); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); return; }
+    const ec=t.closest("[data-edcancel]"); if(ec){ const card=ec.closest(".cs-c,.cs-p"); card.querySelector(".cs-edit").remove(); const p=card.querySelector(":scope > .cs-txt"); p.hidden=!p.textContent.trim(); return; }
+    const es=t.closest("[data-edsave]"); if(es){ const path=es.dataset.edsave, parts=path.split("/"), id=parts[parts.length-1], card=es.closest(".cs-c,.cs-p"), box=card.querySelector(".cs-edit"), text=box.querySelector("textarea").value.trim();
+      const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
+      if(!text&&!(item.imgs||[]).length&&!(item.gifs||[]).length){ box.querySelector(".cs-msg").textContent="Write something first."; return; }
+      es.disabled=true; try{ await editDoc(path,item,text); }catch(er){ box.querySelector(".cs-msg").textContent="Couldn’t save. Try again."; es.disabled=false; return; }
+      const fresh=parts.length>2?commentHTML(parts[1],item):postHTML(item); card.outerHTML=fresh; const host=document.querySelector(`[data-cid="${id}"],[data-pid="${id}"]`); if(host) paintImgs(host); return; }
+    const pn=t.closest("[data-pin]"); if(pn){ const id=pn.dataset.pin; PINS=PINS.includes(id)?PINS.filter(x=>x!==id):[id].concat(PINS).slice(0,3); try{ await savePins(); }catch(er){ if(typeof window.toast==="function") window.toast("Couldn’t pin it."); return; } const w=pn.closest(".cl-wall"); if(w) paintWall(w); return; }
     const dl=t.closest("[data-del]"); if(dl){ if(!confirm("Delete this? It can't be undone.")) return; const path=dl.dataset.del; try{ await del(path); }catch(er){ if(typeof window.toast==="function") window.toast("Couldn’t delete it."); return; }
       const parts=path.split("/"); if(parts.length>2){ const pid=parts[1]; COMM[pid]=(COMM[pid]||[]).filter(x=>x.id!==parts[3]); dl.closest(".cs-c").remove(); } else { POSTS=(POSTS||[]).filter(x=>x.id!==parts[1]); dl.closest(".cs-p").remove(); } return; }
     const op=t.closest("[data-open]"); if(op){ openSub(op.closest(".cs-p"),op.dataset.open); return; }
@@ -2526,7 +2593,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const lb=document.querySelector(".cs-lb"); if(lb) lb.remove(); } });
   /* Noa's bell: recent club activity */
   async function recent(){ try{ return await query("","clubActivity","DESCENDING",40); }catch(e){ return null; } }
-  window.__clubSocial={ mount, recent };
+  window.__clubSocial={ mount, recent, refreshBadge, unread };
   const b=document.getElementById("clubMain"); if(b) mount(b);
 })();
 </script>

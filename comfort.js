@@ -253,11 +253,21 @@
     document.addEventListener("click", e => { if (e.target.closest("[data-go], .navbtn")) stopReading(); }, true);
   }
 
-  /* ---------- study timer (Hibi only) ---------- */
-  let tLen = 25 * 60, tLeft = 25 * 60, tEnd = 0, tInt = null, tRun = false;
-  try { const t = JSON.parse(sessionStorage.getItem("cs-timer") || "null"); if (t) { tLen = t.len; if (t.end && t.end > Date.now()) { tEnd = t.end; tRun = true; } else tLeft = t.left ?? t.len; } } catch (e) {}
+  /* ---------- study timer: Pomodoro (Hibi only) ----------
+     Focus → short break, and a long break after every 4 focus sessions. Breaks start by themselves; focus waits for you. */
+  const PRESETS = { classic: { f: 25, s: 5, l: 15, n: "25 / 5" }, short: { f: 15, s: 3, l: 10, n: "15 / 3" }, long: { f: 50, s: 10, l: 20, n: "50 / 10" } };
+  let P = { preset: "classic", auto: true };
+  try { Object.assign(P, JSON.parse(localStorage.getItem("cs-pomo") || "{}")); } catch (e) {}
+  const savePrefs = () => { try { localStorage.setItem("cs-pomo", JSON.stringify(P)); } catch (e) {} };
+  const len = m => (PRESETS[P.preset] || PRESETS.classic)[m === "focus" ? "f" : m === "short" ? "s" : "l"] * 60;
+  let tMode = "focus", tDone = 0, tLen = len("focus"), tLeft = tLen, tEnd = 0, tInt = null, tRun = false, tCustom = 0;
+  const dayKey = () => new Date().toDateString();
+  let today = { d: dayKey(), n: 0 };
+  try { const x = JSON.parse(localStorage.getItem("cs-pomo-today") || "null"); if (x && x.d === dayKey()) today = x; } catch (e) {}
+  const bumpToday = () => { if (today.d !== dayKey()) today = { d: dayKey(), n: 0 }; today.n++; try { localStorage.setItem("cs-pomo-today", JSON.stringify(today)); } catch (e) {} };
+  try { const t = JSON.parse(sessionStorage.getItem("cs-timer") || "null"); if (t && t.mode) { tMode = t.mode; tDone = t.done || 0; tLen = t.len; tCustom = t.custom || 0; if (t.end && t.end > Date.now()) { tEnd = t.end; tRun = true; } else tLeft = t.left ?? t.len; } } catch (e) {}
   const fmt = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
-  function tSave() { try { sessionStorage.setItem("cs-timer", JSON.stringify({ len: tLen, left: tLeft, end: tRun ? tEnd : 0 })); } catch (e) {} }
+  function tSave() { try { sessionStorage.setItem("cs-timer", JSON.stringify({ mode: tMode, done: tDone, len: tLen, left: tLeft, end: tRun ? tEnd : 0, custom: tCustom })); } catch (e) {} }
   function chime() {
     if (window.csUnlockAudio) window.csUnlockAudio(false);
     try {
@@ -266,22 +276,36 @@
       setTimeout(() => ac.close(), 3000);
     } catch (e) {}
   }
+  function setMode(m, autostart) { tMode = m; tLen = m === "focus" && tCustom ? tCustom : len(m); tLeft = tLen; tRun = false; clearInterval(tInt); tInt = null; tSave(); if (autostart) tStart(); else paintTimer(); }
+  function finished() {
+    tRun = false; clearInterval(tInt); tInt = null; chime();
+    if (tMode === "focus") { tDone++; bumpToday(); const longB = tDone % 4 === 0; toast(longB ? "🍅 4 focus sessions! Take a longer break 🌿" : "🍅 Focus session done! Time for a short break ☕"); setMode(longB ? "long" : "short", P.auto); }
+    else { toast("Break's over. Ready for the next focus session? 🍅"); setMode("focus", false); }
+  }
   function tTick() {
-    if (tRun) { tLeft = Math.max(0, Math.round((tEnd - Date.now()) / 1000)); if (tLeft <= 0) { tRun = false; clearInterval(tInt); tInt = null; tLeft = tLen; tSave(); chime(); toast("⏱ Time's up! Nice work. Take a 5-minute break 🌱"); } }
+    if (tRun) { tLeft = Math.max(0, Math.round((tEnd - Date.now()) / 1000)); if (tLeft <= 0) { finished(); return; } }
     paintTimer();
   }
   function tStart() { if (tRun) return; tEnd = Date.now() + tLeft * 1000; tRun = true; tSave(); clearInterval(tInt); tInt = setInterval(tTick, 1000); tTick(); }
   function tPause() { if (!tRun) return; tLeft = Math.max(0, Math.round((tEnd - Date.now()) / 1000)); tRun = false; clearInterval(tInt); tInt = null; tSave(); paintTimer(); }
   function tReset() { tRun = false; clearInterval(tInt); tInt = null; tLeft = tLen; tSave(); paintTimer(); }
-  function tSet(min) { tLen = min * 60; tReset(); }
-  /* other parts of the site (Practice page) can start the timer too */
-  window.csTimer = { start(min) { tSet(min); tStart(); }, pause: () => tPause(), resume: () => tStart(), reset: () => tReset(), state: () => ({ run: tRun, left: tRun ? Math.max(0, Math.round((tEnd - Date.now()) / 1000)) : tLeft, len: tLen }) };
+  function tSkip() { if (tMode === "focus") { tRun = false; clearInterval(tInt); tInt = null; const longB = (tDone + 1) % 4 === 0; tDone++; setMode(longB ? "long" : "short", false); } else setMode("focus", false); }
+  if (tRun) { tInt = setInterval(tTick, 1000); }
+  /* other parts of the site (Practice page) can start the timer too: a custom focus length */
+  window.csTimer = { start(min) { tCustom = min * 60; setMode("focus", true); }, pause: () => tPause(), resume: () => tStart(), reset: () => tReset(), state: () => ({ run: tRun, left: tRun ? Math.max(0, Math.round((tEnd - Date.now()) / 1000)) : tLeft, len: tLen, mode: tMode }) };
+  const MODE_TXT = { focus: ["🍅", "Focus"], short: ["☕", "Short break"], long: ["🌿", "Long break"] };
   function paintTimer() {
     const d = $("csTime"); if (d) d.textContent = fmt(tLeft);
     const go = $("csTGo"); if (go) go.textContent = tRun ? "Pause" : (tLeft < tLen ? "Resume" : "Start");
-    document.querySelectorAll("[data-tmin]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.tmin * 60 === tLen)));
+    document.querySelectorAll("[data-tmode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tmode === tMode)));
+    document.querySelectorAll("[data-tpre]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tpre === P.preset)));
+    const dots = $("tmDots"); if (dots) { const k = tDone % 4; dots.innerHTML = [0, 1, 2, 3].map(i => `<span class="${i < k ? "on" : ""}"></span>`).join(""); dots.title = k + " of 4 before the long break"; }
+    const td = $("tmToday"); if (td) { if (today.d !== dayKey()) today = { d: dayKey(), n: 0 }; td.textContent = today.n ? `🍅 ${today.n} focus ${today.n === 1 ? "session" : "sessions"} today` : "No focus sessions yet today"; }
+    const ring = $("tmRing"); if (ring) ring.style.setProperty("--p", String(1 - tLeft / Math.max(1, tLen)));
+    const pnl = $("tmPanel"); if (pnl) pnl.dataset.mode = tMode;
+    const au = $("tmAuto"); if (au) au.checked = !!P.auto;
     const tt = $("tmTime"), tb = $("tmBtn");
-    if (tt) { const on = tRun || tLeft !== tLen; tt.hidden = !on; tt.textContent = (tRun ? "" : "⏸ ") + fmt(tLeft); if (tb) tb.classList.toggle("on", on); }
+    if (tt) { const on = tRun || tLeft !== tLen; tt.hidden = !on; tt.textContent = (tRun ? MODE_TXT[tMode][0] + " " : "⏸ ") + fmt(tLeft); if (tb) { tb.classList.toggle("on", on); tb.classList.toggle("brk", on && tMode !== "focus"); } }
     document.dispatchEvent(new CustomEvent("cs-timer"));
   }
 
@@ -406,11 +430,14 @@
     w.innerHTML = `<button class="cs-btn tm-btn" id="tmBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="tmPanel" title="Study timer"><svg class="tm-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4.2l2.6 1.6M9.5 2.5h5M19 6l1.5-1.5"/></svg><span class="tm-time" id="tmTime" hidden></span><span class="cs-txt">Study timer</span></button>
       <div class="cs-panel tm-panel" id="tmPanel" role="dialog" aria-label="Study timer" hidden>
         <div class="cs-head"><h3>Study timer</h3><button class="cs-x" id="tmClose" type="button" aria-label="Close">×</button></div>
-        <div class="cs-timer">
-          <div class="cs-trow">${[10, 15, 25, 45].map(m => `<button type="button" data-tmin="${m}">${m} min</button>`).join("")}</div>
-          <div class="cs-time" id="csTime" aria-live="off">25:00</div>
-          <div class="cs-trow"><button type="button" class="go" id="csTGo">Start</button><button type="button" id="csTReset">Reset</button></div>
-          <small style="color:var(--muted);font-size:12.5px;text-align:center">A soft chime plays when the time is up. Keep the tab open.</small>
+        <div class="cs-timer tm-pomo">
+          <div class="tm-modes" role="group" aria-label="Timer mode">${Object.entries(MODE_TXT).map(([k, [i, l]]) => `<button type="button" data-tmode="${k}">${i} ${l}</button>`).join("")}</div>
+          <div class="tm-ring" id="tmRing"><div class="cs-time" id="csTime" aria-live="off">25:00</div><div class="tm-dots" id="tmDots" aria-label="Focus sessions before the long break"></div></div>
+          <div class="cs-trow"><button type="button" class="go" id="csTGo">Start</button><button type="button" id="csTReset">Reset</button><button type="button" id="tmSkip" title="Skip to the next part">Skip ⏭</button></div>
+          <p class="tm-today" id="tmToday"></p>
+          <div class="tm-set"><b>Rhythm</b> <span class="tm-pre">${Object.entries(PRESETS).map(([k, x]) => `<button type="button" data-tpre="${k}">${x.n}</button>`).join("")}</span></div>
+          <label class="tm-auto"><input type="checkbox" id="tmAuto"> Start breaks by themselves</label>
+          <small style="color:var(--muted);font-size:12.5px;text-align:center">Focus, take a short break, and after 4 rounds a longer one. A soft chime plays at each change. Keep the tab open.</small>
         </div>
       </div>`;
     host.parentNode.insertBefore(w, host);
@@ -421,9 +448,13 @@
     $("tmClose").onclick = () => { open(false); b.focus(); };
     p.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); b.focus(); } });
     document.addEventListener("click", e => { if (!p.hidden && !e.target.closest("#tmWrap")) open(false); });
-    p.querySelector(".cs-timer").addEventListener("click", e => { const x = e.target.closest("[data-tmin]"); if (x) tSet(+x.dataset.tmin); });
+    p.querySelector(".cs-timer").addEventListener("click", e => {
+      const m = e.target.closest("[data-tmode]"); if (m) { if (m.dataset.tmode === "focus") tCustom = 0; setMode(m.dataset.tmode, false); return; }
+      const pr = e.target.closest("[data-tpre]"); if (pr) { P.preset = pr.dataset.tpre; savePrefs(); tCustom = 0; if (!tRun) setMode(tMode, false); else paintTimer(); return; } });
     $("csTGo").onclick = () => tRun ? tPause() : tStart();
     $("csTReset").onclick = tReset;
+    $("tmSkip").onclick = tSkip;
+    $("tmAuto").onchange = e => { P.auto = e.target.checked; savePrefs(); };
     paintTimer();
   }
   function paintPanel() {
