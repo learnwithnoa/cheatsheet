@@ -193,3 +193,11 @@ html.cs-contrast :is(.muted,.hint,.esb,.pr-sub,.ps-kind,.vs-ex,.tr-also,.lk-ex){
 @media (min-width:901px){ .nfg.folded > .navbtn{display:none} }
 .nfg .navbtn .w-ico{display:none}
 @media (max-width:900px){ .nfg-n,.nfg-c{display:none} }
+
+/* study timer button (left of the gear) */
+.tm-btn{gap:6px}
+.tm-ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tm-time{font:800 13.5px var(--mono,ui-monospace,monospace);font-variant-numeric:tabular-nums}
+.tm-btn.on{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.tm-panel{width:min(320px,calc(100vw - 32px))}
+.tm-panel .cs-timer{margin-top:4px}

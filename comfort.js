@@ -280,8 +280,8 @@
     const d = $("csTime"); if (d) d.textContent = fmt(tLeft);
     const go = $("csTGo"); if (go) go.textContent = tRun ? "Pause" : (tLeft < tLen ? "Resume" : "Start");
     document.querySelectorAll("[data-tmin]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.tmin * 60 === tLen)));
-    const chip = $("csTimerChip");
-    if (chip) { chip.hidden = !tRun && tLeft === tLen; chip.textContent = (tRun ? "⏱ " : "⏸ ") + fmt(tLeft); }
+    const tt = $("tmTime"), tb = $("tmBtn");
+    if (tt) { const on = tRun || tLeft !== tLen; tt.hidden = !on; tt.textContent = (tRun ? "" : "⏸ ") + fmt(tLeft); if (tb) tb.classList.toggle("on", on); }
     document.dispatchEvent(new CustomEvent("cs-timer"));
   }
 
@@ -300,7 +300,7 @@
     ["big", "paw", "pencil", "star"].forEach(c => root.classList.toggle("cs-cur-" + c, S.cursor === c));
     root.classList.toggle("cs-no-inshort", !S.inshort);
     root.classList.toggle("cs-no-read", !S.read);
-    root.classList.toggle("cs-green", S.accent === "green");
+    root.classList.remove("cs-green"); /* one look for everyone: blue buttons */
     applyCalm(); applyFocus(); applyRuler(); applyBionic();
     paintPanel();
   }
@@ -317,7 +317,7 @@
   const FOLD_K = "cs-nav-fold", FOLD_DEF = { grammar: true, words: true, life: false, tools: false, start: false };
   function navFold() { try { return Object.assign({}, FOLD_DEF, JSON.parse(localStorage.getItem(FOLD_K) || "{}")); } catch (e) { return Object.assign({}, FOLD_DEF); } }
   function groupMenu() {
-    if ((S.menu || "grouped") !== "grouped") return;
+    /* folding groups for everyone (the old "Classic list" option is gone) */
     const nav = document.querySelector("nav.side"); if (!nav || nav.dataset.grouped) return;
     const btn = id => nav.querySelector(`.navgroup:not(.starred) .navbtn[data-go="${id}"]`);
     if (!btn("basics")) return;
@@ -350,9 +350,7 @@
     host.innerHTML = `<button class="cs-btn" id="csBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="csPanel" title="Reading & comfort settings"><span class="cs-ico" aria-hidden="true">⚙</span><span class="cs-txt">Settings</span></button>
       <div class="cs-panel" id="csPanel" role="dialog" aria-label="Reading and comfort settings" hidden>
         <div class="cs-head"><h3>Reading &amp; comfort</h3><button class="cs-x" id="csClose" type="button" aria-label="Close">×</button></div>
-        <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div>
-          <div class="cs-curl"><b style="font-weight:800">Menu &amp; button colour</b><div class="cs-seg" id="csAccent"><button type="button" data-csacc="blue"><span aria-hidden="true">🔵</span> Blue</button><button type="button" data-csacc="green"><span aria-hidden="true">🟢</span> Green (classic)</button></div></div>
-          <div class="cs-curl"><b style="font-weight:800">Menu layout</b><div class="cs-seg" id="csMenu"><button type="button" data-csmenu="grouped"><span aria-hidden="true">📂</span> Folding groups</button><button type="button" data-csmenu="classic"><span aria-hidden="true">📜</span> Classic list</button></div></div></div>
+        <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>
         <div class="cs-sec"><h4>Reading</h4>
           <div class="cs-size"><button type="button" id="csSmaller" aria-label="Smaller text">A−</button><span id="csSizeTxt">100%</span><button type="button" id="csBigger" aria-label="Bigger text">A+</button></div>
           <div class="cs-seg two" id="csFonts"><button type="button" data-csfont="default" style="font-family:'Lexend',sans-serif">Lexend</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="book" style="font-family:'Literata',Georgia,serif">Book</button><button type="button" data-csfont="classic" style="font-family:'Nunito',sans-serif">Classic</button></div>
@@ -367,11 +365,7 @@
           ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on." : "Hides the student list so you only see one student.")}
           ${isMain ? tog("csInshort", "“In short” boxes", "A one-line summary at the top of each grammar page.") : ""}
           ${isMain && canSpeak ? tog("csRead", "Listen buttons", "A 🔊 Listen button on each page reads it aloud. Select text first to hear just that part.") : ""}
-          ${isMain ? `<div class="cs-timer"><b style="font-weight:800">Study timer</b>
-            <div class="cs-trow">${[10, 15, 25, 45].map(m => `<button type="button" data-tmin="${m}">${m} min</button>`).join("")}</div>
-            <div class="cs-time" id="csTime" aria-live="off">25:00</div>
-            <div class="cs-trow"><button type="button" class="go" id="csTGo">Start</button><button type="button" id="csTReset">Reset</button></div>
-            <small style="color:var(--muted);font-size:12.5px;text-align:center">A soft chime plays when the time is up. Keep the tab open.</small></div>` : ""}
+
         </div>
         <div class="cs-sec"><h4>Calm</h4>
           ${tog("csContrast", "High contrast", "Stronger text and borders, easier to read in bright light or with low vision. Works with any theme.")}
@@ -385,7 +379,7 @@
     btn.onclick = () => open(panel.hidden);
     $("csClose").onclick = () => { open(false); btn.focus(); };
     panel.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); btn.focus(); } });
-    document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest("#csWrap") && !e.target.closest("#csTimerChip")) open(false); });
+    document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest("#csWrap")) open(false); });
     $("csThemes").onclick = e => { const b = e.target.closest("[data-cstheme]"); if (b) setTheme(b.dataset.cstheme); };
     $("csFonts").onclick = e => { const b = e.target.closest("[data-csfont]"); if (!b) return; S.font = b.dataset.csfont; save(); applyAll(); };
     const SIZES = [.8, .9, 1, 1.1, 1.2, 1.35, 1.5];
@@ -402,11 +396,35 @@
     if ($("csRead")) $("csRead").addEventListener("change", () => { if (!S.read) stopReading(); });
     $("csResetAll").onclick = () => { S = Object.assign({}, DEF); save(); applyAll(); toast("Settings reset"); };
     if (isMain) {
-      panel.querySelector(".cs-timer").addEventListener("click", e => { const b = e.target.closest("[data-tmin]"); if (b) tSet(+b.dataset.tmin); });
-      $("csTGo").onclick = () => tRun ? tPause() : tStart();
-      $("csTReset").onclick = tReset;
-      const chip = $("csTimerChip"); if (chip) chip.onclick = e => { e.stopPropagation(); open(true); };
+      buildTimer();
     }
+  }
+  /* ---------- study timer: its own clock button left of the gear, with a pop-up like Music ---------- */
+  function buildTimer() {
+    const host = $("csWrap"); if (!host || $("tmWrap")) return;
+    const w = document.createElement("div"); w.className = "cs-wrap tm-wrap"; w.id = "tmWrap";
+    w.innerHTML = `<button class="cs-btn tm-btn" id="tmBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="tmPanel" title="Study timer"><svg class="tm-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4.2l2.6 1.6M9.5 2.5h5M19 6l1.5-1.5"/></svg><span class="tm-time" id="tmTime" hidden></span><span class="cs-txt">Study timer</span></button>
+      <div class="cs-panel tm-panel" id="tmPanel" role="dialog" aria-label="Study timer" hidden>
+        <div class="cs-head"><h3>Study timer</h3><button class="cs-x" id="tmClose" type="button" aria-label="Close">×</button></div>
+        <div class="cs-timer">
+          <div class="cs-trow">${[10, 15, 25, 45].map(m => `<button type="button" data-tmin="${m}">${m} min</button>`).join("")}</div>
+          <div class="cs-time" id="csTime" aria-live="off">25:00</div>
+          <div class="cs-trow"><button type="button" class="go" id="csTGo">Start</button><button type="button" id="csTReset">Reset</button></div>
+          <small style="color:var(--muted);font-size:12.5px;text-align:center">A soft chime plays when the time is up. Keep the tab open.</small>
+        </div>
+      </div>`;
+    host.parentNode.insertBefore(w, host);
+    const old = $("csTimerChip"); if (old) old.remove();
+    const b = $("tmBtn"), p = $("tmPanel");
+    const open = o => { p.hidden = !o; b.setAttribute("aria-expanded", String(o)); if (o) paintTimer(); };
+    b.onclick = () => open(p.hidden);
+    $("tmClose").onclick = () => { open(false); b.focus(); };
+    p.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); b.focus(); } });
+    document.addEventListener("click", e => { if (!p.hidden && !e.target.closest("#tmWrap")) open(false); });
+    p.querySelector(".cs-timer").addEventListener("click", e => { const x = e.target.closest("[data-tmin]"); if (x) tSet(+x.dataset.tmin); });
+    $("csTGo").onclick = () => tRun ? tPause() : tStart();
+    $("csTReset").onclick = tReset;
+    paintTimer();
   }
   function paintPanel() {
     if (!$("csPanel")) return;

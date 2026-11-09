@@ -383,6 +383,15 @@ def club_sync(tok, tu, m=None, quiet=False):
             now_s = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             http("PATCH", f"{BASE}/users/{uid}/data/hub-view", {"fields": {"json": {"stringValue": "null"}, "deleted": {"booleanValue": True}, "at": {"timestampValue": now_s}}}, token=tok)
             removed.append(uid)
+    # a members-only-safe preview for everyone else on Hibi: this week's topics + schedule, never Zoom links
+    try:
+        ps = sorted(feed.get("posts") or [], key=lambda x: x.get("week", ""))
+        last = ps[-1] if ps else None
+        pub = {"info": {"schedule": [{k: v for k, v in s.items() if k != "zoom"} for s in ((feed.get("info") or {}).get("schedule") or [])]},
+               "post": {"week": last["week"], "title": last.get("title", ""), "classes": [{k: v for k, v in c.items() if k != "zoom"} for c in last.get("classes", [])]} if last else None}
+        http("PATCH", f"{BASE}/clubPublic/week", {"fields": {"json": {"stringValue": json.dumps(pub, ensure_ascii=False)}}}, token=tok)
+    except SystemExit:
+        pass
     # the club list the database's security rules check for the community wall (clubAccess/{uid})
     acc_note = "ok"
     try:

@@ -20,9 +20,9 @@
 }catch(e){} })();
 </script>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=17">
+<link rel="stylesheet" href="comfort.css?v=18">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=19" defer></script>
+<script src="comfort.js?v=20" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -1392,6 +1392,27 @@ nav.side .club-nav .club-dot{margin-left:6px}
 .cs-gi{all:unset;cursor:pointer;border-radius:8px;overflow:hidden;aspect-ratio:1;background:var(--surface-2);line-height:0}
 .cs-gi img{width:100%;height:100%;object-fit:cover}
 .cs-gi:focus-visible{outline:2px solid #F0A63A;outline-offset:1px}
+/* header sits above page content (the 🔔 bell no longer covers Settings), and Saving…/Saved keeps one width */
+.top{z-index:40}
+#authTxt{display:inline-block;min-width:4.9em;text-align:left}
+.va-guest{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.va-gl{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:700}
+.va-copy{all:unset;cursor:pointer;font:800 12.5px var(--body);padding:5px 11px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface)}
+.va-copy:hover,.va-copy:focus-visible{border-color:var(--royal,#5AB8FF)}
+.va-guest small{font-size:12px;line-height:1.4}
+/* Club locked (not a member) */
+nav.side .club-nav.locked::after{content:"🔒";filter:none;opacity:.9}
+nav.side .club-nav.locked{background:color-mix(in srgb,var(--nc) 8%,transparent);border-style:dashed}
+.cl-lock{position:relative;border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,#F0A63A 12%,var(--surface)),color-mix(in srgb,#FF7EB6 8%,var(--surface)));border-radius:20px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:10px}
+.cl-lock-badge{position:absolute;top:16px;right:18px;width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:30px;background:var(--surface);border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line));box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.cl-lock h2{margin:0;font-size:22px;padding-right:70px}
+.cl-lock p{margin:0;font-size:15.5px;line-height:1.6}
+.cl-lock-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.cl-lock-small{font-size:13.5px!important;color:var(--muted)}
+.cl-join-btn{align-self:flex-start;margin-top:4px;font:800 15px var(--body);padding:11px 20px;border-radius:999px;background:linear-gradient(100deg,#F7C65A,#E79A1E 60%,#E26A8D);color:#2a1d00;text-decoration:none;box-shadow:0 4px 14px rgba(231,154,30,.35)}
+.cl-join-btn:hover{filter:brightness(1.05)}.cl-join-btn:focus-visible{outline:3px solid #F0A63A;outline-offset:3px}
+.cl-lock-week{border:1.5px solid var(--line);background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.cl-lock-week h2{margin:0;font-size:18px}
 </style>
 
 <header class="top">
@@ -1931,7 +1952,10 @@ nav.side .club-nav .club-dot{margin-left:6px}
       anchor.insertAdjacentElement("beforebegin",btn); }
     btn.hidden=false;
     if(!pop){ pop=document.createElement("div"); pop.id="vaPop"; pop.className="va-pop card"; pop.hidden=true;
-      pop.innerHTML=`<div class="cs-sec va-sec" id="vaSec"><h4>👁 View the site as… <span class="va-only">only you see this</span></h4><button type="button" class="va-open" id="vaOpen" aria-expanded="false">Choose a student or a generic view</button><div class="va-list" id="vaList" hidden></div></div>`;
+      pop.innerHTML=`<div class="cs-sec va-sec" id="vaSec"><h4>👁 View the site as… <span class="va-only">only you see this</span></h4><button type="button" class="va-open" id="vaOpen" aria-expanded="false">Choose a student or a generic view</button><div class="va-list" id="vaList" hidden></div>
+        <div class="va-guest"><div class="va-h">Guest links <span class="va-only">open in an incognito window, no sign-in</span></div>
+          ${[["New member","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q"],["Club member (sample week)","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q&as=club#club"]].map(([l,u])=>`<div class="va-gl"><span>${l}</span><button type="button" class="va-copy" data-vacopy="${u}">Copy link</button></div>`).join("")}
+          <small class="muted">Your browser can't open incognito by itself, so copy the link and paste it in a private window.</small></div></div>`;
       document.body.appendChild(pop); }
   }
   document.addEventListener("cs-teacher",vaSection); document.addEventListener("cs-preview",vaSection); setTimeout(vaSection,1500);
@@ -1972,6 +1996,7 @@ nav.side .club-nav .club-dot{margin-left:6px}
   document.addEventListener("click",async e=>{
     if(e.target.closest("#vaExit")&&window.__csViewAsMode){ try{ sessionStorage.removeItem("cs-viewas"); }catch(er){} location.hash="#notes"; location.reload(); return; }
     if(e.target.closest("#vaExit")){ window.__csPreview=null; banner(null); if(window.__csViewAs) window.__csViewAs.restore(); document.dispatchEvent(new CustomEvent("cs-preview")); nav(); const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); return; }
+    const cp=e.target.closest("[data-vacopy]"); if(cp){ const u=cp.dataset.vacopy; (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{ cp.textContent="Copied ✓"; setTimeout(()=>cp.textContent="Copy link",1800); }).catch(()=>{ window.prompt("Copy this link:",u); }); return; }
     const pick=e.target.closest("[data-va]"); if(pick){ const k=pick.dataset.va;
       if(k==="club") preview("a club member",null,"club"); else if(k==="private") preview("a private student (example)",SAMPLE,"private"); else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE,"both");
       else if(k.startsWith("hub:")){ const x=vaData.priv.find(x=>x.key===k); if(x){ const lb=x.view.name+(x.both?" (private + club)":" (private)"); if(x.uid) realView(lb,x.view,x.both?"both":"private",x.uid,pick); else preview(lb+" · not on Hibi yet, so no words or notes",x.view,x.both?"both":"private"); } }
@@ -2301,7 +2326,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       ${(p.classes||[]).length?`<div class="cl-classes">${classesOf(f,p).map(c=>clsCard(c,now)).join("")}</div>`:""}${p.closing?`<p class="cl-closing">${esc(p.closing)}</p>`:""}</article>`;
   }
   function nav(){
-    const f=feed(), b=document.getElementById("navClub"); if(b){ b.hidden=!f; const ps=posts(f); let dot=b.querySelector(".club-dot"); const n=ps[0]&&ps[0].id!==seen()&&!window.__csPreview; if(n&&!dot){ dot=document.createElement("span"); dot.className="club-dot"; dot.title="New this week"; b.appendChild(dot); } else if(!n&&dot) dot.remove(); }
+    const f=feed(), b=document.getElementById("navClub"); if(b){ const signed=window.__csAuth===true||!!window.__csGuest||!!window.__csPreview; b.hidden=!f&&!signed; b.classList.toggle("locked",!f); b.title=f?"":"Club members only"; const ps=posts(f); let dot=b.querySelector(".club-dot"); const n=ps[0]&&ps[0].id!==seen()&&!window.__csPreview; if(n&&!dot){ dot=document.createElement("span"); dot.className="club-dot"; dot.title="New this week"; b.appendChild(dot); } else if(!n&&dot) dot.remove(); }
     home();
   }
   function home(){
@@ -2314,9 +2339,27 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <div class="hc-list">${cl.map(c=>`<div class="${now>c.end.getTime()?"past":""}"><span class="d">${c.ico} ${WD[c.wd]} ${esc(fmtT(c.start,TZ).replace(":00",""))}</span><span>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</span></div>`).join("")}</div>
       ${next&&next.zoom&&now>=next.start.getTime()-10*60000?`<a class="cl-join" style="--k:#E5533D" href="${esc(next.zoom)}" target="_blank" rel="noopener">🎥 ${esc(next.name)} is live: join now</a>`:""}`;
   }
+  /* not a club member: a locked page with what the club is, how to join, and this week's topics (no Zoom links) */
+  let PUB=null, pubTried=false;
+  async function loadPublic(){ if(pubTried) return; pubTried=true;
+    try{ const F=window.__csFire; if(!F) return; const tok=await F.token(); if(!tok) return;
+      const r=await fetch(F.base+"/clubPublic/week",{headers:{Authorization:"Bearer "+tok}}); if(!r.ok) return; const d=await r.json(); PUB=JSON.parse(d.fields.json.stringValue); render(); }catch(e){} }
+  function locked(){
+    const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
+    const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
+    box.innerHTML=`<div class="cl-lock"><div class="cl-lock-badge" aria-hidden="true">🔒</div>
+      <h2>Club members only</h2>
+      <p>Noa’s English Club is where you practice speaking with other learners every week, in a relaxed, friendly group. It’s for Spanish speakers (B1 to C1), and it’s queer and neurodivergent-friendly: fluency and confidence first, grammar second.</p>
+      <ul class="cl-lock-list"><li>🧠 <b>Deep Dive Monday</b> · a thought-provoking topic, often with a short video</li><li>🃏 <b>Wildcard Wednesday</b> · games and activities, pure speaking</li><li>💬 <b>Word Up Thursday</b> · useful expressions, then conversation</li><li>😎 <b>Free Talk Friday</b> · relaxed conversation to close the week</li></ul>
+      <p class="cl-lock-small">Members also get the weekly post with the Zoom links, the community wall, and past weeks here on Hibi.</p>
+      <a class="cl-join-btn" href="https://ig.me/m/learnwithnoa" target="_blank" rel="noopener">💛 I want to join</a><p class="cl-lock-small">Joining right here on Hibi is coming soon. For now, tap the button to message Noa.</p></div>
+      ${p?`<div class="cl-lock-week"><div class="cl-meta">This week’s classes · preview</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
+    loadPublic();
+  }
   function render(){
+    { const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=!feed(); }
     nav(); const f=feed();
-    if(!f){ box.innerHTML='<p class="cl-empty">This page is for members of Noa’s English Club. If you’re a member and don’t see it, sign in with the email you use for the club or tell Noa.</p>'; return; }
+    if(!f){ locked(); return; }
     const ps=posts(f), now=Date.now(), info=f.info||{};
     const tabs=[["week","This week"],["wall","Community"],["links","Schedule & links"],["past",`Past weeks${ps.length>1?" ("+(ps.length-1)+")":""}`]];
     let body="";
@@ -2336,7 +2379,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(window.__clubSocial) window.__clubSocial.mount(box);
   }
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-clt]"); if(t){ tab=t.dataset.clt; render(); } });
-  document.addEventListener("cs-club",render); document.addEventListener("cs-hubview",nav);
+  document.addEventListener("cs-club",render); document.addEventListener("cs-hubview",nav); window.addEventListener("cs-auth",()=>{ pubTried=false; setTimeout(render,0); });
   window.addEventListener("hashchange",()=>{ if(location.hash==="#club") setTimeout(render,0); });
   document.addEventListener("click",e=>{ if(e.target.closest('[data-go="club"]')) setTimeout(render,0); });
   /* keep "Live now" fresh, but never while someone is typing a comment */
@@ -3278,7 +3321,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=37" defer></script>
+<script src="buddy.js?v=38" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -7343,7 +7386,7 @@ function alertMsg(t) { const el = $("authStatus"); if (el) el.textContent = t; c
 let lastStatus = "out";
 function status(st) {
   lastStatus = st;
-  const txt = { syncing: "Syncing…", saving: "Saving…", synced: "Saved", error: "Not saved yet", out: "Sign in" }[st] || "Saved";
+  const txt = { syncing: "Syncing…", saving: "Saving…", synced: "Saved", error: "Offline", out: "Sign in" }[st] || "Saved";
   const t = $("authTxt"); if (t) t.textContent = user ? txt : "Sign in";
   const s = $("authStatus");
   if (s) s.textContent = { syncing: "Getting your notes from the cloud…", saving: "Saving your changes…", synced: "✓ Everything is saved to your account.", error: "Couldn't reach the cloud. Your changes are kept here and will save when you're back online." }[st] || "";

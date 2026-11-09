@@ -542,10 +542,13 @@ html.cs-calm .bd-pv{animation:none}
 .ms-scene .ms-disc2,.ms-scene .ms-note{display:none}
 .ms-scene .ms-arm-on{display:none}
 .ms-on .ms-pet{animation:msNod .5s steps(1) infinite}
-.ms-on .ms-disc1{animation:msSpinA .6s steps(1) infinite}.ms-on .ms-disc2{display:inline;animation:msSpinB .6s steps(1) infinite}
-.ms-on .ms-arm-off{display:none}.ms-on .ms-arm-on{display:inline}
-.ms-on .ms-note{display:inline;animation:msNote 2.4s linear infinite}
-.ms-on .ms-note.n2{animation-delay:.8s}.ms-on .ms-note.n3{animation-delay:1.6s}
+.ms-music .ms-disc1{animation:msSpinA .6s steps(1) infinite}.ms-music .ms-disc2{display:inline;animation:msSpinB .6s steps(1) infinite}
+.ms-music .ms-arm-off{display:none}.ms-music .ms-arm-on{display:inline}
+.ms-music .ms-note{display:inline;animation:msNote 2.4s linear infinite}
+.ms-music .ms-note.n2{animation-delay:.8s}.ms-music .ms-note.n3{animation-delay:1.6s}
+.ms-scene .ms-wave{opacity:0}.ms-scene .ms-led{opacity:.35}
+.ms-noise .ms-wave{animation:msWave 1.4s ease-in-out infinite}.ms-noise .ms-wave.w2{animation-delay:.35s}.ms-noise .ms-led{opacity:1}
+@keyframes msWave{0%,100%{opacity:0}40%{opacity:.85}}
 .ms-on .ms-lamp{fill:#FFE08A}
 @keyframes msBreathe{0%,70%{transform:none}71%,100%{transform:translateY(.4px)}}
 @keyframes msBlink{0%,94%{opacity:0}95%,100%{opacity:1}}
@@ -553,7 +556,7 @@ html.cs-calm .bd-pv{animation:none}
 @keyframes msSpinA{0%,49%{opacity:1}50%,100%{opacity:0}}
 @keyframes msSpinB{0%,49%{opacity:0}50%,100%{opacity:1}}
 @keyframes msNote{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(-3px,-9px);opacity:0}}
-html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-on .ms-disc2,html.cs-calm .ms-on .ms-note{display:none}
+html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-music .ms-disc2,html.cs-calm .ms-music .ms-note{display:none}html.cs-calm .ms-noise .ms-wave{opacity:.6}
 .ms-scene .ms-rain{animation:msRain .7s linear infinite}.ms-scene .ms-rain.r1{animation-delay:-.35s}
 .ms-scene .ms-steam{animation:msSteam 2.6s ease-in-out infinite}
 .ms-on .ms-fl{animation:msTw 1.6s steps(1) infinite}.ms-on .ms-fl:nth-of-type(2n){animation-delay:.8s}
@@ -1576,7 +1579,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     sunset: { b: ["#4B3B78", "#B4528A", "#F07E5C", "#F9B565"], wall: "#7A5468", wall2: "#704C60", glow: .3, sun: ["#FFD27A", 22] },
     night: { b: ["#141A3A", "#1B2350", "#252F63", "#30396E"], wall: "#3A3150", wall2: "#342C49", glow: .45, moon: true }
   };
-  function studyRoom(rain) {
+  function studyRoom(rain, kind) {
     const ph = skyPhase(), K = SKY[ph];
     let o = ""; const P = (x, y, w, h, c, cls, op) => { o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"${cls ? ` class="${cls}"` : ""}${op != null ? ` opacity="${op}"` : ""}/>`; };
     /* wall + wainscot + floor */
@@ -1610,22 +1613,32 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     /* mug with steam */
     P(40, 12, 2, 2, "#F2EEE6"); P(42, 12.5, .7, 1, "#F2EEE6"); P(40.5, 12, 1, .5, "#6B3E2A");
     o += `<g class="ms-steam">`; P(40.6, 10, .5, 1, "#FFFFFF", null, .5); P(41.2, 9, .5, 1, "#FFFFFF", null, .4); o += `</g>`;
-    /* record player */
-    P(32, 11, 7, 3, "#C0673A"); P(32, 11, 7, .7, "#D98A5C"); P(33, 13.3, 5, .7, "#A55530");
-    o += `<g class="ms-disc1">`; P(33, 10, 4, 1, "#1F1F24"); P(34, 9.4, 2, .6, "#1F1F24"); P(34.6, 10, .8, .8, "#E5533D"); P(33, 10, .8, 1, "#4A4A55"); o += `</g>`;
-    o += `<g class="ms-disc2">`; P(33, 10, 4, 1, "#1F1F24"); P(34, 9.4, 2, .6, "#1F1F24"); P(34.6, 10, .8, .8, "#E5533D"); P(36.2, 10, .8, 1, "#4A4A55"); o += `</g>`;
-    o += `<g class="ms-arm-off">`; P(38, 8, .7, 3, "#C3CCD6"); o += `</g><g class="ms-arm-on">`; P(38, 8, .7, 2, "#C3CCD6"); P(37, 9.5, 1.2, .7, "#C3CCD6"); o += `</g>`;
-    ["n1", "n2", "n3"].forEach((n, i) => { o += `<text class="ms-note ${n}" x="${33 + i * 1.5}" y="8" font-size="3" fill="${["#F5C842", "#F2B8C6", "#9ED3F0"][i]}">${i === 1 ? "♫" : "♪"}</text>`; });
+    if (kind === "noise") {
+      /* white-noise machine: the sound comes from here for brown / pink / white noise */
+      P(32.5, 10.5, 6, 3.5, "#ECE6DA"); P(32.5, 10.5, 6, .7, "#FFFFFF"); P(33, 13.4, 5, .6, "#CFC6B6");
+      for (let x = 33.3; x < 38; x += 1.1) for (let y = 11.6; y < 13.2; y += .9) P(x, y, .5, .5, "#B9AE9C");
+      P(37.6, 13.5, .6, .4, "#3DDC97", "ms-led");
+      o += `<g class="ms-wave w1">`; P(31.4, 11, .4, 2, "#9ED3F0"); P(39.1, 11, .4, 2, "#9ED3F0"); o += `</g>`;
+      o += `<g class="ms-wave w2">`; P(30.4, 10.4, .4, 3.2, "#9ED3F0"); P(40.1, 10.4, .4, 3.2, "#9ED3F0"); o += `</g>`;
+    } else {
+      /* record player (music) */
+      P(32, 11, 7, 3, "#C0673A"); P(32, 11, 7, .7, "#D98A5C"); P(33, 13.3, 5, .7, "#A55530");
+      o += `<g class="ms-disc1">`; P(33, 10, 4, 1, "#1F1F24"); P(34, 9.4, 2, .6, "#1F1F24"); P(34.6, 10, .8, .8, "#E5533D"); P(33, 10, .8, 1, "#4A4A55"); o += `</g>`;
+      o += `<g class="ms-disc2">`; P(33, 10, 4, 1, "#1F1F24"); P(34, 9.4, 2, .6, "#1F1F24"); P(34.6, 10, .8, .8, "#E5533D"); P(36.2, 10, .8, 1, "#4A4A55"); o += `</g>`;
+      o += `<g class="ms-arm-off">`; P(38, 8, .7, 3, "#C3CCD6"); o += `</g><g class="ms-arm-on">`; P(38, 8, .7, 2, "#C3CCD6"); P(37, 9.5, 1.2, .7, "#C3CCD6"); o += `</g>`;
+      ["n1", "n2", "n3"].forEach((n, i) => { o += `<text class="ms-note ${n}" x="${33 + i * 1.5}" y="8" font-size="3" fill="${["#F5C842", "#F2B8C6", "#9ED3F0"][i]}">${i === 1 ? "♫" : "♪"}</text>`; });
+    }
     /* evening: the whole room gets a little warmer and darker */
     if (ph === "night") P(-3, 0, 52, 27, "#0B0F2A", null, .18);
     return o;
   }
   const RAINY = new Set(["both", "pianorain", "rain"]);
   const curMode = () => { const c = document.querySelector('#musicModes [data-mm][aria-checked="true"]'); return c ? c.dataset.mm : ""; };
+  const NOISE = new Set(["brown", "pink", "white"]);
   function musicScene() {
-    const has = S.on === true && !!S.a, rain = RAINY.has(curMode());
+    const has = S.on === true && !!S.a, m = curMode(), rain = RAINY.has(m), kind = NOISE.has(m) ? "noise" : m === "rain" ? "rain" : "music";
     const pet = has ? `<g class="ms-pet">${rects(drawPet({}), 9, 1)}<g class="ms-blink">${rects(drawPet({ blink: true }), 9, 1)}</g></g>` : "";
-    return `<svg viewBox="-3 0 51 26" shape-rendering="crispEdges" role="img" aria-label="${has ? esc(nameOf()) + " studying with music in a cozy room" : "A cozy study room with a record player"}">${studyRoom(rain)}${pet}</svg>`;
+    return `<svg viewBox="-3 0 51 26" shape-rendering="crispEdges" role="img" aria-label="${has ? esc(nameOf()) + " studying with music in a cozy room" : "A cozy study room with a record player"}">${studyRoom(rain, kind)}${pet}</svg>`;
   }
   function paintMusicScene() {
     const btn = document.getElementById("musicPlay"); if (!btn) return;
@@ -1641,12 +1654,18 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     sc.innerHTML = musicScene();
     const has = S.on === true && !!S.a, tip = btn.querySelector("#msTip");
     if (tip) { tip.textContent = has ? "" : "Adopt a study buddy and it'll study here with you 🐾"; tip.hidden = !tip.textContent; }
-    sc.classList.toggle("ms-on", btn.getAttribute("aria-pressed") === "true");
+    setPlayClasses(sc, btn);
+  }
+  function setPlayClasses(sc, btn) {
+    const on = btn.getAttribute("aria-pressed") === "true", m = curMode();
+    sc.classList.toggle("ms-on", on);
+    sc.classList.toggle("ms-music", on && !NOISE.has(m) && m !== "rain");
+    sc.classList.toggle("ms-noise", on && NOISE.has(m));
   }
   (function musicHook() {
     const btn = document.getElementById("musicPlay"); if (!btn) return;
     paintMusicScene();
-    new MutationObserver(() => { const sc = btn.querySelector(".ms-scene"); if (sc) sc.classList.toggle("ms-on", btn.getAttribute("aria-pressed") === "true"); })
+    new MutationObserver(() => { const sc = btn.querySelector(".ms-scene"); if (sc) setPlayClasses(sc, btn); })
       .observe(btn, { attributes: true, attributeFilter: ["aria-pressed"] });
     const modes = document.getElementById("musicModes");
     if (modes) new MutationObserver(() => paintMusicScene()).observe(modes, { attributes: true, subtree: true, attributeFilter: ["aria-checked"] });
