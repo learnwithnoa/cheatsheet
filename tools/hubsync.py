@@ -29,6 +29,7 @@ Usage:
       "vocab":[{"w":"word","tr":"meaning","ex":"example"}],"homework":"...","heads":["reminder",...]}'   (mini recap on My coaching; keeps only the newest class)
   HUB_PASSWORD=... python3 hubsync.py resources <student-id> add|remove fabulang|chatterbox|simplified|tedideas|tedtalks|slow
       (class resources on My coaching; until Noa or this sets them, they're guessed from the recent class notes)
+  HUB_PASSWORD=... python3 hubsync.py set-level '<Hibi name or email>' B1 ['short reason']   club member's level from club recordings
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 """
 import json, os, re, sys, random, string, datetime, urllib.request, urllib.error
@@ -421,6 +422,24 @@ def main():
         if r.get("hub"):
             publish_all(tok, tu, m, only={r["hub"]})
         print("ok"); return
+    if cmd == "set-level":
+        # set-level '<name or email>' B1 ['why']   club member's English level (from club class recordings); their Hibi adapts feedback to it
+        who, lv = a[1], a[2].upper().replace(" ", "")
+        if not re.fullmatch(r"[ABC][12]([–-][ABC][12])?", lv):
+            print("level must look like B1 or A2-B1"); return
+        accts = get_accounts(tok); w = who.lower().strip()
+        hit = [x for x in accts if (x.get("email") or "").lower() == w] or [x for x in accts if norm_name(x.get("name")) == norm_name(who)]
+        if not hit:
+            fn = norm_name(who).split(" ")
+            hit = [x for x in accts if fn and norm_name(x.get("name")).split(" ")[:len(fn)] == fn]
+        if len(hit) != 1:
+            print(json.dumps({"error": "no single Hibi account matches", "candidates": [{"name": x.get("name"), "email": x.get("email")} for x in hit][:8]}, ensure_ascii=False)); return
+        u = hit[0]
+        now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        fields = {"lv": {"stringValue": lv}, "lvWhy": {"stringValue": (a[3] if len(a) > 3 else "")[:200]}, "lvAt": {"stringValue": datetime.date.today().isoformat()}, "at": {"timestampValue": now}}
+        mask = "&".join("updateMask.fieldPaths=" + k for k in fields)
+        http("PATCH", f"{BASE}/roles/{u['uid']}?{mask}", {"fields": fields}, token=tok)
+        print("ok", u.get("name"), lv); return
     if cmd == "tz-check":
         # clock changes in Chile or a foreign student's country in the next 21 days (for the nightly Heads-up)
         from zoneinfo import ZoneInfo

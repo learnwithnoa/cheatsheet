@@ -1125,6 +1125,14 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .ch-resb:hover{border-color:#3b82f6;transform:translateY(-1px)}
 .ch-resb .i{font-size:22px;line-height:1}
 .ch-resb b{display:block;font-size:14.5px}.ch-resb small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+
+/* sentence practice: stars and tips; word-tool dialogs */
+.sn-stars{margin-left:10px;color:#F5B301;letter-spacing:1px;font-size:17px}.sn-stars i{font-style:normal;color:var(--line)}
+.sn-sl{margin-left:6px;font-size:13px;font-weight:700;color:var(--muted)}
+.sn-stretch{margin:8px 0 0;font-size:14px;padding:7px 10px;border-radius:10px;background:color-mix(in srgb,#8b5cf6 10%,transparent)}
+.cs-chk{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line);cursor:pointer}
+.cs-chk input{margin-top:4px;accent-color:#3b82f6}.cs-chk small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.cs-added{margin:6px 0 12px;padding-left:20px}.cs-added li{margin:2px 0;font-weight:700}
 </style>
 
 <header class="top">
@@ -1777,6 +1785,18 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   /* clock-change helper (also used by My coaching) */
   if(typeof window.__csTzRem!=="function") import("./hubview.js?v=8").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
+</script>
+
+<script>
+/* the student's English level, for level-adapted feedback: Noa's private-student level, or the club level Noa set from class recordings */
+window.csLevel=function(){
+  const v=window.__csHubView, m=v&&String(v.level||"").match(/[ABC][12](?:\s*[–-]\s*[ABC][12])?/i);
+  if(m) return {lv:m[0].toUpperCase().replace(/\s+/g,""),src:"coach"};
+  let c=null; try{ c=JSON.parse(localStorage.getItem("cs-cefr")||"null"); }catch(e){}
+  if(c&&c.lv) return {lv:String(c.lv),src:"club"};
+  let b=null; try{ b=JSON.parse(localStorage.getItem("ncs-level")||"null"); }catch(e){}
+  return b==="beginner"?{lv:"A1–A2",src:"self"}:{lv:"",src:""};
+};
 </script>
 
 <section class="view" id="v-translate" hidden>
@@ -2528,7 +2548,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   </div>
   </div>
 <div class="pr-panel" data-pp="sent" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Use it in a <em>sentence</em></h1>
-  <p>Write your own sentence with one of your words, and get quick feedback. It uses the words from your flashcards.</p>
+  <p>Write your own sentence with one of your words and get quick feedback. Each sentence gets ⭐ to ⭐⭐⭐ <b>for your level</b> (not compared with anyone else), and your buddy gets 1 to 3 🍪. Like your sentence? Save it as the word's example.</p>
   <div class="card sn-card" id="snCard" style="max-width:560px">
     <div class="quiz-top"><span class="tag">✍️ Your word</span><button class="swap" type="button" id="snNext">Another word →</button></div>
     <div class="sn-word"><b id="snWord"></b><span id="snMean"></span></div>
@@ -2566,7 +2586,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=29" defer></script>
+<script src="buddy.js?v=30" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -3650,7 +3670,9 @@ fcShuffle();
   function pool(){ let l=[]; try{ l=typeof fcList==="function"? fcList() : allWords(); }catch(e){ l=allWords(); } l=l.filter(x=>x&&x.w); if(!l.length) l=allWords().filter(x=>x&&x.w); return l; }
   function pick(){
     const l=pool(); if(!l.length){ cur=null; wEl.textContent="Save a few words first"; mEl.textContent=""; ta.disabled=true; go.disabled=true; return; }
-    let x=l[Math.floor(Math.random()*l.length)]; if(l.length>1&&x.id===lastId) x=l.find(y=>y.id!==lastId);
+    /* if the student writes their own examples, words without one come first */
+    const bare=l.filter(y=>!y.e||y.aiEx); const from=(typeof window.csNoEx==="function"&&window.csNoEx()&&bare.length&&Math.random()<0.75)?bare:l;
+    let x=from[Math.floor(Math.random()*from.length)]; if(from.length>1&&x.id===lastId) x=from.find(y=>y.id!==lastId);
     cur=x; lastId=x.id; wEl.textContent=x.w; mEl.textContent=x.m||""; ta.value=""; ta.disabled=false; out.innerHTML=""; out.hidden=true; paintBtn();
   }
   function paintBtn(){ const ok=!!window.__csSample; go.disabled=!cur||!ok; off.hidden=ok; }
@@ -3658,20 +3680,27 @@ fcShuffle();
   go.addEventListener("click",async()=>{
     const s=ta.value.trim(); if(!cur) return; if(s.split(/\s+/).length<3){ toast("Write a full sentence with “"+cur.w+"”"); ta.focus(); return; }
     go.disabled=true; go.textContent="Checking…"; out.hidden=false; out.innerHTML='<p class="muted" style="margin:0">✨ Reading your sentence…</p>';
-    const p="You are a kind, encouraging English coach for a Spanish-speaking learner "+((window.csBeginnerOn&&window.csBeginnerOn())?"who is a BEGINNER (level A1 to A2): use very simple, short English, and end the feedback with one short sentence in Spanish that repeats the main point":"(level B1 to B2)")+". The student is practicing the word or expression \""+cur.w+"\""+(cur.m?" (meaning: "+cur.m+")":"")+".\n"+
+    const L=typeof window.csLevel==="function"?window.csLevel():{lv:""}, LB=/^A/.test(L.lv||"")||(window.csBeginnerOn&&window.csBeginnerOn());
+    const p="You are a kind, encouraging English coach for a Spanish-speaking learner "+(L.lv?"whose English level is "+L.lv+" (CEFR)":"(level not known: assume about B1)")+(LB?": use very simple, short English, and end the feedback with one short sentence in Spanish that repeats the main point":"")+". The student is practicing the word or expression \""+cur.w+"\""+(cur.m?" (meaning: "+cur.m+")":"")+".\n"+
       "Their sentence: \""+s+"\"\n\n"+
       "Check two things: 1) is \""+cur.w+"\" used with the right meaning and in a natural way, and 2) is the sentence grammatically correct? Focus on what matters for communication; don't nitpick tiny style choices.\n"+
-      "Reply with ONLY this JSON, no other text:\n{\"result\":\"great\" or \"almost\" or \"try_again\",\"feedback\":\"one or two short, friendly sentences in simple English, speaking to the student as you. Say what's good, and explain the main fix if there is one\",\"better\":\"a corrected or more natural version of THEIR sentence (keep their idea), or an empty string if it's already great\"}\n"+
+      "Also rate how rich the sentence is FOR THIS STUDENT'S LEVEL, never in absolute terms: stars 1 = simple and clear, 2 = good for their level (some detail, a linking word, a less basic structure), 3 = ambitious for their level (an extra clause, a less common structure or precise vocabulary). A short sentence from a beginner can earn 3 if it stretches them; a C1 student needs more for 3. Be generous and never discouraging.\n"+
+      "Reply with ONLY this JSON, no other text:\n{\"stars\":1 or 2 or 3,\"stretch\":\"one short tip (max 15 words) to make the next sentence a bit richer at their level, e.g. add because + a reason; empty string if stars is 3\",\"result\":\"great\" or \"almost\" or \"try_again\",\"feedback\":\"one or two short, friendly sentences in simple English, speaking to the student as you. Say what's good, and explain the main fix if there is one\",\"better\":\"a corrected or more natural version of THEIR sentence (keep their idea), or an empty string if it's already great\"}\n"+
       "Use \"try_again\" only if the word is used with the wrong meaning or the sentence is very hard to understand.";
     let r=null;
     try{ const res=await window.__csSample(p); r=parse(res&&res.text); }catch(e){ console.warn(e); }
     go.textContent="Check my sentence"; paintBtn();
     if(!r||!r.feedback){ out.innerHTML='<p style="margin:0">Couldn\'t check it right now. Try again in a minute.</p>'; return; }
     const res=String(r.result||"").toLowerCase(), tag= res==="great"?["🎉","Great!","sn-great"]: res==="almost"?["👍","Almost!","sn-almost"]:["💪","Try again","sn-try"];
-    out.innerHTML='<div class="sn-res '+tag[2]+'"><b>'+tag[0]+' '+tag[1]+'</b></div><p style="margin:6px 0 0">'+esc(r.feedback)+'</p>'+
+    const ok=res==="great"||res==="almost", stars=ok?Math.max(1,Math.min(3,parseInt(r.stars,10)||1)):0, SL=["","Clear and correct","Good for your level","Ambitious for your level!"];
+    const keep=ok?(res==="great"?s:String(r.better||"").trim()||s):"";
+    out.innerHTML='<div class="sn-res '+tag[2]+'"><b>'+tag[0]+' '+tag[1]+'</b>'+(stars?'<span class="sn-stars" title="'+SL[stars]+'">'+"★".repeat(stars)+'<i>'+"★".repeat(3-stars)+'</i></span><span class="sn-sl">'+SL[stars]+'</span>':'')+'</div><p style="margin:6px 0 0">'+esc(r.feedback)+'</p>'+
+      (stars&&stars<3&&r.stretch?'<p class="sn-stretch">🚀 <b>Level up:</b> '+esc(r.stretch)+'</p>':'')+
+      (keep?'<div class="note-actions" style="margin-top:8px"><button class="swap" type="button" data-sn-keep>📌 Save as my example for “'+esc(cur.w)+'”</button></div>':'')+
       (r.better&&String(r.better).trim()&&res!=="great"?'<div class="sn-better"><span class="sn-lbl">Try it like this:</span> '+esc(r.better)+(canSpeak?' <button class="say" type="button" data-sn-say aria-label="Hear it">🔊</button>':'')+'</div>':'');
     const sb=out.querySelector("[data-sn-say]"); if(sb) sb.addEventListener("click",()=>say(r.better,sb));
-    if(res==="great"||res==="almost") document.dispatchEvent(new CustomEvent("cs-sentence",{detail:{result:res}}));
+    const kb=out.querySelector("[data-sn-keep]"); if(kb) kb.addEventListener("click",()=>{ try{ const w=words.find(y=>y.id===cur.id); if(w){ w.e=keep.slice(0,220); delete w.aiEx; w.ownEx=1; saveWordsNow(); kb.textContent="✓ Saved as your example"; kb.disabled=true; } }catch(e){ console.warn(e); } });
+    if(ok) document.dispatchEvent(new CustomEvent("cs-sentence",{detail:{result:res,stars}}));
   });
   ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); go.click(); } });
   nx.addEventListener("click",pick);
@@ -5219,6 +5248,9 @@ const POS_LIST=["noun","verb","adjective","adverb","phrasal verb","idiom","expre
 const exampleRule=()=>csBeginner()
   ? "Example sentences: very short and simple, A1 to A2 level, 4 to 8 words, everyday topics."
   : "Example sentences: natural and useful, B1 to B2 level, 8 to 15 words.";
+/* students can write their own example sentences: then the AI leaves them empty */
+const noEx=()=>LS.get("ncs-noex",false)===true;
+window.csNoEx=noEx;
 const cleanPos=p=>{ p=String(p||"").toLowerCase().trim(); return POS_LIST.includes(p)?p:(p.includes("phrasal")?"phrasal verb":p.slice(0,20)); };
 function saveWordsNow(){ LS.set("ncs-words",words); try{ renderWords(); fcShuffle(); renderFlash(); }catch(e){} }
 
@@ -5229,7 +5261,7 @@ async function enrichBatch(list){
     "- pos: the part of speech, one of: "+POS_LIST.join(", ")+"\n"+
     "- def: a very short, simple English meaning (max 10 words, no quotes)\n"+
     "- es: a natural Spanish translation ONLY if \"spanish\" is empty, otherwise an empty string\n"+
-    "- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n"+
+    (noEx()?"- ex: always an empty string (the student writes their own examples)\n":"- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n")+
     "Use American English. Never change the student's word. Reply with ONLY a JSON array like [{\"id\":\"...\",\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\"}].\n\nITEMS:\n"+JSON.stringify(items);
   const r=await window.__csSample(p);
   const arr=aiJSON(r&&r.text); if(!Array.isArray(arr)) throw new Error("The AI's answer didn't make sense");
@@ -5238,7 +5270,7 @@ async function enrichBatch(list){
     if(a.pos&&!x.pos) x.pos=cleanPos(a.pos);
     if(a.def&&!x.def) x.def=String(a.def).trim().slice(0,140);
     if(!x.m&&a.es) x.m=String(a.es).trim().slice(0,140);
-    if(!x.e&&a.ex){ x.e=String(a.ex).trim().slice(0,220); x.aiEx=1; }
+    if(!x.e&&a.ex&&!noEx()){ x.e=String(a.ex).trim().slice(0,220); x.aiEx=1; }
     x.ai=1; n++; });
   saveWordsNow();
   return n;
@@ -5277,6 +5309,7 @@ function undoWords(){
     words=u.words.concat(added); saveWordsNow(); try{ localStorage.removeItem(UNDO_KEY); }catch(er){} showUndo();
     const st=document.getElementById("aiStatus"); if(st){ st.hidden=false; st.textContent="↩ Undone. Your words are back the way they were."; } toast("Undone ↩"); });
 }
+document.addEventListener("change",e=>{ if(e.target&&e.target.id==="aiNoEx"){ LS.set("ncs-noex",!!e.target.checked); const t=document.getElementById("aiExTxt"); if(t) t.hidden=!!e.target.checked; toast(e.target.checked?"✍️ The AI won't write example sentences for you":"The AI will add example sentences again"); } });
 function askFirst(title,html,go,label){
   const d=csDialog('<h3 style="margin-top:0">'+title+'</h3>'+html+'<p class="muted" style="font-size:13.5px">If you don\'t like the result, you can undo it afterwards with <b>↩ Undo</b>.</p><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="y">'+label+'</button><button class="swap" type="button" data-a="n">Cancel</button></div>');
   d.el.addEventListener("click",e=>{ const b=e.target.closest("[data-a]"); if(!b) return; d.close(); if(b.dataset.a==="y") go(); });
@@ -5368,8 +5401,13 @@ document.addEventListener("click",e=>{
   const idx=[...box.querySelectorAll("[data-sugi]:checked")].map(c=>+c.dataset.sugi), base=Date.now(), have=new Set(words.map(x=>norm(x.w))); let n=0;
   idx.forEach((i,k)=>{ const x=box._list[i]; if(!x||have.has(norm(x.w))) return; have.add(norm(x.w));
     words.push({id:(base+k).toString(36)+Math.random().toString(36).slice(2,6),w:String(x.w).trim().slice(0,120),m:String(x.m||"").trim().slice(0,140),e:String(x.e||"").trim().slice(0,220),pos:cleanPos(x.pos),def:String(x.def||"").trim().slice(0,140),t:base+k,ai:1,fromNote:1}); n++; });
+  const added=idx.map(i=>box._list[i]).filter(Boolean).map(x=>String(x.w).trim()).slice(0,n);
   saveWordsNow(); box.hidden=true; box.innerHTML="";
-  toast(n?"Added "+n+(n===1?" word":" words")+" to My words":"Nothing new to add");
+  if(!n){ toast("Nothing new to add"); return; }
+  if(window.csUse) try{ window.csUse("word"); }catch(er){}
+  const d=csDialog('<h3 style="margin-top:0">✅ Added to My words</h3><p>'+n+(n===1?' new word is':' new words are')+' now in <b>My words</b>:</p><ul class="cs-added">'+added.map(w=>'<li>'+esc(w)+'</li>').join("")+'</ul><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="go">See my words</button><button class="swap" type="button" data-a="ok">OK</button></div>');
+  d.el.addEventListener("click",ev=>{ const b2=ev.target.closest("[data-a]"); if(!b2) return; d.close(); if(b2.dataset.a==="go"&&typeof go==="function") go("words",true); });
+  try{ document.dispatchEvent(new CustomEvent("cs-wordsadded",{detail:{n}})); }catch(er){}
 });
 
 /* ---------- clean up my words ---------- */
@@ -5425,7 +5463,8 @@ document.addEventListener("click",e=>{
   const f=e.target.closest("#aiFill"), c=e.target.closest("#aiClean");
   if(f){ const n=words.filter(needsInfo).length;
     if(!n){ const st=document.getElementById("aiStatus"); st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
-    askFirst("✨ Complete my words",'<p>The AI fills in what\'s <b>missing</b> in '+n+(n===1?" word":" words")+': the Spanish translation, a simple meaning, the word type and an example sentence.</p><p><b>It never changes anything you already wrote</b>, including your own example sentences.</p>',()=>completeAll(f),"Yes, complete them"); }
+    askFirst("✨ Complete my words",'<p>The AI fills in what\'s <b>missing</b> in '+n+(n===1?" word":" words")+': the Spanish translation, a simple meaning, the word type<span id="aiExTxt"'+(noEx()?' hidden':'')+'> and an example sentence</span>.</p><p><b>It never changes anything you already wrote</b>, including your own example sentences.</p>'+
+      '<label class="cs-chk"><input type="checkbox" id="aiNoEx"'+(noEx()?' checked':'')+'> <span><b>I\'ll write my own example sentences</b><small>The AI won\'t add examples, to this or to new words. You can practice writing them in <b>Practice → Use it in a sentence</b>.</small></span></label>',()=>completeAll(f),"Yes, complete them"); }
   else if(c) askFirst("🧹 Clean up my words",'<p>The AI checks your words for spelling, punctuation, capital letters and repeated words, and fills in missing translations.</p><p>It shows you every change first, and <b>nothing changes until you press Apply</b>. Sentences you wrote yourself are only suggested if they have a clear mistake, and they stay as they are unless you tick them.</p>',()=>cleanUp(c),"Check my words");
   else if(e.target.closest("#aiUndo")) undoWords();
 });
@@ -6210,6 +6249,11 @@ if(!LS.get("ncs-welcomed",0)) setTimeout(openWelcome,400);
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-sentences", date:"November 9, 2026", title:"Write your own sentences ✍️", items:[
+    ["⭐","Stars for your sentences","in <b>Practice → Use it in a sentence</b>, every sentence gets 1 to 3 stars <b>for your level</b>, a tip to make the next one richer, and up to 3 🍪 for your buddy.","quiz"],
+    ["📌","Your sentence, your example","like the sentence you wrote? Save it as that word's example in <b>My words</b>."],
+    ["✍️","Write your own examples","in <b>✨ Complete my words</b>, tick <b>I'll write my own example sentences</b> and the AI leaves them for you.","words"]
+  ]},
   {id:"2026-hibi", date:"November 9, 2026", title:"Say hi to Hibi 日々", items:[
     ["🌱","A new name: Hibi 日々","the Cheat Sheet is now <b>Hibi</b>, Japanese for <b>“day by day”</b>. A little English every day adds up. Same site, same words and notes."],
     ["⚔️","Duels","club members can challenge each other to a friendly 7-day duel in the <b>Buddy park</b>: word race, first to 15, flashcards or grammar. Winners get treats and fighting gear for their buddy.","park"],
@@ -6663,6 +6707,8 @@ onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();
   loadHubView();
+  /* the English level Noa set for club members (from club class recordings), for level-adapted feedback */
+  if (u) getDoc(doc(db, "roles", u.uid)).then(d => { const r = d.exists() ? d.data() || {} : {}; try { if (r.lv) localStorage.setItem("cs-cefr", JSON.stringify({ lv: r.lv })); else localStorage.removeItem("cs-cefr"); } catch (e) {} }).catch(() => {});
   if (u) syncDown();
   window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } }));
 });

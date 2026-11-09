@@ -1082,9 +1082,12 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (S.on !== true) return;
     const grew = markStudy();
     if (!S.sd || S.sd[0] !== today()) S.sd = [today(), 0];
-    let gave = 0; if (S.sd[1] < 5 && (S.t | 0) < MAXT) { S.sd[1]++; S.t = (S.t | 0) + 1; gave = 1; }
-    save(); wake(); hop(); fx(["✍️", "💛", "✨"]);
-    say((e.detail && e.detail.result === "great" ? "What a sentence! 🎉" : "Nice try, you're close! 👍") + (gave ? " +1 🍪" : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3500);
+    /* 1–3 treats depending on the stars (rated for the student's own level), up to 10 a day */
+    const want = Math.max(1, Math.min(3, (e.detail && e.detail.stars) | 0 || 1));
+    let gave = 0; if (S.sd[1] < 10 && (S.t | 0) < MAXT) { gave = Math.min(want, 10 - S.sd[1], MAXT - (S.t | 0)); S.sd[1] += gave; S.t = (S.t | 0) + gave; }
+    if (want === 3) addFP(1);
+    save(); wake(); hop(); fx(want === 3 ? ["🌟", "✍️", "🌟"] : ["✍️", "💛", "✨"]);
+    say((e.detail && e.detail.result === "great" ? (want === 3 ? "Wow, ambitious sentence! 🌟" : "What a sentence! 🎉") : "Nice try, you're close! 👍") + (gave ? ` +${gave} 🍪` : "") + (want === 3 ? " +1 💛" : "") + (grew ? "<br>🌱 A new flower grew in your garden!" : ""), "", 3800);
   });
   document.addEventListener("cs-modround", () => { if (!S.grd || S.grd[0] !== today()) S.grd = [today(), 0]; if (S.grd[1] < 5) { S.grd[1]++; S.gr = (S.gr | 0) + 1; save(); } });
   document.addEventListener("cs-modround", e => {
