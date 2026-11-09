@@ -408,7 +408,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   function markStudy() { const d = today(); if (!Array.isArray(S.gd)) S.gd = []; if (S.gd[S.gd.length - 1] === d || S.gd.includes(d)) return false; S.gd.push(d); save(); return true; }
   /* zoom: 0 = closer, 1 = normal, 2 and 3 = see more of the room (kept on this device) */
   const ZW = [30, 40, 52, 64];
-  let zoom = 1; try { const z = +localStorage.getItem("cs-bd-zoom"); if (z >= 0 && z < ZW.length) zoom = z; } catch (e) {}
+  let zoom = 1; try { const zr = localStorage.getItem("cs-bd-zoom"), z = +zr; if (zr !== null && zr !== "" && z >= 0 && z < ZW.length) zoom = z; } catch (e) {}
   function zoomBox() { const w = ZW[zoom], h = w * 26 / 40; return `${20 - w / 2} ${26 - h} ${w} ${h}`; }
   function stageSVG(opts) {
     opts = opts || {};
@@ -648,7 +648,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   function hideBub() { clearTimeout(bubTimer); bub.hidden = true; }
   const petsLeft = () => Math.max(0, 5 - (S.pd && S.pd[0] === today() ? S.pd[1] : 0));
-  const gearBtn = () => `<button class="bd-gear" type="button" data-bd="open" aria-label="${esc(nameOf())}'s settings" title="Settings">⚙️</button>`;
+  const gearBtn = () => `<button class="bd-gear" type="button" data-bd="open" aria-label="Open ${esc(nameOf())}'s menu" title="${esc(nameOf())}'s menu: wardrobe, room, progress">🧸</button>`;
   /* Feed + Pet on the left, tuck away on the right. Pass gear=true when the message has no name card (the gear lives next to the name). */
   const menuActs = gear => `<span class="bd-acts-l"><button class="bd-b go" type="button" data-bd="feed">🍪 Feed (${S.t | 0})</button><button class="bd-b" type="button" data-bd="pet" title="${petsLeft() ? petsLeft() + " more pets today give friendship points" : "You can always pet, friendship points come back tomorrow"}">✋ Pet${petsLeft() ? ` (${petsLeft()})` : ""}</button>${gear ? gearBtn() : ""}</span><button class="bd-b bd-tuck" type="button" data-bd="min" aria-label="Tuck your buddy away" title="Tuck away">🐾</button>`;
 
@@ -883,7 +883,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const legend = isOpen(byId.legend), l = level();
     const newIn = slots => ITEMS.filter(i => slots.includes(i.slot) && isOpen(i) && !seen.has(i.id)).length;
     const nb = n => n ? ` <span class="bd-new">${n} NEW</span>` : "";
-    const top = `<div class="bd-top"><h3 id="bdTitle">${legend ? "⭐ " : ""}${l >= 10 ? "💛 " : ""}${sec ? SECT[sec] : "Your study buddy"}</h3><span class="bd-topr">${sec !== "settings" ? `<button class="bd-x bd-set-ico" type="button" data-sec="settings" aria-label="Buddy settings" title="Settings: sounds, seasonal outfits, hide">⚙️</button>` : ""}<button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></span></div>`;
+    const top = `<div class="bd-top"><h3 id="bdTitle">${sec ? SECT[sec] : "🧸 Your study buddy"}</h3><span class="bd-topr">${sec !== "settings" ? `<button class="bd-x bd-set-ico" type="button" data-sec="settings" aria-label="Buddy settings" title="Settings: sounds, seasonal outfits, hide">⚙️</button>` : ""}<button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></span></div>`;
     const stage = `${pvBanner()}<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="Tap to pet · drag a toy to move it">${stageSVG(pvOpts())}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}${S.tp && Object.keys(S.tp).length ? ` <button class="bd-link" type="button" data-m="toyreset">Put toys back</button>` : ""}</p>` : ""}`;
     const foot = `<div class="bd-foot">${sec ? `<button class="bd-link" type="button" data-m="back">← Back</button>` : `<span></span>`}<button class="bd-b go" type="button" data-m="save">${dirty() ? "Save changes" : "Save"}</button></div>`;
     const confirmBox = confirmOpen ? `<div class="bd-confirm" role="alertdialog" aria-labelledby="bdCfT"><p id="bdCfT"><b>Save your changes?</b><br>Your changes won't be saved unless you tap <b>Save</b>.</p><div class="bd-row" style="justify-content:flex-end"><button class="bd-b" type="button" data-m="keep" style="background:transparent">Keep editing</button><button class="bd-b" type="button" data-m="discard">Don't save</button><button class="bd-b go" type="button" data-m="save">Save</button></div></div>` : "";
