@@ -83,6 +83,9 @@ td.act{white-space:nowrap;text-align:right}
 .news-top button{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:700 13px var(--body);cursor:pointer}
 .news-n{font:800 12px var(--body);background:#E5533D;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:3px}
 .news-list{list-style:none;margin:0;padding:0}
+.club-t{width:100%;border-collapse:collapse;font-size:14px}.club-t th{text-align:left;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--line)}
+.club-t td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}.club-t .nw{white-space:nowrap}
+.club-t select{font:600 13px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:8px;padding:4px 6px}
 .news-row{display:flex;align-items:center;gap:8px}
 .news-row .news-i{flex:1;min-width:0}
 .kd-btn{border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 11px;font:700 12.5px var(--body);cursor:pointer;white-space:nowrap}
@@ -139,6 +142,7 @@ td.act{white-space:nowrap;text-align:right}
     <h1>Hibi members</h1>
     <p class="lede" id="summary">Loading…</p>
     <div class="news" id="linkBox" hidden></div>
+    <div class="news" id="clubBox" hidden></div>
     <div class="news" id="news" hidden></div>
     <div class="news" id="tips" hidden></div>
     <div class="news" id="usage" hidden></div>
@@ -246,7 +250,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList(); renderLinks(); renderNews(); renderTips(); renderUsage(); syncPark();
+    renderList(); renderLinks(); renderClub(); renderNews(); renderTips(); renderUsage(); syncPark();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -383,6 +387,31 @@ document.addEventListener("click", async e => {
   if (h && st.email && ![h.email].concat(h.emails || []).some(x => (x || "").toLowerCase() === st.email.toLowerCase())) { if (!h.email) h.email = st.email; else h.emails = (h.emails || []).concat(st.email); }
   await saveRole(st, roleFor(hubId, st.role)); await linkHub(st, hubId, ""); renderLinks();
 });
+/* the club roster (from the Skool export), with each person's status for the move off Skool */
+const CST = [["paying", "💳 Paying"], ["free", "🎁 Free"], ["trial", "🧪 Trial"], ["ask", "❓ Ask before the move"], ["watch", "👀 Only if they come"], ["leaving", "🚪 Not moving over"], ["direct", "🤝 Pays you directly"]];
+let clubF = "all", clubOpen = false;
+function renderClub() {
+  const box = $("clubBox"); const C = hubMeta && hubMeta.club; if (!box || !C || !Array.isArray(C.members) || !C.members.length) { if (box) box.hidden = true; return; }
+  box.hidden = false;
+  const ms = C.members.slice().sort((a, b) => (a.name || "").localeCompare(b.name || "", "es", { sensitivity: "base" }));
+  const byEmail = {}; students.forEach(x => { if (x.email) byEmail[x.email.toLowerCase()] = x; });
+  const hib = m => (m.email && byEmail[String(m.email).toLowerCase()]) || students.find(x => norm(x.name) === norm(m.name)) || null;
+  const cnt = k => ms.filter(m => (m.status || "paying") === k).length;
+  const shown = clubF === "all" ? ms : clubF === "hibi" ? ms.filter(hib) : ms.filter(m => (m.status || "paying") === clubF);
+  const price = m => m.price ? `US$${m.price}/${m.per === "year" ? "yr" : "mo"}` : "";
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🌼 Club members <span class="news-n" style="background:#C98A0C">${ms.length}</span></h2><button type="button" id="clubTog">${clubOpen ? "Hide list" : "Show list"}</button></div>
+    <p class="muted" style="margin:4px 0 8px">${CST.filter(([k]) => cnt(k)).map(([k, l]) => `${l} <b>${cnt(k)}</b>`).join(" · ")}${C.asOf ? ` <span class="muted">· from your Skool export (${esc(C.asOf)})</span>` : ""}</p>
+    ${clubOpen ? `<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px">${[["all", "Everyone " + ms.length], ["hibi", "✓ On Hibi " + ms.filter(hib).length]].concat(CST.filter(([k]) => cnt(k)).map(([k, l]) => [k, l + " " + cnt(k)])).map(([k, l]) => `<button type="button" class="seg" data-clf="${k}" aria-pressed="${clubF === k}">${l}</button>`).join("")}</div>
+    <div style="overflow-x:auto"><table class="club-t"><thead><tr><th>Name</th><th>Plan</th><th>Joined</th><th>Renews</th><th>On Hibi</th><th>Status</th></tr></thead><tbody>${shown.map(m => { const i = C.members.indexOf(m), h = hib(m);
+      return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${esc(m.renew || "")}</td><td class="nw">${h ? `✓ <span class="muted small">${h.lastSeen ? ago(h.lastSeen) : ""}</span>` : `<span class="muted">—</span>`}</td>
+        <td><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`; }).join("")}</tbody></table></div>` : ""}`;
+}
+document.addEventListener("click", e => { if (e.target.id === "clubTog") { clubOpen = !clubOpen; renderClub(); return; } const f = e.target.closest("[data-clf]"); if (f) { clubF = f.dataset.clf; renderClub(); } });
+document.addEventListener("change", async e => { const sl = e.target.closest("[data-clst]"); if (!sl) return;
+  const i = +sl.dataset.clst, name = hubMeta.club.members[i].name, v = sl.value;
+  try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
+  const mm = ((hubMeta.club || {}).members || []).find(x => x.name === name); if (!mm) { toast("Couldn't find them. Refresh and try again."); return; }
+  mm.status = v; saveTPref("t-hubmeta", hubMeta); renderClub(); toast(name.split(" ")[0] + ": " + CST.find(([k]) => k === v)[1]); });
 function renderTips() {
   const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-12).reverse();
   box.hidden = !recs.length; if (!recs.length) return;
