@@ -5927,7 +5927,7 @@ try{ history.replaceState({cs:1,v:curView,n:0},"","#"+curView); }catch(e){}
 let stars=LS.get("ncs-stars",[]);
 const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl').forEach(x=>x.remove()); return c.textContent.trim(); };
 document.querySelectorAll(".view").forEach(v=>{
-  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","translate","park","coaching"].includes(id)) return;
+  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","park","coaching"].includes(id)) return;
   const h=v.querySelector("h1"); if(!h) return;
   const wrap=document.createElement("div"); wrap.className="vhead";
   h.parentNode.insertBefore(wrap,h); wrap.appendChild(h);
@@ -5935,7 +5935,7 @@ document.querySelectorAll(".view").forEach(v=>{
   wrap.appendChild(b);
 });
 function renderStars(){
-  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","translate","park","coaching"].includes(id));
+  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","park","coaching"].includes(id));
   document.querySelectorAll("[data-star]").forEach(b=>{
     const on=stars.includes(b.dataset.star);
     b.setAttribute("aria-pressed",on?"true":"false");
