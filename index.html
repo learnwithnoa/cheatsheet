@@ -1147,6 +1147,9 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .lvl-ans{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lvl-idk{opacity:.75;font-style:italic}
 .lvl-chip{font:700 14px var(--body,inherit);padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface-2,var(--card));color:var(--ink);cursor:pointer}
 .lvl-chip:hover{border-color:#3b82f6}.lvl-chip[aria-pressed="true"]{background:#3b82f6;border-color:#3b82f6;color:#fff}
+/* even button rows: secondary buttons match the main button's height */
+.note-actions>.swap,.note-actions>.pill-btn,.note-actions>a.swap{min-height:33px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;line-height:1.2}
+.note-actions:has(>.sp-mic)>.swap{min-height:39px}
 </style>
 
 <header class="top">
