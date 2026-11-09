@@ -44,6 +44,34 @@ export function resFor(s) {
     { k: "slow", ico: "🐢", name: "Slow English Podcast", note: s && s.slowUrl ? "Your playlist" : "Pick the playlist for your level", url: (s && s.slowUrl) || "https://www.youtube.com/@Slow_English_Podcast/playlists" }
   ].filter(r => !hide.has(r.k));
 }
+/* clock changes: Chile and a foreign student's own country (so Noa remembers to talk about the class time) */
+export const NOA_TZ = "America/Santiago";
+export function tzOffset(tz, t) {
+  try { const p = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "longOffset" }).formatToParts(new Date(t)).find(x => x.type === "timeZoneName").value;
+    const m = p.match(/GMT([+-])(\d{1,2}):?(\d{2})?/); return m ? (m[1] === "-" ? -1 : 1) * (+m[2] * 60 + +(m[3] || 0)) : 0; } catch (e) { return 0; }
+}
+export function tzChanges(tz, from, daysAhead) {
+  const out = [], start = new Date(from + "T12:00:00Z").getTime();
+  let prev = tzOffset(tz, start);
+  for (let i = 1; i <= daysAhead; i++) { const t = start + i * 864e5, o = tzOffset(tz, t); if (o !== prev) { out.push({ date: new Date(t).toISOString().slice(0, 10), from: prev, to: o }); prev = o; } }
+  return out;
+}
+const hm = m => { const a = Math.abs(m), h = Math.floor(a / 60), r = a % 60; return h + (r ? ":" + String(r).padStart(2, "0") : "") + (h === 1 && !r ? " hour" : " hours"); };
+const gap = m => m === 0 ? "the same time as Chile" : hm(m) + (m > 0 ? " ahead of Chile" : " behind Chile");
+/* reminders for one student: changes from `back` days ago to `ahead` days from `today` */
+export function tzReminders(s, todayIso, ahead, back) {
+  const tz = s && s.tz; if (!tz || tz === NOA_TZ) return [];
+  const from = new Date(new Date(todayIso + "T12:00:00Z").getTime() - (back || 0) * 864e5).toISOString().slice(0, 10), n = (ahead || 21) + (back || 0);
+  const ev = tzChanges(NOA_TZ, from, n).map(c => ({ ...c, where: "Chile" })).concat(tzChanges(tz, from, n).map(c => ({ ...c, where: s.country || tz.split("/").pop().replace(/_/g, " ") })));
+  const seen = new Set(), out = [];
+  ev.sort((a, b) => a.date.localeCompare(b.date)).forEach(c => {
+    const t = new Date(c.date + "T12:00:00Z").getTime(), before = tzOffset(tz, t - 864e5) - tzOffset(NOA_TZ, t - 864e5), after = tzOffset(tz, t + 2 * 864e5) - tzOffset(NOA_TZ, t + 2 * 864e5);
+    const k = c.date + c.where; if (seen.has(k)) return; seen.add(k);
+    out.push({ date: c.date, where: c.where, before, after, same: before === after,
+      text: `Clocks change in ${c.where} on ${new Date(c.date + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" })}` + (before === after ? "" : `: ${(s.name || "").split(" ")[0]} goes from ${gap(before)} to ${gap(after)}. Check your class time with ${(s.name || "").split(" ")[0]}.`) });
+  });
+  return out.filter(x => !x.same);
+}
 export function makeView(s, meta) {
   meta = meta || {};
   const cp = curPack(s), cst = cp ? packStats(s, cp) : null, now = Date.now();
@@ -58,7 +86,7 @@ export function makeView(s, meta) {
     packs,
     classes: (s.classes || []).filter(c => c.kind !== "note").map(c => ({ date: c.date || "", dateText: c.dateText || "", topics: c.topics || "", homework: c.homework || "", att: c.att || "", hour: c.hour || "", credits: c.credits ?? null, pack: c.pack || "" })),
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),
-    focus: s.focus || "", recap: s.recap || null, resources: resFor(s), next: up ? up.start : "", due,
+    focus: s.focus || "", recap: s.recap || null, resources: resFor(s), tz: s.tz || "", country: s.country || "", next: up ? up.start : "", due,
     guides: (s.guides || []).filter(g => g && g.url).map(g => ({ title: g.title || "Guide", url: g.url, date: g.date || "" })),
     tips: (meta.recs || []).filter(r => r && r.hub === s.id && !r.done).slice(-5).map(r => ({ title: r.title || "", mod: r.mod || "", stage: r.stage || null, page: r.page || "", why: r.why || "", date: r.date || "" })),
     words: (s.words || []).map((w, i) => ({ w: w.w, tr: w.tr || "", ex: w.ex || "", i })),

@@ -383,7 +383,7 @@ document.addEventListener("click", async e => {
     hubMeta = Object.assign({}, hubMeta || {}, { dismissed: ((hubMeta && hubMeta.dismissed) || []).concat(uid) }); saveTPref("t-hubmeta", hubMeta); renderLinks(); toast("Okay, " + st.name.split(" ")[0] + " is club only"); return; }
   const sel = document.querySelector(`[data-lkfor="${uid}"]`); if (!sel || !sel.value) { toast("Pick who this is first"); return; }
   const hubId = sel.value, h = hubList.find(x => x.id === hubId);
-  const { roleFor } = await import("./hubview.js?v=6");
+  const { roleFor } = await import("./hubview.js?v=7");
   if (h && st.email && ![h.email].concat(h.emails || []).some(x => (x || "").toLowerCase() === st.email.toLowerCase())) { if (!h.email) h.email = st.email; else h.emails = (h.emails || []).concat(st.email); }
   await saveRole(st, roleFor(hubId, st.role)); await linkHub(st, hubId, ""); renderLinks();
 });
@@ -529,7 +529,7 @@ function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.em
 function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
 async function linkHub(s, hubId, oldId) {
   try {
-    const { makeView } = await import("./hubview.js?v=6");
+    const { makeView } = await import("./hubview.js?v=7");
     if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
     if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
     const h = hubList.find(x => x.id === hubId); if (!h) return;

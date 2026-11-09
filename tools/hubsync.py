@@ -218,7 +218,7 @@ def make_view(s, meta=None):
                         for c in s.get("classes", []) if c.get("kind") != "note"],
             "payments": [{"date": p.get("date", ""), "what": p.get("what", ""), "amount": p.get("amount", "")} for p in s.get("payments", [])],
             "words": [{"w": w.get("w", ""), "tr": w.get("tr", ""), "ex": w.get("ex", ""), "i": i} for i, w in enumerate(s.get("words", []))],
-            "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "next": ups[0]["start"] if ups else "", "due": due,
+            "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "tz": s.get("tz", ""), "country": s.get("country", ""), "next": ups[0]["start"] if ups else "", "due": due,
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
@@ -392,6 +392,26 @@ def main():
         if r.get("hub"):
             publish_all(tok, tu, m, only={r["hub"]})
         print("ok"); return
+    if cmd == "tz-check":
+        # clock changes in Chile or a foreign student's country in the next 21 days (for the nightly Heads-up)
+        from zoneinfo import ZoneInfo
+        meta = get_doc(tok, tu, "t-hubmeta") or {}
+        today = datetime.datetime.now(ZoneInfo("America/Santiago")).date()
+        def off(tz, d):
+            return datetime.datetime(d.year, d.month, d.day, 12, tzinfo=datetime.timezone.utc).astimezone(ZoneInfo(tz)).utcoffset().total_seconds() / 60
+        out = []
+        for sid in meta.get("ids") or []:
+            s = get_doc(tok, tu, "t-hub-" + sid)
+            if not s or s.get("status") != "active" or not s.get("tz") or s["tz"] == "America/Santiago":
+                continue
+            for i in range(1, 22):
+                d = today + datetime.timedelta(days=i); p_ = d - datetime.timedelta(days=1)
+                for where, z in (("Chile", "America/Santiago"), (s.get("country") or s["tz"].split("/")[-1].replace("_", " "), s["tz"])):
+                    if off(z, d) != off(z, p_):
+                        b4 = off(s["tz"], p_) - off("America/Santiago", p_); af = off(s["tz"], d + datetime.timedelta(days=1)) - off("America/Santiago", d + datetime.timedelta(days=1))
+                        if b4 != af:
+                            out.append({"student": s["name"], "date": d.isoformat(), "where": where, "hours_ahead_of_chile_before": b4 / 60, "after": af / 60})
+        print(json.dumps(out, ensure_ascii=False, indent=1)); return
     if cmd == "set-meta":
         m = get_doc(tok, tu, "t-hubmeta") or {}
         upd = json.loads(a[1]); m.update(upd); m["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()

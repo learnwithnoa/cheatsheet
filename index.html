@@ -1536,6 +1536,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     /* top: next class + homework, what's due, little stats */
     const lastHw=((v.classes||[]).slice().reverse().find(c=>c.homework)||{}).homework||"";
     let nextTxt=""; if(v.next){ const d=new Date(v.next); if(!isNaN(d)) nextTxt=d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}); }
+    const tzr=(v.tz&&typeof window.__csTzRem==="function")?window.__csTzRem({name:v.name,tz:v.tz,country:v.country},today(),14,1):[];
     const du=v.due; let dueTxt="";
     if(du){ if(du.pending) dueTxt=`Your pack (<b>${esc(du.label)}</b>) isn’t paid yet. Please pay before your next class.`;
       else if(du.left!=null&&du.left<=0) dueTxt=`Your pack is used up. To keep your spot, renew it <b>at least 48 hours before your next class</b>.`;
@@ -1544,6 +1545,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     const top=`<div class="ch-top">
       <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}</div>
       ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
+      ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
       ${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip"><button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}
     </div>`;
     const rc=v.recap; let recapBox="";
@@ -1745,19 +1747,22 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     data.priv.filter(p=>p.status!=="inactive"&&p.status!=="paused").forEach(p=>{ const v=p.view||{}, du=v.due; if(!du) return; const nm=esc(v.name), id=esc(p.key.slice(4));
       let t=""; if(du.pending) t=`<b>${nm}</b>: pack not paid yet`; else if(du.left!=null&&du.left<=0) t=`<b>${nm}</b>: pack used up`; else if(du.classesLeft!=null&&du.classesLeft<=1) t=`<b>${nm}</b>: ${du.classesLeft} class left in the pack`; else if(du.half&&du.instAt&&du.nextNo>=du.instAt) t=`<b>${nm}</b>: 2nd payment due`;
       if(t) packs.push(`<li>💳 ${t} <a class="tn-go" href="coaching.html#s/${id}">Open →</a></li>`); });
+    const clocks=[]; if(typeof window.__csTzRem==="function"){ const td=new Date(), ti=td.getFullYear()+"-"+String(td.getMonth()+1).padStart(2,"0")+"-"+String(td.getDate()).padStart(2,"0");
+      data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>clocks.push(`<li>🕐 ${esc(r.text)} <a class="tn-go" href="coaching.html#s/${esc(p.key.slice(4))}">Open →</a></li>`))); }
     const unl=data.acc.filter(a=>a.kind==="new").length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
-    const cnt=joins.length+packs.length+(unl?1:0);
+    const cnt=joins.length+packs.length+clocks.length+(unl?1:0);
     b.hidden=false;
     /* closed: a small button that opens it again */
     if(!open&&(hid||!cnt)){ b.className="tn-mini"; b.innerHTML=`<button type="button" class="tn-btn" data-tn="open">🔔 Notifications${cnt?` <span class="tn-num">${cnt}</span>`:""}</button>`; return; }
     b.className="tn-box";
     const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
     b.innerHTML=`<div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
-      ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
+      ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
       ${older.length?`<button type="button" class="tn-link" data-tn="all">${showAll?"Hide earlier ones":`Show earlier sign-ups (${older.length})`}</button>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
       ${packs.length?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}
+      ${clocks.length?`<h4>Clock changes</h4><ul>${clocks.join("")}</ul>`:""}
       <p class="tn-line tn-more"><a class="tn-go" href="members.html">More student news (milestones, ✨ love, practice tips) on Members →</a></p>`;
   }
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return; const k=t.dataset.tn;
@@ -1770,6 +1775,8 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
   document.addEventListener("cs-teacher",()=>setTimeout(load,300));
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
+  /* clock-change helper (also used by My coaching) */
+  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=7").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
 </script>
 
@@ -6407,7 +6414,8 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { makeView } from "./hubview.js?v=6";
+import { makeView, tzReminders } from "./hubview.js?v=7";
+window.__csTzRem = tzReminders;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
