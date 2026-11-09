@@ -1165,8 +1165,6 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 
 /* "In short" in Spanish in beginner mode */
 .is-es-pre{display:none}
-.cs-beginner .in-short .is-es-pre{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:var(--ink)}
-.cs-beginner .in-short .is-tag::after{content:" · En resumen"}
 .sug-own{color:#3b82f6!important;font-weight:600}
 /* "+ Word" lives in the header now: no floating button, the buddy sits back in the corner, the quick-add box opens under the header */
 #fab{display:none!important}
@@ -1185,11 +1183,39 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
   .top-in>.search{margin-left:16px}
   .top-in>.search + .spacer{flex:1}
 }
+
+/* beginner mode: Spanish only for "In short" and page descriptions */
+.lede-es,.tt-es{display:none}
+.cs-beginner .lede:has(+ .lede-es){display:none}
+.cs-beginner .lede.lede-es{display:block}
+.cs-beginner .lede-es + p.esb{display:none}
+.cs-beginner .in-short .is-en{display:none}
+.cs-beginner .in-short .is-es-pre{display:block;color:var(--ink)}
+.cs-beginner .in-short .is-tag{font-size:0}
+.cs-beginner .in-short .is-tag::after{content:"En resumen";font-size:11px}
+.cs-beginner .tt-es{display:block;margin:6px 0 0;color:var(--muted);font-size:15px;font-style:italic}
+/* breathing room around the green "saved to your account" note */
+.sync-info{margin-top:4px!important;margin-bottom:22px!important}
+#todayBox + .sync-info,#todayBox ~ .sync-info{margin-top:18px!important}
+
+/* logo tagline */
+.brand .brand-tag{font:italic 600 12.5px var(--body);text-transform:none;color:var(--muted);letter-spacing:.02em;margin-left:8px;align-self:center;white-space:nowrap}
+@media (max-width:1100px){.brand-tag{display:none}}
+
+/* Home notifications: a bell at the top right of Home, opening a drop-down (nothing gets pushed down) */
+#v-notes{position:relative}
+.tn-wrap{position:absolute;top:8px;right:0;z-index:30;display:flex;flex-direction:column;align-items:flex-end}
+.tn-bell{display:inline-flex;align-items:center;gap:6px;font:700 14px var(--body);padding:7px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.tn-bell:hover{border-color:#3b82f6}.tn-bell.has{border-color:color-mix(in srgb,#E5533D 55%,var(--line))}
+.tn-bell .tn-num{margin-left:0}
+.tn-wrap .tn-box{position:absolute;top:calc(100% + 8px);right:0;width:min(480px,calc(100vw - 32px));max-height:min(70vh,600px);overflow:auto;margin:0;box-shadow:0 18px 44px rgba(5,15,30,.35);background:var(--surface)}
+@media (max-width:640px){.tn-bell .tn-bl{display:none}}
+.ch-no{display:inline-block;min-width:30px;margin-right:8px;padding:1px 7px;border-radius:8px;background:var(--pc,var(--line));color:#0b1220;font:800 12.5px var(--mono,monospace);text-align:center}
 </style>
 
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="#notes" data-go="notes" aria-label="Hibi, go to Home"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
+    <a class="brand" href="#notes" data-go="notes" aria-label="Hibi, go to Home"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b><small class="brand-tag">day by day</small></i></a>
     <div class="search" id="searchWrap" role="search">
       <label for="gSearch" class="sr">Search the cheat sheet</label>
       <span class="search-ico" aria-hidden="true"></span>
@@ -1245,14 +1271,14 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
   <nav class="side" aria-label="Sections">
     <div class="navgroup mine">
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
-      <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><span class="w-ico em-ico" aria-hidden="true">👥</span><span>Hibi members</span></button>
-      <button class="navbtn cn-nav t-mnav" type="button" data-href="private-students.html" id="mnavHub" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>Private students</span></button>
-      <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><span class="w-ico em-ico" aria-hidden="true">🎓</span><span>My coaching</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2"/><circle cx="16.8" cy="9.5" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.4 1.4 5 4.6"/></svg><span>Hibi members</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="private-students.html" id="mnavHub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>Private students</span></button>
+      <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>My coaching</span></button>
       <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
       <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
-      <button class="navbtn cn-nav" data-go="park"><span class="w-ico em-ico" aria-hidden="true">🌳</span><span>Buddy park</span></button>
+      <button class="navbtn cn-nav" data-go="park"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5c-3.3 0-5.6 2.4-5.6 5.3 0 .6.1 1.2.3 1.7-1.4.8-2.2 2.1-2.2 3.6 0 2.4 2.1 4.2 4.6 4.2h5.8c2.5 0 4.6-1.8 4.6-4.2 0-1.5-.8-2.8-2.2-3.6.2-.5.3-1.1.3-1.7 0-2.9-2.3-5.3-5.6-5.3z"/><path d="M12 11v9.5"/></svg><span>Buddy park</span></button>
     </div>
     <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
     <div class="navgroup ng-start"><h4>Essentials</h4>
@@ -1627,9 +1653,9 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
     if(tab==="classes"){
-      const cl=(v.classes||[]).slice(); if(cSort<0) cl.reverse();
+      const cl=(v.classes||[]).slice(); const pn={}, num=new Map(); cl.forEach(c=>{ const k=c.pack||"_"; pn[k]=(pn[k]||0)+1; num.set(c,pn[k]); }); const multi=Object.keys(pn).length>1; if(cSort<0) cl.reverse();
       body=`<div class="ch-sort">Order: <button type="button" class="ch-tab ch-s" data-cs="-1" aria-pressed="${cSort<0}">Newest first</button><button type="button" class="ch-tab ch-s" data-cs="1" aria-pressed="${cSort>0}">Oldest first</button></div>
-      <div class="ch-list">${cl.map(c=>`<div class="ch-cls" style="--pc:${pc(c.pack)}"><div class="d">${c.date?fd(c.date):esc(c.dateText)}${c.att&&c.att!=="Present"?`<span class="ch-pill">${esc(c.att)}</span>`:""}</div><div class="t">${esc(c.topics)||"<span class='muted'>(no notes)</span>"}</div>${c.homework?`<div class="h">📝 Homework: ${esc(c.homework)}</div>`:""}</div>`).join("")||'<p class="muted">No classes yet.</p>'}</div>`;
+      <div class="ch-list">${cl.map(c=>`<div class="ch-cls" style="--pc:${pc(c.pack)}"><div class="d"><span class="ch-no" title="${multi?"Class number in this pack":"Class number"}">#${num.get(c)}</span>${c.date?fd(c.date):esc(c.dateText)}${c.att&&c.att!=="Present"?`<span class="ch-pill">${esc(c.att)}</span>`:""}</div><div class="t">${esc(c.topics)||"<span class='muted'>(no notes)</span>"}</div>${c.homework?`<div class="h">📝 Homework: ${esc(c.homework)}</div>`:""}</div>`).join("")||'<p class="muted">No classes yet.</p>'}</div>`;
     } else if(tab==="pack"){
       body=(v.packs||[]).slice().reverse().map(p=>{ const pct=p.size?Math.min(100,p.used/p.size*100):0; return `<div class="ch-tint ch-pk" style="--pc:${p.color||"var(--line)"};--k:${p.current?"var(--c-g)":"var(--line)"}"><b>${esc(p.label)}</b>${p.current?' <span class="ch-pill" style="background:color-mix(in srgb,var(--c-g) 20%,transparent);color:var(--c-g)">current</span>':""}${p.paid==="half"?' <span class="ch-pill">½ paid</span>':""}
         ${p.size?`<div class="ch-bar"><i style="width:${pct}%"></i></div>`:""}<div class="muted" style="font-size:13.5px">${p.size?`${p.used} of ${p.size} ${p.unit} used · `:""}${p.done} ${p.done===1?"class":"classes"}${p.deadline?" · ends "+fd(p.deadline):""}</div></div>`; }).join("")
@@ -1807,7 +1833,7 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
   const ago=t=>{ const m=Math.round((Date.now()-t)/6e4); if(m<60) return m<=1?"just now":m+" min ago"; const h=Math.round(m/60); if(h<24) return h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); return d===1?"yesterday":d+" days ago"; };
   const dkey=()=>new Date().toDateString();
   let busy=false, data=null;
-  function box(){ let b=document.getElementById("tNotif"); if(!b){ const home=document.getElementById("todayBox"); if(!home) return null; b=document.createElement("div"); b.id="tNotif"; b.className="tn-box"; home.parentNode.insertBefore(b,home); } return b; }
+  function box(){ let b=document.getElementById("tNotif"); if(!b){ const v=document.getElementById("v-notes"); if(!v) return null; b=document.createElement("div"); b.id="tNotif"; b.className="tn-wrap"; v.insertBefore(b,v.firstChild); } return b; }
   async function load(){
     const b0=document.getElementById("tNotif");
     if(!window.__csTeacher||window.__csPreview||!window.__csTeach||!window.__csTeach.accounts){ if(b0) b0.remove(); return; }
@@ -1838,24 +1864,27 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
     const cnt=joins.length+packs.length+clocks.length+(unl?1:0);
     b.hidden=false;
     /* closed: a small button that opens it again */
-    if(!open&&(hid||!cnt)){ b.className="tn-mini"; b.innerHTML=`<button type="button" class="tn-btn" data-tn="open">🔔 Notifications${cnt?` <span class="tn-num">${cnt}</span>`:""}</button>`; return; }
-    b.className="tn-box";
+    const bell=`<button type="button" class="tn-bell${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
+    if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
+    b.className="tn-wrap open";
     const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
-    b.innerHTML=`<div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
+    b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
       ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
       ${older.length?`<button type="button" class="tn-link" data-tn="all">${showAll?"Hide earlier ones":`Show earlier sign-ups (${older.length})`}</button>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
       ${packs.length?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}
       ${clocks.length?`<h4>Clock changes</h4><ul>${clocks.join("")}</ul>`:""}
-      <p class="tn-line tn-more"><a class="tn-go" href="members.html">More student news (milestones, ✨ love, practice tips) on Members →</a></p>`;
+      <p class="tn-line tn-more"><a class="tn-go" href="members.html">More student news (milestones, ✨ love, practice tips) on Members →</a></p></div>`;
   }
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return; const k=t.dataset.tn;
-    if(k==="open"){ open=true; try{ localStorage.removeItem(HIDE); }catch(er){} }
+    if(k==="open"){ open=!open; }
     else if(k==="all") showAll=!showAll;
     else if(k==="seen"){ undoPrev=getSeen(); setSeen(Date.now()); open=true; }
     else if(k==="undo"){ setSeen(undoPrev||0); undoPrev=null; open=true; }
-    else if(k==="hide"){ open=false; undoPrev=null; try{ localStorage.setItem(HIDE,dkey()); }catch(er){} }
+    else if(k==="hide"){ open=false; undoPrev=null; }
     paint(); });
+  document.addEventListener("click",e=>{ if(open&&e.target.isConnected&&!e.target.closest("#tNotif")){ open=false; undoPrev=null; paint(); } });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&open){ open=false; paint(); } });
   document.addEventListener("cs-teacher",()=>setTimeout(load,300));
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
@@ -1939,6 +1968,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 /* Noa doesn't need the quick "+ Word" button; students keep it */
 (function(){ function t(){ const b=document.getElementById("hdrWord"); if(b) b.hidden=!!window.__csTeacher&&!window.__csPreview; }
   document.addEventListener("cs-teacher",t); document.addEventListener("cs-preview",t); setTimeout(t,1500); })();
+</script>
+
+<script>
+/* the logo always takes you Home and refreshes the page (even if you're already there) */
+document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} if(location.hash!=="#notes") history.replaceState(null,"","#notes"); location.reload(); },true);
 </script>
 
 <section class="view" id="v-translate" hidden>
@@ -2665,11 +2699,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
   <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
-  <div class="pr-big"><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Vocabulary</b><span>Word sets by Noa: phrasal verbs, work, travel and more</span><span class="esb">Vocabulario</span></button><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Flashcards, sentences and pronunciation</span><span class="esb">Tus palabras</span></button></div>
+  <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
-<div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
-<div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Vocabulary</em></h1><p class="lede">Useful words and expressions, in sets. Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
+<div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
+<div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My words</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
 <div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="psTitle"><em>Past simple</em></h1><p class="lede">Seven stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Siete etapas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
 <div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
@@ -4852,7 +4886,7 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
   function setMod(id){ if(!MODS[id]) return; M=id; const h=$("psTitle"); if(h) h.innerHTML="<em>"+esc(MODS[id].name)+"</em>"; try{ sessionStorage.setItem("cs-mod",id); }catch(e){} }
   try{ const sm=sessionStorage.getItem("cs-mod"); if(MODS[sm]) M=sm; }catch(e){}
   const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab"};
-  const PNAME={gram:"Grammar",words:"Your words",vocab:"Vocabulary"};
+  const PNAME={gram:"Grammar",words:"My words",vocab:"Word packs"};
   function show(p,fromPop){
     cur=p||null;
     if(!fromPop&&!view.hidden){ try{ const st=history.state||{}; if(st.cs&&st.v==="quiz"&&(st.pp||null)!==cur) history.pushState({cs:1,v:"quiz",pp:cur,n:(st.n|0)+1},"","#quiz"); }catch(e){} }
@@ -5626,19 +5660,11 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
 (function(){
   // [selector, Spanish text, where]  where: "after" = new line under it, "in" = inside (buttons/labels)
   const ES=[
-    ["#v-notes .lede","Tu palabra del día, tus apuntes de clase y tus palabras nuevas, todo en un solo lugar.","after"],
-    ["#v-words .lede","Todas las palabras que guardas. Practícalas con tarjetas o agrega una lista que ya tengas.","after"],
-    ["#v-quiz .lede","Repasa tus palabras con tarjetas: dales vuelta y marca si te la sabías. Las que no te sabes vuelven más seguido.","after"],
-    ["#v-classnotes .lede","Tus apuntes de cada clase, ordenados por fecha.","after"],
-    ["#v-notebook .lede","Tus apuntes agrupados por semana, con un resumen corto de cada semana.","after"],
-    ["#v-translate .lede","Traduce palabras y frases entre español e inglés.","after"],
-    ["#v-park .lede","Las mascotas de todos. Toca una para mandarle cariño (+2 de amistad).","after"],
     ['label[for="nWord"]',"Palabra o expresión en inglés","in"],
     ['label[for="nMeaning"]',"Traducción al español","in"],
     ['label[for="nExample"]',"Oración de ejemplo","in"],
     ['label[for="nNote"]',"Notas","in"],
     ["#cnSave","Guardar nota","in"],
-    ["#twSave","Guardar en mis palabras","in"],
     ["#fcKnew","¡Me la sabía!","in"],
     ["#fcMiss","No me la sabía","in"],
     ["#fcNext","Saltar","in"],
@@ -5659,6 +5685,17 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
     document.querySelectorAll("#v-quiz h2").forEach(h=>{ const m=H2.find(([en])=>h.textContent.trim().startsWith(en)); if(!m||h.dataset.esb) return; h.dataset.esb="1"; const s=document.createElement("span"); s.className="esb"; s.lang="es"; s.textContent=m[1]; h.insertAdjacentElement("afterend",s); });
   }
   addHints();
+  /* beginner mode: each page's description in Spanish (the English one hides) */
+  const LEDE_ES={"tenses": "Escribe cualquier verbo y elige un sujeto. Los 12 tiempos se actualizan solos, en afirmativo (+), negativo (−) y pregunta (?).", "verbs": "Busca en inglés o en español. Toca <span class=\"mono\">see tenses</span> para ver un verbo en los 12 tiempos.", "notes": "Tu palabra del día, tus apuntes de clase y tus palabras nuevas, todo en un solo lugar.", "feedback": "¿Falta algo, algo es confuso o no funciona? Cuéntame. Leo todos los mensajes y los uso para mejorar esta página. Escribirlo en inglés es buena práctica, pero en español también está bien.", "words": "Todas las palabras que guardas, las más nuevas primero. Practícalas con tarjetas o agrega una lista que ya tengas.", "classnotes": "Escribe aquí o en tu página de inicio los apuntes de hoy. Cada nota que guardas aparece abajo, la más nueva primero.", "notebook": "Tus mismos apuntes, agrupados por semana, con un resumen corto de cada semana: los temas, las correcciones para recordar y las expresiones nuevas. Toca <b>+ save</b> para agregar una expresión a tus palabras.", "park": "Las mascotas de estudio de todos, juntas. Toca una para ver de quién es y mandarle cariño: gana <b>+2 de amistad</b> (una vez al día por mascota). Usa <b>− / +</b> para alejar o acercar.", "coaching": "Tus clases privadas con Noa: tu próxima clase, la tarea, tus metas, guías y tu pack. Noa lo actualiza después de cada clase.", "translate": "Escribe una palabra o frase en español <i>o</i> en inglés y toca <b>Translate here</b>. Reconoce el idioma solo y te muestra cómo se pronuncia el inglés. También puedes abrirlo en Google Translate o DeepL.", "mistakes": "Los errores más comunes de quienes hablan español, y cómo corregirlos. Todos los cometemos, así que tranquilo: solo intenta darte cuenta.", "place": "Para lugares, piensa en <b>in</b> como dentro de un espacio, <b>on</b> como sobre una superficie o una línea, y <b>at</b> como un punto en el mapa. Para movimiento, la preposición muestra la dirección.", "usedto": "Se ven casi iguales, pero significan tres cosas distintas. El truco: después de <b>be used to</b> y <b>get used to</b> va un sustantivo o un verbo + -ing.", "passive": "Usa la voz pasiva cuando la acción importa más que quién la hizo, o cuando no sabes quién fue. <b>Estructura: be + participio.</b> Solo el verbo <i>be</i> cambia de tiempo.", "reported": "Cómo contarle a alguien lo que dijo otra persona. Normalmente el verbo da un paso atrás en el pasado.", "backup": "¿No has iniciado sesión? Tus palabras, apuntes y secciones favoritas viven solo en este navegador. Usa esta página para guardar una copia o pasar todo a otro computador, navegador o a tu teléfono. O simplemente inicia sesión con Google y todo se sincroniza solo.", "changelog": "Todo lo que se ha agregado a Hibi, lo más nuevo primero.", "be": "Un verbo con dos significados en español: <b>ser</b> y <b>estar</b>. Se usa para identidad, sentimientos, lugar, edad y descripciones.", "modals": "Modal + verbo base. Sin <b>to</b>, sin <b>-s</b>, sin <b>-ed</b>: <span class=\"ok\">she can swim</span> · <span class=\"no\">she cans swim</span> · <span class=\"no\">she can to swim</span>", "domake": "Los dos significan <b>hacer</b>. La regla rápida: <b>do</b> es para actividades y tareas; <b>make</b> es para crear o producir algo. Después hay combinaciones que simplemente se aprenden.", "time": "Piénsalo de grande a pequeño. <b>In</b> para periodos largos, <b>on</b> para días, <b>at</b> para momentos exactos.", "tofor": "Los dos pueden ser <b>para</b> o <b>a</b> en español, por eso confunden. Aquí ves cuándo se usa cada uno.", "pronouns": "Lee cada fila de izquierda a derecha: la misma persona, con distinta función en la oración.", "quantity": "Primero pregúntate: ¿se puede contar? <i>One apple, two apples</i> = contable. <i>Water, information, advice, money</i> = incontable (siempre en singular).", "frequency": "¿Con qué frecuencia lo haces?", "conversation": "Una conversación no es una entrevista de trabajo. Responde, agrega algo más y haz una pregunta de vuelta. Conectar es más importante que responder perfecto.", "linking": "Los conectores que de verdad vas a usar, agrupados por lo que hacen. Empieza con los dos primeros de cada grupo.", "false": "Parecen palabras en español, pero no lo son.", "basics": "El inglés es estricto con el orden de las palabras. En español puedes moverlas; en inglés casi no.", "summary": "Úsalo cuando me cuentes del podcast, video o historia que escuchaste o leíste. Sigue este orden y no te vas a perder.", "stuck": "No te cambies al español. Usa una de estas frases y sigue. Quedarse pegado es normal; lo importante es salir en inglés.", "opinions": "Formas de decir lo que piensas, estar de acuerdo y no estarlo, sin sonar mal educado.", "conditionals": "Elige un ejemplo o escribe el tuyo. Los cuatro condicionales se actualizan abajo para que los compares lado a lado.", "perfect": "La pregunta clave: <b>¿digo (o sé) cuándo pasó?</b> Si la respuesta es sí, past simple. Si hablas de tu vida hasta ahora, present perfect.", "gerund": "Cuando un verbo va después de otro, el segundo toma una de dos formas: el <b>gerundio</b> (verbo + -ing) o el <b>infinitivo</b> (to + verbo). Depende del primer verbo.", "phrasal": "Verbo + una palabrita = un significado nuevo. Estos son los que vas a escuchar todos los días. Busca en inglés o en español.", "compare": "Comparativo = comparar dos cosas (<i>bigger than</i>). Superlativo = el que más de un grupo (<i>the biggest</i>).", "pronunciation": "Palabras que confunden a casi todos. Toca 🔊 para escucharlas. La parte en <b>negrita</b> es la sílaba acentuada.", "numbers": "El inglés usa el punto y la coma al revés que en Chile. Esto confunde a mucha gente en reuniones.", "email": "Frases listas para copiar y pegar en el trabajo. Neutras y profesionales, sin sonar rígidas.", "interview": "Las preguntas que casi siempre te van a hacer, cómo empezar tus respuestas y frases para ganar unos segundos para pensar.", "quiz": "Elige qué quieres practicar hoy. Cada ronda que terminas ayuda a tu mascota y a tu meta de la semana."};
+  document.querySelectorAll("section.view").forEach(v=>{ const id=v.id.replace(/^v-/,""), t=LEDE_ES[id], l=v.querySelector("p.lede:not(.lede-es)"); if(!t||!l||v.querySelector(".lede-es")) return;
+    const p=document.createElement("p"); p.className="lede lede-es"; p.lang="es"; p.innerHTML=t; l.insertAdjacentElement("afterend",p); });
+  /* Thought for today, in Spanish too (translated once, then remembered) */
+  (function(){ const el=document.getElementById("ttText"); if(!el) return; let busy=false;
+    const paint=async()=>{ if(!csBeginner()) return; const en=(el.textContent||"").trim(); if(!en) return; let out=document.getElementById("ttEs"); if(!out){ out=document.createElement("p"); out.id="ttEs"; out.className="tt-es"; out.lang="es"; el.insertAdjacentElement("afterend",out); }
+      let c={}; try{ c=JSON.parse(localStorage.getItem("cs-tt-es")||"{}")||{}; }catch(e){}
+      if(c[en]){ out.textContent=c[en]; return; } if(busy||typeof window.__csSample!=="function") return; busy=true;
+      try{ const r=await window.__csSample("Translate this short motivational sentence into natural, simple Latin American Spanish (Chile). Reply with ONLY the translation.\n\n"+en); const t=(r&&r.text||"").trim().replace(/^["“]|["”]$/g,""); if(t){ c[en]=t; try{ localStorage.setItem("cs-tt-es",JSON.stringify(c)); }catch(e){} out.textContent=t; } }catch(e){} busy=false; };
+    new MutationObserver(paint).observe(el,{childList:true,characterData:true,subtree:true}); window.addEventListener("cs-sample-ready",paint); setTimeout(paint,1500); paint(); })();
   // level of each lesson page (shown on the page; in the menu only in beginner mode)
   const LV={interview:"B1",basics:"A1",be:"A1",time:"A1",place:"A1",pronouns:"A1",frequency:"A1",numbers:"A1",tenses:"A2",verbs:"A2",mistakes:"A2",stuck:"A2",conversation:"A2",modals:"A2",compare:"A2",usedto:"A2",domake:"A2",tofor:"A2",quantity:"A2",pronunciation:"A2",false:"A2",summary:"B1",opinions:"B1",linking:"B1",conditionals:"B1",perfect:"B1",gerund:"B1",phrasal:"B1",passive:"B1",email:"B1",reported:"B2"};
   Object.keys(LV).forEach(id=>{
@@ -5673,7 +5710,7 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
   document.querySelectorAll(".in-short").forEach(b=>{
     if(b.querySelector(".is-es,.is-es-pre")) return;
     const sec=b.closest("section.view"), id=sec&&sec.id.replace(/^v-/,"");
-    if(id&&IS_ES[id]){ const d=document.createElement("div"); d.className="is-es-pre"; d.lang="es"; d.innerHTML=IS_ES[id]; (b.querySelector(":scope > div")||b).appendChild(d); return; }
+    if(id&&IS_ES[id]){ const box=b.querySelector(":scope > div")||b; if(!box.querySelector(":scope > .is-en")){ const en=document.createElement("span"); en.className="is-en"; while(box.firstChild) en.appendChild(box.firstChild); box.appendChild(en); } const d=document.createElement("div"); d.className="is-es-pre"; d.lang="es"; d.innerHTML=IS_ES[id]; box.appendChild(d); return; }
     const btn=document.createElement("button"); btn.type="button"; btn.className="is-es"; btn.textContent="Ver en español";
     const out=document.createElement("div"); out.className="is-es-txt"; out.lang="es"; out.hidden=true;
     b.appendChild(btn); b.appendChild(out);
