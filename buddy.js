@@ -617,10 +617,23 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     let l = document.querySelector('link[rel~="icon"]');
     if (!l) { l = document.createElement("link"); l.rel = "icon"; document.head.appendChild(l); }
     if (favOrig === null) favOrig = l.getAttribute("href") || "";
-    if (!on) { if (favKey) { favKey = ""; l.setAttribute("href", favOrig); l.removeAttribute("type"); } return; }
+    if (!on) { if (favKey) { favKey = ""; l.setAttribute("href", favOrig); l.removeAttribute("type"); document.querySelectorAll('link[rel~="icon"][data-bd-off]').forEach(x => { x.setAttribute("href", x.dataset.bdOff); delete x.dataset.bdOff; }); const a = document.querySelector('link[rel="apple-touch-icon"][data-bd-orig]'); if (a) { a.setAttribute("href", a.dataset.bdOrig); delete a.dataset.bdOrig; } } return; }
     const key = [animal(), S.c | 0, S.head, S.face, S.neck, S.seas, season() && season().id].join("|"); if (key === favKey) return; favKey = key;
     const svg = petSVG().replace('<svg class="bd-svg" viewBox="0 0 20 22"', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 2.5 19 19"');
     l.setAttribute("type", "image/svg+xml"); l.setAttribute("href", "data:image/svg+xml," + encodeURIComponent(svg));
+    /* the other (PNG) icon would win in some browsers: park it while the buddy is the icon */
+    document.querySelectorAll('link[rel~="icon"]').forEach(x => { if (x !== l && !x.dataset.bdOff) { x.dataset.bdOff = x.getAttribute("href") || ""; x.removeAttribute("href"); } });
+    appIcon(svg);
+  }
+  /* iPhone "Add to Home Screen" uses this picture: the buddy on a soft blue tile */
+  function appIcon(svg) {
+    try {
+      const img = new Image(), c = document.createElement("canvas"); c.width = c.height = 180;
+      img.onload = () => { const x = c.getContext("2d"); const g = x.createLinearGradient(0, 0, 180, 180); g.addColorStop(0, "#DCE9FF"); g.addColorStop(1, "#B9D2FF"); x.fillStyle = g; x.fillRect(0, 0, 180, 180); x.imageSmoothingEnabled = false; x.drawImage(img, 18, 14, 144, 144);
+        let a = document.querySelector('link[rel="apple-touch-icon"]'); if (!a) { a = document.createElement("link"); a.rel = "apple-touch-icon"; document.head.appendChild(a); }
+        if (!a.dataset.bdOrig) a.dataset.bdOrig = a.getAttribute("href") || ""; a.setAttribute("href", c.toDataURL("image/png")); };
+      img.src = "data:image/svg+xml," + encodeURIComponent(svg.replace("<svg ", '<svg width="180" height="180" '));
+    } catch (e) {}
   }
   function visible() {
     const show = S.on === true || S.on === undefined;
