@@ -1168,6 +1168,11 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .cs-beginner .in-short .is-es-pre{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:var(--ink)}
 .cs-beginner .in-short .is-tag::after{content:" · En resumen"}
 .sug-own{color:#3b82f6!important;font-weight:600}
+/* "+ Word" lives in the header now: no floating button, the buddy sits back in the corner, the quick-add box opens under the header */
+#fab{display:none!important}
+html .bd{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+@media (max-width:640px){html .bd{bottom:calc(14px + env(safe-area-inset-bottom,0px))}}
+html .qa{top:calc(env(safe-area-inset-top,0px) + 70px);bottom:auto}
 </style>
 
 <header class="top">
@@ -1184,6 +1189,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
     <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Hibi members" aria-label="Hibi members" hidden>👥</a>
     <a class="theme-btn t-ico" id="navHub" href="private-students.html" title="Private students" aria-label="Private students" hidden>🎓</a>
+    <button class="theme-btn" id="hdrWord" type="button" title="Add a word to My words" aria-label="Add a word" aria-haspopup="dialog" aria-controls="qa"><span aria-hidden="true" style="font-size:17px;line-height:1">＋</span><span class="theme-txt">Word</span></button>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
@@ -1900,6 +1906,14 @@ window.csLevel=function(){
   if(panel) new MutationObserver(()=>{ if(!panel.hidden&&!run) home(); }).observe(panel,{attributes:true,attributeFilter:["hidden"]});
   document.addEventListener("cs-hubview",paintNow); setTimeout(paintNow,1500); paintNow();
 })();
+</script>
+<script>
+document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f=document.getElementById("fab"); if(f){ f.hidden=false; f.click(); } } });
+</script>
+<script>
+/* Noa doesn't need the quick "+ Word" button; students keep it */
+(function(){ function t(){ const b=document.getElementById("hdrWord"); if(b) b.hidden=!!window.__csTeacher&&!window.__csPreview; }
+  document.addEventListener("cs-teacher",t); document.addEventListener("cs-preview",t); setTimeout(t,1500); })();
 </script>
 
 <section class="view" id="v-translate" hidden>
