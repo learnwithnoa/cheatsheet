@@ -1166,6 +1166,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .is-es-pre{display:none}
 .cs-beginner .in-short .is-es-pre{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:var(--ink)}
 .cs-beginner .in-short .is-tag::after{content:" · En resumen"}
+.sug-own{color:#3b82f6!important;font-weight:600}
 </style>
 
 <header class="top">
@@ -5486,7 +5487,8 @@ window.csSuggestWords=async function(text,box,manual){
   const p="These are class notes written by a Spanish-speaking learner of English (they can mix English and Spanish).\n"+
     "List the useful English vocabulary in them worth saving for study: words, phrasal verbs, idioms, collocations and expressions the student is learning or was corrected on.\n"+
     "Skip very basic words (like house, go, good, days of the week), names, and grammar labels (like 'present perfect'). Maximum 12 items. For each item:\n"+
-    "w (the English word or expression, lowercase unless it's a name), m (Spanish meaning), pos (one of: "+POS_LIST.join(", ")+"), def (very short English meaning, max 10 words), e (an example from the notes if there is one, otherwise a new one. "+exampleRule()+")\n"+
+    "w (the English word or expression, lowercase unless it's a name), m (Spanish meaning), pos (one of: "+POS_LIST.join(", ")+"), def (very short English meaning, max 10 words), e (an example from the notes if there is one, otherwise a new one. "+exampleRule()+"),\n"+
+    "mn (the meaning or translation the STUDENT wrote for it in the notes, copied exactly, or \"\"), en (the example sentence the STUDENT wrote with it in the notes, copied exactly, or \"\"), bad (true only if the student's own meaning or example has a real mistake: wrong meaning or a clear grammar error; then m and e must be the corrected versions)\n"+
     "Reply with ONLY a JSON array. If there's nothing worth saving, reply [].\n\nNOTES:\n"+text.slice(0,6000);
   let arr=null;
   try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); }
@@ -5495,8 +5497,10 @@ window.csSuggestWords=async function(text,box,manual){
   const list=arr.filter(x=>x&&x.w&&!have.has(norm(x.w))).slice(0,12);
   if(!list.length){ if(manual){ box.innerHTML='<div class="cn-sug-top"><span>✓ No new words in this note. You already have them all!</span><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'; } else box.hidden=true; return; }
   box._list=list;
+  const own=list.filter(x=>(x.mn&&String(x.mn).trim())||(x.en&&String(x.en).trim())).length;
   box.innerHTML='<div class="cn-sug-top"><b>✨ I found '+list.length+' new '+(list.length===1?"word":"words")+' in your note</b><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'+
-    '<div class="imp-list">'+list.map((x,i)=>'<label class="imp-row"><input type="checkbox" data-sugi="'+i+'" checked><span><b>'+esc(x.w)+'</b>'+(x.pos?' <span class="pos">'+esc(cleanPos(x.pos))+'</span>':'')+(x.m?' · '+esc(x.m):'')+(x.def?'<small>'+esc(x.def)+'</small>':'')+'</span></label>').join("")+'</div>'+
+    (own?'<label class="cs-chk" style="margin:6px 0 8px"><input type="checkbox" data-sugown checked> <span><b>Keep what I wrote in my notes</b><small>Your own meanings and examples stay as you wrote them ('+own+(own===1?' word':' words')+'). If one has a mistake, you get the corrected version instead.</small></span></label>':'')+
+    '<div class="imp-list">'+list.map((x,i)=>{ const mine=(x.mn&&String(x.mn).trim())||(x.en&&String(x.en).trim()), shownM=(!x.bad&&x.mn&&String(x.mn).trim())?x.mn:x.m; return '<label class="imp-row"><input type="checkbox" data-sugi="'+i+'" checked><span><b>'+esc(x.w)+'</b>'+(x.pos?' <span class="pos">'+esc(cleanPos(x.pos))+'</span>':'')+(shownM?' · '+esc(shownM):'')+(x.def?'<small>'+esc(x.def)+'</small>':'')+(mine?'<small class="sug-own">'+(x.bad?'✏️ Your note had a small mistake, so the corrected version will be saved':'📝 Your own '+(x.mn&&x.en?'meaning and example':x.mn?'meaning':'example')+' will be kept')+'</small>':'')+'</span></label>'; }).join("")+'</div>'+
     '<div class="note-actions"><button class="pill-btn pill-green" type="button" data-sug="add">Add to my words</button><button class="swap" type="button" data-sug="x">No thanks</button></div>';
 };
 document.addEventListener("click",e=>{
@@ -5504,8 +5508,11 @@ document.addEventListener("click",e=>{
   const box=b.closest(".cn-sug")||document.getElementById("cnSuggest");
   if(b.dataset.sug==="x"){ box.hidden=true; box.innerHTML=""; return; }
   const idx=[...box.querySelectorAll("[data-sugi]:checked")].map(c=>+c.dataset.sugi), base=Date.now(), have=new Set(words.map(x=>norm(x.w))); let n=0;
+  const ownBox=box.querySelector("[data-sugown]"), keepOwn=!ownBox||ownBox.checked;
   idx.forEach((i,k)=>{ const x=box._list[i]; if(!x||have.has(norm(x.w))) return; have.add(norm(x.w));
-    words.push({id:(base+k).toString(36)+Math.random().toString(36).slice(2,6),w:String(x.w).trim().slice(0,120),m:String(x.m||"").trim().slice(0,140),e:String(x.e||"").trim().slice(0,220),pos:cleanPos(x.pos),def:String(x.def||"").trim().slice(0,140),t:base+k,ai:1,fromNote:1}); n++; });
+    const mn=String(x.mn||"").trim(), en=String(x.en||"").trim(), useOwn=keepOwn&&!x.bad;
+    const m=(useOwn&&mn?mn:String(x.m||"").trim()).slice(0,140), ex=(useOwn&&en?en:(noEx()&&!en?"":String(x.e||"").trim())).slice(0,220);
+    words.push(Object.assign({id:(base+k).toString(36)+Math.random().toString(36).slice(2,6),w:String(x.w).trim().slice(0,120),m,e:ex,pos:cleanPos(x.pos),def:String(x.def||"").trim().slice(0,140),t:base+k,ai:1,fromNote:1},useOwn&&en?{ownEx:1}:{})); n++; });
   const added=idx.map(i=>box._list[i]).filter(Boolean).map(x=>String(x.w).trim()).slice(0,n);
   saveWordsNow(); box.hidden=true; box.innerHTML="";
   if(!n){ toast("Nothing new to add"); return; }

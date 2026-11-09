@@ -844,11 +844,21 @@ function wordRows(s) {
   if (wSort === "new") ws.reverse(); else if (wSort === "az") ws.sort((a, b) => a.w.localeCompare(b.w, "en", { sensitivity: "base" })); else if (wSort === "za") ws.sort((a, b) => b.w.localeCompare(a.w, "en", { sensitivity: "base" }));
   return ws;
 }
+/* fresh copy of the words the student saved on Hibi (they may have added some since this page loaded) */
+async function refreshWords(s, loud) {
+  if (!s || !s.uid) return;
+  try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-words")); const w = d.exists() && !d.data().deleted ? JSON.parse(d.data().json || "[]") || [] : [];
+    const before = (appWords[s.id] || []).length; appWords[s.id] = Array.isArray(w) ? w : []; wordsAt[s.id] = Date.now();
+    if (S_() === s) renderDetail(); if (loud) toast(`↻ ${appWords[s.id].length} ${appWords[s.id].length === 1 ? "word" : "words"} in their Hibi${appWords[s.id].length > before ? ` (${appWords[s.id].length - before} new)` : ""}`); }
+  catch (e) { console.warn("words", e); if (loud) toast("Couldn't load their words. Try again."); }
+}
+const wordsAt = {};
 function tWords(s) {
   const ws = wordRows(s);
-  if (!ws.length) return `<p class="muted">No words yet.${s.uid ? "" : " Once they're linked, the words they save on Hibi show up here too."}</p>`;
+  const bar = s.uid ? `<div class="row" style="gap:8px;margin:0 0 8px;align-items:center"><button type="button" class="ib" data-act="refreshWords">↻ Refresh their words</button><span class="muted small">${wordsAt[s.id] ? "Updated " + new Date(wordsAt[s.id]).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : ""}${hibiSeen(s) ? " · last active on Hibi " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span></div>` : "";
+  if (!ws.length) return bar + `<p class="muted">No words yet.${s.uid ? " If they can see words on their screen that aren't here, they're probably <b>not signed in to Hibi on that device</b>: the top right should show their photo and “Saved ✓”. Once they sign in, their words come to their account and show up here." : " Once they're linked, the words they save on Hibi show up here too."}</p>`;
   const th = (k, l) => `<th class="sortable" data-wsort="${wSort === k ? { az: "za", za: "az", new: "old", old: "new" }[k] : k}">${l}${wSort === k ? " ↓" : wSort === { az: "za", za: "az", new: "old", old: "new" }[k] ? " ↑" : ""}</th>`;
-  return `<p class="muted small" style="margin:0 0 8px">📱 = in their Hibi “My words” (your changes go straight to their list) · 📗 = only in their English Journey sheet. Click a column title to sort.</p>
+  return bar + `<p class="muted small" style="margin:0 0 8px">📱 = in their Hibi “My words” (your changes go straight to their list) · 📗 = only in their English Journey sheet. Click a column title to sort.</p>
     <div class="tbl"><table class="wtbl"><thead><tr><th></th>${th("az", "Word")}<th>Type</th><th>Meaning</th><th>Spanish</th><th>Example</th>${th("new", "Added")}<th></th></tr></thead><tbody>${ws.map(w => wEdit === w.key ? `<tr class="editing"><td>${w.src === "app" ? "📱" : "📗"}</td>
       <td><input data-we="w" value="${esc(w.w)}"></td><td><input data-we="pos" value="${esc(w.pos)}" placeholder="noun" style="width:80px"></td><td><textarea data-we="def" rows="2">${esc(w.def)}</textarea></td><td><input data-we="m" value="${esc(w.m)}"></td><td><textarea data-we="e" rows="2">${esc(w.e)}</textarea></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
       <td class="acts"><button type="button" class="ib" data-wsave="${w.key}" title="Save">✓</button><button type="button" class="ib" data-wcancel title="Cancel">✕</button></td></tr>`
@@ -910,6 +920,7 @@ document.addEventListener("click", e => {
   const a = t.closest("[data-act]"); if (!a) return;
   const s = S_(), id = a.dataset.id, act = a.dataset.act;
   if (act === "closeModal") { $("modal").hidden = true; return; }
+  if (act === "refreshWords") { refreshWords(s, true); return; }
   if (act === "delDoc") { const g = (s.docs || [])[+id]; if (!g) return; s.docs.splice(+id, 1); save(s, false, "Removed document " + g.title); renderDetail(); return; }
   if (act === "delGuide") { const g = (s.guides || [])[+id]; if (!g) return; s.guides.splice(+id, 1); save(s, false, "Removed guide " + g.title); renderDetail(); return; }
   if (act === "editRow") { editRow = id; renderDetail(); return; }
@@ -991,7 +1002,7 @@ function go(v) { const h = v === "overview" ? "#overview" : v === "money" ? "#mo
 function openStu(id) { const h = "#s/" + encodeURIComponent(id); if (location.hash !== h) location.hash = h; else route(); }
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
-  if (h.startsWith("s/") && S.some(x => x.id === h.slice(2))) { if (cur !== h.slice(2)) { cur = h.slice(2); editRow = null; } hubView = "students"; }
+  if (h.startsWith("s/") && S.some(x => x.id === h.slice(2))) { if (cur !== h.slice(2)) { cur = h.slice(2); editRow = null; const st = S.find(x => x.id === cur); if (st && st.uid && (!wordsAt[st.id] || Date.now() - wordsAt[st.id] > 60000)) setTimeout(() => refreshWords(st), 0); } hubView = "students"; }
   else { cur = null; if (h === "overview" || h === "students" || h === "money") hubView = h; }
   try { localStorage.setItem("cs-hub-view", hubView); } catch (e) {}
   $("ovView").hidden = hubView !== "overview"; $("stView").hidden = hubView !== "students"; $("mnView").hidden = hubView !== "money";
