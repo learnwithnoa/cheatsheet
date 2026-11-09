@@ -1117,6 +1117,14 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .tn-link{margin:6px 0 0;padding:0;border:0;background:none;font:inherit;font-size:13.5px;font-weight:700;color:#3b82f6;cursor:pointer}.tn-link:hover{text-decoration:underline}
 .tn-old{opacity:.6}
 .tn-more{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:13.5px}
+
+/* class resources on My coaching */
+.ch-res{margin:12px 0 0;padding:14px 16px}
+.ch-resl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.ch-resb{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;border:1.5px solid color-mix(in srgb,#3b82f6 35%,var(--line));background:color-mix(in srgb,var(--bg) 55%,transparent);color:var(--ink);text-decoration:none;transition:border-color .15s,transform .15s}
+.ch-resb:hover{border-color:#3b82f6;transform:translateY(-1px)}
+.ch-resb .i{font-size:22px;line-height:1}
+.ch-resb b{display:block;font-size:14.5px}.ch-resb small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
 </style>
 
 <header class="top">
@@ -1551,6 +1559,9 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
         ${(rc.heads||[]).length?`<div class="ch-rc-heads"><h4>📌 Don’t forget</h4><ul>${rc.heads.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
         </div></div>`;
     }
+    const lvm=String(v.level||"").match(/\b([abc][12])\b/i), lv=lvm?lvm[1].toLowerCase():"";
+    const res=v.resources||[["📖","Fabulang",lv?"Stories at your level ("+lv.toUpperCase()+")":"Short stories to read and listen to","https://www.fabulang.com/en/en"+(lv?"/"+lv:"")],["🎧","Culips · Chatterbox","Natural conversations","https://esl.culips.com/category/chatter-box/"],["🎧","Culips · Simplified Speech","Clear, slower English","https://esl.culips.com/category/simplified-speech/"],["💡","TED Ideas","Short articles","https://ideas.ted.com/"],["🎤","TED Talks","Talks with subtitles","https://www.ted.com/talks"],["🐢","Slow English Podcast","Pick the playlist for your level","https://www.youtube.com/@Slow_English_Podcast/playlists"]].map(([ico,name,note,url])=>({ico,name,note,url}));
+    const resBox=res.length?`<div class="ch-res ch-tint ch-a"><div class="ch-k">🧰 Class resources</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">The websites we use in class. Tap one to open it.</p><div class="ch-resl">${res.map(r=>`<a class="ch-resb" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">${r.ico}</span><span><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span></a>`).join("")}</div></div>`:"";
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
     if(tab==="classes"){
@@ -1571,7 +1582,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
     }
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
-    box.innerHTML=newsBox+top+recapBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    box.innerHTML=newsBox+top+recapBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
     const one=e.target.closest("[data-rcw]"), all=e.target.closest("[data-rcall]"); if(!one&&!all) return;
@@ -6396,7 +6407,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { makeView } from "./hubview.js?v=5";
+import { makeView } from "./hubview.js?v=6";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",

@@ -29,7 +29,7 @@ Usage:
       "vocab":[{"w":"word","tr":"meaning","ex":"example"}],"homework":"...","heads":["reminder",...]}'   (mini recap on My coaching; keeps only the newest class)
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 """
-import json, os, sys, random, string, datetime, urllib.request, urllib.error
+import json, os, re, sys, random, string, datetime, urllib.request, urllib.error
 
 API_KEY = "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw"
 PROJECT = "learnwithnoa-cheatsheet"
@@ -172,6 +172,24 @@ def inst_at(p, st):
     return None
 
 
+def fab_level(s):
+    m = re.search(r"\b([abc][12])\b", str(s.get("fabLevel") or s.get("level") or ""), re.I)
+    return m.group(1).lower() if m else ""
+
+
+def res_for(s):
+    lv = fab_level(s); hide = set(s.get("resHide") or [])
+    out = [
+        {"k": "fabulang", "ico": "📖", "name": "Fabulang", "note": ("Stories at your level (" + lv.upper() + ")") if lv else "Short stories to read and listen to", "url": "https://www.fabulang.com/en/en" + ("/" + lv if lv else "")},
+        {"k": "chatterbox", "ico": "🎧", "name": "Culips · Chatterbox", "note": "Natural conversations", "url": "https://esl.culips.com/category/chatter-box/"},
+        {"k": "simplified", "ico": "🎧", "name": "Culips · Simplified Speech", "note": "Clear, slower English", "url": "https://esl.culips.com/category/simplified-speech/"},
+        {"k": "tedideas", "ico": "💡", "name": "TED Ideas", "note": "Short articles", "url": "https://ideas.ted.com/"},
+        {"k": "tedtalks", "ico": "🎤", "name": "TED Talks", "note": "Talks with subtitles", "url": "https://www.ted.com/talks"},
+        {"k": "slow", "ico": "🐢", "name": "Slow English Podcast", "note": "Your playlist" if s.get("slowUrl") else "Pick the playlist for your level", "url": s.get("slowUrl") or "https://www.youtube.com/@Slow_English_Podcast/playlists"},
+    ]
+    return [r for r in out if r["k"] not in hide]
+
+
 def make_view(s, meta=None):
     meta = meta or {}
     cp = cur_pack(s)
@@ -200,7 +218,7 @@ def make_view(s, meta=None):
                         for c in s.get("classes", []) if c.get("kind") != "note"],
             "payments": [{"date": p.get("date", ""), "what": p.get("what", ""), "amount": p.get("amount", "")} for p in s.get("payments", [])],
             "words": [{"w": w.get("w", ""), "tr": w.get("tr", ""), "ex": w.get("ex", ""), "i": i} for i, w in enumerate(s.get("words", []))],
-            "focus": s.get("focus", ""), "recap": s.get("recap") or None, "next": ups[0]["start"] if ups else "", "due": due,
+            "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "next": ups[0]["start"] if ups else "", "due": due,
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}

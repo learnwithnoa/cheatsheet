@@ -186,6 +186,10 @@ h1.hubt{background:linear-gradient(90deg,var(--c-sky),var(--c-violet) 45%,var(--
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 14px}
 .dh{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.resrow{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
+.resb{display:inline-flex;align-items:center;gap:4px;font:700 12.5px var(--body);padding:4px 10px;border-radius:999px;border:1.5px solid color-mix(in srgb,#3b82f6 40%,var(--line));background:color-mix(in srgb,#3b82f6 10%,transparent);color:var(--ink);text-decoration:none;white-space:nowrap}
+.resb:hover{border-color:#3b82f6;background:color-mix(in srgb,#3b82f6 20%,transparent)}
+.reschk{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:4px}.fld .reschk label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font:600 14px var(--body);color:var(--ink);text-transform:none;letter-spacing:0;margin:0}.fld .reschk input{width:auto;margin:0;accent-color:#3b82f6}
 .dh h2{margin:0;flex:1;min-width:200px}
 .chipb{all:unset;cursor:pointer;font:700 12.5px var(--mono);padding:4px 10px;border-radius:999px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}@media (max-width:700px){.grid2{grid-template-columns:1fr}}
@@ -292,7 +296,7 @@ tr.arch td{opacity:.85}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName } from "./hubview.js?v=5";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, fabLevel } from "./hubview.js?v=6";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -720,7 +724,7 @@ function renderDetail() {
   box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     <select id="stStatus" aria-label="Status" style="width:auto">${["active", "paused", "inactive"].map(k => `<option value="${k}" ${s.status === k ? "selected" : ""}>${{ active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }[k]}</option>`).join("")}</select></div>
-    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Hibi (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Hibi account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
+    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${links ? "<br>" + links : ""}<span class="resrow">${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}</span>${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Hibi (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Hibi account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
     ${since(s) || s.prevCourses ? `<p class="small" style="margin:6px 0 0"><span style="color:var(--c-violet);font-weight:700">${esc(since(s))}</span>${s.prevCourses ? ` <span class="muted">· ${esc(s.prevCourses)}</span>` : ""}</p>` : ""}
     ${bringUp(s)}
     <div class="stats">
@@ -812,6 +816,9 @@ function tInfo(s) {
       <div class="guides">${(s.guides || []).map((g, i) => `<div class="row" style="gap:6px;margin:3px 0"><a class="linkb" href="${esc(g.url)}" target="_blank" rel="noopener">📄 ${esc(g.title)}</a><span class="muted small">${g.date ? fmtShort(g.date) : ""}</span><button type="button" class="ib del" data-act="delGuide" data-id="${i}">✕</button></div>`).join("") || `<span class="muted small">None yet. The nightly wrap-up adds every guide it makes.</span>`}</div>
       <form id="addGuide" class="row" style="gap:6px;margin-top:6px"><input name="gt" placeholder="Title" style="flex:1;min-width:140px"><input name="gu" placeholder="https://docs.google.com/…" style="flex:2;min-width:180px"><button class="ib" type="submit">＋ Add</button></form></div>
     <div class="fld" style="grid-column:1/-1"><label for="f_about">About them <span class="muted">(only you see this)</span></label><textarea id="f_about" data-f="about" style="min-height:150px">${esc(s.about || "")}</textarea></div>
+    <div class="fld"><label for="f_fabLevel">Fabulang level <span class="muted">(their Resources link)</span></label><select id="f_fabLevel" data-f="fabLevel"><option value="">Auto${fabLevel(Object.assign({}, s, { fabLevel: "" })) ? " (" + fabLevel(Object.assign({}, s, { fabLevel: "" })).toUpperCase() + ", from their level)" : " (all levels)"}</option>${["a1", "a2", "b1", "b2", "c1", "c2"].map(l => `<option value="${l}" ${s.fabLevel === l ? "selected" : ""}>${l.toUpperCase()}</option>`).join("")}</select></div>
+    <div class="fld"><label for="f_slowUrl">Slow English playlist link <span class="muted">(paste the playlist for their level)</span></label><input id="f_slowUrl" data-f="slowUrl" placeholder="https://www.youtube.com/playlist?list=…" value="${esc(s.slowUrl || "")}"></div>
+    <div class="fld" style="grid-column:1/-1"><label>Resources they see on My coaching</label><div class="reschk">${resFor(Object.assign({}, s, { resHide: [] })).map(r => `<label><input type="checkbox" data-reshide="${r.k}" ${(s.resHide || []).includes(r.k) ? "" : "checked"}> ${r.ico} ${esc(r.name)}</label>`).join("")}</div></div>
     <div class="fld"><label>Hour rule</label><select data-f="alwaysStdSel"><option value="" ${s.alwaysStd ? "" : "selected"}>Normal (by time of day)</option><option value="1" ${s.alwaysStd ? "selected" : ""}>Always standard hours</option></select></div>
     <div class="fld"><label>Kind</label><select data-f="kind"><option value="pack" ${s.kind !== "trueque" ? "selected" : ""}>Paying student</option><option value="trueque" ${s.kind === "trueque" ? "selected" : ""}>Trueque</option></select></div>
     <div class="fld" style="grid-column:1/-1"><label for="f_prev">Previous courses with you</label><input id="f_prev" data-f="prevCourses" value="${esc(s.prevCourses || "")}" placeholder="e.g. 2nd course: first one was Jun–Sep 2025"></div>
@@ -922,6 +929,7 @@ document.addEventListener("change", e => {
   if (t.dataset.emails) { s.emails = t.value.split(/[,;\s]+/).map(x => x.trim()).filter(x => x.includes("@")); save(s); return; }
   if (t.id === "stStatus") { s.status = t.value; save(s, false, "Status → " + t.value); renderAll(); return; }
   if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s, false, "Payment status → " + t.value); refresh(); return; }
+  if (t.dataset.reshide) { const k = t.dataset.reshide, h = new Set(s.resHide || []); if (t.checked) h.delete(k); else h.add(k); s.resHide = [...h]; save(s, false, (t.checked ? "Showing " : "Hiding ") + k); renderDetail(); return; }
   if (t.dataset.f === "alwaysStdSel") { s.alwaysStd = t.value === "1"; save(s, false, s.alwaysStd ? "Always standard hours" : "Hours by time of day"); renderDetail(); return; }
   if (t.dataset.f && !t.matches("button")) { s[t.dataset.f] = t.value.trim(); if (t.dataset.f === "name") renderList(); save(s, false, "Edited " + (t.closest(".fld") && t.closest(".fld").querySelector("label") ? t.closest(".fld").querySelector("label").textContent.toLowerCase() : t.dataset.f)); return; }
   if (t.dataset.info) { s.info[t.dataset.info] = t.value.split("\n").map(x => x.trim()).filter(Boolean); save(s); return; }

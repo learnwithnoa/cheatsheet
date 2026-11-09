@@ -31,6 +31,19 @@ export function lastClass(s) { return (s.classes || []).filter(c => c.kind !== "
 export function instAt(p, st) { if (p.size === 36) return st.pri ? 5 : 7; if (p.size === 72) return st.pri ? 9 : 12; return null; }
 /* What the student sees: no private notes, no boleta, no email, no "about them".
    meta (optional) = Noa's t-hubmeta: next class from his calendar + practice tips. */
+/* the websites Noa uses in class (shown to the student on My coaching and to Noa on their page) */
+export function fabLevel(s) { const m = String((s && (s.fabLevel || s.level)) || "").match(/\b([abc][12])\b/i); return m ? m[1].toLowerCase() : ""; }
+export function resFor(s) {
+  const lv = fabLevel(s), hide = new Set(((s && s.resHide) || []));
+  return [
+    { k: "fabulang", ico: "📖", name: "Fabulang", note: lv ? "Stories at your level (" + lv.toUpperCase() + ")" : "Short stories to read and listen to", url: "https://www.fabulang.com/en/en" + (lv ? "/" + lv : "") },
+    { k: "chatterbox", ico: "🎧", name: "Culips · Chatterbox", note: "Natural conversations", url: "https://esl.culips.com/category/chatter-box/" },
+    { k: "simplified", ico: "🎧", name: "Culips · Simplified Speech", note: "Clear, slower English", url: "https://esl.culips.com/category/simplified-speech/" },
+    { k: "tedideas", ico: "💡", name: "TED Ideas", note: "Short articles", url: "https://ideas.ted.com/" },
+    { k: "tedtalks", ico: "🎤", name: "TED Talks", note: "Talks with subtitles", url: "https://www.ted.com/talks" },
+    { k: "slow", ico: "🐢", name: "Slow English Podcast", note: s && s.slowUrl ? "Your playlist" : "Pick the playlist for your level", url: (s && s.slowUrl) || "https://www.youtube.com/@Slow_English_Podcast/playlists" }
+  ].filter(r => !hide.has(r.k));
+}
 export function makeView(s, meta) {
   meta = meta || {};
   const cp = curPack(s), cst = cp ? packStats(s, cp) : null, now = Date.now();
@@ -45,7 +58,7 @@ export function makeView(s, meta) {
     packs,
     classes: (s.classes || []).filter(c => c.kind !== "note").map(c => ({ date: c.date || "", dateText: c.dateText || "", topics: c.topics || "", homework: c.homework || "", att: c.att || "", hour: c.hour || "", credits: c.credits ?? null, pack: c.pack || "" })),
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),
-    focus: s.focus || "", recap: s.recap || null, next: up ? up.start : "", due,
+    focus: s.focus || "", recap: s.recap || null, resources: resFor(s), next: up ? up.start : "", due,
     guides: (s.guides || []).filter(g => g && g.url).map(g => ({ title: g.title || "Guide", url: g.url, date: g.date || "" })),
     tips: (meta.recs || []).filter(r => r && r.hub === s.id && !r.done).slice(-5).map(r => ({ title: r.title || "", mod: r.mod || "", stage: r.stage || null, page: r.page || "", why: r.why || "", date: r.date || "" })),
     words: (s.words || []).map((w, i) => ({ w: w.w, tr: w.tr || "", ex: w.ex || "", i })),
