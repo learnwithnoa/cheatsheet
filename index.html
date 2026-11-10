@@ -2851,7 +2851,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     b.className="tn-wrap open";
     const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length||clubNew.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
-      ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
+      ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}${r.n>1?` · asked ${r.n} times`:""}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
       <details class="tn-invite"><summary>＋ Invite someone to Hibi</summary><form data-tninv><input name="name" placeholder="Name" maxlength="80" required><input name="email" type="email" placeholder="Their Google email" maxlength="120" required><button type="submit" class="tn-btn">Approve + email them</button></form></details>
       ${reps.length?`<h4>⚑ Reported on the club wall</h4><ul>${reps.map(r=>`<li>⚑ <b>${esc(r.name)}</b> reported ${esc(r.author||"a post")}’s ${String(r.path||"").split("/").length>2?"comment":"post"}${r.text?`: <span class="muted">“${esc(r.text.slice(0,90))}”</span>`:""}${r.why?` · <i>${esc(r.why)}</i>`:""} <span class="muted">· ${ago(r.at)}</span> <a class="tn-go" href="#club" data-bgo="${esc(r.pid||"")}">Open →</a> <button type="button" class="tn-btn" data-tnrep="${esc(r.id)}">Done ✓</button></li>`).join("")}</ul>`:""}
       ${clubNew.length?`<h4>Club community</h4><ul>${clubNew.map(a=>`<li>${a.kind==="post"?"📝":a.kind==="challenge"?"✍️":"💬"} <b>${esc(a.name)}</b> ${a.kind==="post"?"posted on the wall":a.kind==="challenge"?"answered the weekly challenge":/^w\d{8}$/.test(a.pid||"")?"commented on the weekly post":"commented on a post"}${a.img?" 📷":""}${a.text?`: <span class="muted">“${esc(a.text)}”</span>`:""} <span class="muted">· ${ago(a.at)}</span> <a class="tn-go" href="#club" data-go="club">Open →</a></li>`).join("")}</ul>`:""}
@@ -2865,13 +2865,15 @@ html.cs-calm .cs-rxpal button{transition:none}
   /* access requests: approve = access/{email} + a ready-to-send Gmail invite */
   async function fsx(method,path,body){ const F=window.__csFire; const tok=await F.token(); const r=await fetch(F.base+path,{method,headers:{Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined}); if(!r.ok) throw new Error(r.status); return r.status===204?null:r.json(); }
   async function accessReqs(){ if(!window.__csTeacher||window.__csPreview||!window.__csFire) return []; const j=await fsx("GET","/accessRequests?pageSize=100"); const v=f=>f?(f.stringValue!=null?f.stringValue:f.integerValue!=null?+f.integerValue:""):"";
-    return ((j&&j.documents)||[]).map(d=>({id:d.name.split("/").pop(),name:v(d.fields.name),email:v(d.fields.email),who:v(d.fields.who),msg:v(d.fields.msg),at:v(d.fields.at)})).sort((a,b)=>b.at-a.at); }
+    const all=((j&&j.documents)||[]).map(d=>({id:d.name.split("/").pop(),name:v(d.fields.name),email:String(v(d.fields.email)).trim().toLowerCase(),who:v(d.fields.who),msg:v(d.fields.msg),at:v(d.fields.at)})).sort((a,b)=>b.at-a.at);
+    const by=new Map(); all.forEach(r=>{ const k=r.email||r.id, o=by.get(k); if(o){ o.ids.push(r.id); o.n++; if(!o.msg&&r.msg) o.msg=r.msg; } else by.set(k,Object.assign(r,{ids:[r.id],n:1})); });
+    return [...by.values()]; }
   async function approve(name,email){ email=String(email).trim().toLowerCase(); await fsx("PATCH","/access/"+encodeURIComponent(email),{fields:{name:{stringValue:name},at:{integerValue:String(Date.now())},by:{stringValue:"noa"}}});
     const first=String(name).trim().split(/\s+/)[0]||"";
     const body=`Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://learnwithnoa.github.io/cheatsheet/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
     window.open("https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(email)+"&su="+encodeURIComponent("You're in! Your Hibi access 🎉")+"&body="+encodeURIComponent(body),"_blank"); }
   document.addEventListener("click",async e=>{ const ok=e.target.closest("[data-tnok]"), no=e.target.closest("[data-tnno]"); if(!ok&&!no) return; const id=(ok||no).dataset.tnok||(ok||no).dataset.tnno, r=(data.areq||[]).find(x=>x.id===id); if(!r) return;
-    try{ if(ok) await approve(r.name,r.email); await fsx("DELETE","/accessRequests/"+id); }catch(er){ if(window.toast) window.toast("Couldn’t save that. Did you paste the new Firebase rules?"); return; }
+    try{ if(ok) await approve(r.name,r.email); for(const x of (r.ids||[id])) await fsx("DELETE","/accessRequests/"+encodeURIComponent(x)); }catch(er){ if(window.toast) window.toast("Couldn’t save that. Did you paste the new Firebase rules?"); return; }
     data.areq=data.areq.filter(x=>x.id!==id); open=true; paint(); if(window.toast) window.toast(ok?"✓ Approved. Send the email that just opened.":"Request removed"); });
   document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-tninv]"); if(!f) return; e.preventDefault(); try{ await approve(f.name.value.trim(),f.email.value); }catch(er){ if(window.toast) window.toast("Couldn’t save that. Did you paste the new Firebase rules?"); return; } f.reset(); if(window.toast) window.toast("✓ Approved. Send the email that just opened."); });
   document.addEventListener("click",async e=>{ const r=e.target.closest("[data-tnrep]"); if(!r) return; try{ await window.__clubSocial.delReport(r.dataset.tnrep); }catch(er){ return; } data.reps=(data.reps||[]).filter(x=>x.id!==r.dataset.tnrep); open=true; paint(); });
@@ -3059,11 +3061,19 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const d={name:f.name.value.trim(),email:f.email.value.trim().toLowerCase(),who:f.who.value,msg:f.msg.value.trim()};
     if(!d.name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){ msg.textContent="Please add your name and a valid email."; return; }
     if(!F||!F.base){ msg.textContent="Hibi is still loading. Try again in a moment."; return; }
+    const ALREADY="You already asked with this email 🙌 Noa will email you as soon as you’re in, so there’s no need to send it again. / Ya enviaste tu solicitud con este correo: Noa te escribirá apenas estés dentro.";
+    let asked=[]; try{ asked=JSON.parse(localStorage.getItem("cs-areq")||"[]")||[]; }catch(er){}
+    if(asked.includes(d.email)){ msg.textContent=ALREADY; return; }
     btn.disabled=true; msg.textContent="Sending…";
-    const S=v=>({stringValue:String(v)});
-    try{ const r=await fetch(F.base+"/accessRequests?key="+encodeURIComponent(F.key||""),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{name:S(d.name),email:S(d.email),who:S(d.who),msg:S(d.msg),at:{integerValue:String(Date.now())}}})});
+    const S=v=>({stringValue:String(v)}), body=JSON.stringify({fields:{name:S(d.name),email:S(d.email),who:S(d.who),msg:S(d.msg),at:{integerValue:String(Date.now())}}});
+    const remember=()=>{ try{ localStorage.setItem("cs-areq",JSON.stringify(asked.concat(d.email).slice(-5))); }catch(er){} };
+    try{ /* one request per email: the email is the document id, so asking twice is refused by the database */
+      let r=await fetch(F.base+"/accessRequests?documentId="+encodeURIComponent(d.email)+"&key="+encodeURIComponent(F.key||""),{method:"POST",headers:{"Content-Type":"application/json"},body});
+      if(r.status===409){ remember(); btn.disabled=false; msg.textContent=ALREADY; return; }
+      if(!r.ok) r=await fetch(F.base+"/accessRequests?key="+encodeURIComponent(F.key||""),{method:"POST",headers:{"Content-Type":"application/json"},body});
       if(!r.ok) throw new Error(r.status); }
     catch(er){ btn.disabled=false; msg.textContent="That didn’t go through. Try again, or message Noa on Instagram (@learnwithnoa)."; return; }
+    remember();
     if(REQ_HOOK) fetch(REQ_HOOK,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(Object.assign({_subject:"🙋 Hibi access request: "+d.name},d))}).catch(()=>{});
     mode=""; show("sent"); });
   document.addEventListener("click",async e=>{ if(!e.target.closest("[data-agout]")) return; try{ const b=document.getElementById("signOut")||document.querySelector("[data-signout]"); if(b){ b.click(); return; } }catch(er){} if(window.csSignOut) window.csSignOut(); });

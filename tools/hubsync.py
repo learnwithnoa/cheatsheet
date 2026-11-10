@@ -907,7 +907,10 @@ def main():
         r = http("GET", f"{BASE}/accessRequests?pageSize=100", token=tok) or {}
         for d in r.get("documents", []):
             f = {k: (v.get("stringValue") if "stringValue" in v else v.get("integerValue")) for k, v in d.get("fields", {}).items()}
-            out.append({"name": f.get("name"), "email": f.get("email"), "who": f.get("who"), "msg": f.get("msg"),
+            em = (f.get("email") or "").strip().lower()
+            prev = next((o for o in out if o["email"] == em), None)
+            if prev: prev["times"] += 1; continue   # the same person asking twice = one request
+            out.append({"name": f.get("name"), "email": em, "who": f.get("who"), "msg": f.get("msg"), "times": 1,
                         "when": datetime.datetime.fromtimestamp(int(f.get("at") or 0) / 1000).strftime("%a %b %d")})
         print(json.dumps(out, ensure_ascii=False)); return
     if cmd == "access-add":
