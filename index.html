@@ -9,6 +9,27 @@
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}.brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px;min-width:0}.kj{font:700 15px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em;white-space:nowrap}footer .kj{font-size:inherit;font-weight:600}.brand .brand-row>span{font-size:26px}.brand .kj{font-size:17px}@media (max-width:480px){.brand .brand-row>span{font-size:21px}.brand .kj{font-size:14px}}
 </style>
 <script>
+/* first paint: show the page you're opening (not a default one), and you as signed in, from what this device remembers; the real data replaces it a moment later */
+(function(){ try{
+  var id=(location.hash||"").slice(1); if(!id){ try{ id=JSON.parse(localStorage.getItem("eep-view")||"null")||localStorage.getItem("eep-view"); }catch(e){ id=localStorage.getItem("eep-view"); } } id=String(id||"notes").replace(/[^\w-]/g,"");
+  var st=document.createElement("style"); st.id="csBootView"; st.textContent="#v-"+id+"[hidden]{display:block!important}"; document.head.appendChild(st);
+  var hint=null; try{ hint=JSON.parse(localStorage.getItem("cs-auth-hint")||"null"); }catch(e){}
+  var va=null; try{ va=sessionStorage.getItem("cs-viewas"); }catch(e){}
+  if(hint&&hint.u) document.documentElement.classList.add("cs-signed");
+  document.addEventListener("DOMContentLoaded",function(){
+    var b=document.getElementById("csBootView"); if(b) b.remove();
+    if(!hint||!hint.u) return;
+    var t=document.getElementById("authTxt"), ic=document.getElementById("authIco");
+    if(t&&t.textContent==="Sign in") t.textContent="Syncing…";
+    if(ic&&hint.p&&!ic.querySelector("img")){ var im=new Image(); im.alt=""; im.referrerPolicy="no-referrer"; im.src=hint.p; im.onerror=function(){ ic.textContent=(hint.n||"?").charAt(0).toUpperCase(); }; ic.textContent=""; ic.appendChild(im); }
+    if(va) return;
+    if(hint.t&&window.__csTeacher!==true){ window.__csTeacher=true; document.dispatchEvent(new CustomEvent("cs-teacher")); }
+    if(!window.__csHubView&&!window.__csClub){ var c=null; try{ c=JSON.parse(localStorage.getItem("cs-hv-cache-"+hint.u)||"null"); }catch(e){}
+      if(c){ window.__csClub=c.club||null; window.__csHubView=c.clubOnly?null:c; document.dispatchEvent(new CustomEvent("cs-club")); document.dispatchEvent(new CustomEvent("cs-hubview")); } }
+  });
+}catch(e){} })();
+</script>
+<script>
 /* Noa's "View as" a real student: show their own saved words, notes and buddy, read-only (nothing is written to Noa's or their account) */
 (function(){ try{ const raw=sessionStorage.getItem("cs-viewas"); if(!raw) return; const va=JSON.parse(raw); if(!va||!va.data) return; window.__csViewAsMode=va; const ov=va.data;
   const KEEP=new Set(["ncs-theme","ncs-welcomed","ncs-seen-version","ncs-comfort","ncs-sync-uid","ncs-music-mode","ncs-music-vol","ncs-music-bal"]);
@@ -1861,7 +1882,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   <main>
 
 <!-- ============ TENSES ============ -->
-<section class="view" id="v-tenses">
+<section class="view" id="v-tenses" hidden>
   <h1>Verb <em>tenses</em></h1>
   <p class="lede">Type any verb and pick a subject. All 12 tenses update for you, with the affirmative (+), negative (−) and question (?) forms.</p>
   <div class="in-short"><span class="is-tag">In short</span><div><b>Simple</b> = facts and habits · <b>continuous</b> (be + -ing) = in progress · <b>perfect</b> (have + participle) = connected to a later moment.</div></div>
@@ -8297,6 +8318,7 @@ async function doSignOut() {
   await flush();
   for (const k of lsKeys()) if (!KEEP_ON_SIGNOUT.has(k)) setRaw(k, null);
   setRaw("ncs-sync-uid", null);
+  try { localStorage.removeItem("cs-auth-hint"); Object.keys(localStorage).filter(k => k.indexOf("cs-hv-cache-") === 0).forEach(k => localStorage.removeItem(k)); } catch (e) {}
   await signOut(auth);
   location.reload();
 }
@@ -8327,8 +8349,10 @@ function renderUser() {
     else ico.textContent = name.charAt(0).toUpperCase();
     $("authWho").textContent = name + (user.email && user.displayName ? " · " + user.email : "");
     const tl = $("teacherLink"); if (tl) tl.hidden = (user.email || "").toLowerCase() !== "learnwithnoa@gmail.com";
-    const isT = (user.email || "").toLowerCase() === "learnwithnoa@gmail.com" && user.emailVerified; if (window.__csTeacher !== isT) { window.__csTeacher = isT; document.dispatchEvent(new CustomEvent("cs-teacher")); }
-  } else { ico.textContent = "G"; panel.hidden = true; const tl = $("teacherLink"); if (tl) tl.hidden = true; if (window.__csTeacher) { window.__csTeacher = false; document.dispatchEvent(new CustomEvent("cs-teacher")); } }
+    const isT = (user.email || "").toLowerCase() === "learnwithnoa@gmail.com" && user.emailVerified;
+    /* remembered for the next page load, so the top bar shows "you" right away instead of "Sign in" first */
+    if (!VA) try { localStorage.setItem("cs-auth-hint", JSON.stringify({ u: user.uid, n: name, p: user.photoURL || "", t: isT })); } catch (e) {} if (window.__csTeacher !== isT) { window.__csTeacher = isT; document.dispatchEvent(new CustomEvent("cs-teacher")); }
+  } else { if (ready || auth.currentUser === null) { try { localStorage.removeItem("cs-auth-hint"); } catch (e) {} } ico.textContent = "G"; panel.hidden = true; const tl = $("teacherLink"); if (tl) tl.hidden = true; if (window.__csTeacher) { window.__csTeacher = false; document.dispatchEvent(new CustomEvent("cs-teacher")); } }
   status(user ? lastStatus === "out" ? "syncing" : lastStatus : "out");
 }
 btn.addEventListener("click", () => {
@@ -8360,6 +8384,8 @@ async function loadHubView() {
 }
 /* one private copy per person: private students get "My coaching" in it, club members get the club feed (club-only members get just that) */
 function setHubView(v) {
+  /* keep a copy on this device so the next page load shows the club and My coaching instantly (then it refreshes) */
+  if (!VA && user) try { if (v) localStorage.setItem("cs-hv-cache-" + user.uid, JSON.stringify(v)); else localStorage.removeItem("cs-hv-cache-" + user.uid); } catch (e) {}
   window.__csClub = v && v.club ? v.club : null;
   window.__csHubView = v && !v.clubOnly ? v : null;
   document.dispatchEvent(new CustomEvent("cs-club"));
