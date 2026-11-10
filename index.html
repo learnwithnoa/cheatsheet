@@ -1725,6 +1725,14 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-newpoll[open] summary{margin-bottom:8px}
 .cs-p.cl-idea{flex-direction:row}.cl-ideas .cl-note,.cl-polls .cl-note{margin:0}
 .cl-insights,.cl-members,.cl-say{display:flex;flex-direction:column;gap:14px}.cl-insights .cl-sec h2{margin-top:0}
+/* next class card (top of This week) */
+.cl-next{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:16px;border:1.5px solid color-mix(in srgb,var(--k,#5AB8FF) 55%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--k,#5AB8FF) 14%,var(--surface)),var(--surface))}
+.cl-next-k{font:800 12px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.cl-next-k b{color:var(--ink)}
+.cl-next-b{display:flex;gap:12px;align-items:center}.cl-next-ic{font-size:30px}
+.cl-next h3{margin:0;font-size:18px}.cl-next-b span{font-size:14px;color:var(--muted)}
+.cl-pastw h2 small{font-weight:600;color:var(--muted);font-size:14px}
+.cl-pastw{display:flex;flex-direction:column;gap:8px}
+.cl-next.k1{--k:var(--c3)}.cl-next.k2{--k:var(--c2)}.cl-next.k3{--k:var(--c4)}.cl-next.k4{--k:var(--c1)}
 </style>
 
 <header class="top">
@@ -2823,11 +2831,21 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       cells.push(`<button type="button" class="cl-cd${iso===today?" today":""}${iso===CALD?" sel":""}${iso<today?" past":""}" data-cald="${iso}" aria-label="${esc(fd(iso))}${es.length?": "+es.map(e=>e.name).join(", "):""}" aria-pressed="${iso===CALD}"><span class="n">${i}</span><span class="e">${es.map(e=>`<i class="${e.k||""}">${esc(e.ico||"📅")}</i>`).join("")}</span></button>`); }
     const sel=ev.filter(e=>e.date===CALD), sched2=((f.info||{}).schedule||[]).map(s=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===s.wd){ const st=chileAt(isoD(x),s.time||"20:00"); return Object.assign({},s,{start:st,end:new Date(st.getTime()+(s.dur||90)*60000),title:"",teaser:s.desc||""}); } } }).filter(Boolean);
     const mname=y0.toLocaleDateString(L("en-US","es-CL"),{month:"long",year:"numeric"}), wds=L("Mon Tue Wed Thu Fri Sat Sun","Lun Mar Mié Jue Vie Sáb Dom").split(" ");
-    return `<div class="cl-cal"><div class="cl-calh"><button type="button" class="cs-act" data-calm="-1" aria-label="${L("Previous month","Mes anterior")}">‹</button><b>${esc(mname)}</b><button type="button" class="cs-act" data-calm="1" aria-label="${L("Next month","Mes siguiente")}">›</button></div>
+    const allBox=sched2.length?`<div class="cl-sec cl-calall"><p>${L("Want every class in your calendar, with a reminder 30 minutes before?","¿Quieres todas las clases en tu calendario, con un recordatorio 30 minutos antes?")}</p><a class="cl-join" style="--k:var(--c4)" href="${icsFile(sched2,true)}" download="noas-english-club.ics">⬇ ${L("Add all weekly classes to my calendar","Agregar todas las clases semanales a mi calendario")}</a><small>${L("Opens in Google Calendar, Apple Calendar or Outlook. Moved or cancelled classes show up here and on the weekly post.","Se abre en Google Calendar, Apple Calendar u Outlook. Las clases cambiadas o canceladas aparecen aquí y en el post semanal.")}</small></div>`:"";
+    return allBox+`<div class="cl-cal"><div class="cl-calh"><button type="button" class="cs-act" data-calm="-1" aria-label="${L("Previous month","Mes anterior")}">‹</button><b>${esc(mname)}</b><button type="button" class="cs-act" data-calm="1" aria-label="${L("Next month","Mes siguiente")}">›</button></div>
       <div class="cl-cgrid">${wds.map(w=>`<span class="cl-cw">${w}</span>`).join("")}${cells.join("")}</div></div>
       <div class="cl-cday"><h3>${esc(fd(CALD))}</h3>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
         <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:""):`${e.zoom?`<a class="cl-join" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>
-      ${sched2.length?`<div class="cl-sec cl-calall"><p>${L("Want every class in your calendar, with a reminder 30 minutes before?","¿Quieres todas las clases en tu calendario, con un recordatorio 30 minutos antes?")}</p><a class="cl-join" style="--k:var(--c4)" href="${icsFile(sched2,true)}" download="noas-english-club.ics">⬇ ${L("Add all weekly classes","Agregar todas las clases semanales")}</a><small>${L("Opens in Google Calendar, Apple Calendar or Outlook. Moved or cancelled classes show up here and on the weekly post.","Se abre en Google Calendar, Apple Calendar u Outlook. Las clases cambiadas o canceladas aparecen aquí y en el post semanal.")}</small></div>`:""}`; }
+      `; }
+  /* past weeks: under the recordings in the Library tab */
+  function pastHTML(f,ps,now){ const old=ps.slice(1); if(!old.length) return "";
+    return `<div class="cl-sec cl-pastw"><h2>🗂 ${L("Past weeks","Semanas anteriores")} <small>(${old.length})</small></h2><p class="cl-note">${L("Every weekly post, with its topics, words and comments.","Cada post semanal, con sus temas, palabras y comentarios.")}</p>${old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>${p.recap&&(p.recap.recordings||[]).length?"🎬 ":""}${L("Week of","Semana del")} ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}<div class="cl-thread" data-thread="${esc(p.id)}" data-lazy="1"></div></details>`).join("")}</div>`; }
+  /* the next class, first thing on "This week" */
+  function nextHTML(f,p,now){ const cl=classesOf(f,p), c=cl.find(x=>now<=x.end.getTime()); if(!c) return "";
+    const live=now>=c.start.getTime()-10*60000, today=new Date(c.start).toDateString()===new Date(now).toDateString();
+    return `<div class="cl-next ${c.k}"><div class="cl-next-k">${live?`<span class="cl-live">● ${L("Live now","En vivo")}</span>`:`⏭ ${L("Next class","Próxima clase")}${today?` · <b>${L("today","hoy")}</b>`:""}`}</div>
+      <div class="cl-next-b"><span class="cl-next-ic" aria-hidden="true">${esc(c.ico)}</span><div><h3>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</h3><span>${esc(fd(c.date))} · ${esc(timeTxt(c.start))}</span></div></div>
+      <div class="cl-cact">${c.zoom?`<a class="cl-join" href="${esc(c.zoom)}" target="_blank" rel="noopener">${live?L("🎥 Join now","🎥 Entrar ahora"):"🎥 Zoom link"}</a>`:""}<span class="cl-rsvp" data-rsvp="${esc(p.week)}" data-wd="${c.wd}"></span></div></div>`; }
   /* weekly schedule + useful links (shown under the calendar) */
   function linksHTML(f){ const info=f.info||{};
       const sc=(info.schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7));
@@ -2860,19 +2878,15 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(!f){ locked(); return; }
     const ps=posts(f), now=Date.now(), info=f.info||{};
     const nRec=recList(f).length, isNoa=window.__csFire&&window.__csFire.uid&&window.__csFire.uid()==="J8D2tjQmBaaA2QN730tSfSrjfm73"&&!window.__csPreview;
-    const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["members",L("Members","Miembros")],["recordings",`🎬 ${L("Recordings","Grabaciones")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Schedule","Horario")}`],["say",`🗳 ${L("Polls & ideas","Encuestas e ideas")}`],["past",`${L("Past weeks","Semanas anteriores")}${ps.length>1?" ("+(ps.length-1)+")":""}`]].concat(isNoa?[["insights","📈 Insights"]]:[]);
+    const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["recordings",`🎬 ${L("Library","Biblioteca")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Schedule","Horario")}`],["say",`🗳 ${L("Polls & ideas","Encuestas e ideas")}`],["members",L("Members","Miembros")]].concat(isNoa?[["insights","📈 Insights"]]:[]);
     let body="";
     if(tab==="wall"){ body='<div class="cl-wall" data-wall="1"></div>'; }
     else if(tab==="members"){ body='<div class="cl-members" data-members="1"></div>'; }
     else if(tab==="insights"){ body='<div class="cl-insights" data-insights="1"></div>'; }
-    else if(tab==="recordings"){ body=recTab(f); }
+    else if(tab==="recordings"||tab==="past"){ tab="recordings"; body=recTab(f)+pastHTML(f,ps,now); }
     else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=calTab(f,now)+linksHTML(f)+rulesHTML(f,false); }
     else if(tab==="say"){ body='<div class="cl-say" data-say="1"></div>'+soonHTML(); }
-    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+catchHTML(f,ps[0],now)+'<div class="cl-me" data-mestrip="1"></div>'+postHTML(f,ps[0],now,true,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
-    else if(false){    } else {
-      const old=ps.slice(1);
-      body=old.length?old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>${p.recap&&(p.recap.recordings||[]).length?"🎬 ":""}${L("Week of","Semana del")} ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}<div class="cl-thread" data-thread="${esc(p.id)}" data-lazy="1"></div></details>`).join(""):`<p class="cl-empty">${L("Past weeks will collect here, so you can look back at topics, recordings and words.","Aquí se juntan las semanas anteriores, para revisar temas, grabaciones y palabras.")}</p>`;
-    }
+    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+postHTML(f,ps[0],now,true,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
     if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
   }
@@ -3195,12 +3209,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const m=MON(), board=list.filter(x=>x.id!==NOA).map(x=>({x,pt:points(x.id,m)})).filter(b=>b.pt>0).sort((a,b)=>b.pt-a.pt), myI=board.findIndex(b=>b.x.id===me());
     const lb=`<div class="cl-board"><div class="cl-boardh"><h3>🏆 ${L("This month","Este mes")}</h3><details class="cl-howpts"><summary>${L("How points work","Cómo funcionan los puntos")}</summary><p>${L("A post 5 · a comment 2 · a weekly challenge +5 · each week you come to a class 10. It starts again every month.","Un post 5 · un comentario 2 · un desafío semanal +5 · cada semana que vienes a clase 10. Se reinicia cada mes.")}</p></details></div>
       ${board.length?`<ol>${board.slice(0,5).map((b,i)=>`<li${b.x.id===me()?' class="me"':""}><span class="r">${["🥇","🥈","🥉","4","5"][i]}</span><button type="button" class="cs-nameb" data-prof="${esc(b.x.id)}" data-pname="${esc(b.x.name||"")}">${av(b.x.id,b.x.name)} ${esc(b.x.name||"")}</button><b>${b.pt}</b></li>`).join("")}</ol>${myI>4?`<p class="cl-myrank">${L("You’re","Vas en el lugar")} #${myI+1} ${L("with","con")} ${board[myI].pt} ${L("points","puntos")}</p>`:""}`:`<p class="cl-empty">${L("No points yet this month. Post, comment or come to a class to get on the board!","Aún no hay puntos este mes. ¡Publica, comenta o ven a clase para aparecer aquí!")}</p>`}</div>`;
-    el.innerHTML=lb+`<p class="cl-mintro">${L("Everyone in the club on Hibi. Tap someone to see their profile, buddy and badges.","Todos los del club en Hibi. Toca a alguien para ver su perfil, su buddy y sus insignias.")}</p>
+    el.innerHTML=(me()||G()?'<div class="cl-me" data-mestrip="1"></div>':"")+lb+`<p class="cl-mintro">${L("Everyone in the club on Hibi. Tap someone to see their profile, buddy and badges.","Todos los del club en Hibi. Toca a alguien para ver su perfil, su buddy y sus insignias.")}</p>
       ${!profOK&&!G()?`<p class="cs-off">${L("Profiles are almost ready. They’ll switch on very soon.","Los perfiles están casi listos. Se activan muy pronto.")}</p>`:""}
       <div class="cl-mgrid">${list.map(x=>{ const s=statsOf(x.id), bs=earned(x.id), bd=PARKMAP[x.id];
         return `<button type="button" class="cl-mcard${x.id===me()?" me":""}" data-prof="${esc(x.id)}" data-pname="${esc(x.name||"")}"><span class="cl-mav">${av(x.id,x.name)}</span><b>${esc(x.name||L("Member","Miembro"))}${x.id===me()?` <small>(${L("you","tú")})</small>`:""}</b>
           <span class="cl-msub">${x.id===NOA?L("Teacher","Profe"):[bd&&(bd.cefr||(bd.role&&bd.role.lv))?"📊 "+esc(String(bd.cefr||bd.role.lv).slice(0,7)):"",x.country?esc(x.country):""].filter(Boolean).join(" · ")}</span>
-          ${s.cur>=2?`<span class="cl-mstreak">🔥 ${s.cur}</span>`:""}<span class="cl-mbadges">${bs.slice(-5).map(b=>`<i title="${esc(L(b[2],b[3]))}">${b[1]}</i>`).join("")}</span></button>`; }).join("")}</div>`; }
+          ${s.cur>=2?`<span class="cl-mstreak">🔥 ${s.cur}</span>`:""}<span class="cl-mbadges">${bs.slice(-5).map(b=>`<i title="${esc(L(b[2],b[3]))}">${b[1]}</i>`).join("")}</span></button>`; }).join("")}</div>`;  const ms=el.querySelector(".cl-me"); if(ms) mountMe(ms); }
   /* ---------- profile popup ---------- */
   async function openProfile(u,nm){ if(!u) return; await Promise.all([loadProfs(),loadPark()]);
     const p=profOf(u)||{name:nm}, bd=PARKMAP[u], s=statsOf(u), got=earned(u).map(b=>b[0]), mine=u===(G()?"":me());
@@ -3359,12 +3373,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function mountSay(el){ el.dataset.on="1"; el.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
     try{ await Promise.all([listPosts().then(p=>{ POSTS=G()?SAMPLE_POSTS.slice():p; }),loadPins(),loadPark()]); }catch(e){ el.innerHTML=state==="off"?OFF:""; return; }
     const polls=(POSTS||[]).filter(p=>p.poll).sort((a,b)=>b.at-a.at);
-    el.innerHTML=`<div class="cl-sec cl-ideas"><h2>💡 ${L("Ideas for future classes","Ideas para próximas clases")}</h2><p class="cl-note">${L("What would you like to do in class? A topic, a grammar point, vocabulary, a game… Noa reads every idea. Tap 👍 on the ones you like.","¿Qué te gustaría hacer en clase? Un tema, un punto de gramática, vocabulario, un juego… Noa lee todas las ideas. Toca 👍 en las que te gusten.")}</p>
+    el.innerHTML=`<div class="cl-sec cl-polls"><h2>📊 ${L("Polls","Encuestas")}</h2>${polls.map(postHTML).join("")||`<p class="cs-empty">${L("No polls right now.","No hay encuestas por ahora.")}</p>`}
+        <details class="cl-newpoll"><summary>＋ ${L("Start a poll","Crear una encuesta")}</summary>${composer("poll","",L("Your question…","Tu pregunta…"))}</details></div>
+      <div class="cl-sec cl-ideas"><h2>💡 ${L("Ideas for future classes","Ideas para próximas clases")}</h2><p class="cl-note">${L("What would you like to do in class? A topic, a grammar point, vocabulary, a game… Noa reads every idea. Tap 👍 on the ones you like.","¿Qué te gustaría hacer en clase? Un tema, un punto de gramática, vocabulario, un juego… Noa lee todas las ideas. Toca 👍 en las que te gusten.")}</p>
         ${composer("idea","",L("My idea for a class: …","Mi idea para una clase: …"))}
         <div class="cs-wcats" role="group" aria-label="${L("Sort ideas","Ordenar ideas")}"><button type="button" class="cs-wcat${ISORT==="top"?" on":""}" data-isort="top" aria-pressed="${ISORT==="top"}">👍 ${L("Most liked","Más apoyadas")}</button><button type="button" class="cs-wcat${ISORT==="new"?" on":""}" data-isort="new" aria-pressed="${ISORT==="new"}">🆕 ${L("Newest","Más nuevas")}</button></div>
-        <div class="cl-ilist2" data-ideas="1"></div></div>
-      <div class="cl-sec cl-polls"><h2>📊 ${L("Polls","Encuestas")}</h2>${polls.map(postHTML).join("")||`<p class="cs-empty">${L("No polls right now.","No hay encuestas por ahora.")}</p>`}
-        <details class="cl-newpoll"><summary>＋ ${L("Start a poll","Crear una encuesta")}</summary>${composer("poll","",L("Your question…","Tu pregunta…"))}</details></div>`;
+        <div class="cl-ilist2" data-ideas="1"></div></div>`;
     paintIdeas(el); paintPolls(el); paintImgs(el); }
   let IDEAST={};
   document.addEventListener("click",async e=>{ const u=e.target.closest("[data-iup]"); if(u){ if(!me()&&!G()) return; const id=u.dataset.iup; const item=(POSTS||[]).find(x=>x.id===id)||(G()?SAMPLE_IDEAS.find(x=>x.id===id):null); if(!item) return;
