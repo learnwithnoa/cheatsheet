@@ -1788,6 +1788,15 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-recform label{display:flex;flex-direction:column;gap:4px;font:700 13px var(--body)}
 .cl-recform input,.cl-recform select,.cl-recform textarea{font:500 14.5px var(--body);padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg,var(--surface));color:var(--ink)}
 .cl-rf2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* podcast */
+.cl-pod{display:flex;flex-direction:column;gap:10px;border-color:color-mix(in srgb,#8B5CF6 45%,var(--line))!important;background:linear-gradient(135deg,color-mix(in srgb,#8B5CF6 12%,var(--surface)),var(--surface))}
+.cl-podh{display:flex;align-items:center;gap:12px}.cl-podh h2{margin:2px 0 0}.cl-podh .cl-note{margin:4px 0 0}
+.cl-podic{font-size:28px;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,#8B5CF6 22%,var(--surface));flex:none}
+.cl-soonb{margin-left:auto;font:800 11.5px var(--body);padding:4px 10px;border-radius:999px;background:color-mix(in srgb,#8B5CF6 22%,var(--surface));white-space:nowrap}
+.cl-podp{max-width:720px}.cl-podsp{width:100%;height:152px;border:0;border-radius:12px}.cl-poddr{width:100%;height:80px;border:0;border-radius:12px;background:#111}.cl-podau{width:100%}
+.cl-podn summary,.cl-podold>summary,.cl-podadd summary{cursor:pointer;font:700 14px var(--body)}.cl-podn p{margin:8px 0 0;font-size:14.5px;line-height:1.55}
+.cl-podold{display:flex;flex-direction:column;gap:8px}.cl-podold>.cl-rcard{margin-top:8px}
+.cl-podnew{background:color-mix(in srgb,#8B5CF6 10%,var(--surface));border-color:color-mix(in srgb,#8B5CF6 40%,var(--line))}
 </style>
 
 <header class="top">
@@ -2888,7 +2897,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <h2>Club members only</h2>
       <p>Noa’s English Club is where you practice speaking with other learners every week, in a relaxed, friendly group. It’s for B1 to C1 learners: fluency and confidence first, grammar second.</p>
       <ul class="cl-lock-list"><li>🧠 <b>Deep Dive Monday</b> · a thought-provoking topic, often with a short video</li><li>🃏 <b>Wildcard Wednesday</b> · games and activities, pure speaking</li><li>💬 <b>Word Up Thursday</b> · useful expressions, then conversation</li><li>😎 <b>Free Talk Friday</b> · relaxed conversation to close the week</li></ul>
-      <p class="cl-lock-small">Members get every weekly class, the community wall to chat with other members, all past class recordings, and our 📸 Instagram group to keep practicing (and send memes) between classes.</p>
+      <p class="cl-lock-small">Members get every weekly class, the community wall to chat with other members, all past class recordings, the weekly club podcast 🎧, and our 📸 Instagram group to keep practicing (and send memes) between classes.</p>
       <a class="cl-join-btn" href="https://ig.me/m/learnwithnoa" target="_blank" rel="noopener">💛 I want to join</a><p class="cl-lock-small">Joining right here on Hibi is coming soon. For now, tap the button to message Noa.</p></div>
       ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
@@ -2914,6 +2923,23 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
         ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
   let RFOCUS=null;
+  /* ---------- 🎧 the weekly club podcast (episodes stored in clubStats/_podcast: Noa adds, members listen) ---------- */
+  const pods=()=>(window.__clubPods||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.at||0)-(a.at||0));
+  function podPlayer(u){ u=String(u||""); const yt=ytId(u); if(yt) return `<button type="button" class="cl-yt" data-yt="${yt}" data-watched="pod_${yt}" aria-label="${L("Play the episode","Reproducir el episodio")}"><img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`;
+    let m=u.match(/open\.spotify\.com\/(episode|show)\/([\w]+)/); if(m) return `<iframe class="cl-podsp" src="https://open.spotify.com/embed/${m[1]}/${m[2]}" title="Podcast episode" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"></iframe>`;
+    m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(m) return `<iframe class="cl-poddr" src="https://drive.google.com/file/d/${m[1]}/preview" title="Podcast episode" loading="lazy" allow="autoplay"></iframe>`;
+    if(/\.(mp3|m4a|wav|ogg|aac)(\?|$)/i.test(u)) return `<audio class="cl-podau" controls preload="none" src="${esc(u)}"></audio>`;
+    return `<a class="cl-watch" href="${esc(u)}" target="_blank" rel="noopener">🎧 ${L("Listen","Escuchar")}</a>`; }
+  function podHTML(f){ const ps=pods(), noa=isNoaNow();
+    const add=noa?`<details class="cl-podadd"><summary>＋ Add an episode <span class="muted">(only you see this)</span></summary><form class="cl-recform" data-podform="1"><label>Link to the episode<input name="url" type="url" required placeholder="Google Drive, YouTube or Spotify link"></label><div class="cl-rf2"><label>Week of (Monday)<input name="date" type="date" required value="${weekOf(Date.now())}"></label><label>Title<input name="title" maxlength="120" placeholder="e.g. Pets, interviews & animal verbs"></label></div><label>Show notes <span class="muted">(optional: what we cover, new words)</span><textarea name="notes" rows="3" maxlength="1500"></textarea></label><div class="cs-row"><span class="cs-msg" role="status"></span><button type="submit" class="cs-send">Add the episode</button></div><p class="cl-note">Google Drive: share the audio file as “Anyone with the link can view”, then paste its link.</p></form></details>`:"";
+    if(!ps.length) return `<div class="cl-sec cl-pod"><div class="cl-podh"><span class="cl-podic" aria-hidden="true">🎧</span><div><h2>${L("The club podcast","El podcast del club")}</h2><p class="cl-note">${L("Coming soon: a short weekly recap of our classes, with the topics and new words, to listen to on the bus, at the gym or while you cook.","Muy pronto: un resumen semanal corto de nuestras clases, con los temas y las palabras nuevas, para escuchar en la micro, en el gym o mientras cocinas.")}</p></div><span class="cl-soonb">${L("Coming soon","Muy pronto")}</span></div>${add}</div>`;
+    const [e,...older]=ps;
+    return `<div class="cl-sec cl-pod"><div class="cl-podh"><span class="cl-podic" aria-hidden="true">🎧</span><div><div class="cl-meta">${L("The club podcast","El podcast del club")} · ${L("Week of","Semana del")} ${esc(fd(e.date))}</div><h2>${esc(e.title||L("This week in the club","Esta semana en el club"))}</h2></div></div>
+      <div class="cl-podp">${podPlayer(e.url)}</div>${e.notes?`<details class="cl-podn"><summary>📝 ${L("Show notes","Notas del episodio")}</summary><p>${esc(e.notes).replace(/\n/g,"<br>")}</p></details>`:""}${noa?`<button type="button" class="cs-act" data-poddel="${esc(e.id)}">✕ Remove</button>`:""}
+      ${older.length?`<details class="cl-podold"><summary>${L("Earlier episodes","Episodios anteriores")} (${older.length})</summary>${older.map(x=>`<details class="cl-rcard"><summary><span class="cl-rico" aria-hidden="true">🎧</span><span class="cl-rt"><b>${esc(x.title||L("Club podcast","Podcast del club"))}</b><small>${L("Week of","Semana del")} ${esc(fd(x.date))}</small></span></summary><div class="cl-rbody">${podPlayer(x.url)}${x.notes?`<p>${esc(x.notes).replace(/\n/g,"<br>")}</p>`:""}${noa?`<button type="button" class="cs-act" data-poddel="${esc(x.id)}">✕ Remove</button>`:""}</div></details>`).join("")}</details>`:""}${add}</div>`; }
+  function weekOf(t){ const d=new Date(t); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function podNewHTML(){ const e=pods()[0]; if(!e||Date.now()-new Date(e.date+"T12:00:00").getTime()>10*864e5) return "";
+    return `<button type="button" class="cl-catch cl-podnew" data-clt="recordings"><span aria-hidden="true">🎧</span><span><b>${L("New podcast episode:","Nuevo episodio del podcast:")}</b> ${esc(e.title||L("this week in the club","esta semana en el club"))}</span><span class="cl-mego">→</span></button>`; }
   const isNoaNow=()=>!window.__csPreview&&!window.__csGuest&&window.__csFire&&window.__csFire.uid&&window.__csFire.uid()==="J8D2tjQmBaaA2QN730tSfSrjfm73";
   function recAddHTML(f){ if(!isNoaNow()) return ""; const sc=((f.info||{}).schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7)); const d=new Date(), iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
     return `<details class="cl-sec cl-recadd"><summary>＋ Add a recording <span class="muted">(only you see this)</span></summary><form class="cl-recform" data-recform="1">
@@ -3019,10 +3045,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(tab==="wall"){ body='<div class="cl-wall" data-wall="1"></div>'; }
     else if(tab==="members"){ body='<div class="cl-members" data-members="1"></div>'; }
     else if(tab==="insights"){ body='<div class="cl-insights" data-insights="1"></div>'; }
-    else if(tab==="recordings"||tab==="past"){ tab="recordings"; body=recTab(f)+pastHTML(f,ps,now); }
+    else if(tab==="recordings"||tab==="past"){ tab="recordings"; body=podHTML(f)+recTab(f)+pastHTML(f,ps,now); }
     else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=calTab(f,now)+linksHTML(f)+faqHTML()+igHTML(false)+rulesHTML(f,false); }
     else if(tab==="say"){ body='<div class="cl-say" data-say="1"></div>'+soonHTML(); }
-    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+postHTML(f,ps[0],now,true,true)+igHTML(true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+podNewHTML()+postHTML(f,ps[0],now,true,true)+igHTML(true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
     if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
   }
@@ -3047,6 +3073,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* keep "Live now" fresh, but never while someone is typing a comment */
   setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing) render(); else home(); } },60000);
   window.__clubTab=k=>{ tab=k; render(); };
+  document.addEventListener("cs-club-pods",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,iframe,audio,textarea:focus,input:focus")) render(); });
   document.addEventListener("cs-club-recs",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,textarea:focus,input:focus")) render(); else home(); });
   window.__clubFeed=feed;
   render();
@@ -3176,7 +3203,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
     try{ const list=COMM[pid]=await listComments(pid); sub.innerHTML=list.map(c=>commentHTML(pid,c)).join("")+composer("comment",pid,L("Write a comment…","Escribe un comentario…")); paintImgs(sub); }catch(e){ sub.innerHTML=`<p class="cs-off">${L("Couldn’t load the comments.","No se pudieron cargar los comentarios.")}</p>`; } }
   function mount(root){ root.querySelectorAll(".cl-thread[data-thread]:not([data-on='1'])").forEach(mountThread); root.querySelectorAll(".cl-wall:not([data-on='1'])").forEach(mountWall);
-    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); paintSoon(root); ensureMe(); }
+    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); paintSoon(root); ensureMe(); }
   /* picked photos (up to 4) */
   const PICK=new WeakMap();
   document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
@@ -3531,6 +3558,15 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function loadRecs(force){ if(G()) return; if(RECS&&!force&&Date.now()-recsAt<120000) return; recsAt=Date.now();
     try{ const r=await api("GET","/clubStats/_recordings"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; RECS=j.list||[]; }catch(e){ RECS=RECS||[]; }
     window.__clubRecs=RECS; document.dispatchEvent(new CustomEvent("cs-club-recs")); }
+  let PODS=null, podsAt=0;
+  async function loadPods(force){ if(G()) return; if(PODS&&!force&&Date.now()-podsAt<120000) return; podsAt=Date.now();
+    try{ const r=await api("GET","/clubStats/_podcast"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PODS=j.list||[]; }catch(e){ PODS=PODS||[]; }
+    window.__clubPods=PODS; document.dispatchEvent(new CustomEvent("cs-club-pods")); }
+  async function savePods(list){ await api("PATCH","/clubStats/_podcast",{fields:{uid:S("_podcast"),json:S(JSON.stringify({list}))}}); PODS=list; window.__clubPods=list; document.dispatchEvent(new CustomEvent("cs-club-pods")); }
+  document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-podform]"); if(!f) return; e.preventDefault(); const msg=f.querySelector(".cs-msg");
+    const ep={id:rid(),url:f.url.value.trim(),date:f.date.value,title:f.title.value.trim(),notes:f.notes.value.trim(),at:Date.now()};
+    msg.textContent="Saving…"; try{ await loadPods(true); await savePods((PODS||[]).concat([ep])); }catch(er){ msg.textContent="Couldn’t save. Try again."; return; } toast("🎧 Episode added ✓"); });
+  document.addEventListener("click",async e=>{ const d=e.target.closest("[data-poddel]"); if(!d) return; if(!confirm("Remove this episode?")) return; try{ await loadPods(true); await savePods((PODS||[]).filter(x=>x.id!==d.dataset.poddel)); }catch(er){ toast("Couldn’t remove it."); } });
   async function saveRecs(list){ await api("PATCH","/clubStats/_recordings",{fields:{uid:S("_recordings"),json:S(JSON.stringify({list}))}}); RECS=list; window.__clubRecs=list; document.dispatchEvent(new CustomEvent("cs-club-recs")); }
   document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-recform]"); if(!f) return; e.preventDefault(); const msg=f.querySelector(".cs-msg"), url=f.url.value.trim();
     if(!/youtu\.?be/.test(url)){ msg.textContent="That doesn’t look like a YouTube link."; return; }
