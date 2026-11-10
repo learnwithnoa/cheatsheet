@@ -2807,9 +2807,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
     box.innerHTML=`<div class="cl-lock"><div class="cl-lock-badge" aria-hidden="true">🔒</div>
       <h2>Club members only</h2>
-      <p>Noa’s English Club is where you practice speaking with other learners every week, in a relaxed, friendly group. It’s for Spanish speakers (B1 to C1), and it’s queer and neurodivergent-friendly: fluency and confidence first, grammar second.</p>
+      <p>Noa’s English Club is where you practice speaking with other learners every week, in a relaxed, friendly group. It’s for B1 to C1 learners, and it’s queer and neurodivergent-friendly: fluency and confidence first, grammar second.</p>
       <ul class="cl-lock-list"><li>🧠 <b>Deep Dive Monday</b> · a thought-provoking topic, often with a short video</li><li>🃏 <b>Wildcard Wednesday</b> · games and activities, pure speaking</li><li>💬 <b>Word Up Thursday</b> · useful expressions, then conversation</li><li>😎 <b>Free Talk Friday</b> · relaxed conversation to close the week</li></ul>
-      <p class="cl-lock-small">Members also get the weekly post with the Zoom links, the community wall, and past weeks here on Hibi.</p>
+      <p class="cl-lock-small">Members also get the weekly post with the Zoom links, the community wall, class recordings and past weeks here on Hibi, plus our 📸 Instagram group to keep in touch between classes: keep practicing, share news, and send memes.</p>
       <a class="cl-join-btn" href="https://ig.me/m/learnwithnoa" target="_blank" rel="noopener">💛 I want to join</a><p class="cl-lock-small">Joining right here on Hibi is coming soon. For now, tap the button to message Noa.</p></div>
       ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
