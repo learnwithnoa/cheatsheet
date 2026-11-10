@@ -296,7 +296,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     return { words, learned };
   }
   /* Noa (the teacher account) has everything unlocked and a best-friends buddy */
-  const TCH = () => window.__csTeacher === true;
+  const TCH = () => window.__csTeacher === true && !window.__csPreview;  // in "View as", the buddy unlocks only what that member unlocked
   const musicDays = () => Array.isArray(S.mud) ? S.mud.length : 0;
   const modDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
   const isOpen = it => { if (TCH()) return true; if (it.m) return modDone(it.m); if (it.md != null) return musicDays() >= it.md; if (it.dw != null) return (S.dw | 0) >= it.dw; if (it.ds != null) return (S.dbs | 0) >= it.ds; if (it.dp != null) return (S.dplay | 0) >= it.dp; const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };

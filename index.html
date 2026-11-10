@@ -1270,13 +1270,14 @@ html.ag-lock,html.ag-lock body{overflow:hidden}
 .ch-recap .ch-rc-w>div .muted{font-size:13.5px}
 .ch-recap .ch-rc-save{align-self:flex-start}
 /* guides + class recaps, near the top */
-.ch-gbox{padding:14px 16px}
+.ch-gbox{margin:12px 0 0;padding:14px 16px}
 .ch-gcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 20px}
 .ch-gcols>div{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .ch-glist{display:flex;flex-direction:column;gap:6px;width:100%}
 .ch-gl{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--bg) 55%,transparent);text-decoration:none;color:var(--ink);border:1px solid transparent}
 .ch-gl:hover{border-color:var(--k,var(--line))}
 .ch-gl>span:last-child{display:flex;flex-direction:column;min-width:0}.ch-gl b{font-size:14.5px}.ch-gl small{font-size:12.5px;color:var(--muted)}
+.ch-tipsrow{margin:12px 0 0}.ch-tipsrow .ch-card{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 14px}.ch-tipsrow .ch-k{width:100%}
 .cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
 html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
 .cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -1653,6 +1654,21 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-insights h2 small{font-weight:600;color:var(--muted);font-size:14px}
 .cl-rsearch{min-width:0}.cl-rhead{padding-right:2px}
 .cs-sample{font:800 10.5px var(--body);letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1.5px dashed var(--muted);color:var(--muted)}
+/* polls & ideas tab */
+.cl-say{display:flex;flex-direction:column;gap:14px}
+.cl-ideas,.cl-polls{display:flex;flex-direction:column;gap:10px}
+.cl-ilist2{display:flex;flex-direction:column;gap:8px}
+.cl-idea{display:flex;gap:12px;align-items:flex-start;padding:12px 14px}
+.cl-idea.st-done{opacity:.7}
+.cl-iup{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:12px;border:1.5px solid var(--line);font:800 15px var(--body);color:var(--ink)}
+.cl-iup span{font-size:18px}.cl-iup.on{border-color:var(--c2,#5AB8FF);background:color-mix(in srgb,var(--c2,#5AB8FF) 16%,var(--surface))}
+.cl-iup:focus-visible{outline:2px solid var(--c2);outline-offset:2px}
+.cl-ib{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}.cl-ib .cs-txt{margin:0}
+.cl-imeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}.cl-imeta .cs-av{width:26px;height:26px;font-size:10px}
+.cl-ist{display:inline-flex;gap:6px;margin-left:auto}
+.cl-newpoll summary{cursor:pointer;font:800 14px var(--body);color:var(--c2);padding:6px 0}
+.cl-newpoll[open] summary{margin-bottom:8px}
+.cs-p.cl-idea{flex-direction:row}.cl-ideas .cl-note,.cl-polls .cl-note{margin:0}
 </style>
 
 <header class="top">
@@ -2115,12 +2131,13 @@ html.cs-calm .cs-rxpal button{transition:none}
       else if(du.classesLeft!=null&&du.classesLeft<=1) dueTxt=`You have about <b>${du.classesLeft} ${du.classesLeft===1?"class":"classes"}</b> left. To keep your spot, renew <b>at least 48 hours before your next class</b>.`;
       else if(du.half&&du.instAt) dueTxt=du.nextNo>=du.instAt?`Your <b>2nd payment</b> is due now (class #${du.instAt} of this pack).`:`Your <b>2nd payment</b> is due at class <b>#${du.instAt}</b> of this pack. Your next class is #${du.nextNo}.`; }
     const top=`<div class="ch-top">
-      <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}</div>
+      <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${v.recap&&v.recap.homework?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(v.recap.homework)}</div>`:lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}</div>
       ${newRep?`<div class="ch-tint ch-v ch-card"><div class="ch-k">📈 New progress report</div><div>Your report for <b>${fs(newRep.from)} – ${fs(newRep.to)}</b> is ready.</div><button type="button" class="ch-go" data-rep="${esc(newRep.id)}" style="margin-top:6px">Read it →</button></div>`:""}
       ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
-      ${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}
     </div>`;
+    /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -2129,7 +2146,7 @@ html.cs-calm .cs-rxpal button{transition:none}
         ${rc.summary?`<p class="ch-rc-sum">${esc(rc.summary)}</p>`:""}
         <div class="ch-rc-grid">
         ${(rc.talked||[]).length?`<div><h4>💬 What we talked about</h4><ul>${rc.talked.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
-        ${rc.homework?`<div><h4>📝 Homework for next class</h4><p>${esc(rc.homework)}</p></div>`:""}
+
         ${(rc.heads||[]).length?`<div class="ch-rc-heads"><h4>📌 Don’t forget</h4><ul>${rc.heads.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
         </div>
         ${voc.length?`<div class="ch-rc-wbox"><h4>✨ New words <span class="muted">(${voc.length})</span>${voc.length>2?'<span class="ch-rc-hint">scroll →</span>':""}</h4><div class="ch-rc-words" role="list">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w" role="listitem"><div><b>${esc(x.w)}</b>${x.tr?`<span class="muted">${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
@@ -2167,7 +2184,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     }
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
-    box.innerHTML=newsBox+top+recapBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    box.innerHTML=newsBox+top+recapBox+tipsBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
     const one=e.target.closest("[data-rcw]"), all=e.target.closest("[data-rcall]"); if(!one&&!all) return;
@@ -2683,6 +2700,14 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <div class="cl-cday"><h3>${esc(fd(CALD))}</h3>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
         <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:""):`${e.zoom?`<a class="cl-join" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>
       ${sched2.length?`<div class="cl-sec cl-calall"><p>${L("Want every class in your calendar, with a reminder 30 minutes before?","¿Quieres todas las clases en tu calendario, con un recordatorio 30 minutos antes?")}</p><a class="cl-join" style="--k:var(--c4)" href="${icsFile(sched2,true)}" download="noas-english-club.ics">⬇ ${L("Add all weekly classes","Agregar todas las clases semanales")}</a><small>${L("Opens in Google Calendar, Apple Calendar or Outlook. Moved or cancelled classes show up here and on the weekly post.","Se abre en Google Calendar, Apple Calendar u Outlook. Las clases cambiadas o canceladas aparecen aquí y en el post semanal.")}</small></div>`:""}`; }
+  /* weekly schedule + useful links (shown under the calendar) */
+  function linksHTML(f){ const info=f.info||{};
+      const sc=(info.schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7));
+      const nextDate=wd=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===wd) return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); } };
+      return `<div class="cl-sec"><h2>🗓 ${L("Every week","Todas las semanas")}</h2>${sc.map(s=>{ const st=chileAt(nextDate(s.wd),s.time); return `<div class="cl-row"><span class="i">${s.ico||"📅"}</span><span class="t"><b>${esc(s.name)}</b><span>${["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"][s.wd]} · ${esc(timeTxt(st))} · ${s.dur||90} min${s.host?" · with "+esc(s.host):""}</span>${s.desc?`<br><span>${esc(s.desc)}</span>`:""}</span>${s.zoom?`<a class="cl-join" style="--k:var(--c2)" href="${esc(s.zoom)}" target="_blank" rel="noopener">🎥 Zoom link</a>`:""}</div>`; }).join("")}
+        <p class="cl-note">${L("All classes are optional and open to every level. The Zoom links stay the same every week.","Todas las clases son opcionales y abiertas a todos los niveles. Los links de Zoom son los mismos cada semana.")}</p></div>
+        ${(info.links||[]).length?`<div class="cl-sec"><h2>🔗 ${L("Useful links","Links útiles")}</h2>${info.links.map(l=>`<div class="cl-row"><span class="i">${esc(l.ico||"🔗")}</span><span class="t"><b>${esc(l.title)}</b>${l.note?`<span>${esc(l.note)}</span>`:""}</span><a class="cl-join" style="--k:var(--c4)" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a></div>`).join("")}</div>`:""}`;
+  }
   /* ---------- 👋 welcome + guidelines ---------- */
   const RULES_EN=["Mistakes are welcome here. That’s how we learn.","Be kind. Laugh with people, never at them.","Try to speak and write in English (a little Spanish to get unstuck is fine).","What’s shared in the club stays in the club.","Cameras are optional. Showing up is what counts.","Keep it respectful: no spam, no selling, no hate."];
   const RULES_ES=["Aquí los errores son bienvenidos. Así se aprende.","Sé amable. Ríete con las personas, nunca de ellas.","Intenta hablar y escribir en inglés (un poco de español para destrabarte está bien).","Lo que se comparte en el club, queda en el club.","La cámara es opcional. Lo importante es estar.","Con respeto: nada de spam, ventas ni odio."];
@@ -2707,21 +2732,16 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(!f){ locked(); return; }
     const ps=posts(f), now=Date.now(), info=f.info||{};
     const nRec=recList(f).length, isNoa=window.__csFire&&window.__csFire.uid&&window.__csFire.uid()==="J8D2tjQmBaaA2QN730tSfSrjfm73"&&!window.__csPreview;
-    const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["members",L("Members","Miembros")],["recordings",`🎬 ${L("Recordings","Grabaciones")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Calendar","Calendario")}`],["links",L("Schedule & links","Horario y links")],["past",`${L("Past weeks","Semanas anteriores")}${ps.length>1?" ("+(ps.length-1)+")":""}`]].concat(isNoa?[["insights","📈 Insights"]]:[]);
+    const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["members",L("Members","Miembros")],["recordings",`🎬 ${L("Recordings","Grabaciones")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Schedule","Horario")}`],["say",`🗳 ${L("Polls & ideas","Encuestas e ideas")}`],["past",`${L("Past weeks","Semanas anteriores")}${ps.length>1?" ("+(ps.length-1)+")":""}`]].concat(isNoa?[["insights","📈 Insights"]]:[]);
     let body="";
     if(tab==="wall"){ body='<div class="cl-wall" data-wall="1"></div>'; }
     else if(tab==="members"){ body='<div class="cl-members" data-members="1"></div>'; }
     else if(tab==="insights"){ body='<div class="cl-insights" data-insights="1"></div>'; }
     else if(tab==="recordings"){ body=recTab(f); }
-    else if(tab==="calendar"){ body=calTab(f,now); }
+    else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=calTab(f,now)+linksHTML(f)+rulesHTML(f,false); }
+    else if(tab==="say"){ body='<div class="cl-say" data-say="1"></div>'+soonHTML(); }
     else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+catchHTML(f,ps[0],now)+'<div class="cl-me" data-mestrip="1"></div>'+postHTML(f,ps[0],now,true,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
-    else if(tab==="links"){
-      const sc=(info.schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7));
-      const nextDate=wd=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===wd) return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); } };
-      body=rulesHTML(f,false)+soonHTML()+`<div class="cl-sec"><h2>🗓 ${L("Every week","Todas las semanas")}</h2>${sc.map(s=>{ const st=chileAt(nextDate(s.wd),s.time); return `<div class="cl-row"><span class="i">${s.ico||"📅"}</span><span class="t"><b>${esc(s.name)}</b><span>${["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"][s.wd]} · ${esc(timeTxt(st))} · ${s.dur||90} min${s.host?" · with "+esc(s.host):""}</span>${s.desc?`<br><span>${esc(s.desc)}</span>`:""}</span>${s.zoom?`<a class="cl-join" style="--k:var(--c2)" href="${esc(s.zoom)}" target="_blank" rel="noopener">🎥 Zoom link</a>`:""}</div>`; }).join("")}
-        <p class="cl-note">${L("All classes are optional and open to every level. The Zoom links stay the same every week.","Todas las clases son opcionales y abiertas a todos los niveles. Los links de Zoom son los mismos cada semana.")}</p></div>
-        ${(info.links||[]).length?`<div class="cl-sec"><h2>🔗 ${L("Useful links","Links útiles")}</h2>${info.links.map(l=>`<div class="cl-row"><span class="i">${esc(l.ico||"🔗")}</span><span class="t"><b>${esc(l.title)}</b>${l.note?`<span>${esc(l.note)}</span>`:""}</span><a class="cl-join" style="--k:var(--c4)" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a></div>`).join("")}</div>`:""}`;
-    } else {
+    else if(false){    } else {
       const old=ps.slice(1);
       body=old.length?old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>${p.recap&&(p.recap.recordings||[]).length?"🎬 ":""}${L("Week of","Semana del")} ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}<div class="cl-thread" data-thread="${esc(p.id)}" data-lazy="1"></div></details>`).join(""):`<p class="cl-empty">${L("Past weeks will collect here, so you can look back at topics, recordings and words.","Aquí se juntan las semanas anteriores, para revisar temas, grabaciones y palabras.")}</p>`;
     }
@@ -2767,8 +2787,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const me=()=>F()&&F().uid();
   const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   let state="unknown"; /* unknown | ok | off (rules not switched on) | denied */
+  let roT=0; function toastRO(){ if(Date.now()-roT<4000) return; roT=Date.now(); if(typeof window.toast==="function") window.toast("👁 View as is read-only: nothing is saved"); }
   async function api(method,path,body){
-    const f=F(); if(!f) throw new Error("not ready"); const tok=await f.token(); if(!tok) throw new Error("signin");
+    const f=F(); if(!f) throw new Error("not ready");
+    if(f.readOnly&&f.readOnly()&&method!=="GET"&&!/:runQuery$/.test(path)){ toastRO(); const e=new Error("view-as is read-only"); e.code=0; throw e; }
+    const tok=await f.token(); if(!tok) throw new Error("signin");
     const r=await fetch(f.base+path,{method,headers:{"Authorization":"Bearer "+tok,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
     if(r.status===403){ state=state==="ok"?"ok":"off"; const e=new Error("denied"); e.code=403; throw e; }
     if(!r.ok&&r.status!==404) throw new Error("http "+r.status);
@@ -2817,7 +2840,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const imgs=x=>gifs(x)+((x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"");
   const likeBtn=(x,path)=>{ const c={}; let mine=null; (x.likes||[]).forEach(v=>{ const [u,e]=rxOf(v); c[e]=(c[e]||0)+1; if(u===me()) mine=e; });
     return `<span class="cs-rx" data-rxpath="${esc(path)}">${RX.filter(e=>c[e]).map(e=>`<button type="button" class="cs-act${mine===e?" on":""}" data-rx="${e}" aria-pressed="${mine===e}" aria-label="${e} ${c[e]}">${e} ${c[e]}</button>`).join("")}<span class="cs-rxadd"><button type="button" class="cs-act cs-rxbtn" data-rxopen="1" aria-label="${L("Add a reaction","Reaccionar")}" aria-expanded="false">${mine?"":"🤍 "}＋</button><span class="cs-rxpal" hidden>${RX.map(e=>`<button type="button" data-rx="${e}" aria-label="React ${e}">${e}</button>`).join("")}</span></span></span>`; };
-  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><div class="cs-taw"><textarea rows="${kind==="comment"?2:3}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-ment" role="listbox" hidden></div></div><div class="cs-pollbox" hidden></div>${kind==="post"?`<div class="cs-cats" role="group" aria-label="${L("Topic (optional)","Tema (opcional)")}"><span>${L("Topic:","Tema:")}</span>${CATS.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}<div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><label class="cs-act cs-addph">📷 ${L("Photo","Foto")}<input type="file" accept="image/*" multiple hidden></label>${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}${kind==="post"?`<button type="button" class="cs-act" data-pollopen="1" aria-expanded="false">📊 ${L("Poll","Encuesta")}</button>`:""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?L("Post","Publicar"):kind==="chal"?L("Send my answer","Enviar mi respuesta"):L("Comment","Comentar")}</button></div></form>`; }
+  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><div class="cs-taw"><textarea rows="${kind==="comment"||kind==="poll"?2:3}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-ment" role="listbox" hidden></div></div><div class="cs-pollbox"${kind==="poll"?"":" hidden"}>${kind==="poll"?`<p class="cs-ph2">${L("Options (2 to 6):","Opciones (de 2 a 6):")}</p><div class="cs-popts">${optIn(1)}${optIn(2)}</div><button type="button" class="cs-act" data-polladd="1">＋ ${L("Option","Opción")}</button>`:""}</div>${kind==="idea"?`<div class="cs-cats" role="group" aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}${kind==="post"?`<div class="cs-cats" role="group" aria-label="${L("Topic (optional)","Tema (opcional)")}"><span>${L("Topic:","Tema:")}</span>${CATS.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}<div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><label class="cs-act cs-addph">📷 ${L("Photo","Foto")}<input type="file" accept="image/*" multiple hidden></label>${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?L("Post","Publicar"):kind==="chal"?L("Send my answer","Enviar mi respuesta"):kind==="poll"?L("Start the poll","Publicar encuesta"):kind==="idea"?L("Send my idea","Enviar mi idea"):L("Comment","Comentar")}</button></div></form>`; }
   const OFF=`<p class="cs-off">💬 ${L("Comments and posts are almost ready. They’ll switch on very soon.","Los comentarios y posts están casi listos. Se activan muy pronto.")}</p>`;
   const COMM={};
   async function mountThread(el){
@@ -2837,8 +2860,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const getSeen=()=>{ try{ return +localStorage.getItem(WSEEN)||0; }catch(e){ return 0; } };
   const setSeen=v=>{ try{ localStorage.setItem(WSEEN,String(v)); }catch(e){} };
   let pinsAt=0;
-  async function loadPins(){ if(G()){ PINS=["s2"]; PICKS={wSAMPLE:"s4"}; return; } if(Date.now()-pinsAt<20000) return; try{ const r=await api("GET","/clubPublic/pins"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PINS=j.ids||[]; PICKS=j.picks||{}; pinsAt=Date.now(); }catch(e){ PINS=PINS||[]; } }
-  async function savePins(){ await api("PATCH","/clubPublic/pins",{fields:{json:S(JSON.stringify({ids:PINS,picks:PICKS}))}}); pinsAt=Date.now(); }
+  async function loadPins(){ if(G()){ PINS=["s2"]; PICKS={wSAMPLE:"s4"}; return; } if(Date.now()-pinsAt<20000) return; try{ const r=await api("GET","/clubPublic/pins"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PINS=j.ids||[]; PICKS=j.picks||{}; IDEAST=j.ideas||{}; pinsAt=Date.now(); }catch(e){ PINS=PINS||[]; } }
+  async function savePins(){ await api("PATCH","/clubPublic/pins",{fields:{json:S(JSON.stringify({ids:PINS,picks:PICKS,ideas:IDEAST}))}}); pinsAt=Date.now(); }
   const isNew=(p,seen)=>seen&&((p.at>seen&&p.uid!==me())||(p.lastAt>seen&&p.lastAt>p.at+2000));
   /* how many posts are new or have new comments since you last opened Community (for the tab and the Home card) */
   async function unread(){ if(G()) return 1; try{ if(!POSTS) POSTS=await listPosts(); }catch(e){ return 0; } const s=getSeen(); if(!s){ return 0; } return POSTS.filter(p=>isNew(p,s)).length; }
@@ -2853,13 +2876,14 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function refreshBadge(){ const n=await unread(); const onWall=document.querySelector(".cl-wall[data-on='1']"); badge(onWall?0:n); return n; }
   const CATS=[["intro","👋",["Introductions","Presentaciones"]],["q","❓",["Questions","Preguntas"]],["win","🏆",["Wins","Logros"]],["res","📎",["Resources","Recursos"]],["fun","🎉",["Off-topic","Off-topic"]]];
   const catOf=k=>CATS.find(c=>c[0]===k);
+  const IDEAK=[["topic","💡",["Topic","Tema"]],["grammar","🧩",["Grammar","Gramática"]],["vocab","📚",["Vocabulary","Vocabulario"]],["game","🎲",["Activity or game","Actividad o juego"]],["other","✨",["Other","Otro"]]];
   let WCAT="";
   const cmtLbl=n=>`💬 ${n?n+" ":""}${n===1?L("comment","comentario"):L("comments","comentarios")}`;
   function postHTML(p){ const path=`clubPosts/${p.id}`, pin=PINS.includes(p.id), nw=NEWIDS.has(p.id), pick=p.ch&&PICKS[p.ch]===p.id;
     return `<article class="cs-p${pin?" pinned":""}${nw?" isnew":""}" data-pid="${esc(p.id)}">${pin||nw||p.ch||p.cat?`<div class="cs-flags">${pin?`<span class="cs-pin">📌 ${L("Pinned","Fijado")}</span>`:""}${p.ch?`<span class="cs-chf">✍️ ${L("Weekly challenge","Desafío semanal")}</span>`:""}${p.cat&&catOf(p.cat)?`<span class="cs-catf">${catOf(p.cat)[1]} ${esc(L(catOf(p.cat)[2][0],catOf(p.cat)[2][1]))}</span>`:""}${pick?`<span class="cs-pickf">⭐ ${L("Noa’s pick","Elegido por Noa")}</span>`:""}${nw?`<span class="cs-newf">${p.at>SEEN_AT&&p.uid!==me()?L("New","Nuevo"):L("New comments","Comentarios nuevos")}</span>`:""}</div>`:""}<div class="cs-top">${who(p)}${tools(p,path,true)}</div>${p.text?`<p class="cs-txt">${txtHTML(p.text)}</p>`:'<p class="cs-txt" hidden></p>'}${p.poll&&(p.poll.opts||[]).length?`<div class="cs-poll" data-poll="${esc(p.id)}">${pollHTML(p,null)}</div>`:""}${imgs(p)}
       <div class="cs-acts">${likeBtn(p,path)}<button type="button" class="cs-act" data-open="${esc(p.id)}" aria-expanded="false">${cmtLbl(p.n|0)}</button>${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pin="${esc(p.id)}">${pin?"📌 Unpin":"📌 Pin"}</button>${p.ch?`<button type="button" class="cs-act" data-pick="${esc(p.id)}" data-ch="${esc(p.ch)}">${pick?"⭐ Unpick":"⭐ Pick"}</button>`:""}`:""}</div><div class="cs-sub" hidden></div></article>`; }
   function paintWall(el){
-    const all=(POSTS||[]).slice().sort((a,b)=>(PINS.includes(b.id)-PINS.includes(a.id))||(b.at-a.at));
+    const all=(POSTS||[]).filter(p=>!p.poll&&!p.idea).sort((a,b)=>(PINS.includes(b.id)-PINS.includes(a.id))||(b.at-a.at));
     const list=WCAT?all.filter(p=>WCAT==="ch"?p.ch:p.cat===WCAT):all;
     const chips=[["","✨",[L("All","Todo"),""]]].concat(CATS).concat(all.some(p=>p.ch)?[["ch","✍️",["Challenges","Desafíos"]]]:[]).filter(c=>!c[0]||all.some(p=>c[0]==="ch"?p.ch:p.cat===c[0]));
     const flt=chips.length>1?`<div class="cs-wcats" role="group" aria-label="${L("Filter the wall","Filtrar el muro")}">${chips.map(c=>`<button type="button" class="cs-wcat${WCAT===c[0]?" on":""}" data-wcat="${c[0]}" aria-pressed="${WCAT===c[0]}">${c[1]} ${esc(c[0]?L(c[2][0],c[2][1]):c[2][0])}</button>`).join("")}</div>`:"";
@@ -2872,7 +2896,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
     try{ const list=COMM[pid]=await listComments(pid); sub.innerHTML=list.map(c=>commentHTML(pid,c)).join("")+composer("comment",pid,L("Write a comment…","Escribe un comentario…")); paintImgs(sub); }catch(e){ sub.innerHTML=`<p class="cs-off">${L("Couldn’t load the comments.","No se pudieron cargar los comentarios.")}</p>`; } }
   function mount(root){ root.querySelectorAll(".cl-thread[data-thread]:not([data-on='1'])").forEach(mountThread); root.querySelectorAll(".cl-wall:not([data-on='1'])").forEach(mountWall);
-    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); paintSoon(root); ensureMe(); }
+    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); paintSoon(root); ensureMe(); }
   /* picked photos (up to 4) */
   const PICK=new WeakMap();
   document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
@@ -2881,6 +2905,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const ta=form.querySelector("textarea"), msg=form.querySelector(".cs-msg"), btn=form.querySelector(".cs-send"), text=ta.value.trim(), files=PICK.get(form)||[], gif=GIF.get(form);
     const poll=readPoll(form);
     if(poll&&poll.err){ msg.textContent=poll.err; return; }
+    if(form.dataset.comp==="poll"&&!poll){ msg.textContent=L("Add at least 2 options.","Agrega al menos 2 opciones."); return; }
     if(poll&&!text){ msg.textContent=L("Write your question first.","Escribe tu pregunta primero."); ta.focus(); return; }
     if(!text&&!files.length&&!gif){ ta.focus(); return; }
     if(G()){ msg.textContent=L("Guest preview: posting is off here.","Vista de invitado: aquí no se publica."); return; }
@@ -2889,9 +2914,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{
       const ids=[]; for(const f of files){ ids.push(await uploadImg(f)); }
       const id=rid(), kind=form.dataset.comp, pid=form.dataset.target;
-      const data={text,imgs:ids}; if(gif) data.gifs=[gif]; if(poll&&poll.opts) data.poll={opts:poll.opts}; if(kind==="chal") data.ch=pid; { const ct=form.querySelector(".cs-cat.on"); if(ct&&kind==="post") data.cat=ct.dataset.cat; }
+      const data={text,imgs:ids}; if(gif) data.gifs=[gif]; if(poll&&poll.opts) data.poll={opts:poll.opts}; if(kind==="chal") data.ch=pid; { const ct=form.querySelector(".cs-cat.on"); if(ct&&kind==="post") data.cat=ct.dataset.cat; if(kind==="idea") data.idea={k:ct?ct.dataset.cat:"other"}; }
       const ats=mentionsIn(form,text);
-      if(kind==="post"||kind==="chal"){ await createDoc("clubPosts",id,data); activity(kind==="chal"?"challenge":"post",id,text||(gif?"(GIF)":""),ids.length); if(POSTS) POSTS.unshift(Object.assign({id,uid:me(),name:F().name(),at:Date.now(),likes:[],n:0},data));
+      if(kind==="post"||kind==="chal"||kind==="poll"||kind==="idea"){ await createDoc("clubPosts",id,data); activity(kind==="chal"?"challenge":kind==="idea"?"idea":kind==="poll"?"poll":"post",id,text||(gif?"(GIF)":""),ids.length); if(POSTS) POSTS.unshift(Object.assign({id,uid:me(),name:F().name(),at:Date.now(),likes:[],n:0},data));
         bump(kind==="chal"?{posts:1,ch:1}:{posts:1}); if(kind==="chal") treat(5,L("Thanks for taking the challenge!","¡Gracias por hacer el desafío!"));
         ats.forEach(u=>note(u,"mention",id,text)); }
       else { await createDoc(`clubPosts/${pid}/comments`,id,data); activity("comment",pid,text||(gif?"(GIF)":""),ids.length); bump({comments:1});
@@ -2899,11 +2924,13 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         if(!/^w\d{8}$/.test(pid)){ try{ const p=(POSTS||[]).find(x=>x.id===pid); const n=((COMM[pid]||[]).length||0)+1; if(p) p.n=n; await api("PATCH",`/clubPosts/${pid}?updateMask.fieldPaths=n&updateMask.fieldPaths=lastAt`,{fields:{n:I(n),lastAt:I(Date.now())}}); }catch(er){} } }
       PICK.delete(form); GIF.delete(form); ta.value=""; form._at={};
       const th=form.closest(".cl-thread"), sub=form.closest(".cs-sub"), wall=form.closest(".cl-wall"), chl=form.closest(".cl-chal-list");
-      if(chl){ chl.dataset.on=""; mountChal(chl); }
+      const say=form.closest(".cl-say");
+      if(say){ mountSay(say); }
+      else if(chl){ chl.dataset.on=""; mountChal(chl); }
       else if(th) mountThread(th); else if(sub){ const art=sub.closest(".cs-p"); sub.hidden=true; openSub(art,pid); const b=art.querySelector("[data-open]"); if(b){ const n=(COMM[pid]||[]).length+1; b.innerHTML=cmtLbl(n); } } else if(wall) mountWall(wall);
       setSeen(Date.now());
-      if(typeof window.toast==="function") window.toast(kind==="comment"?L("Comment added ✓","Comentario agregado ✓"):L("Posted ✓","Publicado ✓"));
-    }catch(er){ msg.textContent=er.code===403?L("You can’t post here yet.","Aún no puedes publicar aquí."):er.message==="too big"?L("That photo is too big. Try another one.","Esa foto es muy grande. Prueba con otra."):er.message==="not an image"?L("That file isn’t a photo.","Ese archivo no es una foto."):L("Didn’t work. Try again.","No funcionó. Intenta de nuevo."); btn.disabled=false; return; }
+      if(typeof window.toast==="function") window.toast(kind==="comment"?L("Comment added ✓","Comentario agregado ✓"):kind==="idea"?L("Thanks for the idea! 💡","¡Gracias por la idea! 💡"):L("Posted ✓","Publicado ✓"));
+    }catch(er){ msg.textContent=er.code===0?"👁 View as is read-only: nothing is saved.":er.code===403?L("You can’t post here yet.","Aún no puedes publicar aquí."):er.message==="too big"?L("That photo is too big. Try another one.","Esa foto es muy grande. Prueba con otra."):er.message==="not an image"?L("That file isn’t a photo.","Ese archivo no es una foto."):L("Didn’t work. Try again.","No funcionó. Intenta de nuevo."); btn.disabled=false; return; }
     btn.disabled=false; msg.textContent=""; });
   /* GIF picker (GIPHY): trending when it opens, search after you stop typing; results cached so the free key's limit lasts */
   const GIF=new WeakMap(), GCACHE={};
@@ -3098,9 +3125,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     w.innerHTML=`<button type="button" id="clBell" class="cs-btn clb-btn" aria-expanded="false" aria-controls="clBellPanel" title="${L("Club notifications","Notificaciones del club")}"><span aria-hidden="true">🔔</span><span class="clb-n" hidden></span></button><div id="clBellPanel" class="cs-panel clb-panel" role="dialog" aria-label="${L("Club notifications","Notificaciones del club")}" hidden></div>`;
     anchor.parentNode.insertBefore(w,anchor);
     w.querySelector("#clBell").addEventListener("click",async()=>{ const pn=document.getElementById("clBellPanel"), open=pn.hidden; pn.hidden=!open; w.querySelector("#clBell").setAttribute("aria-expanded",String(open));
-      if(open){ pn.dataset.seen=String(+LSG(BSEEN,0)||0); paintBell(); await loadNotes(); paintBell(); if(!G()) LSS(BSEEN,Date.now()); setTimeout(paintBell,0); } else paintBell(); });
+      if(open){ pn.dataset.seen=String(+LSG(BSEEN,0)||0); paintBell(); await loadNotes(); paintBell(); if(!G()&&!window.__csViewAsMode) LSS(BSEEN,Date.now()); setTimeout(paintBell,0); } else paintBell(); });
     document.addEventListener("click",e=>{ const pn=document.getElementById("clBellPanel"); if(pn&&!pn.hidden&&!e.target.closest("#clBellWrap")){ pn.hidden=true; document.getElementById("clBell")?.setAttribute("aria-expanded","false"); paintBell(); } }); }
-  function bellCheck(){ const fd=window.__clubFeed&&window.__clubFeed(), on=!!fd&&(G()||(!!me()&&me()!==NOA))&&!window.__csPreview; buildBell(); const w=document.getElementById("clBellWrap"); if(!w) return; w.hidden=!on;
+  function bellCheck(){ const fd=window.__clubFeed&&window.__clubFeed(), on=!!fd&&(G()||(!!me()&&me()!==NOA))&&(!window.__csPreview||!!window.__csViewAsMode); buildBell(); const w=document.getElementById("clBellWrap"); if(!w) return; w.hidden=!on;
     if(on&&Date.now()-bellT>150000){ bellT=Date.now(); loadNotes().then(paintBell); } }
   ["cs-club","cs-hubview"].forEach(ev=>document.addEventListener(ev,()=>setTimeout(bellCheck,50))); window.addEventListener("cs-auth",()=>setTimeout(bellCheck,300));
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) bellCheck(); }); setInterval(()=>{ if(!document.hidden) bellCheck(); },60000); setTimeout(bellCheck,800);
@@ -3190,6 +3217,34 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       catch(er){ toast(L("Couldn’t send the report. Try again.","No se pudo enviar el reporte. Intenta de nuevo.")); return; }
       toast(L("Thanks. Noa will take a look 🙏","Gracias. Noa lo va a revisar 🙏")); return; }
   });
+  /* ---------- 🗳 Polls & ideas tab: class ideas from members (👍 to support one) + polls ---------- */
+  const SAMPLE_IDEAS=[{id:"i1",uid:"x3",name:"Sam (sample)",at:H(30),text:"A class about job interviews: common questions and how to answer them.",idea:{k:"topic"},likes:["a|👍","b|👍","c|👍"]},{id:"i2",uid:"x2",name:"Alex (sample)",at:H(50),text:"When do we use 'since' and 'for'? I always mix them up.",idea:{k:"grammar"},likes:["a|👍"]}];
+  let ISORT="top";
+  function ideaHTML(p){ const k=IDEAK.find(c=>c[0]===(p.idea||{}).k)||IDEAK[4], up=(p.likes||[]).map(rxOf).filter(x=>x[1]==="👍"), mine=up.some(x=>x[0]===(G()?"me":me())), st=IDEAST[p.id]||"";
+    return `<div class="cs-p cl-idea${st?" st-"+st:""}" data-pid="${esc(p.id)}"><button type="button" class="cl-iup${mine?" on":""}" data-iup="${esc(p.id)}" aria-pressed="${mine}" aria-label="${L("Support this idea","Apoyar esta idea")} (${up.length})"><span>👍</span><b>${up.length}</b></button>
+      <div class="cl-ib"><div class="cs-flags"><span class="cs-catf">${k[1]} ${esc(L(k[2][0],k[2][1]))}</span>${st==="planned"?`<span class="cs-pickf">🗓 ${L("Planned","Planeada")}</span>`:st==="done"?`<span class="cs-chf">✅ ${L("Done in class","Hecha en clase")}</span>`:""}</div>
+        <p class="cs-txt">${txtHTML(p.text||"")}</p><div class="cl-imeta">${who(p)}${tools(p,"clubPosts/"+p.id,true)}${me()===NOA&&!G()?`<span class="cl-ist"><button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="planned">${st==="planned"?"✓ ":""}🗓 Planned</button><button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="done">${st==="done"?"✓ ":""}✅ Done</button></span>`:""}</div></div></div>`; }
+  function paintIdeas(el){ const box=el.querySelector("[data-ideas]"); if(!box) return; let list=(POSTS||[]).filter(p=>p.idea); if(G()) list=SAMPLE_IDEAS.concat(list);
+    const n=p=>(p.likes||[]).map(rxOf).filter(x=>x[1]==="👍").length, rank=p=>IDEAST[p.id]==="done"?1:0;
+    list.sort((a,b)=>rank(a)-rank(b)||(ISORT==="top"?n(b)-n(a)||b.at-a.at:b.at-a.at));
+    box.innerHTML=list.length?list.map(ideaHTML).join(""):`<p class="cs-empty">${L("No ideas yet. Be the first!","Aún no hay ideas. ¡Sé el primero!")}</p>`; }
+  async function mountSay(el){ el.dataset.on="1"; el.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
+    try{ await Promise.all([listPosts().then(p=>{ POSTS=G()?SAMPLE_POSTS.slice():p; }),loadPins(),loadPark()]); }catch(e){ el.innerHTML=state==="off"?OFF:""; return; }
+    const polls=(POSTS||[]).filter(p=>p.poll).sort((a,b)=>b.at-a.at);
+    el.innerHTML=`<div class="cl-sec cl-ideas"><h2>💡 ${L("Ideas for future classes","Ideas para próximas clases")}</h2><p class="cl-note">${L("What would you like to do in class? A topic, a grammar point, vocabulary, a game… Noa reads every idea. Tap 👍 on the ones you like.","¿Qué te gustaría hacer en clase? Un tema, un punto de gramática, vocabulario, un juego… Noa lee todas las ideas. Toca 👍 en las que te gusten.")}</p>
+        ${composer("idea","",L("My idea for a class: …","Mi idea para una clase: …"))}
+        <div class="cs-wcats" role="group" aria-label="${L("Sort ideas","Ordenar ideas")}"><button type="button" class="cs-wcat${ISORT==="top"?" on":""}" data-isort="top" aria-pressed="${ISORT==="top"}">👍 ${L("Most liked","Más apoyadas")}</button><button type="button" class="cs-wcat${ISORT==="new"?" on":""}" data-isort="new" aria-pressed="${ISORT==="new"}">🆕 ${L("Newest","Más nuevas")}</button></div>
+        <div class="cl-ilist2" data-ideas="1"></div></div>
+      <div class="cl-sec cl-polls"><h2>📊 ${L("Polls","Encuestas")}</h2>${polls.map(postHTML).join("")||`<p class="cs-empty">${L("No polls right now.","No hay encuestas por ahora.")}</p>`}
+        <details class="cl-newpoll"><summary>＋ ${L("Start a poll","Crear una encuesta")}</summary>${composer("poll","",L("Your question…","Tu pregunta…"))}</details></div>`;
+    paintIdeas(el); paintPolls(el); paintImgs(el); }
+  let IDEAST={};
+  document.addEventListener("click",async e=>{ const u=e.target.closest("[data-iup]"); if(u){ if(!me()&&!G()) return; const id=u.dataset.iup; const item=(POSTS||[]).find(x=>x.id===id)||(G()?SAMPLE_IDEAS.find(x=>x.id===id):null); if(!item) return;
+      if(G()){ const r=(item.likes||[]).filter(v=>rxOf(v)[0]!=="me"); item.likes=r.length!==(item.likes||[]).length?r:r.concat(["me|👍"]); }
+      else { try{ await react("clubPosts/"+id,item,"👍"); }catch(er){ toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } }
+      const card=u.closest(".cl-idea"); card.outerHTML=ideaHTML(item); return; }
+    const so=e.target.closest("[data-isort]"); if(so){ ISORT=so.dataset.isort; const say=so.closest(".cl-say"); so.parentElement.querySelectorAll("[data-isort]").forEach(b=>{ b.classList.toggle("on",b===so); b.setAttribute("aria-pressed",String(b===so)); }); paintIdeas(say); return; }
+    const st=e.target.closest("[data-ist]"); if(st){ const id=st.dataset.ist, v=st.dataset.v; if(IDEAST[id]===v) delete IDEAST[id]; else IDEAST[id]=v; try{ await savePins(); }catch(er){ toast("Couldn’t save."); return; } paintIdeas(st.closest(".cl-say")); return; } });
   /* ---------- 🚀 coming-soon votes ---------- */
   async function paintSoon(root){ const els=[...root.querySelectorAll(".cl-soonv[data-soon]")]; if(!els.length) return; const mineU=G()?"me":me();
     for(const el of els){ let list=[]; try{ list=await votes("soon_"+el.dataset.soon); }catch(e){ el.hidden=true; continue; } const on=list.some(v=>v.uid===mineU);
@@ -4014,7 +4069,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=39" defer></script>
+<script src="buddy.js?v=40" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -8070,8 +8125,10 @@ window.csSignIn = signIn;
 window.__csFire = {
   base: "https://firestore.googleapis.com/v1/projects/" + firebaseConfig.projectId + "/databases/(default)/documents",
   token: async () => auth.currentUser ? auth.currentUser.getIdToken() : null,
-  uid: () => auth.currentUser ? auth.currentUser.uid : null,
-  name: () => auth.currentUser ? (auth.currentUser.displayName || (auth.currentUser.email || "").split("@")[0]) : ""
+  /* in Noa's "View as", the club shows things as that member sees them (reads only: the club refuses every write) */
+  uid: () => VA && VA.uid ? VA.uid : auth.currentUser ? auth.currentUser.uid : null,
+  name: () => VA && VA.uid ? String(VA.name || VA.label || "").split(" · ")[0].replace(/\s*\((?:private \+ club|private|club)\)\s*$/, "") : auth.currentUser ? (auth.currentUser.displayName || (auth.currentUser.email || "").split("@")[0]) : "",
+  readOnly: () => !!VA
 };
 async function doSignOut() {
   await flush();
@@ -8193,7 +8250,8 @@ window.__csViewAs = {
   async data(uid) {
     if (!window.__csTeacher || !user || !uid) return {};
     const out = {};
-    (await getDocs(collection(db, "users", uid, "data"))).forEach(d => { const x = d.data() || {}; if (d.id.startsWith("ncs-") && !x.deleted && typeof x.json === "string") out[d.id] = x.json; });
+    (await getDocs(collection(db, "users", uid, "data"))).forEach(d => { const x = d.data() || {}; if (d.id.startsWith("ncs-") && !x.deleted && typeof x.json === "string") out[d.id] = x.json;
+      if (d.id === "hub-view" && !x.deleted && typeof x.json === "string") out.__hubview = x.json; });  /* their real copy: My coaching + the club, exactly as they see it */
     try { const r = await getDoc(doc(db, "roles", uid)); const lv = r.exists() && (r.data() || {}).lv; if (lv) out["cs-cefr"] = JSON.stringify({ lv }); } catch (e) {}
     return out;
   }
@@ -8201,7 +8259,7 @@ window.__csViewAs = {
 onAuthStateChanged(auth, u => {
   user = u; ready = false;
   renderUser();
-  if (VA) { setHubView(VA.view || null); window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
+  if (VA) { let hv = null; try { hv = VA.data && VA.data.__hubview ? JSON.parse(VA.data.__hubview) : null; } catch (e) {} setHubView(hv || VA.view || null); window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
   loadHubView();
   /* the English level Noa set for club members (from club class recordings), for level-adapted feedback */
   if (u) getDoc(doc(db, "roles", u.uid)).then(d => { const r = d.exists() ? d.data() || {} : {}; try { if (r.lv) localStorage.setItem("cs-cefr", JSON.stringify({ lv: r.lv })); else localStorage.removeItem("cs-cefr"); } catch (e) {} }).catch(() => {});

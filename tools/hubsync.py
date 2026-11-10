@@ -30,6 +30,7 @@ Usage:
        "challenge":{"title":"The best advice you ever got","prompt":"short writing prompt (3-5 sentences, a grammar point to try)"}   (optional weekly challenge; members answer on Hibi)}
       (times and Zoom links come from club-info; add "date"/"time"/"zoom" to a class only if it's different that week)
   HUB_PASSWORD=... python3 hubsync.py club-info '{"schedule":[{"wd":1,"ico":"🧠","name":"Deep Dive Monday","time":"20:00","dur":90,"desc":"...","zoom":"https://..."}],"links":[{"title":"...","url":"https://...","note":"..."}]}'
+  HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
       "notes":"1-2 friendly lines about the class","vocab":[{"w":"word","tr":"Spanish meaning","ex":"example from class"}],"phrases":["useful phrase", ...]}'
@@ -681,6 +682,36 @@ def main():
         print(json.dumps({"ok": True, "replaced": replaced, "id": post["id"], "members": len(uids), "link": SITE + "#club"})); return
     if cmd == "club-sync":
         club_sync(tok, tu); return
+    if cmd == "club-ideas":
+        # members' ideas for future classes (Club → Polls & ideas), most supported first; skips ones Noa marked done
+        q = {"structuredQuery": {"from": [{"collectionId": "clubPosts"}], "limit": 300}}
+        st = {}
+        try:
+            pins = http("GET", f"{BASE}/clubPublic/pins", token=tok) or {}
+            st = json.loads(pins.get("fields", {}).get("json", {}).get("stringValue") or "{}").get("ideas") or {}
+        except (SystemExit, ValueError):
+            pass
+        out = []
+        for r in http("POST", f"{BASE}:runQuery", q, token=tok) or []:
+            d = r.get("document")
+            if not d:
+                continue
+            f = d.get("fields", {})
+            try:
+                j = json.loads(f.get("json", {}).get("stringValue") or "{}")
+            except ValueError:
+                continue
+            if not j.get("idea"):
+                continue
+            pid = d["name"].split("/")[-1]
+            if st.get(pid) == "done":
+                continue
+            likes = [v.get("stringValue", "") for v in f.get("likes", {}).get("arrayValue", {}).get("values", [])]
+            out.append({"idea": j.get("text", ""), "kind": (j.get("idea") or {}).get("k", "other"), "by": f.get("name", {}).get("stringValue", ""),
+                        "supporters": sum(1 for x in likes if x.endswith("|👍")), "status": st.get(pid, "new"),
+                        "date": datetime.datetime.fromtimestamp(int(f.get("at", {}).get("integerValue") or 0) / 1000).strftime("%b %d")})
+        out.sort(key=lambda x: (-x["supporters"], x["date"]))
+        print(json.dumps(out, ensure_ascii=False)); return
     if cmd == "club-recap":
         # after class: add recordings / words / phrases / a short note to a week's club post (members see it under "After class")
         week = str(a[1])[:10]; datetime.date.fromisoformat(week)
