@@ -571,15 +571,11 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 /* + Word: green, like every "add" on Hibi */
 #hdrWord{border-color:color-mix(in srgb,var(--green) 60%,var(--line));background:color-mix(in srgb,var(--green) 14%,var(--surface));color:var(--green)}
 #hdrWord:hover{background:color-mix(in srgb,var(--green) 24%,var(--surface))}
-/* Music: rainbow, whatever the theme */
-#musicBtn{border:1.5px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(90deg,#E5533D,#F5A142,#F5C842,#3FB56B,#4F9DF0,#8B5CF6,#E0699A) border-box}
-#musicBtn .eq i:nth-child(1){background:#E5533D}#musicBtn .eq i:nth-child(2){background:#3FB56B}#musicBtn .eq i:nth-child(3){background:#8B5CF6}
-#musicBtn .theme-txt{background:linear-gradient(90deg,#E5533D,#F5A142,#3FB56B,#4F9DF0,#8B5CF6);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
-#musicBtn.on{background:linear-gradient(color-mix(in srgb,#8B5CF6 10%,var(--surface)),color-mix(in srgb,#8B5CF6 10%,var(--surface))) padding-box,linear-gradient(90deg,#E5533D,#F5A142,#F5C842,#3FB56B,#4F9DF0,#8B5CF6,#E0699A) border-box}
-/* Study timer: tomato red (pomodoro) */
-#tmBtn{border-color:color-mix(in srgb,#E5533D 55%,var(--line));color:#E5533D;background:color-mix(in srgb,#E5533D 10%,var(--surface))}
-#tmBtn.on{border-color:#E5533D;background:color-mix(in srgb,#E5533D 18%,var(--surface));color:#E5533D}
-#tmBtn.brk{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+/* Music: normal pill, three bars in blues */
+#musicBtn .eq i:nth-child(1){background:#7CC4FF}#musicBtn .eq i:nth-child(2){background:#2F8CF0}#musicBtn .eq i:nth-child(3){background:#1D4ED8}
+html.dark #musicBtn .eq i:nth-child(3),[data-theme="dark"] #musicBtn .eq i:nth-child(3){background:#4F7BFF}
+/* Study timer: normal pill, warm orange clock */
+#tmBtn .tm-ico{stroke:#F08A24!important;color:#F08A24}
 /* bionic reading wraps words in spans: they must stay inline everywhere */
 span.bw{display:inline!important}
 @media (max-width:480px){#authTxt{display:none!important}.top-in .auth-btn{padding-inline:9px}}
@@ -1407,7 +1403,7 @@ button.ch-gl{border:1px solid transparent}
 .ag-form textarea{min-height:0;height:auto;resize:vertical}.ag-form input,.ag-form select{min-height:0;height:auto}
 
 /* ===== English Map ===== */
-.em-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin:0 0 14px;padding:14px 16px;border-radius:16px;border:1.5px solid var(--line);background:linear-gradient(120deg,color-mix(in srgb,var(--bright) 10%,var(--surface)),var(--surface) 70%);color:var(--ink);cursor:pointer;font:inherit}
+.em-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin:14px 0;padding:14px 16px;border-radius:16px;border:1.5px solid var(--line);background:linear-gradient(120deg,color-mix(in srgb,var(--bright) 10%,var(--surface)),var(--surface) 70%);color:var(--ink);cursor:pointer;font:inherit}
 .em-card:hover{border-color:var(--bright)}
 .em-ci{font-size:26px;line-height:1}.em-card b{display:block;font:800 16px var(--display)}.em-card small{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}.em-cgo{margin-left:auto;font-weight:800;color:var(--bright)}
 .em{max-width:780px;margin:0 auto}
@@ -1873,7 +1869,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-podh{display:flex;align-items:center;gap:12px}.cl-podh h2{margin:2px 0 0}.cl-podh .cl-note{margin:4px 0 0}
 .cl-podic{font-size:28px;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,#8B5CF6 22%,var(--surface));flex:none}
 .cl-soonb{margin-left:auto;font:800 11.5px var(--body);padding:4px 10px;border-radius:999px;background:color-mix(in srgb,#8B5CF6 22%,var(--surface));white-space:nowrap}
-.cl-podp{max-width:720px}.cl-podsp{width:100%;height:152px;border:0;border-radius:12px}.cl-poddr{width:100%;height:80px;border:0;border-radius:12px;background:#111}.cl-podau{width:100%}
+.cl-podp{max-width:720px}.cl-podsp{width:100%;height:152px;border:0;border-radius:12px}.cl-poddr{width:100%;height:110px;display:block;border:0;border-radius:12px;background:#111}.cl-podau{width:100%}
 .cl-podn summary,.cl-podold>summary,.cl-podadd summary{cursor:pointer;font:700 14px var(--body)}.cl-podn p{margin:8px 0 0;font-size:14.5px;line-height:1.55}
 .cl-podold{display:flex;flex-direction:column;gap:8px}.cl-podold>.cl-rcard{margin-top:8px}
 .cl-podnew{background:color-mix(in srgb,#8B5CF6 10%,var(--surface));border-color:color-mix(in srgb,#8B5CF6 40%,var(--line))}
@@ -1972,6 +1968,11 @@ html.cs-calm .cs-rxpal button{transition:none}
 #v-club .cl-igtop{height:34px;box-sizing:border-box;padding:0 12px}
 .auth-links{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.auth-links button{all:unset;cursor:pointer;font:700 13px var(--body);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
 .auth-links button:hover{border-color:var(--bright,#4F9DF0)}
+
+.cl-pvolw{display:inline-flex;align-items:center;gap:4px}.cl-pmute{background:none;border:0;font-size:16px;cursor:pointer;padding:2px;color:inherit}
+.cl-pvol{width:76px;accent-color:var(--bright)}
+@media (max-width:560px){.cl-pvol{display:none}}
+
 </style>
 
 <header class="top">
@@ -3128,7 +3129,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   let RFOCUS=null;
   /* ---------- 🎧 the weekly club podcast (episodes stored in clubStats/_podcast: Noa adds, members listen) ---------- */
   const pods=()=>(window.__clubPods||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.at||0)-(a.at||0));
-  function podPlayer(u){ u=String(u||""); const yt=ytId(u); { const dm=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(dm) return `<div class="cl-pplay" data-drive="${dm[1]}"><button type="button" class="cl-pbtn" data-pplay="1" aria-label="${L("Play","Reproducir")}">▶</button><div class="cl-pmid"><input type="range" class="cl-pbar" min="0" max="1000" value="0" aria-label="${L("Position","Posición")}"><div class="cl-ptime"><span data-pt="cur">0:00</span><span data-pt="dur">–:––</span></div></div><button type="button" class="cs-act cl-pskip" data-pskip="-15" aria-label="${L("Back 15 seconds","Atrás 15 segundos")}">↺ 15</button><button type="button" class="cs-act cl-pskip" data-pskip="15" aria-label="${L("Forward 15 seconds","Adelante 15 segundos")}">15 ↻</button><button type="button" class="cs-act cl-pspeed" data-pspeed="1">1×</button><audio preload="none" src="https://drive.google.com/uc?export=download&id=${dm[1]}"></audio></div>`; } if(yt) return `<button type="button" class="cl-yt" data-yt="${yt}" data-watched="pod_${yt}" aria-label="${L("Play the episode","Reproducir el episodio")}"><img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`;
+  function podPlayer(u){ u=String(u||""); const yt=ytId(u); { const dm=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(dm) return `<div class="cl-pplay" data-drive="${dm[1]}"><button type="button" class="cl-pbtn" data-pplay="1" aria-label="${L("Play","Reproducir")}">▶</button><div class="cl-pmid"><input type="range" class="cl-pbar" min="0" max="1000" value="0" aria-label="${L("Position","Posición")}"><div class="cl-ptime"><span data-pt="cur">0:00</span><span data-pt="dur">–:––</span></div></div><button type="button" class="cs-act cl-pskip" data-pskip="-15" aria-label="${L("Back 15 seconds","Atrás 15 segundos")}">↺ 15</button><button type="button" class="cs-act cl-pskip" data-pskip="15" aria-label="${L("Forward 15 seconds","Adelante 15 segundos")}">15 ↻</button><button type="button" class="cs-act cl-pspeed" data-pspeed="1">1×</button><label class="cl-pvolw" title="${L("Volume","Volumen")}"><button type="button" class="cl-pmute" data-pmute="1" aria-label="${L("Mute","Silenciar")}">🔊</button><input type="range" class="cl-pvol" min="0" max="100" value="100" aria-label="${L("Volume","Volumen")}"></label><audio preload="metadata" src="https://drive.usercontent.google.com/download?id=${dm[1]}&export=download&confirm=t"></audio></div>`; } if(yt) return `<button type="button" class="cl-yt" data-yt="${yt}" data-watched="pod_${yt}" aria-label="${L("Play the episode","Reproducir el episodio")}"><img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`;
     let m=u.match(/open\.spotify\.com\/(episode|show)\/([\w]+)/); if(m) return `<iframe class="cl-podsp" src="https://open.spotify.com/embed/${m[1]}/${m[2]}" title="Podcast episode" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"></iframe>`;
     m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(m) return `<iframe class="cl-poddr" src="https://drive.google.com/file/d/${m[1]}/preview" title="Podcast episode" loading="lazy" allow="autoplay"></iframe>`;
     if(/\.(mp3|m4a|wav|ogg|aac)(\?|$)/i.test(u)) return `<audio class="cl-podau" controls preload="none" src="${esc(u)}"></audio>`;
@@ -3296,6 +3297,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   ["play","pause","timeupdate","loadedmetadata","error","ended"].forEach(ev=>document.addEventListener(ev,e=>{ const au=e.target; if(!au||au.tagName!=="AUDIO") return; const pp=au.closest(".cl-pplay"); if(!pp) return;
     if(ev==="error"){ podFallback(pp); return; } const b=pp.querySelector("[data-pplay]"); b.textContent=au.paused?"▶":"❚❚"; b.setAttribute("aria-label",au.paused?L("Play","Reproducir"):L("Pause","Pausa")); pp.classList.toggle("on",!au.paused);
     pp.querySelector('[data-pt="cur"]').textContent=fmtPT(au.currentTime||0); pp.querySelector('[data-pt="dur"]').textContent=fmtPT(au.duration); if(au.duration&&!pp._drag) pp.querySelector(".cl-pbar").value=Math.round((au.currentTime/au.duration)*1000); },true));
+  document.addEventListener("input",e=>{ const v=e.target.closest(".cl-pplay .cl-pvol"); if(!v) return; const pp=v.closest(".cl-pplay"), au=pp.querySelector("audio"); au.volume=v.value/100; au.muted=false; pp.querySelector("[data-pmute]").textContent=v.value==0?"🔇":v.value<50?"🔉":"🔊"; });
+  document.addEventListener("click",e=>{ const m=e.target.closest(".cl-pplay [data-pmute]"); if(!m) return; e.preventDefault(); const pp=m.closest(".cl-pplay"), au=pp.querySelector("audio"); au.muted=!au.muted; m.textContent=au.muted?"🔇":"🔊"; });
   document.addEventListener("input",e=>{ const r=e.target.closest(".cl-pplay .cl-pbar"); if(!r) return; const au=r.closest(".cl-pplay").querySelector("audio"); if(au.duration) au.currentTime=r.value/1000*au.duration; });
   document.addEventListener("cs-club-pods",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,iframe,.cl-pplay.on,textarea:focus,input:focus")) render(); });
   document.addEventListener("cs-club-recs",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,textarea:focus,input:focus")) render(); else home(); });
@@ -4815,7 +4818,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Make it <em>yours</em> ⚙️</h2>
     <ul class="wl-list">
       <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
-      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (top right): pick your photo (your Google one, your own, or your buddy), and jump to your words, your club profile and your messages. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
+      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (top right): pick your photo (your Google one, your own, or your buddy), and jump to your words and your club profile. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
       <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (top right): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music:</b> lo-fi, piano, rain or calm noise while you study.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
@@ -9290,7 +9293,7 @@ function photoBox() {
     lk.addEventListener("click", e => { const x = e.target.closest("[data-al]"); if (!x) return; panel.hidden = true; const k = x.dataset.al; if (k === "club") { window.__clubMyProfile && window.__clubMyProfile(); } else if (k === "dm") { window.__clubInbox && window.__clubInbox(); } else if (k === "level") { location.hash = "#quiz"; setTimeout(() => document.querySelector('[data-pr="level"]')?.click(), 300); } else location.hash = "#" + k; }); }
   let nW = 0; try { nW = (JSON.parse(localStorage.getItem("ncs-words") || "[]") || []).filter(x => x && !x.sample).length; } catch (e) {}
   const lv = (() => { try { return window.csLevel ? (window.csLevel().lv || "") : ""; } catch (e) { return ""; } })(), club = !!window.__clubInbox && !!document.getElementById("dmTopBtn") && !document.getElementById("dmTopBtn").hidden;
-  lk.innerHTML = `<button type="button" data-al="words">📚 ${nW} ${nW === 1 ? "word" : "words"}</button><button type="button" data-al="level">📊 ${lv ? "Level " + lv : "My level"}</button>${club ? `<button type="button" data-al="club">🙂 My club profile</button><button type="button" data-al="dm">💬 Messages</button>` : ""}`;
+  lk.innerHTML = `<button type="button" data-al="words">📚 ${nW} ${nW === 1 ? "word" : "words"}</button><button type="button" data-al="level">📊 ${lv ? "Level " + lv : "My level"}</button>${club ? `<button type="button" data-al="club">🙂 My club profile</button>` : ""}`;
 }
 function renderUser() {
   document.body.dataset.auth = user ? "in" : "out";

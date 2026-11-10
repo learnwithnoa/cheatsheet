@@ -285,7 +285,7 @@ tr.arch td{opacity:.85}
       <button type="button" id="impBtn">⬆ Import file</button><button type="button" id="expBtn">⬇ Backup</button>
       <input type="file" id="impFile" accept=".json,application/json" hidden></div></div>
     <div class="hubbar" id="hubbar">
-      <div class="hubtabs" role="tablist"><button type="button" role="tab" data-view="overview" id="tabOv">📊 Overview</button><button type="button" role="tab" data-view="students" id="tabSt">🎓 Students</button><button type="button" role="tab" data-view="money" id="tabMn">💰 Money</button></div>
+      <div class="hubtabs" role="tablist"><button type="button" role="tab" data-view="students" id="tabSt">🎓 Students</button><button type="button" role="tab" data-view="overview" id="tabOv">📊 Overview</button><button type="button" role="tab" data-view="money" id="tabMn">💰 Money</button></div>
       <div class="jump"><input type="search" id="jumpQ" placeholder="Jump to a student…" aria-label="Jump to a student" autocomplete="off"><div class="jump-res" id="jumpRes" hidden></div></div>
       <button type="button" class="histb" id="histBtn" title="Undo changes: see everything you changed recently">🕘 Undo / history</button>
     </div>
@@ -1102,7 +1102,7 @@ document.addEventListener("submit", e => {
   }
 });
 /* ---------- screens: Overview, Students list, one student (#s/<id>) ---------- */
-let hubView = "students"; try { const hv = localStorage.getItem("cs-hub-view"); hubView = hv === "overview" || hv === "money" ? hv : "students"; } catch (e) {}
+let hubView = "students";
 function go(v) { const h = v === "overview" ? "#overview" : v === "money" ? "#money" : "#students"; if (location.hash !== h) location.hash = h; else route(); }
 function openStu(id) { const h = "#s/" + encodeURIComponent(id); if (location.hash !== h) location.hash = h; else route(); }
 function route() {
