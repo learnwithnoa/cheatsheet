@@ -1977,6 +1977,8 @@ html.cs-calm .cs-rxpal button{transition:none}
 
 
 .cl-podh{position:relative}.cl-podx{margin-left:auto;align-self:flex-start;background:none;border:1px solid transparent;border-radius:8px;padding:4px 7px;font-size:15px;cursor:pointer;opacity:.45}.cl-podx:hover{opacity:1;border-color:var(--line)}
+/* room between the tab pills and the phone's scroll bar */
+@media (max-width:600px){ .cl-tabs{padding-bottom:12px;margin-bottom:4px} }
 </style>
 
 <header class="top">
@@ -3534,8 +3536,14 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* everyone's buddy, from the Buddy park */
   let PARK=null, parkP=null;
   function loadPark(){ if(PARK) return Promise.resolve(PARK); if(parkP) return parkP;
-    parkP=(async()=>{ try{ const P=window.__csPark; const list=P&&P.list?await Promise.race([P.list(),new Promise(r=>setTimeout(()=>r(null),4000))]):null; PARK=list||[]; }catch(e){ PARK=[]; }
-      const myU=me(); PARK.forEach(x=>{ const u=x.me?myU:x.uid; if(u&&x.a&&x.on!==false) PARKMAP[u]=x; }); parkP=null; return PARK; })(); return parkP; }
+    parkP=(async()=>{ const fill=l=>{ const myU=me(); (l||[]).forEach(x=>{ const u=x.me?myU:x.uid; if(u&&x.a&&x.on!==false) PARKMAP[u]=x; }); };
+      try{ const P=window.__csPark; if(!P||!P.list){ /* the buddy script isn't ready yet: try again in a moment, don't cache an empty park */ parkP=null; setTimeout(parkLate,1500); return []; }
+        const full=P.list(), list=await Promise.race([full,new Promise(r=>setTimeout(()=>r(null),4000))]);
+        if(list){ PARK=list; } else { full.then(l=>{ PARK=l||[]; fill(PARK); parkRepaint(); }).catch(()=>{ PARK=[]; }); parkP=null; return []; }
+      }catch(e){ PARK=[]; }
+      fill(PARK); parkP=null; return PARK; })(); return parkP; }
+  function parkLate(){ if(PARK) return; loadPark().then(l=>{ if(l&&l.length) parkRepaint(); }); }
+  function parkRepaint(){ const v=document.getElementById("v-club"); if(!v||v.hidden||box.querySelector("textarea:focus,input:focus,.cl-ytf,.cl-pplay.on")) return; const ms=document.querySelectorAll(".cl-members[data-on='1']"); if(ms.length){ ms.forEach(x=>mountMembers(x)); return; } render(); }
   /* ---------- profiles (clubProfiles/{uid}) and attendance (clubStats/{uid}, written by Noa's nightly helper) ---------- */
   const SMO=(()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); })();
   const SAMPLE_PROFS=[{id:NOA,uid:NOA,name:"Noa (sample)",about:"This is a sample profile.",country:"Chile",since:Date.now()-200*864e5,posts:12,comments:40,ch:0},{id:"x3",uid:"x3",name:"Sam (sample)",about:"This is a sample profile.",country:"Chile",since:Date.now()-180*864e5,posts:6,comments:22,ch:3,mo:{[SMO]:{posts:2,comments:9,ch:1}},watched:["a","b","c"]},{id:"x2",uid:"x2",name:"Alex (sample)",about:"This is a sample profile.",country:"Chile",since:Date.now()-60*864e5,posts:2,comments:11,ch:1,mo:{[SMO]:{posts:1,comments:4,ch:1}}},{id:"x1",uid:"x1",name:"Robin (sample)",about:"",country:"",since:Date.now()-9*864e5,posts:1,comments:2,ch:0}];
