@@ -453,7 +453,7 @@ def club_sync(tok, tu, m=None, quiet=False):
     try:
         names = {x["uid"]: x.get("name", "") for x in get_accounts(tok)}
         feed["roster"] = sorted([{"uid": u, "name": names.get(u, "")} for u in uids if names.get(u)], key=lambda x: x["name"].lower())
-        m["clubFeed"] = feed
+        m["clubFeed"] = feed; set_doc(tok, tu, "t-hubmeta", m)
     except SystemExit:
         pass
     now = int(datetime.datetime.now().timestamp() * 1000)
