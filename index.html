@@ -1332,6 +1332,7 @@ button.ch-gl{border:1px solid transparent}
 .lx .lx-check{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 16px;border-radius:999px;background:var(--c-s,#3B82F6);color:#fff;font:800 14px var(--body);border:0;text-decoration:none;cursor:pointer}
 .lx .lx-check:hover{filter:brightness(1.08)}
 .lx .lx-gapq .lx-in{padding:2px 8px;height:auto;min-height:0;line-height:1.4;border-radius:6px;vertical-align:baseline}
+.ch-khead{all:unset;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline}.ch-khead span{opacity:.75;text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:700}.ch-khead:hover span{opacity:1;text-decoration:underline}.ch-khead:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:4px}
 .cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
 html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
 .cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -2278,10 +2279,10 @@ html.cs-calm .cs-rxpal button{transition:none}
     const lpAll=lprog(), lBadge=g=>{ const L=lesOf(v).find(x=>x.id===g.lesson); if(!L) return ""; const tot=lesTotal(L), p=lpAll[L.id]||{}, sc=lesScore(L,p); return tot?(p.done?' <span class="ch-lbadge done">✅ done</span>':sc?` <span class="ch-lbadge">${sc}/${tot}</span>`:` <span class="ch-lbadge new">✏️ ${tot} exercises</span>`):""; };
     const gItem=(g,ico,cls)=>g.lesson?`<button type="button" class="${cls}" data-lesson="${esc(g.lesson)}">${cls==="ch-gl"?`<span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}${lBadge(g)}</b>${g.date?`<small>${fd(g.date)} · on Hibi</small>`:""}</span>`:`<b>${ico} ${esc(g.title)}${lBadge(g)}</b><span>${g.date?fd(g.date):""}</span>`}</button>`
       :`<a class="${cls}" href="${esc(g.url)}" target="_blank" rel="noopener">${cls==="ch-gl"?`<span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}</b>${g.date?`<small>${fd(g.date)}</small>`:""}</span>`:`<b>${ico} ${esc(g.title)}</b><span>${g.date?fd(g.date):""}</span>`}</a>`;
-    const gRow=(list,ico)=>list.slice(0,3).map(g=>gItem(g,ico,"ch-gl")).join("");
+    const gRow=(list,ico)=>list.slice(0,1).map(g=>gItem(g,ico,"ch-gl")).join("");  /* just the newest one here; the tab below has them all */
     const guideBox=gAll.length?`<div class="ch-gbox ch-tint ch-a"><div class="ch-gcols">
-      ${gStudy.length?`<div><div class="ch-k">📄 Study guides</div><div class="ch-glist">${gRow(gStudy,"📄")}</div>${gStudy.length>3?`<button type="button" class="ch-go" data-ct="guides">See all ${gStudy.length} →</button>`:""}</div>`:""}
-      ${gRecap.length?`<div><div class="ch-k">📼 Class recaps</div><div class="ch-glist">${gRow(gRecap,"📼")}</div>${gRecap.length>3?`<button type="button" class="ch-go" data-ct="recaps">See all ${gRecap.length} →</button>`:""}</div>`:""}
+      ${gStudy.length?`<div><button type="button" class="ch-k ch-khead" data-ctgo="guides" title="See all your study guides">📄 ${gStudy.length>1?"Latest study guide":"Study guide"} <span>${gStudy.length>1?`· all ${gStudy.length} →`:"→"}</span></button><div class="ch-glist">${gRow(gStudy,"📄")}</div></div>`:""}
+      ${gRecap.length?`<div><button type="button" class="ch-k ch-khead" data-ctgo="recaps" title="See all your class recaps">📼 ${gRecap.length>1?"Latest class recap":"Class recap"} <span>${gRecap.length>1?`· all ${gRecap.length} →`:"→"}</span></button><div class="ch-glist">${gRow(gRecap,"📼")}</div></div>`:""}
       </div></div>`:"";
     const res=v.resources||[];
     const resBox=res.length?`<div class="ch-res ch-tint ch-a"><div class="ch-k">🧰 Class resources</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">The websites we use in class. Tap one to open it.</p><div class="ch-resl">${res.map(r=>`<a class="ch-resb" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">${r.ico}</span><span><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span></a>`).join("")}</div></div>`:"";
@@ -2324,6 +2325,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const b=e.target.closest("[data-rep]"); if(!b||!v) return; const id=b.dataset.rep;
     if(tab==="reports"&&openRep===id&&b.classList.contains("ch-rep-h")) openRep="__none"; else { openRep=id; tab="reports"; }
     render(); const el=document.getElementById("rep-"+id); if(el&&!b.classList.contains("ch-rep-h")) el.scrollIntoView({behavior:"smooth",block:"start"}); });
+  box.addEventListener("click",e=>{ const g=e.target.closest("[data-ctgo]"); if(!g) return; tab=g.dataset.ctgo; render(); setTimeout(()=>box.querySelector(".ch-tabs")?.scrollIntoView({behavior:"smooth",block:"start"}),30); });
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); });
   document.addEventListener("cs-hubview",render); document.addEventListener("cs-teacher",nav);
   /* teacher: shortcuts in the phone menu */
