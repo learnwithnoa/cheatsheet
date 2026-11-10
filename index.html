@@ -1733,6 +1733,17 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-pastw h2 small{font-weight:600;color:var(--muted);font-size:14px}
 .cl-pastw{display:flex;flex-direction:column;gap:8px}
 .cl-next.k1{--k:var(--c3)}.cl-next.k2{--k:var(--c2)}.cl-next.k3{--k:var(--c4)}.cl-next.k4{--k:var(--c1)}
+/* narrow windows: the top bar compacts instead of overlapping the logo */
+.top-in>.brand{flex-shrink:0}
+@media (max-width:980px){ .top-in .theme-btn:not(.auth-btn) .theme-txt{display:none} .top-in .theme-btn:not(.auth-btn){padding-inline:10px} html.cs-signed #authTxt{display:none} }
+@media (max-width:640px){ .top-in #navTeacher,.top-in #navHub{display:none} .top-in{gap:5px} }
+.cl-ig{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--ink);border:1.5px solid color-mix(in srgb,#E1306C 45%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,#F58529 10%,var(--surface)),color-mix(in srgb,#DD2A7B 12%,var(--surface)),color-mix(in srgb,#8134AF 10%,var(--surface)))}
+.cl-ig:hover{border-color:#E1306C}.cl-ig-ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);flex:none}
+.cl-ig>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px}.cl-ig small{color:var(--muted);font-size:13px}.cl-ig-go{font-weight:800;color:#E1306C}
+.cl-ig.compact{padding:9px 12px}.cl-ig.compact .cl-ig-ic{width:30px;height:30px;border-radius:9px}
+.cl-faq details{border-bottom:1px solid var(--line);padding:8px 0}.cl-faq summary{cursor:pointer;font:700 15px var(--body)}.cl-faq details p{margin:8px 0 2px;font-size:14.5px;line-height:1.55}
+.cl-faq h3{margin:14px 0 6px;font-size:15px}.cl-faq ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:14.5px;line-height:1.5}
+.cl-rules ol{list-style:none;padding-left:0}
 </style>
 
 <header class="top">
@@ -2855,16 +2866,25 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         ${(info.links||[]).length?`<div class="cl-sec"><h2>🔗 ${L("Useful links","Links útiles")}</h2>${info.links.map(l=>`<div class="cl-row"><span class="i">${esc(l.ico||"🔗")}</span><span class="t"><b>${esc(l.title)}</b>${l.note?`<span>${esc(l.note)}</span>`:""}</span><a class="cl-join" style="--k:var(--c4)" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a></div>`).join("")}</div>`:""}`;
   }
   /* ---------- 👋 welcome + guidelines ---------- */
-  const RULES_EN=["Mistakes are welcome here. That’s how we learn.","Be kind. Laugh with people, never at them.","Try to speak and write in English (a little Spanish to get unstuck is fine).","What’s shared in the club stays in the club.","Cameras are optional. Showing up is what counts.","Keep it respectful: no spam, no selling, no hate."];
-  const RULES_ES=["Aquí los errores son bienvenidos. Así se aprende.","Sé amable. Ríete con las personas, nunca de ellas.","Intenta hablar y escribir en inglés (un poco de español para destrabarte está bien).","Lo que se comparte en el club, queda en el club.","La cámara es opcional. Lo importante es estar.","Con respeto: nada de spam, ventas ni odio."];
+  const RULES_EN=["✔️ Respect everyone, whatever their level. Laugh with people, never at them.","💡 Mistakes are welcome here. That’s how we learn.","💬 Bring positive energy, and stick to English as much as you can (a little Spanish to get unstuck is fine).","🔒 What’s shared in the club stays in the club.","🚫 No spam, no self-promotion.","🛟 Questions? Just ask, we’ve got you."];
+  const RULES_ES=["✔️ Respeta a todos, sin importar su nivel. Ríete con las personas, nunca de ellas.","💡 Aquí los errores son bienvenidos. Así se aprende.","💬 Trae buena energía y usa el inglés lo más que puedas (un poco de español para destrabarte está bien).","🔒 Lo que se comparte en el club, queda en el club.","🚫 Nada de spam ni autopromoción.","🛟 ¿Dudas? Solo pregunta, aquí te ayudamos."];
+  const IG_GROUP="https://www.instagram.com/j/AbYEKteyhp-zyxxc/";
+  function igHTML(compact){ return `<a class="cl-ig${compact?" compact":""}" href="${IG_GROUP}" target="_blank" rel="noopener"><span class="cl-ig-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span><span><b>${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</b>${compact?"":`<small>${L("Reminders, memes and chats with the club between classes.","Recordatorios, memes y conversación con el club entre clases.")}</small>`}</span><span class="cl-ig-go">→</span></a>`; }
+  /* good to know: how the classes work */
+  function faqHTML(){ const Q=[
+      ["📅",["Can I come to more than one class a week?","¿Puedo ir a más de una clase por semana?"],["Absolutely! All classes are open to everyone, so join as many as you like in the same week. You can also just listen quietly if you’re not up to talking that day. No pressure.","¡Claro! Todas las clases están abiertas para todos, así que ven a las que quieras en la misma semana. También puedes solo escuchar si ese día no tienes ganas de hablar. Sin presión."]],
+      ["📚",["Do I need to prepare?","¿Tengo que preparar algo?"],["Usually no: all classes are drop-in. Sometimes there’s a little homework, and it’s always in the weekly post (the This week tab), so you’ll know in advance. It’s never anything too time-consuming.","Normalmente no: todas las clases son sin preparación. A veces hay una pequeña tarea, y siempre está en el post semanal (pestaña Esta semana), para que lo sepas antes. Nunca es algo que tome mucho tiempo."]]];
+    const T=L(["💻 Use a computer if you can: it’s easier to see the materials and your classmates.","📷 Keep your camera on: it makes the conversation feel more natural.","🎧 Use headphones if possible: better audio for everyone.","🔇 Only mute yourself if there’s background noise. No need to be on mute the whole time."],["💻 Usa un computador si puedes: es más fácil ver los materiales y a tus compañeros.","📷 Deja tu cámara encendida: la conversación se siente más natural.","🎧 Usa audífonos si puedes: mejor audio para todos.","🔇 Silénciate solo si hay ruido de fondo. No hace falta estar en silencio todo el rato."]);
+    return `<div class="cl-sec cl-faq"><h2>🙋 ${L("Good to know","Bueno saber")}</h2>${Q.map(q=>`<details><summary>${q[0]} ${esc(L(q[1][0],q[1][1]))}</summary><p>${esc(L(q[2][0],q[2][1]))}</p></details>`).join("")}<h3>🎧 ${L("A few tips","Algunos consejos")}</h3><ul>${T.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`; }
   function rulesHTML(f,inWelcome){ const r=((f.info||{}).rules||[]).length?f.info.rules:L(RULES_EN,RULES_ES);
     return `<div class="cl-sec cl-rules">${inWelcome?"":`<h2>🤝 ${L("Club guidelines","Normas del club")}</h2>`}<ol>${r.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`; }
   const WELC="cs-club-welcomed";
   function welcomeHTML(f){ try{ if(localStorage.getItem(WELC)) return ""; }catch(e){ return ""; } if(window.__csPreview&&!window.__csGuest) return "";
     const nm=(window.__csFire&&window.__csFire.name&&window.__csFire.name()||"").split(" ")[0];
-    return `<div class="cl-welc"><button type="button" class="cl-welc-x" data-welcx="1" aria-label="${L("Close","Cerrar")}">✕</button><h2>👋 ${L("Welcome to the club","Bienvenido al club")}${nm?", "+esc(nm):""}!</h2><p>${L("Three small things to get started:","Tres cositas para empezar:")}</p>
+    return `<div class="cl-welc"><button type="button" class="cl-welc-x" data-welcx="1" aria-label="${L("Close","Cerrar")}">✕</button><h2>👋 ${L("Welcome to the club","Bienvenido al club")}${nm?", "+esc(nm):""}!</h2><p>${L("A few small things to get started:","Unas cositas para empezar:")}</p>
       <ol class="cl-steps"><li><b>${L("Say hi on the wall","Saluda en el muro")}</b><span>${L("Tell us your name, where you’re from and why you’re learning English.","Cuéntanos tu nombre, de dónde eres y por qué aprendes inglés.")}</span><button type="button" class="cl-join" style="--k:var(--c2)" data-intro="1">👋 ${L("Introduce yourself","Preséntate")}</button></li>
         <li><b>${L("Read the club guidelines","Lee las normas del club")}</b><details><summary>${L("Show them","Mostrar")}</summary>${rulesHTML(f,true)}</details></li>
+        <li><b>${L("Join our Instagram group","Únete al grupo de Instagram")}</b><span>${L("Reminders and chats with the club between classes.","Recordatorios y conversación con el club entre clases.")}</span><a class="cl-join" style="--k:#E1306C" href="${IG_GROUP}" target="_blank" rel="noopener">📸 ${L("Join the group","Unirme al grupo")}</a></li>
         <li><b>${L("Come to a class","Ven a una clase")}</b><span>${L("Tap “🙋 I’m going” on a class below. All levels, camera optional.","Toca “🙋 Voy” en una clase de abajo. Todos los niveles, cámara opcional.")}</span></li></ol>
       <button type="button" class="cs-act" data-welcx="1">${L("Got it","Entendido")} ✓</button></div>`; }
   /* ---------- 🚀 coming soon (members vote; filled by the community script) ---------- */
@@ -2884,9 +2904,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     else if(tab==="members"){ body='<div class="cl-members" data-members="1"></div>'; }
     else if(tab==="insights"){ body='<div class="cl-insights" data-insights="1"></div>'; }
     else if(tab==="recordings"||tab==="past"){ tab="recordings"; body=recTab(f)+pastHTML(f,ps,now); }
-    else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=calTab(f,now)+linksHTML(f)+rulesHTML(f,false); }
+    else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=calTab(f,now)+linksHTML(f)+faqHTML()+igHTML(false)+rulesHTML(f,false); }
     else if(tab==="say"){ body='<div class="cl-say" data-say="1"></div>'+soonHTML(); }
-    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+postHTML(f,ps[0],now,true,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+postHTML(f,ps[0],now,true,true)+igHTML(true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
     if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
   }
@@ -3205,6 +3225,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     await Promise.all([loadProfs(true),loadPark(),loadPins(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{})]);
     let list=(PROFS||[]).slice();
     (POSTS||[]).forEach(p=>{ if(p.uid&&!list.some(x=>x.id===p.uid)) list.push({id:p.uid,uid:p.uid,name:p.name}); });
+    { const fd=window.__clubFeed&&window.__clubFeed(); ((fd&&fd.roster)||[]).forEach(r=>{ if(r.uid&&!list.some(x=>x.id===r.uid)) list.push({id:r.uid,uid:r.uid,name:r.name}); }); }
     list.sort((a,b)=>(b.id===NOA)-(a.id===NOA)||(b.id===me())-(a.id===me())||String(a.name).localeCompare(String(b.name)));
     const m=MON(), board=list.filter(x=>x.id!==NOA).map(x=>({x,pt:points(x.id,m)})).filter(b=>b.pt>0).sort((a,b)=>b.pt-a.pt), myI=board.findIndex(b=>b.x.id===me());
     const lb=`<div class="cl-board"><div class="cl-boardh"><h3>🏆 ${L("This month","Este mes")}</h3><details class="cl-howpts"><summary>${L("How points work","Cómo funcionan los puntos")}</summary><p>${L("A post 5 · a comment 2 · a weekly challenge +5 · each week you come to a class 10. It starts again every month.","Un post 5 · un comentario 2 · un desafío semanal +5 · cada semana que vienes a clase 10. Se reinicia cada mes.")}</p></details></div>

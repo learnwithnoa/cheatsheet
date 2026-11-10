@@ -449,6 +449,13 @@ def club_sync(tok, tu, m=None, quiet=False):
     m["clubUids"] = uids; set_doc(tok, tu, "t-hubmeta", m)
     feed = m.get("clubFeed") or {}
     hub_of = {u: (r or {}).get("hub") for u, r in roles.items() if (r or {}).get("hub")}
+    # who's in the club (Hibi accounts marked club/both), so the Members tab isn't empty before people open it
+    try:
+        names = {x["uid"]: x.get("name", "") for x in get_accounts(tok)}
+        feed["roster"] = sorted([{"uid": u, "name": names.get(u, "")} for u in uids if names.get(u)], key=lambda x: x["name"].lower())
+        m["clubFeed"] = feed
+    except SystemExit:
+        pass
     now = int(datetime.datetime.now().timestamp() * 1000)
     added, removed = [], []
     for uid in sorted(set(uids) | before):
