@@ -578,6 +578,11 @@ html.dark #musicBtn .eq i:nth-child(3),[data-theme="dark"] #musicBtn .eq i:nth-c
 #tmBtn .tm-ico{stroke:#F08A24!important;color:#F08A24}
 /* bionic reading wraps words in spans: they must stay inline everywhere */
 span.bw{display:inline!important}
+/* gradient titles (Hibi logo, page titles): lighter blues on dark themes so they read well */
+:root{--gloss-text:var(--gloss)}
+:root[data-theme="dark"],:root[data-theme="midnight"]{--gloss-text:linear-gradient(180deg,#C4E3FF 0%,#86C5FF 50%,#8FA8FF 100%)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="unicorn"]):not([data-theme="sepia"]):not([data-theme="midnight"]){--gloss-text:linear-gradient(180deg,#C4E3FF 0%,#86C5FF 50%,#8FA8FF 100%)}}
+.brand span,.view h1 em,.welcome h2 em,.quiz-verb{background:var(--gloss-text);-webkit-background-clip:text;background-clip:text}
 /* top bar order: + Word · Music · Timer | Messages · Profile · Settings */
 .top-in>#clBellWrap,.top-in>#dmTopBtn{order:5}.top-in>.auth-wrap{order:6}.top-in>#csWrap{order:10}
 @media (max-width:480px){#authTxt{display:none!important}.top-in .auth-btn{padding-inline:9px}}
