@@ -568,6 +568,22 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 @keyframes wlTw{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.wl-bdprev .wl-bdimg i{animation:none;opacity:.8}}
 
+/* + Word: green, like every "add" on Hibi */
+#hdrWord{border-color:color-mix(in srgb,var(--green) 60%,var(--line));background:color-mix(in srgb,var(--green) 14%,var(--surface));color:var(--green)}
+#hdrWord:hover{background:color-mix(in srgb,var(--green) 24%,var(--surface))}
+/* Music: rainbow, whatever the theme */
+#musicBtn{border:1.5px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(90deg,#E5533D,#F5A142,#F5C842,#3FB56B,#4F9DF0,#8B5CF6,#E0699A) border-box}
+#musicBtn .eq i:nth-child(1){background:#E5533D}#musicBtn .eq i:nth-child(2){background:#3FB56B}#musicBtn .eq i:nth-child(3){background:#8B5CF6}
+#musicBtn .theme-txt{background:linear-gradient(90deg,#E5533D,#F5A142,#3FB56B,#4F9DF0,#8B5CF6);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+#musicBtn.on{background:linear-gradient(color-mix(in srgb,#8B5CF6 10%,var(--surface)),color-mix(in srgb,#8B5CF6 10%,var(--surface))) padding-box,linear-gradient(90deg,#E5533D,#F5A142,#F5C842,#3FB56B,#4F9DF0,#8B5CF6,#E0699A) border-box}
+/* Study timer: tomato red (pomodoro) */
+#tmBtn{border-color:color-mix(in srgb,#E5533D 55%,var(--line));color:#E5533D;background:color-mix(in srgb,#E5533D 10%,var(--surface))}
+#tmBtn.on{border-color:#E5533D;background:color-mix(in srgb,#E5533D 18%,var(--surface));color:#E5533D}
+#tmBtn.brk{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+/* bionic reading wraps words in spans: they must stay inline everywhere */
+span.bw{display:inline!important}
+@media (max-width:480px){#authTxt{display:none!important}.top-in .auth-btn{padding-inline:9px}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -1100,7 +1116,7 @@ html[data-theme="light"] .ch-wrap,html[data-theme="sepia"] .ch-wrap,html[data-th
 .ch-card{padding:14px 16px;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.45}
 .ch-card>b{font-size:17px}
 .ch-k{font:700 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--k)}
-.ch-hw{font-size:14px}.ch-hw span{display:block;font-weight:800;font-size:12.5px;color:var(--muted)}
+.ch-hw{font-size:14px}.ch-hw>span:first-child{display:block;font-weight:800;font-size:12.5px;color:var(--muted)}
 .ch-tip{display:flex;flex-direction:column;gap:1px}.ch-tip small{color:var(--muted);font-size:12.5px}
 .ch-go{all:unset;cursor:pointer;font-weight:800;color:var(--k);font-size:14.5px}.ch-go:hover{text-decoration:underline}
 .ch-guides{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
@@ -1389,6 +1405,49 @@ button.ch-gl{border:1px solid transparent}
 .tn-invite{margin:8px 0}.tn-invite summary{cursor:pointer;font-weight:700}
 .tn-invite form{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.tn-invite input{flex:1 1 140px;font:500 14px var(--body);padding:6px 9px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg,var(--surface));color:var(--ink)}
 .ag-form textarea{min-height:0;height:auto;resize:vertical}.ag-form input,.ag-form select{min-height:0;height:auto}
+
+/* ===== English Map ===== */
+.em-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin:0 0 14px;padding:14px 16px;border-radius:16px;border:1.5px solid var(--line);background:linear-gradient(120deg,color-mix(in srgb,var(--bright) 10%,var(--surface)),var(--surface) 70%);color:var(--ink);cursor:pointer;font:inherit}
+.em-card:hover{border-color:var(--bright)}
+.em-ci{font-size:26px;line-height:1}.em-card b{display:block;font:800 16px var(--display)}.em-card small{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}.em-cgo{margin-left:auto;font-weight:800;color:var(--bright)}
+.em{max-width:780px;margin:0 auto}
+.em-hd{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between;margin:14px 0 18px;padding:22px 22px 20px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+.em-k{font:700 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--bright)}
+.em-hd h2{margin:8px 0 4px;font-size:clamp(22px,3.6vw,30px);line-height:1.15;max-width:22ch}
+.em-sub{margin:0;color:var(--muted);font-size:14px}
+.em-lv{display:flex;gap:4px}
+.em-lv span{position:relative;display:grid;place-items:center;width:40px;height:34px;border-radius:9px;font:800 13px var(--mono);color:var(--muted);background:var(--surface-2);border:1px solid var(--line)}
+.em-lv span.past{color:var(--ink);background:color-mix(in srgb,var(--bright) 14%,var(--surface))}
+.em-lv span.on{color:#fff;background:var(--bright);border-color:var(--bright);box-shadow:0 4px 14px color-mix(in srgb,var(--bright) 40%,transparent)}
+.em-lv span i{position:absolute;top:calc(100% + 4px);font:700 10.5px var(--body);font-style:normal;color:var(--bright);letter-spacing:.04em;text-transform:uppercase}
+.em-sec{margin:0 0 14px;padding:18px 20px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}
+.em-sec h3{margin:0 0 10px;font-size:17px}.em-sec p{margin:0 0 6px;line-height:1.55}.em-muted{font-weight:600;font-size:13px;color:var(--muted);margin-left:6px}
+.em-power{background:linear-gradient(135deg,color-mix(in srgb,#f5b301 14%,var(--surface)),var(--surface) 65%)}
+.em-power blockquote{margin:0 0 8px;padding:10px 14px;border-left:3px solid #f5b301;border-radius:0 10px 10px 0;background:color-mix(in srgb,#f5b301 8%,var(--surface));font-style:italic;font-size:16px}
+.em-focus{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.em-focus li{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:12px 0;border-top:1px dashed var(--line)}.em-focus li:first-child{border-top:0;padding-top:0}
+.em-fn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:800 14px var(--mono);background:var(--bright);color:#fff}
+.em-fx{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.em-fx span{display:flex;flex-direction:column;padding:7px 11px;border-radius:10px;font-size:15px;line-height:1.35}
+.em-fx small{font:700 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-bottom:2px}
+.em-said{background:color-mix(in srgb,var(--red) 9%,var(--surface));color:var(--ink)}.em-said s{text-decoration-color:color-mix(in srgb,var(--red) 70%,transparent)}
+.em-fix{background:color-mix(in srgb,var(--green) 12%,var(--surface));font-weight:700}
+.em-tip{font-size:14.5px;color:var(--muted)}
+.em-route{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0;position:relative}
+.em-route li{position:relative;padding:28px 12px 4px 0}
+.em-route li::before{content:"";position:absolute;top:9px;left:0;right:0;height:3px;background:var(--line);border-radius:3px}
+.em-route li.em-now::before{background:linear-gradient(90deg,var(--bright),var(--line))}
+.em-dot{position:absolute;top:2px;left:0;width:17px;height:17px;border-radius:50%;background:var(--surface);border:3px solid var(--bright);z-index:1;display:grid;place-items:center;font-size:12px}
+.em-now .em-dot{background:var(--bright)}.em-goal .em-dot{border:0;background:none;font-size:18px;top:-1px}
+.em-route small{display:block;font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--bright)}
+.em-route b{display:block;margin-top:4px;font-size:14.5px;line-height:1.4;font-weight:600}
+.em-goal b{font-weight:800}
+@media (max-width:640px){.em-route{grid-template-columns:1fr}.em-route li{padding:0 0 16px 30px}.em-route li::before{top:0;bottom:0;left:7px;right:auto;width:3px;height:auto}.em-dot{top:0}.em-route li:last-child::before{display:none}}
+.em-rt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.em-rc{display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+a.em-rc:hover{border-color:var(--bright)}.em-rc span{font-size:20px}.em-rc small{font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.em-rc b{font-size:14.5px;font-weight:600;line-height:1.35}
+.em-foot p{margin:0 0 8px}.em-next{padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--bright) 9%,var(--surface))}
+.em-sign{text-align:right;font:700 17px var(--display);color:var(--bright);margin:4px 6px 20px}
 .cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
 html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
 .cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -1900,6 +1959,19 @@ html.cs-calm .cs-rxpal button{transition:none}
 /* club header buttons wrap instead of covering the title */
 #v-club .cs-read-row{flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end;max-width:60%}
 @media (max-width:760px){#v-club .vhead{flex-direction:column;gap:4px}#v-club .cs-read-row{max-width:none;justify-content:flex-start}}
+.cl-lock-h{display:flex;align-items:center;justify-content:space-between;gap:12px}.cl-lock-h h2{margin:0}
+.cl-lock .cl-lock-badge{position:static;flex:none}
+/* top bar: messages next to Profile; no extra space in the Profile button */
+#dmTopBtn{position:relative;padding-inline:10px}#dmTopBtn[hidden]{display:none}
+#dmTopBtn .cl-dmn{position:absolute;top:-5px;right:-5px}
+.auth-btn .dot{display:none!important}
+.auth-btn{min-width:0!important}
+/* club header: Instagram lines up with Listen and Star */
+#v-club .cs-read-row{align-items:center}
+#v-club .cs-read-row>*{margin-top:8px!important}
+#v-club .cl-igtop{height:34px;box-sizing:border-box;padding:0 12px}
+.auth-links{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.auth-links button{all:unset;cursor:pointer;font:700 13px var(--body);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+.auth-links button:hover{border-color:var(--bright,#4F9DF0)}
 </style>
 
 <header class="top">
@@ -2298,6 +2370,28 @@ html.cs-calm .cs-rxpal button{transition:none}
   let openLes=null;
   try{ const q=new URLSearchParams(location.search).get("lesson"); if(q){ sessionStorage.setItem(LES_P,q.replace(/[^\w-]/g,"").slice(0,60)); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
   const lesOf=v=>((v&&v.lessons)||[]).filter(x=>x&&x.id);
+  /* ===== English Map (from Session Zero; ?map#coaching opens it) ===== */
+  const MAP_P="cs-open-map";
+  try{ const sp=new URLSearchParams(location.search); if(sp.has("map")){ sessionStorage.setItem(MAP_P,"1"); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
+  const LV=["A1","A2","B1","B2","C1","C2"];
+  const MODNM={prs:"Present simple",ps:"Past simple",pp:"Present perfect",ed:"-ed endings"};
+  function mapHTML(v){ const m=v.map||{}, lv=String(m.level||v.level||"").toUpperCase().match(/[ABC][12]/), cur=lv?lv[0]:"", first=(v.name||"").split(" ")[0];
+    const nextRev=(m.reviews||[]).filter(d=>!(m.reviewed||[]).includes(d)).sort()[0];
+    const route=(m.route||[]).slice(0,4);
+    const RICO={read:"📖",listen:"🎧",words:"📝",watch:"🎬",speak:"🗣️",write:"✍️"};
+    return `<div class="em" id="emView"><button type="button" class="ch-tab lx-back" data-mapback="1">← Back to My coaching</button>
+    <header class="em-hd"><div><div class="em-k">Your English Map</div><h2>${esc(first)}, here's where you are and where we're going</h2>${m.date?`<p class="em-sub">From Session Zero · ${esc(fd(m.date))}</p>`:""}</div>
+      ${cur?`<div class="em-lv" role="img" aria-label="Your level: ${cur}">${LV.map(l=>`<span class="${l===cur?"on":LV.indexOf(l)<LV.indexOf(cur)?"past":""}">${l}${l===cur?"<i>you</i>":""}</span>`).join("")}</div>`:""}</header>
+    ${m.where?`<section class="em-sec"><h3>📍 Where you are now</h3><p>${md(m.where)}</p></section>`:""}
+    ${m.power?`<section class="em-sec em-power"><h3>⭐ Your superpower: ${esc(m.power.title||"")}</h3>${m.power.quote?`<blockquote>“${esc(m.power.quote)}”</blockquote>`:""}${m.power.note?`<p>${md(m.power.note)}</p>`:""}</section>`:""}
+    ${(m.focus||[]).length?`<section class="em-sec"><h3>🎯 Your 3 focus areas</h3><ol class="em-focus">${m.focus.map((f,i)=>`<li><div class="em-fn">${i+1}</div><div><b>${esc(f.t||"")}</b>
+      ${f.said||f.fix?`<div class="em-fx">${f.said?`<span class="em-said"><small>You said</small><s>${esc(f.said)}</s></span>`:""}${f.fix?`<span class="em-fix"><small>${f.said?"Try":"Say it like this"}</small>${esc(f.fix)}</span>`:""}</div>`:""}
+      ${f.tip?`<p class="em-tip">💡 ${md(f.tip)}</p>`:""}${f.mod&&MODNM[f.mod]?`<button type="button" class="ch-go" data-go="quiz">Practice: ${esc(MODNM[f.mod])}${f.stage?" · stage "+(+f.stage):""} →</button>`:""}</div></li>`).join("")}</ol></section>`:""}
+    ${route.length||m.goal?`<section class="em-sec"><h3>🚀 Where we're going</h3><ol class="em-route"><li class="em-now"><span class="em-dot"></span><small>Today</small><b>${cur?cur+" · ":""}your starting point</b></li>${route.map(r=>`<li><span class="em-dot"></span><small>${esc(r.when||"")}</small><b>${esc(r.what||"")}</b></li>`).join("")}${m.goal?`<li class="em-goal"><span class="em-dot">🏁</span><small>Your goal</small><b>${esc(m.goal)}</b></li>`:""}</ol></section>`:""}
+    ${(m.routine||[]).length?`<section class="em-sec"><h3>📚 Your routine <span class="em-muted">15–20 minutes a day</span></h3><div class="em-rt">${m.routine.map(r=>{ const ico=RICO[String(r.k||"").toLowerCase()]||"✨", inner=`<span aria-hidden="true">${ico}</span><small>${esc(r.k||"")}</small><b>${esc(r.v||"")}</b>`; return /^https:\/\//.test(r.url||"")?`<a class="em-rc" href="${esc(r.url)}" target="_blank" rel="noopener">${inner}</a>`:`<div class="em-rc">${inner}</div>`; }).join("")}</div></section>`:""}
+    ${m.how||m.dayone||nextRev?`<section class="em-sec em-foot">${m.how?`<p><b>🧭 How we get there.</b> ${md(m.how)}</p>`:""}${m.dayone?`<p><b>📸 Your day one.</b> ${md(m.dayone)}</p>`:""}${nextRev?`<p class="em-next">🗓️ We'll look at this map together again around <b>${esc(fd(nextRev))}</b>.</p>`:""}</section>`:""}
+    <p class="em-sign">Let's go, ${esc(first)}. Noa</p></div>`; }
+  let openMap=false;
   const lprog=()=>{ try{ return JSON.parse(localStorage.getItem(LES_K)||"{}")||{}; }catch(e){ return {}; } };
   const lsave=(id,p)=>{ try{ const all=lprog(); all[id]=p; localStorage.setItem(LES_K,JSON.stringify(all)); }catch(e){} };
   const md=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/\*([^*]+)\*/g,"<i>$1</i>");
@@ -2344,6 +2438,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     if(tot&&sc===tot&&!p.done){ p.done=true; setTimeout(()=>{ try{ if(window.csBuddy&&window.csBuddy.treat) window.csBuddy.treat(5,"🎉 You finished every exercise!"); else if(window.toast) window.toast("🎉 You finished every exercise!"); }catch(e){} },300); }
     lsave(L.id,p); const y=window.scrollY; render(); window.scrollTo(0,y); }
   box.addEventListener("click",e=>{ const v=window.__csHubView; if(!v) return; const t=e.target;
+    if(t.closest("[data-openmap]")){ e.preventDefault(); openMap=true; openLes=null; render(); window.scrollTo({top:0}); return; }
+    if(t.closest("[data-mapback]")){ openMap=false; render(); window.scrollTo({top:0}); return; }
     const op=t.closest("[data-lesson]"); if(op){ e.preventDefault(); openLes=op.dataset.lesson; render(); window.scrollTo({top:0}); return; }
     if(!openLes) return; const L=lesOf(v).find(x=>x.id===openLes); if(!L) return;
     if(t.closest("[data-lxback]")){ openLes=null; render(); window.scrollTo({top:0}); return; }
@@ -2358,6 +2454,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const ins=li.querySelectorAll("input[data-b]"); p.ans[k]=ins.length?[...ins].map(n=>n.value):e.target.value; lsave(openLes,p); });
   box.addEventListener("keydown",e=>{ if(e.key!=="Enter"||!e.target.matches(".lx input")) return; e.preventDefault(); const part=e.target.closest("[data-part]"); if(part){ const v=window.__csHubView, L=lesOf(v).find(x=>x.id===openLes); if(L) lesCheck(L,+part.dataset.part); } });
   function takePending(v){
+    if(v&&v.map){ let mp=null; try{ mp=sessionStorage.getItem(MAP_P); }catch(e){} if(mp){ try{ sessionStorage.removeItem(MAP_P); }catch(e){} openMap=true; if(location.hash!=="#coaching") location.hash="#coaching"; setTimeout(()=>window.scrollTo({top:0}),60); } }
     if(v){ let lp=null; try{ lp=sessionStorage.getItem(LES_P); }catch(e){} if(lp){ try{ sessionStorage.removeItem(LES_P); }catch(e){} if(lesOf(v).some(x=>x.id===lp)){ openLes=lp; if(location.hash!=="#coaching") location.hash="#coaching"; setTimeout(()=>window.scrollTo({top:0}),60); } } }
     let p=null; try{ p=sessionStorage.getItem(REP_P); }catch(e){} if(!p) return;
     if(!v){ return; }
@@ -2399,6 +2496,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const v=window.__csHubView; nav();
     if(!v){ box.innerHTML='<p class="muted">This page is for Noa’s private students. If you take private classes and don’t see your information, ask Noa to link your account.</p>'; return; }
     takePending(v);
+    if(openMap&&v.map){ box.innerHTML=mapHTML(v); return; }
     if(openLes){ const L=lesOf(v).find(x=>x.id===openLes); if(L){ box.innerHTML=lessonHTML(L); return; } openLes=null; }
     const cur=(v.packs||[]).filter(p=>p.current).slice(-1)[0];
     const per=cur&&cur.unit==="credits"?((v.classes||[]).filter(c=>c.pack===cur.id&&c.hour==="Priority").length>(v.classes||[]).filter(c=>c.pack===cur.id).length/2?4:3):1;
@@ -2486,7 +2584,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     }
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
-    box.innerHTML=newsBox+top+recapBox+tipsBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    const mapBox=v.map?`<button type="button" class="em-card ch-s" data-openmap="1"><span class="em-ci" aria-hidden="true">🗺️</span><span><b>Your English Map</b><small>Your level, your superpower, 3 focus areas and the route to ${esc((v.map.goal||"your goal").replace(/\.$/,""))}</small></span><span class="em-cgo" aria-hidden="true">→</span></button>`:"";
+    box.innerHTML=newsBox+top+mapBox+recapBox+tipsBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
     const one=e.target.closest("[data-rcw]"), all=e.target.closest("[data-rcall]"); if(!one&&!all) return;
@@ -2737,7 +2836,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
   /* clock-change helper (also used by My coaching) */
-  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=13").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
+  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=14").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
 </script>
 
@@ -2998,12 +3097,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function locked(){
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
-    box.innerHTML=`<div class="cl-lock"><div class="cl-lock-badge" aria-hidden="true">🔒</div>
-      <h2>Club members only</h2>
+    box.innerHTML=`<div class="cl-lock"><div class="cl-lock-h"><h2>Club members only</h2><div class="cl-lock-badge" aria-hidden="true">🔒</div></div>
       <p>Noa’s English Club is where you practice speaking with other learners every week, in a relaxed, friendly group. It’s for B1 to C1 learners: fluency and confidence first, grammar second.</p>
       <ul class="cl-lock-list"><li>🧠 <b>Deep Dive Monday</b> · a thought-provoking topic, often with a short video</li><li>🃏 <b>Wildcard Wednesday</b> · games and activities, pure speaking</li><li>💬 <b>Word Up Thursday</b> · useful expressions, then conversation</li><li>😎 <b>Free Talk Friday</b> · relaxed conversation to close the week</li></ul>
       <p class="cl-lock-small">Members get every weekly class, the community wall to chat with other members, all past class recordings, the weekly club podcast 🎧, and our 📸 Instagram group to keep practicing (and send memes) between classes.</p>
-      <a class="cl-join-btn" href="https://ig.me/m/learnwithnoa" target="_blank" rel="noopener">💛 I want to join</a><p class="cl-lock-small">Joining right here on Hibi is coming soon. For now, tap the button to message Noa.</p></div>
+      <a class="cl-join-btn" href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}&body=${encodeURIComponent("Hi Noa! I'd like to join the club.\n\nMy name: "+((window.__csFire&&window.__csFire.name&&window.__csFire.name())||"")+"\nMy level (if I know it): \n\n")}">💛 I want to join</a><p class="cl-lock-small">Tap the button to email Noa, and he’ll send you everything you need. Prefer Instagram? <a href="https://ig.me/m/learnwithnoa" target="_blank" rel="noopener">Message @learnwithnoa</a>.</p></div>
       ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
   }
@@ -3122,7 +3220,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const IG_GROUP="https://www.instagram.com/j/AbYEKteyhp-zyxxc/";
   function igNudge(){ try{ if(!localStorage.getItem(WELC)||localStorage.getItem("cs-ig-nudged")||window.__csPreview||!feed()) return; localStorage.setItem("cs-ig-nudged","1"); }catch(e){ return; }
     setTimeout(()=>{ if(!window.csDialog) return; const d=window.csDialog(`<h3 style="margin-top:0">📸 ${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</h3><p>${L("Class reminders, memes and chats with the club between classes. It’s where the club hangs out during the week.","Recordatorios de clases, memes y conversación con el club entre clases. Ahí se junta el club durante la semana.")}</p><div class="note-actions"><a class="pill-btn pill-green" href="${IG_GROUP}" target="_blank" rel="noopener" data-a="go">${L("Join the group","Unirme al grupo")}</a><button class="swap" type="button" data-a="x">${L("Maybe later","Más tarde")}</button></div><p class="muted" style="font-size:13px;margin:10px 0 0">${L("It’s always at the top of the club page too.","También está siempre arriba en la página del club.")}</p>`); d.el.addEventListener("click",ev=>{ if(ev.target.closest("[data-a]")) setTimeout(d.close,50); }); },1500); }
-  function igTop(){ const v=document.getElementById("v-club"); if(!v) return; const put=()=>{ const row=v.querySelector(".cs-read-row"); if(!row) return false; let a=row.querySelector(".cl-igtop"); if(!a){ a=document.createElement("a"); a.className="cl-igtop"; a.href=IG_GROUP; a.target="_blank"; a.rel="noopener"; row.insertBefore(a,row.firstChild); } a.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>${L("Instagram group","Grupo de Instagram")}`; a.hidden=!feed(); let m=row.querySelector(".cl-dmtop"); if(!m){ m=document.createElement("button"); m.type="button"; m.className="cl-dmtop"; m.dataset.dminbox="1"; row.insertBefore(m,a); } m.innerHTML=`💬 ${L("Messages","Mensajes")} <span class="cl-dmn" hidden></span>`; m.hidden=!feed(); try{ window.__clubSocial&&window.__clubSocial.dms&&window.__clubSocial.dms(); }catch(e){} return true; }; if(!put()){ let n=0; const t=setInterval(()=>{ if(put()||++n>20) clearInterval(t); },250); } }
+  function dmTop(){ const aw=document.querySelector(".top-in .auth-wrap"); if(!aw) return; let m=document.getElementById("dmTopBtn"); if(!m){ m=document.createElement("button"); m.type="button"; m.id="dmTopBtn"; m.className="theme-btn cl-dmtop"; m.dataset.dminbox="1"; m.title=L("Messages","Mensajes"); m.setAttribute("aria-label",L("Messages","Mensajes")); m.innerHTML=`<span aria-hidden="true">💬</span><span class="cl-dmn" hidden></span>`; aw.parentNode.insertBefore(m,aw); } m.hidden=!feed(); try{ window.__clubSocial&&window.__clubSocial.dms&&window.__clubSocial.dms(); }catch(e){} }
+  document.addEventListener("cs-club",()=>setTimeout(dmTop,50)); window.addEventListener("load",()=>setTimeout(dmTop,1500));
+  function igTop(){ const v=document.getElementById("v-club"); if(!v) return; const put=()=>{ const row=v.querySelector(".cs-read-row"); if(!row) return false; let a=row.querySelector(".cl-igtop"); if(!a){ a=document.createElement("a"); a.className="cl-igtop"; a.href=IG_GROUP; a.target="_blank"; a.rel="noopener"; row.insertBefore(a,row.firstChild); } a.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>${L("Instagram group","Grupo de Instagram")}`; a.hidden=!feed(); dmTop(); try{ window.__clubSocial&&window.__clubSocial.dms&&window.__clubSocial.dms(); }catch(e){} return true; }; if(!put()){ let n=0; const t=setInterval(()=>{ if(put()||++n>20) clearInterval(t); },250); } }
   function igHTML(compact){ return `<a class="cl-ig${compact?" compact":""}" href="${IG_GROUP}" target="_blank" rel="noopener"><span class="cl-ig-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span><span><b>${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</b>${compact?"":`<small>${L("Reminders, memes and chats with the club between classes.","Recordatorios, memes y conversación con el club entre clases.")}</small>`}</span><span class="cl-ig-go">→</span></a>`; }
   /* good to know: how the classes work */
   function faqHTML(){ const Q=[
@@ -3261,7 +3361,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* ---------- UI ---------- */
   const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
   let PARKMAP={};
-  const av=(uid,name)=>{ const pp=PROFS&&profOf(uid); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
+  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait){ const sv=window.csBuddy.portrait(); if(sv) return `<span class="cs-av cs-avb" aria-hidden="true">${sv}</span>`; } }
+    const pp=PROFS&&profOf(uid); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
   const who=x=>`<button type="button" class="cs-whob" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}" aria-label="${esc(L("See profile: ","Ver perfil: ")+(x.name||""))}">${av(x.uid,x.name)}</button><span class="cs-who"><b><button type="button" class="cs-nameb" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}">${esc(x.name||L("Member","Miembro"))}</button></b>${x.uid===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}<span class="cs-ago">${ago(x.at)}${x.edited?L(" · edited"," · editado"):""}</span>${G()?`<span class="cs-sample">${L("Sample","Ejemplo")}</span>`:""}</span>`;
   const canDel=x=>x.uid===me()||me()===NOA;
   const canEdit=x=>x.uid===me()&&!G();
@@ -3295,7 +3396,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function savePins(){ await api("PATCH","/clubPublic/pins",{fields:{json:S(JSON.stringify({ids:PINS,picks:PICKS,ideas:IDEAST}))}}); pinsAt=Date.now(); }
   const isNew=(p,seen)=>seen&&((p.at>seen&&p.uid!==me())||(p.lastAt>seen&&p.lastAt>p.at+2000));
   /* how many posts are new or have new comments since you last opened Community (for the tab and the Home card) */
-  async function unread(){ if(G()) return 1; try{ if(!POSTS) POSTS=await listPosts(); }catch(e){ return 0; } const s=getSeen(); if(!s){ return 0; } return POSTS.filter(p=>isNew(p,s)).length; }
+  let unreadAt=0;
+  async function unread(){ if(G()) return 1; try{ if(!POSTS||Date.now()-unreadAt>120000){ POSTS=await listPosts(); unreadAt=Date.now(); } }catch(e){ return 0; } const s=getSeen()||(Date.now()-7*864e5); return POSTS.filter(p=>isNew(p,s)&&p.uid!==me()).length; }
   async function mountWall(el){
     el.dataset.on="1"; if(POSTS) paintWall(el); else el.innerHTML='<p class="cs-load">Loading…</p>';
     try{ const [ps]=await Promise.all([listPosts(),loadPins(),loadPark()]); POSTS=ps; }catch(e){ el.innerHTML=state==="off"?OFF:`<p class="cs-off">${L("The wall couldn’t load. Check your connection and try again.","No se pudo cargar el muro. Revisa tu conexión e intenta de nuevo.")}</p>`; return; }
@@ -3687,14 +3789,16 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const so=e.target.closest("[data-isort]"); if(so){ ISORT=so.dataset.isort; const say=so.closest(".cl-say"); so.parentElement.querySelectorAll("[data-isort]").forEach(b=>{ b.classList.toggle("on",b===so); b.setAttribute("aria-pressed",String(b===so)); }); paintIdeas(say); return; }
     const st=e.target.closest("[data-ist]"); if(st){ const id=st.dataset.ist, v=st.dataset.v; if(IDEAST[id]===v) delete IDEAST[id]; else IDEAST[id]=v; try{ await savePins(); }catch(er){ toast("Couldn’t save."); return; } const wl=st.closest(".cl-wall"); if(wl) paintWall(wl); else paintIdeas(st.closest(".cl-say")); return; } });
   /* ---------- 🎬 recordings Noa adds (YouTube), stored in clubStats/_recordings: Noa writes, members read ---------- */
+  /* the first load can happen before sign-in has finished: try again a few times instead of showing nothing */
+  const RETRY={}; function retryLoad(k,fn){ RETRY[k]=(RETRY[k]||0)+1; if(RETRY[k]>6) return; setTimeout(fn,1500*RETRY[k]); }
   let RECS=null, recsAt=0;
   async function loadRecs(force){ if(G()) return; if(RECS&&!force&&Date.now()-recsAt<120000) return; recsAt=Date.now();
-    try{ const r=await api("GET","/clubStats/_recordings"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; RECS=j.list||[]; }catch(e){ RECS=RECS||[]; }
+    try{ const r=await api("GET","/clubStats/_recordings"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; RECS=j.list||[]; }catch(e){ RECS=RECS||[]; retryLoad("recs",()=>loadRecs(true)); }
     window.__clubRecs=RECS; document.dispatchEvent(new CustomEvent("cs-club-recs")); }
   /* lesson plans: the helper uploads each class's plan only AFTER the class (clubStats/_plans index + _plans_<week>) */
   let PLANS=null, plansAt=0; const PLANDOC={};
   async function loadPlans(force){ if(G()) return; if(PLANS&&!force&&Date.now()-plansAt<300000) return; plansAt=Date.now();
-    try{ const r=await api("GET","/clubStats/_plans"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PLANS=j.weeks||{}; }catch(e){ PLANS=PLANS||{}; }
+    try{ const r=await api("GET","/clubStats/_plans"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PLANS=j.weeks||{}; }catch(e){ PLANS=PLANS||{}; retryLoad("plans",()=>loadPlans(true)); }
     window.__clubPlans=PLANS; document.dispatchEvent(new CustomEvent("cs-club-plans")); }
   function mdHTML(md){ const inl=t=>esc(t).replace(/&lt;br\s*\/?&gt;/g,"<br>").replace(/&lt;(\/?)(b|i|strong|em|u)&gt;/g,"<$1$2>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*?)\*/g,"$1<i>$2</i>")
       .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g,(m,a,u)=>`<a href="${u.replace(/&amp;/g,"&").replace(/"/g,"%22")}" target="_blank" rel="noopener">${a}</a>`).replace(/\\([$_*#\-\[\]()>])/g,"$1");
@@ -3719,7 +3823,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",e=>{ const x=e.target.closest("[data-planx]"); if(!x) return; const p=x.closest(".cl-plan"), b=p.previousElementSibling&&p.previousElementSibling.querySelector("[data-plan]"); if(b) b.setAttribute("aria-expanded","false"); p.remove(); });
   let PODS=null, podsAt=0;
   async function loadPods(force){ if(G()) return; if(PODS&&!force&&Date.now()-podsAt<120000) return; podsAt=Date.now();
-    try{ const r=await api("GET","/clubStats/_podcast"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PODS=j.list||[]; }catch(e){ PODS=PODS||[]; }
+    try{ const r=await api("GET","/clubStats/_podcast"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PODS=j.list||[]; }catch(e){ PODS=PODS||[]; retryLoad("pods",()=>loadPods(true)); }
     window.__clubPods=PODS; document.dispatchEvent(new CustomEvent("cs-club-pods")); }
   async function savePods(list){ await api("PATCH","/clubStats/_podcast",{fields:{uid:S("_podcast"),json:S(JSON.stringify({list}))}}); PODS=list; window.__clubPods=list; document.dispatchEvent(new CustomEvent("cs-club-pods")); }
   document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-podform]"); if(!f) return; e.preventDefault(); const msg=f.querySelector(".cs-msg");
@@ -3818,6 +3922,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const data={text}; if(ids.length) data.imgs=ids; if(gif) data.gifs=[gif];
     await api("POST",`/dms/${tid}/msgs?documentId=${rid()}`,{fields:{from:S(me()),at:I(now),json:S(JSON.stringify(data))}});
     const t=(THREADS||[]).find(x=>x.id===tid); if(!t||!t.at||now-t.at>30*60000) note(u,"dm","dm:"+me(),text||"📷"); if(t){ t.at=now; t.last={text,from:me(),at:now}; } }
+  window.__clubMyProfile=()=>{ if(!me()) return; if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>openProfile(me()),200); };
   window.__clubDM=(u,nm)=>{ if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>openChat(u,nm),u?150:0); };
   window.__clubInbox=()=>openInbox();
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-dmto]"); if(t){ e.preventDefault(); document.querySelector(".cl-prof-ov")?.remove(); openChat(t.dataset.dmto,t.dataset.dmname); return; }
@@ -4619,7 +4724,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=43" defer></script>
+<script src="buddy.js?v=44" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -4686,7 +4791,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Your <em>classes</em>, all in one place 🎓</h2>
     <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
       <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
     </ul>
@@ -4710,7 +4815,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Make it <em>yours</em> ⚙️</h2>
     <ul class="wl-list">
       <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
-      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (top right): pick your photo (your Google one or your own). The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
+      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (top right): pick your photo (your Google one, your own, or your buddy), and jump to your words, your club profile and your messages. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
       <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (top right): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music:</b> lo-fi, piano, rain or calm noise while you study.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
@@ -8702,6 +8807,12 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-map", date:"November 10, 2026", title:"Your English Map 🗺️", items:[
+    ["🗺️","Your English Map","private students: your map from Session Zero now lives in <b>My coaching</b>. Your level, your superpower, 3 focus areas with practice links, and the route to your goal."],
+    ["💬","Messages at the top","the 💬 button now sits in the top bar, with a red dot when someone writes to you.","club"],
+    ["⏱️","Study timer buddy","your buddy cheers you on during the study timer: halfway, 5 minutes left, and when it's time for a break."],
+    ["🔴","New posts","a red dot on <b>Community</b> tells you when there's something new on the wall.","club"]
+  ]},
   {id:"2026-dm", date:"November 10, 2026", title:"Messages, photos and more 💬", items:[
     ["💬","Messages","club members can now chat privately: open someone's profile (or tap their buddy in the park) and press <b>💬 Message</b>. Text, photos and GIFs.","club"],
     ["🙂","Your profile photo","tap <b>Profile</b> at the top right to use your Google photo or upload your own. It shows next to your posts and messages."],
@@ -8932,7 +9043,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { makeView, tzReminders } from "./hubview.js?v=13";
+import { makeView, tzReminders } from "./hubview.js?v=14";
 window.__csTzRem = tzReminders;
 
 const firebaseConfig = {
@@ -9175,6 +9286,11 @@ function photoBox() {
     <label><input type="radio" name="phk" value="custom" ${p.k === "custom" ? "checked" : ""}> My own photo</label>
     <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> No photo (show my buddy)</label>
     <label class="ap-up">📷 ${p.d ? "Change my photo" : "Upload a photo"}<input type="file" accept="image/*" hidden></label></div>`;
+  let lk = document.getElementById("authLinks"); if (!lk) { lk = document.createElement("div"); lk.id = "authLinks"; lk.className = "auth-links"; b.insertAdjacentElement("afterend", lk);
+    lk.addEventListener("click", e => { const x = e.target.closest("[data-al]"); if (!x) return; panel.hidden = true; const k = x.dataset.al; if (k === "club") { window.__clubMyProfile && window.__clubMyProfile(); } else if (k === "dm") { window.__clubInbox && window.__clubInbox(); } else if (k === "level") { location.hash = "#quiz"; setTimeout(() => document.querySelector('[data-pr="level"]')?.click(), 300); } else location.hash = "#" + k; }); }
+  let nW = 0; try { nW = (JSON.parse(localStorage.getItem("ncs-words") || "[]") || []).filter(x => x && !x.sample).length; } catch (e) {}
+  const lv = (() => { try { return window.csLevel ? (window.csLevel().lv || "") : ""; } catch (e) { return ""; } })(), club = !!window.__clubInbox && !!document.getElementById("dmTopBtn") && !document.getElementById("dmTopBtn").hidden;
+  lk.innerHTML = `<button type="button" data-al="words">📚 ${nW} ${nW === 1 ? "word" : "words"}</button><button type="button" data-al="level">📊 ${lv ? "Level " + lv : "My level"}</button>${club ? `<button type="button" data-al="club">🙂 My club profile</button><button type="button" data-al="dm">💬 Messages</button>` : ""}`;
 }
 function renderUser() {
   document.body.dataset.auth = user ? "in" : "out";

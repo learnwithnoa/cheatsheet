@@ -44,6 +44,9 @@ h2{font:700 22px var(--display);margin:22px 0 10px}
 .stu .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stu .meta{font:12px var(--mono);color:var(--muted)}
 input[type=search]{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;margin-bottom:10px}
+.frm-acts{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;margin-top:4px;padding-top:10px;border-top:1px dashed var(--line)}
+.recf{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.recf select,.recf input{font:600 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px}.recf input{flex:1;min-width:200px}
 .wtools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}.wsel-all{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:14px}
 .wfix{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}.wfix-r{display:flex;gap:8px;align-items:flex-start;font-size:14px}.wfix s{opacity:.7}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin:12px 0 6px}
@@ -316,7 +319,7 @@ tr.arch td{opacity:.85}
 </main>
 <div id="modal" class="modal" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=40"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=44"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -328,7 +331,7 @@ tr.arch td{opacity:.85}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp, initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=13";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=14";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -555,6 +558,7 @@ function alertsFor(s) {
     const dl = deadline(p, st.first); if (dl) { const d = days(today(), dl); if (d < 0 && st.left > 0) out.push({ lvl: "bad", i: "⏰", t: `${s.name}: pack expired ${fmtShort(dl)} with ${st.left} ${p.unit} unused` }); else if (d >= 0 && d <= 7 && st.left > 0) out.push({ lvl: "warn", i: "⏰", t: `${s.name}: pack ends ${fmtShort(dl)} (${d === 0 ? "today" : d === 1 ? "tomorrow" : "in " + d + " days"}), ${st.left} ${p.unit} left` }); }
   }
   tzReminders(s, today(), 21, 2).forEach(r => out.push({ kind: "tz", lvl: "warn", i: "🕐", t: r.text }));
+  if (s.map && Array.isArray(s.map.reviews)) { const due = s.map.reviews.filter(d => !(s.map.reviewed || []).includes(d)).find(d => days(today(), d) <= 3); if (due) out.push({ kind: "map", lvl: "info", i: "🗺️", t: `${s.name}: revisit the English Map together (${days(today(), due) < 0 ? "was due " : "due "}${fmtShort(due)}). Look back at the 1-month goal and the 3 focus areas.`, due }); }
   const lc = lastClass(s); if (lc && days(lc, today()) >= 14) out.push({ lvl: "info", i: "💤", t: `${s.name}: no class since ${fmtShort(lc)}` });
   return out.map(a => ({ ...a, id: s.id }));
 }
@@ -746,12 +750,22 @@ function emailUI(s) {
   const pick = s._mail && all.includes(s._mail) ? s._mail : all[0];
   return `<a class="linkb" id="mailLink" target="_blank" rel="noopener" href="${GM(pick)}" title="Write in Gmail">✉️ ${esc(pick)}</a>${all.length > 1 ? ` <select id="mailPick" aria-label="Choose email" style="width:auto;font:600 12.5px var(--body);padding:2px 6px;border-radius:8px">${all.map(e => `<option ${e === pick ? "selected" : ""}>${esc(e)}</option>`).join("")}</select>` : ""}`;
 }
+const REC_MODS = { prs: { name: "Present simple", stages: ["I, you, we, they", "He, she, it + -s", "Spelling: -es, -ies, has", "Negatives: don't / doesn't", "Questions: do / does", "Mix it up", "Tell the story"] },
+  ps: { name: "Past simple", stages: ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"] },
+  pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] },
+  ed: { name: "-ed endings (pronunciation)", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
+function recBox(s) {
+  const mine = ((meta && meta.recs) || []).filter(r => r.hub === s.id && !r.done).slice(-3).reverse();
+  const list = mine.length ? `<span class="muted small">Showing now: ${mine.map(r => esc(r.mod ? (REC_MODS[r.mod] ? REC_MODS[r.mod].name : r.mod) + (r.stage ? " · " + r.stage : "") : r.title || r.page || r.pack)).join(", ")}</span>` : "";
+  if (!s._recOpen) return `<div class="row" style="margin:8px 0 0;gap:8px;align-items:center"><button type="button" class="ib" data-act="recOpen">⭐ Recommend a module</button>${list}</div>`;
+  return `<form id="recForm" class="recf" onsubmit="return false"><b>⭐ Recommend a module</b><select name="mod">${Object.entries(REC_MODS).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("")}</select><select name="stage">${REC_MODS.prs.stages.map((t, i) => `<option value="${i + 1}">${i + 1}. ${esc(t)}</option>`).join("")}</select><input name="why" placeholder="Why (optional, they see it): e.g. said “she work”" maxlength="120"><button type="button" class="primary" data-act="recGo">Recommend</button><button type="button" data-act="recOpen">Cancel</button><span class="muted small" style="flex-basis:100%">They see it on My coaching under “Noa recommends”, and in Practice that stage gets a ⭐.</span></form>`;
+}
 function bringUp(s) {
   const auto = alertsFor(s).filter(a => a.kind).map(a => ({ auto: true, text: a.t.replace(s.name + ": ", ""), a }));
   const pins = (s.pins || []).filter(x => !x.done);
   if (!auto.length && !pins.length && !s._pinOpen) return `<div class="row" style="margin-top:8px"><button type="button" class="ib" data-act="pinOpen">📌 Add something to bring up in class</button></div>`;
   return `<div class="tint k-coral" style="border-radius:12px;padding:10px 12px;margin-top:10px"><b style="color:var(--c-coral)">📌 Bring up in class</b>
-    <ul style="margin:6px 0 0;padding-left:18px">${auto.map(x => `<li>${esc(x.text)} ${(() => { const u = reminderFor(s, x.a); return u ? `<a class="ib" target="_blank" rel="noopener" href="${u}">✉️ Remind</a>` : ""; })()}</li>`).join("")}${pins.map(x => `<li>${esc(x.text)} <button type="button" class="ib" data-act="pinDone" data-id="${x.id}">✓ Done</button></li>`).join("")}</ul>
+    <ul style="margin:6px 0 0;padding-left:18px">${auto.map(x => `<li>${esc(x.text)} ${x.a.kind === "map" ? `<button type="button" class="ib" data-act="mapDone" data-id="${esc(x.a.due)}">✓ Done</button>` : (() => { const u = reminderFor(s, x.a); return u ? `<a class="ib" target="_blank" rel="noopener" href="${u}">✉️ Remind</a>` : ""; })()}</li>`).join("")}${pins.map(x => `<li>${esc(x.text)} <button type="button" class="ib" data-act="pinDone" data-id="${x.id}">✓ Done</button></li>`).join("")}</ul>
     <form id="pinForm" class="row" style="margin-top:6px"><input name="pin" placeholder="e.g. next half pack payment due" style="flex:1;min-width:160px;font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px"><button class="ib" type="submit">＋ Add</button></form></div>`;
 }
 function since(s) {
@@ -765,7 +779,7 @@ function renderDetail() {
   const s = S_(); const box = $("detail");
   if (!s) { box.innerHTML = ""; return; }
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
-  const links = [s.sheetId ? `<a class="linkb" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/${esc(s.sheetId)}/edit">English Journey ↗</a>` : "", s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
+  const links = [s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
   box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
     ${(() => { const LV = ["A1", "A2", "A2-B1", "B1", "B1-B2", "B2", "B2-C1", "C1", "C2"], fromLevel = String(s.level || "").toUpperCase().replace(/[–—]/g, "-").replace(/\s+/g, ""), cur = s.cefr || (LV.includes(fromLevel) ? fromLevel : "");
@@ -807,7 +821,7 @@ function tClasses(s) {
     return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}" title="${num[c.id] ? "Class #" + num[c.id] + " of this pack" : ""}">${num[c.id] || ""}</td><td class="d">${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td>${attB(c.att)}</td><td class="hr ${esc(c.hour || "")}">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
   }).join("");
   const hourNow = () => { const h = new Date().getHours(); return h >= 10 && h < 15 ? "Standard" : "Priority"; };
-  return bringUp(s) + `<form class="frm tint k-sky" id="addClass" autocomplete="off">
+  return bringUp(s) + recBox(s) + `<form class="frm tint k-sky" id="addClass" autocomplete="off">
       <div class="fld"><label>Date</label><input type="date" name="date" value="${today()}" required></div>
       <div class="fld w2"><label>Topics covered</label><input name="topics" placeholder="fabulang: …, convo: …"></div>
       <div class="fld w3"><label>Homework</label><input name="homework" value="${esc((s.classes.filter(c => c.kind !== "note").pop() || {}).homework || "")}"></div>
@@ -815,7 +829,7 @@ function tClasses(s) {
       <div class="fld"><label>Hour type</label><select name="hour">${s.kind === "trueque" ? "<option>—</option>" : ""}<option ${s.alwaysStd || hourNow() === "Standard" ? "selected" : ""}>Standard</option><option ${!s.alwaysStd && hourNow() === "Priority" ? "selected" : ""}>Priority</option></select></div>
       <div class="fld"><label>Credits</label><input type="number" name="credits" min="0" max="10" placeholder="auto"></div>
       <div class="fld w2"><label>Pack</label><select name="pack">${packOpts(s, p ? p.id : "")}</select></div>
-      <div class="row"><button class="primary" type="submit">＋ Add class</button><button type="button" data-act="addNote">＋ Note</button></div>
+      <div class="row frm-acts"><button type="button" data-act="addNote" title="A note without a class (e.g. 'moved Friday's class')">＋ Note only</button><button class="primary" type="submit">＋ Add class</button></div>
     </form>
     <div class="tbl"><table><thead><tr><th title="Class number in its pack">#</th><th class="sortable" data-csort="${-clsSort}" title="Click to show ${clsSort < 0 ? "oldest" : "newest"} first" aria-sort="${clsSort < 0 ? "descending" : "ascending"}">Date ${clsSort < 0 ? "↓" : "↑"}</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
 }
@@ -1005,6 +1019,12 @@ document.addEventListener("click", e => {
   if (act === "delReport") { const i = (s.reports || []).findIndex(r => r.id === id); if (i < 0) return; if (!confirm("Remove this progress report? The student won't see it anymore.")) return; const r = s.reports.splice(i, 1)[0]; save(s, false, "Removed progress report " + r.from + " – " + r.to); renderDetail(); return; }
   if (act === "delGuide") { const g = (s.guides || [])[+id]; if (!g) return; s.guides.splice(+id, 1); save(s, false, "Removed guide " + g.title); renderDetail(); return; }
   if (act === "editRow") { editRow = id; renderDetail(); return; }
+  if (act === "mapDone") { s.map.reviewed = (s.map.reviewed || []).concat(id); save(s, false, "English Map check-in done"); renderDetail(); return; }
+  if (act === "recOpen") { s._recOpen = !s._recOpen; renderDetail(); return; }
+  if (act === "recGo") { const f = $("recForm"), mod = f.mod.value, st = +f.stage.value, why = f.why.value.trim(); const T = REC_MODS[mod]; if (!T) return;
+    meta.recs = (meta.recs || []).concat({ id: uid(), hub: s.id, name: s.name, mod, stage: st, title: T.stages[st - 1], why, from: "Noa", date: today() }).slice(-120); saveMeta(); publish(s, true);
+    if (s.uid) (async () => { try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-modrec")); let v = {}; try { v = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e2) {} v[mod] = st; await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); } catch (e2) { console.warn(e2); } })();
+    s._recOpen = false; renderDetail(); toast("⭐ Recommended to " + s.name.split(" ")[0] + ": " + T.name + " · stage " + st); return; }
   if (act === "pinOpen") { s._pinOpen = true; renderDetail(); const i = document.querySelector("#pinForm input"); if (i) i.focus(); return; }
   if (act === "pinDone") { const x = (s.pins || []).find(x => x.id === id); if (x) x.done = today(); save(s); renderDetail(); return; }
   if (act === "cancelRow") { editRow = null; renderDetail(); return; }
@@ -1026,6 +1046,7 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const t = e.target, s = S_();
+  if (t.closest && t.closest("#recForm") && t.name === "mod") { const T = REC_MODS[t.value]; t.form.stage.innerHTML = T.stages.map((x, i) => `<option value="${i + 1}">${i + 1}. ${esc(x)}</option>`).join(""); return; }
   if (t.dataset.wsel) { if (t.checked) wSel.add(t.dataset.wsel); else wSel.delete(t.dataset.wsel); renderDetail(); return; }
   if (t.hasAttribute && t.hasAttribute("data-wselall")) { wSel = t.checked ? new Set(wordRows(s).filter(w => w.src === "app").map(w => w.key)) : new Set(); renderDetail(); return; }
   if (t.id === "mailPick") { s._mail = t.value; $("mailLink").href = GM(t.value); $("mailLink").textContent = "✉️ " + t.value; return; }

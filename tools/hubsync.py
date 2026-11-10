@@ -67,10 +67,22 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py del-report <student-id> <report-id>
   HUB_PASSWORD=... python3 hubsync.py add-lesson <student-id> @/tmp/lesson.json   class recap / study guide hosted on Hibi with interactive
       exercises (see LESSON below). Prints the link for the email. Same id (or same kind+date+title) again = replaces it.
+  HUB_PASSWORD=... python3 hubsync.py set-map <student-id> @/tmp/map.json   the student's English Map on My coaching (see MAP below).
+      Prints the link (?map#coaching). Running it again replaces the map; check-ins already marked done are kept.
   HUB_PASSWORD=... python3 hubsync.py lessons <student-id>   ·   del-lesson <student-id> <lesson-id>
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 
 Any '<json>' argument can also be @/path/to/file.json or - (read from stdin).
+
+MAP json (English Map from Session Zero; TO the student, "you"; short lines; never health or private things):
+  {"date":"2026-11-09","level":"B2","where":"one or two lines on the level in plain words",
+   "power":{"title":"You keep going","quote":"a real sentence they said","note":"why it matters"},
+   "focus":[{"t":"Past tense in stories","said":"We go to...","fix":"We went to...","tip":"tiny rule","mod":"ps","stage":2}],   (max 3; mod/stage optional: prs ps pp ed)
+   "route":[{"when":"In 1 month","what":"..."},{"when":"In 3 months","what":"..."},{"when":"By January","what":"..."}],
+   "goal":"their real goal in a few words",
+   "routine":[{"k":"Read","v":"Fabulang A2 story","url":"https://fabulang.com"},{"k":"Listen","v":"..."},{"k":"Words","v":"..."},{"k":"Watch","v":"..."}],
+   "how":"pack / schedule line", "dayone":"this class is your day one...",
+   "reviews":["2026-12-09","2027-02-09"]}   check-in dates: Noa gets a reminder in Private students 3 days before each.
 
 LESSON json (TO the student, "you", at their level; **bold** and *italic* work; never private things):
   {"kind":"recap" or "guide","date":"2026-11-09","title":"Class recap · November 9, 2026","topic":"one line","nutshell":"1-2 warm sentences",
@@ -322,6 +334,7 @@ def make_view(s, meta=None):
             "reports": [view_report(r) for r in (s.get("reports") or [])[-12:] if r and r.get("id")],
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", ""), "kind": g.get("kind", "")} for g in s.get("guides", []) if g and g.get("url")],
             "lessons": [x for x in (s.get("lessons") or [])[-30:] if x and x.get("id")],
+            "map": s.get("map") or None,
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "pack": r.get("pack", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
 
@@ -1129,6 +1142,13 @@ def main():
                 old["kind"] = g["kind"]; save(tok, tu, s); print("ok: kind updated"); return
             print("skip: guide already listed"); return
         s.setdefault("guides", []).append(g); save(tok, tu, s); print("ok"); return
+    if cmd == "set-map":
+        old = s.get("map") or {}
+        m = {k: data.get(k) for k in ("date", "level", "where", "power", "focus", "route", "goal", "routine", "how", "dayone", "reviews") if data.get(k) not in (None, "", [])}
+        m["focus"] = (m.get("focus") or [])[:3]
+        m["reviewed"] = [d for d in old.get("reviewed", []) if d in (m.get("reviews") or [])]
+        s["map"] = m; save(tok, tu, s)
+        print(json.dumps({"ok": True, "link": SITE + "?map#coaching", "onHibi": bool(s.get("uid"))})); return
     if cmd == "set-recap":
         # mini recap of the latest class, shown on the student's My coaching page
         if s.get("recap") and (s["recap"].get("date") or "") > data.get("date", ""):

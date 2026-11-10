@@ -119,6 +119,8 @@ td.act{white-space:nowrap;text-align:right}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 .brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px}.kj{font:700 14px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em}
+.mtabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.mtabs .seg{font-weight:800}.mt-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#E5533D;color:#fff;font:800 11px var(--body);margin-left:4px}
+.mt-empty{padding:18px 4px}
 </style>
 <link rel="stylesheet" href="comfort.css?v=19">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -152,13 +154,12 @@ td.act{white-space:nowrap;text-align:right}
   <section id="vMain" hidden>
     <h1>Hibi members</h1>
     <p class="lede" id="summary">Loading…</p>
-    <div class="news" id="linkBox" hidden></div>
-    <div class="news" id="clubBox" hidden></div>
-    <div class="news" id="news" hidden></div>
-    <div class="news" id="tips" hidden></div>
-    <div class="news" id="ideas" hidden></div>
-    <div class="news" id="usage" hidden></div>
-    <div class="layout">
+    <div class="mtabs" id="mTabs" role="group" aria-label="Sections"></div>
+    <div data-pane="todo"><div class="news" id="news" hidden></div><div class="news" id="tips" hidden></div><div class="news" id="linkBox" hidden></div><p class="muted mt-empty" id="todoEmpty" hidden>Nothing waiting for you here ✨</p></div>
+    <div data-pane="club" hidden><div class="news" id="clubBox" hidden></div></div>
+    <div data-pane="ideas" hidden><div class="news" id="ideas" hidden></div></div>
+    <div data-pane="usage" hidden><div class="news" id="usage" hidden></div></div>
+    <div class="layout" data-pane="students" hidden>
       <div>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
         <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
@@ -174,7 +175,7 @@ td.act{white-space:nowrap;text-align:right}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=40"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=44"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -270,7 +271,7 @@ async function load() {
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    renderList(); renderLinks(); renderClub(); renderNews(); renderTips(); renderIdeas(); renderUsage(); syncPark();
+    renderList(); renderLinks(); renderClub(); renderNews(); renderTips(); renderIdeas(); renderUsage(); syncPark(); renderTabs();
     if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
   } catch (e) {
     console.warn(e);
@@ -404,7 +405,7 @@ document.addEventListener("click", async e => {
     hubMeta = Object.assign({}, hubMeta || {}, { dismissed: ((hubMeta && hubMeta.dismissed) || []).concat(uid) }); saveTPref("t-hubmeta", hubMeta); renderLinks(); toast("Okay, " + st.name.split(" ")[0] + " is club only"); return; }
   const sel = document.querySelector(`[data-lkfor="${uid}"]`); if (!sel || !sel.value) { toast("Pick who this is first"); return; }
   const hubId = sel.value, h = hubList.find(x => x.id === hubId);
-  const { roleFor } = await import("./hubview.js?v=13");
+  const { roleFor } = await import("./hubview.js?v=14");
   if (h && st.email && ![h.email].concat(h.emails || []).some(x => (x || "").toLowerCase() === st.email.toLowerCase())) { if (!h.email) h.email = st.email; else h.emails = (h.emails || []).concat(st.email); }
   await saveRole(st, roleFor(hubId, st.role)); await linkHub(st, hubId, ""); renderLinks();
 });
@@ -437,14 +438,26 @@ document.addEventListener("change", async e => { const sl = e.target.closest("[d
   try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
   const mm = ((hubMeta.club || {}).members || []).find(x => x.name === name); if (!mm) { toast("Couldn't find them. Refresh and try again."); return; }
   mm.status = v; saveTPref("t-hubmeta", hubMeta); renderClub(); toast(name.split(" ")[0] + ": " + CST.find(([k]) => k === v)[1]); });
+/* sections as tabs, so the page isn't one long scroll */
+let mTab = null; try { mTab = sessionStorage.getItem("cs-m-tab"); } catch (e) {}
+const cntOf = id => { const b = $(id); if (!b || b.hidden) return 0; const n = b.querySelector(".news-n"); return n ? (parseInt(n.textContent, 10) || 0) : 0; };
+function renderTabs() {
+  const todo = cntOf("news") + cntOf("tips") + cntOf("linkBox"), T = [["todo", "📥 To do", todo], ["students", "👥 Students", students.length], ["club", "🌼 Club", cntOf("clubBox")], ["ideas", "🧱 Ideas to build", cntOf("ideas")], ["usage", "📊 Usage", 0]];
+  if (!mTab) mTab = todo ? "todo" : "students";
+  $("mTabs").innerHTML = T.map(([k, l, n]) => `<button type="button" class="seg" data-mtab="${k}" aria-pressed="${mTab === k}">${l}${n ? ` <span class="mt-n">${n}</span>` : ""}</button>`).join("");
+  document.querySelectorAll("[data-pane]").forEach(p => p.hidden = p.dataset.pane !== mTab);
+  const te = $("todoEmpty"); if (te) te.hidden = !!todo;
+  document.querySelectorAll("[data-pane]").forEach(p => { if (p.dataset.pane === "todo" || p.dataset.pane === "students") return; let e = p.querySelector(".pane-empty"); const empty = ![...p.querySelectorAll(".news")].some(n => !n.hidden && n.textContent.trim()); if (empty && !e) { e = document.createElement("p"); e.className = "muted pane-empty"; e.style.cssText = "padding:18px 4px"; e.textContent = { club: "Nothing new from the club right now.", ideas: "No ideas waiting. The nightly wrap-up adds new ones on weeknights.", usage: "No usage data yet." }[p.dataset.pane] || "Nothing here right now."; p.appendChild(e); } if (e) e.hidden = !empty; });
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-mtab]"); if (!b) return; mTab = b.dataset.mtab; try { sessionStorage.setItem("cs-m-tab", mTab); } catch (er) {} renderTabs(); });
 function renderTips() {
   const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-12).reverse();
   box.hidden = !recs.length; if (!recs.length) return;
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips <span class="news-n" style="background:#7348D8">${recs.length}</span></h2></div>
-    <p class="muted" style="margin:4px 0 8px">From your classes: mistakes that keep coming up, and what could help.</p>
+    <p class="muted" style="margin:4px 0 8px">From your classes (the nightly wrap-up adds these every night): mistakes that keep coming up, and what could help. <b>⭐ Recommend it</b> shows it to the student under “Noa recommends”.</p>
     <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : r.pack ? `Word pack: ${PACK_T[r.pack] || r.pack}` : (PAGE_T[r.page] || r.title || r.page);
       return `<li><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
-        ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}">💌 Suggest it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
+        ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}" title="Sends them a note on Hibi with a link to it">⭐ Recommend it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
         <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}">✓ Done</button></div></li>`; }).join("")}</ul>`;
 }
 /* ideas for NEW grammar modules / word packs, collected by the nightly wrap-up from what keeps coming up in classes */
@@ -524,11 +537,13 @@ $("news").addEventListener("click", e => {
   if (e.target.closest("#newsSeen")) { const now = Date.now(); localStorage.setItem(NEWS_KEY, String(now)); saveTPref("t-news-seen", now); renderNews(); return; }
   if (e.target.closest("#newsMore")) { newsOpen = !newsOpen; renderNews(); return; }
   const b = e.target.closest("[data-news]"); if (!b) return;
-  current = b.dataset.news; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
+  current = b.dataset.news; mTab = "students"; renderTabs(); renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
 });
 const PS_T = ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"];
 function weekKeyT() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
-const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] } };
+const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] },
+  prs: { name: "Present simple", stages: ["I, you, we, they", "He, she, it + -s", "Spelling: -es, -ies, has", "Negatives: don't / doesn't", "Questions: do / does", "Mix it up", "Tell the story"] },
+  ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
 function modBlock(s, id) {
   const T = MODT[id], p = s.mods[id] || {}, b = p.b || {}, st = p.s || {}, rec = s.modrec[id] || 0;
   const tot = T.stages.reduce((t, _, i) => t + (st[i + 1] | 0), 0), tOut = p.to && p.to.sc >= 15;
@@ -540,7 +555,7 @@ function modBlock(s, id) {
 function practiceBox(s) {
   const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
   const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
-  return `<div class="parkbox"><b>Practice</b>${modBlock(s, "ps")}${modBlock(s, "pp")}
+  return `<div class="parkbox"><b>Practice</b>${modBlock(s, "prs")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ed")}
     <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
     <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. Tap it again to remove it.</p></div>`;
 }
@@ -570,7 +585,7 @@ function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.em
 function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
 async function linkHub(s, hubId, oldId) {
   try {
-    const { makeView } = await import("./hubview.js?v=13");
+    const { makeView } = await import("./hubview.js?v=14");
     if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
     if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
     const h = hubList.find(x => x.id === hubId); if (!h) return;

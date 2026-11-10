@@ -1701,6 +1701,18 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     setInterval(() => { const p = document.getElementById("musicPanel"); if (p && !p.hidden) paintMusicScene(); }, 10 * 60000);
   })();
 
+  /* the buddy keeps you company during the study timer: a few short, quiet messages (not in calm mode) */
+  let tmSeen = { k: "" };
+  document.addEventListener("cs-timer", () => {
+    if (S.on !== true || root.hidden || !window.csTimer || document.documentElement.classList.contains("cs-calm")) return;
+    const st = window.csTimer.state(); if (!st) return;
+    const key = st.mode + ":" + st.len, mark = m => { if (tmSeen[m] === key) return false; tmSeen[m] = key; return true; };
+    if (st.run && st.left >= st.len - 2 && mark("start")) { say(st.mode === "focus" ? `Let's focus for ${Math.round(st.len / 60)} minutes! I'll be right here 📚` : "Break time! Stand up, stretch, drink some water 💧", "", 4200); return; }
+    if (st.run && st.mode === "focus" && st.len >= 600 && Math.abs(st.left - Math.round(st.len / 2)) <= 1 && mark("half")) { say("Halfway there! You're doing great ✨", "", 3500); return; }
+    if (st.run && st.mode === "focus" && st.len >= 900 && st.left <= 300 && st.left >= 298 && mark("five")) { say("5 minutes left. Finish strong 💪", "", 3500); return; }
+    if (!st.run && st.left === st.len && tmSeen.lastRun && tmSeen.lastMode === "focus" && st.mode !== "focus" && mark("done")) { hop(); say("You did it! 🍅 Time for a break. Stand up and stretch 🧘", "", 5000); }
+    tmSeen.lastRun = st.run; tmSeen.lastMode = st.mode;
+  });
   window.csBuddy = { get state() { return S; }, love() { if (S.on !== true) return; addFP(1); if (!root.hidden) { wake(); hop(); fx(["✨", "💛", "✨"]); say("Aww ✨ +1 friendship", "", 2400); } }, addFP, level, season, SEASONS, level, idle: () => { lastIdle = 0; lastAct = 0; idleTick(); }, IDLE, open: openModal, feed, pet: petIt, say: (h, acts, ms) => { if (S.on === true && !root.hidden) say(h, acts || "", ms || 8000); }, portrait: () => petSVG({ a: animal(), pal: palIdx(animal(), S.c | 0), wear: { head: S.head, face: S.face, neck: S.neck }, plain: true }), scene: () => stageSVG({ plain: true }).replace(/var\(--bd-sky\)/g, "#BFE3FF").replace(/var\(--bd-grass2\)/g, "#8CD47E").replace(/var\(--bd-grass\)/g, "#6CC06A"), name: () => nameOf(), items: ITEMS, counts, svg: petSVG, of: x => (x && SP[x.a] ? petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true }) : ""),
     treat(n, why) { if (S.on !== true) return false; S.t = Math.min(MAXT + 15, (S.t | 0) + (n | 0)); save(); if (!root.hidden) { wake(); hop(); fx(["🍪", "✨", "🍪"]); } say(`${why ? why + " " : ""}+${n | 0} 🍪`, "", 5000); return true; }, reload() { S = load(); visible(); } };
 })();
