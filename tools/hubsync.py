@@ -288,7 +288,7 @@ def make_view(s, meta=None):
             "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "tz": s.get("tz", ""), "country": s.get("country", ""), "next": ups[0]["start"] if ups else "", "due": due,
             "club": (meta.get("clubFeed") or None) if s.get("uid") and s.get("uid") in (meta.get("clubUids") or []) else None,
             "reports": [view_report(r) for r in (s.get("reports") or [])[-12:] if r and r.get("id")],
-            "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", "")} for g in s.get("guides", []) if g and g.get("url")],
+            "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", ""), "kind": g.get("kind", "")} for g in s.get("guides", []) if g and g.get("url")],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "pack": r.get("pack", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
 
@@ -867,7 +867,15 @@ def main():
         save(tok, tu, s); print("ok"); return
     if cmd == "add-guide":
         g = {"title": data.get("title", "Guide"), "url": data["url"], "date": data.get("date") or datetime.date.today().isoformat()}
-        if any(x.get("url") == g["url"] for x in s.get("guides", [])):
+        # "recap" = a class recap / class notes (Class Recaps folder); "guide" = a study guide (Study Guides folder)
+        kind = (data.get("kind") or "").lower()
+        if kind not in ("recap", "guide"):
+            kind = "recap" if re.search(r"recap|class notes|notes from|resumen", g["title"], re.I) else "guide"
+        g["kind"] = kind
+        old = next((x for x in s.get("guides", []) if x.get("url") == g["url"]), None)
+        if old:
+            if data.get("kind") and old.get("kind") != g["kind"]:
+                old["kind"] = g["kind"]; save(tok, tu, s); print("ok: kind updated"); return
             print("skip: guide already listed"); return
         s.setdefault("guides", []).append(g); save(tok, tu, s); print("ok"); return
     if cmd == "set-recap":

@@ -1260,6 +1260,23 @@ a.ch-rp-res:hover{border-color:var(--k)}
 html.ag-lock,html.ag-lock body{overflow:hidden}
 /* the side menu sticks exactly where it starts, so it doesn't jump 4px when you scroll */
 @media (min-width:901px){nav.side{top:calc(env(safe-area-inset-top,0px) + 78px);max-height:calc(100dvh - 78px - env(safe-area-inset-top,0px) - 16px)}}
+/* last-class recap: new words in one row at the bottom (scroll sideways), so the other sections stay compact */
+.ch-rc-wbox{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ch-rc-wbox h4{margin:0;font-size:13px;font-weight:800;color:var(--muted);display:flex;gap:6px;align-items:baseline}
+.ch-rc-hint{margin-left:auto;font-weight:600;font-size:12px}
+.ch-recap .ch-rc-words{flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px;padding:2px 2px 8px;scrollbar-width:thin;overscroll-behavior-x:contain}
+.ch-recap .ch-rc-w{flex:0 0 clamp(210px,40%,280px);scroll-snap-align:start;flex-direction:column;align-items:stretch;justify-content:space-between;gap:8px}
+.ch-recap .ch-rc-w>div{display:flex;flex-direction:column;gap:2px}
+.ch-recap .ch-rc-w>div .muted{font-size:13.5px}
+.ch-recap .ch-rc-save{align-self:flex-start}
+/* guides + class recaps, near the top */
+.ch-gbox{padding:14px 16px}
+.ch-gcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 20px}
+.ch-gcols>div{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.ch-glist{display:flex;flex-direction:column;gap:6px;width:100%}
+.ch-gl{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--bg) 55%,transparent);text-decoration:none;color:var(--ink);border:1px solid transparent}
+.ch-gl:hover{border-color:var(--k,var(--line))}
+.ch-gl>span:last-child{display:flex;flex-direction:column;min-width:0}.ch-gl b{font-size:14.5px}.ch-gl small{font-size:12.5px;color:var(--muted)}
 .cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
 html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
 .cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -1999,7 +2016,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 
 <section class="view" id="v-coaching" hidden>
   <h1>My <em>coaching</em></h1>
-  <p class="lede">Your private classes with Noa: your next class, homework, goals, guides and your pack. Noa keeps it up to date after your classes.</p>
+  <p class="lede">Your private classes with Noa: your next class, homework, guides, class recaps, goals and your pack. Noa keeps it up to date after your classes.</p>
   <div class="ch-wrap" id="coachBox"><p class="muted">Loading…</p></div>
 </section>
 <script>
@@ -2048,7 +2065,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   function newsFor(v){
     if(!v) return []; let sn=seenGet(); const wk=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
     const since=sn&&sn.d?sn.d:wk, out=[];
-    (v.guides||[]).forEach(g=>{ if(g.date&&g.date>since) out.push({d:g.date,ico:"📄",t:`New guide: <b>${esc(g.title)}</b>`,tab:"guides"}); });
+    (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
     (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
@@ -2082,7 +2099,10 @@ html.cs-calm .cs-rxpal button{transition:none}
       <div class="ch-tint ch-s ch-stat"><b>${Math.round(held.length*0.75)}</b><span>hours of English together</span></div>
       ${streak>=3?`<div class="ch-tint ch-g ch-stat"><b>🔥 ${streak}</b><span>classes in a row</span></div>`:""}</div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
     const reps=repsOf(v);
-    const tabs=[["classes","My classes","ch-s"]].concat(reps.length?[["reports",`Progress reports (${reps.length})`,"ch-v"]]:[]).concat([["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]]).concat((v.guides||[]).length?[["guides",`Guides (${v.guides.length})`,"ch-a"]]:[]);
+    const gKind=g=>g.kind==="recap"||g.kind==="guide"?g.kind:(/recap|class notes|notes from|resumen/i.test(g.title||"")?"recap":"guide");
+    const gAll=(v.guides||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")), gStudy=gAll.filter(g=>gKind(g)==="guide"), gRecap=gAll.filter(g=>gKind(g)==="recap");
+    const tabs=[["classes","My classes","ch-s"]].concat(reps.length?[["reports",`Progress reports (${reps.length})`,"ch-v"]]:[]).concat([["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]]).concat(gStudy.length?[["guides",`Study guides (${gStudy.length})`,"ch-a"]]:[]).concat(gRecap.length?[["recaps",`Class recaps (${gRecap.length})`,"ch-s"]]:[]);
+    if((tab==="guides"&&!gStudy.length)||(tab==="recaps"&&!gRecap.length)) tab="classes";
     if(tab==="reports"&&!reps.length) tab="classes";
     const newRep=reps[0]&&!repRead().includes(reps[0].id)&&tab!=="reports"?reps[0]:null;
     /* top: next class + homework, what's due, little stats */
@@ -2109,11 +2129,17 @@ html.cs-calm .cs-rxpal button{transition:none}
         ${rc.summary?`<p class="ch-rc-sum">${esc(rc.summary)}</p>`:""}
         <div class="ch-rc-grid">
         ${(rc.talked||[]).length?`<div><h4>💬 What we talked about</h4><ul>${rc.talked.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
-        ${voc.length?`<div><h4>✨ New words</h4><div class="ch-rc-words">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w"><div><b>${esc(x.w)}</b>${x.tr?` <span class="muted">· ${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
         ${rc.homework?`<div><h4>📝 Homework for next class</h4><p>${esc(rc.homework)}</p></div>`:""}
         ${(rc.heads||[]).length?`<div class="ch-rc-heads"><h4>📌 Don’t forget</h4><ul>${rc.heads.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
-        </div></div>`;
+        </div>
+        ${voc.length?`<div class="ch-rc-wbox"><h4>✨ New words <span class="muted">(${voc.length})</span>${voc.length>2?'<span class="ch-rc-hint">scroll →</span>':""}</h4><div class="ch-rc-words" role="list">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w" role="listitem"><div><b>${esc(x.w)}</b>${x.tr?`<span class="muted">${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
+        </div>`;
     }
+    const gRow=(list,ico)=>list.slice(0,3).map(g=>`<a class="ch-gl" href="${esc(g.url)}" target="_blank" rel="noopener"><span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}</b>${g.date?`<small>${fd(g.date)}</small>`:""}</span></a>`).join("");
+    const guideBox=gAll.length?`<div class="ch-gbox ch-tint ch-a"><div class="ch-gcols">
+      ${gStudy.length?`<div><div class="ch-k">📄 Study guides</div><div class="ch-glist">${gRow(gStudy,"📄")}</div>${gStudy.length>3?`<button type="button" class="ch-go" data-ct="guides">See all ${gStudy.length} →</button>`:""}</div>`:""}
+      ${gRecap.length?`<div><div class="ch-k">📼 Class recaps</div><div class="ch-glist">${gRow(gRecap,"📼")}</div>${gRecap.length>3?`<button type="button" class="ch-go" data-ct="recaps">See all ${gRecap.length} →</button>`:""}</div>`:""}
+      </div></div>`:"";
     const res=v.resources||[];
     const resBox=res.length?`<div class="ch-res ch-tint ch-a"><div class="ch-k">🧰 Class resources</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">The websites we use in class. Tap one to open it.</p><div class="ch-resl">${res.map(r=>`<a class="ch-resb" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">${r.ico}</span><span><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span></a>`).join("")}</div></div>`:"";
     let body="";
@@ -2132,15 +2158,16 @@ html.cs-calm .cs-rxpal button{transition:none}
         +((v.payments||[]).length?`<h2 style="margin-top:18px">Payments</h2><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Date</th><th>What</th><th>Amount</th></tr></thead><tbody>${(v.payments||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(p=>`<tr><td style="white-space:nowrap">${p.date?fs(p.date):""}</td><td>${esc(p.what)}</td><td style="white-space:nowrap">${esc(p.amount)}</td></tr>`).join("")}</tbody></table></div>`:"");
     } else if(tab==="goals"){
       body=`<div class="ch-tint ch-v ch-goal">${v.objective?`<b>🎯 Your goal</b>\n${esc(v.objective)}\n\n`:""}${v.focus?`<b>🛠 What we're working on</b>\n${esc(v.focus)}\n\n`:""}${v.level?`<b>Your level</b>: ${esc(v.level)}\n`:""}${v.schedule?`<b>Your schedule</b>: ${esc(v.schedule)}`:""}</div>`;
-    } else if(tab==="guides"){
-      body=`<p class="muted" style="font-size:14px">Study guides and class recaps Noa made for you.</p><div class="ch-guides">${(v.guides||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(g=>`<a class="ch-tint ch-a ch-guide" href="${esc(g.url)}" target="_blank" rel="noopener"><b>📄 ${esc(g.title)}</b><span>${g.date?fd(g.date):""}</span></a>`).join("")}</div>`;
+    } else if(tab==="guides"||tab==="recaps"){
+      const rc2=tab==="recaps";
+      body=`<p class="muted" style="font-size:14px">${rc2?"Recaps and notes from your classes.":"Grammar and study guides Noa made for you, with exercises."}</p><div class="ch-guides">${(rc2?gRecap:gStudy).map(g=>`<a class="ch-tint ${rc2?"ch-s":"ch-a"} ch-guide" href="${esc(g.url)}" target="_blank" rel="noopener"><b>${rc2?"📼":"📄"} ${esc(g.title)}</b><span>${g.date?fd(g.date):""}</span></a>`).join("")}</div>`;
     } else {
       let w=(v.words||[]).slice(); if(wSort==="new") w.reverse(); else if(wSort==="az") w.sort((a,b)=>a.w.localeCompare(b.w,"en",{sensitivity:"base"})); else if(wSort==="za") w.sort((a,b)=>b.w.localeCompare(a.w,"en",{sensitivity:"base"}));
       body=w.length?`<p class="muted" style="font-size:14px">Words from your English Journey sheet. Your own saved words are in <b>My words</b>.</p><div class="ch-sort">Order: ${[["new","Newest added"],["old","Oldest added"],["az","A → Z"],["za","Z → A"]].map(([k,l])=>`<button type="button" class="ch-tab ch-a" data-ws="${k}" aria-pressed="${wSort===k}">${l}</button>`).join("")}</div><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${w.map(x=>`<tr><td><b>${esc(x.w)}</b></td><td>${esc(x.tr)}</td><td>${esc(x.ex)}</td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No words here yet. Your saved words are in <b>My words</b>.</p>';
     }
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
-    box.innerHTML=newsBox+top+recapBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    box.innerHTML=newsBox+top+recapBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
     const one=e.target.closest("[data-rcw]"), all=e.target.closest("[data-rcall]"); if(!one&&!all) return;
@@ -2375,7 +2402,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
   /* clock-change helper (also used by My coaching) */
-  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=9").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
+  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=12").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
 </script>
 
@@ -2467,6 +2494,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const K="cs-guest";
   try{ const q=new URLSearchParams(location.search); if(q.get("guest")==="hb7k2q"){ sessionStorage.setItem(K,q.get("as")==="club"?"club":"plain"); history.replaceState(null,"",location.pathname+(location.hash||"")); } }catch(e){}
   let g=null; try{ g=sessionStorage.getItem(K); }catch(e){}
+  if(g&&window.__csViewAsMode){ try{ sessionStorage.removeItem(K); }catch(e){} g=null; }  /* "View as" a real student = their real data, never the guest samples */
   if(!g) return;
   window.__csGuest=g;
   const SAMPLE_CLUB={info:{schedule:[{wd:1,ico:"🧠",name:"Deep Dive Monday",time:"20:00",dur:90,desc:"A thought-provoking topic, usually with a short video, then we talk about it."},{wd:3,ico:"🃏",name:"Wildcard Wednesday",time:"20:00",dur:90,desc:"Games and activities, pure speaking, no formal teaching."},{wd:4,ico:"💬",name:"Word Up Thursday",time:"20:00",dur:90,desc:"About 6 phrasal verbs, idioms or expressions on a theme, then conversation using them."},{wd:5,ico:"😎",name:"Free Talk Friday",time:"14:30",dur:60,host:"Laura",desc:"Relaxed conversation to close the week."}],links:[]},
@@ -2753,7 +2781,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     state="ok"; return (res||[]).filter(x=>x.document).map(x=>fromDoc(x.document));
   }
   /* Noa's guest preview: sample posts, nothing is sent anywhere */
-  const G=()=>!!window.__csGuest, H=h=>Date.now()-h*36e5;
+  const G=()=>!!window.__csGuest&&!window.__csPreview, H=h=>Date.now()-h*36e5;
   const SAMPLE_POSTS=[{id:"s3",uid:"x3",name:"Sam (sample)",at:H(1),text:"Which topic should we do next Deep Dive Monday? 🤔",poll:{opts:["Travel disasters ✈️","Food from home 🍲","Dream jobs 💼"]},likes:["a|🔥"],n:0},{id:"s4",uid:"x2",name:"Alex (sample)",at:H(5),ch:"wSAMPLE",text:"The best advice I ever got: 'Done is better than perfect.' It helped me start speaking in class instead of waiting until my English was perfect.",likes:["a|👏","b|❤️"],n:1},{id:"s5",uid:"x1",name:"Robin (sample)",at:H(20),cat:"intro",text:"Hi everyone! I'm Robin and this is a sample post I'm learning English because I want to work remotely. Fun fact: I have three cats.",likes:["a|❤️","b|👏"],n:0},{id:"s1",uid:"x1",name:"Robin (sample)",at:H(3),cat:"q",text:"Does anyone have a good podcast for practicing listening on the bus? 🎧",likes:["a","b"],n:2},{id:"s2",uid:NOA,name:"Noa (sample)",at:H(26),text:"Welcome to the new club wall! Ask questions, share wins, post your pet photos 🐾",likes:["a","b","c","d"],n:1}];
   const SAMPLE_COMM={s1:[{id:"c1",uid:"x2",name:"Alex (sample)",at:H(2),text:"6 Minute English from the BBC! Short and easy to follow.",likes:["a"]},{id:"c2",uid:NOA,name:"Noa (sample)",at:H(1),text:"Great pick. Culips is also really good for real conversations.",likes:[]}],s2:[{id:"c3",uid:"x3",name:"Sam (sample)",at:H(20),text:"Love this! 🫰🏻",likes:["a"]}]};
   const listPosts=()=>G()?Promise.resolve(SAMPLE_POSTS):query("","clubPosts","DESCENDING",50);
@@ -7884,7 +7912,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { makeView, tzReminders } from "./hubview.js?v=9";
+import { makeView, tzReminders } from "./hubview.js?v=12";
 window.__csTzRem = tzReminders;
 
 const firebaseConfig = {
