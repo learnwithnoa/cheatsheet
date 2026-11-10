@@ -1997,6 +1997,12 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-podh{position:relative}.cl-podx{margin-left:auto;align-self:flex-start;background:none;border:1px solid transparent;border-radius:8px;padding:4px 7px;font-size:15px;cursor:pointer;opacity:.45}.cl-podx:hover{opacity:1;border-color:var(--line)}
 /* room between the tab pills and the phone's scroll bar */
 @media (max-width:600px){ .cl-tabs{padding-bottom:12px;margin-bottom:4px} }
+
+.cl-dmnew{position:relative;margin:0 0 10px}
+#dmFind{width:100%;box-sizing:border-box;font:600 15px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+#dmFind:focus{outline:none;border-color:var(--bright)}
+.cl-dmfind{list-style:none;margin:6px 0 0;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--surface);display:flex;flex-direction:column;gap:2px}
+.cl-dmnone{padding:8px 10px;font-size:14px}
 </style>
 
 <header class="top">
@@ -3930,11 +3936,24 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function closeDm(){ const o=document.getElementById("clDm"); if(o) o.remove(); DMOPEN=null; clearInterval(DMTIMER); }
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("clDm")) closeDm(); });
   async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
-    b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark()]);
+    b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{})]);
     const ts=THREADS||[];
-    b.innerHTML=(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(t.names||{})[u]||(profOf(u)||{}).name||L("Member","Miembro");
+    b.innerHTML=`<div class="cl-dmnew"><label class="sr" for="dmFind">${L("New message to…","Nuevo mensaje para…")}</label><input id="dmFind" type="search" autocomplete="off" placeholder="✏️ ${L("New message: type a name…","Nuevo mensaje: escribe un nombre…")}"><ul class="cl-dmfind" hidden></ul></div>`+(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(t.names||{})[u]||(profOf(u)||{}).name||L("Member","Miembro");
       return `<li><button type="button" class="cl-dmi${t.unread?" new":""}" data-dmto="${esc(u)}" data-dmname="${esc(nm)}">${av(u,nm)}<span><b>${esc(nm)}</b><small>${t.last?esc((t.last.from===(G()?"me":me())?L("You: ","Tú: "):"")+(t.last.text||"📷")):""}</small></span><em>${t.at?ago(t.at):""}</em></button></li>`; }).join("")}</ul>`
-      :`<p class="cl-empty">${L("No messages yet. Open someone’s profile (tap their name or buddy) and press 💬 Message.","Aún no hay mensajes. Abre el perfil de alguien (toca su nombre o su buddy) y presiona 💬 Mensaje.")}</p>`)+`<p class="cl-dmnote">🔒 ${L("Only you and the other person can read your messages.","Solo tú y la otra persona pueden leer sus mensajes.")}</p>`; }
+      :`<p class="cl-empty">${L("No messages yet. Type a name above to start one, or open someone’s profile and press 💬 Message.","Aún no hay mensajes. Escribe un nombre arriba para empezar uno, o abre el perfil de alguien y presiona 💬 Mensaje.")}</p>`)+`<p class="cl-dmnote">🔒 ${L("Only you and the other person can read your messages.","Solo tú y la otra persona pueden leer sus mensajes.")}</p>`; }
+  /* everyone you can write to: club profiles, people on the wall, the club roster, and always Noa */
+  function dmPeople(){ const out=new Map(), add=(u,n)=>{ if(!u||u===me()||out.has(u)) return; out.set(u,n||(profOf(u)||{}).name||""); };
+    if(G()){ [["x2","Alex (sample)"],["x3","Sam (sample)"],[NOA,"Noa"]].forEach(([u,n])=>add(u,n)); return [...out]; }
+    add(NOA,(profOf(NOA)||{}).name||"Noa");
+    (PROFS||[]).forEach(x=>add(x.id,x.name)); (POSTS||[]).forEach(p=>add(p.uid,p.name));
+    { const fd=window.__clubFeed&&window.__clubFeed(); ((fd&&fd.roster)||[]).forEach(r=>add(r.uid,r.name)); }
+    return [...out].filter(([,n])=>n); }
+  const fold=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  document.addEventListener("input",e=>{ const i=e.target.closest("#dmFind"); if(!i) return; const ul=i.parentNode.querySelector(".cl-dmfind"), q=fold(i.value.trim());
+    if(!q){ ul.hidden=true; ul.innerHTML=""; return; }
+    const hits=dmPeople().filter(([,n])=>fold(n).split(/\s+/).some(w=>w.startsWith(q))||fold(n).includes(q)).sort((a,b)=>(b[0]===NOA)-(a[0]===NOA)||a[1].localeCompare(b[1])).slice(0,8);
+    ul.hidden=false; ul.innerHTML=hits.length?hits.map(([u,n])=>`<li><button type="button" class="cl-dmi" data-dmto="${esc(u)}" data-dmname="${esc(n)}">${av(u,n)}<span><b>${esc(n)}</b>${u===NOA?`<small>${L("Teacher","Profe")}</small>`:""}</span></button></li>`).join(""):`<li class="muted cl-dmnone">${L("Nobody with that name in the club yet.","Nadie con ese nombre en el club todavía.")}</li>`; });
+  document.addEventListener("keydown",e=>{ if(e.key!=="Enter"||!e.target.closest("#dmFind")) return; e.preventDefault(); const f=e.target.parentNode.querySelector(".cl-dmfind [data-dmto]"); if(f) f.click(); });
   function msgHTML(m){ const mine=m.from===(G()?"me":me());
     return `<div class="cl-msg${mine?" mine":""}">${m.text?`<p>${txtHTML(m.text)}</p>`:""}${(m.imgs||[]).map(i=>`<img data-img="${esc(i)}" alt="${L("Photo","Foto")}" class="cl-msgimg">`).join("")}${(m.gifs||[]).map(g=>`<img src="${esc(g.url||g)}" alt="GIF" class="cl-msgimg">`).join("")}<em>${new Date(m.at).toLocaleString(L("en-US","es-CL"),{hour:"numeric",minute:"2-digit",month:"short",day:"numeric"})}</em></div>`; }
   async function openChat(u,nm){ if(!u||u===me()) return; if(!G()&&!me()){ toast(L("Sign in first.","Primero inicia sesión.")); return; }
@@ -8843,7 +8862,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 const CHANGELOG=[
   {id:"2026-map", date:"November 10, 2026", title:"Your English Map 🗺️", items:[
     ["🗺️","Your English Map","private students: your map from Session Zero now lives in <b>My coaching</b>. Your level, your superpower, 3 focus areas with practice links, and the route to your goal."],
-    ["💬","Messages at the top","the 💬 button now sits in the top bar, with a red dot when someone writes to you.","club"],
+    ["💬","Messages at the top","the 💬 button now sits in the top bar, with a red dot when someone writes to you. Type a name at the top to start a new chat, with anyone in the club or with Noa.","club"],
     ["⏱️","Study timer buddy","your buddy cheers you on during the study timer: halfway, 5 minutes left, and when it's time for a break."],
     ["🔴","New posts","a red dot on <b>Community</b> tells you when there's something new on the wall.","club"]
   ]},
