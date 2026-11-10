@@ -1185,7 +1185,8 @@ def main():
         replaced = len(ls) != len(s.get("lessons") or [])
         ls.append(L); ls.sort(key=lambda x: x.get("date", "")); s["lessons"] = ls[-40:]
         if data.get("replacesUrl"):
-            s["guides"] = [g for g in s.get("guides", []) if g.get("url") != data["replacesUrl"]]
+            _rid = re.search(r"/d/([\w-]{20,})", data["replacesUrl"]); _rid = _rid.group(1) if _rid else None
+            s["guides"] = [g for g in s.get("guides", []) if g.get("url") != data["replacesUrl"] and not (_rid and _rid in (g.get("url") or ""))]
         save(tok, tu, s)
         print(json.dumps({"ok": True, "replaced": replaced, "id": L["id"], "link": lesson_link(L["id"]), "onHibi": bool(s.get("uid")),
                           "exercises": sum(len(x["items"]) for x in L["exercises"]),
