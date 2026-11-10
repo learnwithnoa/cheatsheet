@@ -1,0 +1,32 @@
+name: Podcast audio
+# Copies club podcast episodes from Google Drive into pod/<drive-id>.mp3 (small, speech-quality MP3),
+# so Hibi can play them with its own player. Add a Drive file id as a line in pod/queue.txt and push.
+on:
+  push:
+    paths: ["pod/queue.txt"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Download and convert
+        run: |
+          set -e
+          touch pod/queue.txt
+          for id in $(grep -oE '[A-Za-z0-9_-]{20,}' pod/queue.txt | sort -u); do
+            [ -f "pod/$id.mp3" ] && continue
+            curl -sSL --fail -o /tmp/src "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
+            file /tmp/src; ls -la /tmp/src
+            ffmpeg -nostdin -loglevel error -y -i /tmp/src -ac 1 -ar 44100 -b:a 64k "pod/$id.mp3"
+            ls -la "pod/$id.mp3"
+          done
+      - name: Commit
+        run: |
+          git config user.name "hibi-bot"; git config user.email "hibi-bot@users.noreply.github.com"
+          git add pod/*.mp3 2>/dev/null || true
+          git diff --cached --quiet || (git commit -m "Podcast audio" && git push)
