@@ -20,6 +20,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py recommend '{"hub":"laura","name":"Laura Porcile","mod":"pp","stage":6,"title":"Present perfect or past simple?","why":"said 'I have seen it yesterday' twice","from":"private class Nov 9"}'
       mod: "ps" (Past simple: 1 Regular verbs, 2 Irregular verbs, 3 Was/were, 4 Negatives, 5 Questions, 6 Mix it up, 7 Tell the story)
            "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
+           "ed" (-ed endings, pronunciation: 1 Extra syllable or not?, 2 The /t/ sound, 3 The /d/ sound, 4 Mix it up, 5 Spelling tricks, 6 Odd one out, 7 Feelings: -ed adjectives)
       or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
            compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
@@ -34,6 +35,11 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py access-sync        approve every existing account · access-add <email> ['Name']   approve one email
   HUB_PASSWORD=... python3 hubsync.py club-recs   ·   club-add-rec '{"url":"https://youtu.be/…","date":"YYYY-MM-DD","wd":3,"topic":"…","summary":"…"}'
       YouTube recordings in the club Library (wd = weekday of the class: 1 Mon, 3 Wed, 4 Thu, 5 Fri). Skips links already there.
+  HUB_PASSWORD=... python3 hubsync.py club-episodes  ·  club-add-episode '{"url":"https://drive.google.com/file/d/…/view","date":"<week Monday>","title":"…","notes":"what we cover + a few new words"}'  ·  club-del-episode <id>
+      the weekly club podcast at the top of the club Library (same week again = replaces it). Drive files must be shared "anyone with the link can view".
+  HUB_PASSWORD=... python3 hubsync.py club-plans-todo [days]   club classes that already happened but whose lesson plan isn't on Hibi yet
+  HUB_PASSWORD=... python3 hubsync.py club-plan <class date YYYY-MM-DD> @/tmp/plan.json   {"title":"Wildcard Wednesday: The Pitch","md":"<the Notion plan's content, as fetched>"}
+      shows that class's lesson plan to members ("📄 Class material"). Refuses before the class has ended: plans are NEVER shown before class.
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
@@ -799,6 +805,77 @@ def main():
         lst.append(rec)
         http("PATCH", f"{BASE}/clubStats/_recordings", {"fields": {"uid": {"stringValue": "_recordings"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
         print(json.dumps({"ok": True, "id": rec["id"], "count": len(lst)})); return
+    if cmd in ("club-plan", "club-plans-todo"):
+        # club lesson plans go to members only AFTER the class has ended (never before): club-plan <class date> @plan.json
+        from zoneinfo import ZoneInfo
+        cl = ZoneInfo("America/Santiago"); now = datetime.datetime.now(cl)
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        sch = {int(x["wd"]): x for x in ((m.get("clubFeed") or {}).get("info") or {}).get("schedule") or []}
+        def ended(day):
+            wd = (day.weekday() + 1) % 7; s0 = sch.get(wd) or {}
+            hh, mm = (s0.get("time") or "20:00").split(":")
+            end = datetime.datetime(day.year, day.month, day.day, int(hh), int(mm), tzinfo=cl) + datetime.timedelta(minutes=int(s0.get("dur") or 90))
+            return now >= end, wd
+        idx = http("GET", f"{BASE}/clubStats/_plans", token=tok) or {}
+        try:
+            weeks = json.loads(idx.get("fields", {}).get("json", {}).get("stringValue") or "{}").get("weeks") or {}
+        except ValueError:
+            weeks = {}
+        if cmd == "club-plans-todo":
+            # classes with a lesson plan (Mon/Wed/Thu) that have ended in the last N days (default 8) and aren't on Hibi yet
+            out = []
+            for i in range(int(a[1]) if len(a) > 1 else 8, -1, -1):
+                day = now.date() - datetime.timedelta(days=i); done, wd = ended(day)
+                if wd not in (1, 3, 4) or not done:
+                    continue
+                wk = (day - datetime.timedelta(days=day.weekday())).isoformat()
+                if wd not in (weeks.get(wk) or []):
+                    out.append({"date": day.isoformat(), "wd": wd, "class": (sch.get(wd) or {}).get("name", "")})
+            print(json.dumps(out, ensure_ascii=False)); return
+        day = datetime.date.fromisoformat(a[1][:10]); done, wd = ended(day)
+        if not done:
+            raise SystemExit("not yet: lesson plans only go to members after the class has ended")
+        d = json.load(open(a[2][1:], encoding="utf-8")) if a[2].startswith("@") else json.loads(a[2])
+        md = str(d.get("md") or "")
+        md = re.split(r"(?im)^#+\s*.*(notes? for noa|teacher'?s? notes?|for noa only).*$", md)[0][:60000]  # drop a Noa-only section at the end
+        if len(md.strip()) < 50:
+            raise SystemExit("need the plan text in md")
+        wk = (day - datetime.timedelta(days=day.weekday())).isoformat(); path = f"{BASE}/clubStats/_plans_{wk.replace('-', '')}"
+        r = http("GET", path, token=tok) or {}
+        try:
+            doc = json.loads(r.get("fields", {}).get("json", {}).get("stringValue") or "{}")
+        except ValueError:
+            doc = {}
+        doc.setdefault("plans", {})[str(wd)] = {"title": _txt(d.get("title"), 140), "date": day.isoformat(), "md": md, "at": int(now.timestamp() * 1000)}
+        http("PATCH", path, {"fields": {"uid": {"stringValue": f"_plans_{wk.replace('-', '')}"}, "json": {"stringValue": json.dumps(doc, ensure_ascii=False)}}}, token=tok)
+        weeks[wk] = sorted(set((weeks.get(wk) or []) + [wd]))
+        http("PATCH", f"{BASE}/clubStats/_plans", {"fields": {"uid": {"stringValue": "_plans"}, "json": {"stringValue": json.dumps({"weeks": weeks})}}}, token=tok)
+        print(json.dumps({"ok": True, "week": wk, "wd": wd})); return
+    if cmd in ("club-episodes", "club-add-episode", "club-del-episode"):
+        # the weekly club podcast (NotebookLM audio overview) in the club Library: Noa/helper add, members listen
+        r = http("GET", f"{BASE}/clubStats/_podcast", token=tok) or {}
+        try:
+            lst = json.loads(r.get("fields", {}).get("json", {}).get("stringValue") or "{}").get("list") or []
+        except ValueError:
+            lst = []
+        if cmd == "club-episodes":
+            print(json.dumps(lst, ensure_ascii=False, indent=1)); return
+        if cmd == "club-del-episode":
+            lst = [x for x in lst if x.get("id") != a[1]]
+        else:
+            d = json.loads(a[1]) if not a[1].startswith("@") else json.load(open(a[1][1:], encoding="utf-8"))
+            url = _url(d.get("url"))
+            if not url:
+                raise SystemExit("need the episode link (Google Drive file shared 'anyone with the link', YouTube or Spotify)")
+            wk = str(d.get("date"))[:10]; datetime.date.fromisoformat(wk)
+            fid = re.search(r"/d/([\w-]{20,})|id=([\w-]{20,})", url)
+            key = (fid.group(1) or fid.group(2)) if fid else url
+            old = [x for x in lst if x.get("date") == wk or key in (x.get("url") or "")]
+            ep = {"id": old[0]["id"] if old else "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)), "url": url, "date": wk,
+                  "title": _txt(d.get("title"), 120), "notes": str(d.get("notes") or "")[:1500], "at": int(datetime.datetime.now().timestamp() * 1000)}
+            lst = [x for x in lst if x not in old] + [ep]
+        http("PATCH", f"{BASE}/clubStats/_podcast", {"fields": {"uid": {"stringValue": "_podcast"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
+        print(json.dumps({"ok": True, "count": len(lst)})); return
     if cmd == "access-sync":
         # Hibi is invite-only: approve every account that already exists (access/{email}), so nobody gets locked out
         n = 0

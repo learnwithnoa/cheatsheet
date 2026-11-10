@@ -547,6 +547,9 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 
 .move-alt{flex-basis:100%;margin:0;font-size:13.5px;color:var(--muted)}
 
+.pr-newb{font:800 10.5px var(--body);letter-spacing:.04em;background:var(--green);color:#fff;border-radius:999px;padding:2px 7px;vertical-align:middle}
+.ps-say{margin:-4px 0 10px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -1797,6 +1800,13 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-podn summary,.cl-podold>summary,.cl-podadd summary{cursor:pointer;font:700 14px var(--body)}.cl-podn p{margin:8px 0 0;font-size:14.5px;line-height:1.55}
 .cl-podold{display:flex;flex-direction:column;gap:8px}.cl-podold>.cl-rcard{margin-top:8px}
 .cl-podnew{background:color-mix(in srgb,#8B5CF6 10%,var(--surface));border-color:color-mix(in srgb,#8B5CF6 40%,var(--line))}
+/* lesson plans after class */
+.cl-plan{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 16px;max-height:70vh;overflow:auto}
+.cl-planh{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-12px;background:var(--surface);padding:6px 0;border-bottom:1px solid var(--line);margin-bottom:8px}
+.cl-planb2{font-size:15px;line-height:1.6}.cl-planb2 h3,.cl-planb2 h4,.cl-planb2 h5{margin:14px 0 6px}.cl-planb2 p{margin:6px 0}.cl-planb2 ul,.cl-planb2 ol{margin:6px 0;padding-left:22px}
+.cl-planb2 blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--accent,#8B5CF6);background:color-mix(in srgb,var(--accent,#8B5CF6) 7%,transparent);border-radius:0 8px 8px 0}
+.cl-planb2 hr{border:0;border-top:1px dashed var(--line);margin:12px 0}
+.cl-planb2 h3{font-size:19px}.cl-planb2 h4{font-size:17px}.cl-planb2 h5{font-size:15px}
 </style>
 
 <header class="top">
@@ -2277,7 +2287,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     lesOf(v).forEach(x=>{ if(x.date&&x.date>since) out.push({d:x.date,ico:x.kind==="guide"?"📄":"📼",t:`${x.kind==="guide"?"New study guide":"Your class recap"}: <b>${esc(x.title)}</b> (with exercises)`,tab:x.kind==="guide"?"guides":"recaps"}); });
     (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
-    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
+    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
@@ -2332,7 +2342,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
     </div>`;
     /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
-    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -2851,11 +2861,13 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return (p.classes||[]).map((c,i)=>{ const wd=c.wd!=null?c.wd:Math.max(0,WD.indexOf(String(c.day||"").slice(0,3))); const s=sched(f,wd)||{}; const date=c.date||at((wd+6)%7); const start=chileAt(date,c.time||s.time||"20:00"); const end=new Date(start.getTime()+((c.dur||s.dur||90)*60000));
       return Object.assign({},s,c,{wd,date,start,end,ico:c.ico||s.ico||"📅",name:c.name||s.name||"",zoom:c.zoom||s.zoom||"",k:"k"+(((wd===1?1:wd===3?2:wd===4?3:4)))}); });
   }
+  const planBtn=(date,wd)=>{ const d=new Date(date+"T12:00:00"); d.setDate(d.getDate()-((d.getDay()+6)%7)); const wk=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    return ((window.__clubPlans||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb" data-plan="${wk}|${wd}" aria-expanded="false">📄 ${L("Class material","Material de la clase")}</button>`:""; };
   function clsCard(c,now,rs){
     const live=now>=c.start.getTime()-10*60000&&now<=c.end.getTime(), past=now>c.end.getTime(), today=new Date(c.start).toDateString()===new Date(now).toDateString();
     return `<div class="cl-cls ${c.k}${past?" past":""}"><div class="cl-when"><b>${c.ico} ${esc(fd(c.date))}</b><span>${esc(timeTxt(c.start))}</span>${live?'<span class="cl-live">● Live now</span>':today&&!past?'<span class="cl-today">Today</span>':""}</div>
       <h3>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</h3>${c.teaser?`<p>${esc(c.teaser)}</p>`:""}
-      <div class="cl-cact">${c.zoom&&!past?`<a class="cl-join" href="${esc(c.zoom)}" target="_blank" rel="noopener">${live?L("🎥 Join now","🎥 Entrar ahora"):"🎥 Zoom link"}</a>`:""}${rs&&!past?`<span class="cl-rsvp" data-rsvp="${esc(rs)}" data-wd="${c.wd}"></span>`:""}</div></div>`;
+      <div class="cl-cact">${c.zoom&&!past?`<a class="cl-join" href="${esc(c.zoom)}" target="_blank" rel="noopener">${live?L("🎥 Join now","🎥 Entrar ahora"):"🎥 Zoom link"}</a>`:""}${rs&&!past?`<span class="cl-rsvp" data-rsvp="${esc(rs)}" data-wd="${c.wd}"></span>`:""}${past?planBtn(c.date,c.wd):""}</div></div>`;
   }
   function postHTML(f,p,now,head,cur){
     return `<article class="cl-post">${head?`<div class="cl-meta">${L("Week of","Semana del")} ${esc(fd(p.week))}</div>`:""}${p.title?`<h2>${esc(p.title)}</h2>`:""}${p.intro?`<p class="cl-intro">${esc(p.intro)}</p>`:""}
@@ -2918,7 +2930,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=r.vocab||[], ph=r.phrases||[];
     const name=c.name||x.title||L("Class","Clase"), topic=c.title&&c.name?c.title:"", q=[name,topic,x.title,x.summary,c.teaser,it.p.title,voc.map(v=>v.w).join(" ")].join(" ").toLowerCase();
     return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${voc.length?` · 📚 ${voc.length} ${L("words","palabras")}`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
-      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">▶ ${L("Watch the recording","Ver la grabación")}</a><button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
+      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">▶ ${L("Watch the recording","Ver la grabación")}</a>${planBtn(it.date,x.wd)}<button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
         ${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:""}
         ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
         ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
@@ -3073,6 +3085,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* keep "Live now" fresh, but never while someone is typing a comment */
   setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing) render(); else home(); } },60000);
   window.__clubTab=k=>{ tab=k; render(); };
+  document.addEventListener("cs-club-plans",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,.cl-plan,iframe,audio,textarea:focus,input:focus")) render(); });
   document.addEventListener("cs-club-pods",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,iframe,audio,textarea:focus,input:focus")) render(); });
   document.addEventListener("cs-club-recs",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,textarea:focus,input:focus")) render(); else home(); });
   window.__clubFeed=feed;
@@ -3203,7 +3216,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
     try{ const list=COMM[pid]=await listComments(pid); sub.innerHTML=list.map(c=>commentHTML(pid,c)).join("")+composer("comment",pid,L("Write a comment…","Escribe un comentario…")); paintImgs(sub); }catch(e){ sub.innerHTML=`<p class="cs-off">${L("Couldn’t load the comments.","No se pudieron cargar los comentarios.")}</p>`; } }
   function mount(root){ root.querySelectorAll(".cl-thread[data-thread]:not([data-on='1'])").forEach(mountThread); root.querySelectorAll(".cl-wall:not([data-on='1'])").forEach(mountWall);
-    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); paintSoon(root); ensureMe(); }
+    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); loadPlans(); paintSoon(root); ensureMe(); }
   /* picked photos (up to 4) */
   const PICK=new WeakMap();
   document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
@@ -3558,6 +3571,32 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function loadRecs(force){ if(G()) return; if(RECS&&!force&&Date.now()-recsAt<120000) return; recsAt=Date.now();
     try{ const r=await api("GET","/clubStats/_recordings"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; RECS=j.list||[]; }catch(e){ RECS=RECS||[]; }
     window.__clubRecs=RECS; document.dispatchEvent(new CustomEvent("cs-club-recs")); }
+  /* lesson plans: the helper uploads each class's plan only AFTER the class (clubStats/_plans index + _plans_<week>) */
+  let PLANS=null, plansAt=0; const PLANDOC={};
+  async function loadPlans(force){ if(G()) return; if(PLANS&&!force&&Date.now()-plansAt<300000) return; plansAt=Date.now();
+    try{ const r=await api("GET","/clubStats/_plans"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PLANS=j.weeks||{}; }catch(e){ PLANS=PLANS||{}; }
+    window.__clubPlans=PLANS; document.dispatchEvent(new CustomEvent("cs-club-plans")); }
+  function mdHTML(md){ const inl=t=>esc(t).replace(/&lt;br\s*\/?&gt;/g,"<br>").replace(/&lt;(\/?)(b|i|strong|em|u)&gt;/g,"<$1$2>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*?)\*/g,"$1<i>$2</i>")
+      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g,(m,a,u)=>`<a href="${u.replace(/&amp;/g,"&").replace(/"/g,"%22")}" target="_blank" rel="noopener">${a}</a>`).replace(/\\([$_*#\-\[\]()>])/g,"$1");
+    const out=[]; let list=null; const close=()=>{ if(list){ out.push(`</${list}>`); list=null; } };
+    String(md||"").replace(/<\/?(content|page|callout|columns?|column|toggle|details|summary|quote|span|empty-block)[^>]*>/gi,"").split("\n").forEach(raw=>{ const l=raw.replace(/\t/g,"  ").trim(); let m;
+      if(!l){ close(); return; }
+      if(/^(---|\*\*\*)$/.test(l)){ close(); out.push("<hr>"); return; }
+      if((m=l.match(/^(#{1,4})\s+(.*)/))){ close(); const h=Math.min(5,m[1].length+2); out.push(`<h${h}>${inl(m[2])}</h${h}>`); return; }
+      if((m=l.match(/^[-*•]\s+(?:\[[ x]\]\s*)?(.*)/))){ if(list!=="ul"){ close(); out.push("<ul>"); list="ul"; } out.push(`<li>${inl(m[1])}</li>`); return; }
+      if((m=l.match(/^\d+[.)]\s+(.*)/))){ if(list!=="ol"){ close(); out.push("<ol>"); list="ol"; } out.push(`<li>${inl(m[1])}</li>`); return; }
+      if((m=l.match(/^>\s?(.*)/))){ close(); out.push(`<blockquote>${inl(m[1])}</blockquote>`); return; }
+      close(); out.push(`<p>${inl(l)}</p>`); });
+    close(); return out.join(""); }
+  document.addEventListener("click",async e=>{ const b=e.target.closest("[data-plan]"); if(!b) return; e.preventDefault();
+    const nx=b.parentElement.nextElementSibling&&b.parentElement.nextElementSibling.classList.contains("cl-plan")?b.parentElement.nextElementSibling:null;
+    if(nx){ nx.remove(); b.setAttribute("aria-expanded","false"); return; }
+    const [wk,wd]=b.dataset.plan.split("|"); b.setAttribute("aria-expanded","true");
+    try{ if(!PLANDOC[wk]){ const r=await api("GET","/clubStats/_plans_"+wk.replace(/-/g,"")); PLANDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
+      const pl=(PLANDOC[wk].plans||{})[wd]; if(!pl){ toast(L("Couldn’t find it.","No lo encontré.")); return; }
+      b.parentElement.insertAdjacentHTML("afterend",`<div class="cl-plan"><div class="cl-planh"><b>📄 ${esc(pl.title||L("Class material","Material de la clase"))}</b><button type="button" class="cs-act" data-planx="1">✕ ${L("Close","Cerrar")}</button></div><div class="cl-planb2">${mdHTML(pl.md)}</div></div>`);
+    }catch(er){ b.setAttribute("aria-expanded","false"); toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
+  document.addEventListener("click",e=>{ const x=e.target.closest("[data-planx]"); if(!x) return; const p=x.closest(".cl-plan"), b=p.previousElementSibling&&p.previousElementSibling.querySelector("[data-plan]"); if(b) b.setAttribute("aria-expanded","false"); p.remove(); });
   let PODS=null, podsAt=0;
   async function loadPods(force){ if(G()) return; if(PODS&&!force&&Date.now()-podsAt<120000) return; podsAt=Date.now();
     try{ const r=await api("GET","/clubStats/_podcast"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PODS=j.list||[]; }catch(e){ PODS=PODS||[]; }
@@ -4338,7 +4377,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="card pr-goal" id="prGoal"></div>
   <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My words</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
@@ -4403,7 +4442,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=40" defer></script>
+<script src="buddy.js?v=41" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -6462,6 +6501,223 @@ He has ___ his bike to work every day this week. (ride)|ridden|Ride → rode →
 We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|Since → present perfect. Speak → spoken.
 `.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"ppt-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
 
+/* ---------- -ed endings (pronunciation) question bank ----------
+   word | t / d / id | how it sounds | extra note (optional)
+   Every stage is multiple choice with a 🔊 button; the test out is typed (/t/, /d/ or /ɪd/). */
+const ED_SND={t:"/t/",d:"/d/",id:"/ɪd/ (extra syllable)"};
+const ED_RULE={
+  t:["The verb ends in a quiet sound (p, k, f, s, sh, ch, x), so -ed sounds like a soft /t/. No extra syllable.","El verbo termina en un sonido sordo (p, k, f, s, sh, ch, x): la -ed suena como /t/, sin sílaba extra."],
+  d:["The verb ends in a voiced sound (a vowel, or b, g, j, l, m, n, r, v, z…), so -ed sounds like /d/. No extra syllable.","El verbo termina en un sonido sonoro (vocal, o b, g, j, l, m, n, r, v, z…): la -ed suena como /d/, sin sílaba extra."],
+  id:["The verb ends in a /t/ or /d/ sound, so -ed adds an extra syllable: /ɪd/.","El verbo termina en sonido /t/ o /d/: la -ed agrega una sílaba extra, /ɪd/."]
+};
+const ED_STAGES=[
+ {n:1, t:"Extra syllable or not?", sub:"wanted vs worked", kind:"syl", q:`
+wanted|id|WAN-tid
+needed|id|NEE-did
+worked|t|workt
+played|d|playd
+decided|id|de-SY-did
+started|id|STAR-tid
+waited|id|WAY-tid
+ended|id|EN-did
+loved|d|luvd
+helped|t|helpt
+added|id|AD-did
+called|d|cawld
+looked|t|lookt
+painted|id|PAIN-tid
+invited|id|in-VY-tid
+opened|d|O-pend|Two syllables, but the -ed doesn't add a new one: o-pen → o-pened.
+cleaned|d|cleend
+rested|id|RES-tid
+missed|t|mist|It ends in s, not t, so there's no extra syllable.
+finished|t|FIN-isht|Two syllables, like finish. The -ed doesn't add a third.
+mixed|t|mikst
+visited|id|VIS-i-tid
+hated|id|HAY-tid
+landed|id|LAN-did
+`},
+ {n:2, t:"The /t/ sound", sub:"worked, stopped, laughed", q:`
+worked|t|workt
+stopped|t|stopt
+helped|t|helpt
+watched|t|watcht
+washed|t|washt
+kissed|t|kist
+cooked|t|cookt
+liked|t|laikt
+hoped|t|houpt
+jumped|t|jumpt
+talked|t|tawkt
+walked|t|wawkt
+danced|t|danst|Ends in a /s/ sound (the -ce sounds like s).
+passed|t|past|It sounds exactly like the word "past".
+relaxed|t|ri-LAKST
+asked|t|askt|Native speakers often say it fast: "ast".
+dropped|t|dropt
+shopped|t|shopt
+laughed|t|laft|The -gh sounds like f, a quiet sound.
+picked|t|pikt
+played|d|playd|Careful: play ends in a vowel sound, so it's /d/.
+wanted|id|WAN-tid|Careful: want ends in t, so it's /ɪd/.
+called|d|cawld|Careful: call ends in l, a voiced sound.
+`},
+ {n:3, t:"The /d/ sound", sub:"played, loved, cleaned", q:`
+played|d|playd
+loved|d|luvd
+called|d|cawld
+cleaned|d|cleend
+opened|d|O-pend
+lived|d|livd
+moved|d|moovd
+changed|d|chaynjd
+enjoyed|d|en-JOYD
+tried|d|traid
+studied|d|STUH-deed
+listened|d|LIS-end
+arrived|d|a-RAIVD
+smiled|d|smaild
+hugged|d|hugd
+answered|d|AN-serd
+cried|d|craid
+stayed|d|stayd
+rained|d|raynd
+showed|d|shoud
+planned|d|pland
+worked|t|workt|Careful: work ends in k, a quiet sound, so it's /t/.
+needed|id|NEE-did|Careful: need ends in d, so it's /ɪd/.
+`},
+ {n:4, t:"Mix it up", sub:"/t/, /d/ or /ɪd/?", q:`
+watched|t|watcht
+waited|id|WAY-tid
+cleaned|d|cleend
+decided|id|de-SY-did
+stopped|t|stopt
+enjoyed|d|en-JOYD
+started|id|STAR-tid
+helped|t|helpt
+travelled|d|TRA-veld
+counted|id|COWN-tid
+fixed|t|fikst
+married|d|MA-reed
+pointed|id|POIN-tid
+followed|d|FO-loud
+touched|t|tucht
+needed|id|NEE-did
+learned|d|lernd
+checked|t|chekt
+graduated|id|GRA-ju-ay-tid
+ordered|d|OR-derd
+attended|id|a-TEN-did
+pushed|t|pusht
+explained|d|ex-PLAYND
+completed|id|com-PLEE-tid
+`},
+ {n:5, t:"Spelling tricks", sub:"fixed, closed, laughed", q:`
+fixed|t|fikst|The x sounds like "ks", a quiet sound.
+laughed|t|laft|The -gh sounds like f.
+coughed|t|coft|The -gh sounds like f.
+danced|t|danst|The -ce sounds like s.
+raced|t|rayst|The -ce sounds like s.
+closed|d|cloazd|The s in close sounds like z, a voiced sound.
+used|d|yoozd|The s in use sounds like z. (In "I used to", it's /t/: "yoost to".)
+raised|d|rayzd|The s sounds like z.
+refused|d|ri-FYOOZD|The s sounds like z.
+surprised|d|ser-PRAIZD|The s sounds like z.
+changed|d|chaynjd|The -ge sounds like j, a voiced sound.
+judged|d|jujd|The -dge sounds like j, not d. So no extra syllable!
+typed|t|taipt|The e is silent: the last sound is p.
+baked|t|baykt|The e is silent: the last sound is k.
+hoped|t|houpt|The e is silent: the last sound is p.
+hated|id|HAY-tid|The e is silent, the last sound is t: extra syllable.
+voted|id|VOU-tid|The last sound is t: extra syllable.
+excited|id|ex-SAI-tid|The last sound is t: extra syllable.
+breathed|d|breethd|The -the sounds like a buzzing th, a voiced sound.
+crashed|t|crasht|The -sh is a quiet sound.
+boxed|t|bokst|The x sounds like "ks".
+tired|d|TAI-erd|Ends in an r sound, voiced.
+missed|t|mist|Double s, still just one quiet s sound.
+faxed|t|fakst
+`},
+ {n:6, t:"Odd one out", sub:"which one sounds different?", kind:"odd", q:`
+worked, watched, played, kissed|played|played has /d/; the others have /t/.
+loved, called, wanted, cleaned|wanted|wanted has /ɪd/ (WAN-tid); the others have /d/.
+needed, started, decided, helped|helped|helped has /t/; the others have the extra syllable /ɪd/.
+stopped, lived, cooked, laughed|lived|lived has /d/; the others have /t/.
+opened, rained, jumped, smiled|jumped|jumped has /t/; the others have /d/.
+waited, ended, missed, visited|missed|missed has /t/ (mist); the others have /ɪd/.
+fixed, danced, closed, washed|closed|closed has /d/ (the s sounds like z); the others have /t/.
+changed, judged, painted, hugged|painted|painted has /ɪd/; the others have /d/ (judged is "jujd", no extra syllable).
+asked, hated, voted, counted|asked|asked has /t/; the others have /ɪd/.
+tried, cried, studied, typed|typed|typed has /t/; the others have /d/.
+relaxed, finished, enjoyed, talked|enjoyed|enjoyed has /d/; the others have /t/.
+used, refused, raced, surprised|raced|raced has /t/ (the -ce sounds like s); the others have /d/ (the s sounds like z).
+landed, added, laughed, rested|laughed|laughed has /t/ (laft); the others have /ɪd/.
+showed, followed, listened, pushed|pushed|pushed has /t/; the others have /d/.
+`},
+ {n:7, t:"Feelings: -ed adjectives", sub:"tired, excited, stressed", q:`
+tired|d|TAI-erd
+bored|d|bord
+excited|id|ex-SAI-tid
+interested|id|IN-tres-tid|Most people say it in 3 syllables: IN-tres-tid.
+relaxed|t|ri-LAKST
+stressed|t|strest
+worried|d|WUH-reed
+surprised|d|ser-PRAIZD
+shocked|t|shokt
+embarrassed|t|em-BA-rast
+frustrated|id|frus-TRAY-tid
+exhausted|id|ig-ZAWS-tid
+disappointed|id|dis-a-POIN-tid
+amazed|d|a-MAYZD
+scared|d|skerd
+confused|d|con-FYOOZD
+annoyed|d|a-NOYD
+depressed|t|di-PREST
+overwhelmed|d|o-ver-WELMD
+motivated|id|MO-ti-vay-tid
+naked|id|NAY-kid|A rule-breaker! As an adjective, naked has the extra syllable.
+wicked|id|WI-kid|A rule-breaker! As an adjective, wicked has the extra syllable.
+`}
+];
+ED_STAGES.forEach(st=>{
+  st.items=st.q.trim().split("\n").map((l,k)=>{ const p=l.split("|").map(x=>x.trim()); const id="ed"+st.n+"-"+k;
+    if(st.kind==="odd"){ const ws=p[0].split(",").map(x=>x.trim()); return {id, st:st.n, mco:true, q:"Which one has a different -ed sound? "+ws.join(" · "), a:[p[1]], o:ws.filter(w=>w!==p[1]), why:p[2], es:"Di cada palabra en voz alta y escucha el final.", say:ws.join(", ")}; }
+    const w=p[0], s=p[1], rs=p[2]||"", note=p[3]||"";
+    const why=w+" sounds like “"+rs+"”. "+ED_RULE[s][0]+(note?" "+note:"");
+    if(st.kind==="syl") return {id, st:st.n, mco:true, q:"“"+w+"”: does the -ed add an extra syllable?", a:[s==="id"?"Yes, an extra syllable (/ɪd/)":"No extra syllable"], o:[s==="id"?"No extra syllable":"Yes, an extra syllable (/ɪd/)"], why, es:ED_RULE[s][1], say:w};
+    return {id, st:st.n, mco:true, q:"“"+w+"”: how does the -ed sound?", a:[ED_SND[s]], o:Object.keys(ED_SND).filter(k2=>k2!==s).map(k2=>ED_SND[k2]), why, es:ED_RULE[s][1], say:w};
+  });
+  st.why=ED_RULE.id[0]; st.es=ED_RULE.id[1]; delete st.q;
+});
+const ED_ANS={t:["t","/t/"],d:["d","/d/"],id:["ɪd","id","/ɪd/","/id/","ed","/ed/","i d","ɪ d"]};
+const ED_TEST=`
+watched|t|watcht
+needed|id|NEE-did
+arrived|d|a-RAIVD
+fixed|t|fikst|The x sounds like "ks".
+closed|d|cloazd|The s sounds like z.
+excited|id|ex-SAI-tid
+laughed|t|laft|The -gh sounds like f.
+judged|d|jujd|The -dge sounds like j: no extra syllable.
+stressed|t|strest
+pointed|id|POIN-tid
+breathed|d|breethd
+danced|t|danst
+attended|id|a-TEN-did
+enjoyed|d|en-JOYD
+typed|t|taipt
+voted|id|VOU-tid
+refused|d|ri-FYOOZD
+coughed|t|coft
+exhausted|id|ig-ZAWS-tid
+planned|d|pland
+crashed|t|crasht
+graduated|id|GRA-ju-ay-tid
+changed|d|chaynjd
+relaxed|t|ri-LAKST
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"edt-"+i, st:0, q:"“"+p[0]+"”: the -ed sounds like /___/ (write t, d or id)", a:ED_ANS[p[1]], o:[], why:p[0]+" sounds like “"+p[2]+"”. "+ED_RULE[p[1]][0]+(p[3]?" "+p[3]:""), es:ED_RULE[p[1]][1], say:p[0]}; });
+
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
 (function(){
   const view=document.getElementById("v-quiz"), hub=document.getElementById("prHub"); if(!view||!hub) return;
@@ -6471,7 +6727,8 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
   const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
   const MODS={
     ps:{id:"ps",name:"Past simple",lname:"past simple",stages:PS_STAGES,test:PS_TEST,toy:"⏳ Magic hourglass",toyName:"Magic hourglass",ico:"⏪"},
-    pp:{id:"pp",name:"Present perfect",lname:"present perfect",stages:PP_STAGES,test:PP_TEST,toy:"🌍 Little globe",toyName:"Little globe",ico:"🌍"}
+    pp:{id:"pp",name:"Present perfect",lname:"present perfect",stages:PP_STAGES,test:PP_TEST,toy:"🌍 Little globe",toyName:"Little globe",ico:"🌍"},
+    ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
   const ITEM={}; Object.values(MODS).forEach(md=>md.stages.forEach(st=>st.items.forEach(q=>{ q.mod=md.id; ITEM[q.id]=q; }))); VOC_SETS.forEach(v=>v.qs.forEach(q=>ITEM[q.id]=q));
@@ -6584,9 +6841,9 @@ We ___ a word since the argument. (not / speak)|haven't spoken/have not spoken|S
     const blank=it.mc?'<span class="ps-blank">___</span>':'<input class="ps-in" id="psIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer">';
     box.innerHTML='<div class="card ps-q"><div class="quiz-top"><span class="tag">'+esc(R.title)+'</span><span class="count">'+(R.retry?"Try again · "+(R.i+1)+" / "+n:(R.i+1)+" / "+n)+'</span></div>'+
       '<div class="ps-bar" aria-hidden="true"><i style="width:'+Math.round(R.i/n*100)+'%"></i></div>'+
-      '<p class="ps-kind">'+(it.mc?"Choose the right answer":"Write the missing words")+(R.test?" · you'll see your results at the end":"")+'</p>'+
+      '<p class="ps-kind">'+(it.mc?"Choose the right answer":M==="ed"&&R.test?"Write t, d or id":"Write the missing words")+(R.test?" · you'll see your results at the end":"")+'</p>'+
       (R.story&&!R.retry?'<div class="ps-story"><b>📖 '+esc(R.story.title)+'</b>'+(R.i?'<p>'+R.list.slice(0,R.i).map(x=>esc(x.q.q.replace(/\s*\([^)]*\)\s*$/,"")).replace("___","<span>"+esc(x.q.a[0])+"</span>")).join(" ")+'</p>':'<p class="muted">The story starts here…</p>')+'</div>':"")+
-      '<p class="ps-sent">'+sentence(q,blank)+'</p>'+
+      '<p class="ps-sent">'+sentence(q,blank)+'</p>'+(q.say&&window.csSpeak?'<p class="ps-say"><button class="swap" type="button" data-vsay="'+esc(q.say)+'" aria-label="Listen">🔊 Listen</button></p>':"")+
       (it.mc?'<div class="ps-opts">'+shuffle([q.a[0]].concat(q.o.slice(0,3))).map(o=>'<button type="button" class="ps-opt" data-psopt="'+esc(o)+'">'+esc(o)+'</button>').join("")+'</div>'
             :'<div class="note-actions"><button class="pill-btn" type="button" id="psCheck">'+(R.test?"Next →":"Check")+'</button><button class="swap" type="button" id="psDunno">'+(R.test?"Skip":"I don\'t know")+'</button></div>')+
       '<div class="ps-fb" id="psFb" aria-live="polite"></div></div>'+
@@ -8082,6 +8339,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-ed", date:"November 10, 2026", title:"Say your -ed endings right 🔊", items:[
+    ["🔊","New: -ed endings","worked, played or wanted? Learn when -ed sounds like /t/, /d/ or /ɪd/, with a 🔊 button on every word. 7 short stages in Practice → Grammar.","quiz"],
+    ["🔔","A new toy for your buddy","finish all 7 stages and your buddy gets the Little bell."]
+  ]},
   {id:"2026-club2", date:"November 9, 2026", title:"The club, more alive 🌼", quiet:true, items:[
     ["🔔","Your own club bell","see when someone comments on your post, reacts to it or @mentions you (type @ and a name to mention someone).","club"],
     ["🙋","I’m going","tap it on each class of the week, and see who else is coming. Polls 📊 are on the wall too.","club"],
