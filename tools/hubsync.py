@@ -26,9 +26,16 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py club-post @/tmp/club-post.json   this week's club post, straight to club members' Hibi (Club page + Home card):
       {"week":"2026-11-09" (the Monday),"title":"...","intro":"short hello + announcements (plain text)",
        "classes":[{"day":"Mon","ico":"🐾","name":"Deep Dive Monday","title":"Pets, People & Why Animals Feel Safe","teaser":"1-2 lines"}, ...],
-       "closing":"light closing line"}   (times and Zoom links come from club-info; add "date"/"time"/"zoom" to a class only if it's different that week)
+       "closing":"light closing line",
+       "challenge":{"title":"The best advice you ever got","prompt":"short writing prompt (3-5 sentences, a grammar point to try)"}   (optional weekly challenge; members answer on Hibi)}
+      (times and Zoom links come from club-info; add "date"/"time"/"zoom" to a class only if it's different that week)
   HUB_PASSWORD=... python3 hubsync.py club-info '{"schedule":[{"wd":1,"ico":"🧠","name":"Deep Dive Monday","time":"20:00","dur":90,"desc":"...","zoom":"https://..."}],"links":[{"title":"...","url":"https://...","note":"..."}]}'
-  HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h)
+  HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
+  HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/..."}],
+      "notes":"1-2 friendly lines about the class","vocab":[{"w":"word","tr":"Spanish meaning","ex":"example from class"}],"phrases":["useful phrase", ...]}'
+      after-class material on that week's club post ("After class": recordings, words members can save, phrases). Merges with what's there.
+  HUB_PASSWORD=... python3 hubsync.py club-attend <week-monday> '["Laura Porcile","Daniel Soto", ...]'   who came to club classes that week (Zoom names);
+      builds streaks + badges on members' Hibi profiles. Prints names it couldn't match.
   HUB_PASSWORD=... python3 hubsync.py club-sync   give/remove club page access (new sign-ups who match the Skool roster, role changes)
   HUB_PASSWORD=... python3 hubsync.py idea '{"kind":"grammar"|"words","title":"Future: will vs going to","why":"what keeps coming up","example":"I will go tomorrow (planned)","student":"Laura Porcile"}'
       an idea for a NEW grammar module / word pack Hibi doesn't have yet; the same title again adds +1 and the student
@@ -426,8 +433,43 @@ def clean_club_post(d):
         if _url(c.get("zoom")):
             x["zoom"] = _url(c["zoom"])
         cls.append(x)
-    return {"id": "w" + week.replace("-", ""), "week": week, "title": _txt(d.get("title"), 160), "intro": str(d.get("intro") or "").strip()[:2500],
-            "classes": cls, "closing": str(d.get("closing") or "").strip()[:800], "at": datetime.date.today().isoformat()}
+    out = {"id": "w" + week.replace("-", ""), "week": week, "title": _txt(d.get("title"), 160), "intro": str(d.get("intro") or "").strip()[:2500],
+           "classes": cls, "closing": str(d.get("closing") or "").strip()[:800], "at": datetime.date.today().isoformat()}
+    ch = d.get("challenge")
+    if isinstance(ch, dict) and (ch.get("title") or ch.get("prompt")):
+        out["challenge"] = {"title": _txt(ch.get("title"), 120), "prompt": str(ch.get("prompt") or "").strip()[:600]}
+    return out
+
+
+def clean_recap(d, old=None):
+    """after-class material for a week: recordings, a short note, words and phrases (merged into what's there)"""
+    old = dict(old or {})
+    recs = list(old.get("recordings") or [])
+    for x in d.get("recordings") or []:
+        u = _url(x.get("url"))
+        if not u:
+            continue
+        recs = [r for r in recs if r.get("url") != u]
+        r = {"title": _txt(x.get("title"), 80), "url": u}
+        if x.get("wd") is not None:
+            r["wd"] = int(x["wd"])
+        recs.append(r)
+    voc = list(old.get("vocab") or [])
+    have = {v.get("w", "").lower() for v in voc}
+    for v in d.get("vocab") or []:
+        w = _txt(v.get("w"), 60)
+        if w and w.lower() not in have:
+            voc.append({"w": w, "tr": _txt(v.get("tr"), 80), "ex": _txt(v.get("ex"), 200)}); have.add(w.lower())
+    ph = list(old.get("phrases") or [])
+    for x in d.get("phrases") or []:
+        t = _txt(x, 80)
+        if t and t not in ph:
+            ph.append(t)
+    out = {"recordings": recs[-8:], "vocab": voc[-24:], "phrases": ph[-12:]}
+    note = d.get("notes") if d.get("notes") is not None else old.get("notes")
+    if note:
+        out["notes"] = str(note).strip()[:600]
+    return out
 
 
 def report_link(rid):
@@ -624,6 +666,9 @@ def main():
         post = clean_club_post(d)
         m = get_doc(tok, tu, "t-hubmeta") or {}
         feed = m.get("clubFeed") or {}
+        prev = next((x for x in (feed.get("posts") or []) if x.get("id") == post["id"]), None)
+        if prev and prev.get("recap"):
+            post["recap"] = prev["recap"]  # keep recordings/words already added to this week
         ps = [x for x in (feed.get("posts") or []) if x.get("id") != post["id"]]
         replaced = len(ps) != len(feed.get("posts") or [])
         ps.append(post); ps.sort(key=lambda x: x.get("week", "")); feed["posts"] = ps[-12:]
@@ -632,6 +677,52 @@ def main():
         print(json.dumps({"ok": True, "replaced": replaced, "id": post["id"], "members": len(uids), "link": SITE + "#club"})); return
     if cmd == "club-sync":
         club_sync(tok, tu); return
+    if cmd == "club-recap":
+        # after class: add recordings / words / phrases / a short note to a week's club post (members see it under "After class")
+        week = str(a[1])[:10]; datetime.date.fromisoformat(week)
+        raw = a[2]
+        d = json.load(sys.stdin) if raw == "-" else json.load(open(raw[1:], encoding="utf-8")) if raw.startswith("@") else json.loads(raw)
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        feed = m.get("clubFeed") or {}
+        post = next((x for x in (feed.get("posts") or []) if x.get("week") == week), None)
+        if not post:
+            raise SystemExit(f"No club post for the week of {week}. Weeks: " + ", ".join(x.get("week", "") for x in feed.get("posts") or []))
+        post["recap"] = clean_recap(d, post.get("recap"))
+        m["clubFeed"] = feed
+        uids = club_sync(tok, tu, m, quiet=True)
+        r = post["recap"]
+        print(json.dumps({"ok": True, "week": week, "recordings": len(r["recordings"]), "words": len(r["vocab"]), "phrases": len(r["phrases"]), "members": len(uids)})); return
+    if cmd == "club-attend":
+        # who came to club classes in a week (from Zoom): builds streaks and badges on members' Hibi profiles
+        week = str(a[1])[:10]; wd = datetime.date.fromisoformat(week)
+        week = (wd - datetime.timedelta(days=wd.weekday())).isoformat()  # the Monday
+        names = json.loads(a[2]) if not a[2].startswith("@") else json.load(open(a[2][1:], encoding="utf-8"))
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        club = set(m.get("clubUids") or [])
+        accts = [x for x in get_accounts(tok) if x["uid"] in club and x["uid"] != tu]
+        matched, unmatched = [], []
+        for raw_name in names:
+            n = norm_name(raw_name)
+            if not n:
+                continue
+            hit = [x for x in accts if norm_name(x.get("name", "")) == n]
+            if not hit:
+                parts = n.split()
+                hit = [x for x in accts if norm_name(x.get("name", "")).split()[:1] == parts[:1]]
+                if len(parts) > 1:
+                    hit = [x for x in hit if parts[1][:1] in [w[:1] for w in norm_name(x.get("name", "")).split()[1:]]] or (hit if len(hit) == 1 else [])
+            if len(hit) != 1:
+                unmatched.append(raw_name); continue
+            uid = hit[0]["uid"]
+            cur = http("GET", f"{BASE}/clubStats/{uid}", token=tok) or {}
+            try:
+                st = json.loads(cur.get("fields", {}).get("json", {}).get("stringValue") or "{}")
+            except ValueError:
+                st = {}
+            ws = sorted(set((st.get("weeks") or []) + [week]))
+            http("PATCH", f"{BASE}/clubStats/{uid}", {"fields": {"uid": {"stringValue": uid}, "json": {"stringValue": json.dumps({"weeks": ws[-104:]})}}}, token=tok)
+            matched.append(hit[0].get("name"))
+        print(json.dumps({"week": week, "matched": matched, "unmatched": unmatched}, ensure_ascii=False)); return
     if cmd == "club-activity":
         # new posts/comments/photos on the club community wall in the last N hours (default 24), for the nightly email
         hours = float(a[1]) if len(a) > 1 else 24
@@ -650,6 +741,20 @@ def main():
             f = {k: (v.get("stringValue") if "stringValue" in v else v.get("integerValue") if "integerValue" in v else v.get("booleanValue")) for k, v in d.get("fields", {}).items()}
             out.append({"when": datetime.datetime.fromtimestamp(int(f.get("at") or 0) / 1000).strftime("%a %b %d %H:%M"), "who": f.get("name"), "kind": f.get("kind"),
                         "where": "weekly post" if re.match(r"^w\d{8}$", f.get("pid") or "") else "wall", "photo": bool(f.get("img")), "text": f.get("text")})
+        # anything members reported to Noa (stays until he marks it done on Hibi)
+        reps = []
+        try:
+            q2 = {"structuredQuery": {"from": [{"collectionId": "clubReports"}], "limit": 50}}
+            for r in http("POST", f"{BASE}:runQuery", q2, token=tok) or []:
+                d = r.get("document")
+                if d:
+                    f = {k: (v.get("stringValue") if "stringValue" in v else v.get("integerValue")) for k, v in d.get("fields", {}).items()}
+                    reps.append({"reported_by": f.get("name"), "author": f.get("author"), "text": f.get("text"), "why": f.get("why"),
+                                 "when": datetime.datetime.fromtimestamp(int(f.get("at") or 0) / 1000).strftime("%a %b %d")})
+        except SystemExit:
+            pass
+        if reps:
+            out.append({"REPORTS_for_Noa": reps})
         print(json.dumps(out, ensure_ascii=False)); return
     if cmd == "idea":
         # an idea for a NEW grammar module or word pack, from what keeps coming up in classes (Noa sees them on Hibi members)

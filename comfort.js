@@ -65,7 +65,7 @@
     }
     return false;
   }
-  function bionicNode(tn) {
+  function bionicNode(tn, pd) {
     const txt = tn.nodeValue; WORD.lastIndex = 0;
     if (!WORD.test(txt)) return; WORD.lastIndex = 0;
     const frag = document.createDocumentFragment(); let last = 0, m;
@@ -79,38 +79,78 @@
     }
     if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
     /* in a flex or grid box, keep the line together as one piece so the layout doesn't change */
-    const pd = getComputedStyle(tn.parentNode).display;
     if (/flex|grid/.test(pd)) { const w = document.createElement("span"); w.className = "bw-line"; w.appendChild(frag); tn.parentNode.replaceChild(w, tn); return; }
     tn.parentNode.replaceChild(frag, tn);
   }
-  function bionicIn(scope) {
-    if (!scope) return;
-    const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
-      acceptNode: n => (n.nodeValue.trim() && n.parentElement && !skipEl(n.parentElement)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
-    });
-    const list = []; while (walker.nextNode()) list.push(walker.currentNode);
-    list.forEach(bionicNode);
+  /* Only what's on screen gets processed: hidden views, closed panels and closed <details> are
+     skipped, then picked up when they open. Work is done in small batches so the page never freezes. */
+  function rejectEl(el) {
+    if (SKIP.has(el.tagName) || el.hidden || el.isContentEditable) return true;
+    const c = el.classList; if (c && (c.contains("bw") || c.contains("bw-line") || c.contains("no-bio") || c.contains("mono"))) return true;
+    const p = el.parentElement; if (p && p.tagName === "DETAILS" && !p.open && el.tagName !== "SUMMARY") return true;
+    return false;
   }
-  function bionicOff() {
-    document.querySelectorAll("span.bw").forEach(s => { const p = s.parentNode; p.replaceChild(document.createTextNode(s.textContent), s); p.normalize && p.normalize(); });
-    document.querySelectorAll("span.bw-line").forEach(s => { const p = s.parentNode; p.replaceChild(document.createTextNode(s.textContent), s); p.normalize && p.normalize(); });
-  }
-  function bionicScope() { return document.body; }  /* the whole site, including Settings, Music and other panels */
-  function bionicRun() {
-    if (bioBusy) return; bioBusy = true;
-    if (bioObs) bioObs.disconnect();
-    try { bionicIn(bionicScope()); } finally {
-      bioBusy = false;
-      if (S.bionic && bioObs) bioObs.observe(bionicScope(), { childList: true, subtree: true, characterData: true });
+  function hiddenUp(el) {
+    for (let e = el; e && e !== document.body; e = e.parentElement) {
+      if (rejectEl(e)) return true;
     }
+    return false;
   }
-  let bioT = null;
+  function collect(scope, out) {
+    if (!scope || scope.nodeType !== 1 || !scope.isConnected || hiddenUp(scope)) return;
+    const walker = document.createTreeWalker(scope, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+      acceptNode: n => n.nodeType === 1 ? (rejectEl(n) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_SKIP)
+        : (n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT)
+    });
+    while (walker.nextNode()) out.push(walker.currentNode);
+  }
+  let bioQueue = [], bioRAF = 0;
+  function bionicFlush() {
+    bioRAF = 0;
+    if (!S.bionic) { bioQueue = []; return; }
+    if (bioObs) bioObs.disconnect();
+    const t0 = performance.now();
+    try {
+      while (bioQueue.length && performance.now() - t0 < 12) {
+        const batch = bioQueue.splice(0, 250).filter(n => n.isConnected && n.parentNode);
+        const disp = batch.map(n => getComputedStyle(n.parentNode).display);  /* all reads first, then all writes */
+        batch.forEach((n, i) => bionicNode(n, disp[i]));
+      }
+    } finally {
+      if (S.bionic && bioObs) bioObs.observe(document.body, BIO_OBS);
+    }
+    if (bioQueue.length) bioRAF = requestAnimationFrame(bionicFlush);
+  }
+  function bionicIn(scope) { collect(scope, bioQueue); if (bioQueue.length && !bioRAF) bioRAF = requestAnimationFrame(bionicFlush); }
+  function bionicOff() {
+    if (bioRAF) { cancelAnimationFrame(bioRAF); bioRAF = 0; } bioQueue = [];
+    const parents = new Set();
+    document.querySelectorAll("span.bw-line").forEach(s => { parents.add(s.parentNode); s.replaceWith(document.createTextNode(s.textContent)); });
+    document.querySelectorAll("span.bw").forEach(s => { parents.add(s.parentNode); s.replaceWith(document.createTextNode(s.textContent)); });
+    parents.forEach(p => p && p.isConnected && p.normalize());
+  }
+  const BIO_OBS = { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "open"] };
+  let bioPending = new Set(), bioT = null;
+  function onBioMut(muts) {
+    for (const m of muts) {
+      const t = m.type === "characterData" ? m.target.parentElement : m.target;
+      if (t) bioPending.add(t);
+    }
+    clearTimeout(bioT);
+    bioT = setTimeout(() => {
+      const list = [...bioPending]; bioPending = new Set();
+      /* drop nodes inside another pending node so nothing is walked twice */
+      list.filter(el => !list.some(o => o !== el && o.contains(el))).forEach(bionicIn);
+    }, 60);
+  }
   function applyBionic() {
     if (S.bionic) {
-      if (!bioObs) bioObs = new MutationObserver(() => { clearTimeout(bioT); bioT = setTimeout(bionicRun, 60); });
-      bionicRun();
+      if (!bioObs) bioObs = new MutationObserver(onBioMut);
+      bioObs.observe(document.body, BIO_OBS);
+      bionicIn(document.body);
     } else {
       if (bioObs) { bioObs.disconnect(); }
+      clearTimeout(bioT); bioPending = new Set();
       bionicOff();
     }
     root.classList.toggle("cs-bionic", !!S.bionic);
