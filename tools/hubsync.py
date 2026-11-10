@@ -36,7 +36,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py access-sync        approve every existing account · access-add <email> ['Name']   approve one email
   HUB_PASSWORD=... python3 hubsync.py club-recs   ·   club-add-rec '{"url":"https://youtu.be/…","date":"YYYY-MM-DD","wd":3,"topic":"…","summary":"…"}'
       YouTube recordings in the club Library (wd = weekday of the class: 1 Mon, 3 Wed, 4 Thu, 5 Fri). Skips links already there.
-  HUB_PASSWORD=... python3 hubsync.py club-episodes  ·  club-add-episode '{"url":"https://drive.google.com/file/d/…/view","date":"<week Monday>","title":"…","notes":"what we cover + a few new words"}'  ·  club-del-episode <id>
+  HUB_PASSWORD=... python3 hubsync.py club-episodes  ·  club-add-episode '{"url":"https://drive.google.com/file/d/…/view","date":"<week Monday>","title":"…","notes":"what we cover","vocab":[{"w":"word","tr":"Spanish","ex":"example"}]}'  ·  club-del-episode <id>
       the weekly club podcast at the top of the club Library (same week again = replaces it). Drive files must be shared "anyone with the link can view".
   HUB_PASSWORD=... python3 hubsync.py club-plans-todo [days]   club classes that already happened but whose lesson plan isn't on Hibi yet
   HUB_PASSWORD=... python3 hubsync.py club-plan <class date YYYY-MM-DD> @/tmp/plan.json   {"title":"Wildcard Wednesday: The Pitch","md":"<the Notion plan's content, as fetched>"}
@@ -873,7 +873,8 @@ def main():
             key = (fid.group(1) or fid.group(2)) if fid else url
             old = [x for x in lst if x.get("date") == wk or key in (x.get("url") or "")]
             ep = {"id": old[0]["id"] if old else "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)), "url": url, "date": wk,
-                  "title": _txt(d.get("title"), 120), "notes": str(d.get("notes") or "")[:1500], "at": int(datetime.datetime.now().timestamp() * 1000)}
+                  "title": _txt(d.get("title"), 120), "notes": str(d.get("notes") or "")[:1500], "at": int(datetime.datetime.now().timestamp() * 1000),
+                  "vocab": [{"w": _txt(v.get("w"), 80), "tr": _txt(v.get("tr"), 120), "ex": _txt(v.get("ex"), 220)} for v in (d.get("vocab") or []) if isinstance(v, dict) and v.get("w")][:16]}
             lst = [x for x in lst if x not in old] + [ep]
         http("PATCH", f"{BASE}/clubStats/_podcast", {"fields": {"uid": {"stringValue": "_podcast"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
         print(json.dumps({"ok": True, "count": len(lst)})); return

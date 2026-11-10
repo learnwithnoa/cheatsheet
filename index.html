@@ -554,6 +554,20 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 @media (max-width:600px){#v-quiz .pr-big{grid-template-columns:1fr}}
 #v-quiz .pr-big .pr-bigbtn{min-height:150px}
 
+.w-lead{display:flex;flex-direction:column;align-items:center;gap:4px}.w-chkw{display:flex;align-items:flex-start;cursor:pointer;padding:2px}.wcard .w-chk{pointer-events:auto;cursor:pointer;margin:6px 4px 0 0}
+.wcard.picked{border-color:color-mix(in srgb,var(--green) 55%,var(--line))}
+.w-selbar{position:sticky;top:64px;z-index:5}
+/* tour: same size on every step, so Next never jumps */
+#welcome{display:flex;flex-direction:column;height:min(660px,calc(100vh - 40px));max-height:none}
+#welcome .wl-step{flex:1 1 auto;min-height:0;overflow:auto;padding-right:4px}
+#welcome .wl-nav{flex:none;margin-top:auto}
+#wlNotes{display:none!important}
+.wl-bdprev{display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,#F5C842 10%,var(--surface));border:1px solid color-mix(in srgb,#F5C842 35%,var(--line))}
+.wl-bdprev .wl-bdimg{position:relative;flex:none;width:88px;height:88px}.wl-bdprev .wl-bdimg svg{width:100%;height:100%;image-rendering:pixelated}
+.wl-bdprev .wl-bdimg i{position:absolute;font-style:normal;color:#F5C842;animation:wlTw 1.6s ease-in-out infinite}.wl-bdprev .wl-bdimg i:nth-child(2){top:2px;left:4px}.wl-bdprev .wl-bdimg i:nth-child(3){top:18px;right:0;animation-delay:.5s}.wl-bdprev .wl-bdimg i:nth-child(4){bottom:8px;left:0;animation-delay:1s}
+@keyframes wlTw{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.wl-bdprev .wl-bdimg i{animation:none;opacity:.8}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -1828,6 +1842,64 @@ html.cs-calm .cs-rxpal button{transition:none}
 @media (max-width:760px){.cl-infogrid{grid-template-columns:1fr}}
 /* community: polls on top only when there are polls */
 .cl-polls.empty{padding:10px 14px}.cl-polls.empty h2{display:none}
+/* This week → Community */
+.cl-towall{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 2px 0;font-size:14.5px;color:var(--muted)}
+/* calendar pop-up: Zoom pill like the others, a bit brighter */
+.cl-zoomb{background:color-mix(in srgb,#2D8CFF 18%,var(--surface))!important;border-color:color-mix(in srgb,#2D8CFF 55%,var(--line))!important}
+/* podcast: our own player, in the theme's colours */
+.cl-podp{max-width:none}
+.cl-pplay{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,#8B5CF6 14%,var(--surface-2,var(--surface)));border:1px solid color-mix(in srgb,#8B5CF6 35%,var(--line))}
+.cl-pbtn{all:unset;cursor:pointer;flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:18px;color:#fff;background:linear-gradient(135deg,#8B5CF6,#E0699A);box-shadow:0 4px 14px color-mix(in srgb,#8B5CF6 40%,transparent)}
+.cl-pbtn:focus-visible{outline:3px solid var(--bright,#8B5CF6);outline-offset:2px}
+.cl-pmid{flex:1;min-width:160px;display:flex;flex-direction:column;gap:2px}
+.cl-pbar{width:100%;accent-color:#8B5CF6;margin:0;height:auto!important;padding:0!important;border:0!important;background:none!important}
+.cl-ptime{display:flex;justify-content:space-between;font:600 12px var(--mono,monospace);color:var(--muted)}
+.cl-pskip,.cl-pspeed{flex:none}
+.cl-podnoa{display:flex;justify-content:flex-end}.cl-podnoa .cs-act{width:auto}
+.cl-podn{border-top:1px dashed var(--line);padding-top:8px}
+.cl-pvh{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 6px}
+.cl-pvrow{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity}
+.cl-pvc{flex:0 0 210px;scroll-snap-align:start;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.cl-pvc i{font-size:13.5px;color:var(--muted)}.cl-pvc small{font-size:13px;line-height:1.35;flex:1}.cl-pvc .cl-addw{align-self:flex-start;margin-top:4px}
+/* ✨ I enjoyed this class */
+.cl-favb.on{background:color-mix(in srgb,#F5C842 25%,var(--surface))!important;border-color:color-mix(in srgb,#F5C842 60%,var(--line))!important}
+/* ideas as a wall topic */
+.cs-ideak{margin-top:4px}.cl-iup2.on{background:color-mix(in srgb,var(--green) 20%,var(--surface))!important}
+/* 💬 direct messages */
+.cs-read-row>.cl-dmtop{margin:8px 0 0}
+.cl-dmtop{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font:700 13.5px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);white-space:nowrap}
+.cl-dmtop:hover{border-color:var(--bright,#4F9DF0)}.cl-dmtop[hidden]{display:none}
+.cl-dmn{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#E5533D;color:#fff;font:800 11px var(--body);display:inline-grid;place-items:center}
+.cl-dm-ov{position:fixed;inset:0;z-index:1200;background:rgba(5,10,25,.45);display:flex;justify-content:flex-end}
+.cl-dm{width:min(440px,100%);height:100%;background:var(--bg,#0d1424);border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(0,0,0,.35)}
+.cl-dmh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}.cl-dmh .cl-dmt{flex:1;display:flex;align-items:center;gap:8px;font-size:17px}.cl-dmh .cl-prof-x{position:static}
+.cl-dmh .cs-av,.cl-dmi .cs-av{width:30px;height:30px}
+.cl-dmb{flex:1;display:flex;flex-direction:column;min-height:0;padding:12px 14px;gap:10px;overflow:auto}
+.cl-dml{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cl-dmi{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.cl-dmi>span{flex:1;min-width:0;display:flex;flex-direction:column}.cl-dmi small{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cl-dmi em{font-style:normal;font-size:12px;color:var(--muted)}
+.cl-dmi.new{border-color:color-mix(in srgb,#E5533D 55%,var(--line))}.cl-dmi.new b::after{content:" •";color:#E5533D}
+.cl-dmnote{font-size:12.5px;color:var(--muted);margin:auto 0 0}
+.cl-msgs{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:4px 2px}
+.cl-msg{max-width:82%;align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:8px 12px}
+.cl-msg.mine{align-self:flex-end;background:color-mix(in srgb,#4F9DF0 22%,var(--surface));border-color:color-mix(in srgb,#4F9DF0 45%,var(--line));border-radius:16px 16px 4px 16px}
+.cl-msg p{margin:0;font-size:15px;line-height:1.45;white-space:pre-wrap;word-break:break-word}.cl-msg em{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:3px}
+.cl-msgimg{display:block;max-width:100%;max-height:260px;border-radius:10px;margin-top:6px}
+.cl-dm .cs-comp{border-top:1px solid var(--line);padding-top:10px}
+.cl-dmbtn{margin-top:8px}
+.cl-dmi>.cs-av,.cl-dmh .cs-av{flex:none;width:34px!important;height:34px!important;min-width:34px}
+/* top-right profile button: green = saved, yellow = saving, red = offline */
+.auth-btn.st-ok{border-color:color-mix(in srgb,var(--green) 55%,var(--line))!important}
+.auth-btn.st-busy{border-color:#E0A100!important;box-shadow:0 0 0 2px color-mix(in srgb,#E0A100 25%,transparent)}
+.auth-btn.st-err{border-color:var(--red)!important}
+.auth-photo{display:flex;gap:12px;align-items:flex-start;margin:6px 0 10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2,var(--surface))}
+.ap-prev{flex:none;width:64px;height:64px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--surface);border:2px solid var(--line);font-size:28px}.ap-prev img{width:100%;height:100%;object-fit:cover}
+.ap-opts{display:flex;flex-direction:column;gap:4px;font-size:14px}.ap-opts small{color:var(--muted);margin-bottom:2px}.ap-opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.ap-up{display:inline-flex!important;align-self:flex-start;margin-top:4px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:13px}
+.cs-avp{overflow:hidden}.cs-avp img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+/* club header buttons wrap instead of covering the title */
+#v-club .cs-read-row{flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end;max-width:60%}
+@media (max-width:760px){#v-club .vhead{flex-direction:column;gap:4px}#v-club .cs-read-row{max-width:none;justify-content:flex-start}}
 </style>
 
 <header class="top">
@@ -1872,7 +1944,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <div class="music-wrap auth-wrap">
       <button class="theme-btn auth-btn" id="authBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="authPanel"><span class="g-ico" id="authIco" aria-hidden="true">G</span><span class="theme-txt" id="authTxt">Sign in</span></button>
       <div class="music-panel card auth-panel" id="authPanel" role="dialog" aria-label="Your account" hidden>
-        <div class="qa-top"><h3>Your account</h3><button class="qa-x" type="button" id="authClose" aria-label="Close">×</button></div>
+        <div class="qa-top"><h3>Your profile</h3><button class="qa-x" type="button" id="authClose" aria-label="Close">×</button></div>
         <p class="auth-who" id="authWho"></p>
         <p class="auth-status" id="authStatus"></p>
         <div class="auth-stats" id="authStats"></div>
@@ -2136,7 +2208,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <div class="list-tools">
       <input id="wSearch" type="search" placeholder="Search my words…" aria-label="Search my words" autocomplete="off">
       <select id="wSort" class="w-sort" aria-label="Sort my words"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">A → Z</option><option value="za">Z → A</option></select>
-      <button class="swap" type="button" id="wSelBtn" aria-pressed="false">Choose words</button>
+      <button class="swap" type="button" id="wSelBtn" aria-pressed="false" hidden>Choose words</button>
       <button class="pill-btn" type="button" id="copyNew">Copy new words</button>
       <button class="swap" type="button" id="copyAll">Copy all</button>
       <button class="swap danger" type="button" id="delAll">Delete all</button>
@@ -2146,7 +2218,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <p id="delAllTxt"><b>Delete all your words?</b> This can't be undone. If you want to keep them, copy them first.</p>
     <div class="note-actions"><button class="swap" type="button" id="delAllCopy">Copy all first</button><button class="pill-btn danger-btn" type="button" id="delAllYes">Yes, delete all</button><button class="swap" type="button" id="delAllNo">Cancel</button></div>
   </div>
-  <div class="w-selbar" id="wSelBar" hidden><span id="wSelN">0 chosen</span><button class="swap" type="button" id="wSelAll">Choose all shown</button><button class="swap" type="button" id="wSelNone">Clear</button><button class="pill-btn pill-green" type="button" id="wSelGo">Practice these →</button><button class="swap" type="button" id="wSelDone">Done</button></div>
+  <div class="w-selbar" id="wSelBar" hidden><span id="wSelN">0 chosen</span><button class="swap" type="button" id="wSelAll">Choose all shown</button><button class="swap" type="button" id="wSelNone">Clear</button><button class="pill-btn pill-green" type="button" id="wSelGo">🃏 Practice these with flashcards →</button><button class="swap" type="button" id="wSelDone" hidden>Done</button></div>
 <div id="wordList" class="word-list"></div>
 </section>
 
@@ -2338,7 +2410,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       <div class="ch-tint ch-a ch-stat"><b>${Math.floor(left/per)}</b><span>${Math.floor(left/per)===1?"class":"classes"} left (about)</span></div>
       ${cur.deadline?`<div class="ch-tint ch-p ch-stat"><b>${fs(cur.deadline)}</b><span>your pack ends</span></div>`:""}
       <div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div>
-      <div class="ch-tint ch-s ch-stat"><b>${Math.round(held.length*0.75)}</b><span>hours of English together</span></div>
+      <div class="ch-tint ch-s ch-stat">${(()=>{ const m=held.length*45; return m<60?`<b>${m}</b><span>minutes of English together</span>`:`<b>${Math.round(m/60*10)/10}</b><span>hours of English together</span>`; })()}</div>
       ${streak>=3?`<div class="ch-tint ch-g ch-stat"><b>🔥 ${streak}</b><span>classes in a row</span></div>`:""}</div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
     const reps=repsOf(v);
     const gKind=g=>g.kind==="recap"||g.kind==="guide"?g.kind:(/recap|class notes|notes from|resumen/i.test(g.title||"")?"recap":"guide");
@@ -2940,25 +3012,25 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const watched=()=>{ try{ return JSON.parse(localStorage.getItem(WKEY)||"[]"); }catch(e){ return []; } };
   function setWatched(id,on){ let w=watched().filter(x=>x!==id); if(on) w.push(id); try{ localStorage.setItem(WKEY,JSON.stringify(w)); }catch(e){} try{ window.__clubSocial&&window.__clubSocial.watched&&window.__clubSocial.watched(w); }catch(e){} }
   function recList(f){ const out=[]; posts(f).forEach(p=>{ const r=p.recap||{}, cl=classesOf(f,p); (r.recordings||[]).forEach((x,i)=>{ const c=cl.find(y=>y.wd===x.wd)||(x.wd!=null?(()=>{ const s=sched(f,x.wd)||{}; return {name:s.name,ico:s.ico,date:weekDates(p.week)((x.wd+6)%7)}; })():{});
-      out.push({id:p.week+"_"+(x.wd!=null?x.wd:"r"+i),week:p.week,p,x,c,date:c.date||p.week}); }); });
+      out.push({id:p.week+"_"+(x.wd!=null?x.wd:"r"+i),week:p.week,p,x,c:Object.assign({},c,{ico:(sched(f,x.wd)||{}).ico||c.ico}),date:c.date||p.week}); }); });
     /* recordings Noa added by hand (YouTube links), with or without a weekly post */
     (window.__clubRecs||[]).forEach(r=>{ if(!r||!r.url||!r.date) return; const d=new Date(r.date+"T12:00:00"), wd=d.getDay(), mon=new Date(d); mon.setDate(d.getDate()-((wd+6)%7)); const wk=mon.getFullYear()+"-"+String(mon.getMonth()+1).padStart(2,"0")+"-"+String(mon.getDate()).padStart(2,"0");
       const p=posts(f).find(x=>x.week===wk), s=sched(f,r.wd!=null?r.wd:wd)||{}, pc=p?classesOf(f,p).find(y=>y.wd===(r.wd!=null?r.wd:wd)):null;
       const id="yt_"+r.id; if(out.some(o=>o.x.url===r.url)) return;
-      out.push({id,week:wk,p:p||{recap:{},title:""},x:{url:r.url,title:r.name||s.name,summary:r.summary||"",wd:r.wd!=null?r.wd:wd,rid:r.id},c:{name:r.name||(pc&&pc.name)||s.name||"",title:r.topic||(pc&&pc.title)||"",ico:(pc&&pc.ico)||s.ico||"🎬",teaser:pc&&pc.teaser,date:r.date},date:r.date}); });
+      out.push({id,week:wk,p:p||{recap:{},title:""},x:{url:r.url,title:r.name||s.name,summary:r.summary||"",wd:r.wd!=null?r.wd:wd,rid:r.id},c:{name:r.name||(pc&&pc.name)||s.name||"",title:r.topic||(pc&&pc.title)||"",ico:s.ico||(pc&&pc.ico)||"🎬",teaser:pc&&pc.teaser,date:r.date},date:r.date}); });
     return out.sort((a,b)=>b.date.localeCompare(a.date)); }
   const ytId=u=>{ const m=String(u||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m?m[1]:""; };
   function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=r.vocab||[], ph=r.phrases||[];
     const name=c.name||x.title||L("Class","Clase"), topic=c.title&&c.name?c.title:"", q=[name,topic,x.title,x.summary,c.teaser,it.p.title,voc.map(v=>v.w).join(" ")].join(" ").toLowerCase();
     return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${voc.length?` · 📚 ${voc.length} ${L("words","palabras")}`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
-      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">▶ ${L("Watch the recording","Ver la grabación")}</a>${planBtn(it.date,x.wd)}<button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
+      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">▶ ${L("Watch the recording","Ver la grabación")}</a>${planBtn(it.date,x.wd)}<span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span><button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
         ${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:""}
         ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
         ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
   let RFOCUS=null;
   /* ---------- 🎧 the weekly club podcast (episodes stored in clubStats/_podcast: Noa adds, members listen) ---------- */
   const pods=()=>(window.__clubPods||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.at||0)-(a.at||0));
-  function podPlayer(u){ u=String(u||""); const yt=ytId(u); if(yt) return `<button type="button" class="cl-yt" data-yt="${yt}" data-watched="pod_${yt}" aria-label="${L("Play the episode","Reproducir el episodio")}"><img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`;
+  function podPlayer(u){ u=String(u||""); const yt=ytId(u); { const dm=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(dm) return `<div class="cl-pplay" data-drive="${dm[1]}"><button type="button" class="cl-pbtn" data-pplay="1" aria-label="${L("Play","Reproducir")}">▶</button><div class="cl-pmid"><input type="range" class="cl-pbar" min="0" max="1000" value="0" aria-label="${L("Position","Posición")}"><div class="cl-ptime"><span data-pt="cur">0:00</span><span data-pt="dur">–:––</span></div></div><button type="button" class="cs-act cl-pskip" data-pskip="-15" aria-label="${L("Back 15 seconds","Atrás 15 segundos")}">↺ 15</button><button type="button" class="cs-act cl-pskip" data-pskip="15" aria-label="${L("Forward 15 seconds","Adelante 15 segundos")}">15 ↻</button><button type="button" class="cs-act cl-pspeed" data-pspeed="1">1×</button><audio preload="none" src="https://drive.google.com/uc?export=download&id=${dm[1]}"></audio></div>`; } if(yt) return `<button type="button" class="cl-yt" data-yt="${yt}" data-watched="pod_${yt}" aria-label="${L("Play the episode","Reproducir el episodio")}"><img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`;
     let m=u.match(/open\.spotify\.com\/(episode|show)\/([\w]+)/); if(m) return `<iframe class="cl-podsp" src="https://open.spotify.com/embed/${m[1]}/${m[2]}" title="Podcast episode" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"></iframe>`;
     m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(m) return `<iframe class="cl-poddr" src="https://drive.google.com/file/d/${m[1]}/preview" title="Podcast episode" loading="lazy" allow="autoplay"></iframe>`;
     if(/\.(mp3|m4a|wav|ogg|aac)(\?|$)/i.test(u)) return `<audio class="cl-podau" controls preload="none" src="${esc(u)}"></audio>`;
@@ -2968,8 +3040,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(!ps.length) return `<div class="cl-sec cl-pod"><div class="cl-podh"><span class="cl-podic" aria-hidden="true">🎧</span><div><h2>${L("The club podcast","El podcast del club")}</h2><p class="cl-note">${L("Coming soon: a short weekly recap of our classes, with the topics and new words, to listen to on the bus, at the gym or while you cook.","Muy pronto: un resumen semanal corto de nuestras clases, con los temas y las palabras nuevas, para escuchar en la micro, en el gym o mientras cocinas.")}</p></div><span class="cl-soonb">${L("Coming soon","Muy pronto")}</span></div>${add}</div>`;
     const [e,...older]=ps;
     return `<div class="cl-sec cl-pod"><div class="cl-podh"><span class="cl-podic" aria-hidden="true">🎧</span><div><div class="cl-meta">${L("The club podcast","El podcast del club")} · ${L("Week of","Semana del")} ${esc(fd(e.date))}</div><h2>${esc(e.title||L("This week in the club","Esta semana en el club"))}</h2></div></div>
-      <div class="cl-podp">${podPlayer(e.url)}</div>${e.notes?`<details class="cl-podn"><summary>📝 ${L("Show notes","Notas del episodio")}</summary><p>${esc(e.notes).replace(/\n/g,"<br>")}</p></details>`:""}${noa?`<button type="button" class="cs-act" data-poddel="${esc(e.id)}">✕ Remove</button>`:""}
+      <div class="cl-podp">${podPlayer(e.url)}</div>${e.notes||(e.vocab||[]).length?`<details class="cl-podn"><summary>📝 ${L("Show notes","Notas del episodio")}${(e.vocab||[]).length?` <span class="muted">· ${e.vocab.length} ${L("words","palabras")}</span>`:""}</summary>${e.notes?`<p>${esc(e.notes).replace(/\n/g,"<br>")}</p>`:""}${podVocab(e)}</details>`:""}${noa?`<div class="cl-podnoa"><button type="button" class="cs-act" data-poddel="${esc(e.id)}">✕ Remove</button></div>`:""}
       ${older.length?`<details class="cl-podold"><summary>${L("Earlier episodes","Episodios anteriores")} (${older.length})</summary>${older.map(x=>`<details class="cl-rcard"><summary><span class="cl-rico" aria-hidden="true">🎧</span><span class="cl-rt"><b>${esc(x.title||L("Club podcast","Podcast del club"))}</b><small>${L("Week of","Semana del")} ${esc(fd(x.date))}</small></span></summary><div class="cl-rbody">${podPlayer(x.url)}${x.notes?`<p>${esc(x.notes).replace(/\n/g,"<br>")}</p>`:""}${noa?`<button type="button" class="cs-act" data-poddel="${esc(x.id)}">✕ Remove</button>`:""}</div></details>`).join("")}</details>`:""}${add}</div>`; }
+  function podVocab(e){ const v=(e.vocab||[]).filter(x=>x&&x.w); if(!v.length) return "";
+    return `<div class="cl-pvh"><b>📚 ${L("Words from this episode","Palabras de este episodio")}</b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Add all to My words","Agregar todas a Mis palabras")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`).join("")}</div>`; }
   function weekOf(t){ const d=new Date(t); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function podNewHTML(){ const e=pods()[0]; if(!e||Date.now()-new Date(e.date+"T12:00:00").getTime()>10*864e5) return "";
     return `<button type="button" class="cl-catch cl-podnew" data-clt="recordings"><span aria-hidden="true">🎧</span><span><b>${L("New podcast episode:","Nuevo episodio del podcast:")}</b> ${esc(e.title||L("this week in the club","esta semana en el club"))}</span><span class="cl-mego">→</span></button>`; }
@@ -3019,7 +3093,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const mname=y0.toLocaleDateString(L("en-US","es-CL"),{month:"long",year:"numeric"}), wds=L("Mon Tue Wed Thu Fri Sat Sun","Lun Mar Mié Jue Vie Sáb Dom").split(" ");
     const allBox=sched2.length?`<div class="cl-calall"><p>${L("Want every class in your calendar, with a reminder 30 minutes before?","¿Quieres todas las clases en tu calendario, con un recordatorio 30 minutos antes?")}</p><a class="cl-join" style="--k:var(--c4)" href="${icsFile(sched2,true)}" download="noas-english-club.ics">⬇ ${L("Add all weekly classes to my calendar","Agregar todas las clases semanales a mi calendario")}</a><small>${L("Opens in Google Calendar, Apple Calendar or Outlook. Moved or cancelled classes show up here and on the weekly post.","Se abre en Google Calendar, Apple Calendar u Outlook. Las clases cambiadas o canceladas aparecen aquí y en el post semanal.")}</small></div>`:"";
     const pop=CALPOP?`<div class="cl-cpop" role="dialog" aria-label="${esc(fd(CALD))}"><div class="cl-cpoph"><h3>${esc(fd(CALD))}</h3><button type="button" class="cs-act" data-calx="1" aria-label="${L("Close","Cerrar")}">✕</button></div>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}${e.dur?" · "+e.dur+" min":""}${e.host?" · "+L("with","con")+" "+esc(e.host):""}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
-        <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:`<span class="muted">${L("This class already happened.","Esta clase ya pasó.")}</span>`):`${e.zoom?`<a class="cl-join" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>`:"";
+        <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:`<span class="muted">${L("This class already happened.","Esta clase ya pasó.")}</span>`):`${e.zoom?`<a class="cs-act cl-zoomb" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>`:"";
     return `<div class="cl-cal"><div class="cl-calh"><button type="button" class="cs-act" data-calm="-1" aria-label="${L("Previous month","Mes anterior")}">‹</button><b>${esc(mname)}</b><button type="button" class="cs-act" data-calm="1" aria-label="${L("Next month","Mes siguiente")}">›</button></div>
       <div class="cl-cgrid">${wds.map(w=>`<span class="cl-cw">${w}</span>`).join("")}${cells.join("")}</div>${pop}<p class="cl-chint">${L("Tap a day to see its classes and Zoom links.","Toca un día para ver sus clases y links de Zoom.")}</p></div>${allBox}
       <div class="cl-cday" hidden><h3>${esc(fd(CALD))}</h3>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
@@ -3046,7 +3120,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const RULES_EN=["✔️ Respect everyone, whatever their level. Laugh with people, never at them.","💡 Mistakes are welcome here. That’s how we learn.","💬 Bring positive energy, and stick to English as much as you can (a little Spanish to get unstuck is fine).","🔒 What’s shared in the club stays in the club.","🚫 No spam, no self-promotion.","🛟 Questions? Just ask, we’ve got you."];
   const RULES_ES=["✔️ Respeta a todos, sin importar su nivel. Ríete con las personas, nunca de ellas.","💡 Aquí los errores son bienvenidos. Así se aprende.","💬 Trae buena energía y usa el inglés lo más que puedas (un poco de español para destrabarte está bien).","🔒 Lo que se comparte en el club, queda en el club.","🚫 Nada de spam ni autopromoción.","🛟 ¿Dudas? Solo pregunta, aquí te ayudamos."];
   const IG_GROUP="https://www.instagram.com/j/AbYEKteyhp-zyxxc/";
-  function igTop(){ const v=document.getElementById("v-club"); if(!v) return; const put=()=>{ const row=v.querySelector(".cs-read-row"); if(!row) return false; let a=row.querySelector(".cl-igtop"); if(!a){ a=document.createElement("a"); a.className="cl-igtop"; a.href=IG_GROUP; a.target="_blank"; a.rel="noopener"; row.insertBefore(a,row.firstChild); } a.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>${L("Instagram group","Grupo de Instagram")}`; a.hidden=!feed(); return true; }; if(!put()){ let n=0; const t=setInterval(()=>{ if(put()||++n>20) clearInterval(t); },250); } }
+  function igNudge(){ try{ if(!localStorage.getItem(WELC)||localStorage.getItem("cs-ig-nudged")||window.__csPreview||!feed()) return; localStorage.setItem("cs-ig-nudged","1"); }catch(e){ return; }
+    setTimeout(()=>{ if(!window.csDialog) return; const d=window.csDialog(`<h3 style="margin-top:0">📸 ${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</h3><p>${L("Class reminders, memes and chats with the club between classes. It’s where the club hangs out during the week.","Recordatorios de clases, memes y conversación con el club entre clases. Ahí se junta el club durante la semana.")}</p><div class="note-actions"><a class="pill-btn pill-green" href="${IG_GROUP}" target="_blank" rel="noopener" data-a="go">${L("Join the group","Unirme al grupo")}</a><button class="swap" type="button" data-a="x">${L("Maybe later","Más tarde")}</button></div><p class="muted" style="font-size:13px;margin:10px 0 0">${L("It’s always at the top of the club page too.","También está siempre arriba en la página del club.")}</p>`); d.el.addEventListener("click",ev=>{ if(ev.target.closest("[data-a]")) setTimeout(d.close,50); }); },1500); }
+  function igTop(){ const v=document.getElementById("v-club"); if(!v) return; const put=()=>{ const row=v.querySelector(".cs-read-row"); if(!row) return false; let a=row.querySelector(".cl-igtop"); if(!a){ a=document.createElement("a"); a.className="cl-igtop"; a.href=IG_GROUP; a.target="_blank"; a.rel="noopener"; row.insertBefore(a,row.firstChild); } a.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>${L("Instagram group","Grupo de Instagram")}`; a.hidden=!feed(); let m=row.querySelector(".cl-dmtop"); if(!m){ m=document.createElement("button"); m.type="button"; m.className="cl-dmtop"; m.dataset.dminbox="1"; row.insertBefore(m,a); } m.innerHTML=`💬 ${L("Messages","Mensajes")} <span class="cl-dmn" hidden></span>`; m.hidden=!feed(); try{ window.__clubSocial&&window.__clubSocial.dms&&window.__clubSocial.dms(); }catch(e){} return true; }; if(!put()){ let n=0; const t=setInterval(()=>{ if(put()||++n>20) clearInterval(t); },250); } }
   function igHTML(compact){ return `<a class="cl-ig${compact?" compact":""}" href="${IG_GROUP}" target="_blank" rel="noopener"><span class="cl-ig-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span><span><b>${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</b>${compact?"":`<small>${L("Reminders, memes and chats with the club between classes.","Recordatorios, memes y conversación con el club entre clases.")}</small>`}</span><span class="cl-ig-go">→</span></a>`; }
   /* good to know: how the classes work */
   function faqHTML(){ const Q=[
@@ -3078,13 +3154,13 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const nRec=recList(f).length, isNoa=window.__csFire&&window.__csFire.uid&&window.__csFire.uid()==="J8D2tjQmBaaA2QN730tSfSrjfm73"&&!window.__csPreview;
     const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["recordings",`🎬 ${L("Library","Biblioteca")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Calendar","Calendario")}`],["members",L("Members","Miembros")]].concat(isNoa?[["insights","📈 Insights"]]:[]);
     let body="";
-    if(tab==="wall"||tab==="say"){ tab="wall"; body='<div class="cl-say" data-say="1"></div><div class="cl-wall" data-wall="1"></div><div class="cl-say cl-sayideas" data-on="1"></div>'+soonHTML(); }
+    if(tab==="wall"||tab==="say"){ tab="wall"; body='<div class="cl-say" data-say="1"></div><div class="cl-wall" data-wall="1"></div>'; }
     else if(tab==="members"){ body='<div class="cl-members" data-members="1"></div>'; }
     else if(tab==="insights"){ body='<div class="cl-insights" data-insights="1"></div>'; }
     else if(tab==="recordings"||tab==="past"){ tab="recordings"; body=podHTML(f)+recTab(f)+pastHTML(f,ps,now); }
     else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=`<div class="cl-keyinfo"><span>✅ ${L("All classes are optional and open to every level","Todas las clases son opcionales y para todos los niveles")}</span><span>🔗 ${L("The Zoom links stay the same every week","Los links de Zoom son los mismos cada semana")}</span><span>🙋 ${L("Come to as many as you like","Ven a todas las que quieras")}</span></div>`+calTab(f,now)+`<div class="cl-infogrid">${faqHTML()}${rulesHTML(f,false)}</div>`+linksHTML(f); }
-    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+podNewHTML()+postHTML(f,ps[0],now,true,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
-    igTop();
+    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+podNewHTML()+postHTML(f,ps[0],now,true,true)+`<p class="cl-towall">💬 ${L("Questions or something to share?","¿Preguntas o algo que compartir?")} <button type="button" class="cs-act" data-clt="wall">${L("Post it in Community","Publícalo en Comunidad")} →</button></p>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    igTop(); igNudge();
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
     if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
   }
@@ -3101,6 +3177,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const wa=e.target.closest("[data-watched]"); if(wa){ if(!watched().includes(wa.dataset.watched)){ setWatched(wa.dataset.watched,true); const id=wa.dataset.watched; setTimeout(()=>{ RFOCUS=id; render(); },300); } return; }
     if(e.target.closest("[data-welcx]")){ try{ localStorage.setItem(WELC,"1"); }catch(er){} render(); return; }
     if(e.target.closest("[data-intro]")){ try{ localStorage.setItem(WELC,"1"); }catch(er){} window.__clubIntro=true; tab="wall"; render(); return; }
+    const wAll=e.target.closest("[data-clwall]"); if(wAll){ let arr=[]; try{ arr=JSON.parse(wAll.dataset.clwall); }catch(er){} let n=0; arr.forEach(x=>{ try{ if(typeof window.csAddWord==="function"&&window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; }catch(er){} }); wAll.closest(".cl-podn,.cl-recap,details")?.querySelectorAll("[data-clw]").forEach(b=>{ b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); }); wAll.disabled=true; wAll.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ Already in your words","✓ Ya están en tus palabras"); return; }
+    const pp=e.target.closest(".cl-pplay"); if(pp){ const au=pp.querySelector("audio"); if(e.target.closest("[data-pplay]")){ if(au.paused){ au.play().catch(()=>podFallback(pp)); } else au.pause(); return; } const sk=e.target.closest("[data-pskip]"); if(sk){ au.currentTime=Math.max(0,(au.currentTime||0)+ +sk.dataset.pskip); return; } const sp=e.target.closest("[data-pspeed]"); if(sp){ const R2=[1,1.25,1.5,0.75], nx=R2[(R2.indexOf(au.playbackRate||1)+1)%R2.length]; au.playbackRate=nx; sp.textContent=nx+"×"; return; } }
     const w=e.target.closest("[data-clw]"); if(w){ let x={}; try{ x=JSON.parse(w.dataset.clw); }catch(er){} let ok=false; try{ ok=typeof window.csAddWord==="function"&&window.csAddWord(x.w,x.tr||"",x.ex||""); }catch(er){} w.disabled=true; w.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras"); } });
   document.addEventListener("cs-level",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden) render(); });
   /* data updates never wipe something half-typed: they wait until the text is sent or cleared */
@@ -3113,7 +3191,13 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing) render(); else home(); } },60000);
   window.__clubTab=k=>{ tab=k; render(); };
   document.addEventListener("cs-club-plans",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,.cl-plan,iframe,audio,textarea:focus,input:focus")) render(); });
-  document.addEventListener("cs-club-pods",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,iframe,audio,textarea:focus,input:focus")) render(); });
+  const fmtPT=t=>!isFinite(t)?"–:––":Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
+  function podFallback(pp){ if(!pp||!pp.isConnected||pp.dataset.fb) return; pp.dataset.fb="1"; pp.outerHTML=`<iframe class="cl-poddr" src="https://drive.google.com/file/d/${pp.dataset.drive}/preview" title="Podcast episode" loading="lazy" allow="autoplay"></iframe>`; }
+  ["play","pause","timeupdate","loadedmetadata","error","ended"].forEach(ev=>document.addEventListener(ev,e=>{ const au=e.target; if(!au||au.tagName!=="AUDIO") return; const pp=au.closest(".cl-pplay"); if(!pp) return;
+    if(ev==="error"){ podFallback(pp); return; } const b=pp.querySelector("[data-pplay]"); b.textContent=au.paused?"▶":"❚❚"; b.setAttribute("aria-label",au.paused?L("Play","Reproducir"):L("Pause","Pausa")); pp.classList.toggle("on",!au.paused);
+    pp.querySelector('[data-pt="cur"]').textContent=fmtPT(au.currentTime||0); pp.querySelector('[data-pt="dur"]').textContent=fmtPT(au.duration); if(au.duration&&!pp._drag) pp.querySelector(".cl-pbar").value=Math.round((au.currentTime/au.duration)*1000); },true));
+  document.addEventListener("input",e=>{ const r=e.target.closest(".cl-pplay .cl-pbar"); if(!r) return; const au=r.closest(".cl-pplay").querySelector("audio"); if(au.duration) au.currentTime=r.value/1000*au.duration; });
+  document.addEventListener("cs-club-pods",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,iframe,.cl-pplay.on,textarea:focus,input:focus")) render(); });
   document.addEventListener("cs-club-recs",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,textarea:focus,input:focus")) render(); else home(); });
   window.__clubFeed=feed;
   render();
@@ -3177,7 +3261,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* ---------- UI ---------- */
   const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
   let PARKMAP={};
-  const av=(uid,name)=>{ const bd=PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
+  const av=(uid,name)=>{ const pp=PROFS&&profOf(uid); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
   const who=x=>`<button type="button" class="cs-whob" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}" aria-label="${esc(L("See profile: ","Ver perfil: ")+(x.name||""))}">${av(x.uid,x.name)}</button><span class="cs-who"><b><button type="button" class="cs-nameb" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}">${esc(x.name||L("Member","Miembro"))}</button></b>${x.uid===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}<span class="cs-ago">${ago(x.at)}${x.edited?L(" · edited"," · editado"):""}</span>${G()?`<span class="cs-sample">${L("Sample","Ejemplo")}</span>`:""}</span>`;
   const canDel=x=>x.uid===me()||me()===NOA;
   const canEdit=x=>x.uid===me()&&!G();
@@ -3187,7 +3271,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const imgs=x=>gifs(x)+((x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"");
   const likeBtn=(x,path)=>{ const c={}; let mine=null; (x.likes||[]).forEach(v=>{ const [u,e]=rxOf(v); c[e]=(c[e]||0)+1; if(u===me()) mine=e; });
     return `<span class="cs-rx" data-rxpath="${esc(path)}">${RX.filter(e=>c[e]).map(e=>`<button type="button" class="cs-act${mine===e?" on":""}" data-rx="${e}" aria-pressed="${mine===e}" aria-label="${e} ${c[e]}">${e} ${c[e]}</button>`).join("")}<span class="cs-rxadd"><button type="button" class="cs-act cs-rxbtn" data-rxopen="1" aria-label="${L("Add a reaction","Reaccionar")}" aria-expanded="false">${mine?"":"🤍 "}＋</button><span class="cs-rxpal" hidden>${RX.map(e=>`<button type="button" data-rx="${e}" aria-label="React ${e}">${e}</button>`).join("")}</span></span></span>`; };
-  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><div class="cs-taw"><textarea rows="${kind==="comment"||kind==="poll"?2:3}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-ment" role="listbox" hidden></div></div><div class="cs-pollbox"${kind==="poll"?"":" hidden"}>${kind==="poll"?`<p class="cs-ph2">${L("Options (2 to 6):","Opciones (de 2 a 6):")}</p><div class="cs-popts">${optIn(1)}${optIn(2)}</div><button type="button" class="cs-act" data-polladd="1">＋ ${L("Option","Opción")}</button>`:""}</div>${kind==="idea"?`<div class="cs-cats" role="group" aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}${kind==="post"?`<div class="cs-cats" role="group" aria-label="${L("Topic (optional)","Tema (opcional)")}"><span>${L("Topic:","Tema:")}</span>${CATS.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}<div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><label class="cs-act cs-addph">📷 ${L("Photo","Foto")}<input type="file" accept="image/*" multiple hidden></label>${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?L("Post","Publicar"):kind==="chal"?L("Send my answer","Enviar mi respuesta"):kind==="poll"?L("Start the poll","Publicar encuesta"):kind==="idea"?L("Send my idea","Enviar mi idea"):L("Comment","Comentar")}</button></div></form>`; }
+  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><div class="cs-taw"><textarea rows="${kind==="comment"||kind==="poll"?2:3}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-ment" role="listbox" hidden></div></div><div class="cs-pollbox"${kind==="poll"?"":" hidden"}>${kind==="poll"?`<p class="cs-ph2">${L("Options (2 to 6):","Opciones (de 2 a 6):")}</p><div class="cs-popts">${optIn(1)}${optIn(2)}</div><button type="button" class="cs-act" data-polladd="1">＋ ${L("Option","Opción")}</button>`:""}</div>${kind==="idea"?`<div class="cs-cats" role="group" aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}${kind==="post"?`<div class="cs-cats" role="group" aria-label="${L("Topic (optional)","Tema (opcional)")}"><span>${L("Topic:","Tema:")}</span>${CATS.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div><div class="cs-cats cs-ideak" role="group" hidden aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat cs-ik" data-ik="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}<div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><label class="cs-act cs-addph">📷 ${L("Photo","Foto")}<input type="file" accept="image/*" multiple hidden></label>${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?L("Post","Publicar"):kind==="chal"?L("Send my answer","Enviar mi respuesta"):kind==="poll"?L("Start the poll","Publicar encuesta"):kind==="idea"?L("Send my idea","Enviar mi idea"):kind==="dm"?L("Send","Enviar"):L("Comment","Comentar")}</button></div></form>`; }
   const OFF=`<p class="cs-off">💬 ${L("Comments and posts are almost ready. They’ll switch on very soon.","Los comentarios y posts están casi listos. Se activan muy pronto.")}</p>`;
   const COMM={};
   async function mountThread(el){
@@ -3221,17 +3305,20 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   }
   function badge(n){ document.querySelectorAll("[data-unread]").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":String(n); }); }
   async function refreshBadge(){ const n=await unread(); const onWall=document.querySelector(".cl-wall[data-on='1']"); badge(onWall?0:n); return n; }
-  const CATS=[["intro","👋",["Introductions","Presentaciones"]],["q","❓",["Questions","Preguntas"]],["win","🏆",["Wins","Logros"]],["res","📎",["Resources","Recursos"]],["fun","🎉",["Off-topic","Off-topic"]]];
+  const CATS=[["intro","👋",["Introductions","Presentaciones"]],["q","❓",["Questions","Preguntas"]],["win","🏆",["Wins","Logros"]],["res","📎",["Resources","Recursos"]],["fun","🎉",["Off-topic","Off-topic"]],["idea","💡",["Class idea","Idea para clase"]]];
   const catOf=k=>CATS.find(c=>c[0]===k);
   const IDEAK=[["topic","💡",["Topic","Tema"]],["grammar","🧩",["Grammar","Gramática"]],["vocab","📚",["Vocabulary","Vocabulario"]],["game","🎲",["Activity or game","Actividad o juego"]],["other","✨",["Other","Otro"]]];
   let WCAT="";
   const cmtLbl=n=>`💬 ${n?n+" ":""}${n===1?L("comment","comentario"):L("comments","comentarios")}`;
-  function postHTML(p){ const path=`clubPosts/${p.id}`, pin=PINS.includes(p.id), nw=NEWIDS.has(p.id), pick=p.ch&&PICKS[p.ch]===p.id;
-    return `<article class="cs-p${pin?" pinned":""}${nw?" isnew":""}" data-pid="${esc(p.id)}">${pin||nw||p.ch||p.cat?`<div class="cs-flags">${pin?`<span class="cs-pin">📌 ${L("Pinned","Fijado")}</span>`:""}${p.ch?`<span class="cs-chf">✍️ ${L("Weekly challenge","Desafío semanal")}</span>`:""}${p.cat&&catOf(p.cat)?`<span class="cs-catf">${catOf(p.cat)[1]} ${esc(L(catOf(p.cat)[2][0],catOf(p.cat)[2][1]))}</span>`:""}${pick?`<span class="cs-pickf">⭐ ${L("Noa’s pick","Elegido por Noa")}</span>`:""}${nw?`<span class="cs-newf">${p.at>SEEN_AT&&p.uid!==me()?L("New","Nuevo"):L("New comments","Comentarios nuevos")}</span>`:""}</div>`:""}<div class="cs-top">${who(p)}${tools(p,path,true)}</div>${p.text?`<p class="cs-txt">${txtHTML(p.text)}</p>`:'<p class="cs-txt" hidden></p>'}${p.poll&&(p.poll.opts||[]).length?`<div class="cs-poll" data-poll="${esc(p.id)}">${pollHTML(p,null)}</div>`:""}${imgs(p)}
-      <div class="cs-acts">${likeBtn(p,path)}<button type="button" class="cs-act" data-open="${esc(p.id)}" aria-expanded="false">${cmtLbl(p.n|0)}</button>${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pin="${esc(p.id)}">${pin?"📌 Unpin":"📌 Pin"}</button>${p.ch?`<button type="button" class="cs-act" data-pick="${esc(p.id)}" data-ch="${esc(p.ch)}">${pick?"⭐ Unpick":"⭐ Pick"}</button>`:""}`:""}</div><div class="cs-sub" hidden></div></article>`; }
+  function ideaBits(p){ if(!p.idea) return {flag:"",up:""}; const k=IDEAK.find(c=>c[0]===(p.idea||{}).k)||IDEAK[4], up=(p.likes||[]).map(rxOf).filter(x=>x[1]==="👍"), mine=up.some(x=>x[0]===(G()?"me":me())), st=IDEAST[p.id]||"";
+    return {flag:`<span class="cs-catf">${k[1]} ${esc(L(k[2][0],k[2][1]))}</span>${st==="planned"?`<span class="cs-pickf">🗓 ${L("Planned","Planeada")}</span>`:st==="done"?`<span class="cs-chf">✅ ${L("Done in class","Hecha en clase")}</span>`:""}`,
+      up:`<button type="button" class="cs-act cl-iup2${mine?" on":""}" data-iup="${esc(p.id)}" aria-pressed="${mine}">👍 ${up.length?up.length+" ":""}${L("I want this","Lo quiero")}</button>${me()===NOA&&!G()?`<button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="planned">${st==="planned"?"✓ ":""}🗓 Planned</button><button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="done">${st==="done"?"✓ ":""}✅ Done</button>`:""}`}; }
+  function postHTML(p){ const path=`clubPosts/${p.id}`, pin=PINS.includes(p.id), nw=NEWIDS.has(p.id), pick=p.ch&&PICKS[p.ch]===p.id, ib=ideaBits(p);
+    return `<article class="cs-p${pin?" pinned":""}${nw?" isnew":""}" data-pid="${esc(p.id)}">${pin||nw||p.ch||p.cat||p.idea?`<div class="cs-flags">${pin?`<span class="cs-pin">📌 ${L("Pinned","Fijado")}</span>`:""}${p.ch?`<span class="cs-chf">✍️ ${L("Weekly challenge","Desafío semanal")}</span>`:""}${p.cat&&catOf(p.cat)?`<span class="cs-catf">${catOf(p.cat)[1]} ${esc(L(catOf(p.cat)[2][0],catOf(p.cat)[2][1]))}</span>`:""}${ib.flag}${pick?`<span class="cs-pickf">⭐ ${L("Noa’s pick","Elegido por Noa")}</span>`:""}${nw?`<span class="cs-newf">${p.at>SEEN_AT&&p.uid!==me()?L("New","Nuevo"):L("New comments","Comentarios nuevos")}</span>`:""}</div>`:""}<div class="cs-top">${who(p)}${tools(p,path,true)}</div>${p.text?`<p class="cs-txt">${txtHTML(p.text)}</p>`:'<p class="cs-txt" hidden></p>'}${p.poll&&(p.poll.opts||[]).length?`<div class="cs-poll" data-poll="${esc(p.id)}">${pollHTML(p,null)}</div>`:""}${imgs(p)}
+      <div class="cs-acts">${p.idea?ib.up:likeBtn(p,path)}<button type="button" class="cs-act" data-open="${esc(p.id)}" aria-expanded="false">${cmtLbl(p.n|0)}</button>${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pin="${esc(p.id)}">${pin?"📌 Unpin":"📌 Pin"}</button>${p.ch?`<button type="button" class="cs-act" data-pick="${esc(p.id)}" data-ch="${esc(p.ch)}">${pick?"⭐ Unpick":"⭐ Pick"}</button>`:""}`:""}</div><div class="cs-sub" hidden></div></article>`; }
   function paintWall(el){
-    const all=(POSTS||[]).filter(p=>!p.poll&&!p.idea).sort((a,b)=>(PINS.includes(b.id)-PINS.includes(a.id))||(b.at-a.at));
-    const list=WCAT?all.filter(p=>WCAT==="ch"?p.ch:p.cat===WCAT):all;
+    const all=(POSTS||[]).filter(p=>!p.poll).map(p=>p.idea&&!p.cat?Object.assign(p,{cat:"idea"}):p).sort((a,b)=>(PINS.includes(b.id)-PINS.includes(a.id))||(b.at-a.at));
+    const list=WCAT?all.filter(p=>WCAT==="ch"?p.ch:p.cat===WCAT):all.filter(p=>!(p.idea&&IDEAST[p.id]==="done"));
     const chips=[["","✨",[L("All","Todo"),""]]].concat(CATS).concat(all.some(p=>p.ch)?[["ch","✍️",["Challenges","Desafíos"]]]:[]).filter(c=>!c[0]||all.some(p=>c[0]==="ch"?p.ch:p.cat===c[0]));
     const flt=chips.length>1?`<div class="cs-wcats" role="group" aria-label="${L("Filter the wall","Filtrar el muro")}">${chips.map(c=>`<button type="button" class="cs-wcat${WCAT===c[0]?" on":""}" data-wcat="${c[0]}" aria-pressed="${WCAT===c[0]}">${c[1]} ${esc(c[0]?L(c[2][0],c[2][1]):c[2][0])}</button>`).join("")}</div>`:"";
     const old=el.querySelector(".cs-new form"), keep=old?{v:old.querySelector("textarea").value,cat:(old.querySelector(".cs-cat.on")||{dataset:{}}).dataset.cat,focus:old.contains(document.activeElement)}:null;
@@ -3243,7 +3330,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
     try{ const list=COMM[pid]=await listComments(pid); sub.innerHTML=list.map(c=>commentHTML(pid,c)).join("")+composer("comment",pid,L("Write a comment…","Escribe un comentario…")); paintImgs(sub); }catch(e){ sub.innerHTML=`<p class="cs-off">${L("Couldn’t load the comments.","No se pudieron cargar los comentarios.")}</p>`; } }
   function mount(root){ root.querySelectorAll(".cl-thread[data-thread]:not([data-on='1'])").forEach(mountThread); root.querySelectorAll(".cl-wall:not([data-on='1'])").forEach(mountWall);
-    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); loadPlans(); paintSoon(root); ensureMe(); }
+    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); loadPlans(); paintSoon(root); paintFav(root); ensureMe(); }
   /* picked photos (up to 4) */
   const PICK=new WeakMap();
   document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
@@ -3257,11 +3344,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(!text&&!files.length&&!gif){ ta.focus(); return; }
     if(G()){ msg.textContent=L("Guest preview: posting is off here.","Vista de invitado: aquí no se publica."); return; }
     if(!me()){ msg.textContent=L("Sign in first.","Primero inicia sesión."); return; }
+    if(form.dataset.comp==="dm"){ btn.disabled=true; msg.textContent=files.length?L("Uploading photo…","Subiendo foto…"):""; try{ await sendDm(form,text,files,gif); PICK.delete(form); GIF.delete(form); ta.value=""; form.querySelector(".cs-prev").innerHTML=""; const gp=form.querySelector(".cs-gifpick"); if(gp) gp.hidden=true; msg.textContent=""; await paintChat(true); }catch(er){ msg.textContent=er&&er.code===403?L("Messages aren’t switched on yet.","Los mensajes aún no están activados."):L("Couldn’t send. Try again.","No se pudo enviar. Intenta de nuevo."); } btn.disabled=false; ta.focus(); return; }
     btn.disabled=true; msg.textContent=files.length?L("Uploading photo…","Subiendo foto…"):L("Posting…","Publicando…");
     try{
       const ids=[]; for(const f of files){ ids.push(await uploadImg(f)); }
       const id=rid(), kind=form.dataset.comp, pid=form.dataset.target;
-      const data={text,imgs:ids}; if(gif) data.gifs=[gif]; if(poll&&poll.opts) data.poll={opts:poll.opts}; if(kind==="chal") data.ch=pid; { const ct=form.querySelector(".cs-cat.on"); if(ct&&kind==="post") data.cat=ct.dataset.cat; if(kind==="idea") data.idea={k:ct?ct.dataset.cat:"other"}; }
+      const data={text,imgs:ids}; if(gif) data.gifs=[gif]; if(poll&&poll.opts) data.poll={opts:poll.opts}; if(kind==="chal") data.ch=pid; { const ct=form.querySelector(".cs-cat.on"); if(ct&&kind==="post") data.cat=ct.dataset.cat; if(kind==="idea") data.idea={k:ct?ct.dataset.cat:"other"}; if(kind==="post"&&ct&&ct.dataset.cat==="idea"){ const ik=form.querySelector(".cs-ik.on"); data.idea={k:ik?ik.dataset.ik:"other"}; } }
       const ats=mentionsIn(form,text);
       if(kind==="post"||kind==="chal"||kind==="poll"||kind==="idea"){ await createDoc("clubPosts",id,data); activity(kind==="chal"?"challenge":kind==="idea"?"idea":kind==="poll"?"poll":"post",id,text||(gif?"(GIF)":""),ids.length); if(POSTS) POSTS.unshift(Object.assign({id,uid:me(),name:F().name(),at:Date.now(),likes:[],n:0},data));
         bump(kind==="chal"?{posts:1,ch:1}:{posts:1}); if(kind==="chal") treat(5,L("Thanks for taking the challenge!","¡Gracias por hacer el desafío!"));
@@ -3352,7 +3440,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return PROFS; }
   const profOf=u=>(PROFS||[]).find(x=>x.id===u||x.uid===u)||null;
   async function saveMe(patch){ if(G()||!me()) return; const cur=profOf(me())||{};
-    const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[]};
+    const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||""};
     Object.assign(data,patch||{});
     await api("PATCH","/clubProfiles/"+me(),{fields:{uid:S(me()),name:S(F().name()||""),at:I(Date.now()),json:S(JSON.stringify(data))}});
     const o=Object.assign({id:me(),uid:me(),name:F().name()},data); PROFS=(PROFS||[]).filter(x=>x.id!==me()).concat([o]); return o; }
@@ -3361,11 +3449,13 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const mo=Object.assign({},cur.mo||{}), m=MON(), x=Object.assign({},mo[m]||{}); for(const k in d) x[k]=(x[k]|0)+d[k]; mo[m]=x; Object.keys(mo).sort().slice(0,-6).forEach(k=>delete mo[k]); p.mo=mo;
     await saveMe(p); checkBadges(); }catch(e){} }
   let wT=0; function syncWatched(list){ clearTimeout(wT); wT=setTimeout(async()=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({watched:list.slice(-300)}); checkBadges(); }catch(e){} },800); }
+  document.addEventListener("cs-photo",async e=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({photo:(e.detail&&e.detail.photo)||""}); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); }catch(er){} });
   let meDone=false;
   async function ensureMe(){ if(meDone||G()||!me()||!F()) return; meDone=true;
     try{ await loadProfs(); const cur=profOf(me()); if(!profOK) return;
       const posts=(POSTS||[]).filter(p=>p.uid===me()).length;
-      if(!cur||cur.name!==F().name()||posts>(cur.posts|0)) await saveMe(posts>((cur&&cur.posts)|0)?{posts}:{});
+      const ph=window.csMyPhoto?window.csMyPhoto():"";
+      if(!cur||cur.name!==F().name()||posts>(cur.posts|0)||(cur.photo||"")!==ph) await saveMe(Object.assign(posts>((cur&&cur.posts)|0)?{posts}:{},{photo:ph}));
       checkBadges(); }catch(e){} }
   function treat(n,why){ try{ if(window.csBuddy&&window.csBuddy.treat&&window.csBuddy.treat(n,why)) return; }catch(e){} toast(why); }
   /* streaks: weeks in a row with at least one class */
@@ -3434,7 +3524,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         <p class="cl-prof-meta">${u===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}${lv?`<span>📊 ${esc(String(lv).slice(0,7))}</span>`:""}${p.country?`<span>📍 ${esc(p.country)}</span>`:""}${since?`<span>🌼 ${L("Member since","Miembro desde")} ${esc(since)}</span>`:""}</p>
         ${bn?`<p class="cl-prof-bn">${L("Buddy:","Buddy:")} <b>${esc(bn)}</b>${bd&&bd.lvl>1?` · 💛 ${bd.lvl|0}`:""}</p>`:""}</div></div>
       <div class="cl-prof-about" data-pabout>${p.about?`<p>${esc(p.about)}</p>`:mine?`<p class="muted">${L("Tell the club a bit about you.","Cuéntale al club un poco sobre ti.")}</p>`:""}</div>
-      ${mine?`<button type="button" class="cs-act" data-pedit="1">✏️ ${L("Edit my profile","Editar mi perfil")}</button>`:""}
+      ${mine?`<button type="button" class="cs-act" data-pedit="1">✏️ ${L("Edit my profile","Editar mi perfil")}</button>`:`<button type="button" class="cs-send cl-dmbtn" data-dmto="${esc(u)}" data-dmname="${esc(p.name||nm||"")}">💬 ${L("Message","Mensaje")}</button>`}
       <div class="cl-prof-stats"><div><b>${s.cur||0}</b><span>🔥 ${L("week streak","semanas seguidas")}</span></div><div><b>${s.classes}</b><span>🎟️ ${L("weeks of classes","semanas con clases")}</span></div><div><b>${s.posts}</b><span>📝 ${L("posts","posts")}</span></div><div><b>${s.comments}</b><span>💬 ${L("comments","comentarios")}</span></div><div><b>${s.ch}</b><span>✍️ ${L("challenges","desafíos")}</span></div></div>
       <h3>${L("Badges","Insignias")}</h3><div class="cl-prof-badges">${BADGES.filter(b=>mine||got.includes(b[0])).map(b=>`<div class="cl-badge${got.includes(b[0])?"":" off"}"><span>${b[1]}</span><b>${esc(L(b[2],b[3]))}</b><small>${esc(L(b[4],b[5]))}</small></div>`).join("")||`<p class="muted">${L("No badges yet.","Aún no tiene insignias.")}</p>`}</div>
       ${mine?`<p class="cl-prof-tip">${L("Each new badge gives your buddy 5 treats 🍪","Cada insignia nueva le da 5 galletas a tu buddy 🍪")}</p>`:""}</div>`;
@@ -3461,6 +3551,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(n.kind==="comment") return `💬 ${nm} ${L("commented on your post","comentó tu post")}`;
     if(n.kind==="react") return `${esc(String(n.text||"").split(" ")[0]||"❤️")} ${nm} ${L("reacted to your post","reaccionó a tu post")}`;
     if(n.kind==="reactc") return `${esc(String(n.text||"").split(" ")[0]||"❤️")} ${nm} ${L("reacted to your comment","reaccionó a tu comentario")}`;
+    if(n.kind==="dm") return `💬 ${nm} ${L("sent you a message","te envió un mensaje")}`;
     if(n.kind==="mention") return `@ ${nm} ${L("mentioned you","te mencionó")}${weekly?L(" on the weekly post"," en el post semanal"):""}`;
     return `🔔 ${nm}`; }
   function paintBell(){ const b=document.getElementById("clBell"); if(!b) return; const seen=+LSG(BSEEN,0)||0, n=NOTES.filter(x=>x.at>seen).length;
@@ -3480,6 +3571,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   ["cs-club","cs-hubview"].forEach(ev=>document.addEventListener(ev,()=>setTimeout(bellCheck,50))); window.addEventListener("cs-auth",()=>setTimeout(bellCheck,300));
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) bellCheck(); }); setInterval(()=>{ if(!document.hidden) bellCheck(); },60000); setTimeout(bellCheck,800);
   document.addEventListener("click",e=>{ const g=e.target.closest("[data-bgo]"); if(!g) return; const pid=g.dataset.bgo; const pn=document.getElementById("clBellPanel"); if(pn) pn.hidden=true; paintBell();
+    if(/^dm:/.test(pid)){ const n=(NOTES||[]).find(x=>x.pid===pid); window.__clubDM(pid.slice(3),n&&n.name); return; }
     if(location.hash!=="#club") location.hash="#club";
     setTimeout(()=>{ if(/^w\d{8}$/.test(pid)||!pid){ window.__clubTab&&window.__clubTab("week"); setTimeout(()=>document.querySelector(".cl-thread")?.scrollIntoView({block:"start",behavior:"smooth"}),500); } else { FOCUS=pid; window.__clubTab&&window.__clubTab("wall"); } },60); });
   /* ---------- @mentions: suggestions while typing, and who to notify ---------- */
@@ -3586,15 +3678,14 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         ${composer("idea","",L("My idea for a class: …","Mi idea para una clase: …"))}
         <div class="cs-wcats" role="group" aria-label="${L("Sort ideas","Ordenar ideas")}"><button type="button" class="cs-wcat${ISORT==="top"?" on":""}" data-isort="top" aria-pressed="${ISORT==="top"}">👍 ${L("Most liked","Más apoyadas")}</button><button type="button" class="cs-wcat${ISORT==="new"?" on":""}" data-isort="new" aria-pressed="${ISORT==="new"}">🆕 ${L("Newest","Más nuevas")}</button></div>
         <div class="cl-ilist2" data-ideas="1"></div></div>`;
-    if(ih){ el.innerHTML=pollsH; ih.innerHTML=ideasH; paintIdeas(ih); paintPolls(el); paintImgs(el); paintImgs(ih); return; }
-    el.innerHTML=pollsH+ideasH; paintIdeas(el); paintPolls(el); paintImgs(el); }
+    el.innerHTML=pollsH; paintPolls(el); paintImgs(el); }
   let IDEAST={};
   document.addEventListener("click",async e=>{ const u=e.target.closest("[data-iup]"); if(u){ if(!me()&&!G()) return; const id=u.dataset.iup; const item=(POSTS||[]).find(x=>x.id===id)||(G()?SAMPLE_IDEAS.find(x=>x.id===id):null); if(!item) return;
       if(G()){ const r=(item.likes||[]).filter(v=>rxOf(v)[0]!=="me"); item.likes=r.length!==(item.likes||[]).length?r:r.concat(["me|👍"]); }
       else { try{ await react("clubPosts/"+id,item,"👍"); }catch(er){ toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } }
-      const card=u.closest(".cl-idea"); card.outerHTML=ideaHTML(item); return; }
+      const card=u.closest(".cl-idea"); if(card){ card.outerHTML=ideaHTML(item); return; } const art=u.closest(".cs-p"); if(art){ const open=!art.querySelector(".cs-sub").hidden; if(!open){ art.outerHTML=postHTML(item); const a2=document.querySelector(`.cs-p[data-pid="${CSS.escape(id)}"]`); if(a2) paintImgs(a2); } else u.outerHTML=ideaBits(item).up.split("</button>")[0]+"</button>"; } return; }
     const so=e.target.closest("[data-isort]"); if(so){ ISORT=so.dataset.isort; const say=so.closest(".cl-say"); so.parentElement.querySelectorAll("[data-isort]").forEach(b=>{ b.classList.toggle("on",b===so); b.setAttribute("aria-pressed",String(b===so)); }); paintIdeas(say); return; }
-    const st=e.target.closest("[data-ist]"); if(st){ const id=st.dataset.ist, v=st.dataset.v; if(IDEAST[id]===v) delete IDEAST[id]; else IDEAST[id]=v; try{ await savePins(); }catch(er){ toast("Couldn’t save."); return; } paintIdeas(st.closest(".cl-say")); return; } });
+    const st=e.target.closest("[data-ist]"); if(st){ const id=st.dataset.ist, v=st.dataset.v; if(IDEAST[id]===v) delete IDEAST[id]; else IDEAST[id]=v; try{ await savePins(); }catch(er){ toast("Couldn’t save."); return; } const wl=st.closest(".cl-wall"); if(wl) paintWall(wl); else paintIdeas(st.closest(".cl-say")); return; } });
   /* ---------- 🎬 recordings Noa adds (YouTube), stored in clubStats/_recordings: Noa writes, members read ---------- */
   let RECS=null, recsAt=0;
   async function loadRecs(force){ if(G()) return; if(RECS&&!force&&Date.now()-recsAt<120000) return; recsAt=Date.now();
@@ -3648,13 +3739,21 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",async e=>{ const d=e.target.closest("[data-recdel]"); if(!d) return; if(!confirm("Remove this recording from the Library?")) return;
     try{ await loadRecs(true); await saveRecs((RECS||[]).filter(r=>r.id!==d.dataset.recdel)); }catch(er){ toast("Couldn’t remove it."); } });
   /* ---------- 🚀 coming-soon votes ---------- */
+  /* ✨ "I enjoyed this class" on recordings (clubVotes, poll rec_<id>) */
+  async function paintFav(root){ const els=[...root.querySelectorAll(".cl-recfav[data-recfav]:not([data-fp])")].filter(x=>x.closest("details")?x.closest("details").open:true); if(!els.length) return; const mineU=G()?"me":me();
+    await Promise.all(els.map(async el=>{ el.dataset.fp="1"; let vs=[]; try{ vs=await votes(el.dataset.recfav); }catch(e){} const on=vs.some(v=>v.uid===mineU);
+      el.innerHTML=`<button type="button" class="cs-act cl-favb${on?" on":""}" data-fav="${esc(el.dataset.recfav)}" aria-pressed="${on}" title="${esc(vs.map(v=>(v.name||"").split(" ")[0]).filter(Boolean).join(", "))}">✨ ${L("I enjoyed this class","Me gustó esta clase")}${vs.length?` · ${vs.length}`:""}</button>`; })); }
+  document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.classList&&d.classList.contains("cl-rcard")&&d.open) paintFav(d); },true);
+  document.addEventListener("click",async e=>{ const b=e.target.closest("[data-fav]"); if(!b) return; if(api&&F()&&F().readOnly&&F().readOnly()){ toastRO(); return; } const poll=b.dataset.fav, mineU=G()?"me":me(), on=(VOTES[poll]||[]).some(v=>v.uid===mineU);
+    b.disabled=true; try{ await vote(poll,on?"":"1"); }catch(er){ b.disabled=false; toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } const el=b.closest(".cl-recfav"); delete el.dataset.fp; paintFav(el.parentElement); if(!on) toast(L("✨ Thanks! Noa will see it.","✨ ¡Gracias! Noa lo verá.")); });
   async function paintSoon(root){ const els=[...root.querySelectorAll(".cl-soonv[data-soon]")]; if(!els.length) return; const mineU=G()?"me":me();
     for(const el of els){ let list=[]; try{ list=await votes("soon_"+el.dataset.soon); }catch(e){ el.hidden=true; continue; } const on=list.some(v=>v.uid===mineU);
       el.innerHTML=`<button type="button" class="cl-going${on?" on":""}" data-soonv="${esc(el.dataset.soon)}" aria-pressed="${on}">👍 ${on?L("Voted","Votado"):L("I want this","Lo quiero")}</button><small>${list.length} ${list.length===1?L("vote","voto"):L("votes","votos")}</small>`; } }
   document.addEventListener("click",async e=>{ const b=e.target.closest("[data-soonv]"); if(!b||(!me()&&!G())) return; const k=b.dataset.soonv, poll="soon_"+k, mineU=G()?"me":me(), on=(VOTES[poll]||[]).some(v=>v.uid===mineU);
     b.disabled=true; try{ await vote(poll,on?"":"1"); }catch(er){ b.disabled=false; toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } paintSoon(b.closest(".cl-soon")||document); });
   /* ---------- wall filter + topic chips ---------- */
-  document.addEventListener("click",e=>{ const c=e.target.closest(".cs-cat[data-cat]"); if(c){ const on=!c.classList.contains("on"); c.parentElement.querySelectorAll(".cs-cat").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); if(on){ c.classList.add("on"); c.setAttribute("aria-pressed","true"); } return; }
+  document.addEventListener("click",e=>{ const k=e.target.closest(".cs-ik[data-ik]"); if(k){ const on=!k.classList.contains("on"); k.parentElement.querySelectorAll(".cs-ik").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); if(on){ k.classList.add("on"); k.setAttribute("aria-pressed","true"); } return; }
+    const c=e.target.closest(".cs-cat[data-cat]"); if(c){ const on=!c.classList.contains("on"); c.parentElement.querySelectorAll(".cs-cat").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); if(on){ c.classList.add("on"); c.setAttribute("aria-pressed","true"); } const ik=c.closest("form")&&c.closest("form").querySelector(".cs-ideak"); if(ik){ ik.hidden=!(on&&c.dataset.cat==="idea"); const ta=c.closest("form").querySelector("textarea"); if(ta) ta.placeholder=on&&c.dataset.cat==="idea"?L("My idea for a class: …","Mi idea para una clase: …"):L("Share something with the club: a question, a photo, a small win…","Comparte algo con el club: una pregunta, una foto, un pequeño logro…"); } return; }
     const w=e.target.closest("[data-wcat]"); if(w){ WCAT=w.dataset.wcat; const wall=w.closest(".cl-wall"); if(wall) paintWall(wall); } });
   /* ---------- 📈 Noa's insights ---------- */
   async function mountInsights(el){ el.dataset.on="1"; if(me()!==NOA&&!G()) return; el.innerHTML=`<p class="cs-load">Loading…</p>`;
@@ -3676,7 +3775,55 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <div class="cl-sec"><h2>👀 Haven’t opened the Club page yet <small>(${never.length})</small></h2>${never.length?`<p>${never.map(x=>esc(x.name||"(no name)")).join(" · ")}</p>`:'<p class="muted">Everyone has.</p>'}</div>
       <div class="cl-sec"><h2>🏆 Most active this month</h2><ol class="cl-ilist">${board.slice(0,10).map(b=>`<li>${nm(b.x)} <b>${b.pt}</b> pts</li>`).join("")}</ol></div>
       ${soon.length?`<div class="cl-sec"><h2>🚀 Coming-soon votes</h2><p>${soon.map(([k,n])=>`${({dm:"💬 Direct messages",digest:"📧 Email digest",courses:"🎓 Club courses",join:"💳 Join & pay on Hibi"})[k]}: <b>${n}</b>`).join(" · ")}</p></div>`:""}`; }
-  window.__clubSocial={ mount, recent, refreshBadge, unread, reports, delReport, watched:syncWatched };
+
+  /* ---------- 💬 direct messages (dms/{a_b} thread + msgs; only the two members can read them) ---------- */
+  const tidOf=(a,b)=>[a,b].sort().join("_");
+  let THREADS=null, thAt=0, DMOPEN=null, DMTIMER=null;
+  const SAMPLE_TH=[{id:"me_x2",members:["me","x2"],names:{x2:"Alex (sample)"},last:{text:"See you on Wednesday! 👋",from:"x2",at:H(2)},at:H(2),unread:true}];
+  async function loadThreads(force){ if(G()){ THREADS=SAMPLE_TH; return THREADS; } if(!me()) return []; if(THREADS&&!force&&Date.now()-thAt<20000) return THREADS;
+    try{ const res=await api("POST",":runQuery",{structuredQuery:{from:[{collectionId:"dms"}],where:{fieldFilter:{field:{fieldPath:"members"},op:"ARRAY_CONTAINS",value:S(me())}},limit:60}});
+      THREADS=(res||[]).filter(x=>x.document).map(x=>{ const o=fromDoc(x.document); o.unread=o.last&&o.last.from!==me()&&(o["r_"+me()]||0)<(o.at||0); return o; }).sort((a,b)=>(b.at||0)-(a.at||0)); thAt=Date.now(); }
+    catch(e){ THREADS=THREADS||[]; } dmBadge(); return THREADS; }
+  const otherOf=t=>(t.members||[]).find(u=>u!==(G()?"me":me()))||"";
+  function dmBadge(){ const n=(THREADS||[]).filter(t=>t.unread).length; document.querySelectorAll(".cl-dmtop .cl-dmn").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":n; }); }
+  function dmPanel(){ let o=document.getElementById("clDm"); if(o) return o; o=document.createElement("div"); o.id="clDm"; o.className="cl-dm-ov"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true"); o.setAttribute("aria-label",L("Messages","Mensajes"));
+    o.innerHTML=`<div class="cl-dm"><div class="cl-dmh"><button type="button" class="cs-act cl-dmback" data-dmback="1" hidden aria-label="${L("Back","Volver")}">←</button><b class="cl-dmt">💬 ${L("Messages","Mensajes")}</b><button type="button" class="cl-prof-x" data-dmx="1" aria-label="${L("Close","Cerrar")}">✕</button></div><div class="cl-dmb"></div></div>`;
+    document.body.appendChild(o); o.addEventListener("click",e=>{ if(e.target===o||e.target.closest("[data-dmx]")) closeDm(); }); return o; }
+  function closeDm(){ const o=document.getElementById("clDm"); if(o) o.remove(); DMOPEN=null; clearInterval(DMTIMER); }
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("clDm")) closeDm(); });
+  async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
+    b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark()]);
+    const ts=THREADS||[];
+    b.innerHTML=(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(t.names||{})[u]||(profOf(u)||{}).name||L("Member","Miembro");
+      return `<li><button type="button" class="cl-dmi${t.unread?" new":""}" data-dmto="${esc(u)}" data-dmname="${esc(nm)}">${av(u,nm)}<span><b>${esc(nm)}</b><small>${t.last?esc((t.last.from===(G()?"me":me())?L("You: ","Tú: "):"")+(t.last.text||"📷")):""}</small></span><em>${t.at?ago(t.at):""}</em></button></li>`; }).join("")}</ul>`
+      :`<p class="cl-empty">${L("No messages yet. Open someone’s profile (tap their name or buddy) and press 💬 Message.","Aún no hay mensajes. Abre el perfil de alguien (toca su nombre o su buddy) y presiona 💬 Mensaje.")}</p>`)+`<p class="cl-dmnote">🔒 ${L("Only you and the other person can read your messages.","Solo tú y la otra persona pueden leer sus mensajes.")}</p>`; }
+  function msgHTML(m){ const mine=m.from===(G()?"me":me());
+    return `<div class="cl-msg${mine?" mine":""}">${m.text?`<p>${txtHTML(m.text)}</p>`:""}${(m.imgs||[]).map(i=>`<img data-img="${esc(i)}" alt="${L("Photo","Foto")}" class="cl-msgimg">`).join("")}${(m.gifs||[]).map(g=>`<img src="${esc(g.url||g)}" alt="GIF" class="cl-msgimg">`).join("")}<em>${new Date(m.at).toLocaleString(L("en-US","es-CL"),{hour:"numeric",minute:"2-digit",month:"short",day:"numeric"})}</em></div>`; }
+  async function openChat(u,nm){ if(!u||u===me()) return; if(!G()&&!me()){ toast(L("Sign in first.","Primero inicia sesión.")); return; }
+    const o=dmPanel(), b=o.querySelector(".cl-dmb"), tid=G()?"me_"+u:tidOf(me(),u); DMOPEN={tid,u,nm};
+    o.querySelector(".cl-dmback").hidden=false; o.querySelector(".cl-dmt").innerHTML=`${av(u,nm)} ${esc(nm||L("Member","Miembro"))}`;
+    b.innerHTML=`<div class="cl-msgs" aria-live="polite"><p class="cs-load">${L("Loading…","Cargando…")}</p></div>${composer("dm",u,L("Write a message…","Escribe un mensaje…"))}`;
+    const ta=b.querySelector("textarea"); if(ta){ ta.rows=2; ta.focus(); ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); ta.form.requestSubmit(); } }); }
+    await paintChat(true); clearInterval(DMTIMER); DMTIMER=setInterval(()=>{ if(document.getElementById("clDm")&&DMOPEN&&!document.hidden) paintChat(false); },12000); }
+  async function paintChat(scroll){ if(!DMOPEN) return; const {tid}=DMOPEN, box=document.querySelector("#clDm .cl-msgs"); if(!box) return; let ms=[];
+    if(G()) ms=[{from:DMOPEN.u,text:"Hi! Are you coming on Wednesday? 😊",at:H(3)},{from:"me",text:"Yes! See you there 👋",at:H(2)}];
+    else { try{ ms=await query("dms/"+tid,"msgs","ASCENDING",300); }catch(e){ ms=[]; } }
+    const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+    box.innerHTML=ms.length?ms.map(msgHTML).join(""):`<p class="cl-empty">${L("Say hi 👋","Saluda 👋")}</p>`; paintImgs(box); if(scroll||near) box.scrollTop=box.scrollHeight;
+    if(!G()&&ms.length&&ms[ms.length-1].from!==me()){ try{ await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=r_${me()}`,{fields:{["r_"+me()]:I(Date.now())}}); const t=(THREADS||[]).find(x=>x.id===tid); if(t) t.unread=false; dmBadge(); }catch(e){} } }
+  async function sendDm(form,text,files,gif){ const u=form.dataset.target, tid=tidOf(me(),u), now=Date.now();
+    const ids=[]; for(const f of files){ ids.push(await uploadImg(f)); }
+    const names={[me()]:F().name()||"",[u]:(DMOPEN&&DMOPEN.nm)||(profOf(u)||{}).name||""};
+    await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=members&updateMask.fieldPaths=json&updateMask.fieldPaths=at&updateMask.fieldPaths=r_${me()}`,{fields:{members:{arrayValue:{values:[me(),u].sort().map(S)}},json:S(JSON.stringify({names,last:{text:text.slice(0,120)||(gif?"GIF":"📷"),from:me(),at:now}})),at:I(now),["r_"+me()]:I(now)}});
+    const data={text}; if(ids.length) data.imgs=ids; if(gif) data.gifs=[gif];
+    await api("POST",`/dms/${tid}/msgs?documentId=${rid()}`,{fields:{from:S(me()),at:I(now),json:S(JSON.stringify(data))}});
+    const t=(THREADS||[]).find(x=>x.id===tid); if(!t||!t.at||now-t.at>30*60000) note(u,"dm","dm:"+me(),text||"📷"); if(t){ t.at=now; t.last={text,from:me(),at:now}; } }
+  window.__clubDM=(u,nm)=>{ if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>openChat(u,nm),u?150:0); };
+  window.__clubInbox=()=>openInbox();
+  document.addEventListener("click",e=>{ const t=e.target.closest("[data-dmto]"); if(t){ e.preventDefault(); document.querySelector(".cl-prof-ov")?.remove(); openChat(t.dataset.dmto,t.dataset.dmname); return; }
+    if(e.target.closest("[data-dmback]")){ openInbox(); return; }
+    if(e.target.closest("[data-dminbox]")){ openInbox(); return; } });
+  window.__clubSocial={ mount, dms:loadThreads, recent, refreshBadge, unread, reports, delReport, watched:syncWatched };
   const b=document.getElementById("clubMain"); if(b) mount(b);
 })();
 </script>
@@ -4471,8 +4618,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </div>
 </section>
 
-<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=42" defer></script>
+<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
+<script src="buddy.js?v=43" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -4527,29 +4674,43 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Time to <em>practice</em> 🎯</h2>
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find three parts:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>past simple</b> and the <b>present perfect</b>, in stages from easy to harder. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>present simple</b>, <b>past simple</b> and <b>present perfect</b>, in stages from easy to harder. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Vocabulary:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
-      <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My words</b> to practice just those.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> 3 practice rounds a week. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
     </ul>
   </div>
 
   <div class="wl-step" data-step="4" hidden>
+    <h2>Your <em>classes</em>, all in one place 🎓</h2>
+    <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-step" data-step="5" hidden>
     <h2>Your <em>study buddy</em> 🐾</h2>
-    <p class="wl-lede">A little friend in the corner of the screen that grows as you study.</p>
+    <div class="wl-bdprev"><div class="wl-bdimg" id="wlBdImg"><span></span><i>✦</i><i>✦</i><i>✦</i></div><div><b>Meet Miki</b>, Noa's buddy, with her crown and sparkles. Yours starts as an egg 🥚: <b>tap the egg in the bottom-right corner</b> of any page to hatch it.</div></div>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🍪</span><div><b>Earn treats by studying:</b> saving words, flashcard rounds, grammar rounds, writing sentences and more. Then <b>feed</b> your buddy (up to 5 a day).</div></li>
       <li><span class="wl-ico" aria-hidden="true">💛</span><div><b>Friendship levels:</b> feeding, petting and visiting raise its level. Each level unlocks a new trick, and in the <b>Buddy park</b> it starts to glow: silver, gold and rainbow.</div></li>
       <li><span class="wl-ico" aria-hidden="true">👕</span><div><b>Clothes, colors and toys</b> unlock as you save and learn words. Finish grammar modules for special magic toys.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">✋</span><div><b>Move it anywhere:</b> drag your buddy around the screen, and tap it to pet it, feed it or dress it up.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🌳</span><div><b>Buddy park:</b> see everyone's buddies and send them love. It never gets sick or sad if you're away, it just naps.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚔️</span><div><b>Duels</b> (club members): challenge someone in the park to a friendly 7-day duel. Winners get treats and prizes, including clothes your buddy can wear.</div></li>
     </ul>
     <div class="note-actions wl-adopt" id="wlAdoptRow"><button class="pill-btn pill-green" type="button" data-wladopt>🐾 Choose my buddy</button></div>
   </div>
 
-  <div class="wl-step" data-step="5" hidden>
+  <div class="wl-step" data-step="6" hidden>
     <h2>Make it <em>yours</em> ⚙️</h2>
     <ul class="wl-list">
       <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
+      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (top right): pick your photo (your Google one or your own). The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
       <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (top right): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music:</b> lo-fi, piano, rain or calm noise while you study.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
@@ -4562,7 +4723,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   </div>
 
   <div class="wl-nav">
-    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="note-actions wl-btns">
       <button class="swap" type="button" id="wlBack" hidden>← Back</button>
       <button class="pill-btn" type="button" id="wlNext">Next →</button>
@@ -5019,9 +5180,9 @@ function sortWords(l){
   if(wSortMode==="az"||wSortMode==="za"){ l.sort((a,b)=>wKey(a).localeCompare(wKey(b),"en",{sensitivity:"base"})); return wSortMode==="za"?l.reverse():l; }
   return l.sort((a,b)=>(b.t||0)-(a.t||0));
 }
-let wSel=false, fcPick=LS.get("ncs-fcpick",[]); if(!Array.isArray(fcPick)) fcPick=[];
+let wSel=true, fcPick=LS.get("ncs-fcpick",[]); if(!Array.isArray(fcPick)) fcPick=[];
 function renderSelBar(){
-  const bar=document.getElementById("wSelBar"); bar.hidden=!wSel;
+  const bar=document.getElementById("wSelBar"); bar.hidden=!fcPick.length;
   const btn=document.getElementById("wSelBtn"); btn.setAttribute("aria-pressed",String(wSel)); btn.textContent=wSel?"Done choosing":"Choose words";
   const n=fcPick.length; document.getElementById("wSelN").textContent=n+(n===1?" word":" words")+" chosen";
   document.getElementById("wSelGo").disabled=!n;
@@ -5051,7 +5212,7 @@ function renderWords(){
       '<div class="note-actions"><button class="pill-btn" type="submit">Save changes</button><button class="swap" type="button" data-cancel>Cancel</button></div></form>';
     const isNew = x.sample || isPending(x);
     const picked=wSel&&fcPick.includes(x.id);
-    return '<article class="card wcard'+(wSel?' wsel':'')+(picked?' picked':'')+'"'+(wSel?' data-pick="'+x.id+'"':'')+'>'+(wSel?'<input type="checkbox" class="w-chk" aria-label="Choose '+esc(x.w)+'"'+(picked?' checked':'')+'>':sayBtn(x.w.replace(/\(.*?\)/g,"")))+
+    return '<article class="card wcard'+(picked?' picked':'')+'">'+'<span class="w-lead">'+(x.sample?'':'<label class="w-chkw" title="Pick for flashcards"><input type="checkbox" class="w-chk" data-wpick="'+x.id+'" aria-label="Pick '+esc(x.w)+' for flashcards"'+(picked?' checked':'')+'></label>')+sayBtn(x.w.replace(/\(.*?\)/g,""))+'</span>'+
       '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
       '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
@@ -5086,8 +5247,8 @@ wList.addEventListener("submit",e=>{
 wList.addEventListener("keydown",e=>{ if(e.key==="Escape" && editingId){ editingId=null; renderWords(); } });
 function savePick(){ LS.set("ncs-fcpick",fcPick); renderWords(); }
 wList.addEventListener("click",e=>{
-  const pc=wSel&&e.target.closest("[data-pick]");
-  if(pc){ const id=pc.dataset.pick; fcPick=fcPick.includes(id)?fcPick.filter(i=>i!==id):fcPick.concat(id); savePick(); return; }
+  const pc=e.target.closest("[data-wpick]");
+  if(pc){ const id=pc.dataset.wpick; fcPick=fcPick.includes(id)?fcPick.filter(i=>i!==id):fcPick.concat(id); savePick(); return; }
   const s=e.target.closest("[data-say]"); if(s){ say(s.dataset.say,s); return; }
   const ed=e.target.closest("[data-edit]"); if(ed){ editingId=ed.dataset.edit; renderWords(); const i=document.getElementById("ed-w"); if(i){ i.focus(); } return; }
   if(e.target.closest("[data-cancel]")){ editingId=null; renderWords(); return; }
@@ -8517,6 +8678,7 @@ function wlShow(i){ const steps=wl.querySelectorAll(".wl-step"); wlAt=Math.max(0
   wl.scrollTop=0; const h=steps[wlAt].querySelector("h2"); if(h){ h.setAttribute("tabindex","-1"); }
   setTimeout(()=>document.getElementById(last?"wlOk":"wlNext").focus(),30); }
 function openWelcome(){ wlReturn=document.activeElement; wl.hidden=false; wlBd.hidden=false; wlShow(0);
+  try{ const im=document.getElementById("wlBdImg"); if(im&&window.csBuddy&&window.csBuddy.of&&!im.dataset.done){ const svg=window.csBuddy.of({a:"miki",c:0,head:"crown"}); if(svg){ im.firstElementChild.outerHTML=svg; im.dataset.done="1"; } } }catch(e){}
   const lvl=LS.get("ncs-level","normal"); wl.querySelectorAll("[data-wllevel]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.wllevel===(lvl==="beginner"?"beginner":"normal"))));
   const bd=LS.get("ncs-buddy",{})||{}; const ar=document.getElementById("wlAdoptRow"); if(ar) ar.hidden=bd.on===true; }
 document.getElementById("wlNext").addEventListener("click",()=>wlShow(wlAt+1));
@@ -8540,6 +8702,12 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-dm", date:"November 10, 2026", title:"Messages, photos and more 💬", items:[
+    ["💬","Messages","club members can now chat privately: open someone's profile (or tap their buddy in the park) and press <b>💬 Message</b>. Text, photos and GIFs.","club"],
+    ["🙂","Your profile photo","tap <b>Profile</b> at the top right to use your Google photo or upload your own. It shows next to your posts and messages."],
+    ["🎧","The club podcast","listen right on Hibi, at your speed, and save the episode's words with one tap (Club → Library)."],
+    ["☑","Pick words faster","in <b>My words</b>, tick the words you want and practice just those with flashcards."]
+  ]},
   {id:"2026-prs", date:"November 10, 2026", title:"Present simple + pronunciation ☀️", items:[
     ["☀️","New: Present simple","I work, she works, I don't, does he…? 7 short stages with a little Spanish help on every question, in Practice → Grammar.","quiz"],
     ["🗣️","New: Pronunciation","its own section in Practice, starting with -ed endings: worked, played or wanted? A 🔊 button on every word.","quiz"],
@@ -8981,13 +9149,32 @@ let lastStatus = "out";
 function status(st) {
   lastStatus = st;
   const txt = { syncing: "Syncing…", saving: "Saving…", synced: "Saved", error: "Offline", out: "Sign in" }[st] || "Saved";
-  const t = $("authTxt"); if (t) t.textContent = user ? txt : "Sign in";
+  const t = $("authTxt"); if (t) t.textContent = user ? (st === "error" ? "Offline" : "Profile") : "Sign in";
+  if (btn) { btn.classList.toggle("st-busy", !!user && (st === "saving" || st === "syncing")); btn.classList.toggle("st-err", !!user && st === "error"); btn.classList.toggle("st-ok", !!user && st !== "saving" && st !== "syncing" && st !== "error"); btn.title = user ? txt : ""; }
   document.documentElement.classList.toggle("cs-signed", !!user);
   const s = $("authStatus");
   if (s) s.textContent = { syncing: "Getting your notes from the cloud…", saving: "Saving your changes…", synced: "✓ Everything is saved to your account.", error: "Couldn't reach the cloud. Your changes are kept here and will save when you're back online." }[st] || "";
   let dot = btn && btn.querySelector(".dot");
   if (user && btn) { if (!dot) { dot = document.createElement("span"); dot.className = "dot"; btn.appendChild(dot); } dot.className = "dot" + (st === "error" ? " err" : (st === "synced" ? "" : " busy")); }
   else if (dot) dot.remove();
+}
+/* profile photo: the Google one, one they upload, or none (their buddy shows in the club) */
+function photoPref() { try { const v = JSON.parse(localStorage.getItem("ncs-photo") || "null"); if (v && typeof v === "object") return v; } catch (e) {} return { k: "google" }; }
+function myPhoto() { const p = photoPref(); if (p.k === "custom" && p.d) return p.d; if (p.k === "google" && user && user.photoURL) return user.photoURL; return ""; }
+window.csMyPhoto = () => myPhoto();
+function setPhoto(v) { if (VA) { alertMsg("👁 View as is read-only: nothing is saved"); return; } try { localStorage.setItem("ncs-photo", JSON.stringify(v)); } catch (e) {} try { window.__csOnSet && window.__csOnSet("ncs-photo"); } catch (e) {} renderUser(); document.dispatchEvent(new CustomEvent("cs-photo", { detail: { photo: myPhoto(), k: v.k } })); }
+function shrinkPhoto(file) { return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image(); im.onload = () => { const S = 192, c = document.createElement("canvas"); c.width = c.height = S; const k = Math.max(S / im.naturalWidth, S / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k; c.getContext("2d").drawImage(im, (S - w) / 2, (S - h) / 2, w, h); URL.revokeObjectURL(u); res(c.toDataURL("image/jpeg", .82)); }; im.onerror = rej; im.src = u; }); }
+function photoBox() {
+  if (!panel || !user) return; let b = document.getElementById("authPhoto");
+  if (!b) { b = document.createElement("div"); b.id = "authPhoto"; b.className = "auth-photo"; const who = $("authWho"); (who || panel.firstChild).insertAdjacentElement("afterend", b);
+    b.addEventListener("change", async e => { const r = e.target.closest("[name=phk]"); if (r) { if (r.value === "custom" && !(photoPref().d)) { b.querySelector("input[type=file]").click(); return; } setPhoto(Object.assign({}, photoPref(), { k: r.value })); return; }
+      const f = e.target.closest("input[type=file]"); if (f && f.files[0]) { try { const d = await shrinkPhoto(f.files[0]); setPhoto({ k: "custom", d }); alertMsg("✓ Photo saved"); } catch (er) { alertMsg("Couldn't use that photo. Try another one."); } f.value = ""; } }); }
+  const p = photoPref(), ph = myPhoto();
+  b.innerHTML = `<div class="ap-prev">${ph ? `<img src="${ph.replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer">` : `<span>🐾</span>`}</div><div class="ap-opts"><b>Profile photo</b><small>Shows in the club next to your posts and messages.</small>
+    <label><input type="radio" name="phk" value="google" ${p.k === "google" ? "checked" : ""} ${user.photoURL ? "" : "disabled"}> My Google photo</label>
+    <label><input type="radio" name="phk" value="custom" ${p.k === "custom" ? "checked" : ""}> My own photo</label>
+    <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> No photo (show my buddy)</label>
+    <label class="ap-up">📷 ${p.d ? "Change my photo" : "Upload a photo"}<input type="file" accept="image/*" hidden></label></div>`;
 }
 function renderUser() {
   document.body.dataset.auth = user ? "in" : "out";
@@ -8996,8 +9183,10 @@ function renderUser() {
   const ico = $("authIco");
   if (user) {
     const name = user.displayName || user.email || "You";
-    if (user.photoURL) { ico.innerHTML = ""; const img = new Image(); img.alt = ""; img.referrerPolicy = "no-referrer"; img.src = user.photoURL; img.onerror = () => { ico.textContent = name.charAt(0).toUpperCase(); }; ico.appendChild(img); }
+    const ph = myPhoto();
+    if (ph) { ico.innerHTML = ""; const img = new Image(); img.alt = ""; img.referrerPolicy = "no-referrer"; img.src = ph; img.onerror = () => { ico.textContent = name.charAt(0).toUpperCase(); }; ico.appendChild(img); }
     else ico.textContent = name.charAt(0).toUpperCase();
+    photoBox();
     $("authWho").textContent = name + (user.email && user.displayName ? " · " + user.email : "");
     const tl = $("teacherLink"); if (tl) tl.hidden = (user.email || "").toLowerCase() !== "learnwithnoa@gmail.com";
     const isT = (user.email || "").toLowerCase() === "learnwithnoa@gmail.com" && user.emailVerified;

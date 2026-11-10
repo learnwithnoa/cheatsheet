@@ -44,7 +44,15 @@ h2{font:700 22px var(--display);margin:22px 0 10px}
 .stu .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stu .meta{font:12px var(--mono);color:var(--muted)}
 input[type=search]{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;margin-bottom:10px}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+.wtools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}.wsel-all{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:14px}
+.wfix{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}.wfix-r{display:flex;gap:8px;align-items:flex-start;font-size:14px}.wfix s{opacity:.7}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin:12px 0 6px}
+#detail .stat{background:var(--surface-2)!important;border:1px solid var(--line)!important;padding:8px 12px}
+#detail .stat b{font-size:22px}#detail .stat span{font-size:12.5px}
+#detail .stat.k-green b{color:var(--c-green)}#detail .stat.k-amber b{color:var(--c-amber)}#detail .stat.k-sky b{color:var(--c-sky)}#detail .stat.k-pink b{color:var(--c-pink)}#detail .stat.k-violet b{color:var(--c-violet)}#detail .stat.k-coral b{color:var(--c-coral)}#detail .stat.k-teal b{color:var(--c-teal)}
+.st-eng{cursor:help}.eng-i{font-style:normal;opacity:.7}
+.dlinks{display:block;margin-top:4px}.resrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.docrow{display:contents}
+.dmeta2{margin:6px 0 0!important}
 .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:8px 14px}
 .stat b{display:block;font:700 24px var(--display)}
 .stat span{font-size:13px;color:var(--muted)}
@@ -319,7 +327,7 @@ tr.arch td{opacity:.85}
 </script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
-  getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0c";
+  getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp, initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
 import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=13";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
@@ -330,6 +338,18 @@ const app = initializeApp({
   messagingSenderId: "619847241160",
   appId: "1:619847241160:web:d66edc58b7b143b9ab04fd"
 });
+/* AI (same Gemini setup as Hibi) for the word bank tools */
+try { initializeAppCheck(app, { provider: new ReCaptchaEnterpriseProvider("6Lf_6wUuAAAAABPRQ2tI35UPj2oKPzo5P1wSfqjT"), isTokenAutoRefreshEnabled: true }); } catch (e) { console.warn("app check", e); }
+let aiL = null; try { aiL = getAI(app, { backend: new GoogleAIBackend() }); } catch (e) { console.warn("AI not available", e); }
+async function aiAsk(prompt) {
+  if (!aiL) throw new Error("AI not available");
+  let last; for (const name of ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]) {
+    try { const m = getGenerativeModel(aiL, { model: name, generationConfig: { temperature: 0.2 } }); const r = await m.generateContent(prompt); return r.response.text(); }
+    catch (e) { last = e; if (!/not found|404|unsupported/i.test(String(e && e.message))) break; } }
+  throw last || new Error("AI failed");
+}
+const aiArr = t => { t = String(t || "").replace(/```(?:json)?/gi, ""); const a = t.indexOf("["); try { return JSON.parse(t.slice(a, t.lastIndexOf("]") + 1)); } catch (e) { return null; } };
+
 const auth = getAuth(app), db = getFirestore(app);
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -753,15 +773,14 @@ function renderDetail() {
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }, cur = ST[s.status] ? s.status : "active";
       return `<label class="cefr-pick st-pick st-${cur}" title="Status (tap to change)"><b>${ST[cur]}</b><span class="cp-car" aria-hidden="true">▾</span><select id="stStatus" aria-label="Status">${Object.keys(ST).map(k => `<option value="${k}" ${cur === k ? "selected" : ""}>${ST[k]}</option>`).join("")}</select></label>`; })()}</div>
-    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}${links ? "<br>" + links : ""}${(s.docs || []).length ? `<span class="resrow docrow">${s.docs.map(g => `<a class="resb docb" href="${esc(g.url)}" target="_blank" rel="noopener" title="Only you see this">${/notion/.test(g.url) ? "📓" : "📎"} ${esc(g.title)}</a>`).join("")}</span>` : ""}<span class="resrow" ${resFor(s).length ? "" : "hidden"}>${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}</span>${r ? `<br><span class="kc k-teal" style="color:var(--c-teal)">👀 Can see this in their Hibi (${r.club && r.private ? "private + club" : "private student"})</span>` : `<br><span class="muted">Not linked to a Hibi account yet. It links by itself when they sign in with their email, or pick them on the Members page.</span>`}</p>
-    ${since(s) || s.prevCourses ? `<p class="small" style="margin:6px 0 0"><span style="color:var(--c-violet);font-weight:700">${esc(since(s))}</span>${s.prevCourses ? ` <span class="muted">· ${esc(s.prevCourses)}</span>` : ""}</p>` : ""}
-    ${bringUp(s)}
+    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}${links ? `<span class="dlinks">${links}</span>` : ""}${(s.docs || []).length || resFor(s).length ? `<span class="resrow">` : ""}${(s.docs || []).length ? `<span class="docrow">${s.docs.map(g => `<a class="resb docb" href="${esc(g.url)}" target="_blank" rel="noopener" title="Only you see this">${/notion/.test(g.url) ? "📓" : "📎"} ${esc(g.title)}</a>`).join("")}</span>` : ""}${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}${(s.docs || []).length || resFor(s).length ? `</span>` : ""}</p>
+    <p class="muted small dmeta2">${[since(s), s.prevCourses || "", r ? `👀 Sees this on Hibi (${r.club && r.private ? "private + club" : "private student"})` : "Not linked to a Hibi account yet (links when they sign in with their email)"].filter(Boolean).map(esc).join(" · ")}</p>
     <div class="stats">
       ${p && st && st.size ? `<div class="stat tint k-green"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat tint k-amber"><b>${st.classesLeft}</b><span>${st.classesLeft === 1 ? "class" : "classes"} left (approx.)</span></div>` : ""}
       ${p && st ? `<div class="stat tint k-sky"><b>${st.done}</b><span>classes this pack</span></div>` : ""}
       ${p && st && deadline(p, st.first) ? `<div class="stat tint k-pink"><b>${fmtShort(deadline(p, st.first))}</b><span>pack ends</span></div>` : ""}
       <div class="stat tint k-violet"><b>${s.classes.filter(c => c.kind !== "note").length}</b><span>classes in total</span></div>
-      ${en ? `<div class="stat tint ${en.k}" title="${esc(en.parts.join(" · "))}"><b>${en.lvl}</b><span>engagement · ${esc(en.parts.join(" · "))}</span></div>` : ""}
+      ${en ? `<div class="stat st-eng ${en.k}" title="${esc(en.parts.join(" · "))}"><b>${en.lvl}</b><span>engagement <i class="eng-i" aria-hidden="true">ⓘ</i></span></div>` : ""}
     </div>
     <div class="tabs">${tabs.map(([k, l, c]) => `<button type="button" class="seg ${c}" data-tab="${k}" aria-pressed="${tab === k}">${l}${k === "words" ? ` (${new Set(s.words.map(w => nw(w.w)).concat((appWords[s.id] || []).map(w => nw(w && w.w)))).size})` : ""}</button>`).join("")}</div>
     <div id="tabBody">${({ classes: tClasses, packs: tPacks, info: tInfo, words: tWords, other: tOther }[tab] || tClasses)(s)}</div>`;
@@ -788,7 +807,7 @@ function tClasses(s) {
     return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}" title="${num[c.id] ? "Class #" + num[c.id] + " of this pack" : ""}">${num[c.id] || ""}</td><td class="d">${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td>${attB(c.att)}</td><td class="hr ${esc(c.hour || "")}">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
   }).join("");
   const hourNow = () => { const h = new Date().getHours(); return h >= 10 && h < 15 ? "Standard" : "Priority"; };
-  return `<form class="frm tint k-sky" id="addClass" autocomplete="off">
+  return bringUp(s) + `<form class="frm tint k-sky" id="addClass" autocomplete="off">
       <div class="fld"><label>Date</label><input type="date" name="date" value="${today()}" required></div>
       <div class="fld w2"><label>Topics covered</label><input name="topics" placeholder="fabulang: …, convo: …"></div>
       <div class="fld w3"><label>Homework</label><input name="homework" value="${esc((s.classes.filter(c => c.kind !== "note").pop() || {}).homework || "")}"></div>
@@ -882,17 +901,47 @@ async function refreshWords(s, loud) {
   catch (e) { console.warn("words", e); if (loud) toast("Couldn't load their words. Try again."); }
 }
 const wordsAt = {};
+let wSel = new Set();
 function tWords(s) {
-  const ws = wordRows(s);
+  const ws = wordRows(s); const appRows = ws.filter(w => w.src === "app"); wSel = new Set([...wSel].filter(k => appRows.some(w => w.key === k)));
   const bar = s.uid ? `<div class="row" style="gap:8px;margin:0 0 8px;align-items:center"><button type="button" class="ib" data-act="refreshWords">↻ Refresh their words</button><span class="muted small">${wordsAt[s.id] ? "Updated " + new Date(wordsAt[s.id]).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : ""}${hibiSeen(s) ? " · last active on Hibi " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span></div>` : "";
   if (!ws.length) return bar + `<p class="muted">No words yet.${s.uid ? " If they can see words on their screen that aren't here, they're probably <b>not signed in to Hibi on that device</b>: the top right should show their photo and “Saved ✓”. Once they sign in, their words come to their account and show up here." : " Once they're linked, the words they save on Hibi show up here too."}</p>`;
   const th = (k, l) => `<th class="sortable" data-wsort="${wSort === k ? { az: "za", za: "az", new: "old", old: "new" }[k] : k}">${l}${wSort === k ? " ↓" : wSort === { az: "za", za: "az", new: "old", old: "new" }[k] ? " ↑" : ""}</th>`;
-  return bar + `<p class="muted small" style="margin:0 0 8px">📱 = in their Hibi “My words” (your changes go straight to their list) · 📗 = only in their English Journey sheet. Click a column title to sort.</p>
-    <div class="tbl"><table class="wtbl"><thead><tr><th></th>${th("az", "Word")}<th>Type</th><th>Meaning</th><th>Spanish</th><th>Example</th>${th("new", "Added")}<th></th></tr></thead><tbody>${ws.map(w => wEdit === w.key ? `<tr class="editing"><td>${w.src === "app" ? "📱" : "📗"}</td>
+  const tools = s.uid && appRows.length ? `<div class="wtools"><label class="wsel-all"><input type="checkbox" data-wselall ${wSel.size && wSel.size === appRows.length ? "checked" : ""}> Select all</label><span class="muted small">${wSel.size ? wSel.size + " selected" : "Tick words in their Hibi (📱) to fix only those"}</span><button type="button" class="ib" data-wai="complete" ${wSel.size ? "" : "disabled"}>✨ Complete selected</button><button type="button" class="ib" data-wai="clean" ${wSel.size ? "" : "disabled"}>🧹 Clean up selected</button><span class="muted small" id="wAiSt"></span></div>` : "";
+  return bar + tools + `<p class="muted small" style="margin:0 0 8px">📱 = in their Hibi “My words” (your changes go straight to their list) · 📗 = only in their English Journey sheet. Click a column title to sort.</p>
+    <div class="tbl"><table class="wtbl"><thead><tr><th></th><th></th>${th("az", "Word")}<th>Type</th><th>Meaning</th><th>Spanish</th><th>Example</th>${th("new", "Added")}<th></th></tr></thead><tbody>${ws.map(w => wEdit === w.key ? `<tr class="editing"><td></td><td>${w.src === "app" ? "📱" : "📗"}</td>
       <td><input data-we="w" value="${esc(w.w)}"></td><td><input data-we="pos" value="${esc(w.pos)}" placeholder="noun" style="width:80px"></td><td><textarea data-we="def" rows="2">${esc(w.def)}</textarea></td><td><input data-we="m" value="${esc(w.m)}"></td><td><textarea data-we="e" rows="2">${esc(w.e)}</textarea></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
       <td class="acts"><button type="button" class="ib" data-wsave="${w.key}" title="Save">✓</button><button type="button" class="ib" data-wcancel title="Cancel">✕</button></td></tr>`
-      : `<tr><td title="${w.src === "app" ? "In their Hibi" : "English Journey sheet"}">${w.src === "app" ? "📱" : "📗"}</td><td><b>${esc(w.w)}</b></td><td class="muted">${esc(w.pos)}</td><td>${esc(w.def)}</td><td>${esc(w.m)}</td><td><i>${esc(w.e)}</i></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
+      : `<tr><td>${w.src === "app" ? `<input type="checkbox" data-wsel="${w.key}" ${wSel.has(w.key) ? "checked" : ""} aria-label="Select ${esc(w.w)}">` : ""}</td><td title="${w.src === "app" ? "In their Hibi" : "English Journey sheet"}">${w.src === "app" ? "📱" : "📗"}</td><td><b>${esc(w.w)}</b></td><td class="muted">${esc(w.pos)}</td><td>${esc(w.def)}</td><td>${esc(w.m)}</td><td><i>${esc(w.e)}</i></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
       <td class="acts"><button type="button" class="ib" data-wedit="${w.key}" title="Edit">✏️</button><button type="button" class="ib del" data-wdel="${w.key}" title="Remove">🗑</button></td></tr>`).join("")}</tbody></table></div>`;
+}
+/* ✨ complete / 🧹 clean up only the words Noa ticked; their own example sentences stay theirs */
+async function wordAI(s, kind) {
+  const idx = [...wSel].map(k => +k.slice(1)), list = (appWords[s.id] || []).map(x => Object.assign({}, x)), before = (appWords[s.id] || []).map(x => Object.assign({}, x));
+  const pick = idx.map(i => ({ i, x: list[i] })).filter(o => o.x && o.x.w); if (!pick.length) return;
+  const st = () => document.getElementById("wAiSt"), say = t => { const e = st(); if (e) e.textContent = t; };
+  say("✨ Working on " + pick.length + (pick.length === 1 ? " word…" : " words…"));
+  try {
+    if (kind === "complete") {
+      const items = pick.map(o => ({ id: o.i, word: o.x.w, spanish: o.x.m || "", example: o.x.e || "" }));
+      const lvl = String(s.cefr || "").startsWith("A") ? "very short and simple, A1 to A2 level, 4 to 8 words" : "natural and useful, B1 to B2 level, 8 to 15 words";
+      const arr = aiArr(await aiAsk("You help a Spanish-speaking learner of English (from Chile) build their vocabulary list. For EACH item return: pos (noun, verb, adjective, adverb, phrasal verb, idiom, expression, collocation, preposition...), def (a very short simple English meaning, max 10 words), es (a natural Spanish translation ONLY if spanish is empty, else \"\"), ex (an example sentence ONLY if example is empty, else \"\"; " + lvl + "). Never change the student's word. Reply with ONLY a JSON array like [{\"id\":0,\"pos\":\"\",\"def\":\"\",\"es\":\"\",\"ex\":\"\"}].\n\nITEMS:\n" + JSON.stringify(items)));
+      if (!Array.isArray(arr)) throw new Error("bad answer");
+      let n = 0; arr.forEach(a => { const x = list[+a.id]; if (!x) return; if (a.pos && !x.pos) x.pos = String(a.pos).toLowerCase().slice(0, 20); if (a.def && !x.def) x.def = String(a.def).slice(0, 140); if (!x.m && a.es) x.m = String(a.es).slice(0, 140); if (!x.e && a.ex) { x.e = String(a.ex).slice(0, 220); x.aiEx = 1; } x.ai = 1; n++; });
+      appWords[s.id] = list; wSel = new Set(); renderDetail(); await saveAppWords(s, "✨ Completed " + n + (n === 1 ? " word" : " words") + " (anything they wrote stayed the same)", before); return;
+    }
+    const chunk = pick.map(o => ({ id: o.i, w: o.x.w, m: o.x.m || "", e: o.x.e || "", own: !!(o.x.e && !o.x.aiEx) }));
+    const arr = aiArr(await aiAsk("You are checking a Spanish-speaking learner's English vocabulary list. w = English word/expression, m = Spanish meaning, e = example sentence. Find ONLY real problems: spelling mistakes (English or Spanish), capital letters (w lowercase unless a name or 'I'; sentences start with a capital), punctuation (sentences end with . ? or !), a clearly wrong Spanish meaning. Sentences with own=true were written by the student: only fix a clear grammar or word mistake there, never rewrite them to sound nicer. Don't change correct things. Reply with ONLY a JSON array like [{\"id\":0,\"field\":\"w\" or \"m\" or \"e\",\"to\":\"corrected text\",\"why\":\"max 6 words\"}]. If nothing needs fixing reply [].\n\nITEMS:\n" + JSON.stringify(chunk)));
+    if (!Array.isArray(arr)) throw new Error("bad answer");
+    const fixes = arr.filter(c => list[+c.id] && ["w", "m", "e"].includes(c.field) && String(c.to || "").trim() && String(c.to).trim() !== String(list[+c.id][c.field] || ""));
+    say(""); if (!fixes.length) { toast("✨ Those words look great. Nothing to fix!"); return; }
+    const box = document.createElement("div"); box.className = "wfix";
+    box.innerHTML = `<b>🧹 Suggested fixes</b> <span class="muted small">Nothing changes until you press Apply. Untick what you want to keep.</span>${fixes.map((f, k) => `<label class="wfix-r"><input type="checkbox" data-fx="${k}" checked><span><b>${esc(list[+f.id].w)}</b> · ${({ w: "word", m: "Spanish", e: "example" })[f.field]}${chunk.find(c => c.id === +f.id && c.own) && f.field === "e" ? " <i>(their own sentence)</i>" : ""}: <s>${esc(list[+f.id][f.field] || "")}</s> → <b>${esc(f.to)}</b> <span class="muted">${esc(f.why || "")}</span></span></label>`).join("")}<div class="row"><button type="button" class="primary" data-fxgo>Apply</button><button type="button" data-fxno>Cancel</button></div>`;
+    const tools = document.querySelector(".wtools"); tools.insertAdjacentElement("afterend", box);
+    box.addEventListener("click", async ev => { if (ev.target.closest("[data-fxno]")) { box.remove(); return; } if (!ev.target.closest("[data-fxgo]")) return;
+      let n = 0; box.querySelectorAll("[data-fx]:checked").forEach(c => { const f = fixes[+c.dataset.fx], x = list[+f.id]; x[f.field] = String(f.to).trim(); if (f.field === "w") { delete x.pos; delete x.def; delete x.ai; } n++; });
+      appWords[s.id] = list; wSel = new Set(); renderDetail(); await saveAppWords(s, "🧹 Applied " + n + (n === 1 ? " fix" : " fixes"), before); });
+  } catch (e) { console.warn(e); say("The AI didn't answer. Try again in a minute."); }
 }
 async function saveAppWords(s, label, before) {
   const list = appWords[s.id] || [];
@@ -935,6 +984,7 @@ document.addEventListener("click", e => {
   if (!t.closest(".jump")) $("jumpRes").hidden = true;
   if (t.closest("#backBtn")) { go("students"); return; }
   if (t.closest("#histBtn")) { showHist(); return; }
+  const wa = t.closest("[data-wai]"); if (wa) { wordAI(S_(), wa.dataset.wai); return; }
   const we = t.closest("[data-wedit]"); if (we) { wEdit = we.dataset.wedit; renderDetail(); const f = document.querySelector('[data-we="def"]'); if (f) f.focus(); return; }
   if (t.closest("[data-wcancel]")) { wEdit = null; renderDetail(); return; }
   const ws = t.closest("[data-wsave]"); if (ws) { const v = {}; document.querySelectorAll("tr.editing [data-we]").forEach(x => v[x.dataset.we] = x.value.trim()); if (!v.w) { toast("The word can't be empty"); return; } wordAct(S_(), ws.dataset.wsave, "edit", v); return; }
@@ -976,8 +1026,11 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const t = e.target, s = S_();
+  if (t.dataset.wsel) { if (t.checked) wSel.add(t.dataset.wsel); else wSel.delete(t.dataset.wsel); renderDetail(); return; }
+  if (t.hasAttribute && t.hasAttribute("data-wselall")) { wSel = t.checked ? new Set(wordRows(s).filter(w => w.src === "app").map(w => w.key)) : new Set(); renderDetail(); return; }
   if (t.id === "mailPick") { s._mail = t.value; $("mailLink").href = GM(t.value); $("mailLink").textContent = "✉️ " + t.value; return; }
   if (t.dataset.emails) { s.emails = t.value.split(/[,;\s]+/).map(x => x.trim()).filter(x => x.includes("@")); save(s); return; }
+  if (t.dataset.f === "cefr") { s.cefr = t.value; save(s, false, "Level → " + t.value); renderDetail(); return; }
   if (t.id === "stStatus") { s.status = t.value; save(s, false, "Status → " + t.value); renderAll(); return; }
   if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s, false, "Payment status → " + t.value); refresh(); return; }
   if (t.dataset.reskey) { const k = t.dataset.reskey, cur = new Set(resKeys(s)); if (t.checked) cur.add(k); else cur.delete(k); s.res = RES_ALL(s).map(r => r.k).filter(x => cur.has(x)); delete s.resHide; save(s, false, (t.checked ? "Showing " : "Hiding ") + k); renderDetail(); return; }

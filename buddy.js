@@ -466,6 +466,13 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-b small{font-size:11px;opacity:.8;font-weight:700}
 .bd-gear{all:unset;cursor:pointer;font-size:15px;line-height:1;padding:3px 5px;border-radius:8px}.bd-gear:hover,.bd-gear:focus-visible{background:color-mix(in srgb,var(--green,#2E8B57) 18%,transparent);outline:none}
 .bd-ic-nm{display:inline-flex;align-items:center;gap:4px}
+.park-scene{position:absolute;left:10px;top:10px;z-index:7}.park-scene select{height:36px;border-radius:10px;border:1.5px solid var(--line,#ddd);background:var(--surface,#fff);color:var(--ink,#111);font:700 14px var(--body,sans-serif);padding:0 8px;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;width:auto}
+.park-world.sc-day{background:radial-gradient(ellipse 34% 30% at 50% 52%,color-mix(in srgb,#F5C842 22%,#9BD88A) 0 98%,transparent 100%),linear-gradient(180deg,#BFE6FF 0 14%,#9BD88A 14% 100%)!important}
+.park-world.sc-night{background:radial-gradient(ellipse 34% 30% at 50% 52%,#3E6B3A 0 98%,transparent 100%),linear-gradient(180deg,#151F42 0 14%,#2E5230 14% 100%)!important}
+.park-world.sc-beach{background:radial-gradient(ellipse 34% 30% at 50% 52%,#7FD3E8 0 98%,transparent 100%),linear-gradient(180deg,#9FDBFF 0 14%,#F3DDA4 14% 100%)!important}
+.park-world.sc-forest{background:radial-gradient(ellipse 34% 30% at 50% 52%,#5E8F4E 0 98%,transparent 100%),linear-gradient(180deg,#2F5D3A 0 14%,#3F6E3C 14% 100%)!important}
+.park-world.sc-snow{background:radial-gradient(ellipse 34% 30% at 50% 52%,#BFE3F2 0 98%,transparent 100%),linear-gradient(180deg,#C9D8E8 0 14%,#F4F8FC 14% 100%)!important}
+.park-world.sc-sunset{background:radial-gradient(ellipse 34% 30% at 50% 52%,color-mix(in srgb,#F5A142 30%,#8CC07A) 0 98%,transparent 100%),linear-gradient(180deg,#F59E7A 0 7%,#C47AA8 14%,#86B86F 14% 100%)!important}
 .duel-board{margin:18px 0 0;padding:16px 18px;border-radius:18px;border:1.5px solid color-mix(in srgb,#C2306F 40%,var(--line,#ddd));background:linear-gradient(135deg,color-mix(in srgb,#C2306F 9%,var(--surface,#fff)),color-mix(in srgb,#F5C842 8%,var(--surface,#fff)))}
 .duel-board[hidden]{display:none}
 .duel-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:10px 12px}.duel-h h2{margin:0 4px 0 0;font-size:22px}.duel-h .duel-stats{margin:0}#duelBoard .duel-h h2{margin:0 4px 0 0}#parkLegend.park-legend{margin:8px 2px 0}.duel-sub{margin:10px 0 6px;font-size:13.5px;font-weight:700;color:var(--muted,#666)}.duel-rec{font-size:14px;color:var(--muted,#666);flex:1}
@@ -1299,13 +1306,24 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     setTimeout(() => { if (root.hidden) return; wake(); hop(); fx(["💛", "💌", "💛"]); say(`💌 <b>${esc(who)}</b> ${fed === got.length ? "fed your buddy a treat" : fed ? "sent love and treats to your buddy" : "sent your buddy love"} in the Buddy park! +${fp} friendship`, `<button class="bd-b" type="button" data-bd="open">See ${esc(nameOf())}</button>`, 9000); }, 3500);
   }
   /* ---------- buddy park ---------- */
-  const DECO = [["🌳", 3, 16], ["🌲", 90, 18], ["🌳", 2, 70], ["🌲", 92, 74], ["🌷", 24, 92], ["🌼", 70, 93], ["🌻", 47, 95], ["☁️", 20, 3], ["☁️", 72, 5], ["🌼", 12, 44], ["🌷", 86, 46]]
+  /* park scenes: each person picks theirs (Auto follows the light/dark theme) */
+  const SCENES = {
+    auto: { n: "✨ Auto" }, day: { n: "🌳 Park" }, night: { n: "🌙 Night" }, beach: { n: "🏖️ Beach", d: [["🌴", 3, 18], ["🌴", 90, 20], ["⛱️", 6, 70], ["🐚", 90, 76], ["🦀", 26, 93], ["🐚", 72, 92], ["⛵", 48, 4], ["☁️", 20, 3], ["☀️", 84, 3], ["🌊", 12, 44], ["🌊", 86, 46]] },
+    forest: { n: "🌲 Forest", d: [["🌲", 3, 16], ["🌲", 90, 18], ["🌲", 2, 70], ["🌲", 92, 74], ["🍄", 24, 92], ["🌿", 70, 93], ["🦊", 47, 95], ["🌲", 20, 3], ["🌲", 72, 5], ["🍄", 12, 44], ["🐿️", 86, 46]] },
+    snow: { n: "❄️ Snow", d: [["🌲", 3, 16], ["⛄", 90, 18], ["🌲", 2, 70], ["🌲", 92, 74], ["❄️", 24, 92], ["❄️", 70, 93], ["🛷", 47, 95], ["☁️", 20, 3], ["❄️", 72, 5], ["❄️", 12, 44], ["⛄", 86, 46]] },
+    sunset: { n: "🌅 Sunset", d: [["🌳", 3, 16], ["🌲", 90, 18], ["🌳", 2, 70], ["🌲", 92, 74], ["🌷", 24, 92], ["🌼", 70, 93], ["🌻", 47, 95], ["🌅", 20, 3], ["🐦", 72, 5], ["🌼", 12, 44], ["🌷", 86, 46]] }
+  };
+  const BASE_DECO = [["🌳", 3, 16], ["🌲", 90, 18], ["🌳", 2, 70], ["🌲", 92, 74], ["🌷", 24, 92], ["🌼", 70, 93], ["🌻", 47, 95], ["☁️", 20, 3], ["☁️", 72, 5], ["🌼", 12, 44], ["🌷", 86, 46]];
+  const sceneNow = () => { let v = "auto"; try { v = JSON.parse(localStorage.getItem("ncs-park-scene") || '"auto"'); } catch (e) {} return SCENES[v] ? v : "auto"; };
+  const decoFor = sc => ((SCENES[sc] && SCENES[sc].d) || (sc === "night" ? BASE_DECO.map(d => d[0] === "☁️" ? (d[1] < 50 ? ["🌙", d[1], d[2]] : ["✨", d[1], d[2]]) : d) : BASE_DECO))
     .map(([e, x, y]) => `<span class="park-deco" style="left:${x}%;top:${y}%" aria-hidden="true">${e}</span>`).join("");
   let parkBusy = false;
+  document.addEventListener("change", e => { const t = e.target.closest("[data-pscene]"); if (!t) return; const v = t.value; try { localStorage.setItem("ncs-park-scene", JSON.stringify(v)); window.__csOnSet && window.__csOnSet("ncs-park-scene"); } catch (er) {}
+    const w = $("parkWorld"); if (w) { w.className = "park-world sc-" + v; w.querySelectorAll(".park-deco").forEach(x => x.remove()); w.insertAdjacentHTML("afterbegin", decoFor(v)); } });
   function palFor(x) { const d = SP[x.a]; return Object.assign({}, d.p, (d.colors[x.c | 0] || d.colors[0])[1]); }
   async function renderPark() {
     const el = $("parkArea"), v = $("v-park"); if (!el || !v || v.hidden || parkBusy) return;
-    const msg = h => { el.innerHTML = DECO + `<div class="park-msg"><div>${h}</div></div>`; };
+    const msg = h => { el.innerHTML = decoFor(sceneNow()) + `<div class="park-msg"><div>${h}</div></div>`; };
     const P = window.__csPark;
     if (!P) { msg("Opening the park gates… 🌳"); setTimeout(renderPark, 1500); return; }
     if (!P.signedIn()) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses Hibi: all roaming around together.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
@@ -1324,12 +1342,13 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     list.forEach(x => { let best = null, bestD = -1; for (let k = 0; k < 14; k++) { const p = spot(); const d = pos.reduce((m, o) => Math.min(m, Math.hypot((p[0] - o[1]) * 1.2, p[1] - o[2])), 999); if (d > bestD) { bestD = d; best = p; } } pos.push([x, best[0], best[1]]); });
     const wc = x => (x.me ? counts().words : x.words | 0);
     if (!document.getElementById("parkLegend")) el.insertAdjacentHTML("afterend", `<p class="park-legend" id="parkLegend">✨ The glow shows friendship: <span class="lg1">silver</span> at level 4, <span class="lg2">gold</span> at level 7, <span class="lg3">rainbow</span> at level 10.</p>`);
-    el.innerHTML = `<div class="park-zoom" role="group" aria-label="Zoom"><button type="button" data-pz="-1" aria-label="Zoom out">−</button><button type="button" data-pz="0" aria-label="Fit the whole park">⤢</button><button type="button" data-pz="1" aria-label="Zoom in">+</button></div>
-      <div class="park-vp" id="parkVp"><div class="park-world" id="parkWorld">${DECO}${pos.map(([x, l, t]) => {
+    const sc = sceneNow();
+    el.innerHTML = `<div class="park-scene"><label><select data-pscene aria-label="Park scene">${Object.keys(SCENES).map(k => `<option value="${k}" ${k === sc ? "selected" : ""}>${SCENES[k].n}</option>`).join("")}</select></label></div><div class="park-zoom" role="group" aria-label="Zoom"><button type="button" data-pz="-1" aria-label="Zoom out">−</button><button type="button" data-pz="0" aria-label="Fit the whole park">⤢</button><button type="button" data-pz="1" aria-label="Zoom in">+</button></div>
+      <div class="park-vp" id="parkVp"><div class="park-world sc-${sc}" id="parkWorld">${decoFor(sc)}${pos.map(([x, l, t]) => {
       const bn = (x.n && String(x.n).trim() && String(x.n).trim() !== SP[x.a].old ? String(x.n).trim() : SP[x.a].name), owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
       const info = `<span class="pi-1"><b>${esc(bn)}</b>${owner ? ` <small>· ${esc(owner)}</small>` : ""}</span><span class="pi-2">📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}${(() => { const c = x.me ? (window.csLevel ? window.csLevel().lv : "") : (x.cefr || (x.role && x.role.lv) || ""); return c ? ` · 📊 ${esc(String(c).slice(0, 7))}` : ""; })()}</span>`;
       const lv = x.lvl | 0 || 1, tier = lv >= 10 ? 3 : lv >= 7 ? 2 : lv >= 4 ? 1 : 0;
-      return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}<span class="pi-3">${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && !(window.__csPreview && window.__csPreview.kind === "private") ? `<span class="pb-feed pb-duel" role="button" tabindex="0" data-duel="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Challenge ${esc(x.first || bn)} to a duel">⚔️ Duel</span>` : ""}</span></span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
+      return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}<span class="pi-3">${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && !(window.__csPreview && window.__csPreview.kind === "private") ? `<span class="pb-feed pb-duel" role="button" tabindex="0" data-duel="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Challenge ${esc(x.first || bn)} to a duel">⚔️ Duel</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && window.__clubDM ? `<span class="pb-feed pb-dm" role="button" tabindex="0" data-pdm="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Message ${esc(x.first || bn)}">💬 Message</span>` : ""}</span></span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;
     applyZoom(false); startPark(); dropTreat();
     try { duelSync(listAll); } catch (e) { console.warn("duels", e); }
@@ -1424,6 +1443,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   document.addEventListener("click", e => {
     const pb = e.target.closest(".park-b");
+    const dm = e.target.closest("[data-pdm]"); if (dm) { e.preventDefault(); e.stopPropagation(); if (window.__clubDM) window.__clubDM(dm.dataset.pdm, dm.dataset.first); return; }
     const dz = e.target.closest("[data-duel]"); if (dz) { e.preventDefault(); e.stopPropagation(); duelDialog(dz.dataset.duel, dz.dataset.first); return; }
     if (pb && e.target.closest("[data-feed]")) { e.preventDefault(); e.stopPropagation(); clearTimeout(pb._it); pb._it = setTimeout(() => pb.classList.remove("show-info"), 4000); feedOther(pb); ["🍪", "💛", "🍪"].forEach((ch, i) => setTimeout(() => parkFx(pb, ch), i * 130)); return; }
     if (pb && pb.dataset.a) animalSound(pb.dataset.a);
