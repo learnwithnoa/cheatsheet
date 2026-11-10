@@ -32,6 +32,8 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py club-info '{"schedule":[{"wd":1,"ico":"🧠","name":"Deep Dive Monday","time":"20:00","dur":90,"desc":"...","zoom":"https://..."}],"links":[{"title":"...","url":"https://...","note":"..."}]}'
   HUB_PASSWORD=... python3 hubsync.py access-requests   people asking to join Hibi (Noa approves them on Hibi, Home → 🔔)
   HUB_PASSWORD=... python3 hubsync.py access-sync        approve every existing account · access-add <email> ['Name']   approve one email
+  HUB_PASSWORD=... python3 hubsync.py club-recs   ·   club-add-rec '{"url":"https://youtu.be/…","date":"YYYY-MM-DD","wd":3,"topic":"…","summary":"…"}'
+      YouTube recordings in the club Library (wd = weekday of the class: 1 Mon, 3 Wed, 4 Thu, 5 Fri). Skips links already there.
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
@@ -766,6 +768,37 @@ def main():
         print(json.dumps({"ok": True, "replaced": replaced, "id": post["id"], "members": len(uids), "link": SITE + "#club"})); return
     if cmd == "club-sync":
         club_sync(tok, tu); return
+    if cmd == "club-recs":
+        # recordings in the club Library that came from YouTube (clubStats/_recordings)
+        r = http("GET", f"{BASE}/clubStats/_recordings", token=tok) or {}
+        try:
+            lst = json.loads(r.get("fields", {}).get("json", {}).get("stringValue") or "{}").get("list") or []
+        except ValueError:
+            lst = []
+        print(json.dumps(lst, ensure_ascii=False)); return
+    if cmd == "club-add-rec":
+        # add a YouTube recording to the club Library: club-add-rec '{"url":"https://youtu.be/…","date":"2026-11-11","wd":3,"topic":"…","summary":"…"}'
+        d = json.loads(a[1]) if not a[1].startswith("@") else json.load(open(a[1][1:], encoding="utf-8"))
+        url = _url(d.get("url"))
+        if not url or not re.search(r"youtu\.?be", url):
+            raise SystemExit("need a YouTube url")
+        datetime.date.fromisoformat(str(d.get("date"))[:10])
+        r = http("GET", f"{BASE}/clubStats/_recordings", token=tok) or {}
+        try:
+            lst = json.loads(r.get("fields", {}).get("json", {}).get("stringValue") or "{}").get("list") or []
+        except ValueError:
+            lst = []
+        vid = re.search(r"(?:v=|youtu\.be/|embed/|shorts/|live/)([\w-]{11})", url)
+        if any(vid and vid.group(1) in (x.get("url") or "") for x in lst):
+            print(json.dumps({"skip": "already in the Library"})); return
+        rec = {"id": "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)), "url": url, "date": str(d["date"])[:10],
+               "wd": int(d["wd"]) if d.get("wd") is not None else None, "topic": _txt(d.get("topic"), 120), "summary": str(d.get("summary") or "")[:500],
+               "at": int(datetime.datetime.now().timestamp() * 1000)}
+        if d.get("name"):
+            rec["name"] = _txt(d["name"], 80)
+        lst.append(rec)
+        http("PATCH", f"{BASE}/clubStats/_recordings", {"fields": {"uid": {"stringValue": "_recordings"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
+        print(json.dumps({"ok": True, "id": rec["id"], "count": len(lst)})); return
     if cmd == "access-sync":
         # Hibi is invite-only: approve every account that already exists (access/{email}), so nobody gets locked out
         n = 0
