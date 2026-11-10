@@ -108,6 +108,7 @@ export function makeView(s, meta) {
     focus: s.focus || "", recap: s.recap || null, resources: resFor(s), tz: s.tz || "", country: s.country || "", next: up ? up.start : "", due,
     club: s.uid && (meta.clubUids || []).includes(s.uid) ? (meta.clubFeed || null) : null,
     reports: (s.reports || []).filter(r => r && r.id).slice(-12).map(r => ({ id: r.id, from: r.from || "", to: r.to || "", sessions: r.sessions || 0, snapshot: r.snapshot || "", clicking: r.clicking || [], topics: r.topics || [], patterns: r.patterns || [], focus: r.focus || [], resource: r.resource || null, recordings: r.recordings || [], month: r.month || "", closing: r.closing || "", at: r.at || "" })),
+    lessons: (s.lessons || []).filter(x => x && x.id).slice(-30),
     guides: (s.guides || []).filter(g => g && g.url).map(g => ({ title: g.title || "Guide", url: g.url, date: g.date || "", kind: g.kind || "" })),
     tips: (meta.recs || []).filter(r => r && r.hub === s.id && !r.done).slice(-5).map(r => ({ title: r.title || "", mod: r.mod || "", stage: r.stage || null, page: r.page || "", pack: r.pack || "", why: r.why || "", date: r.date || "" })),
     words: (s.words || []).map((w, i) => ({ w: w.w, tr: w.tr || "", ex: w.ex || "", i })),

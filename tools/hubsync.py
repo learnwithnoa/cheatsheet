@@ -54,9 +54,29 @@ Usage:
       prints the link to put in the student's email. Same "to" date again = replaces that report.
   HUB_PASSWORD=... python3 hubsync.py reports <student-id>             list a student's reports (id, period)
   HUB_PASSWORD=... python3 hubsync.py del-report <student-id> <report-id>
+  HUB_PASSWORD=... python3 hubsync.py add-lesson <student-id> @/tmp/lesson.json   class recap / study guide hosted on Hibi with interactive
+      exercises (see LESSON below). Prints the link for the email. Same id (or same kind+date+title) again = replaces it.
+  HUB_PASSWORD=... python3 hubsync.py lessons <student-id>   ·   del-lesson <student-id> <lesson-id>
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
 
 Any '<json>' argument can also be @/path/to/file.json or - (read from stdin).
+
+LESSON json (TO the student, "you", at their level; **bold** and *italic* work; never private things):
+  {"kind":"recap" or "guide","date":"2026-11-09","title":"Class recap · November 9, 2026","topic":"one line","nutshell":"1-2 warm sentences",
+   "sections":[
+     {"type":"list","h":"What we talked about","items":["...", ...]},
+     {"type":"list","h":"What you nailed","items":["**Clear structure.** ... *\"quote from class\"*", ...]},
+     {"type":"fixes","h":"Watch out for","rows":[{"said":"what they said","try":"better version (**bold** the fix)","why":"short reason"}],"bonus":"optional extra fixes"},
+     {"type":"vocab","h":"Vocabulary from today","items":[{"w":"onboarding","pos":"noun","tr":"meaning (Spanish or simple English)","ex":"example from class"}]},
+     {"type":"text","h":"Quick grammar reminder: past perfect","body":"paragraphs; lines starting with - are bullets"}],
+   "exercises":[   (interactive: Hibi checks the answers; give every accepted answer)
+     {"type":"gap","h":"Part 1: ...","items":[{"q":"When I joined, I ___ (never / work) in sales.","a":[["had never worked"]]},
+                                             {"q":"I ___ (pass) a C1 in 2023, but then I ___ (stop).","a":[["passed"],["stopped"]]}]},   (one list per ___)
+     {"type":"choice","h":"Part 2: Choose the right word.","items":[{"q":"She asked me to ___ the meeting.","opts":["quit","leave"],"a":1,"note":"optional why"}]},
+     {"type":"fix","h":"Part 3: Correct the mistake.","items":[{"q":"I didn't missed my phonics.","a":["I didn't miss my phonics.","I didn't lose my phonics."]}]},
+     {"type":"write","h":"Part 4: Rewrite using the word in brackets.","items":[{"q":"My boss trusted me even though it was risky. (bet)","a":["My boss bet on me."]}]}],
+   "yourTurn":"a speaking task for next class",
+   "replacesUrl":"(optional) the Google Doc link it replaces on their page"}
 
 REPORT json (write everything TO the student, "you", at their level; plain text, no markdown):
   {"from":"2026-10-19","to":"2026-11-09","sessions":5,
@@ -70,7 +90,7 @@ REPORT json (write everything TO the student, "you", at their level; plain text,
    "month":"(optional) Zooming out: your month at a glance",
    "closing":"short warm note"}
 """
-import json, os, re, sys, random, string, datetime, urllib.request, urllib.error
+import json, os, re, sys, random, string, datetime, urllib.request, urllib.error, urllib.parse
 
 API_KEY = "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw"
 PROJECT = "learnwithnoa-cheatsheet"
@@ -290,11 +310,66 @@ def make_view(s, meta=None):
             "club": (meta.get("clubFeed") or None) if s.get("uid") and s.get("uid") in (meta.get("clubUids") or []) else None,
             "reports": [view_report(r) for r in (s.get("reports") or [])[-12:] if r and r.get("id")],
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", ""), "kind": g.get("kind", "")} for g in s.get("guides", []) if g and g.get("url")],
+            "lessons": [x for x in (s.get("lessons") or [])[-30:] if x and x.get("id")],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "pack": r.get("pack", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
 
 
 SITE = "https://learnwithnoa.github.io/cheatsheet/"
+
+
+def _strs(xs, n, m=600):
+    return [str(x).strip()[:m] for x in (xs or []) if str(x).strip()][:n]
+
+
+def clean_lesson(d):
+    """a class recap or study guide hosted on Hibi (My coaching), with interactive exercises"""
+    date = str(d.get("date") or datetime.date.today().isoformat())[:10]
+    datetime.date.fromisoformat(date)
+    kind = "guide" if d.get("kind") == "guide" else "recap"
+    title = _txt(d.get("title"), 140) or ("Class recap · " + date)
+    lid = re.sub(r"[^a-z0-9]+", "-", (d.get("id") or f"{kind}-{date}-{title}").lower()).strip("-")[:60]
+    secs = []
+    for x in (d.get("sections") or [])[:12]:
+        t = x.get("type") or "list"
+        sec = {"type": t, "h": _txt(x.get("h"), 120)}
+        if t == "list":
+            sec["items"] = _strs(x.get("items"), 12)
+        elif t == "fixes":
+            sec["rows"] = [{"said": str(r.get("said", ""))[:300], "try": str(r.get("try", ""))[:300], "why": str(r.get("why", ""))[:400]} for r in (x.get("rows") or [])[:15]]
+            sec["bonus"] = str(x.get("bonus") or "")[:500]
+        elif t == "vocab":
+            sec["items"] = [{"w": _txt(v.get("w"), 80), "pos": _txt(v.get("pos"), 30), "tr": str(v.get("tr", ""))[:200], "ex": str(v.get("ex", ""))[:300]} for v in (x.get("items") or [])[:24] if v.get("w")]
+        else:
+            sec["type"] = "text"; sec["body"] = str(x.get("body") or "")[:3000]
+        secs.append(sec)
+    exs = []
+    for x in (d.get("exercises") or [])[:8]:
+        t = x.get("type")
+        if t not in ("gap", "choice", "fix", "write"):
+            continue
+        items = []
+        for it in (x.get("items") or [])[:12]:
+            q = str(it.get("q") or "")[:500]
+            if t == "choice":
+                opts = _strs(it.get("opts"), 6, 120)
+                if len(opts) < 2:
+                    continue
+                items.append({"q": q, "opts": opts, "a": max(0, min(int(it.get("a") or 0), len(opts) - 1)), "note": str(it.get("note") or "")[:300]})
+            elif t == "gap":
+                ans = it.get("a") or []
+                ans = [[str(v)[:120] for v in (a if isinstance(a, list) else [a])] for a in ans]
+                items.append({"q": q, "a": ans, "note": str(it.get("note") or "")[:300]})
+            else:
+                items.append({"q": q, "a": _strs(it.get("a"), 6, 300), "note": str(it.get("note") or "")[:300]})
+        if items:
+            exs.append({"type": t, "h": _txt(x.get("h"), 160), "items": items})
+    return {"id": lid, "kind": kind, "title": title, "date": date, "topic": str(d.get("topic") or "")[:300], "nutshell": str(d.get("nutshell") or "")[:600],
+            "sections": secs, "exercises": exs, "yourTurn": str(d.get("yourTurn") or "")[:600], "at": datetime.date.today().isoformat()}
+
+
+def lesson_link(lid):
+    return SITE + "?lesson=" + urllib.parse.quote(lid) + "#coaching"
 PACKS = ["expr", "phrasal", "travel", "work"]   # word packs on Hibi (Practice → Word packs)
 
 
@@ -938,6 +1013,26 @@ def main():
         print(json.dumps({"ok": True, "replaced": replaced, "id": r["id"], "link": report_link(r["id"]),
                           "onHibi": bool(s.get("uid")),
                           "note": "" if s.get("uid") else "This student isn't linked to a Hibi account yet, so they can't see it until they sign in. Use the Google Doc fallback for the email."}, ensure_ascii=False)); return
+    if cmd == "add-lesson":
+        # a class recap / study guide hosted on Hibi with interactive exercises (replaces the Google Doc when the student is on Hibi)
+        L = clean_lesson(data)
+        ls = [x for x in (s.get("lessons") or []) if x.get("id") != L["id"]]
+        replaced = len(ls) != len(s.get("lessons") or [])
+        ls.append(L); ls.sort(key=lambda x: x.get("date", "")); s["lessons"] = ls[-40:]
+        if data.get("replacesUrl"):
+            s["guides"] = [g for g in s.get("guides", []) if g.get("url") != data["replacesUrl"]]
+        save(tok, tu, s)
+        print(json.dumps({"ok": True, "replaced": replaced, "id": L["id"], "link": lesson_link(L["id"]), "onHibi": bool(s.get("uid")),
+                          "exercises": sum(len(x["items"]) for x in L["exercises"]),
+                          "note": "" if s.get("uid") else "This student isn't on Hibi yet: also make the Google Doc version and link that in the email."}, ensure_ascii=False)); return
+    if cmd == "lessons":
+        print(json.dumps([{"id": x["id"], "kind": x.get("kind"), "title": x.get("title"), "date": x.get("date"), "link": lesson_link(x["id"])} for x in s.get("lessons") or []], ensure_ascii=False)); return
+    if cmd == "del-lesson":
+        before = len(s.get("lessons") or [])
+        s["lessons"] = [x for x in (s.get("lessons") or []) if x.get("id") != a[2]]
+        if len(s["lessons"]) == before:
+            print("no lesson with id", a[2]); return
+        save(tok, tu, s); print("ok"); return
     if cmd == "reports":
         print(json.dumps([{"id": x["id"], "from": x.get("from"), "to": x.get("to"), "sessions": x.get("sessions"), "link": report_link(x["id"])} for x in s.get("reports") or []], ensure_ascii=False)); return
     if cmd == "del-report":

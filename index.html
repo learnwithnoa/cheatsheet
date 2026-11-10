@@ -1278,6 +1278,60 @@ html.ag-lock,html.ag-lock body{overflow:hidden}
 .ch-gl:hover{border-color:var(--k,var(--line))}
 .ch-gl>span:last-child{display:flex;flex-direction:column;min-width:0}.ch-gl b{font-size:14.5px}.ch-gl small{font-size:12.5px;color:var(--muted)}
 .ch-tipsrow{margin:12px 0 0}.ch-tipsrow .ch-card{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 14px}.ch-tipsrow .ch-k{width:100%}
+/* hosted recaps / guides */
+button.ch-gl,button.ch-guide{font:inherit;text-align:left;cursor:pointer;width:100%;color:var(--ink)}
+button.ch-gl{border:1px solid transparent}
+.ch-lbadge{display:inline-block;margin-left:6px;font:800 11px var(--body);padding:2px 7px;border-radius:999px;background:color-mix(in srgb,var(--c-v,#8B5CF6) 18%,transparent);vertical-align:2px}
+.ch-lbadge.new{background:color-mix(in srgb,#F59E0B 22%,transparent)}.ch-lbadge.done{background:color-mix(in srgb,#22C55E 22%,transparent)}
+.lx{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.lx-back{align-self:flex-start}
+.lx-head{padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.lx-head h2{margin:0;font-size:24px;line-height:1.2}
+.lx-topic,.lx-nut{margin:0;font-size:15.5px;line-height:1.55}.lx-nut{font-size:16.5px}
+.lx-prog{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}.lx-prog .ch-bar{flex:1 1 160px;margin:0}.lx-prog span{font:700 13px var(--body);color:var(--muted)}
+.lx-sec{padding:16px 18px;border:1.5px solid var(--line);border-radius:18px;background:var(--card,var(--surface))}
+.lx-sec h3{margin:0 0 10px;font-size:18px}.lx-sec h4{margin:14px 0 8px;font-size:15.5px}
+.lx-sech{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}.lx-sech h3{margin:0}
+.lx-sec ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15.5px;line-height:1.55}
+.lx-sec p{margin:0 0 8px;font-size:15.5px;line-height:1.6}
+.lx-fixes{display:flex;flex-direction:column;gap:8px}
+.lx-fix{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--bg) 55%,transparent);font-size:15px}
+.lx-fix small{display:block;font:800 11px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.lx-fix .said s{text-decoration-color:color-mix(in srgb,#EF4444 70%,transparent);color:var(--muted)}
+.lx-fix .try span{color:var(--ink)}.lx-fix .try b{color:#22C55E}
+.lx-fix .why{grid-column:1/-1;font-size:13.5px;color:var(--muted)}
+@media (max-width:560px){ .lx-fix{grid-template-columns:1fr} }
+.lx-bonus{margin-top:10px!important;font-size:14.5px!important}
+.lx-voc{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.lx-w{display:flex;flex-direction:column;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--bg) 55%,transparent);font-size:15px}
+.lx-w>div{display:flex;flex-direction:column;gap:2px}.lx-w small{color:var(--muted);font-size:13.5px}.lx-w .ch-rc-save{align-self:flex-start}
+.lx-pos{font:700 11.5px var(--body);color:var(--muted)}.lx-tr{font-size:14px}
+.lx-part{margin-top:6px}
+.lx-items{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:12px}
+.lx-it{font-size:15.5px;line-height:1.6;padding-left:2px}
+.lx-q{display:block}
+.lx-gapq .lx-in{display:inline-block;width:auto;margin:0 4px}
+.lx-in{font:600 15px var(--body);color:var(--ink);background:var(--bg,var(--surface));border:1.5px solid var(--line);border-radius:8px;padding:4px 8px;max-width:100%}
+.lx-in:focus{outline:none;border-color:var(--c-s,#3B82F6)}
+.lx-ta{display:block;width:100%;box-sizing:border-box;margin-top:6px;resize:vertical}
+.lx-it.lx-good .lx-in{border-color:#22C55E;background:color-mix(in srgb,#22C55E 10%,transparent)}
+.lx-it.lx-bad .lx-in{border-color:#EF4444}
+.lx-mark{font-weight:900;margin-left:4px}.lx-mark.lx-good{color:#22C55E}.lx-mark.lx-bad{color:#EF4444}
+.lx-blank{display:inline-block;min-width:60px;border-bottom:2px solid var(--line);text-align:center;margin:0 4px;font-weight:700}
+.lx-opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.lx-opt{font:700 14.5px var(--body);padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card,var(--surface));color:var(--ink);cursor:pointer}
+.lx-opt:hover:not(:disabled){border-color:var(--c-s,#3B82F6)}.lx-opt.lx-good{border-color:#22C55E;background:color-mix(in srgb,#22C55E 16%,transparent)}.lx-opt.lx-bad{border-color:#EF4444;background:color-mix(in srgb,#EF4444 12%,transparent)}
+.lx-opt:disabled{cursor:default}
+.lx-fb{margin-top:4px;font-size:14px;color:var(--muted)}.lx-ans{color:var(--ink);font-weight:600}
+.lx-link{all:unset;cursor:pointer;color:var(--c-s,#3B82F6);font-weight:700;text-decoration:underline}
+.lx-note{margin-top:4px;font-size:13.5px;color:var(--muted)}
+.lx-check{margin-top:10px}
+.lx-turn{padding:16px 18px}
+.lx-done{text-align:center;font:800 18px var(--body);padding:14px;border-radius:16px;background:color-mix(in srgb,#22C55E 14%,transparent)}
+.lx .lx-ta{min-height:0;height:auto;font-weight:500}
+.lx .lx-check{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 16px;border-radius:999px;background:var(--c-s,#3B82F6);color:#fff;font:800 14px var(--body);border:0;text-decoration:none;cursor:pointer}
+.lx .lx-check:hover{filter:brightness(1.08)}
+.lx .lx-gapq .lx-in{padding:2px 8px;height:auto;min-height:0;line-height:1.4;border-radius:6px;vertical-align:baseline}
 .cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
 html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
 .cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -2062,7 +2116,72 @@ html.cs-calm .cs-rxpal button{transition:none}
     w.document.write(`<!doctype html><meta charset="utf-8"><title>Progress report · ${esc(fs(r.from))} – ${esc(fs(r.to))}<\/title><style>body{font:15px/1.55 system-ui,sans-serif;color:#111;max-width:720px;margin:32px auto;padding:0 20px}h1{font-size:22px;margin:0 0 4px}h4{margin:18px 0 6px;font-size:15px}.m{color:#555;margin:0 0 14px}.ch-rp-snap{font-size:16px}.ch-rp-win,.ch-rp-foc,.ch-rp-res{margin:0 0 8px}.ch-rp-win small,.ch-rp-res small{display:block;color:#555}.ch-rp-chips span{display:inline-block;border:1px solid #ccc;border-radius:99px;padding:1px 9px;margin:0 4px 4px 0;font-size:13px}.ch-rp-close{font-style:italic;margin-top:20px}<\/style><h1>Your progress report</h1><p class="m">${esc(window.__csHubView&&window.__csHubView.name||"")} · ${esc(fd(r.from))} – ${esc(fd(r.to))} · ${r.sessions} ${r.sessions===1?"class":"classes"}</p>${repHTML(r,true)}`);
     w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },300);
   }
+  /* ===== class recaps & study guides hosted on Hibi, with interactive exercises (?lesson=<id>#coaching opens one) ===== */
+  const LES_P="cs-open-lesson", LES_K="ncs-lesson-prog";
+  let openLes=null;
+  try{ const q=new URLSearchParams(location.search).get("lesson"); if(q){ sessionStorage.setItem(LES_P,q.replace(/[^\w-]/g,"").slice(0,60)); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
+  const lesOf=v=>((v&&v.lessons)||[]).filter(x=>x&&x.id);
+  const lprog=()=>{ try{ return JSON.parse(localStorage.getItem(LES_K)||"{}")||{}; }catch(e){ return {}; } };
+  const lsave=(id,p)=>{ try{ const all=lprog(); all[id]=p; localStorage.setItem(LES_K,JSON.stringify(all)); }catch(e){} };
+  const md=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/\*([^*]+)\*/g,"<i>$1</i>");
+  const NRM=t=>String(t||"").toLowerCase().replace(/[‘’`´]/g,"'").replace(/[“”]/g,'"')
+    .replace(/\bcan't\b/g,"cannot").replace(/\bwon't\b/g,"will not").replace(/n't\b/g," not").replace(/'ve\b/g," have").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ll\b/g," will")
+    .replace(/[.,!?;:"()]/g," ").replace(/\s+/g," ").trim();
+  const same=(a,b)=>NRM(a)===NRM(b);
+  function lesTotal(L){ return (L.exercises||[]).reduce((n,x)=>n+x.items.length,0); }
+  function lesScore(L,p){ let ok=0; (L.exercises||[]).forEach((x,i)=>x.items.forEach((_,j)=>{ if((p.ok||{})[i+"-"+j]===true) ok++; })); return ok; }
+  function blanks(q){ return String(q).split(/_{2,}/); }
+  function exItem(L,x,i,j,p){ const k=i+"-"+j, it=x.items[j], ok=(p.ok||{})[k], ans=(p.ans||{})[k], tried=ok!==undefined, show=(p.show||{})[k];
+    const mark=ok===true?'<span class="lx-mark lx-good" aria-label="Correct">✓</span>':tried?'<span class="lx-mark lx-bad" aria-label="Not yet">✗</span>':"";
+    const note=it.note&&tried?`<div class="lx-note">💡 ${md(it.note)}</div>`:"";
+    if(x.type==="choice"){ const parts=blanks(it.q);
+      return `<li class="lx-it${ok===true?" lx-good":tried?" lx-bad":""}" data-k="${k}"><div class="lx-q">${parts.length>1?md(parts[0])+'<span class="lx-blank">'+(ok===true?esc(it.opts[it.a]):"____")+"</span>"+md(parts.slice(1).join("____")):md(it.q)} ${mark}</div>
+        <div class="lx-opts">${it.opts.map((o,n)=>`<button type="button" class="lx-opt${ans===n?(n===it.a?" lx-good":" lx-bad"):""}${ok===true&&n===it.a?" lx-good":""}" data-lxopt="${n}" ${ok===true?"disabled":""}>${esc(o)}</button>`).join("")}</div>${note}</li>`; }
+    if(x.type==="gap"){ const parts=blanks(it.q), vals=Array.isArray(ans)?ans:[];
+      return `<li class="lx-it${ok===true?" lx-good":tried?" lx-bad":""}" data-k="${k}"><div class="lx-q lx-gapq">${parts.map((t,n)=>md(t)+(n<parts.length-1?`<input type="text" class="lx-in" data-b="${n}" value="${esc(vals[n]||"")}" aria-label="Blank ${n+1}" autocomplete="off" autocapitalize="off" spellcheck="false" ${ok===true?"disabled":""} size="${Math.max(8,Math.min(22,((it.a[n]||[""])[0]||"").length+2))}">`:"")).join("")} ${mark}</div>
+        ${tried&&ok!==true?`<div class="lx-fb">${show?`<span class="lx-ans">✅ ${it.a.map(a=>esc(a[0])).join(" · ")}</span>`:`<button type="button" class="lx-link" data-lxshow="1">Show the answer</button>`}</div>`:""}${note}</li>`; }
+    return `<li class="lx-it${ok===true?" lx-good":tried?" lx-bad":""}" data-k="${k}"><div class="lx-q">${md(it.q)} ${mark}</div>
+      <textarea class="lx-in lx-ta" rows="2" aria-label="Your answer" ${ok===true?"disabled":""} spellcheck="false">${esc(ans||"")}</textarea>
+      ${tried&&ok!==true?`<div class="lx-fb">${show?`<span class="lx-ans">✅ ${it.a.map(esc).join(" <i>or</i> ")}</span>`:`<span>Not quite yet. Try again, or </span><button type="button" class="lx-link" data-lxshow="1">see a good answer</button>`}</div>`:ok===true&&it.a.length&&!it.a.some(a=>same(a,ans))?`<div class="lx-fb"><span class="lx-ans">Also good: ${esc(it.a[0])}</span></div>`:""}${note}</li>`; }
+  function lessonHTML(L){ const p=lprog()[L.id]||{}, tot=lesTotal(L), sc=lesScore(L,p);
+    let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
+    const sec=s=>{ if(s.type==="list") return `<section class="lx-sec"><h3>${esc(s.h)}</h3><ul>${s.items.map(t=>`<li>${md(t)}</li>`).join("")}</ul></section>`;
+      if(s.type==="fixes") return `<section class="lx-sec"><h3>${esc(s.h)}</h3><div class="lx-fixes">${s.rows.map(r=>`<div class="lx-fix"><div class="said"><small>You said</small><s>${md(r.said)}</s></div><div class="try"><small>Try instead</small><span>${md(r.try)}</span></div>${r.why?`<div class="why">${md(r.why)}</div>`:""}</div>`).join("")}</div>${s.bonus?`<p class="lx-bonus"><b>Bonus:</b> ${md(s.bonus)}</p>`:""}</section>`;
+      if(s.type==="vocab"){ const un=s.items.filter(v=>!have.has(v.w.toLowerCase().trim())).length;
+        return `<section class="lx-sec"><div class="lx-sech"><h3>${esc(s.h)}</h3>${un?`<button type="button" class="ch-go" data-lxsaveall="1">＋ Save all ${un} to My words</button>`:""}</div><div class="lx-voc">${s.items.map((v,n)=>{ const okw=have.has(v.w.toLowerCase().trim()); return `<div class="lx-w"><div><b>${esc(v.w)}</b>${v.pos?` <span class="lx-pos">${esc(v.pos)}</span>`:""}${v.tr?`<span class="lx-tr">${esc(v.tr)}</span>`:""}${v.ex?`<small>“${esc(v.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-lxw='${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}' ${okw?"disabled":""}>${okw?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></section>`; }
+      return `<section class="lx-sec"><h3>${esc(s.h)}</h3>${String(s.body||"").split(/\n{2,}/).map(par=>{ const ls=par.split("\n"); return ls.every(x=>/^\s*[-•]/.test(x))?`<ul>${ls.map(x=>`<li>${md(x.replace(/^\s*[-•]\s*/,""))}</li>`).join("")}</ul>`:`<p>${ls.map(md).join("<br>")}</p>`; }).join("")}</section>`; };
+    return `<div class="lx" data-lesson-id="${esc(L.id)}"><button type="button" class="ch-tab lx-back" data-lxback="1">← Back to My coaching</button>
+      <header class="lx-head ch-tint ${L.kind==="guide"?"ch-a":"ch-s"}"><div class="ch-k">${L.kind==="guide"?"📄 Study guide":"📼 Class recap"} · ${fd(L.date)}</div><h2>${esc(L.title)}</h2>${L.topic?`<p class="lx-topic"><b>Topic:</b> ${md(L.topic)}</p>`:""}${L.nutshell?`<p class="lx-nut">${md(L.nutshell)}</p>`:""}
+        ${tot?`<div class="lx-prog"><div class="ch-bar"><i style="width:${Math.round(sc*100/tot)}%"></i></div><span>${sc}/${tot} exercises right${p.done?" · ✅ done":""}</span><button type="button" class="ch-go" data-lxjump="1">✏️ Go to the practice</button></div>`:""}</header>
+      ${(L.sections||[]).map(sec).join("")}
+      ${(L.exercises||[]).length?`<section class="lx-sec lx-practice" id="lxPractice"><h3>✏️ Practice time</h3><p class="muted">Hibi checks your answers as you go. Small differences like contractions (didn’t / did not) are fine.</p>
+        ${L.exercises.map((x,i)=>`<div class="lx-part" data-part="${i}"><h4>${esc(x.h||"")}</h4><ol class="lx-items">${x.items.map((_,j)=>exItem(L,x,i,j,p)).join("")}</ol>${x.type!=="choice"?`<button type="button" class="ch-go lx-check" data-lxcheck="${i}">Check my answers</button>`:""}</div>`).join("")}</section>`:""}
+      ${L.yourTurn?`<section class="lx-sec lx-turn ch-tint ch-v"><h3>🎤 Your turn</h3><p>${md(L.yourTurn)}</p></section>`:""}
+      ${tot&&sc===tot?`<div class="lx-done">🎉 All ${tot} right! Great work.</div>`:""}</div>`; }
+  function lesCheck(L,i){ const box2=document.querySelector(`.lx [data-part="${i}"]`); if(!box2) return; const x=L.exercises[i], p=lprog()[L.id]||{}; p.ans=p.ans||{}; p.ok=p.ok||{};
+    x.items.forEach((it,j)=>{ const k=i+"-"+j, li=box2.querySelector(`[data-k="${k}"]`); if(!li||p.ok[k]===true) return;
+      if(x.type==="gap"){ const vals=[...li.querySelectorAll("input[data-b]")].map(n=>n.value); if(vals.every(v=>!v.trim())) return; p.ans[k]=vals; p.ok[k]=vals.every((v,n)=>(it.a[n]||[]).some(a=>same(a,v))); }
+      else { const v=(li.querySelector("textarea")||{}).value||""; if(!v.trim()) return; p.ans[k]=v; p.ok[k]=it.a.some(a=>same(a,v)); } });
+    lesFinish(L,p); }
+  function lesFinish(L,p){ const tot=lesTotal(L), sc=lesScore(L,p);
+    if(tot&&sc===tot&&!p.done){ p.done=true; setTimeout(()=>{ try{ if(window.csBuddy&&window.csBuddy.treat) window.csBuddy.treat(5,"🎉 You finished every exercise!"); else if(window.toast) window.toast("🎉 You finished every exercise!"); }catch(e){} },300); }
+    lsave(L.id,p); const y=window.scrollY; render(); window.scrollTo(0,y); }
+  box.addEventListener("click",e=>{ const v=window.__csHubView; if(!v) return; const t=e.target;
+    const op=t.closest("[data-lesson]"); if(op){ e.preventDefault(); openLes=op.dataset.lesson; render(); window.scrollTo({top:0}); return; }
+    if(!openLes) return; const L=lesOf(v).find(x=>x.id===openLes); if(!L) return;
+    if(t.closest("[data-lxback]")){ openLes=null; render(); window.scrollTo({top:0}); return; }
+    if(t.closest("[data-lxjump]")){ document.getElementById("lxPractice")?.scrollIntoView({behavior:"smooth",block:"start"}); return; }
+    const o=t.closest("[data-lxopt]"); if(o){ const li=o.closest("[data-k]"), k=li.dataset.k, [i,j]=k.split("-").map(Number), it=L.exercises[i].items[j], n=+o.dataset.lxopt, p=lprog()[L.id]||{}; p.ans=p.ans||{}; p.ok=p.ok||{}; if(p.ok[k]===true) return; p.ans[k]=n; p.ok[k]=n===it.a; lesFinish(L,p); return; }
+    const c=t.closest("[data-lxcheck]"); if(c){ lesCheck(L,+c.dataset.lxcheck); return; }
+    const sh=t.closest("[data-lxshow]"); if(sh){ const k=sh.closest("[data-k]").dataset.k, p=lprog()[L.id]||{}; p.show=p.show||{}; p.show[k]=true; lsave(L.id,p); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+    const w=t.closest("[data-lxw]"); if(w){ let x={}; try{ x=JSON.parse(w.dataset.lxw); }catch(er){} if(window.csAddWord&&window.csAddWord(x.w,x.tr,x.ex)&&window.toast) window.toast("Saved to My words ✓"); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+    if(t.closest("[data-lxsaveall]")){ let n=0; (L.sections||[]).filter(s=>s.type==="vocab").forEach(s=>s.items.forEach(x=>{ if(window.csAddWord&&window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; })); if(n&&window.toast) window.toast(`Saved ${n} words to My words ✓`); const y=window.scrollY; render(); window.scrollTo(0,y); return; } });
+  /* typing keeps the answer even before "Check" (so a re-render never loses it) */
+  box.addEventListener("input",e=>{ const v=window.__csHubView; if(!openLes||!v) return; const li=e.target.closest(".lx-it"); if(!li) return; const k=li.dataset.k, p=lprog()[openLes]||{}; p.ans=p.ans||{};
+    const ins=li.querySelectorAll("input[data-b]"); p.ans[k]=ins.length?[...ins].map(n=>n.value):e.target.value; lsave(openLes,p); });
+  box.addEventListener("keydown",e=>{ if(e.key!=="Enter"||!e.target.matches(".lx input")) return; e.preventDefault(); const part=e.target.closest("[data-part]"); if(part){ const v=window.__csHubView, L=lesOf(v).find(x=>x.id===openLes); if(L) lesCheck(L,+part.dataset.part); } });
   function takePending(v){
+    if(v){ let lp=null; try{ lp=sessionStorage.getItem(LES_P); }catch(e){} if(lp){ try{ sessionStorage.removeItem(LES_P); }catch(e){} if(lesOf(v).some(x=>x.id===lp)){ openLes=lp; if(location.hash!=="#coaching") location.hash="#coaching"; setTimeout(()=>window.scrollTo({top:0}),60); } } }
     let p=null; try{ p=sessionStorage.getItem(REP_P); }catch(e){} if(!p) return;
     if(!v){ return; }
     try{ sessionStorage.removeItem(REP_P); }catch(e){}
@@ -2081,6 +2200,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   function newsFor(v){
     if(!v) return []; let sn=seenGet(); const wk=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
     const since=sn&&sn.d?sn.d:wk, out=[];
+    lesOf(v).forEach(x=>{ if(x.date&&x.date>since) out.push({d:x.date,ico:x.kind==="guide"?"📄":"📼",t:`${x.kind==="guide"?"New study guide":"Your class recap"}: <b>${esc(x.title)}</b> (with exercises)`,tab:x.kind==="guide"?"guides":"recaps"}); });
     (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
     (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(t.mod==="ps"?"Past simple":"Present perfect")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
@@ -2102,6 +2222,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const v=window.__csHubView; nav();
     if(!v){ box.innerHTML='<p class="muted">This page is for Noa’s private students. If you take private classes and don’t see your information, ask Noa to link your account.</p>'; return; }
     takePending(v);
+    if(openLes){ const L=lesOf(v).find(x=>x.id===openLes); if(L){ box.innerHTML=lessonHTML(L); return; } openLes=null; }
     const cur=(v.packs||[]).filter(p=>p.current).slice(-1)[0];
     const per=cur&&cur.unit==="credits"?((v.classes||[]).filter(c=>c.pack===cur.id&&c.hour==="Priority").length>(v.classes||[]).filter(c=>c.pack===cur.id).length/2?4:3):1;
     const left=cur&&cur.size?Math.max(0,cur.left):null;
@@ -2116,7 +2237,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${streak>=3?`<div class="ch-tint ch-g ch-stat"><b>🔥 ${streak}</b><span>classes in a row</span></div>`:""}</div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
     const reps=repsOf(v);
     const gKind=g=>g.kind==="recap"||g.kind==="guide"?g.kind:(/recap|class notes|notes from|resumen/i.test(g.title||"")?"recap":"guide");
-    const gAll=(v.guides||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")), gStudy=gAll.filter(g=>gKind(g)==="guide"), gRecap=gAll.filter(g=>gKind(g)==="recap");
+    const gAll=(v.guides||[]).concat(lesOf(v).map(x=>({title:x.title,date:x.date,kind:x.kind,lesson:x.id}))).sort((a,b)=>(b.date||"").localeCompare(a.date||"")), gStudy=gAll.filter(g=>gKind(g)==="guide"), gRecap=gAll.filter(g=>gKind(g)==="recap");
     const tabs=[["classes","My classes","ch-s"]].concat(reps.length?[["reports",`Progress reports (${reps.length})`,"ch-v"]]:[]).concat([["pack","Pack & payments","ch-g"],["goals","My goals","ch-v"]]).concat(gStudy.length?[["guides",`Study guides (${gStudy.length})`,"ch-a"]]:[]).concat(gRecap.length?[["recaps",`Class recaps (${gRecap.length})`,"ch-s"]]:[]);
     if((tab==="guides"&&!gStudy.length)||(tab==="recaps"&&!gRecap.length)) tab="classes";
     if(tab==="reports"&&!reps.length) tab="classes";
@@ -2142,7 +2263,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
       const voc=(rc.vocab||[]).filter(x=>x&&x.w), unsaved=voc.filter(x=>!have.has(x.w.toLowerCase().trim())).length;
-      recapBox=`<div class="ch-recap ch-tint ch-s" id="chRecap"><div class="ch-rc-h"><div><div class="ch-k">📼 Your last class</div><b>${fd(rc.date)}</b></div>${voc.length&&unsaved?`<button type="button" class="ch-go" data-rcall="1">＋ Save all ${unsaved} ${unsaved===1?"word":"words"}</button>`:""}</div>
+      const rcL=lesOf(v).find(x=>x.kind==="recap"&&x.date===rc.date);
+      recapBox=`<div class="ch-recap ch-tint ch-s" id="chRecap"><div class="ch-rc-h"><div><div class="ch-k">📼 Your last class</div><b>${fd(rc.date)}</b></div>${rcL?`<button type="button" class="ch-go" data-lesson="${esc(rcL.id)}">📖 Full recap + exercises →</button>`:""}${voc.length&&unsaved?`<button type="button" class="ch-go" data-rcall="1">＋ Save all ${unsaved} ${unsaved===1?"word":"words"}</button>`:""}</div>
         ${rc.summary?`<p class="ch-rc-sum">${esc(rc.summary)}</p>`:""}
         <div class="ch-rc-grid">
         ${(rc.talked||[]).length?`<div><h4>💬 What we talked about</h4><ul>${rc.talked.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
@@ -2152,7 +2274,10 @@ html.cs-calm .cs-rxpal button{transition:none}
         ${voc.length?`<div class="ch-rc-wbox"><h4>✨ New words <span class="muted">(${voc.length})</span>${voc.length>2?'<span class="ch-rc-hint">scroll →</span>':""}</h4><div class="ch-rc-words" role="list">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w" role="listitem"><div><b>${esc(x.w)}</b>${x.tr?`<span class="muted">${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
         </div>`;
     }
-    const gRow=(list,ico)=>list.slice(0,3).map(g=>`<a class="ch-gl" href="${esc(g.url)}" target="_blank" rel="noopener"><span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}</b>${g.date?`<small>${fd(g.date)}</small>`:""}</span></a>`).join("");
+    const lpAll=lprog(), lBadge=g=>{ const L=lesOf(v).find(x=>x.id===g.lesson); if(!L) return ""; const tot=lesTotal(L), p=lpAll[L.id]||{}, sc=lesScore(L,p); return tot?(p.done?' <span class="ch-lbadge done">✅ done</span>':sc?` <span class="ch-lbadge">${sc}/${tot}</span>`:` <span class="ch-lbadge new">✏️ ${tot} exercises</span>`):""; };
+    const gItem=(g,ico,cls)=>g.lesson?`<button type="button" class="${cls}" data-lesson="${esc(g.lesson)}">${cls==="ch-gl"?`<span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}${lBadge(g)}</b>${g.date?`<small>${fd(g.date)} · on Hibi</small>`:""}</span>`:`<b>${ico} ${esc(g.title)}${lBadge(g)}</b><span>${g.date?fd(g.date):""}</span>`}</button>`
+      :`<a class="${cls}" href="${esc(g.url)}" target="_blank" rel="noopener">${cls==="ch-gl"?`<span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}</b>${g.date?`<small>${fd(g.date)}</small>`:""}</span>`:`<b>${ico} ${esc(g.title)}</b><span>${g.date?fd(g.date):""}</span>`}</a>`;
+    const gRow=(list,ico)=>list.slice(0,3).map(g=>gItem(g,ico,"ch-gl")).join("");
     const guideBox=gAll.length?`<div class="ch-gbox ch-tint ch-a"><div class="ch-gcols">
       ${gStudy.length?`<div><div class="ch-k">📄 Study guides</div><div class="ch-glist">${gRow(gStudy,"📄")}</div>${gStudy.length>3?`<button type="button" class="ch-go" data-ct="guides">See all ${gStudy.length} →</button>`:""}</div>`:""}
       ${gRecap.length?`<div><div class="ch-k">📼 Class recaps</div><div class="ch-glist">${gRow(gRecap,"📼")}</div>${gRecap.length>3?`<button type="button" class="ch-go" data-ct="recaps">See all ${gRecap.length} →</button>`:""}</div>`:""}
@@ -2177,7 +2302,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       body=`<div class="ch-tint ch-v ch-goal">${v.objective?`<b>🎯 Your goal</b>\n${esc(v.objective)}\n\n`:""}${v.focus?`<b>🛠 What we're working on</b>\n${esc(v.focus)}\n\n`:""}${v.level?`<b>Your level</b>: ${esc(v.level)}\n`:""}${v.schedule?`<b>Your schedule</b>: ${esc(v.schedule)}`:""}</div>`;
     } else if(tab==="guides"||tab==="recaps"){
       const rc2=tab==="recaps";
-      body=`<p class="muted" style="font-size:14px">${rc2?"Recaps and notes from your classes.":"Grammar and study guides Noa made for you, with exercises."}</p><div class="ch-guides">${(rc2?gRecap:gStudy).map(g=>`<a class="ch-tint ${rc2?"ch-s":"ch-a"} ch-guide" href="${esc(g.url)}" target="_blank" rel="noopener"><b>${rc2?"📼":"📄"} ${esc(g.title)}</b><span>${g.date?fd(g.date):""}</span></a>`).join("")}</div>`;
+      body=`<p class="muted" style="font-size:14px">${rc2?"Recaps and notes from your classes.":"Grammar and study guides Noa made for you, with exercises."}</p><div class="ch-guides">${(rc2?gRecap:gStudy).map(g=>gItem(g,rc2?"📼":"📄",`ch-tint ${rc2?"ch-s":"ch-a"} ch-guide`)).join("")}</div>`;
     } else {
       let w=(v.words||[]).slice(); if(wSort==="new") w.reverse(); else if(wSort==="az") w.sort((a,b)=>a.w.localeCompare(b.w,"en",{sensitivity:"base"})); else if(wSort==="za") w.sort((a,b)=>b.w.localeCompare(a.w,"en",{sensitivity:"base"}));
       body=w.length?`<p class="muted" style="font-size:14px">Words from your English Journey sheet. Your own saved words are in <b>My words</b>.</p><div class="ch-sort">Order: ${[["new","Newest added"],["old","Oldest added"],["az","A → Z"],["za","Z → A"]].map(([k,l])=>`<button type="button" class="ch-tab ch-a" data-ws="${k}" aria-pressed="${wSort===k}">${l}</button>`).join("")}</div><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${w.map(x=>`<tr><td><b>${esc(x.w)}</b></td><td>${esc(x.tr)}</td><td>${esc(x.ex)}</td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No words here yet. Your saved words are in <b>My words</b>.</p>';
@@ -2419,7 +2544,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
   /* clock-change helper (also used by My coaching) */
-  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=12").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
+  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=13").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
 </script>
 
@@ -7967,7 +8092,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
-import { makeView, tzReminders } from "./hubview.js?v=12";
+import { makeView, tzReminders } from "./hubview.js?v=13";
 window.__csTzRem = tzReminders;
 
 const firebaseConfig = {
