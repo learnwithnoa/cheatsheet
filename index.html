@@ -592,6 +592,9 @@ span.bw{display:inline!important}
 /* "Viewing as" banner: stays on top, the header and menu stack right under it */
 .top{top:calc(env(safe-area-inset-top,0px) + var(--va-h,0px))!important}
 .va-banner{top:env(safe-area-inset-top,0px)!important}
+@media (max-width:600px){.va-pop{left:12px!important;right:12px!important;width:auto!important}}
+/* Noa's notifications bell on Home: its own row on phones instead of floating over the title */
+@media (max-width:900px){.tn-wrap{position:relative!important;top:auto!important;right:auto!important;margin:0 0 10px auto;width:fit-content}.tn-wrap .tn-box{width:min(480px,calc(100vw - 32px))}}
 @media (max-width:600px){.va-banner{font-size:12.5px;padding:6px 10px;gap:6px;line-height:1.3}.va-banner button{padding:3px 10px}}
 @media (max-width:480px){
   .top-in{gap:3px!important;padding-left:12px!important;padding-right:12px!important}
@@ -2008,6 +2011,12 @@ html.cs-calm .cs-rxpal button{transition:none}
 #dmFind:focus{outline:none;border-color:var(--bright)}
 .cl-dmfind{list-style:none;margin:6px 0 0;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--surface);display:flex;flex-direction:column;gap:2px}
 .cl-dmnone{padding:8px 10px;font-size:14px}
+
+.cl-dmsug{margin:0 0 12px}.cl-dmsugh{font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 2px 6px}
+.cl-dmsugr{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.cl-dmsc{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:76px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;text-align:center}
+.cl-dmsc:hover,.cl-dmsc:focus-visible{background:var(--surface-2)}
+.cl-dmsc .cs-av{width:42px;height:42px;font-size:15px}.cl-dmsc b{font-size:12.5px;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cl-dmsc small{font-size:11px;line-height:1}
 </style>
 
 <header class="top">
@@ -3945,9 +3954,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function closeDm(){ const o=document.getElementById("clDm"); if(o) o.remove(); DMOPEN=null; clearInterval(DMTIMER); }
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("clDm")) closeDm(); });
   async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
-    b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{})]);
+    b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{}),loadNotes().catch(()=>{})]);
     const ts=THREADS||[];
-    b.innerHTML=`<div class="cl-dmnew"><label class="sr" for="dmFind">${L("New message to…","Nuevo mensaje para…")}</label><input id="dmFind" type="search" autocomplete="off" placeholder="✏️ ${L("New message: type a name…","Nuevo mensaje: escribe un nombre…")}"><ul class="cl-dmfind" hidden></ul></div>`+(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(t.names||{})[u]||(profOf(u)||{}).name||L("Member","Miembro");
+    b.innerHTML=`<div class="cl-dmnew"><label class="sr" for="dmFind">${L("New message to…","Nuevo mensaje para…")}</label><input id="dmFind" type="search" autocomplete="off" placeholder="✏️ ${L("New message: type a name…","Nuevo mensaje: escribe un nombre…")}"><ul class="cl-dmfind" hidden></ul></div>`+dmSugHTML()+(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(t.names||{})[u]||(profOf(u)||{}).name||L("Member","Miembro");
       return `<li><button type="button" class="cl-dmi${t.unread?" new":""}" data-dmto="${esc(u)}" data-dmname="${esc(nm)}">${av(u,nm)}<span><b>${esc(nm)}</b><small>${t.last?esc((t.last.from===(G()?"me":me())?L("You: ","Tú: "):"")+(t.last.text||"📷")):""}</small></span><em>${t.at?ago(t.at):""}</em></button></li>`; }).join("")}</ul>`
       :`<p class="cl-empty">${L("No messages yet. Type a name above to start one, or open someone’s profile and press 💬 Message.","Aún no hay mensajes. Escribe un nombre arriba para empezar uno, o abre el perfil de alguien y presiona 💬 Mensaje.")}</p>`)+`<p class="cl-dmnote">🔒 ${L("Only you and the other person can read your messages.","Solo tú y la otra persona pueden leer sus mensajes.")}</p>`; }
   /* everyone you can write to: club profiles, people on the wall, the club roster, and always Noa */
@@ -3957,6 +3966,20 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     (PROFS||[]).forEach(x=>add(x.id,x.name)); (POSTS||[]).forEach(p=>add(p.uid,p.name));
     { const fd=window.__clubFeed&&window.__clubFeed(); ((fd&&fd.roster)||[]).forEach(r=>add(r.uid,r.name)); }
     return [...out].filter(([,n])=>n); }
+  /* smart suggestions: people you've interacted with (DMs, replies, reactions, mentions, duels), plus Noa, always */
+  function dmSuggest(){ const my=G()?"me":me(), sc=new Map(), why=new Map(), names=new Map(dmPeople());
+    const bump=(u,n,w)=>{ if(!u||u===my||u===me()) return; sc.set(u,(sc.get(u)||0)+n); if(w&&!(why.get(u)||[]).includes(w)) why.set(u,(why.get(u)||[]).concat(w)); };
+    (THREADS||[]).forEach(t=>bump(otherOf(t),3,"💬"));
+    (NOTES||[]).forEach(n=>bump(n.uid,n.kind==="react"?2:3,n.kind==="react"?"❤️":n.kind==="mention"?"@":"↩️"));
+    (POSTS||[]).forEach(p=>{ (p.likes||[]).forEach(v=>{ const [u]=rxOf(v); if(p.uid===my) bump(u,2,"❤️"); else if(u===my) bump(p.uid,2,"❤️"); });
+      (COMM[p.id]||[]).forEach(c=>{ if(c.uid===my) bump(p.uid,3,"↩️"); else if(p.uid===my) bump(c.uid,3,"↩️"); (c.likes||[]).forEach(v=>{ const [u]=rxOf(v); if(c.uid===my) bump(u,1,"❤️"); else if(u===my) bump(c.uid,1,"❤️"); }); }); });
+    (PARK||[]).forEach(x=>{ const u=x.me?my:x.uid; (x.dz||[]).forEach(z=>{ if(u===my) bump(z.to,4,"⚔️"); else if(z.to===me()) bump(u,4,"⚔️"); }); });
+    let list=[...sc].filter(([u])=>names.get(u)).sort((a,b)=>b[1]-a[1]).map(([u])=>u).slice(0,6);
+    if(my!==NOA&&!list.includes(NOA)) list.splice(Math.min(list.length,2),0,NOA);   /* Noa is always there: near the top, not necessarily first */
+    if(list.length<4){ (POSTS||[]).forEach(p=>{ if(list.length<6&&p.uid&&p.uid!==my&&p.uid!==me()&&!list.includes(p.uid)&&names.get(p.uid)) list.push(p.uid); }); }
+    return list.slice(0,7).map(u=>[u,names.get(u)||"Noa",u===NOA&&!(why.get(u)||[]).length?["🎓"]:(why.get(u)||[])]); }
+  function dmSugHTML(){ const l=dmSuggest(); if(!l.length) return "";
+    return `<div class="cl-dmsug"><div class="cl-dmsugh">${L("Suggested","Sugerencias")}</div><div class="cl-dmsugr">${l.map(([u,n,w])=>`<button type="button" class="cl-dmsc" data-dmto="${esc(u)}" data-dmname="${esc(n)}" title="${esc(n)}">${av(u,n)}<b>${esc(String(n).split(" ")[0])}</b>${w.length?`<small>${w.slice(0,2).join(" ")}</small>`:""}</button>`).join("")}</div></div>`; }
   const fold=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
   document.addEventListener("input",e=>{ const i=e.target.closest("#dmFind"); if(!i) return; const ul=i.parentNode.querySelector(".cl-dmfind"), q=fold(i.value.trim());
     if(!q){ ul.hidden=true; ul.innerHTML=""; return; }
