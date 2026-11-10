@@ -31,7 +31,7 @@ Usage:
       (times and Zoom links come from club-info; add "date"/"time"/"zoom" to a class only if it's different that week)
   HUB_PASSWORD=... python3 hubsync.py club-info '{"schedule":[{"wd":1,"ico":"🧠","name":"Deep Dive Monday","time":"20:00","dur":90,"desc":"...","zoom":"https://..."}],"links":[{"title":"...","url":"https://...","note":"..."}]}'
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
-  HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/..."}],
+  HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
       "notes":"1-2 friendly lines about the class","vocab":[{"w":"word","tr":"Spanish meaning","ex":"example from class"}],"phrases":["useful phrase", ...]}'
       after-class material on that week's club post ("After class": recordings, words members can save, phrases). Merges with what's there.
   HUB_PASSWORD=... python3 hubsync.py club-attend <week-monday> '["Laura Porcile","Daniel Soto", ...]'   who came to club classes that week (Zoom names);
@@ -451,6 +451,8 @@ def clean_recap(d, old=None):
             continue
         recs = [r for r in recs if r.get("url") != u]
         r = {"title": _txt(x.get("title"), 80), "url": u}
+        if x.get("summary"):
+            r["summary"] = str(x["summary"]).strip()[:500]  # 2-3 lines on what happened in that class (the class page in the Recordings tab)
         if x.get("wd") is not None:
             r["wd"] = int(x["wd"])
         recs.append(r)
@@ -657,6 +659,8 @@ def main():
                                  "host": _txt(x.get("host"), 60), "desc": _txt(x.get("desc"), 300), "zoom": _url(x.get("zoom"))} for x in d["schedule"]]
         if "links" in d:
             info["links"] = [{"ico": _txt(x.get("ico"), 8), "title": _txt(x.get("title"), 80), "url": _url(x.get("url")), "note": _txt(x.get("note"), 200)} for x in d["links"] if _url(x.get("url"))]
+        if "rules" in d:  # club guidelines shown to members (welcome card + Schedule & links)
+            info["rules"] = [_txt(x, 200) for x in d["rules"] if _txt(x, 200)][:10]
         feed["info"] = info; m["clubFeed"] = feed
         club_sync(tok, tu, m); return
     if cmd == "club-post":
