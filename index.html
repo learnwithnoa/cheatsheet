@@ -1354,6 +1354,20 @@ button.ch-gl{border:1px solid transparent}
 .lx .lx-check:hover{filter:brightness(1.08)}
 .lx .lx-gapq .lx-in{padding:2px 8px;height:auto;min-height:0;line-height:1.4;border-radius:6px;vertical-align:baseline}
 .ch-khead{all:unset;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline}.ch-khead span{opacity:.75;text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:700}.ch-khead:hover span{opacity:1;text-decoration:underline}.ch-khead:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:4px}
+/* access request form on the sign-in screen */
+.ag-card{max-height:calc(100vh - 32px);overflow:auto}
+.ag-form{display:flex;flex-direction:column;gap:9px;text-align:left;margin:6px 0}
+.ag-form label{display:flex;flex-direction:column;gap:4px;font:700 13px var(--body);color:var(--ink)}.ag-form label small{font-weight:500;color:var(--muted)}
+.ag-form input,.ag-form select,.ag-form textarea{font:500 15px var(--body);padding:9px 11px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg,var(--surface));color:var(--ink);width:100%;box-sizing:border-box}
+.ag-form input[readonly]{opacity:.75}
+.ag-send{margin-top:4px;background:var(--c2,#3B82F6)!important;color:#fff!important;justify-content:center}
+.ag-fmsg{margin:0;font-size:13.5px;color:var(--muted);min-height:1em}
+.ag-or{display:flex;align-items:center;gap:10px;margin:10px 0 4px;color:var(--muted);font:700 12.5px var(--body)}.ag-or::before,.ag-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.ag-link{all:unset;cursor:pointer;color:var(--muted);font:700 13px var(--body);text-decoration:underline;margin-top:8px;display:inline-block}
+.tn-acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.tn-invite{margin:8px 0}.tn-invite summary{cursor:pointer;font-weight:700}
+.tn-invite form{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.tn-invite input{flex:1 1 140px;font:500 14px var(--body);padding:6px 9px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg,var(--surface));color:var(--ink)}
+.ag-form textarea{min-height:0;height:auto;resize:vertical}.ag-form input,.ag-form select{min-height:0;height:auto}
 .cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
 html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
 .cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -2543,7 +2557,8 @@ html.cs-calm .cs-rxpal button{transition:none}
       let priv=[]; try{ priv=(await window.__csViewAs.students()).priv||[]; }catch(e){}
       let club=null; try{ club=window.__clubSocial?await window.__clubSocial.recent():null; }catch(e){}
       let reps=[]; try{ reps=window.__clubSocial&&window.__clubSocial.reports?await window.__clubSocial.reports():[]; }catch(e){}
-      data={acc,priv,club,reps}; paint();
+      let areq=[]; try{ areq=await accessReqs(); }catch(e){}
+      data={acc,priv,club,reps,areq}; paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
   }
   let showAll=false, open=false, undoPrev=null;
@@ -2564,8 +2579,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     const unl=data.acc.filter(a=>a.kind==="new").length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
     const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
-    const reps=data.reps||[];
-    const cnt=joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length+reps.length;
+    const reps=data.reps||[], areq=data.areq||[];
+    const cnt=areq.length+joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length+reps.length;
     b.hidden=false;
     /* closed: a small button that opens it again */
     const bell=`<button type="button" class="tn-bell${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
@@ -2573,6 +2588,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     b.className="tn-wrap open";
     const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length||clubNew.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
+      ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
+      <details class="tn-invite"><summary>＋ Invite someone to Hibi</summary><form data-tninv><input name="name" placeholder="Name" maxlength="80" required><input name="email" type="email" placeholder="Their Google email" maxlength="120" required><button type="submit" class="tn-btn">Approve + email them</button></form></details>
       ${reps.length?`<h4>⚑ Reported on the club wall</h4><ul>${reps.map(r=>`<li>⚑ <b>${esc(r.name)}</b> reported ${esc(r.author||"a post")}’s ${String(r.path||"").split("/").length>2?"comment":"post"}${r.text?`: <span class="muted">“${esc(r.text.slice(0,90))}”</span>`:""}${r.why?` · <i>${esc(r.why)}</i>`:""} <span class="muted">· ${ago(r.at)}</span> <a class="tn-go" href="#club" data-bgo="${esc(r.pid||"")}">Open →</a> <button type="button" class="tn-btn" data-tnrep="${esc(r.id)}">Done ✓</button></li>`).join("")}</ul>`:""}
       ${clubNew.length?`<h4>Club community</h4><ul>${clubNew.map(a=>`<li>${a.kind==="post"?"📝":a.kind==="challenge"?"✍️":"💬"} <b>${esc(a.name)}</b> ${a.kind==="post"?"posted on the wall":a.kind==="challenge"?"answered the weekly challenge":/^w\d{8}$/.test(a.pid||"")?"commented on the weekly post":"commented on a post"}${a.img?" 📷":""}${a.text?`: <span class="muted">“${esc(a.text)}”</span>`:""} <span class="muted">· ${ago(a.at)}</span> <a class="tn-go" href="#club" data-go="club">Open →</a></li>`).join("")}</ul>`:""}
       ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length&&!clubNew.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
@@ -2582,6 +2599,18 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${clocks.length?`<h4>Clock changes</h4><ul>${clocks.join("")}</ul>`:""}
       <p class="tn-line tn-more"><a class="tn-go" href="members.html">More student news (milestones, ✨ love, practice tips) on Members →</a></p></div>`;
   }
+  /* access requests: approve = access/{email} + a ready-to-send Gmail invite */
+  async function fsx(method,path,body){ const F=window.__csFire; const tok=await F.token(); const r=await fetch(F.base+path,{method,headers:{Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined}); if(!r.ok) throw new Error(r.status); return r.status===204?null:r.json(); }
+  async function accessReqs(){ if(!window.__csTeacher||window.__csPreview||!window.__csFire) return []; const j=await fsx("GET","/accessRequests?pageSize=100"); const v=f=>f?(f.stringValue!=null?f.stringValue:f.integerValue!=null?+f.integerValue:""):"";
+    return ((j&&j.documents)||[]).map(d=>({id:d.name.split("/").pop(),name:v(d.fields.name),email:v(d.fields.email),who:v(d.fields.who),msg:v(d.fields.msg),at:v(d.fields.at)})).sort((a,b)=>b.at-a.at); }
+  async function approve(name,email){ email=String(email).trim().toLowerCase(); await fsx("PATCH","/access/"+encodeURIComponent(email),{fields:{name:{stringValue:name},at:{integerValue:String(Date.now())},by:{stringValue:"noa"}}});
+    const first=String(name).trim().split(/\s+/)[0]||"";
+    const body=`Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://learnwithnoa.github.io/cheatsheet/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
+    window.open("https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(email)+"&su="+encodeURIComponent("You're in! Your Hibi access 🎉")+"&body="+encodeURIComponent(body),"_blank"); }
+  document.addEventListener("click",async e=>{ const ok=e.target.closest("[data-tnok]"), no=e.target.closest("[data-tnno]"); if(!ok&&!no) return; const id=(ok||no).dataset.tnok||(ok||no).dataset.tnno, r=(data.areq||[]).find(x=>x.id===id); if(!r) return;
+    try{ if(ok) await approve(r.name,r.email); await fsx("DELETE","/accessRequests/"+id); }catch(er){ if(window.toast) window.toast("Couldn’t save that. Did you paste the new Firebase rules?"); return; }
+    data.areq=data.areq.filter(x=>x.id!==id); open=true; paint(); if(window.toast) window.toast(ok?"✓ Approved. Send the email that just opened.":"Request removed"); });
+  document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-tninv]"); if(!f) return; e.preventDefault(); try{ await approve(f.name.value.trim(),f.email.value); }catch(er){ if(window.toast) window.toast("Couldn’t save that. Did you paste the new Firebase rules?"); return; } f.reset(); if(window.toast) window.toast("✓ Approved. Send the email that just opened."); });
   document.addEventListener("click",async e=>{ const r=e.target.closest("[data-tnrep]"); if(!r) return; try{ await window.__clubSocial.delReport(r.dataset.tnrep); }catch(er){ return; } data.reps=(data.reps||[]).filter(x=>x.id!==r.dataset.tnrep); open=true; paint(); });
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return; const k=t.dataset.tn;
     if(k==="open"){ open=!open; }
@@ -2705,35 +2734,76 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     d.querySelector("button").onclick=()=>{ try{ sessionStorage.removeItem(K); }catch(e){} location.reload(); }; document.body.appendChild(d); };
   if(document.body) bar(); else document.addEventListener("DOMContentLoaded",bar);
 })();
-/* Hibi needs a Google account: until someone signs in, a sign-in screen covers everything (it comes before the welcome card) */
+/* Hibi is invite-only: people ask for access (name + email, no Google yet), Noa approves, then they sign in with Google.
+   Signed in but not approved yet → a "waiting for Noa" screen. Approved = access/{email} exists (or a teacher). */
 (function(){
   if(window.__csPreview||window.__csGuest) return;
   const G='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
-  let gate=null;
-  function show(){
+  const REQ_HOOK="";   /* optional: a Formspree endpoint (https://formspree.io/f/xxxx) to also email Noa instantly */
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const OKK=u=>"cs-ok-"+u;
+  let gate=null, mode="";
+  function card(m){ const F=window.__csFire, em=F&&F.email?F.email():"";
+    if(m==="pending") return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
+      <h2 id="agTitle">Almost there!</h2>
+      <p>You’re signed in as <b>${esc(em)}</b>, but Noa hasn’t opened Hibi for this email yet.</p>
+      <p class="ag-es" lang="es">Iniciaste sesión, pero Noa aún no ha aprobado este correo.</p>
+      ${reqForm(em,true)}
+      <button type="button" class="ag-link" data-agout>Use another Google account</button>`;
+    if(m==="sent") return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
+      <h2 id="agTitle">Thanks! 🙌</h2><p>Noa got your request. He’ll email you as soon as you’re in (usually within a day). Then come back and sign in with Google using <b>the same email</b>.</p>
+      <p class="ag-es" lang="es">¡Gracias! Noa recibió tu solicitud y te escribirá cuando estés dentro. Luego vuelve e inicia sesión con Google usando el mismo correo.</p>
+      <button type="button" class="ag-btn ag-alt" data-signin>${G}<span>I’m approved: continue with Google</span></button>`;
+    return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
+      <h2 id="agTitle">Hibi is for Noa’s students</h2>
+      <p>Ask for access below. Noa will email you when you’re in, and then you sign in with Google.</p>
+      <p class="ag-es" lang="es">Hibi es para los alumnos de Noa. Pide acceso aquí: Noa te escribirá cuando estés dentro.</p>
+      ${reqForm("",false)}
+      <div class="ag-or"><span>Already approved?</span></div>
+      <button type="button" class="ag-btn" data-signin>${G}<span>Continue with Google</span></button>
+      <p class="ag-msg" id="agMsg" role="alert" hidden></p>
+      <p class="ag-small">Hibi only uses your name and email to save your progress. Noa never sees your password.</p>`; }
+  function reqForm(em,signed){ return `<form class="ag-form" data-agreq>
+      <label>Your name<input name="name" required maxlength="80" autocomplete="name"></label>
+      <label>Your email <small>(the Google account you’ll sign in with)</small><input name="email" type="email" required maxlength="120" autocomplete="email" value="${esc(em)}" ${signed?"readonly":""}></label>
+      <label>I’m…<select name="who"><option value="club">In Noa’s English Club</option><option value="private">Taking private classes with Noa</option><option value="joining">Interested in joining</option><option value="other">Other</option></select></label>
+      <label>Anything to add? <small>(optional)</small><textarea name="msg" rows="2" maxlength="500"></textarea></label>
+      <button type="submit" class="ag-btn ag-send">Ask for access</button><p class="ag-fmsg" role="status"></p></form>`; }
+  function show(m){
     if(window.__csPreview) return;
-    if(!gate){
-      gate=document.createElement("div"); gate.id="authGate"; gate.setAttribute("role","dialog"); gate.setAttribute("aria-modal","true"); gate.setAttribute("aria-labelledby","agTitle");
-      gate.innerHTML=`<div class="ag-card"><div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
-        <h2 id="agTitle">Sign in to start</h2>
-        <p>Hibi saves your words, class notes and buddy to your Google account, so they're always there, on any device.</p>
-        <p class="ag-es" lang="es">Inicia sesión con tu cuenta de Google para usar Hibi. Así tus palabras, apuntes y tu mascota quedan guardados.</p>
-        <button type="button" class="ag-btn" data-signin>${G}<span>Continue with Google</span></button>
-        <p class="ag-msg" id="agMsg" role="alert" hidden></p>
-        <p class="ag-small">Hibi only uses your name and email to save your progress. Noa never sees your password.</p></div>`;
-      document.body.appendChild(gate);
-    }
+    if(!gate){ gate=document.createElement("div"); gate.id="authGate"; gate.setAttribute("role","dialog"); gate.setAttribute("aria-modal","true"); gate.setAttribute("aria-labelledby","agTitle"); document.body.appendChild(gate); }
+    if(mode!==m||!gate.innerHTML){ mode=m; gate.innerHTML=`<div class="ag-card">${card(m)}</div>`; }
     gate.hidden=false; document.documentElement.classList.add("ag-lock");
     [...document.body.children].forEach(el=>{ if(el!==gate&&!el.matches("script")) el.inert=true; });
-    setTimeout(()=>{ const b=gate.querySelector(".ag-btn"); if(b) b.focus(); },50);
   }
   function hide(){
     if(gate) gate.hidden=true; document.documentElement.classList.remove("ag-lock");
     [...document.body.children].forEach(el=>{ if(el!==gate) el.inert=false; });
   }
-  const on=s=>{ if(s) hide(); else show(); };
+  /* approved? (access/{email}); if the database can't say (e.g. rules not set up yet), let them in */
+  async function approved(){ const F=window.__csFire; if(!F||!F.email) return true; const em=F.email(), uid=F.uid&&F.uid(); if(!em) return true;
+    if(window.__csTeacher===true||em==="learnwithnoa@gmail.com") return true;
+    try{ const tok=await F.token(); const r=await fetch(F.base+"/access/"+encodeURIComponent(em),{headers:{Authorization:"Bearer "+tok}});
+      if(r.status===404) return false; if(r.ok) return true; return true; }catch(e){ return true; } }
+  async function check(){ const F=window.__csFire, uid=F&&F.uid?F.uid():""; let cached=false; try{ cached=!!localStorage.getItem(OKK(uid)); }catch(e){}
+    if(cached) hide(); else if(gate&&!gate.hidden) {} 
+    const ok=await approved(); try{ if(ok) localStorage.setItem(OKK(uid),"1"); else localStorage.removeItem(OKK(uid)); }catch(e){}
+    if(ok) hide(); else show("pending"); }
+  const on=s=>{ if(s) check(); else show(mode==="sent"?"sent":"out"); };
   window.addEventListener("cs-auth",e=>on(!!(e.detail&&e.detail.signedIn)));
   if(window.__csAuth!=null) on(window.__csAuth);
+  document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-agreq]"); if(!f) return; e.preventDefault(); const F=window.__csFire, msg=f.querySelector(".ag-fmsg"), btn=f.querySelector("button");
+    const d={name:f.name.value.trim(),email:f.email.value.trim().toLowerCase(),who:f.who.value,msg:f.msg.value.trim()};
+    if(!d.name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){ msg.textContent="Please add your name and a valid email."; return; }
+    if(!F||!F.base){ msg.textContent="Hibi is still loading. Try again in a moment."; return; }
+    btn.disabled=true; msg.textContent="Sending…";
+    const S=v=>({stringValue:String(v)});
+    try{ const r=await fetch(F.base+"/accessRequests?key="+encodeURIComponent(F.key||""),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{name:S(d.name),email:S(d.email),who:S(d.who),msg:S(d.msg),at:{integerValue:String(Date.now())}}})});
+      if(!r.ok) throw new Error(r.status); }
+    catch(er){ btn.disabled=false; msg.textContent="That didn’t go through. Try again, or message Noa on Instagram (@learnwithnoa)."; return; }
+    if(REQ_HOOK) fetch(REQ_HOOK,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(Object.assign({_subject:"🙋 Hibi access request: "+d.name},d))}).catch(()=>{});
+    mode=""; show("sent"); });
+  document.addEventListener("click",async e=>{ if(!e.target.closest("[data-agout]")) return; try{ const b=document.getElementById("signOut")||document.querySelector("[data-signout]"); if(b){ b.click(); return; } }catch(er){} if(window.csSignOut) window.csSignOut(); });
 })();
 </script>
 
@@ -8356,7 +8426,9 @@ window.__csFire = {
   /* in Noa's "View as", the club shows things as that member sees them (reads only: the club refuses every write) */
   uid: () => VA && VA.uid ? VA.uid : auth.currentUser ? auth.currentUser.uid : null,
   name: () => VA && VA.uid ? String(VA.name || VA.label || "").split(" · ")[0].replace(/\s*\((?:private \+ club|private|club)\)\s*$/, "") : auth.currentUser ? (auth.currentUser.displayName || (auth.currentUser.email || "").split("@")[0]) : "",
-  readOnly: () => !!VA
+  readOnly: () => !!VA,
+  email: () => auth.currentUser ? String(auth.currentUser.email || "").toLowerCase() : "",
+  key: firebaseConfig.apiKey
 };
 async function doSignOut() {
   await flush();
@@ -8412,6 +8484,7 @@ $("authOut").addEventListener("click", async () => {
 });
 $("authOutNo").addEventListener("click", () => { $("authOutConfirm").hidden = true; $("authOutBox").hidden = false; });
 $("authOutYes").addEventListener("click", doSignOut);
+window.csSignOut = doSignOut;
 document.addEventListener("click", e => { if (e.target.closest("[data-signin]")) { e.preventDefault(); signIn(); } });
 
 window.addEventListener("pagehide", () => { flush(); });

@@ -30,6 +30,8 @@ Usage:
        "challenge":{"title":"The best advice you ever got","prompt":"short writing prompt (3-5 sentences, a grammar point to try)"}   (optional weekly challenge; members answer on Hibi)}
       (times and Zoom links come from club-info; add "date"/"time"/"zoom" to a class only if it's different that week)
   HUB_PASSWORD=... python3 hubsync.py club-info '{"schedule":[{"wd":1,"ico":"🧠","name":"Deep Dive Monday","time":"20:00","dur":90,"desc":"...","zoom":"https://..."}],"links":[{"title":"...","url":"https://...","note":"..."}]}'
+  HUB_PASSWORD=... python3 hubsync.py access-requests   people asking to join Hibi (Noa approves them on Hibi, Home → 🔔)
+  HUB_PASSWORD=... python3 hubsync.py access-sync        approve every existing account · access-add <email> ['Name']   approve one email
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
@@ -764,6 +766,30 @@ def main():
         print(json.dumps({"ok": True, "replaced": replaced, "id": post["id"], "members": len(uids), "link": SITE + "#club"})); return
     if cmd == "club-sync":
         club_sync(tok, tu); return
+    if cmd == "access-sync":
+        # Hibi is invite-only: approve every account that already exists (access/{email}), so nobody gets locked out
+        n = 0
+        for x in get_accounts(tok):
+            em = (x.get("email") or "").strip().lower()
+            if not em:
+                continue
+            http("PATCH", f"{BASE}/access/{urllib.parse.quote(em)}", {"fields": {"name": {"stringValue": x.get("name", "")}, "at": {"integerValue": str(int(datetime.datetime.now().timestamp() * 1000))}, "by": {"stringValue": "existing account"}}}, token=tok)
+            n += 1
+        print(json.dumps({"approved": n})); return
+    if cmd == "access-requests":
+        # people asking to join Hibi (Noa approves them on Hibi: Home → 🔔)
+        out = []
+        r = http("GET", f"{BASE}/accessRequests?pageSize=100", token=tok) or {}
+        for d in r.get("documents", []):
+            f = {k: (v.get("stringValue") if "stringValue" in v else v.get("integerValue")) for k, v in d.get("fields", {}).items()}
+            out.append({"name": f.get("name"), "email": f.get("email"), "who": f.get("who"), "msg": f.get("msg"),
+                        "when": datetime.datetime.fromtimestamp(int(f.get("at") or 0) / 1000).strftime("%a %b %d")})
+        print(json.dumps(out, ensure_ascii=False)); return
+    if cmd == "access-add":
+        # approve one email: access-add someone@gmail.com 'Their Name'
+        em = a[1].strip().lower()
+        http("PATCH", f"{BASE}/access/{urllib.parse.quote(em)}", {"fields": {"name": {"stringValue": a[2] if len(a) > 2 else ""}, "at": {"integerValue": str(int(datetime.datetime.now().timestamp() * 1000))}, "by": {"stringValue": "helper"}}}, token=tok)
+        print("ok"); return
     if cmd == "club-ideas":
         # members' ideas for future classes (Club → Polls & ideas), most supported first; skips ones Noa marked done
         q = {"structuredQuery": {"from": [{"collectionId": "clubPosts"}], "limit": 300}}
