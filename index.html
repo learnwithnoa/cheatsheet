@@ -587,6 +587,19 @@ span.bw{display:inline!important}
 .top-in>#clBellWrap,.top-in>#dmTopBtn{order:5}.top-in>.auth-wrap{order:6}.top-in>#csWrap{order:10}
 @media (max-width:480px){#authTxt{display:none!important}.top-in .auth-btn{padding-inline:9px}}
 
+@media (max-width:900px){nav.side{top:calc(var(--hdr-h,61px) - 1px)!important}}
+@media (max-width:480px){
+  .top-in{gap:3px!important;padding-left:12px!important;padding-right:12px!important}
+  .top-in>.spacer{flex:1 1 0;min-width:0}
+  .brand .kj{display:none}.brand span{font-size:21px}
+  #hdrWord{display:none!important}
+  .top-in #dmTopBtn{height:33px;min-width:33px;padding:0 8px!important;box-sizing:border-box;justify-content:center;border-width:1.5px}
+  .top-in .theme-btn,.top-in .cs-btn,.top-in .search-toggle,.top-in .t-ico{height:33px;min-width:33px;width:auto;padding:0 7px!important;justify-content:center;flex:none}
+  .top-in .search-toggle{width:33px;padding:0!important}
+  .top-in .auth-btn{gap:4px;padding:0 6px!important}
+  .clb-n{top:-6px;right:-6px;min-width:16px;height:16px;font-size:10px;line-height:16px}
+}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2038,7 +2051,8 @@ html.cs-calm .cs-rxpal button{transition:none}
       </div>
     </div>
   </div>
-</header>
+</header><script>(function(){ var t=document.querySelector("header.top"); if(!t) return; function f(){ document.documentElement.style.setProperty("--hdr-h", Math.round(t.getBoundingClientRect().height)+"px"); } f(); try{ new ResizeObserver(f).observe(t); }catch(e){ addEventListener("resize",f); } })();</script>
+
 
 <div class="shell">
   <nav class="side" aria-label="Sections">
