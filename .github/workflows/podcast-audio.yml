@@ -5,6 +5,8 @@ on:
   push:
     paths: ["pod/queue.txt"]
   workflow_dispatch:
+  schedule:
+    - cron: "17 */3 * * *"   # every 3 hours: picks up new episodes added to Hibi
 permissions:
   contents: write
 jobs:
@@ -15,9 +17,15 @@ jobs:
       - name: Install ffmpeg
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - name: Download and convert
+        env:
+          HUB_PASSWORD: ${{ secrets.HUB_PASSWORD }}
         run: |
           set -e
           touch pod/queue.txt
+          if [ -n "$HUB_PASSWORD" ]; then
+            python3 tools/hubsync.py club-episodes > /tmp/eps.json 2>/dev/null || echo "[]" > /tmp/eps.json
+            python3 -c "import json,re;[print(m.group(1)) for e in json.load(open('/tmp/eps.json')) for m in [re.search(r'drive\.google\.com/(?:file/d/|open\?id=)([\w-]{20,})',e.get('url',''))] if m]" >> pod/queue.txt || true
+          fi
           for id in $(grep -oE '[A-Za-z0-9_-]{20,}' pod/queue.txt | sort -u); do
             [ -f "pod/$id.mp3" ] && continue
             curl -sSL --fail -o /tmp/src "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
@@ -28,5 +36,5 @@ jobs:
       - name: Commit
         run: |
           git config user.name "hibi-bot"; git config user.email "hibi-bot@users.noreply.github.com"
-          git add pod/*.mp3 2>/dev/null || true
+          git add pod/*.mp3 2>/dev/null || true; git checkout -- pod/queue.txt 2>/dev/null || true
           git diff --cached --quiet || (git commit -m "Podcast audio" && git push)
