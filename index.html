@@ -608,6 +608,10 @@ span.bw{display:inline!important}
   .clb-n{top:-6px;right:-6px;min-width:16px;height:16px;font-size:10px;line-height:16px}
 }
 
+footer>div:has(+ .foot-v){display:inline}.foot-v{display:inline-block;margin-left:10px;vertical-align:1px}
+.foot-ver{all:unset;cursor:pointer;font:700 12px var(--mono);letter-spacing:.04em;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.foot-ver:hover,.foot-ver:focus-visible{color:var(--bright);border-color:var(--bright)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -969,8 +973,6 @@ html.cs-calm .park-treat{animation:none}
 .ps-fb:empty{display:none}
 .ps-fb{margin-top:14px;padding:12px 14px;border-radius:12px}
 .ps-fb.ok{background:var(--green-soft)}.ps-fb.no{background:var(--red-soft)}
-.ps-fb.ok,.ps-fb.no{color:inherit;font-weight:400;text-decoration:none}  /* the box only borrows .ok/.no for its colour: no strikethrough, plain readable text */
-.ps-fb.ok>b{color:var(--green);font-weight:800}.ps-fb.no>b{color:var(--red);font-weight:800}
 .ps-fb p{margin:6px 0}
 .ps-fb .es{display:block}
 .ps-quit{max-width:620px;text-align:right;margin-top:8px}
@@ -2447,7 +2449,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   const lprog=()=>{ try{ return JSON.parse(localStorage.getItem(LES_K)||"{}")||{}; }catch(e){ return {}; } };
   const lsave=(id,p)=>{ try{ const all=lprog(); all[id]=p; localStorage.setItem(LES_K,JSON.stringify(all)); }catch(e){} };
   const md=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/\*([^*]+)\*/g,"<i>$1</i>");
-  const NRM=t=>String(t||"").toLowerCase().replace(/[‘’`´ʼ′]/g,"'").replace(/[“”]/g,'"')
+  const NRM=t=>String(t||"").toLowerCase().replace(/[‘’`´]/g,"'").replace(/[“”]/g,'"')
     .replace(/\bcan't\b/g,"cannot").replace(/\bwon't\b/g,"will not").replace(/n't\b/g," not").replace(/'ve\b/g," have").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ll\b/g," will")
     .replace(/[.,!?;:"()]/g," ").replace(/\s+/g," ").trim();
   const same=(a,b)=>NRM(a)===NRM(b);
@@ -4820,7 +4822,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </div>
 </section>
 
-<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
+<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
 <script src="buddy.js?v=44" defer></script>
   </main>
 </div>
@@ -7382,7 +7384,7 @@ What time ___ the movie start? (do)|does|The movie = it → does.
 
   /* ---- a round ---- */
   let round=null;
-  const nrm=s=>String(s||"").toLowerCase().replace(/[’‘`´ʼ′]/g,"'").replace(/[.?!,]+$/g,"").replace(/\bdidn't\b/g,"did not").replace(/\bwasn't\b/g,"was not").replace(/\bweren't\b/g,"were not").replace(/\bhaven't\b/g,"have not").replace(/\bhasn't\b/g,"has not").replace(/\s+/g," ").trim();
+  const nrm=s=>String(s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.?!,]+$/g,"").replace(/\bdidn't\b/g,"did not").replace(/\bwasn't\b/g,"was not").replace(/\bweren't\b/g,"were not").replace(/\bhaven't\b/g,"have not").replace(/\bhasn't\b/g,"has not").replace(/\s+/g," ").trim();
   function start(kind,stage){
     let pool, title;
     let story=null;
