@@ -8321,11 +8321,46 @@ function mergeKey(k, l, c) {
   return c;
 }
 
+/* ---------- lists that can change on two devices at once (words, class notes, stars) ----------
+   Before: the last device to save won, so a phone could add 3 words and an old tab on the laptop
+   could save its older list over them. Now: a 3-way merge with what this device last saw in the cloud
+   ("base"): words added anywhere are kept, words deleted anywhere stay deleted, local edits win. */
+const LISTS = { "ncs-words": x => norm(x && x.w), "ncs-classnotes": x => x && x.id, "ncs-stars": x => x };
+const BASE = k => "cs-base-" + k;
+function merge3(k, b, l, c) {
+  const key = LISTS[k]; if (!key) return c != null ? c : l;
+  if (c == null) return l; if (l == null) return c;
+  let B, L, C; try { L = JSON.parse(l); C = JSON.parse(c); B = b ? JSON.parse(b) : null; } catch (e) { return c; }
+  if (!Array.isArray(L) || !Array.isArray(C)) return c;
+  if (!Array.isArray(B)) return mergeKey(k, l, c);   /* no base yet on this device: keep everything from both */
+  const id = x => String(key(x) || ""), Bm = new Map(B.map(x => [id(x), JSON.stringify(x)])), Lm = new Map(L.map(x => [id(x), x])), Cm = new Map(C.map(x => [id(x), x]));
+  const out = [], done = new Set();
+  for (const x of L) { const i = id(x); if (!i || done.has(i)) continue; done.add(i);
+    const inB = Bm.has(i), inC = Cm.has(i);
+    if (inB && !inC) continue;                                  /* deleted on another device */
+    if (inC && inB && JSON.stringify(x) === Bm.get(i)) out.push(Cm.get(i));   /* unchanged here: take the cloud's version */
+    else out.push(x); }                                         /* new or edited here */
+  for (const x of C) { const i = id(x); if (!i || done.has(i)) continue; done.add(i);
+    if (!Bm.has(i)) out.push(x); }                              /* added on another device (if it was in base and not here, it was deleted here) */
+  return JSON.stringify(out);
+}
 /* ---------- cloud I/O ---------- */
 async function pushKey(k) {
-  const v = getRaw(k);
+  let v = getRaw(k);
+  if (LISTS[k] && v != null) {
+    try { const d = await getDoc(doc(db, "users", user.uid, "data", k)); const c = d.exists() && !d.data().deleted && typeof d.data().json === "string" ? d.data().json : null;
+      const m = merge3(k, getRaw(BASE(k)), v, c);
+      if (m !== v) { setRaw(k, m); v = m; mergedNeedsReload(); } } catch (e) { console.warn("merge", k, e); }
+  }
   await setDoc(doc(db, "users", user.uid, "data", k), { json: v, deleted: v == null, at: serverTimestamp() });
+  if (LISTS[k]) setRaw(BASE(k), v);
 }
+/* the page keeps lists in memory: after a merge brought in something from another device, reload it (not while typing) */
+let reloadWanted = false;
+function mergedNeedsReload() { reloadWanted = true; tryReload(); }
+function tryReload() { if (!reloadWanted) return; const a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.value) { setTimeout(tryReload, 4000); return; }
+  const last = +(sessionStorage.getItem("ncs-reload-at") || 0); if (Date.now() - last < 8000) { setTimeout(tryReload, 8000); return; }
+  sessionStorage.setItem("ncs-reload-at", String(Date.now())); location.reload(); }
 async function flush() {
   clearTimeout(timer);
   if (!user || !ready || !pending.size) return;
@@ -8357,11 +8392,12 @@ async function syncDown() {
     for (const k of keys) {
       if (!isSynced(k)) continue;
       const l = getRaw(k), c = (k in cloud) ? cloud[k] : null;
-      let v = first ? mergeKey(k, l, c) : (c != null ? c : l);
+      let v = first ? mergeKey(k, l, c) : LISTS[k] ? merge3(k, getRaw(BASE(k)), l, c) : (c != null ? c : l);
       /* never bring back an older "What's new" version: that made the pop-up show again (and again) after closing it */
       if (k === "ncs-seen-version" && l != null && window.__csClLatest && l === JSON.stringify(window.__csClLatest)) v = l;
       if (v !== l) { setRaw(k, v); changed = true; }
       if (v != null && v !== c) toPush.push(k);
+      else if (LISTS[k] && v != null) setRaw(BASE(k), v);
     }
     setRaw("ncs-sync-uid", user.uid);
     ready = true;
