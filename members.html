@@ -449,7 +449,7 @@ function renderTips() {
 }
 /* ideas for NEW grammar modules / word packs, collected by the nightly wrap-up from what keeps coming up in classes */
 function renderIdeas() {
-  const box = $("ideas"); const all = ((hubMeta && hubMeta.ideas) || []).filter(x => x.status !== "no");
+  const box = $("ideas"); const all = ((hubMeta && hubMeta.ideas) || []).filter(x => x.status !== "no" && x.status !== "done");
   box.hidden = !all.length; if (!all.length) return;
   const ls = all.slice().sort((a, b) => (a.status === "yes") - (b.status === "yes") || (b.count || 1) - (a.count || 1) || (b.last || "").localeCompare(a.last || ""));
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🧱 Ideas to build <span class="news-n" style="background:#12935C">${all.filter(x => x.status !== "yes").length}</span></h2></div>

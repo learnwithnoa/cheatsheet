@@ -20,6 +20,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py recommend '{"hub":"laura","name":"Laura Porcile","mod":"pp","stage":6,"title":"Present perfect or past simple?","why":"said 'I have seen it yesterday' twice","from":"private class Nov 9"}'
       mod: "ps" (Past simple: 1 Regular verbs, 2 Irregular verbs, 3 Was/were, 4 Negatives, 5 Questions, 6 Mix it up, 7 Tell the story)
            "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
+           "prs" (Present simple, A1-A2: 1 I/you/we/they, 2 He/she/it + -s, 3 Spelling: -es/-ies/has, 4 Negatives: don't/doesn't, 5 Questions: do/does, 6 Mix it up, 7 Tell the story)
            "ed" (-ed endings, pronunciation: 1 Extra syllable or not?, 2 The /t/ sound, 3 The /d/ sound, 4 Mix it up, 5 Spelling tricks, 6 Odd one out, 7 Feelings: -ed adjectives)
       or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,

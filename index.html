@@ -549,6 +549,10 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 
 .pr-newb{font:800 10.5px var(--body);letter-spacing:.04em;background:var(--green);color:#fff;border-radius:999px;padding:2px 7px;vertical-align:middle}
 .ps-say{margin:-4px 0 10px}
+#v-quiz .pb-pron{border-top:5px solid #E0699A}#v-quiz .pb-pron:hover{border-color:#E0699A}
+#v-quiz .pr-big{grid-template-columns:repeat(2,minmax(0,1fr));max-width:880px}
+@media (max-width:600px){#v-quiz .pr-big{grid-template-columns:1fr}}
+#v-quiz .pr-big .pr-bigbtn{min-height:150px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -1807,6 +1811,23 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-planb2 blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--accent,#8B5CF6);background:color-mix(in srgb,var(--accent,#8B5CF6) 7%,transparent);border-radius:0 8px 8px 0}
 .cl-planb2 hr{border:0;border-top:1px dashed var(--line);margin:12px 0}
 .cl-planb2 h3{font-size:19px}.cl-planb2 h4{font-size:17px}.cl-planb2 h5{font-size:15px}
+/* Instagram group: steady button at the top, next to Listen */
+.cs-read-row>.cl-igtop{margin:8px 0 0}
+.cl-igtop{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font:700 13.5px var(--body);text-decoration:none;color:#fff;background:linear-gradient(135deg,#F58529,#DD2A7B 50%,#8134AF);border:0;line-height:1.2;white-space:nowrap;box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.cl-igtop:hover{filter:brightness(1.08)}.cl-igtop[hidden]{display:none}
+/* calendar tab */
+.cl-keyinfo{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.cl-keyinfo span{font:600 13.5px var(--body);padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--green) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--green) 35%,var(--line))}
+.cl-cal{position:relative}
+.cl-cpop{position:absolute;left:50%;top:56px;transform:translateX(-50%);width:min(520px,calc(100% - 16px));z-index:5;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:0 18px 50px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:8px;max-height:calc(100% - 64px);overflow:auto}
+.cl-cpoph{display:flex;align-items:center;justify-content:space-between;gap:8px}.cl-cpoph h3{margin:0;font-size:17px}
+.cl-cpop .cl-cev{margin:0}
+.cl-chint{margin:8px 2px 0;font-size:13px;color:var(--muted)}
+.cl-calall{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:flex-start;text-align:left;gap:8px 12px;margin:10px 2px 14px}.cl-calall p{margin:0;font-size:14px}.cl-calall small{flex-basis:100%;color:var(--muted);font-size:12.5px}
+.cl-infogrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.cl-infogrid>.cl-sec{margin:0}
+@media (max-width:760px){.cl-infogrid{grid-template-columns:1fr}}
+/* community: polls on top only when there are polls */
+.cl-polls.empty{padding:10px 14px}.cl-polls.empty h2{display:none}
 </style>
 
 <header class="top">
@@ -2287,7 +2308,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     lesOf(v).forEach(x=>{ if(x.date&&x.date>since) out.push({d:x.date,ico:x.kind==="guide"?"📄":"📼",t:`${x.kind==="guide"?"New study guide":"Your class recap"}: <b>${esc(x.title)}</b> (with exercises)`,tab:x.kind==="guide"?"guides":"recaps"}); });
     (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
-    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
+    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
@@ -2342,7 +2363,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
     </div>`;
     /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
-    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -2971,7 +2992,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const it=list[list.length-1], voc=((p.recap||{}).vocab||[]).length;
     return `<button type="button" class="cl-catch" data-recgo="${esc(it.id)}"><span aria-hidden="true">🎬</span><span><b>${L("Missed","¿Te perdiste")} ${esc(it.c.name||it.x.title||"")}${L("?","?")}</b> ${L("Watch the recording","Mira la grabación")}${voc?` ${L("and save","y guarda")} ${voc} ${L("new words","palabras nuevas")}`:""}.</span><span class="cl-mego">→</span></button>`; }
   /* ---------- 📅 calendar ---------- */
-  let CALM=0, CALD=null;
+  let CALM=0, CALD=null, CALPOP=false;
   const isoD=x=>x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");
   function eventsIn(f,y,m){ const ev=[], ps=posts(f), info=f.info||{}, covered=new Set();
     ps.forEach(p=>{ const at=weekDates(p.week); for(let i=0;i<7;i++) covered.add(at(i)); classesOf(f,p).forEach(c=>{ const d=new Date(c.date+"T12:00:00"); if(d.getFullYear()===y&&d.getMonth()===m) ev.push(Object.assign({},c,{post:p})); }); });
@@ -2996,10 +3017,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       cells.push(`<button type="button" class="cl-cd${iso===today?" today":""}${iso===CALD?" sel":""}${iso<today?" past":""}" data-cald="${iso}" aria-label="${esc(fd(iso))}${es.length?": "+es.map(e=>e.name).join(", "):""}" aria-pressed="${iso===CALD}"><span class="n">${i}</span><span class="e">${es.map(e=>`<i class="${e.k||""}">${esc(e.ico||"📅")}</i>`).join("")}</span></button>`); }
     const sel=ev.filter(e=>e.date===CALD), sched2=((f.info||{}).schedule||[]).map(s=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===s.wd){ const st=chileAt(isoD(x),s.time||"20:00"); return Object.assign({},s,{start:st,end:new Date(st.getTime()+(s.dur||90)*60000),title:"",teaser:s.desc||""}); } } }).filter(Boolean);
     const mname=y0.toLocaleDateString(L("en-US","es-CL"),{month:"long",year:"numeric"}), wds=L("Mon Tue Wed Thu Fri Sat Sun","Lun Mar Mié Jue Vie Sáb Dom").split(" ");
-    const allBox=sched2.length?`<div class="cl-sec cl-calall"><p>${L("Want every class in your calendar, with a reminder 30 minutes before?","¿Quieres todas las clases en tu calendario, con un recordatorio 30 minutos antes?")}</p><a class="cl-join" style="--k:var(--c4)" href="${icsFile(sched2,true)}" download="noas-english-club.ics">⬇ ${L("Add all weekly classes to my calendar","Agregar todas las clases semanales a mi calendario")}</a><small>${L("Opens in Google Calendar, Apple Calendar or Outlook. Moved or cancelled classes show up here and on the weekly post.","Se abre en Google Calendar, Apple Calendar u Outlook. Las clases cambiadas o canceladas aparecen aquí y en el post semanal.")}</small></div>`:"";
-    return allBox+`<div class="cl-cal"><div class="cl-calh"><button type="button" class="cs-act" data-calm="-1" aria-label="${L("Previous month","Mes anterior")}">‹</button><b>${esc(mname)}</b><button type="button" class="cs-act" data-calm="1" aria-label="${L("Next month","Mes siguiente")}">›</button></div>
-      <div class="cl-cgrid">${wds.map(w=>`<span class="cl-cw">${w}</span>`).join("")}${cells.join("")}</div></div>
-      <div class="cl-cday"><h3>${esc(fd(CALD))}</h3>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
+    const allBox=sched2.length?`<div class="cl-calall"><p>${L("Want every class in your calendar, with a reminder 30 minutes before?","¿Quieres todas las clases en tu calendario, con un recordatorio 30 minutos antes?")}</p><a class="cl-join" style="--k:var(--c4)" href="${icsFile(sched2,true)}" download="noas-english-club.ics">⬇ ${L("Add all weekly classes to my calendar","Agregar todas las clases semanales a mi calendario")}</a><small>${L("Opens in Google Calendar, Apple Calendar or Outlook. Moved or cancelled classes show up here and on the weekly post.","Se abre en Google Calendar, Apple Calendar u Outlook. Las clases cambiadas o canceladas aparecen aquí y en el post semanal.")}</small></div>`:"";
+    const pop=CALPOP?`<div class="cl-cpop" role="dialog" aria-label="${esc(fd(CALD))}"><div class="cl-cpoph"><h3>${esc(fd(CALD))}</h3><button type="button" class="cs-act" data-calx="1" aria-label="${L("Close","Cerrar")}">✕</button></div>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}${e.dur?" · "+e.dur+" min":""}${e.host?" · "+L("with","con")+" "+esc(e.host):""}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
+        <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:`<span class="muted">${L("This class already happened.","Esta clase ya pasó.")}</span>`):`${e.zoom?`<a class="cl-join" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>`:"";
+    return `<div class="cl-cal"><div class="cl-calh"><button type="button" class="cs-act" data-calm="-1" aria-label="${L("Previous month","Mes anterior")}">‹</button><b>${esc(mname)}</b><button type="button" class="cs-act" data-calm="1" aria-label="${L("Next month","Mes siguiente")}">›</button></div>
+      <div class="cl-cgrid">${wds.map(w=>`<span class="cl-cw">${w}</span>`).join("")}${cells.join("")}</div>${pop}<p class="cl-chint">${L("Tap a day to see its classes and Zoom links.","Toca un día para ver sus clases y links de Zoom.")}</p></div>${allBox}
+      <div class="cl-cday" hidden><h3>${esc(fd(CALD))}</h3>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
         <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:""):`${e.zoom?`<a class="cl-join" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>
       `; }
   /* past weeks: under the recordings in the Library tab */
@@ -3015,7 +3038,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function linksHTML(f){ const info=f.info||{};
       const sc=(info.schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7));
       const nextDate=wd=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===wd) return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); } };
-      return `<div class="cl-sec"><h2>🗓 ${L("Every week","Todas las semanas")}</h2>${sc.map(s=>{ const st=chileAt(nextDate(s.wd),s.time); return `<div class="cl-row"><span class="i">${s.ico||"📅"}</span><span class="t"><b>${esc(s.name)}</b><span>${["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"][s.wd]} · ${esc(timeTxt(st))} · ${s.dur||90} min${s.host?" · with "+esc(s.host):""}</span>${s.desc?`<br><span>${esc(s.desc)}</span>`:""}</span>${s.zoom?`<a class="cl-join" style="--k:var(--c2)" href="${esc(s.zoom)}" target="_blank" rel="noopener">🎥 Zoom link</a>`:""}</div>`; }).join("")}
+      return `<div class="cl-sec" hidden><h2>🗓 ${L("Every week","Todas las semanas")}</h2>${sc.map(s=>{ const st=chileAt(nextDate(s.wd),s.time); return `<div class="cl-row"><span class="i">${s.ico||"📅"}</span><span class="t"><b>${esc(s.name)}</b><span>${["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"][s.wd]} · ${esc(timeTxt(st))} · ${s.dur||90} min${s.host?" · with "+esc(s.host):""}</span>${s.desc?`<br><span>${esc(s.desc)}</span>`:""}</span>${s.zoom?`<a class="cl-join" style="--k:var(--c2)" href="${esc(s.zoom)}" target="_blank" rel="noopener">🎥 Zoom link</a>`:""}</div>`; }).join("")}
         <p class="cl-note">${L("All classes are optional and open to every level. The Zoom links stay the same every week.","Todas las clases son opcionales y abiertas a todos los niveles. Los links de Zoom son los mismos cada semana.")}</p></div>
         ${(info.links||[]).length?`<div class="cl-sec"><h2>🔗 ${L("Useful links","Links útiles")}</h2>${info.links.map(l=>`<div class="cl-row"><span class="i">${esc(l.ico||"🔗")}</span><span class="t"><b>${esc(l.title)}</b>${l.note?`<span>${esc(l.note)}</span>`:""}</span><a class="cl-join" style="--k:var(--c4)" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a></div>`).join("")}</div>`:""}`;
   }
@@ -3023,6 +3046,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const RULES_EN=["✔️ Respect everyone, whatever their level. Laugh with people, never at them.","💡 Mistakes are welcome here. That’s how we learn.","💬 Bring positive energy, and stick to English as much as you can (a little Spanish to get unstuck is fine).","🔒 What’s shared in the club stays in the club.","🚫 No spam, no self-promotion.","🛟 Questions? Just ask, we’ve got you."];
   const RULES_ES=["✔️ Respeta a todos, sin importar su nivel. Ríete con las personas, nunca de ellas.","💡 Aquí los errores son bienvenidos. Así se aprende.","💬 Trae buena energía y usa el inglés lo más que puedas (un poco de español para destrabarte está bien).","🔒 Lo que se comparte en el club, queda en el club.","🚫 Nada de spam ni autopromoción.","🛟 ¿Dudas? Solo pregunta, aquí te ayudamos."];
   const IG_GROUP="https://www.instagram.com/j/AbYEKteyhp-zyxxc/";
+  function igTop(){ const v=document.getElementById("v-club"); if(!v) return; const put=()=>{ const row=v.querySelector(".cs-read-row"); if(!row) return false; let a=row.querySelector(".cl-igtop"); if(!a){ a=document.createElement("a"); a.className="cl-igtop"; a.href=IG_GROUP; a.target="_blank"; a.rel="noopener"; row.insertBefore(a,row.firstChild); } a.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>${L("Instagram group","Grupo de Instagram")}`; a.hidden=!feed(); return true; }; if(!put()){ let n=0; const t=setInterval(()=>{ if(put()||++n>20) clearInterval(t); },250); } }
   function igHTML(compact){ return `<a class="cl-ig${compact?" compact":""}" href="${IG_GROUP}" target="_blank" rel="noopener"><span class="cl-ig-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span><span><b>${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</b>${compact?"":`<small>${L("Reminders, memes and chats with the club between classes.","Recordatorios, memes y conversación con el club entre clases.")}</small>`}</span><span class="cl-ig-go">→</span></a>`; }
   /* good to know: how the classes work */
   function faqHTML(){ const Q=[
@@ -3052,23 +3076,26 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(!f){ locked(); return; }
     const ps=posts(f), now=Date.now(), info=f.info||{};
     const nRec=recList(f).length, isNoa=window.__csFire&&window.__csFire.uid&&window.__csFire.uid()==="J8D2tjQmBaaA2QN730tSfSrjfm73"&&!window.__csPreview;
-    const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["recordings",`🎬 ${L("Library","Biblioteca")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Schedule","Horario")}`],["say",`🗳 ${L("Polls & ideas","Encuestas e ideas")}`],["members",L("Members","Miembros")]].concat(isNoa?[["insights","📈 Insights"]]:[]);
+    const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["recordings",`🎬 ${L("Library","Biblioteca")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Calendar","Calendario")}`],["members",L("Members","Miembros")]].concat(isNoa?[["insights","📈 Insights"]]:[]);
     let body="";
-    if(tab==="wall"){ body='<div class="cl-wall" data-wall="1"></div>'; }
+    if(tab==="wall"||tab==="say"){ tab="wall"; body='<div class="cl-say" data-say="1"></div><div class="cl-wall" data-wall="1"></div><div class="cl-say cl-sayideas" data-on="1"></div>'+soonHTML(); }
     else if(tab==="members"){ body='<div class="cl-members" data-members="1"></div>'; }
     else if(tab==="insights"){ body='<div class="cl-insights" data-insights="1"></div>'; }
     else if(tab==="recordings"||tab==="past"){ tab="recordings"; body=podHTML(f)+recTab(f)+pastHTML(f,ps,now); }
-    else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=calTab(f,now)+linksHTML(f)+faqHTML()+igHTML(false)+rulesHTML(f,false); }
-    else if(tab==="say"){ body='<div class="cl-say" data-say="1"></div>'+soonHTML(); }
-    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+podNewHTML()+postHTML(f,ps[0],now,true,true)+igHTML(true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=`<div class="cl-keyinfo"><span>✅ ${L("All classes are optional and open to every level","Todas las clases son opcionales y para todos los niveles")}</span><span>🔗 ${L("The Zoom links stay the same every week","Los links de Zoom son los mismos cada semana")}</span><span>🙋 ${L("Come to as many as you like","Ven a todas las que quieras")}</span></div>`+calTab(f,now)+`<div class="cl-infogrid">${faqHTML()}${rulesHTML(f,false)}</div>`+linksHTML(f); }
+    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+podNewHTML()+postHTML(f,ps[0],now,true,true)+`<div class="cl-thread" data-thread="${esc(ps[0].id)}"></div>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    igTop();
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
     if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
   }
   document.addEventListener("click",e=>{ const g=e.target.closest("[data-recgo]"); if(!g) return; RFOCUS=g.dataset.recgo; tab="recordings"; if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>{ render(); setTimeout(()=>document.querySelector(`.cl-rcard[open]`)?.scrollIntoView({block:"center",behavior:"smooth"}),80); },0); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&CALPOP){ CALPOP=false; render(); } });
   box.addEventListener("input",e=>{ const q=e.target.closest("[data-recq]"); if(!q) return; const v=q.value.trim().toLowerCase(); let n=0; box.querySelectorAll(".cl-rcard").forEach(c=>{ const hit=!v||v.split(/\s+/).every(w=>c.dataset.q.includes(w)); c.hidden=!hit; if(hit) n++; }); const no=box.querySelector("[data-rnone]"); if(no) no.hidden=!!n; });
   box.addEventListener("click",e=>{ const t=e.target.closest("[data-clt]"); if(t){ tab=t.dataset.clt; render(); return; }
-    const cm=e.target.closest("[data-calm]"); if(cm){ CALM+=+cm.dataset.calm; CALD=null; render(); return; }
-    const cd=e.target.closest("[data-cald]"); if(cd){ CALD=cd.dataset.cald; render(); return; }
+    const cm=e.target.closest("[data-calm]"); if(cm){ CALM+=+cm.dataset.calm; CALD=null; CALPOP=false; render(); return; }
+    const cd=e.target.closest("[data-cald]"); if(cd){ CALD=cd.dataset.cald; CALPOP=true; render(); return; }
+    if(e.target.closest("[data-calx]")){ CALPOP=false; render(); return; }
+    if(CALPOP&&e.target.closest(".cl-cal")&&!e.target.closest(".cl-cpop")){ CALPOP=false; render(); return; }
     const wt=e.target.closest("[data-wtoggle]"); if(wt){ const id=wt.dataset.wtoggle, on=!watched().includes(id); setWatched(id,on); RFOCUS=id; render(); return; }
     const yt=e.target.closest("[data-yt]"); if(yt){ const id=yt.dataset.yt; if(!watched().includes(yt.dataset.watched)) setWatched(yt.dataset.watched,true); yt.outerHTML=`<div class="cl-ytf"><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1" title="Class recording" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`; return; }
     const wa=e.target.closest("[data-watched]"); if(wa){ if(!watched().includes(wa.dataset.watched)){ setWatched(wa.dataset.watched,true); const id=wa.dataset.watched; setTimeout(()=>{ RFOCUS=id; render(); },300); } return; }
@@ -3552,13 +3579,15 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function mountSay(el){ el.dataset.on="1"; el.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
     try{ await Promise.all([listPosts().then(p=>{ POSTS=G()?SAMPLE_POSTS.slice():p; }),loadPins(),loadPark()]); }catch(e){ el.innerHTML=state==="off"?OFF:""; return; }
     const polls=(POSTS||[]).filter(p=>p.poll).sort((a,b)=>b.at-a.at);
-    el.innerHTML=`<div class="cl-sec cl-polls"><h2>📊 ${L("Polls","Encuestas")}</h2>${polls.map(postHTML).join("")||`<p class="cs-empty">${L("No polls right now.","No hay encuestas por ahora.")}</p>`}
-        <details class="cl-newpoll"><summary>＋ ${L("Start a poll","Crear una encuesta")}</summary>${composer("poll","",L("Your question…","Tu pregunta…"))}</details></div>
-      <div class="cl-sec cl-ideas"><h2>💡 ${L("Ideas for future classes","Ideas para próximas clases")}</h2><p class="cl-note">${L("What would you like to do in class? A topic, a grammar point, vocabulary, a game… Noa reads every idea. Tap 👍 on the ones you like.","¿Qué te gustaría hacer en clase? Un tema, un punto de gramática, vocabulario, un juego… Noa lee todas las ideas. Toca 👍 en las que te gusten.")}</p>
+    const ih=el.parentElement&&el.parentElement.querySelector(".cl-sayideas");
+    const pollsH=`<div class="cl-sec cl-polls${polls.length?"":" empty"}"><h2>📊 ${L("Polls","Encuestas")}</h2>${polls.map(postHTML).join("")}
+        <details class="cl-newpoll"><summary>＋ ${L("Start a poll","Crear una encuesta")}</summary>${composer("poll","",L("Your question…","Tu pregunta…"))}</details></div>`;
+    const ideasH=`<div class="cl-sec cl-ideas"><h2>💡 ${L("Ideas for future classes","Ideas para próximas clases")}</h2><p class="cl-note">${L("What would you like to do in class? A topic, a grammar point, vocabulary, a game… Noa reads every idea. Tap 👍 on the ones you like.","¿Qué te gustaría hacer en clase? Un tema, un punto de gramática, vocabulario, un juego… Noa lee todas las ideas. Toca 👍 en las que te gusten.")}</p>
         ${composer("idea","",L("My idea for a class: …","Mi idea para una clase: …"))}
         <div class="cs-wcats" role="group" aria-label="${L("Sort ideas","Ordenar ideas")}"><button type="button" class="cs-wcat${ISORT==="top"?" on":""}" data-isort="top" aria-pressed="${ISORT==="top"}">👍 ${L("Most liked","Más apoyadas")}</button><button type="button" class="cs-wcat${ISORT==="new"?" on":""}" data-isort="new" aria-pressed="${ISORT==="new"}">🆕 ${L("Newest","Más nuevas")}</button></div>
         <div class="cl-ilist2" data-ideas="1"></div></div>`;
-    paintIdeas(el); paintPolls(el); paintImgs(el); }
+    if(ih){ el.innerHTML=pollsH; ih.innerHTML=ideasH; paintIdeas(ih); paintPolls(el); paintImgs(el); paintImgs(ih); return; }
+    el.innerHTML=pollsH+ideasH; paintIdeas(el); paintPolls(el); paintImgs(el); }
   let IDEAST={};
   document.addEventListener("click",async e=>{ const u=e.target.closest("[data-iup]"); if(u){ if(!me()&&!G()) return; const id=u.dataset.iup; const item=(POSTS||[]).find(x=>x.id===id)||(G()?SAMPLE_IDEAS.find(x=>x.id===id):null); if(!item) return;
       if(G()){ const r=(item.likes||[]).filter(v=>rxOf(v)[0]!=="me"); item.likes=r.length!==(item.likes||[]).length?r:r.concat(["me|👍"]); }
@@ -4375,9 +4404,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
-  <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
+  <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My words</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
@@ -4442,7 +4472,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" data-go="backup">Back up or move your notes</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div></footer>
-<script src="buddy.js?v=41" defer></script>
+<script src="buddy.js?v=42" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -6718,6 +6748,175 @@ changed|d|chaynjd
 relaxed|t|ri-LAKST
 `.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"edt-"+i, st:0, q:"“"+p[0]+"”: the -ed sounds like /___/ (write t, d or id)", a:ED_ANS[p[1]], o:[], why:p[0]+" sounds like “"+p[2]+"”. "+ED_RULE[p[1]][0]+(p[3]?" "+p[3]:""), es:ED_RULE[p[1]][1], say:p[0]}; });
 
+/* ---------- Present simple question bank (A1-A2 friendly, Spanish help on every question) ----------
+   same format as the past simple bank: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint */
+const PRS_STAGES=[
+ {n:1, t:"I, you, we, they", sub:"I work, they live", why:"With I, you, we and they, use the verb as it is: no -s.", es:"Con I, you, we y they, el verbo va sin cambios: sin -s.", q:`
+I ___ in Santiago. (live)|live|lives,living,am live
+We ___ English on Mondays. (study)|study|studies,studys,studying
+They ___ coffee every morning. (drink)|drink|drinks,drinking,are drink
+You ___ really fast! (walk)|walk|walks,walking,are walk
+I ___ my mom every Sunday. (call)|call|calls,calling,am call
+My friends ___ football on Saturdays. (play)|play|plays,playing,are play|My friends = they, so no -s.|My friends = they: el verbo va sin -s.
+We ___ at 9 a.m. (start)|start|starts,starting,are start
+I ___ cats. (love)|love|loves,loving,am love
+You ___ a lot of questions. (ask)|ask|asks,asking,are ask
+My parents ___ in Viña del Mar. (live)|live|lives,living,are live|My parents = they, so no -s.|My parents = they: sin -s.
+I ___ to music on the metro. (listen)|listen|listens,listening,am listen
+They ___ dinner at 9 p.m. (eat)|eat|eats,eating,are eat
+We ___ the same TV shows. (like)|like|likes,liking,are like
+I ___ in an office. (work)|work|works,working,am work
+You and Ana ___ very well. (dance)|dance|dances,dancing,are dance|You and Ana = you (plural), so no -s.|You and Ana = ustedes: sin -s.
+Many people ___ the metro in Santiago. (take)|take|takes,taking,are take|Many people = they, so no -s.|Many people = ellos: sin -s.
+`},
+ {n:2, t:"He, she, it + -s", sub:"she works, it opens", why:"With he, she and it, add -s to the verb.", es:"Con he, she e it, agrega -s al verbo.", q:`
+She ___ in a bank. (work)|works|work,working,is work
+He ___ coffee every morning. (drink)|drinks|drink,drinking,is drink
+My sister ___ in Concepción. (live)|lives|live,living,is live|My sister = she: add -s.|My sister = she: agrega -s.
+The store ___ at 10 a.m. (open)|opens|open,opening,is open|The store = it: add -s.|The store = it: agrega -s.
+Pedro ___ the guitar. (play)|plays|play,playing,is play|Pedro = he: add -s.|Pedro = he: agrega -s.
+My dog ___ a lot. (sleep)|sleeps|sleep,sleeping,is sleep|My dog = it: add -s.|My dog = it: agrega -s.
+She ___ English very well. (speak)|speaks|speak,speaking,is speak
+He ___ the bus to work. (take)|takes|take,taking,is take
+It ___ a lot in winter. (rain)|rains|rain,raining,is rain
+My boss ___ long emails. (write)|writes|write,writing,is write
+Ana ___ pizza. (love)|loves|love,loving,is love
+The class ___ at 8 p.m. (start)|starts|start,starting,is start|The class = it: add -s.|The class = it: agrega -s.
+My brother ___ video games all day. (play)|plays|play,playing,is play
+She ___ her mom every day. (call)|calls|call,calling,is call
+He ___ at a restaurant. (cook)|cooks|cook,cooking,is cook
+My phone ___ a lot of money. (cost)|costs|cost,costing,is cost
+`},
+ {n:3, t:"Spelling: -es, -ies, has", sub:"watches, studies, has, goes", why:"Some verbs change: -es after ch, sh, s, x, o; consonant + y → -ies; have → has.", es:"Algunos verbos cambian: -es después de ch, sh, s, x, o; consonante + y → -ies; have → has.", q:`
+She ___ TV every night. (watch)|watches|watchs,watch,watchies|After -ch, add -es: watches.|Después de -ch, agrega -es.
+He ___ English at university. (study)|studies|studys,study,studyes|Consonant + y → -ies: studies.|Consonante + y → -ies.
+My mom ___ two cats. (have)|has|haves,have,hass|have → has with he, she, it.|have → has con he, she, it.
+He ___ to the gym on Mondays. (go)|goes|gos,go,goies|go → goes.|go → goes.
+She ___ her homework after dinner. (do)|does|dos,do,doies|do → does.|do → does.
+Tom ___ the dishes. (wash)|washes|washs,wash,washies|After -sh, add -es.|Después de -sh, agrega -es.
+The baby ___ a lot at night. (cry)|cries|crys,cry,cryes|Consonant + y → -ies.|Consonante + y → -ies.
+He ___ cars. (fix)|fixes|fixs,fix,fixies|After -x, add -es.|Después de -x, agrega -es.
+She always ___ the bus. (miss)|misses|miss,misss,missies|After -ss, add -es.|Después de -ss, agrega -es.
+My dad ___ to work at 7. (drive)|drives|drivees,drive,drivies|Normal verb: just add -s.|Verbo normal: solo agrega -s.
+She ___ very hard. (try)|tries|trys,try,tryes|Consonant + y → -ies.|Consonante + y → -ies.
+He ___ to music in the car. (listen)|listens|listenes,listen,listenies|Normal verb: just add -s.|Verbo normal: solo agrega -s.
+My friend ___ a big house. (have)|has|haves,have,haves|have → has.|have → has.
+The movie ___ at 9. (finish)|finishes|finishs,finish,finishies|After -sh, add -es.|Después de -sh, agrega -es.
+She ___ video games. (play)|plays|plaies,play,playes|Vowel + y → just -s: plays.|Vocal + y → solo -s: plays.
+He ___ his teeth twice a day. (brush)|brushes|brushs,brush,brushies|After -sh, add -es.|Después de -sh, agrega -es.
+`},
+ {n:4, t:"Negatives: don't / doesn't", sub:"I don't, she doesn't", why:"I/you/we/they + don't + verb. He/she/it + doesn't + verb (no -s after doesn't).", es:"I/you/we/they + don't + verbo. He/she/it + doesn't + verbo (sin -s después de doesn't).", q:`
+I ___ coffee. (not / like)|don't like/do not like|doesn't like,not like,don't likes
+She ___ meat. (not / eat)|doesn't eat/does not eat|don't eat,doesn't eats,not eat|She → doesn't, and the verb has no -s.|She → doesn't, y el verbo va sin -s.
+We ___ on Sundays. (not / work)|don't work/do not work|doesn't work,not work,don't works
+He ___ English at home. (not / speak)|doesn't speak/does not speak|don't speak,doesn't speaks,not speak
+They ___ in Santiago. (not / live)|don't live/do not live|doesn't live,not live,don't lives
+My dog ___ cats. (not / like)|doesn't like/does not like|don't like,doesn't likes,not like|My dog = it → doesn't.|My dog = it → doesn't.
+I ___ how to swim. (not / know)|don't know/do not know|doesn't know,not know,don't knows
+The bus ___ here. (not / stop)|doesn't stop/does not stop|don't stop,doesn't stops,not stop|The bus = it → doesn't.|The bus = it → doesn't.
+You ___ to come. (not / need)|don't need/do not need|doesn't need,not need,don't needs
+My brother ___ TV. (not / watch)|doesn't watch/does not watch|don't watch,doesn't watches,not watch|After doesn't, the verb has no -s or -es.|Después de doesn't, el verbo va sin -s ni -es.
+She ___ a car. (not / have)|doesn't have/does not have|doesn't has,don't have,not have|After doesn't, use have (not has).|Después de doesn't, usa have (no has).
+We ___ much time. (not / have)|don't have/do not have|doesn't have,don't has,not have
+He ___ on weekends. (not / study)|doesn't study/does not study|doesn't studies,don't study,not study
+I ___ the answer. (not / understand)|don't understand/do not understand|doesn't understand,not understand,don't understands
+It ___ much in summer. (not / rain)|doesn't rain/does not rain|don't rain,doesn't rains,not rain
+My parents ___ English. (not / speak)|don't speak/do not speak|doesn't speak,not speak,don't speaks|My parents = they → don't.|My parents = they → don't.
+`},
+ {n:5, t:"Questions: do / does", sub:"Do you…? Does she…?", why:"Do + I/you/we/they + verb? Does + he/she/it + verb? (no -s after does).", es:"Do + I/you/we/they + verbo? Does + he/she/it + verbo? (sin -s después de does).", q:`
+___ you like pizza?|Do|Does,Are,Is
+___ she work on Saturdays?|Does|Do,Is,Are
+___ they live near here?|Do|Does,Are,Is
+Where ___ you work?|do|does,are,is
+What time ___ the class start?|does|do,is,are|The class = it → does.|The class = it → does.
+___ your brother play football?|Does|Do,Is,Are|Your brother = he → does.|Your brother = he → does.
+Does he ___ English? (speak)|speak|speaks,speaking,spoke|After does, the verb has no -s.|Después de does, el verbo va sin -s.
+Do you ___ a dog? (have)|have|has,having,haves
+Does she ___ coffee? (drink)|drink|drinks,drinking,drank|After does, the verb has no -s.|Después de does, el verbo va sin -s.
+What ___ you do on weekends?|do|does,are,is
+How ___ he go to work?|does|do,is,are
+Does it ___ a lot here? (rain)|rain|rains,raining,rained
+Do you like tea? Yes, I ___.|do|does,am,like|Short answer: Yes, I do.|Respuesta corta: Yes, I do.
+Does she live here? No, she ___.|doesn't|don't,isn't,not|Short answer: No, she doesn't.|Respuesta corta: No, she doesn't.
+___ your parents speak English?|Do|Does,Are,Is|Your parents = they → do.|Your parents = they → do.
+Where does your sister ___? (live)|live|lives,living,lived|After does, the verb has no -s.|Después de does, el verbo va sin -s.
+`},
+ {n:6, t:"Mix it up", sub:"routines with always, never…", why:"Check the subject first: he/she/it → -s; and always/usually/never go before the verb.", es:"Mira primero el sujeto: he/she/it → -s; y always/usually/never van antes del verbo.", q:`
+She always ___ breakfast. (eat)|eats|eat,eating,is eat
+I never ___ late. (arrive)|arrive|arrives,arriving,am arrive
+My dad usually ___ at 7. (get up)|gets up|get up,gets ups,is get up|Phrasal verbs: the -s goes on the verb: gets up.|En los verbos con partícula, la -s va en el verbo: gets up.
+We sometimes ___ out on Fridays. (go)|go|goes,going,are go
+He ___ coffee. (not / drink)|doesn't drink/does not drink|don't drink,doesn't drinks,not drink
+___ you usually cook at home?|Do|Does,Are,Is
+Ana often ___ her grandma. (visit)|visits|visit,visiting,is visit
+My kids ___ TV in the morning. (not / watch)|don't watch/do not watch|doesn't watch,not watch,don't watches
+The metro ___ very full at 8 a.m. (be)|is|are,be,does|Be is different: I am, you/we/they are, he/she/it is.|Be es distinto: I am, you/we/they are, he/she/it is.
+I ___ tired on Mondays. (be)|am|is,are,be|I → am.|I → am.
+She ___ the dishes after lunch. (wash)|washes|wash,washs,washing
+What time ___ your class finish?|does|do,is,are
+He ___ two jobs. (have)|has|have,haves,is have
+They usually ___ the bus. (take)|take|takes,taking,are take
+My cat never ___ on the bed. (sleep)|sleeps|sleep,sleeping,is sleep
+___ he like his new job?|Does|Do,Is,Are
+`},
+ {n:7, t:"Tell the story", sub:"a normal day, 10 blanks", story:true, why:"Read the whole sentence: who does it? He/she/it → -s.", es:"Lee toda la oración: ¿quién lo hace? He/she/it → -s.", q:`
+#Camila's normal day
+Camila ___ in Santiago with her dog, Toby. (live)|lives|live,living,is live
+She ___ up at 7 every morning. (get)|gets|get,getting,is get
+First, she ___ a big cup of coffee. (drink)|drinks|drink,drinking,is drink
+Then she ___ the metro to work. (take)|takes|take,taking,is take
+She ___ in an office near Plaza de Armas. (work)|works|work,working,is work
+She ___ her job, but it's a little boring. (like)|likes|like,liking,is like
+At lunch, she and her friends ___ completos. (eat)|eat|eats,eating,are eat
+After work, she ___ to the gym. (go)|goes|go,gos,going
+Toby ___ the gym, so he waits at home. (not / like)|doesn't like/does not like|don't like,doesn't likes,not like
+At night, Camila and Toby ___ TV together. (watch)|watch|watches,watching,are watch
+#My weekend
+On Saturdays, I ___ late. (wake up)|wake up|wakes up,waking up,am wake up
+My roommate ___ pancakes for breakfast. (make)|makes|make,making,is make
+We ___ breakfast on the balcony. (have)|have|has,having,are have
+In the afternoon, my roommate ___ football with his friends. (play)|plays|play,playing,is play
+I ___ football, so I stay home. (not / play)|don't play/do not play|doesn't play,not play,don't plays
+I usually ___ a series in bed. (watch)|watch|watches,watching,am watch
+On Sundays, we ___ my grandma. (visit)|visit|visits,visiting,are visit
+She ___ the best empanadas in Chile! (cook)|cooks|cook,cooking,is cook
+She always ___: “Eat more!” (say)|says|say,saying,is say
+___ you have a favorite day of the week? (do)|Do|Does,Are,Is
+`}
+];
+PRS_STAGES.forEach(st=>{
+  if(st.story){ st.stories=[]; let cur=null, k=0; st.items=[]; st.q.trim().split("\n").forEach(l=>{ if(l.startsWith("#")){ cur={title:l.slice(1).trim(),items:[]}; st.stories.push(cur); return; } const p=l.split("|").map(x=>x.trim()); const it={id:"prs"+st.n+"-"+(k++), st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es, story:cur.title}; cur.items.push(it); st.items.push(it); }); delete st.q; return; }
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"prs"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+const PRS_TEST=`
+My sister ___ in a hospital. (work)|works|My sister = she: works.
+They ___ near the beach. (live)|live|They: no -s.
+He ___ English at night. (study)|studies|Consonant + y → -ies.
+She ___ a red car. (have)|has|have → has.
+My dad ___ to work by bike. (go)|goes|go → goes.
+The shop ___ at 9. (close)|closes|The shop = it: closes.
+I ___ spicy food. (not / like)|don't like/do not like|I → don't + verb.
+He ___ meat. (not / eat)|doesn't eat/does not eat|He → doesn't + verb (no -s).
+We ___ a car. (not / have)|don't have/do not have|We → don't have.
+She ___ a dog. (not / have)|doesn't have/does not have|After doesn't: have, not has.
+___ you speak Spanish? (do)|Do|You → Do.
+___ he work here? (do)|Does|He → Does.
+Where ___ she live? (do)|does|She → does.
+Does your mom ___ coffee? (drink)|drink|After does: no -s.
+He always ___ his keys. (forget)|forgets|He → -s; always goes before the verb.
+My kids ___ TV after school. (watch)|watch|My kids = they: no -s.
+She ___ the dishes every night. (wash)|washes|After -sh: -es.
+I ___ happy today. (be)|am|I → am.
+My friends ___ very funny. (be)|are|They → are.
+The baby ___ at night. (cry)|cries|Consonant + y → -ies.
+He usually ___ up at 6. (get)|gets|He → gets up.
+Do you like tea? Yes, I ___. (do)|do|Short answer: Yes, I do.
+Does he play guitar? No, he ___. (do)|doesn't/does not|Short answer: No, he doesn't.
+My cat ___ a lot. (sleep)|sleeps|My cat = it: sleeps.
+What time ___ the movie start? (do)|does|The movie = it → does.
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"prst-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
+
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
 (function(){
   const view=document.getElementById("v-quiz"), hub=document.getElementById("prHub"); if(!view||!hub) return;
@@ -6728,6 +6927,7 @@ relaxed|t|ri-LAKST
   const MODS={
     ps:{id:"ps",name:"Past simple",lname:"past simple",stages:PS_STAGES,test:PS_TEST,toy:"⏳ Magic hourglass",toyName:"Magic hourglass",ico:"⏪"},
     pp:{id:"pp",name:"Present perfect",lname:"present perfect",stages:PP_STAGES,test:PP_TEST,toy:"🌍 Little globe",toyName:"Little globe",ico:"🌍"},
+    prs:{id:"prs",name:"Present simple",lname:"present simple",stages:PRS_STAGES,test:PRS_TEST,toy:"☕ Coffee mug",toyName:"Coffee mug",ico:"☀️"},
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
@@ -6780,11 +6980,12 @@ relaxed|t|ri-LAKST
   function setMod(id){ if(!MODS[id]) return; M=id; const h=$("psTitle"); if(h) h.innerHTML="<em>"+esc(MODS[id].name)+"</em>"; try{ sessionStorage.setItem("cs-mod",id); }catch(e){} }
   try{ const sm=sessionStorage.getItem("cs-mod"); if(MODS[sm]) M=sm; }catch(e){}
   const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab"};
-  const PNAME={gram:"Grammar",words:"My words",vocab:"Word packs"};
+  const par=c=>c==="ps"&&M==="ed"?"pron":PARENT[c];
+  const PNAME={gram:"Grammar",words:"My words",vocab:"Word packs",pron:"Pronunciation"};
   function show(p,fromPop){
     cur=p||null;
     if(!fromPop&&!view.hidden){ try{ const st=history.state||{}; if(st.cs&&st.v==="quiz"&&(st.pp||null)!==cur) history.pushState({cs:1,v:"quiz",pp:cur,n:(st.n|0)+1},"","#quiz"); }catch(e){} }
-    view.querySelectorAll(".pr-back-t").forEach(t=>t.textContent=PNAME[PARENT[cur]]||"All practice");
+    view.querySelectorAll(".pr-back-t").forEach(t=>t.textContent=PNAME[par(cur)]||"All practice");
     hub.hidden=!!cur; panels.forEach(x=>x.hidden=x.dataset.pp!==cur);
     if(cur==="ps"&&!round) renderStages();
     if(cur==="mis"&&!round) renderMis();
@@ -6795,7 +6996,7 @@ relaxed|t|ri-LAKST
   }
   view.addEventListener("click",e=>{
     const t=e.target.closest("[data-pr]"); if(t){ round=null; if(t.dataset.modtile) setMod(t.dataset.modtile); show(t.dataset.pr); return; }
-    if(e.target.closest("[data-prback]")){ round=null; show(PARENT[cur]||null); }
+    if(e.target.closest("[data-prback]")){ round=null; show(par(cur)||null); }
   });
   document.addEventListener("click",e=>{ const b=e.target.closest('[data-go="quiz"]'); if(b&&!b.closest("#v-quiz")){ round=null; setTimeout(()=>show(null),0); } });
 
@@ -8339,9 +8540,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
-  {id:"2026-ed", date:"November 10, 2026", title:"Say your -ed endings right 🔊", items:[
-    ["🔊","New: -ed endings","worked, played or wanted? Learn when -ed sounds like /t/, /d/ or /ɪd/, with a 🔊 button on every word. 7 short stages in Practice → Grammar.","quiz"],
-    ["🔔","A new toy for your buddy","finish all 7 stages and your buddy gets the Little bell."]
+  {id:"2026-prs", date:"November 10, 2026", title:"Present simple + pronunciation ☀️", items:[
+    ["☀️","New: Present simple","I work, she works, I don't, does he…? 7 short stages with a little Spanish help on every question, in Practice → Grammar.","quiz"],
+    ["🗣️","New: Pronunciation","its own section in Practice, starting with -ed endings: worked, played or wanted? A 🔊 button on every word.","quiz"],
+    ["🎁","New prizes for your buddy","☕ a coffee mug for Present simple, 🔔 a little bell for -ed endings, and new duel prizes your buddy can wear (headband, medal, shades, laurel)."]
   ]},
   {id:"2026-club2", date:"November 9, 2026", title:"The club, more alive 🌼", quiet:true, items:[
     ["🔔","Your own club bell","see when someone comments on your post, reacts to it or @mentions you (type @ and a name to mention someone).","club"],

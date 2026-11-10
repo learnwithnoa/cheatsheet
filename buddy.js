@@ -259,6 +259,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     /* grammar modules: finish every stage */
     { id: "hourglass", name: "Magic hourglass", ico: "⏳", slot: "toy", m: "ps", mt: "Past simple" },
     { id: "globe", name: "Little globe", ico: "🌍", slot: "toy", m: "pp", mt: "Present perfect" },
+    { id: "mug", name: "Coffee mug", ico: "☕", slot: "toy", m: "prs", mt: "Present simple" },
     { id: "bell", name: "Little bell", ico: "🔔", slot: "toy", m: "ed", mt: "-ed endings" },
     /* duels (club members): fighting gear */
     { id: "dbanner", name: "Duel banner", ico: "🚩", slot: "toy", dp: 1 },
@@ -266,7 +267,11 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "shield", name: "Shield", ico: "🛡️", slot: "toy", dw: 3 },
     { id: "helmet", name: "Knight helmet", ico: "⛑️", slot: "head", dw: 5, px: ["...yy...", "..ssss..", ".ssSSss.", "sSkkkkSs", "sS....Ss"] },
     { id: "armour", name: "Armour stand", ico: "🏰", slot: "toy", dw: 10 },
-    { id: "cape", name: "Hero cape", ico: "🦸", slot: "neck", ds: 3, px: ["rrrrrrrr", "rRrrrrRr", "rr....rr"] }
+    { id: "cape", name: "Hero cape", ico: "🦸", slot: "neck", ds: 3, px: ["rrrrrrrr", "rRrrrrRr", "rr....rr"] },
+    { id: "headband", name: "Fighter headband", ico: "🥋", slot: "head", dp: 1, px: ["........", "rrrrrrrr", "rwrrrrrr", "......rr", ".......r"] },
+    { id: "medal", name: "Champion medal", ico: "🥇", slot: "neck", dw: 2, px: ["b......b", ".b....b.", "..bbbb..", "...yy...", "..yyyy..", "...yy..."] },
+    { id: "battleshades", name: "Battle shades", ico: "😎", slot: "face", dw: 7, lens: ["kkk", "kkk"], frame: "r" },
+    { id: "laurel", name: "Victory laurel", ico: "🌿", slot: "head", dw: 15, px: ["G.G..G.G", "GGgGGgGG"] }
   ];
   const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
@@ -396,7 +401,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       R(X0, Y0, RW, RH, "var(--bd-sky)"); R(X0, 20, RW, 6, "var(--bd-grass)"); R(X0, 20, RW, 1, "var(--bd-grass2)");
       [[-10, -9], [42, -12], [24, -6]].forEach(([x, y]) => { R(x, y, 6, 2, "color-mix(in srgb,var(--bd-sky) 40%,#fff)"); R(x + 1, y - 1, 3, 1, "color-mix(in srgb,var(--bd-sky) 40%,#fff)"); });
     }
-    const T = { bell: [12, 1, ["...k...", "...k...", "..yyy..", ".ywyyy.", ".yyyyy.", "yyyyyyy", "...o..."], { k: "#8A6A3A", y: "#E8B931", w: "#FFF3A0", o: "#B8860B" }], globe: [3, 1, ["...w...", "..bbb..", ".bggbb.", "bbgbbgb", "bgggbbb", ".bbggb.", "..bbb..", "...k...", "..kkk.."], { b: "#4A90E2", g: "#58C26B", k: "#8A6A3A", w: "#FFF3A0" }], hourglass: [30, 1, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
+    const T = { mug: [9, 23, [".s.s..", "s.s...", "wwwww.", "wkkkww", "wwwww.w", "wwwwww.", ".www.."], { w: "#F4F1EA", k: "#6B4226", s: "#C9D3E0" }], bell: [12, 1, ["...k...", "...k...", "..yyy..", ".ywyyy.", ".yyyyy.", "yyyyyyy", "...o..."], { k: "#8A6A3A", y: "#E8B931", w: "#FFF3A0", o: "#B8860B" }], globe: [3, 1, ["...w...", "..bbb..", ".bggbb.", "bbgbbgb", "bgggbbb", ".bbggb.", "..bbb..", "...k...", "..kkk.."], { b: "#4A90E2", g: "#58C26B", k: "#8A6A3A", w: "#FFF3A0" }], hourglass: [30, 1, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
       plant: [34, 14, ["g.g.", ".gg.", "gggg", ".gg.", "oooo", ".oo."], { g: "#3BA776", o: "#C0673A" }], lamp: [1, 11, ["yyyy", "yyyy", ".kk.", ".k..", ".k..", ".k..", ".k..", "kkk."], { y: "#F9D25C", k: "#4A3A2A" }],
       trophy: [28, 19, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }],
       dbanner: [36, 3, ["k....", "krrrr", "krwrr", "krrrr", "k.rr.", "k....", "k....", "k...."], { k: "#5A4632", r: "#C2306F", w: "#F5C842" }],
@@ -463,10 +468,10 @@ html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 .bd-ic-nm{display:inline-flex;align-items:center;gap:4px}
 .duel-board{margin:18px 0 0;padding:16px 18px;border-radius:18px;border:1.5px solid color-mix(in srgb,#C2306F 40%,var(--line,#ddd));background:linear-gradient(135deg,color-mix(in srgb,#C2306F 9%,var(--surface,#fff)),color-mix(in srgb,#F5C842 8%,var(--surface,#fff)))}
 .duel-board[hidden]{display:none}
-.duel-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}.duel-h h2{margin:0;font-size:22px}.duel-rec{font-size:14px;color:var(--muted,#666);flex:1}
+.duel-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:10px 12px}.duel-h h2{margin:0 4px 0 0;font-size:22px}.duel-h .duel-stats{margin:0}#duelBoard .duel-h h2{margin:0 4px 0 0}#parkLegend.park-legend{margin:8px 2px 0}.duel-sub{margin:10px 0 6px;font-size:13.5px;font-weight:700;color:var(--muted,#666)}.duel-rec{font-size:14px;color:var(--muted,#666);flex:1}
 .duel-stats{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}.duel-stats span{font-size:13.5px;padding:4px 12px;border-radius:99px;background:var(--surface,#fff);border:1px solid var(--line,#ddd);color:var(--muted,#666)}.duel-stats b{color:var(--ink,#111);font-size:15px}
-.duel-gh{margin:20px 0 8px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#666)}.duel-gh small{text-transform:none;letter-spacing:0;font-weight:600;margin-left:6px}
-.duel-gearg{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.duel-gh{margin:16px 0 0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#666)}.duel-gh small{text-transform:none;letter-spacing:0;font-weight:600;margin-left:6px}
+.duel-gearg{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
 .dgt{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;padding:10px 6px;border-radius:12px;background:var(--surface,#fff);border:1px solid var(--line,#ddd);opacity:.55}
 .dgt.on{opacity:1;border-color:color-mix(in srgb,#F5C842 55%,var(--line,#ddd))}.dgt .dgi{font-size:22px;line-height:1.2}.dgt b{font-size:13px}.dgt small{font-size:11.5px;color:var(--muted,#666);line-height:1.25}
 .duel-board h3{margin:14px 0 6px;font-size:15px}
@@ -1318,7 +1323,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const pos = [];
     list.forEach(x => { let best = null, bestD = -1; for (let k = 0; k < 14; k++) { const p = spot(); const d = pos.reduce((m, o) => Math.min(m, Math.hypot((p[0] - o[1]) * 1.2, p[1] - o[2])), 999); if (d > bestD) { bestD = d; best = p; } } pos.push([x, best[0], best[1]]); });
     const wc = x => (x.me ? counts().words : x.words | 0);
-    if (!document.getElementById("parkLegend")) el.insertAdjacentHTML("beforebegin", `<p class="park-legend" id="parkLegend">✨ The glow shows friendship: <span class="lg1">silver</span> at level 4, <span class="lg2">gold</span> at level 7, <span class="lg3">rainbow</span> at level 10.</p>`);
+    if (!document.getElementById("parkLegend")) el.insertAdjacentHTML("afterend", `<p class="park-legend" id="parkLegend">✨ The glow shows friendship: <span class="lg1">silver</span> at level 4, <span class="lg2">gold</span> at level 7, <span class="lg3">rainbow</span> at level 10.</p>`);
     el.innerHTML = `<div class="park-zoom" role="group" aria-label="Zoom"><button type="button" data-pz="-1" aria-label="Zoom out">−</button><button type="button" data-pz="0" aria-label="Fit the whole park">⤢</button><button type="button" data-pz="1" aria-label="Zoom in">+</button></div>
       <div class="park-vp" id="parkVp"><div class="park-world" id="parkWorld">${DECO}${pos.map(([x, l, t]) => {
       const bn = (x.n && String(x.n).trim() && String(x.n).trim() !== SP[x.a].old ? String(x.n).trim() : SP[x.a].name), owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
@@ -1513,7 +1518,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   const gearLine = () => ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null).map(i => `<span class="dg${isOpen(i) ? " on" : ""}" title="${esc(i.name)}${isOpen(i) ? " (unlocked)" : " · unlocks " + lockTxt(i)}">${isOpen(i) ? i.ico : "🔒"} ${esc(i.name)}</span>`).join("");
   function renderDuels(ds) {
     const area = $("parkArea"); if (!area) return;
-    let box = $("duelBoard"); if (!box) { box = document.createElement("section"); box.id = "duelBoard"; box.className = "duel-board"; area.insertAdjacentElement("afterend", box); }
+    let box = $("duelBoard"); if (!box) { box = document.createElement("section"); box.id = "duelBoard"; box.className = "duel-board"; (document.getElementById("parkLegend") || area).insertAdjacentElement("afterend", box); }
     if (!canDuel(duelMeRole) || window.__csPreview && window.__csPreview.kind === "private") { box.hidden = true; return; }
     box.hidden = false; const now = Date.now(), recent = d => d.st === "done" && d.end && now - d.end < 14 * DAY;
     const inc = ds.filter(d => d.toMe && d.st === "pending" && !(S.da || {})[d.id]);
@@ -1522,23 +1527,25 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const done = ds.filter(recent).sort((a, b) => b.end - a.end).slice(0, 8);
     const bar = (n, mx) => `<i style="width:${Math.min(100, Math.round(n / Math.max(1, mx) * 100))}%"></i>`;
     const left = d => { const h = Math.max(0, Math.round((d.end - now) / 36e5)); return h > 48 ? Math.round(h / 24) + " days left" : h + " h left"; };
-    box.innerHTML = `<div class="duel-h"><h2>⚔️ Duels</h2><button class="bd-b" type="button" data-dhelp="1">How duels work</button></div>
-      <div class="duel-stats"><span><b>${S.dw | 0}</b> ${(S.dw | 0) === 1 ? "win" : "wins"}</span><span><b>${S.dl | 0}</b> ${(S.dl | 0) === 1 ? "loss" : "losses"}</span>${(S.dst | 0) >= 2 ? `<span>🔥 <b>${S.dst}</b> in a row</span>` : ""}</div>
+    box.innerHTML = `<div class="duel-h"><h2>⚔️ Duels</h2><div class="duel-stats"><span><b>${S.dw | 0}</b> ${(S.dw | 0) === 1 ? "win" : "wins"}</span><span><b>${S.dl | 0}</b> ${(S.dl | 0) === 1 ? "loss" : "losses"}</span>${(S.dst | 0) >= 2 ? `<span>🔥 <b>${S.dst}</b> in a row</span>` : ""}</div><button class="bd-b" type="button" data-dhelp="1">❓ How duels work</button></div>
       ${inc.map(d => `<div class="duel-card inc"><b>${esc(d.fromName)}</b> challenged you to a <b>${DT[d.ty].ico} ${DT[d.ty].name}</b>. <span class="bd-small" style="margin:0">${esc(DT[d.ty].how)}</span><div class="bd-row" style="margin-top:6px"><button class="bd-b go" type="button" data-dacc="${esc(d.id)}">⚔️ Accept</button><button class="bd-b" type="button" data-ddec="${esc(d.id)}">No thanks</button></div></div>`).join("")}
       ${live.length ? `<h3>Live now</h3>${live.map(d => { const mx = d.ty === "first15" ? 15 : Math.max(d.fs, d.ts, 5); return `<div class="duel-card${d.fromMe || d.toMe ? " mine" : ""}"><div class="duel-t">${DT[d.ty].ico} <b>${DT[d.ty].name}</b> <span class="bd-small" style="margin:0">· ${left(d)}</span></div>
         <div class="duel-row"><span>${esc(d.fromName)}</span><span class="duel-bar">${bar(d.fs, mx)}</span><b>${d.fs}</b></div><div class="duel-row"><span>${esc(d.toName)}</span><span class="duel-bar">${bar(d.ts, mx)}</span><b>${d.ts}</b></div></div>`; }).join("")}` : ""}
       ${ds.filter(d => d.fromMe && d.st === "pending").map(d => `<div class="duel-card"><span class="bd-small" style="margin:0">⏳ Waiting for <b>${esc(d.toName)}</b> to accept your ${DT[d.ty].ico} ${DT[d.ty].name}.</span></div>`).join("")}
       ${done.length ? `<h3>Recent winners</h3><ul class="duel-done">${done.map(d => `<li>${d.fs === d.ts ? `🤝 ${esc(d.fromName)} and ${esc(d.toName)} drew` : `🏆 <b>${esc(d.fs > d.ts ? d.fromName : d.toName)}</b> beat ${esc(d.fs > d.ts ? d.toName : d.fromName)}`} · ${DT[d.ty].ico} ${DT[d.ty].name} (${Math.max(d.fs, d.ts)}–${Math.min(d.fs, d.ts)})</li>`).join("")}</ul>` : ""}
       ${!inc.length && !live.length && !done.length && !mineOpen.length ? `<p class="bd-small">No duels yet. Tap someone's buddy in the park, then <b>⚔️ Duel</b> to challenge them!</p>` : mineOpen.length < OPEN_MAX ? `<p class="bd-small">Tap a buddy in the park, then <b>⚔️ Duel</b> to start a new one.</p>` : `<p class="bd-small">You have ${OPEN_MAX} duels going. Finish one to start another.</p>`}
-      <h3 class="duel-gh">Duel gear <small>${ITEMS.filter(i => (i.dw != null || i.ds != null || i.dp != null) && isOpen(i)).length} of ${ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null).length} unlocked</small></h3>
-      <div class="duel-gearg">${ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null).map(i => `<div class="dgt${isOpen(i) ? " on" : ""}"><span class="dgi" aria-hidden="true">${isOpen(i) ? i.ico : "🔒"}</span><b>${esc(i.name)}</b><small>${isOpen(i) ? "Unlocked" : esc(lockTxt(i))}</small></div>`).join("")}</div>`;
+      ${(() => { const dz = ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null), tile = i => `<div class="dgt${isOpen(i) ? " on" : ""}"><span class="dgi" aria-hidden="true">${isOpen(i) ? i.ico : "🔒"}</span><b>${esc(i.name)}</b><small>${isOpen(i) ? "Unlocked ✓" : esc(lockTxt(i))}</small></div>`, ord = i => i.dp != null ? 0 : i.ds != null ? i.ds + 0.5 : i.dw, wear = dz.filter(i => i.slot !== "toy").sort((a, b) => ord(a) - ord(b)), room = dz.filter(i => i.slot === "toy").sort((a, b) => ord(a) - ord(b));
+        return `<h3 class="duel-gh">Duel prizes <small>${dz.filter(isOpen).length} of ${dz.length} unlocked</small></h3>
+        <p class="duel-sub">👕 For your buddy to wear</p><div class="duel-gearg">${wear.map(tile).join("")}</div>
+        <p class="duel-sub">🏠 For your buddy's room</p><div class="duel-gearg">${room.map(tile).join("")}</div>`; })()}`;
   }
   function duelHelp() {
     if (!window.csDialog) return;
     window.csDialog(`<h3 style="margin-top:0">⚔️ How duels work</h3><p>Challenge another club member to a friendly 7-day duel. It starts when they accept.</p><ul>${Object.values(DT).map(t => `<li>${t.ico} <b>${t.name}</b>: ${esc(t.how)}</li>`).join("")}</ul>
       <p class="muted" style="font-size:14px">Only words with a meaning <b>and</b> an example sentence count, up to 10 a day. Scores update when each of you opens Hibi.</p>
       <p><b>Prizes:</b> the winner gets <b>+10 🍪</b> (even past the 30 limit) and <b>+15 friendship</b>. A draw gives +5 🍪, and everyone who finishes a duel gets at least +2 🍪.</p>
-      <p><b>Duel gear:</b> 🚩 banner after your first duel · 🗡️ sword at 1 win · 🛡️ shield at 3 · ⛑️ knight helmet at 5 · 🏰 armour stand at 10 · 🦸 hero cape for 3 wins in a row.</p>
+      <p><b>Prizes your buddy can wear:</b> 🥋 fighter headband after your first duel · 🥇 champion medal at 2 wins · ⛑️ knight helmet at 5 · 😎 battle shades at 7 · 🌿 victory laurel at 15 · 🦸 hero cape for 3 wins in a row.</p>
+      <p><b>Prizes for the room:</b> 🚩 banner after your first duel · 🗡️ sword at 1 win · 🛡️ shield at 3 · 🏰 armour stand at 10.</p>
       <p class="muted" style="font-size:13.5px">You can have up to ${OPEN_MAX} duels at a time, and one at a time with each person.</p>`);
   }
   function duelDialog(uid, first) {
