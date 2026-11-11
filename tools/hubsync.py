@@ -16,6 +16,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py merge <student-id> '<json>'      shallow-merge profile fields
   HUB_PASSWORD=... python3 hubsync.py backup <folder>      full copy of the database (as Noa) into JSON files
   HUB_PASSWORD=... python3 hubsync.py club-sample '{"title":..,"url":<YouTube/Drive link>,"note":..,"wd":3}'   sample class for non-members
+  HUB_PASSWORD=... python3 hubsync.py levels                each Hibi member's level (set by Noa) vs their own choice, level check and module results
   HUB_PASSWORD=... python3 hubsync.py stoic-add '{"d":"YYYY-MM-DD","title":..,"idea":..,"todo":..}'   Daily Stoic line on the teacher pages
   HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..}]}
   HUB_PASSWORD=... python3 hubsync.py add-words <student-id> '[{"w":"word","tr":"meaning","ex":"example"}, ...]'   (skips words already there)
@@ -1159,6 +1160,28 @@ def main():
     if cmd == "club-sample":  # the sample class recording shown to people who aren't in the club yet; '{}' removes it
         e = json.loads(a[1]) if len(a) > 1 else {}
         http("PATCH", f"{BASE}/clubPublic/sample", {"fields": {"json": {"stringValue": json.dumps(e, ensure_ascii=False)}}}, token=tok); print("ok"); return
+    if cmd == "levels":  # level Noa set (roles.lv) next to what each Hibi member's own data says, for the weekly level check
+        users = http("GET", f"{BASE}/users?pageSize=300", token=tok) or {}
+        roles = {}
+        for d in (http("GET", f"{BASE}/roles?pageSize=300", token=tok) or {}).get("documents", []):
+            f = d.get("fields", {}); roles[d["name"].split("/")[-1]] = (f.get("lv") or {}).get("stringValue", "")
+        MODN = {"ps": "past simple", "pp": "present perfect", "prs": "present simple", "ed": "-ed endings"}
+        out = []
+        for d in users.get("documents", []):
+            uid = d["name"].split("/")[-1]; f = d.get("fields", {}); g = lambda k: (f.get(k) or {}).get("stringValue", "")
+            if uid == tu: continue
+            def rd(k):
+                try: return get_doc(tok, uid, k)
+                except SystemExit: return None
+            my, beg, mods = rd("ncs-mylevel"), rd("ncs-level"), rd("ncs-mods") or {}
+            ms = {}
+            for k, v in (mods or {}).items():
+                if isinstance(v, dict) and (v.get("b") or {}):
+                    best = v.get("b") or {}; ms[MODN.get(k, k)] = {"stagesDone": len(best), "bestScores": best, "reached": v.get("r")}
+            out.append({"name": g("name"), "email": g("email"), "setByNoa": roles.get(uid, ""), "theirChoice": (my or {}).get("lv", "") if isinstance(my, dict) else "",
+                        "choiceSource": (my or {}).get("src", "") if isinstance(my, dict) else "", "levelCheckScore": (my or {}).get("score") if isinstance(my, dict) else None,
+                        "beginnerMode": beg == "beginner", "modules": ms})
+        print(json.dumps(sorted(out, key=lambda x: x["name"].lower()), ensure_ascii=False, indent=1)); return
     if cmd == "stoic-add":  # one Daily Stoic entry {"d","title","idea","todo"}; replaces the same date
         e = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}
         L = [x for x in (m.get("stoic") or []) if x.get("d") != e["d"]] + [e]
