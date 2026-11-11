@@ -122,17 +122,17 @@ td.act{white-space:nowrap;text-align:right}
 .mtabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.mtabs .seg{font-weight:800}.mt-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#E5533D;color:#fff;font:800 11px var(--body);margin-left:4px}
 .mt-empty{padding:18px 4px}
 </style>
-<link rel="stylesheet" href="comfort.css?v=19">
+<link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=22" defer></script>
+<script src="comfort.js?v=23" defer></script>
 </head>
 <body>
 <header><div class="top">
   <a class="brand" href="./"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
   <span class="tag">Hibi members</span>
-  <a class="btn" href="private-students.html" style="margin-left:6px" title="Private students">🎓<span class="bt-l"> Private students</span></a>
+  <a class="btn" href="private-students.html" style="margin-left:6px" title="Go to the Private students page">🎓<span class="bt-l"> Go to Private students →</span></a>
   <div class="sp"></div>
   <div class="cs-wrap" id="csWrap"></div>
   <button id="outBtn" type="button" hidden>Sign out</button>
@@ -175,7 +175,7 @@ td.act{white-space:nowrap;text-align:right}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=44"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=45"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -442,7 +442,7 @@ document.addEventListener("change", async e => { const sl = e.target.closest("[d
 let mTab = null; try { mTab = sessionStorage.getItem("cs-m-tab"); } catch (e) {}
 const cntOf = id => { const b = $(id); if (!b || b.hidden) return 0; const n = b.querySelector(".news-n"); return n ? (parseInt(n.textContent, 10) || 0) : 0; };
 function renderTabs() {
-  const todo = cntOf("news") + cntOf("tips") + cntOf("linkBox"), T = [["todo", "📥 To do", todo], ["students", "👥 Students", students.length], ["club", "🌼 Club", cntOf("clubBox")], ["ideas", "🧱 Ideas to build", cntOf("ideas")], ["usage", "📊 Usage", 0]];
+  const todo = cntOf("news") + cntOf("tips") + cntOf("linkBox"), T = [["todo", "📥 To do", todo], ["students", "👥 Hibi members", students.length], ["club", "🌼 Club members", cntOf("clubBox")], ["ideas", "🧱 Ideas to build", cntOf("ideas")], ["usage", "📊 Usage", 0]];
   if (!mTab) mTab = todo ? "todo" : "students";
   $("mTabs").innerHTML = T.map(([k, l, n]) => `<button type="button" class="seg" data-mtab="${k}" aria-pressed="${mTab === k}">${l}${n ? ` <span class="mt-n">${n}</span>` : ""}</button>`).join("");
   document.querySelectorAll("[data-pane]").forEach(p => p.hidden = p.dataset.pane !== mTab);

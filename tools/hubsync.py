@@ -67,6 +67,9 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py del-report <student-id> <report-id>
   HUB_PASSWORD=... python3 hubsync.py add-lesson <student-id> @/tmp/lesson.json   class recap / study guide hosted on Hibi with interactive
       exercises (see LESSON below). Prints the link for the email. Same id (or same kind+date+title) again = replaces it.
+  HUB_PASSWORD=... python3 hubsync.py club-rec-set <rec id or YYYY-MM-DD> '{"summary":"…","diff":6,"diffWhy":"…"}'
+      Updates a Library recording. diff = difficulty 1-10 for club members (1 ≈ A2+, 4 ≈ B1, 6 ≈ B1+/B2, 8 ≈ B2, 10 ≈ C1),
+      judged from the topic, vocabulary, speed and abstractness. club-add-rec and club-add-episode also take "diff" and "diffWhy".
   HUB_PASSWORD=... python3 hubsync.py set-map <student-id> @/tmp/map.json   the student's English Map on My coaching (see MAP below).
       Prints the link (?map#coaching). Running it again replaces the map; check-ins already marked done are kept.
   HUB_PASSWORD=... python3 hubsync.py lessons <student-id>   ·   del-lesson <student-id> <lesson-id>
@@ -816,6 +819,8 @@ def main():
                "at": int(datetime.datetime.now().timestamp() * 1000)}
         if d.get("name"):
             rec["name"] = _txt(d["name"], 80)
+        if d.get("diff"):
+            rec["diff"] = max(1, min(10, int(d["diff"]))); rec["diffWhy"] = _txt(d.get("diffWhy"), 160)
         lst.append(rec)
         http("PATCH", f"{BASE}/clubStats/_recordings", {"fields": {"uid": {"stringValue": "_recordings"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
         print(json.dumps({"ok": True, "id": rec["id"], "count": len(lst)})); return
@@ -865,6 +870,20 @@ def main():
         weeks[wk] = sorted(set((weeks.get(wk) or []) + [wd]))
         http("PATCH", f"{BASE}/clubStats/_plans", {"fields": {"uid": {"stringValue": "_plans"}, "json": {"stringValue": json.dumps({"weeks": weeks})}}}, token=tok)
         print(json.dumps({"ok": True, "week": wk, "wd": wd})); return
+    if cmd == "club-rec-set":
+        # change a Library recording: club-rec-set <id or YYYY-MM-DD> '{"summary":"…","diff":6,"diffWhy":"…","topic":"…"}'
+        d = json.loads(a[2]) if not a[2].startswith("@") else json.load(open(a[2][1:], encoding="utf-8"))
+        r = http("GET", f"{BASE}/clubStats/_recordings", token=tok) or {}
+        lst = json.loads(r.get("fields", {}).get("json", {}).get("stringValue") or "{}").get("list") or []
+        hit = [x for x in lst if x.get("id") == a[1] or x.get("date") == a[1]]
+        if not hit:
+            raise SystemExit("no recording with that id/date")
+        for x in hit:
+            if "summary" in d: x["summary"] = str(d["summary"] or "")[:500]
+            if "topic" in d: x["topic"] = _txt(d["topic"], 120)
+            if d.get("diff"): x["diff"] = max(1, min(10, int(d["diff"]))); x["diffWhy"] = _txt(d.get("diffWhy"), 160)
+        http("PATCH", f"{BASE}/clubStats/_recordings", {"fields": {"uid": {"stringValue": "_recordings"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
+        print(json.dumps({"ok": True, "updated": len(hit)})); return
     if cmd in ("club-episodes", "club-add-episode", "club-del-episode"):
         # the weekly club podcast (NotebookLM audio overview) in the club Library: Noa/helper add, members listen
         r = http("GET", f"{BASE}/clubStats/_podcast", token=tok) or {}
@@ -888,6 +907,10 @@ def main():
             ep = {"id": old[0]["id"] if old else "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10)), "url": url, "date": wk,
                   "title": _txt(d.get("title"), 120), "notes": str(d.get("notes") or "")[:1500], "at": int(datetime.datetime.now().timestamp() * 1000),
                   "vocab": [{"w": _txt(v.get("w"), 80), "tr": _txt(v.get("tr"), 120), "ex": _txt(v.get("ex"), 220)} for v in (d.get("vocab") or []) if isinstance(v, dict) and v.get("w")][:16]}
+            if d.get("diff"):
+                ep["diff"] = max(1, min(10, int(d["diff"]))); ep["diffWhy"] = _txt(d.get("diffWhy"), 160)
+            elif old and old[0].get("diff"):
+                ep["diff"] = old[0]["diff"]; ep["diffWhy"] = old[0].get("diffWhy", "")
             lst = [x for x in lst if x not in old] + [ep]
         http("PATCH", f"{BASE}/clubStats/_podcast", {"fields": {"uid": {"stringValue": "_podcast"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
         print(json.dumps({"ok": True, "count": len(lst)})); return

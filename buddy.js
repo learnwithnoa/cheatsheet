@@ -1248,7 +1248,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const secs = p.querySelectorAll(".cs-sec"); const last = secs[secs.length - 1]; if (!last) return;
     const sec = document.createElement("div"); sec.className = "cs-sec";
     sec.innerHTML = `<h4>Study buddy</h4><label class="cs-tog"><input type="checkbox" id="csBuddyT"><span><b>Show my study buddy</b><small>A little pixel pet in the corner that you feed with treats you earn by studying.</small></span></label>`;
-    p.insertBefore(sec, last);
+    p.insertBefore(sec, $("csInstallSec") || last);
     const t = $("csBuddyT"); updateToggle();
     t.addEventListener("change", () => {
       if (t.checked) { if (!S.a) { const csx = $("csClose"); if (csx) csx.click(); openModal("adopt"); t.checked = false; return; } S.on = true; S.min = false; save(); visible(); hop(); }

@@ -411,11 +411,13 @@
   function tog(id, label, sub) { return `<label class="cs-tog"><input type="checkbox" id="${id}"><span><b>${label}</b>${sub ? `<small>${sub}</small>` : ""}</span></label>`; }
   function buildPanel() {
     const host = $("csWrap"); if (!host) return;
-    host.innerHTML = `<button class="cs-btn" id="csBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="csPanel" title="Reading & comfort settings"><span class="cs-ico" aria-hidden="true">⚙</span><span class="cs-txt">Settings</span></button>
-      <div class="cs-panel" id="csPanel" role="dialog" aria-label="Reading and comfort settings" hidden>
-        <div class="cs-head"><h3>Reading &amp; comfort</h3><button class="cs-x" id="csClose" type="button" aria-label="Close">×</button></div>
-        <div class="cs-sec"><h4>Look</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>
-        <div class="cs-sec"><h4>Reading</h4>
+    host.innerHTML = `<button class="cs-btn" id="csBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="csPanel" title="Settings: look, reading, focus and your buddy"><span class="cs-ico" aria-hidden="true">⚙</span><span class="cs-txt">Settings</span></button>
+      <div class="cs-panel" id="csPanel" role="dialog" aria-label="Settings" hidden>
+        <div class="cs-head"><h3>Settings <small class="cs-hsub">Make Hibi work your way</small></h3><button class="cs-x" id="csClose" type="button" aria-label="Close">×</button></div>
+        <div class="cs-sec"><h4>Look &amp; feel</h4><div class="cs-seg" id="csThemes">${THEME_LIST.map(([v, i, l]) => `<button type="button" data-cstheme="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div>
+          ${matchMedia("(pointer:fine)").matches ? `<div class="cs-curl"><b style="font-weight:800">Mouse cursor</b><div class="cs-seg" id="csCursors">${[["default", "↖", "Normal"], ["big", "⬉", "Big"], ["paw", "🐾", "Paw"], ["pencil", "✏️", "Pencil"], ["star", "⭐", "Star"]].map(([v, i, l]) => `<button type="button" data-cscur="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>` : ""}
+        </div>
+        <div class="cs-sec"><h4>Text &amp; reading</h4>
           <div class="cs-size"><button type="button" id="csSmaller" aria-label="Smaller text">A−</button><span id="csSizeTxt">100%</span><button type="button" id="csBigger" aria-label="Bigger text">A+</button></div>
           <div class="cs-seg two" id="csFonts"><button type="button" data-csfont="default" style="font-family:'Lexend',sans-serif">Lexend</button><button type="button" data-csfont="atkinson" style="font-family:'Atkinson Hyperlegible',sans-serif">Atkinson</button><button type="button" data-csfont="book" style="font-family:'Literata',Georgia,serif">Book</button><button type="button" data-csfont="classic" style="font-family:'Nunito',sans-serif">Classic</button></div>
           <small class="cs-fdesc" id="csFontDesc" aria-live="polite"></small>
@@ -423,15 +425,14 @@
           ${tog("csBionic", "Bionic reading", "Bolds the start of each word. Some people find it easier to read; try it and see.")}
           ${tog("csRulerT", "Reading ruler", "A highlighted band that follows your mouse or finger, to keep your place.")}
           ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click a word, or select a few words," : "Press and hold a word") + " to see what it means and save it to My words.") : ""}
-          ${matchMedia("(pointer:fine)").matches ? `<div class="cs-curl"><b style="font-weight:800">Mouse cursor</b><div class="cs-seg" id="csCursors">${[["default", "↖", "Normal"], ["big", "⬉", "Big"], ["paw", "🐾", "Paw"], ["pencil", "✏️", "Pencil"], ["star", "⭐", "Star"]].map(([v, i, l]) => `<button type="button" data-cscur="${v}"><span aria-hidden="true">${i}</span> ${l}</button>`).join("")}</div></div>` : ""}
         </div>
-        <div class="cs-sec"><h4>Focus</h4>
+        <div class="cs-sec"><h4>Page tools</h4>
           ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on." : "Hides the student list so you only see one student.")}
           ${isMain ? tog("csInshort", "“In short” boxes", "A one-line summary at the top of each grammar page.") : ""}
           ${isMain && canSpeak ? tog("csRead", "Listen buttons", "A 🔊 Listen button on each page reads it aloud. Select text first to hear just that part.") : ""}
 
         </div>
-        <div class="cs-sec"><h4>Calm</h4>
+        <div class="cs-sec"><h4>Comfort &amp; accessibility</h4>
           ${tog("csContrast", "High contrast", "Stronger text and borders, easier to read in bright light or with low vision. Works with any theme.")}
           ${tog("csCalm", "Calm mode", "No animations, softer colors, and no pop-ups" + (isMain ? " (new updates show as a small dot on “What's new” instead)" : "") + ".")}
         </div>
