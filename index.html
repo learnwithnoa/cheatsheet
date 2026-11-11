@@ -800,6 +800,10 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .cl-cev.bday{border-left:3px solid #F0A63A}
 .cl-pf>small:not(.cl-pfh){display:inline}
 
+/* step73 */
+.ger-prac{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--green);background:color-mix(in srgb,var(--green) 8%,var(--surface))}
+.ger-prac>span{font-size:26px;line-height:1}.ger-prac>div{flex:1 1 220px;display:grid;gap:2px}.ger-prac>div span{font-size:14px;color:var(--muted)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2631,7 +2635,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   const MAP_P="cs-open-map";
   try{ const sp=new URLSearchParams(location.search); if(sp.has("map")){ sessionStorage.setItem(MAP_P,"1"); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
   const LV=["A1","A2","B1","B2","C1","C2"];
-  const MODNM={prs:"Present simple",ps:"Past simple",pp:"Present perfect",ed:"-ed endings"};
+  const MODNM={prs:"Present simple",ps:"Past simple",pp:"Present perfect",ing:"Verb + -ing",ed:"-ed endings"};
   function mapHTML(v){ const m=v.map||{}, lv=String(m.level||v.level||"").toUpperCase().match(/[ABC][12]/), cur=lv?lv[0]:"", first=(v.name||"").split(" ")[0];
     const nextRev=(m.reviews||[]).filter(d=>!(m.reviewed||[]).includes(d)).sort()[0];
     const route=(m.route||[]).slice(0,4);
@@ -2734,7 +2738,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     lesOf(v).forEach(x=>{ if(x.date&&x.date>since) out.push({d:x.date,ico:x.kind==="guide"?"📄":"📼",t:`${x.kind==="guide"?"New study guide":"Your class recap"}: <b>${esc(x.title)}</b> (with exercises)`,tab:x.kind==="guide"?"guides":"recaps"}); });
     (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
-    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
+    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ing:"Verb + -ing",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
@@ -2790,7 +2794,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
     </div>`;
     /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
-    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ing:"Verb + -ing",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -4924,6 +4928,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <h1><em>-ing</em> or <em>to</em>?</h1>
   <p class="lede">When one verb comes after another, the second one takes one of two forms: the <b>gerund</b> (verb + -ing) or the <b>infinitive</b> (to + verb). Which one depends on the first verb.</p>
   <div class="in-short"><span class="is-tag">In short</span><div><b>-ing</b> after prepositions and verbs like enjoy, avoid, finish · <b>to + verb</b> after want, need, decide, hope.</div></div>
+  <div class="ger-prac"><span aria-hidden="true">🏃</span><div><b>Practice it</b><span>7 short stages: before leaving, I recommend going, looking forward to seeing you, -ing or to…</span></div><button type="button" class="pill-btn pill-green" data-gomod="ing">Start practicing →</button></div>
   <div class="grid two" style="margin-bottom:14px">
     <div class="card"><span class="tag">gerund · verb + -ing</span>
       <h3 style="margin-top:10px">What it is</h3>
@@ -5110,7 +5115,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My words</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
@@ -5175,7 +5180,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=49" defer></script>
+<script src="buddy.js?v=50" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -5572,6 +5577,9 @@ function searchable(inputId,bodyId,countId,emptyId,data,rowFn,label){
 }
 
 /* ---------------- gerund / infinitive ---------------- */
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-gomod]"); if(!b) return; const id=b.dataset.gomod;
+  try{ sessionStorage.setItem("cs-mod",id); }catch(er){} if(typeof go==="function") go("quiz",true); else location.hash="#quiz";
+  setTimeout(()=>{ const g=document.querySelector('#v-quiz [data-pr="gram"]'); if(g) g.click(); setTimeout(()=>{ const t=document.querySelector('#v-quiz [data-modtile="'+id+'"]'); if(t) t.click(); },60); },180); });
 const GER=[
 ["enjoy","-ing","I enjoy cooking.","disfrutar"],["avoid","-ing","Try to avoid eating late.","evitar"],["finish","-ing","I finished working at 7.","terminar"],
 ["mind","-ing","Do you mind waiting?","importar"],["consider","-ing","I'm considering moving.","considerar"],["suggest","-ing","She suggested going out.","sugerir"],
@@ -7636,6 +7644,175 @@ My cat ___ a lot. (sleep)|sleeps|My cat = it: sleeps.
 What time ___ the movie start? (do)|does|The movie = it → does.
 `.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"prst-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
 
+/* ---------- Verb + -ing question bank (B1 friendly, Spanish help on every question) ----------
+   same format as the other banks: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint */
+const ING_STAGES=[
+ {n:1, t:"Before, after, without + -ing", sub:"before leaving, after work", why:"After a preposition (before, after, without, by, instead of, for…), use verb + -ing.", es:"Después de una preposición (before, after, without, by…), va verbo + -ing: antes de salir → before leaving.", q:`
+Always check your email before ___ it. (send)|sending|send,to send,sent
+I usually have a coffee after ___ lunch. (have)|having|have,to have,had
+She left without ___ goodbye. (say)|saying|say,to say,said|without + -ing.|without + -ing: sin decir → without saying.
+Turn off the lights before ___ the office. (leave)|leaving|leave,to leave,leaveing|Drop the -e: leave → leaving.|Se quita la -e: leave → leaving.
+After ___ the report, I sent it to my boss. (finish)|finishing|finish,to finish,finished
+You can improve your English by ___ every day. (practice)|practicing/practising|practice,to practice,practiced|by + -ing = how you do something.|by + -ing = cómo lo haces: practicando.
+Instead of ___ a taxi, we took the metro. (take)|taking|take,to take,took
+Wash your hands before ___. (eat)|eating|eat,to eat,ate
+He got the job without ___ any experience. (have)|having|have,to have,had
+I'm sorry for ___ late. (be)|being|be,to be,was
+Think carefully before ___ a decision. (make)|making|make,to make,makeing|Drop the -e: make → making.|Se quita la -e: make → making.
+Read the contract before ___ it. (sign)|signing|sign,to sign,signed
+Thanks for ___ me! (help)|helping|help,to help,helped
+Before ___ to bed, I read a little. (go)|going|go,to go,went
+After ___ in Chile for years, she speaks perfect Spanish. (live)|living|live,to live,lived
+We talked about ___ to Peru. (travel)|traveling/travelling|travel,to travel,traveled
+`},
+ {n:2, t:"Verbs that take -ing", sub:"enjoy cooking, avoid eating", why:"Some verbs are always followed by -ing: enjoy, finish, avoid, mind, keep, miss, practice, consider, imagine, give up.", es:"Algunos verbos siempre van con -ing: enjoy, finish, avoid, mind, keep, miss, practice, consider…", q:`
+I really enjoy ___ for my friends. (cook)|cooking|cook,to cook,cooked
+Have you finished ___ the email? (write)|writing|write,to write,writeing|Drop the -e: write → writing.|Se quita la -e: write → writing.
+Try to avoid ___ late at night. (eat)|eating|eat,to eat,ate
+Do you mind ___ a few minutes? (wait)|waiting|wait,to wait,waited
+He keeps ___ me in meetings. (interrupt)|interrupting|interrupt,to interrupt,interrupted|keep + -ing = keep doing it again and again.|keep + -ing = no parar de: no para de interrumpirme.
+I miss ___ near the beach. (live)|living|live,to live,lived
+You need to practice ___ every day. (speak)|speaking|speak,to speak,spoke
+We're considering ___ to a new office. (move)|moving|move,to move,moved
+Imagine ___ in Japan for a year! (work)|working|work,to work,worked
+She stopped ___ because it was bad for her. (smoke)|smoking|smoke,to smoke,smoked|stop + -ing = quit doing it.|stop + -ing = dejar de: dejó de fumar.
+I can't stand ___ in long lines. (wait)|waiting|wait,to wait,waited
+He admitted ___ a mistake. (make)|making|make,to make,made
+Don't give up ___ English! (learn)|learning|learn,to learn,learned
+I spent the whole weekend ___. (study)|studying|study,to study,studied|spend time + -ing.|pasar tiempo + -ing: pasé el fin de semana estudiando.
+I don't mind ___ in cold water. (swim)|swimming|swiming,swim,to swim|Short verb: double the last letter: swim → swimming.|Verbo corto: se duplica la última letra: swimming.
+They delayed ___ the project until March. (start)|starting|start,to start,started
+`},
+ {n:3, t:"suggest, recommend, propose", sub:"I recommend going", why:"After suggest, recommend and propose, use -ing. Never 'suggest to go'. (Or use that + person + verb: I suggest that you go.)", es:"Después de suggest, recommend y propose va -ing. Nunca 'suggest to go'. (O usa that + persona + verbo: I suggest that you go.)", q:`
+I recommend ___ the early train. (take)|taking|to take,take,took|recommend + -ing.|recommend + -ing: te recomiendo tomar → I recommend taking.
+She suggested ___ out for dinner. (go)|going|to go,go,went|suggest + -ing. Never "suggest to go".|suggest + -ing. Nunca "suggest to go".
+We proposed ___ two more people for the team. (hire)|hiring|hire,to hire,hired|propose + -ing: We proposed hiring…|propusimos contratar → we proposed hiring.
+The doctor recommended ___ more water. (drink)|drinking|to drink,drink,drank
+I suggest ___ the meeting to Friday. (move)|moving|to move,move,moved
+They recommended ___ the tickets online. (buy)|buying|to buy,buy,bought
+My manager suggested ___ a short break. (take)|taking|to take,take,took
+Do you recommend ___ this hotel? (book)|booking|to book,book,booked
+He proposed ___ the price by 10%. (lower)|lowering|to lower,lower,lowered
+I'd suggest ___ with the easy questions. (start)|starting|to start,start,started
+Experts recommend ___ at least 7 hours a night. (sleep)|sleeping|to sleep,sleep,slept
+We recommend ___ early to get a good seat. (arrive)|arriving|to arrive,arrive,arriveing|Drop the -e: arrive → arriving.|Se quita la -e: arrive → arriving.
+I recommend that you ___ early. (arrive)|arrive|arriving,to arrive,arrives|With "that + person", use the normal verb: I recommend that you arrive.|Con "that + persona", va el verbo normal: that you arrive.
+She suggested that we ___ a taxi. (take)|take|taking,to take,took|suggest that + person + verb (no -ing, no to).|suggest that + persona + verbo (sin -ing, sin to).
+I suggest ___ a short email instead of calling. (send)|sending|to send,send,sent
+Someone proposed ___ the office on Fridays. (close)|closing|to close,close,closeing|propose + -ing. Drop the -e: closing.|propose + -ing. Se quita la -e: closing.
+`},
+ {n:4, t:"good at, interested in, look forward to", sub:"word + preposition + -ing", why:"Many words come with a preposition: good at, interested in, tired of, thinking about, look forward to. After the preposition: -ing.", es:"Muchas palabras van con preposición: good at, interested in, tired of, look forward to. Después de la preposición: -ing.", q:`
+I'm really interested in ___ more about AI. (learn)|learning|learn,to learn,learned
+She's very good at ___ problems. (solve)|solving|solve,to solve,solveing|good at + -ing. Drop the -e: solving.|good at + -ing. Se quita la -e: solving.
+I'm looking forward to ___ you next week. (see)|seeing|see,to see,saw|look forward to + -ing: here "to" is a preposition!|En look forward to, el "to" es preposición: va -ing.
+I'm tired of ___ the same thing every day. (do)|doing|do,to do,did
+We're thinking about ___ a house. (buy)|buying|buy,to buy,bought
+He's afraid of ___ in public. (speak)|speaking|speak,to speak,spoke
+Thank you for ___ so patient. (be)|being|be,to be,been
+I'm used to ___ up early. (get)|getting|get,to get,geting|be used to + -ing = it's normal for me. Double the t: getting.|be used to + -ing = estar acostumbrado a. Se duplica la t: getting.
+She apologized for ___ the deadline. (miss)|missing|miss,to miss,missed
+They're excited about ___ the new office. (open)|opening|open,to open,opened
+I'm not very good at ___ names. (remember)|remembering|remember,to remember,remembered
+He insisted on ___ for dinner. (pay)|paying|pay,to pay,paid
+Are you interested in ___ our team? (join)|joining|join,to join,joined
+I'm worried about ___ my job. (lose)|losing|lose,to lose,loseing|Drop the -e: lose → losing.|Se quita la -e: lose → losing.
+We look forward to ___ from you. (hear)|hearing|hear,to hear,heard|A classic email ending: We look forward to hearing from you.|Cierre típico de email: We look forward to hearing from you.
+She's in charge of ___ new staff. (train)|training|train,to train,trained
+`},
+ {n:5, t:"-ing or to?", sub:"enjoy doing vs want to do", why:"Some verbs take -ing (enjoy, avoid, finish, suggest, mind). Others take to + verb (want, need, decide, hope, plan, agree).", es:"Algunos verbos van con -ing (enjoy, avoid, finish, suggest). Otros con to + verbo (want, need, decide, hope, plan).", q:`
+I want ___ English fluently. (speak)|to speak|speaking,speak,to speaking|want + to + verb.|want + to + verbo.
+I enjoy ___ English with friends. (speak)|speaking|to speak,speak,spoke|enjoy + -ing.|enjoy + -ing.
+We decided ___ the meeting. (cancel)|to cancel|canceling,cancel,cancelled|decide + to + verb.|decide + to + verbo.
+She avoids ___ her phone at dinner. (use)|using|to use,use,used|avoid + -ing.|avoid + -ing.
+I hope ___ you soon. (see)|to see|seeing,see,saw|hope + to + verb.|hope + to + verbo.
+He suggested ___ a break. (take)|taking|to take,take,took|suggest + -ing.|suggest + -ing.
+They agreed ___ the contract. (sign)|to sign|signing,sign,signed|agree + to + verb.|agree + to + verbo.
+I need ___ this report today. (finish)|to finish|finishing,finish,finished|need + to + verb.|need + to + verbo.
+I've finished ___ the report. (write)|writing|to write,write,wrote|finish + -ing.|finish + -ing.
+We're planning ___ in December. (travel)|to travel|traveling,travel,traveled|plan + to + verb.|plan + to + verbo.
+Do you mind ___ the window? (open)|opening|to open,open,opened|mind + -ing.|mind + -ing.
+I can't afford ___ a new car. (buy)|to buy|buying,buy,bought|afford + to + verb.|afford + to + verbo.
+She managed ___ the problem. (fix)|to fix|fixing,fix,fixed|manage + to + verb = lograr.|manage + to + verbo = lograr.
+I'd like ___ a table for two. (book)|to book|booking,book,booked|would like + to + verb.|would like + to + verbo.
+He keeps ___ the same mistake. (make)|making|to make,make,made|keep + -ing.|keep + -ing.
+I learned ___ when I was 30. (drive)|to drive|driving,drive,drove|learn + to + verb.|learn + to + verbo.
+`},
+ {n:6, t:"Mix it up", sub:"all of it, mixed", why:"After a preposition or verbs like enjoy/suggest/recommend: -ing. After want, need, decide, hope: to + verb.", es:"Después de preposición o verbos como enjoy/suggest/recommend: -ing. Después de want, need, decide, hope: to + verbo.", q:`
+Before ___ the call, check your notes. (start)|starting|to start,start,started
+I recommend ___ this book. (read)|reading|to read,read,readed
+I'd love ___ with you on this project. (work)|to work|working,work,worked|would love + to + verb.|would love + to + verbo.
+She left the meeting without ___ anything. (say)|saying|to say,say,said
+We proposed ___ a new system. (use)|using|to use,use,used
+I'm looking forward to ___ on holiday. (go)|going|to go,go,went
+He refused ___ for the damage. (pay)|to pay|paying,pay,paid
+Have you considered ___ jobs? (change)|changing|to change,change,changeing
+I'm good at ___ under pressure. (work)|working|to work,work,worked
+It's important ___ every day. (practice)|to practice/to practise|practicing,practice,practiced|After an adjective (important, easy, hard): to + verb.|Después de un adjetivo (important, easy): to + verbo.
+After ___ the news, we all went quiet. (hear)|hearing|to hear,hear,heard
+She promised ___ me back. (call)|to call|calling,call,called
+Instead of ___, let's find a solution. (complain)|complaining|to complain,complain,complained
+I suggest ___ the client first. (call)|calling|to call,call,called
+Do you feel like ___ out tonight? (go)|going|to go,go,went
+They expect ___ by Friday. (finish)|to finish|finishing,finish,finished
+`},
+ {n:7, t:"Tell the story", sub:"at work, 10 blanks", story:true, why:"Look at the word before the blank: a preposition, enjoy/suggest/recommend → -ing. want/need/decide → to + verb.", es:"Mira la palabra antes del espacio: preposición, enjoy/suggest/recommend → -ing. want/need/decide → to + verbo.", q:`
+#Marta's first week
+Before ___ her new job, Marta was nervous. (start)|starting|to start,start,started
+Her boss suggested ___ the whole team on day one. (meet)|meeting|to meet,meet,met
+She really enjoyed ___ to everyone. (talk)|talking|to talk,talk,talked
+After ___ lunch together, they showed her the office. (have)|having|to have,have,had
+On Tuesday, she decided ___ notes in English. (take)|to take|taking,take,took
+Her manager recommended ___ a short online course. (do)|doing|to do,do,did
+She's interested in ___ her presentation skills. (improve)|improving|to improve,improve,improved
+She tries to avoid ___ too fast in meetings. (speak)|speaking|to speak,speak,spoke
+On Friday, she left without ___ her laptop! (take)|taking|to take,take,took
+She's looking forward to ___ back on Monday. (go)|going|to go,go,went
+#The team meeting
+Thanks for ___ to the meeting, everyone. (come)|coming|to come,come,came
+Today I want ___ about our sales. (talk)|to talk|talking,talk,talked
+Sales went down after ___ the price. (raise)|raising|to raise,raise,raised
+Carlos suggested ___ a new ad campaign. (try)|trying|to try,try,tried
+Ana proposed ___ two new salespeople. (hire)|hiring|to hire,hire,hired
+I think it's worth ___ about. (think)|thinking|to think,think,thought
+We need ___ a decision soon. (make)|to make|making,make,made
+Let's avoid ___ too much money. (spend)|spending|to spend,spend,spent
+Does anyone mind ___ the notes? (write)|writing|to write,write,wrote
+Great! I look forward to ___ the results. (see)|seeing|to see,see,saw
+`}
+];
+ING_STAGES.forEach(st=>{
+  if(st.story){ st.stories=[]; let cur=null, k=0; st.items=[]; st.q.trim().split("\n").forEach(l=>{ if(l.startsWith("#")){ cur={title:l.slice(1).trim(),items:[]}; st.stories.push(cur); return; } const p=l.split("|").map(x=>x.trim()); const it={id:"ing"+st.n+"-"+(k++), st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es, story:cur.title}; cur.items.push(it); st.items.push(it); }); delete st.q; return; }
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"ing"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+const ING_TEST=`
+Call me before ___ the office. (leave)|leaving|Before + -ing. Drop the -e.
+She left without ___ a word. (say)|saying|without + -ing.
+I enjoy ___ in the morning. (run)|running|enjoy + -ing. Double the n.
+We recommend ___ the tickets early. (buy)|buying|recommend + -ing.
+He suggested ___ a meeting. (have)|having|suggest + -ing, never "suggest to".
+We proposed ___ more staff. (hire)|hiring|propose + -ing.
+I want ___ a new job. (find)|to find|want + to + verb.
+They decided ___ the trip. (cancel)|to cancel|decide + to + verb.
+I'm looking forward to ___ you. (meet)|meeting|look forward to + -ing.
+She's good at ___ people. (manage)|managing|good at + -ing.
+I'm interested in ___ abroad. (study)|studying|interested in + -ing.
+Do you mind ___ me? (help)|helping|mind + -ing.
+I need ___ my boss. (call)|to call|need + to + verb.
+He keeps ___ late. (arrive)|arriving|keep + -ing.
+After ___ the email, she felt better. (send)|sending|after + -ing.
+I'm tired of ___ for the bus. (wait)|waiting|tired of + -ing.
+We hope ___ soon. (finish)|to finish|hope + to + verb.
+I suggest that you ___ a break. (take)|take|suggest that + person + verb.
+She avoided ___ the question. (answer)|answering|avoid + -ing.
+Thanks for ___ me. (invite)|inviting|for + -ing.
+I'm used to ___ in English. (work)|working|be used to + -ing.
+It's worth ___ the movie. (see)|seeing|it's worth + -ing.
+I'd like ___ a coffee. (order)|to order|would like + to + verb.
+Instead of ___, he went home. (stay)|staying|instead of + -ing.
+She managed ___ on time. (arrive)|to arrive|manage + to + verb.
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"ingt-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
+
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
 (function(){
   const view=document.getElementById("v-quiz"), hub=document.getElementById("prHub"); if(!view||!hub) return;
@@ -7647,6 +7824,7 @@ What time ___ the movie start? (do)|does|The movie = it → does.
     ps:{id:"ps",name:"Past simple",lname:"past simple",stages:PS_STAGES,test:PS_TEST,toy:"⏳ Magic hourglass",toyName:"Magic hourglass",ico:"⏪"},
     pp:{id:"pp",name:"Present perfect",lname:"present perfect",stages:PP_STAGES,test:PP_TEST,toy:"🌍 Little globe",toyName:"Little globe",ico:"🌍"},
     prs:{id:"prs",name:"Present simple",lname:"present simple",stages:PRS_STAGES,test:PRS_TEST,toy:"☕ Coffee mug",toyName:"Coffee mug",ico:"☀️"},
+    ing:{id:"ing",name:"Verb + -ing",lname:"verb + -ing",stages:ING_STAGES,test:ING_TEST,toy:"🛹 Skateboard",toyName:"Skateboard",ico:"🏃"},
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
@@ -9310,6 +9488,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 const CHANGELOG=[
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
     ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
+    ["🏃","New: Verb + -ing","<b>before leaving</b>, <b>I recommend going</b>, <b>looking forward to seeing you</b>, and when it's <b>to</b> instead. 7 stages in <b>Practice → Grammar</b>. Finish it for a 🛹 skateboard for your buddy.","quiz"],
     ["🎂","Your name, job and birthday","in the club, open <b>your profile → ✏️ Edit</b> to change how your name shows (just your first name, for example), add a little title (your job, or anything that describes you), and add your birthday. Birthdays you choose to show get a 🎂 on the club calendar and a little celebration on <b>This week</b>.","club"],
     ["✍️","My own sentence","in <b>My words</b>, tap <b>✍️ Write my own sentence</b> under any word to add a sentence of your own. You can edit it any time, and the AI never touches it.","words"],
     ["✅","Choose what the AI does","<b>✨ Complete my words</b> and <b>🧹 Clean up my words</b> now have a checklist (with <b>Select all</b>) so you choose exactly what gets filled in or checked.","words"],

@@ -323,7 +323,7 @@ tr.arch td{opacity:.85}
 </main>
 <div id="modal" class="modal" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=49"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=50"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -772,6 +772,7 @@ function emailUI(s) {
 const REC_MODS = { prs: { name: "Present simple", stages: ["I, you, we, they", "He, she, it + -s", "Spelling: -es, -ies, has", "Negatives: don't / doesn't", "Questions: do / does", "Mix it up", "Tell the story"] },
   ps: { name: "Past simple", stages: ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"] },
   pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] },
+  ing: { name: "Verb + -ing", stages: ["Before, after, without + -ing", "Verbs that take -ing", "suggest, recommend, propose", "good at, interested in, look forward to", "-ing or to?", "Mix it up", "Tell the story"] },
   ed: { name: "-ed endings (pronunciation)", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
 function recBox(s) {
   const mine = ((meta && meta.recs) || []).filter(r => r.hub === s.id && !r.done).slice(-3).reverse();
