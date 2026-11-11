@@ -733,6 +733,13 @@ html.cs-signed .top-in #authBtn.st-busy::after{background:#E0A100}
 html.cs-signed .top-in #authBtn.st-err::after{background:var(--red,#E5533D)}
 html.cs-signed .top-in #authBtn:hover{border-color:var(--royal,#3b82f6)!important}
 
+/* step62: notifications-only mode for the teacher pages' pop-up */
+html.np-mode,html.np-mode body{background:var(--surface)!important;overflow:hidden!important}
+html.np-mode body *{visibility:hidden!important}
+html.np-mode #tNotif .tn-box,html.np-mode #tNotif .tn-box *{visibility:visible!important}
+html.np-mode #tNotif .tn-box{position:fixed!important;inset:0!important;width:auto!important;max-height:none!important;height:100%!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:auto!important;z-index:2147483647}
+html.np-mode dialog,html.np-mode .toast{display:none!important}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2954,6 +2961,9 @@ html.cs-calm .cs-rxpal button{transition:none}
 <script>
 /* Noa only: notifications at the top of Home (new sign-ups, packs that need attention) */
 (function(){
+  const NP=/[?&]np=1/.test(location.search);   /* shown inside the 🔔 pop-up on the teacher pages */
+  if(NP){ document.documentElement.classList.add("np-mode"); const bs=document.createElement("base"); bs.target="_top"; document.head.appendChild(bs); }
+  const npSay=m=>{ if(NP&&window.parent!==window) try{ window.parent.postMessage(Object.assign({tn:1},m),location.origin); }catch(e){} };
   const SEEN="ncs-tnotif-seen", HIDE="cs-tnotif-hide";
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const ago=t=>{ const m=Math.round((Date.now()-t)/6e4); if(m<60) return m<=1?"just now":m+" min ago"; const h=Math.round(m/60); if(h<24) return h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); return d===1?"yesterday":d+" days ago"; };
@@ -2971,7 +2981,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       let reps=[]; try{ reps=window.__clubSocial&&window.__clubSocial.reports?await window.__clubSocial.reports():[]; }catch(e){}
       let areq=[]; try{ areq=await accessReqs(); }catch(e){}
       let mine=[]; try{ mine=window.__clubSocial&&window.__clubSocial.myNotes?await window.__clubSocial.myNotes():[]; }catch(e){}
-      data={acc,priv,club,reps,areq,mine};
+      data={acc,priv,club,reps,areq,mine}; if(NP) open=true;
       try{ if(new URLSearchParams(location.search).get("notif")){ open=true; history.replaceState(null,"",location.pathname+location.hash); } }catch(e){}
       paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
@@ -2997,7 +3007,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const reps=data.reps||[], areq=data.areq||[];
     const mineNew=(data.mine||[]).filter(n=>n.at>since);
     const cnt=areq.length+joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length+reps.length+mineNew.length;
-    try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){}
+    try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){} npSay({n:cnt});
     b.hidden=false;
     /* closed: a small button that opens it again */
     const bell=`<button type="button" class="tn-bell theme-btn${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
@@ -3037,9 +3047,9 @@ html.cs-calm .cs-rxpal button{transition:none}
     else if(k==="all") showAll=!showAll;
     else if(k==="seen"){ undoPrev=getSeen(); setSeen(Date.now()); open=true; }
     else if(k==="undo"){ setSeen(undoPrev||0); undoPrev=null; open=true; }
-    else if(k==="hide"){ open=false; undoPrev=null; }
+    else if(k==="hide"){ if(NP){ npSay({close:1}); return; } open=false; undoPrev=null; }
     paint(); });
-  document.addEventListener("click",e=>{ if(open&&e.target.isConnected&&!e.target.closest("#tNotif")){ open=false; undoPrev=null; paint(); } });
+  document.addEventListener("click",e=>{ if(NP) return; if(open&&e.target.isConnected&&!e.target.closest("#tNotif")){ open=false; undoPrev=null; paint(); } });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&open){ open=false; paint(); } });
   document.addEventListener("cs-teacher",()=>setTimeout(load,300));
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher&&window.__csAway&&window.__csAway(300000)) load(); });
@@ -8940,7 +8950,7 @@ bkRender();
      (browsers only allow sound after a tap, so if it can't start by itself the first tap anywhere starts it) */
   let RESUME=null;
   window.addEventListener("pagehide",()=>{ try{ if(playing) localStorage.setItem("cs-music-on",JSON.stringify({t:Date.now(),step,bar})); else localStorage.removeItem("cs-music-on"); }catch(e){} });
-  (function(){ let t=0; try{ const v=JSON.parse(localStorage.getItem("cs-music-on")||"null"); localStorage.removeItem("cs-music-on"); if(v&&typeof v==="object"){ t=v.t; RESUME={step:v.step|0,bar:v.bar|0}; } else t=+v||0; }catch(e){} if(!t||Date.now()-t>180000){ RESUME=null; return; }
+  (function(){ if(/[?&]np=1/.test(location.search)) return; let t=0; try{ const v=JSON.parse(localStorage.getItem("cs-music-on")||"null"); localStorage.removeItem("cs-music-on"); if(v&&typeof v==="object"){ t=v.t; RESUME={step:v.step|0,bar:v.bar|0}; } else t=+v||0; }catch(e){} if(!t||Date.now()-t>180000){ RESUME=null; return; }
     const go=()=>{ ["pointerdown","keydown","touchstart"].forEach(ev=>window.removeEventListener(ev,go,true)); btn.classList.remove("mu-wait"); btn.removeAttribute("data-wait"); if(!(ac&&ac.state==="running")) play(); };
     setTimeout(()=>{ play().then(()=>{ if(ac&&ac.state==="running") return; btn.classList.add("mu-wait"); btn.setAttribute("data-wait","Tap anywhere to keep the music going"); ["pointerdown","keydown","touchstart"].forEach(ev=>window.addEventListener(ev,go,true)); }); },300); })();
   document.getElementById("musicModes").addEventListener("click",e=>{ const b=e.target.closest("[data-mm]"); if(!b) return; mode=b.dataset.mm; LS.set("ncs-music-mode",mode); applyMix(); paint(); if(!playing) play(); });
