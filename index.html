@@ -9435,7 +9435,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
    After that: the cloud is the source of truth, local edits are pushed right away. */
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
-  initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0c";
+  initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, AgentPlatformBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
 import { makeView, tzReminders } from "./hubview.js?v=14";
 window.__csTzRem = tzReminders;
 
@@ -9878,14 +9878,17 @@ window.__csPark = {
 /* ---------- translator (Gemini via Firebase AI Logic, free tier) ----------
    Same shape as the Claude page's sample(): sample(prompt,{onText}) -> {text} */
 const MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
-let ai = null;
+/* paid service first (Agent Platform, on the Blaze plan), the free Gemini Developer API as a backup */
+let ai = null, aiPaid = null;
 try { ai = getAI(app, { backend: new GoogleAIBackend() }); } catch (e) { console.warn("AI Logic not available", e); }
+try { aiPaid = getAI(app, { backend: new AgentPlatformBackend("global") }); } catch (e) { aiPaid = null; }
 const aiCount = k => { try { window.csUse && window.csUse(k); } catch (e) {} };
 async function geminiSample(prompt, opts = {}) {
   let lastErr, limited = false; aiCount("ai");
-  for (const name of MODELS) {
+  const tries = []; if (aiPaid && !window.__csNoPaidAI) MODELS.forEach(m => tries.push([aiPaid, m, true])); MODELS.forEach(m => tries.push([ai, m, false]));
+  for (const [inst, name, paid] of tries) {
     try {
-      const model = getGenerativeModel(ai, { model: name, generationConfig: { temperature: 0.2 } });
+      const model = getGenerativeModel(inst, { model: name, generationConfig: { temperature: 0.2 } });
       const res = await model.generateContentStream(prompt);
       let text = "";
       for await (const chunk of res.stream) {
@@ -9898,6 +9901,9 @@ async function geminiSample(prompt, opts = {}) {
       if (e && e.name === "AbortError") throw e;
       lastErr = e;
       const msg = String((e && (e.message || e.code)) || "");
+      /* the paid service isn't switched on yet (or not allowed): use the free one for the rest of this visit */
+      if (paid && /403|permission|disabled|not been used|not enabled|billing|PERMISSION_DENIED|api-not-enabled/i.test(msg)) { window.__csNoPaidAI = true; continue; }
+      if (paid) continue;   /* any other trouble with the paid service: try the next option */
       /* busy or out of quota: each model has its own limit, so try the next one before giving up */
       if (/429|quota|exhaust|rate/i.test(msg)) { aiCount("ai-limit"); limited = true; continue; }
       if (!/not found|404|unsupported|not supported|503|overloaded|unavailable/i.test(msg)) break;   // try the next model if this one doesn't exist or is overloaded
