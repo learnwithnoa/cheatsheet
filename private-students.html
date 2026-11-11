@@ -47,6 +47,7 @@ input[type=search]{width:100%;font:600 15px var(--body);color:var(--ink);backgro
 .frm-acts{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;margin-top:4px;padding-top:10px;border-top:1px dashed var(--line)}
 .recf{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
 .recf select,.recf input{font:600 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px}.recf input{flex:1;min-width:200px}
+.tenkey{display:flex;align-items:center;gap:3px;margin:6px 2px 8px;font-size:11.5px;color:var(--muted)}.tenkey[hidden]{display:none}.tenkey i{width:16px;height:6px;border-radius:3px}.tenkey span{margin:0 4px}
 .wtools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}.wsel-all{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:14px}
 .wfix{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}.wfix-r{display:flex;gap:8px;align-items:flex-start;font-size:14px}.wfix s{opacity:.7}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin:12px 0 6px}
@@ -309,7 +310,7 @@ tr.arch td{opacity:.85}
     <div id="stList">
         <input type="search" id="q" placeholder="Search students…" aria-label="Search students">
         <div class="filters" id="filters"></div>
-        <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option></select></div>
+        <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option></select><label class="muted small" for="lbar" style="margin-left:8px">Color:</label><select id="lbar" title="What the colored line next to each name means" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="time">Time with you 🌈</option><option value="pack">Their pack</option></select></div><div class="tenkey" id="tenKey" aria-hidden="true"></div>
         <div class="list" id="list"></div>
     </div>
     <div id="stDetail" hidden><button type="button" class="backb" id="backBtn">← All students</button><div id="detail" class="card"></div></div>
@@ -728,17 +729,19 @@ function renderList() {
   const ls = S.filter(s => (filt === "all" || (filt === "hibi" ? s.uid && s.status !== "inactive" : s.status === filt)) && (!q || (s.name + " " + (s.email || "") + " " + (s.emails || []).join(" ")).toLowerCase().includes(q)));
   const byName = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" });
   const nx = {}; ls.forEach(s => nx[s.id] = nextClassAt(s));
+  /* colored line: how long they've been with you (cool = new, hot = longest), 8 steps */
   const ord = (meta && meta.order) || [];
   const left = s => { const p = curPack(s); const st = p && p.size ? packStats(s, p) : null; return st ? st.classesLeft : 999; };
   if (lSort !== "next") lSort = "name";
   ls.sort(lSort === "name" ? byName : (a, b) => ((nx[a.id] ? nx[a.id].t : 9e15) - (nx[b.id] ? nx[b.id].t : 9e15)) || byName(a, b));
-  $("lsort").value = lSort;
+  $("lsort").value = lSort; $("lbar").value = barMode;
+  const tk = $("tenKey"); if (tk) { tk.hidden = barMode !== "time"; tk.innerHTML = barMode === "time" ? `<span>newer</span>${TEN.map(t => `<i style="background:${t[1]}" title="${t[2]}"></i>`).join("")}<span>longer</span>` : ""; }
   $("list").innerHTML = ls.map(s => {
     const p = curPack(s), st = p ? packStats(s, p) : null, al = alertsFor(s), en = engagement(s);
     const pct = st && st.size ? Math.min(100, st.used / st.size * 100) : 0;
     const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
     const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
-    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${p && p.color || "var(--line)"}"><span class="av${avSync(s)}" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
+    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${barMode === "time" ? tenColor(s)[0] : (p && p.color || "var(--line)")}" title="${barMode === "time" ? esc(tenColor(s)[1]) : ""}"><span class="av${avSync(s)}" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
       <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lSort === "next" && nx[s.id] ? " · " + fmtNext(nx[s.id]) : lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
       ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</span></button>`;
   }).join("") || `<p class="muted">No students here.</p>`;
@@ -756,10 +759,15 @@ const REC_MODS = { prs: { name: "Present simple", stages: ["I, you, we, they", "
   ed: { name: "-ed endings (pronunciation)", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
 function recBox(s) {
   const mine = ((meta && meta.recs) || []).filter(r => r.hub === s.id && !r.done).slice(-3).reverse();
-  const list = mine.length ? `<span class="muted small">Showing now: ${mine.map(r => esc(r.mod ? (REC_MODS[r.mod] ? REC_MODS[r.mod].name : r.mod) + (r.stage ? " · " + r.stage : "") : r.title || r.page || r.pack)).join(", ")}</span>` : "";
+  const list = mine.length ? `<span class="muted small">Showing now: ${mine.map(r => esc(r.mod ? (REC_MODS[r.mod] ? REC_MODS[r.mod].name : r.mod) + (r.stage ? " · " + r.stage : " (whole module)") : r.title || r.page || r.pack)).join(", ")}</span>` : "";
   if (!s._recOpen) return `<div class="row" style="margin:8px 0 0;gap:8px;align-items:center"><button type="button" class="ib" data-act="recOpen">⭐ Recommend a module</button>${list}</div>`;
-  return `<form id="recForm" class="recf" onsubmit="return false"><b>⭐ Recommend a module</b><select name="mod">${Object.entries(REC_MODS).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("")}</select><select name="stage">${REC_MODS.prs.stages.map((t, i) => `<option value="${i + 1}">${i + 1}. ${esc(t)}</option>`).join("")}</select><input name="why" placeholder="Why (optional, they see it): e.g. said “she work”" maxlength="120"><button type="button" class="primary" data-act="recGo">Recommend</button><button type="button" data-act="recOpen">Cancel</button><span class="muted small" style="flex-basis:100%">They see it on My coaching under “Noa recommends”, and in Practice that stage gets a ⭐.</span></form>`;
+  return `<form id="recForm" class="recf" onsubmit="return false"><b>⭐ Recommend a module</b><select name="mod">${Object.entries(REC_MODS).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("")}</select><select name="stage"><option value="0">⭐ The whole module</option>${REC_MODS.prs.stages.map((t, i) => `<option value="${i + 1}">${i + 1}. ${esc(t)}</option>`).join("")}</select><input name="why" placeholder="Why (optional, they see it): e.g. said “she work”" maxlength="120"><button type="button" class="primary" data-act="recGo">Recommend</button><button type="button" data-act="recOpen">Cancel</button><span class="muted small" style="flex-basis:100%">They see it on My coaching under “Noa recommends”, and in Practice that stage gets a ⭐.</span></form>`;
 }
+let barMode = "time"; try { barMode = localStorage.getItem("cs-hub-lbar") === "pack" ? "pack" : "time"; } catch (e) {}
+const TEN = [[1, "#8B5CF6", "under 1 month"], [2, "#3B82F6", "1–2 months"], [3, "#06B6D4", "2–3 months"], [6, "#22C55E", "3–6 months"], [9, "#A3D635", "6–9 months"], [12, "#FACC15", "9–12 months"], [18, "#F97316", "1 year to 1½ years"], [1e9, "#EF4444", "1½ years or more"]];
+function firstDate(s) { const ds = (s.classes || []).map(c => c.date).filter(Boolean).concat((s.packs || []).map(p => p.first).filter(Boolean)).sort(); return ds[0] || ""; }
+function tenColor(s) { const f = firstDate(s); if (!f) return ["var(--line)", "No classes yet"]; const m = (Date.now() - new Date(f + "T12:00:00")) / (30.44 * 864e5); const t = TEN.find(x => m < x[0]) || TEN[TEN.length - 1];
+  const mm = Math.floor(m); return [t[1], `With you since ${fmtShort(f)} (${mm < 1 ? "less than a month" : mm === 1 ? "1 month" : mm < 24 ? mm + " months" : (m / 12).toFixed(1).replace(".0", "") + " years"})`]; }
 function bringUp(s) {
   const auto = alertsFor(s).filter(a => a.kind).map(a => ({ auto: true, text: a.t.replace(s.name + ": ", ""), a }));
   const pins = (s.pins || []).filter(x => !x.done);
@@ -779,7 +787,7 @@ function renderDetail() {
   const s = S_(); const box = $("detail");
   if (!s) { box.innerHTML = ""; return; }
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
-  const links = [s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
+  const links = [`<a class="linkb" href="index.html?viewas=${encodeURIComponent(s.id)}#coaching" title="Opens Hibi showing exactly what ${esc(s.name.split(" ")[0])} sees (read-only)">👁 Their My coaching</a>`, s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
   box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
     ${(() => { const LV = ["A1", "A2", "A2-B1", "B1", "B1-B2", "B2", "B2-C1", "C1", "C2"], fromLevel = String(s.level || "").toUpperCase().replace(/[–—]/g, "-").replace(/\s+/g, ""), cur = s.cefr || (LV.includes(fromLevel) ? fromLevel : "");
@@ -922,7 +930,7 @@ function tWords(s) {
   if (!ws.length) return bar + `<p class="muted">No words yet.${s.uid ? " If they can see words on their screen that aren't here, they're probably <b>not signed in to Hibi on that device</b>: the top right should show their photo and “Saved ✓”. Once they sign in, their words come to their account and show up here." : " Once they're linked, the words they save on Hibi show up here too."}</p>`;
   const th = (k, l) => `<th class="sortable" data-wsort="${wSort === k ? { az: "za", za: "az", new: "old", old: "new" }[k] : k}">${l}${wSort === k ? " ↓" : wSort === { az: "za", za: "az", new: "old", old: "new" }[k] ? " ↑" : ""}</th>`;
   const tools = s.uid && appRows.length ? `<div class="wtools"><label class="wsel-all"><input type="checkbox" data-wselall ${wSel.size && wSel.size === appRows.length ? "checked" : ""}> Select all</label><span class="muted small">${wSel.size ? wSel.size + " selected" : "Tick words in their Hibi (📱) to fix only those"}</span><button type="button" class="ib" data-wai="complete" ${wSel.size ? "" : "disabled"}>✨ Complete selected</button><button type="button" class="ib" data-wai="clean" ${wSel.size ? "" : "disabled"}>🧹 Clean up selected</button><span class="muted small" id="wAiSt"></span></div>` : "";
-  return bar + tools + `<p class="muted small" style="margin:0 0 8px">📱 = in their Hibi “My words” (your changes go straight to their list) · 📗 = only in their English Journey sheet. Click a column title to sort.</p>
+  return bar + tools + `<p class="muted small" style="margin:0 0 8px">Click a column title to sort.</p>
     <div class="tbl"><table class="wtbl"><thead><tr><th></th><th></th>${th("az", "Word")}<th>Type</th><th>Meaning</th><th>Spanish</th><th>Example</th>${th("new", "Added")}<th></th></tr></thead><tbody>${ws.map(w => wEdit === w.key ? `<tr class="editing"><td></td><td>${w.src === "app" ? "📱" : "📗"}</td>
       <td><input data-we="w" value="${esc(w.w)}"></td><td><input data-we="pos" value="${esc(w.pos)}" placeholder="noun" style="width:80px"></td><td><textarea data-we="def" rows="2">${esc(w.def)}</textarea></td><td><input data-we="m" value="${esc(w.m)}"></td><td><textarea data-we="e" rows="2">${esc(w.e)}</textarea></td><td class="d">${w.t ? fmtShort(new Date(w.t).toISOString().slice(0, 10)) : ""}</td>
       <td class="acts"><button type="button" class="ib" data-wsave="${w.key}" title="Save">✓</button><button type="button" class="ib" data-wcancel title="Cancel">✕</button></td></tr>`
@@ -979,6 +987,7 @@ function tOther(s) { return s.other.map(o => `<h3>${esc(o.tab)}</h3><div class="
 
 /* ---------- events ---------- */
 $("q").oninput = renderList;
+$("lbar").onchange = e => { barMode = e.target.value; try { localStorage.setItem("cs-hub-lbar", barMode); } catch (er) {} renderList(); };
 $("lsort").onchange = e => { lSort = e.target.value; try { localStorage.setItem("cs-hub-lsort", lSort); } catch (er) {} renderList(); };
 let dragId = null;
 $("list").addEventListener("dragstart", e => { const b = e.target.closest(".stu"); if (!b) return; dragId = b.dataset.s; e.dataTransfer.effectAllowed = "move"; });
@@ -1022,9 +1031,9 @@ document.addEventListener("click", e => {
   if (act === "mapDone") { s.map.reviewed = (s.map.reviewed || []).concat(id); save(s, false, "English Map check-in done"); renderDetail(); return; }
   if (act === "recOpen") { s._recOpen = !s._recOpen; renderDetail(); return; }
   if (act === "recGo") { const f = $("recForm"), mod = f.mod.value, st = +f.stage.value, why = f.why.value.trim(); const T = REC_MODS[mod]; if (!T) return;
-    meta.recs = (meta.recs || []).concat({ id: uid(), hub: s.id, name: s.name, mod, stage: st, title: T.stages[st - 1], why, from: "Noa", date: today() }).slice(-120); saveMeta(); publish(s, true);
-    if (s.uid) (async () => { try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-modrec")); let v = {}; try { v = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e2) {} v[mod] = st; await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); } catch (e2) { console.warn(e2); } })();
-    s._recOpen = false; renderDetail(); toast("⭐ Recommended to " + s.name.split(" ")[0] + ": " + T.name + " · stage " + st); return; }
+    meta.recs = (meta.recs || []).concat({ id: uid(), hub: s.id, name: s.name, mod, stage: st || 0, title: st ? T.stages[st - 1] : "The whole module", why, from: "Noa", date: today() }).slice(-120); saveMeta(); publish(s, true);
+    if (s.uid) (async () => { try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-modrec")); let v = {}; try { v = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e2) {} v[mod] = st || "all"; await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); } catch (e2) { console.warn(e2); } })();
+    s._recOpen = false; renderDetail(); toast("⭐ Recommended to " + s.name.split(" ")[0] + ": " + T.name + (st ? " · stage " + st : " (whole module)")); return; }
   if (act === "pinOpen") { s._pinOpen = true; renderDetail(); const i = document.querySelector("#pinForm input"); if (i) i.focus(); return; }
   if (act === "pinDone") { const x = (s.pins || []).find(x => x.id === id); if (x) x.done = today(); save(s); renderDetail(); return; }
   if (act === "cancelRow") { editRow = null; renderDetail(); return; }
@@ -1046,7 +1055,7 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const t = e.target, s = S_();
-  if (t.closest && t.closest("#recForm") && t.name === "mod") { const T = REC_MODS[t.value]; t.form.stage.innerHTML = T.stages.map((x, i) => `<option value="${i + 1}">${i + 1}. ${esc(x)}</option>`).join(""); return; }
+  if (t.closest && t.closest("#recForm") && t.name === "mod") { const T = REC_MODS[t.value]; t.form.stage.innerHTML = `<option value="0">⭐ The whole module</option>` + T.stages.map((x, i) => `<option value="${i + 1}">${i + 1}. ${esc(x)}</option>`).join(""); return; }
   if (t.dataset.wsel) { if (t.checked) wSel.add(t.dataset.wsel); else wSel.delete(t.dataset.wsel); renderDetail(); return; }
   if (t.hasAttribute && t.hasAttribute("data-wselall")) { wSel = t.checked ? new Set(wordRows(s).filter(w => w.src === "app").map(w => w.key)) : new Set(); renderDetail(); return; }
   if (t.id === "mailPick") { s._mail = t.value; $("mailLink").href = GM(t.value); $("mailLink").textContent = "✉️ " + t.value; return; }

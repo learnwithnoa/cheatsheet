@@ -2731,6 +2731,16 @@ html.cs-calm .cs-rxpal button{transition:none}
     try{ sessionStorage.setItem("cs-viewas",JSON.stringify({label,kind,view,uid,data,at:Date.now()})); }catch(err){ if(typeof window.toast==="function") window.toast("Their data is too big to preview here"); preview(label,view,kind); return; }
     location.hash=view?"#coaching":"#notes"; location.reload();
   }
+  /* shortcut from Private students: index.html?viewas=<hub id> opens that student's My coaching, viewed as them */
+  (function(){ let want=null; try{ const sp=new URLSearchParams(location.search); want=sp.get("viewas"); if(want){ sessionStorage.setItem("cs-va-want",want); history.replaceState(null,"",location.pathname+"#coaching"); } else want=sessionStorage.getItem("cs-va-want"); }catch(e){}
+    if(!want) return; if(window.__csViewAsMode){ try{ sessionStorage.removeItem("cs-va-want"); }catch(e){} return; }
+    let tries=0; const go=async()=>{ const F=window.__csFire; if(!(window.__csTeacher===true&&window.__csViewAs&&F&&F.uid&&F.uid())){ if(++tries<60) setTimeout(go,500); else { try{ sessionStorage.removeItem("cs-va-want"); }catch(e){} } return; }
+      try{ sessionStorage.removeItem("cs-va-want"); }catch(e){}
+      let d={priv:[]}; try{ d=await window.__csViewAs.students(); }catch(e){}
+      const x=(d.priv||[]).find(p=>p.key==="hub:"+want); if(!x){ if(typeof window.toast==="function") window.toast("Couldn’t find that student"); return; }
+      const lb=x.view.name+(x.both?" (private + club)":" (private)");
+      if(x.uid) realView(lb,x.view,x.both?"both":"private",x.uid,null); else { preview(lb+" · not on Hibi yet, so no words or notes",x.view,x.both?"both":"private"); location.hash="#coaching"; } };
+    go(); })();
   if(window.__csViewAsMode){ const va=window.__csViewAsMode; window.__csPreview={label:va.label,kind:va.kind||(va.view?"private":"club"),real:true}; window.__csHubView=va.view||null;
     const show=()=>{ banner(va.label+" · their own words, notes and buddy (read-only)"); nav(); document.dispatchEvent(new CustomEvent("cs-preview")); };
     if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",show); else show(); }
@@ -7376,7 +7386,7 @@ What time ___ the movie start? (do)|does|The movie = it → does.
       '<div class="pr-dots" aria-hidden="true">'+Array.from({length:GOAL},(_,i)=>'<i class="'+(i<w.n?"on":"")+'"></i>').join("")+'</div>'+
       '<p>'+(w.got?"Done for this week! 🎉 Your buddy got its reward. Keep going if you want, a new goal starts on Monday.":"Finish "+GOAL+" practice rounds this week (grammar or flashcards). Your buddy gets <b>+5 🍪</b> and <b>+5 friendship</b>.")+'</p>'+
       '<p class="esb">Meta semanal: termina '+GOAL+' rondas de práctica esta semana.</p>';
-    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.length*3; ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(r?' · <span class="pr-rec">Noa recommends stage '+r+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
+    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.length*3; ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(r?' · <span class="pr-rec">'+(r==="all"?"⭐ Noa recommends this module":"Noa recommends stage "+r)+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
     const sc=$("prShortCount"); if(sc){ sc.textContent=Math.min(w.n,GOAL)+"/"+GOAL; sc.parentElement.classList.toggle("done",!!w.got); }
     const tm=$("prMisTile"); if(tm){ const n=misList().length; tm.querySelector(".pr-sub").textContent=n?n+(n===1?" question to review":" questions to review"):"Nothing to review yet"; }
   }
