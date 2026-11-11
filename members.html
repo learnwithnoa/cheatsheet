@@ -649,7 +649,7 @@ function renderDetail(s) {
     <div class="muted">${esc(s.email)} · last seen ${ago(s.lastSeen)}${s.lastSeen ? " (" + fmtDate(s.lastSeen) + ")" : ""}</div>
     <div class="row" style="margin-top:10px;gap:8px;align-items:center"><label for="rLv"><b>📊 Their level</b></label>
       <select id="rLv" style="font:700 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${["", "A1", "A1–A2", "A2", "A2–B1", "B1", "B1–B2", "B2", "B2–C1", "C1", "C2"].map(v => `<option value="${v}" ${(s.role.lv || "") === v ? "selected" : ""}>${v || "Not set (use theirs)"}</option>`).join("")}</select>
-      <span class="muted small">What you set here is what they see on Hibi.</span></div>
+      <span class="muted small">${s.role && s.role.hub ? "Same level as their coaching page on Private students." : "What you set here is what they see on Hibi."}</span></div>
     <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:10px;cursor:pointer"><input type="checkbox" id="lvlBeg" ${s.level === "beginner" ? "checked" : ""}> 🌱 Beginner mode (more Spanish, simpler examples, slower voice)</label>
     <div class="row" style="margin-top:10px"><button type="button" class="kd-btn" data-kd="msg-${esc(s.uid)}">💌 Send ${esc(s.name.split(" ")[0])} a message</button></div>
     ${kdOpen === "msg-" + s.uid ? composer("msg-" + s.uid, "Hi " + s.name.split(" ")[0] + "! ") : ""}
@@ -679,7 +679,13 @@ function renderDetail(s) {
     catch (e) { console.warn(e); toast("Couldn't save. Try again."); }
   });
   const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });
-  const rl = $("rLv"); if (rl) rl.onchange = () => saveRole(s, { lv: rl.value });
+  const rl = $("rLv"); if (rl) rl.onchange = async () => { await saveRole(s, { lv: rl.value });
+    /* private students: the same level on their coaching page (one level per person) */
+    const hid = s.role && s.role.hub; if (!hid || !tUid) return;
+    try { const ref = doc(db, "users", tUid, "data", "t-hub-" + hid), d = await getDoc(ref); if (!d.exists()) return; const h = JSON.parse(d.data().json || "{}"); h.cefr = String(rl.value || "").replace("–", "-");
+      await setDoc(ref, { json: JSON.stringify(h), deleted: false, at: serverTimestamp() });
+      if (s.uid) await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(h, hubMeta || {})), deleted: false, at: serverTimestamp() });
+      toast("Saved on their coaching page too"); } catch (e) { console.warn("level sync", e); } };
   const lb = $("lvlBeg"); if (lb) lb.onchange = async () => {
     const v = lb.checked ? "beginner" : "normal";
     try { await setDoc(doc(db, "users", s.uid, "data", "ncs-level"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.level = v; toast(lb.checked ? "🌱 Beginner mode on for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Beginner mode off"); }

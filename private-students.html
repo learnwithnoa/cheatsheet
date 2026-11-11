@@ -1063,7 +1063,10 @@ document.addEventListener("change", e => {
   if (t.hasAttribute && t.hasAttribute("data-wselall")) { wSel = t.checked ? new Set(wordRows(s).filter(w => w.src === "app").map(w => w.key)) : new Set(); renderDetail(); return; }
   if (t.id === "mailPick") { s._mail = t.value; $("mailLink").href = GM(t.value); $("mailLink").textContent = "✉️ " + t.value; return; }
   if (t.dataset.emails) { s.emails = t.value.split(/[,;\s]+/).map(x => x.trim()).filter(x => x.includes("@")); save(s); return; }
-  if (t.dataset.f === "cefr") { s.cefr = t.value; save(s, false, "Level → " + t.value); renderDetail(); return; }
+  if (t.dataset.f === "cefr") { s.cefr = t.value; save(s, false, "Level → " + t.value); renderDetail();
+    /* one level per person: the Hibi members page uses the same one */
+    const ru = s.uid || (roles[s.id] && roles[s.id].uid); if (ru) setDoc(doc(db, "roles", ru), { lv: String(t.value || "").replace("-", "–"), at: serverTimestamp() }, { merge: true }).then(() => { if (rolesByUid[ru]) rolesByUid[ru].lv = String(t.value || "").replace("-", "–"); }).catch(e => console.warn("level sync", e));
+    return; }
   if (t.id === "stStatus") { s.status = t.value; save(s, false, "Status → " + t.value); renderAll(); return; }
   if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s, false, "Payment status → " + t.value); refresh(); return; }
   if (t.dataset.reskey) { const k = t.dataset.reskey, cur = new Set(resKeys(s)); if (t.checked) cur.add(k); else cur.delete(k); s.res = RES_ALL(s).map(r => r.k).filter(x => cur.has(x)); delete s.resHide; save(s, false, (t.checked ? "Showing " : "Hiding ") + k); renderDetail(); return; }
