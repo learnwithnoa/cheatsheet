@@ -818,6 +818,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .cs-upd-go{border:0;border-radius:999px;padding:6px 14px;font:700 14px var(--body,inherit);background:var(--accent,#5b8def);color:#fff;cursor:pointer}
 .cs-upd-x{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:2px 6px}
 
+/* step78 */
+.wcard .wpr{font:600 13.5px var(--mono,ui-monospace,monospace);letter-spacing:.02em;color:var(--muted);margin:1px 0 2px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -5789,13 +5792,14 @@ function renderWords(){
       '<div class="field"><label for="ed-w">English word / expression</label><input id="ed-w" type="text" value="'+esc(x.w)+'" spellcheck="false"></div>'+
       '<div class="field"><label for="ed-m">Spanish translation</label><input id="ed-m" type="text" value="'+esc(x.m||"")+'"></div>'+
       '<div class="field wide"><label for="ed-e">Example sentence</label><input id="ed-e" type="text" value="'+esc(x.e||"")+'"></div>'+
+      '<div class="field"><label for="ed-pr">🗣️ How to say it</label><input id="ed-pr" type="text" value="'+esc(x.pr||"")+'" placeholder="e.g. LEV-er-ij"></div>'+
       '<div class="field wide"><label for="ed-own">✍️ My own sentence</label><input id="ed-own" type="text" value="'+esc(x.own||"")+'" placeholder="Write a sentence of your own with this word"></div>'+
       '<div class="field wide"><label for="ed-n">Notes</label><input id="ed-n" type="text" value="'+esc(x.n||"")+'"></div>'+
       '<div class="note-actions"><button class="pill-btn" type="submit">Save changes</button><button class="swap" type="button" data-cancel>Cancel</button></div></form>';
     const isNew = x.sample || isPending(x);
     const picked=wSel&&fcPick.includes(x.id);
     return '<article class="card wcard'+(picked?' picked':'')+'">'+'<span class="w-lead">'+(x.sample?'':'<label class="w-chkw" title="Pick for flashcards"><input type="checkbox" class="w-chk" data-wpick="'+x.id+'" aria-label="Pick '+esc(x.w)+' for flashcards"'+(picked?' checked':'')+'></label>')+sayBtn(x.w.replace(/\(.*?\)/g,""))+'</span>'+
-      '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.own?'<div class="wown">✍️ '+esc(x.own)+'</div>':(x.sample?'':'<button class="wown-add" type="button" data-ownw="'+x.id+'">✍️ Write my own sentence</button>'))+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
+      '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.pr?'<div class="wpr" title="How to say it (CAPITALS = the strong part)"><span aria-hidden="true">🗣️</span> '+esc(x.pr)+'</div>':'')+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.own?'<div class="wown">✍️ '+esc(x.own)+'</div>':(x.sample?'':'<button class="wown-add" type="button" data-ownw="'+x.id+'">✍️ Write my own sentence</button>'))+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
       '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
   }).join("");
@@ -5823,7 +5827,7 @@ wList.addEventListener("submit",e=>{
   const f=e.target.closest("[data-editform]"); if(!f) return; e.preventDefault();
   const x=words.find(y=>y.id===f.dataset.editform); if(!x) return;
   const nw=document.getElementById("ed-w").value.trim(); if(!nw){ document.getElementById("ed-w").focus(); return; }
-  x.w=nw; x.m=document.getElementById("ed-m").value.trim(); x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; } { const ov=document.getElementById("ed-own").value.trim().slice(0,300); if(ov) x.own=ov; else delete x.own; }
+  x.w=nw; x.m=document.getElementById("ed-m").value.trim(); x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; } { const ov=document.getElementById("ed-own").value.trim().slice(0,300); if(ov) x.own=ov; else delete x.own; } { const pi=document.getElementById("ed-pr"); if(pi){ const pv=pi.value.trim().slice(0,60); if(pv) x.pr=pv; else { delete x.pr; x.prTried=1; } } }
   LS.set("ncs-words",words); editingId=null; renderWords(); toast("Changes saved");
 });
 wList.addEventListener("keydown",e=>{ if(e.key==="Escape" && editingId){ editingId=null; renderWords(); } });
@@ -8445,22 +8449,26 @@ const exampleRule=()=>csBeginner()
 /* students can write their own example sentences: then the AI leaves them empty */
 const noEx=()=>LS.get("ncs-noex",false)===true;
 window.csNoEx=noEx;
-const FILLF=["m","def","pos","e"];
-const fillF=()=>{ const v=LS.get("ncs-fillf",null); return Array.isArray(v)?v.filter(f=>FILLF.includes(f)):FILLF.filter(f=>f!=="e"||!noEx()); };
-const missF=(x,fs)=>x&&x.w&&!x.sample&&fs.some(f=>!x[f]);
+const FILLF=["m","def","pos","e","pr"];
+/* pronunciation only for single words, phrasal verbs and short expressions */
+const isShort=x=>{ const w=String(x&&x.w||"").trim(); return !!w&&w.length<=32&&w.split(/\s+/).length<=3&&!/[.?!]$/.test(w); };
+const fillF=()=>{ const v=LS.get("ncs-fillf",null); if(!Array.isArray(v)) return FILLF.filter(f=>f!=="e"||!noEx()); const o=v.filter(f=>FILLF.includes(f)); if(LS.get("ncs-fillf-v",0)<2&&!o.includes("pr")) o.push("pr"); return o; };
+const missF=(x,fs)=>x&&x.w&&!x.sample&&fs.some(f=>f==="pr"?(isShort(x)&&!x.pr&&!x.prTried):!x[f]);
+const PR_RULE="an easy pronunciation guide for a Spanish speaker: split the syllables with hyphens, write the STRESSED syllable in CAPITALS, use plain letters read the English way (no IPA symbols), keep phrasal verbs as separate words. Examples: leverage → LEV-er-ij, drawback → DRAW-bak, give up → giv UP, thought → thawt, comfortable → KUMF-ter-bul, schedule → SKEJ-ool";
 const cleanPos=p=>{ p=String(p||"").toLowerCase().trim(); return POS_LIST.includes(p)?p:(p.includes("phrasal")?"phrasal verb":p.slice(0,20)); };
 function saveWordsNow(){ LS.set("ncs-words",words); try{ renderWords(); fcShuffle(); renderFlash(); }catch(e){} }
 
 /* ---------- fill in the details of each word (part of speech, meaning, translation, example) ---------- */
 async function enrichBatch(list,fs){
   fs=fs||FILLF.filter(f=>f!=="e"||!noEx()); const want=f=>fs.includes(f);
-  const items=list.map(x=>({id:x.id,word:x.w,spanish:x.m||"",example:x.e||""}));
+  const items=list.map(x=>({id:x.id,word:x.w,spanish:x.m||"",example:x.e||"",short:isShort(x)}));
   const p="You help a Spanish-speaking learner of English (from Chile) build their vocabulary list. For EACH item return:\n"+
     (want("pos")?"- pos: the part of speech, one of: "+POS_LIST.join(", ")+"\n":"- pos: always an empty string\n")+
     (want("def")?"- def: a very short, simple English meaning (max 10 words, no quotes)\n":"- def: always an empty string\n")+
     (want("m")?"- es: a natural Spanish translation ONLY if \"spanish\" is empty, otherwise an empty string\n":"- es: always an empty string\n")+
     (!want("e")?"- ex: always an empty string (the student writes their own examples)\n":"- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n")+
-    "Use American English. Never change the student's word. Reply with ONLY a JSON array like [{\"id\":\"...\",\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\"}].\n\nITEMS:\n"+JSON.stringify(items);
+    (want("pr")?"- pr: ONLY if \"short\" is true, "+PR_RULE+". If \"short\" is false: an empty string\n":"- pr: always an empty string\n")+
+    "Use American English. Never change the student's word. Reply with ONLY a JSON array like [{\"id\":\"...\",\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\",\"pr\":\"...\"}].\n\nITEMS:\n"+JSON.stringify(items);
   const r=await window.__csSample(p);
   const arr=aiJSON(r&&r.text); if(!Array.isArray(arr)) throw new Error("The AI's answer didn't make sense");
   let n=0;
@@ -8469,7 +8477,8 @@ async function enrichBatch(list,fs){
     if(want("def")&&a.def&&!x.def) x.def=String(a.def).trim().slice(0,140);
     if(want("m")&&!x.m&&a.es) x.m=String(a.es).trim().slice(0,140);
     if(want("e")&&!x.e&&a.ex){ x.e=String(a.ex).trim().slice(0,220); x.aiEx=1; }
-    x.ai=1; n++; });
+    if(want("pr")&&isShort(x)&&!x.pr){ const v=String(a.pr||"").replace(/[\/\[\]]/g,"").trim().slice(0,60); if(v) x.pr=v; else x.prTried=1; }
+    if(!(fs.length===1&&fs[0]==="pr")) x.ai=1; n++; });
   saveWordsNow();
   return n;
 }
@@ -8483,7 +8492,13 @@ async function runEnrich(){
   try{ for(let i=0;i<list.length;i+=20) await enrichBatch(list.slice(i,i+20)); }catch(e){ console.warn("word details",e); }
   enrBusy=false;
 }
-window.addEventListener("cs-sample-ready",()=>{ if(enrQ.size) runEnrich(); });
+window.addEventListener("cs-sample-ready",()=>{ if(enrQ.size) runEnrich(); prBackfill(); });
+/* words saved before pronunciation existed get it quietly, a few at a time */
+let prRuns=0, prBusy=false;
+async function prBackfill(){ if(prBusy||prRuns>=3||!aiOK()) return; const fs=fillF(); if(!fs.includes("pr")) return;
+  const list=words.filter(x=>x&&!x.sample&&isShort(x)&&!x.pr&&!x.prTried).slice(0,25); if(!list.length) return;
+  prBusy=true; prRuns++; try{ await enrichBatch(list,["pr"]); }catch(e){ console.warn("pronunciation",e); } prBusy=false; if(prRuns<3) setTimeout(prBackfill,4000); }
+setTimeout(()=>{ if(aiOK()) prBackfill(); },6000);
 /* every word added from now on gets its details */
 const _addWordPlain=addWord;
 addWord=function(){ const before=words.length, r=_addWordPlain.apply(this,arguments); if(words.length>before) queueEnrich([words[words.length-1].id]); return r; };
@@ -8536,7 +8551,7 @@ async function completeAll(btn,fs){
   btn.disabled=true; st.hidden=false; let done=0; wordsSnapshot("complete");
   try{
     for(let i=0;i<list.length;i+=20){ st.textContent="✨ Filling in your words… "+Math.min(i,list.length)+" of "+list.length; done+=await enrichBatch(list.slice(i,i+20),fs); }
-    const nm={m:"Spanish translation",def:"simple meaning",pos:"word type",e:"example sentence"}, li=fs.map(f=>nm[f]);
+    const nm={m:"Spanish translation",def:"simple meaning",pos:"word type",e:"example sentence",pr:"pronunciation"}, li=fs.map(f=>nm[f]);
     st.textContent="✓ Done! Filled in "+(li.length>1?li.slice(0,-1).join(", ")+" and "+li[li.length-1]:li[0])+" for "+done+(done===1?" word":" words")+". Anything you wrote yourself stayed the same.";
   }catch(e){ console.warn(e); st.textContent="Stopped after "+done+" words: the AI didn't answer. Try again in a minute (it continues where it stopped)."; }
   btn.disabled=false;
@@ -8686,8 +8701,8 @@ document.addEventListener("click",e=>{
     if(!n){ const st=document.getElementById("aiStatus"); st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
     const n0=words.filter(x=>missF(x,fs0)).length;
     askFirst("✨ Complete my words",'<p>Choose what the AI fills in. It only fills what\'s <b>missing</b> (<span id="aiFillN">'+n0+(n0===1?" word":" words")+'</span>) and <b>never changes anything you already wrote</b>.</p>'+
-      optList("fill",[["m","Spanish translation"],["def","Simple meaning","A short, easy English meaning"],["pos","Word type","noun, verb, phrasal verb…"],["e","Example sentence","Untick it if you like writing your own. New words won\'t get one either"]],fs0),
-      el=>{ const fs=readOpts(el); LS.set("ncs-fillf",fs); LS.set("ncs-noex",!fs.includes("e")); completeAll(f,fs); },"Complete them"); }
+      optList("fill",[["m","Spanish translation"],["def","Simple meaning","A short, easy English meaning"],["pos","Word type","noun, verb, phrasal verb…"],["pr","Pronunciation","How to say it, like LEV-er-ij (single words and short expressions)"],["e","Example sentence","Untick it if you like writing your own. New words won\'t get one either"]],fs0),
+      el=>{ const fs=readOpts(el); LS.set("ncs-fillf",fs); LS.set("ncs-fillf-v",2); LS.set("ncs-noex",!fs.includes("e")); completeAll(f,fs); },"Complete them"); }
   else if(c) askFirst("🧹 Clean up my words",'<p>Choose what the AI checks. It shows you every change first, and <b>nothing changes until you press Apply</b>. Your own sentences (✍️) are never touched.</p>'+optList("clean",CLEANF,cleanF()),
       el=>{ const co=readOpts(el); LS.set("ncs-cleanf",co); cleanUp(c,co); },"Check my words");
   else if(e.target.closest("#aiUndo")) undoWords();
@@ -9508,6 +9523,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 const CHANGELOG=[
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
     ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
+    ["🗣️","How to say your words","short words and expressions in <b>My words</b> now show how to say them, like <b>LEV-er-ij</b> (CAPITALS = the strong part). Your saved words get it little by little, and you can edit it.","words"],
     ["🏃","New: Verb + -ing","<b>before leaving</b>, <b>I recommend going</b>, <b>looking forward to seeing you</b>, and when it's <b>to</b> instead. 7 stages in <b>Practice → Grammar</b>. Finish it for a 🛹 skateboard for your buddy.","quiz"],
     ["🎂","Your name, job and birthday","in the club, open <b>your profile → ✏️ Edit</b> to change how your name shows (just your first name, for example), add a little title (your job, or anything that describes you), and add your birthday. Birthdays you choose to show get a 🎂 on the club calendar and a little celebration on <b>This week</b>.","club"],
     ["✍️","My own sentence","in <b>My words</b>, tap <b>✍️ Write my own sentence</b> under any word to add a sentence of your own. You can edit it any time, and the AI never touches it.","words"],
@@ -9754,7 +9770,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261111184149"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261111191331"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
