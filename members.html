@@ -123,6 +123,9 @@ td.act{white-space:nowrap;text-align:right}
 .mt-empty{padding:18px 4px}
 .stoic{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:9px 14px;margin:6px 0 10px;border-radius:12px;background:linear-gradient(90deg,color-mix(in srgb,#C9A26B 22%,var(--surface,#fff)),var(--surface,#fff));border:1px solid color-mix(in srgb,#C9A26B 45%,var(--line,#ddd));font-size:14px}
 .stoic .st-k{font:700 11px var(--mono,monospace);letter-spacing:.05em;text-transform:uppercase;color:#A07A3C}.stoic .st-t{color:var(--muted);font-size:13px}
+.inv{margin:0 0 12px;padding:10px 14px;border:1.5px dashed var(--line);border-radius:14px;background:var(--surface)}
+.inv summary{cursor:pointer;font-weight:800}
+.inv-f{display:flex;flex-wrap:wrap;gap:8px}.inv-f input{flex:1 1 180px;min-width:0}
 </style>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -165,6 +168,10 @@ td.act{white-space:nowrap;text-align:right}
     <div data-pane="usage" hidden><div class="news" id="usage" hidden></div></div>
     <div class="layout" data-pane="students" hidden>
       <div>
+        <details class="inv" id="invBox"><summary>＋ Invite someone to Hibi</summary>
+          <p class="muted small" style="margin:6px 0 8px">They get access right away, and an email to them opens in Gmail, ready to send.</p>
+          <form id="invForm" class="inv-f"><input name="name" placeholder="Name" maxlength="80" required><input name="email" type="email" placeholder="Their Google email" maxlength="120" required><button type="submit" class="btn primary">Approve + email them</button></form>
+        </details>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
         <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
         <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option></select></div>
@@ -206,6 +213,16 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const views = ["vSign", "vDenied", "vMain"];
 const showView = v => views.forEach(id => $(id).hidden = id !== v);
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "invForm") return; e.preventDefault(); const f = e.target;
+  const name = f.name.value.trim(), email = f.email.value.trim().toLowerCase(); if (!name || !email) return;
+  try { await setDoc(doc(db, "access", email), { name, at: Date.now(), by: "noa" }); }
+  catch (er) { toast("Couldn’t save that. Try again."); return; }
+  const first = name.split(/\s+/)[0] || "";
+  const body = `Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://learnwithnoa.github.io/cheatsheet/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
+  window.open("https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(email) + "&su=" + encodeURIComponent("You're in! Your Hibi access 🎉") + "&body=" + encodeURIComponent(body), "_blank");
+  f.reset(); $("invBox").open = false; toast("✓ Approved. Send the email that just opened.");
+});
 function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
 
 $("inBtn").onclick = async () => {
