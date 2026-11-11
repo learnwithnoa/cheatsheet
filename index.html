@@ -693,6 +693,34 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
   .top-in{gap:3px!important}
 }
 
+/* step59: one size and shape for every round button in the top bar */
+.top-in .cs-btn,.top-in .theme-btn:not(#hdrWord),.top-in #dmTopBtn,.top-in>#tNotif .tn-bell,.top-in #clBell,.top-in #navTeacher,.top-in #navHub{
+  width:38px!important;min-width:38px!important;height:38px!important;padding:0!important;border-radius:50%!important;border-width:1.5px!important;
+  align-items:center;justify-content:center;gap:0!important;box-sizing:border-box;flex:none}
+.top-in #tmBtn:has(.tm-time:not([hidden])){width:auto!important;padding:0 11px!important;border-radius:999px!important;gap:6px!important}
+.top-in #hdrWord{height:38px!important;box-sizing:border-box}
+.top-in #csBtn{font-size:20px}
+.top-in #csBtn svg{width:20px;height:20px}
+.top-in #tmBtn .tm-ico{width:19px;height:19px}
+.top-in #musicBtn .mu-ico svg{width:19px;height:19px}
+@media (max-width:520px){
+  .top-in .cs-btn,.top-in .theme-btn:not(#hdrWord),.top-in #dmTopBtn,.top-in>#tNotif .tn-bell,.top-in #clBell,.top-in #navTeacher,.top-in #navHub{width:34px!important;min-width:34px!important;height:34px!important}
+  .top-in #hdrWord{height:34px!important}
+}
+@media (max-width:380px){
+  .top-in .cs-btn,.top-in .theme-btn:not(#hdrWord),.top-in #dmTopBtn,.top-in>#tNotif .tn-bell,.top-in #clBell,.top-in #navTeacher,.top-in #navHub{width:31px!important;min-width:31px!important;height:31px!important}
+}
+html .top-in #themeBtn,html .top-in [hidden]{display:none!important}
+/* profile: the photo fills the round button, one ring only (green = saved) */
+html.cs-signed .top-in #authBtn{padding:0!important;border-width:2px!important;overflow:hidden}
+html.cs-signed .top-in #authBtn .g-ico{width:100%;height:100%;border:0!important;font-size:15px}
+/* access gate: no empty gap under "Ask for access" */
+.ag-fmsg:empty{display:none}
+.ag-or{margin:14px 0 8px!important}
+/* club page: a bit of air between the buttons and the subtitle */
+#v-club .vhead{margin-bottom:10px}
+#v-club .lede{margin-top:6px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2927,7 +2955,10 @@ html.cs-calm .cs-rxpal button{transition:none}
       let club=null; try{ club=window.__clubSocial?await window.__clubSocial.recent():null; }catch(e){}
       let reps=[]; try{ reps=window.__clubSocial&&window.__clubSocial.reports?await window.__clubSocial.reports():[]; }catch(e){}
       let areq=[]; try{ areq=await accessReqs(); }catch(e){}
-      data={acc,priv,club,reps,areq}; paint();
+      let mine=[]; try{ mine=window.__clubSocial&&window.__clubSocial.myNotes?await window.__clubSocial.myNotes():[]; }catch(e){}
+      data={acc,priv,club,reps,areq,mine};
+      try{ if(new URLSearchParams(location.search).get("notif")){ open=true; history.replaceState(null,"",location.pathname+location.hash); } }catch(e){}
+      paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
   }
   let showAll=false, open=false, undoPrev=null;
@@ -2949,7 +2980,9 @@ html.cs-calm .cs-rxpal button{transition:none}
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
     const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
     const reps=data.reps||[], areq=data.areq||[];
-    const cnt=areq.length+joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length+reps.length;
+    const mineNew=(data.mine||[]).filter(n=>n.at>since);
+    const cnt=areq.length+joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length+reps.length+mineNew.length;
+    try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){}
     b.hidden=false;
     /* closed: a small button that opens it again */
     const bell=`<button type="button" class="tn-bell theme-btn${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
@@ -2964,6 +2997,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length&&!clubNew.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
       ${older.length?`<button type="button" class="tn-link" data-tn="all">${showAll?"Hide earlier ones":`Show earlier sign-ups (${older.length})`}</button>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
+      ${mineNew.length?`<h4>💛 About you in the club</h4><ul>${mineNew.map(n=>`<li>${n.html}${n.text&&!/^react/.test(n.kind)?` <span class="muted">“${esc(n.text)}”</span>`:""} <span class="muted">· ${ago(n.at)}</span></li>`).join("")}</ul>`:""}
       ${packs.length?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}
       ${clocks.length?`<h4>Clock changes</h4><ul>${clocks.join("")}</ul>`:""}
       <p class="tn-line tn-more"><a class="tn-go" href="members.html">More student news (milestones, ✨ love, practice tips) on Members →</a></p></div>`;
@@ -4183,7 +4217,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-dmto]"); if(t){ e.preventDefault(); document.querySelector(".cl-prof-ov")?.remove(); openChat(t.dataset.dmto,t.dataset.dmname); return; }
     if(e.target.closest("[data-dmback]")){ openInbox(); return; }
     if(e.target.closest("[data-dminbox]")){ openInbox(); return; } });
-  window.__clubSocial={ mount, dms:loadThreads, recent, refreshBadge, unread, reports, delReport, watched:syncWatched };
+  async function myNotes(){ await loadNotes(); return (NOTES||[]).filter(n=>n.kind!=="dm"&&n.kind!=="comment").map(n=>Object.assign({},n,{html:noteTxt(n)})); }
+  window.__clubSocial={ mount, dms:loadThreads, recent, myNotes, refreshBadge, unread, reports, delReport, watched:syncWatched };
   const b=document.getElementById("clubMain"); if(b) mount(b);
 })();
 </script>
@@ -8629,7 +8664,7 @@ document.querySelectorAll(".view").forEach(v=>{
   wrap.appendChild(b);
 });
 function renderStars(){
-  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","park","coaching"].includes(id));
+  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","park","coaching","club"].includes(id));
   document.querySelectorAll("[data-star]").forEach(b=>{
     const on=stars.includes(b.dataset.star);
     b.setAttribute("aria-pressed",on?"true":"false");
@@ -8873,7 +8908,7 @@ bkRender();
     if(window.csUnlockAudio) window.csUnlockAudio(true);
     if(!ac && !setup()){ toast("Your browser can't play generated music"); return; }
     try{ await ac.resume(); }catch(e){}
-    playing=true; nextTime=ac.currentTime+0.1; step=0;
+    playing=true; nextTime=ac.currentTime+0.1; step=0; if(RESUME){ step=RESUME.step; bar=RESUME.bar; RESUME=null; }
     clearInterval(timer); timer=setInterval(tick,25); tick(); applyMix(); paint();
   }
   function pause(){ if(window.csReleaseAudio) window.csReleaseAudio(); playing=false; applyMix(); paint(); setTimeout(()=>{ if(!playing){ clearInterval(timer); timer=null; try{ ac.suspend(); }catch(e){} } },600); }
@@ -8882,8 +8917,9 @@ bkRender();
   btn.title="Study music";
   /* keep the music going between Hibi pages: remember it was on, start again on the next page
      (browsers only allow sound after a tap, so if it can't start by itself the first tap anywhere starts it) */
-  window.addEventListener("pagehide",()=>{ try{ if(playing) localStorage.setItem("cs-music-on",String(Date.now())); else localStorage.removeItem("cs-music-on"); }catch(e){} });
-  (function(){ let t=0; try{ t=+localStorage.getItem("cs-music-on")||0; localStorage.removeItem("cs-music-on"); }catch(e){} if(!t||Date.now()-t>180000) return;
+  let RESUME=null;
+  window.addEventListener("pagehide",()=>{ try{ if(playing) localStorage.setItem("cs-music-on",JSON.stringify({t:Date.now(),step,bar})); else localStorage.removeItem("cs-music-on"); }catch(e){} });
+  (function(){ let t=0; try{ const v=JSON.parse(localStorage.getItem("cs-music-on")||"null"); localStorage.removeItem("cs-music-on"); if(v&&typeof v==="object"){ t=v.t; RESUME={step:v.step|0,bar:v.bar|0}; } else t=+v||0; }catch(e){} if(!t||Date.now()-t>180000){ RESUME=null; return; }
     const go=()=>{ ["pointerdown","keydown","touchstart"].forEach(ev=>window.removeEventListener(ev,go,true)); btn.classList.remove("mu-wait"); btn.removeAttribute("data-wait"); if(!(ac&&ac.state==="running")) play(); };
     setTimeout(()=>{ play().then(()=>{ if(ac&&ac.state==="running") return; btn.classList.add("mu-wait"); btn.setAttribute("data-wait","Tap anywhere to keep the music going"); ["pointerdown","keydown","touchstart"].forEach(ev=>window.addEventListener(ev,go,true)); }); },300); })();
   document.getElementById("musicModes").addEventListener("click",e=>{ const b=e.target.closest("[data-mm]"); if(!b) return; mode=b.dataset.mm; LS.set("ncs-music-mode",mode); applyMix(); paint(); if(!playing) play(); });
