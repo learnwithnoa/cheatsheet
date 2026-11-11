@@ -7912,7 +7912,10 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
 
   /* ---- past simple: stage list ---- */
   const stars=n=>'<span class="ps-stars" aria-label="'+n+' of 3 stars">'+"★★★".slice(0,n)+'<s>'+"★★★".slice(0,3-n)+'</s></span>';
-  function renderStages(){
+  let LEDE0=null;
+  function psLede(test){ const l=document.querySelector('#v-quiz [data-pp="ps"] .lede'); if(!l) return; if(LEDE0===null) LEDE0=l.innerHTML;
+    l.innerHTML=test?'🎓 <b>Test out:</b> 15 questions, no multiple choice, and you see your results at the end. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.<span class="esb">Examen: 15 preguntas sin alternativas. Si aciertas las 15, pasas todo el módulo. Un intento al día.</span>':LEDE0; }
+  function renderStages(){ psLede(false);
     const box=$("psArea"); if(!box) return; const p=ps(), r=rec()[M], md=MD(); setMod(M);
     const to=p.to, triedToday=p.tod===today();
     const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of the '+esc(md.lname)+'</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
@@ -7946,7 +7949,7 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
   }
   const area=()=>$(round&&round.kind==="voc"?"vsetArea":round&&round.kind!=="mis"?"psArea":"misArea");
   function sentence(q,inner){ return esc(q.q).replace("___",inner); }
-  function paintQ(){
+  function paintQ(){ psLede(!!(round&&round.test));
     const R=round, it=R.list[R.i], q=it.q, n=R.list.length, box=area(); if(!box) return;
     R.answered=false;
     const blank=it.mc?'<span class="ps-blank">___</span>':'<input class="ps-in" id="psIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer">';
