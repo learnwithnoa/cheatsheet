@@ -126,6 +126,9 @@ td.act{white-space:nowrap;text-align:right}
 .inv{margin:0 0 12px;padding:10px 14px;border:1.5px dashed var(--line);border-radius:14px;background:var(--surface)}
 .inv summary{cursor:pointer;font-weight:800}
 .inv-f{display:flex;flex-wrap:wrap;gap:8px}.inv-f input{flex:1 1 180px;min-width:0}
+
+/* dropdowns: our own arrow, a comfortable distance from the edge */
+select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 12px center!important;background-size:11px 7px!important;padding-right:32px!important;cursor:pointer}
 </style>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
