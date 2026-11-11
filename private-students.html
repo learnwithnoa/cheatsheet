@@ -92,7 +92,8 @@ tr:last-child td{border-bottom:0}
 .hubtabs button{all:unset;cursor:pointer;padding:7px 14px;border-radius:999px;font:800 14px var(--body);color:var(--muted)}
 .hubtabs button[aria-selected="true"]{background:linear-gradient(180deg,#3B9BFF,#1D6FE0);color:#fff;box-shadow:0 2px 8px rgba(29,111,224,.45)}
 .hubtabs button:not([aria-selected="true"]):hover{color:var(--ink);background:color-mix(in srgb,var(--surface) 70%,transparent)}
-.jump{position:relative;flex:1;min-width:180px;max-width:360px}
+.jump{position:relative;flex:1;min-width:180px;max-width:360px;margin-left:auto;display:flex;align-items:center}
+.jump input{height:40px;box-sizing:border-box;margin:0!important;border-radius:999px!important;padding:0 16px!important}
 .jump input{box-sizing:border-box;width:100%;font:600 14.5px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px}
 .jump input:focus{border-color:var(--c-sky);outline:none}
 .jump-res{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-height:60vh;overflow:auto}
@@ -286,19 +287,19 @@ tr.arch td{opacity:.85}
       <div class="row"><button type="button" class="primary" id="addStu">＋ New student</button>
       <button type="button" id="impBtn">⬆ Import file</button><button type="button" id="expBtn">⬇ Backup</button>
       <input type="file" id="impFile" accept=".json,application/json" hidden></div></div>
+    <div class="stoic" id="stoicBox" hidden></div>
     <div class="hubbar" id="hubbar">
-      <div class="hubtabs" role="tablist"><button type="button" role="tab" data-view="students" id="tabSt">🎓 Students</button><button type="button" role="tab" data-view="overview" id="tabOv">📊 Overview</button><button type="button" role="tab" data-view="money" id="tabMn">💰 Money</button></div>
+      <div class="hubtabs" role="tablist"><button type="button" role="tab" data-view="overview" id="tabOv">📊 Overview</button><button type="button" role="tab" data-view="students" id="tabSt">🎓 Students</button><button type="button" role="tab" data-view="money" id="tabMn">💰 Earnings</button></div>
       <div class="jump"><input type="search" id="jumpQ" placeholder="Jump to a student…" aria-label="Jump to a student" autocomplete="off"><div class="jump-res" id="jumpRes" hidden></div></div>
       <button type="button" class="histb" id="histBtn" title="Undo changes: see everything you changed recently">🕘 Undo / history</button>
     </div>
     <div id="ovView">
-    <div class="stoic" id="stoicBox" hidden></div>
     <p class="lede" id="summary" style="margin-top:6px">Loading…</p>
     <div class="kpis" id="kpis"></div>
     <div class="tint k-sky panel" id="nextBox" hidden></div>
     <div class="tint k-teal panel" id="linkBox" hidden></div>
     <div class="tint k-amber panel" id="alertsBox" hidden></div>
-    <p class="muted small" style="margin:4px 0 14px">💰 Money in, what's coming in and the club income are in the <a href="#money">Money</a> tab.</p>
+    <p class="muted small" style="margin:4px 0 14px">💰 Money in, what's coming in and the club income are in the <a href="#money">Earnings</a> tab.</p>
     <div class="tint k-sky panel" id="trendBox"></div>
     </div>
     <div id="mnView" hidden>
@@ -311,7 +312,7 @@ tr.arch td{opacity:.85}
     <div id="stList">
         <input type="search" id="q" placeholder="Search students…" aria-label="Search students">
         <div class="filters" id="filters"></div>
-        <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option></select><label class="muted small" for="lbar" style="margin-left:8px">Color:</label><select id="lbar" title="What the colored line next to each name means" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="time">Time with you 🌈</option><option value="pack">Their pack</option></select></div><div class="tenkey" id="tenKey" aria-hidden="true"></div>
+        <div class="sortrow"><label class="muted small" for="lsort">Sort:</label><select id="lsort" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="name">Name A → Z</option><option value="next">Next class first</option><option value="long">Longest with you</option><option value="new">Newest first</option></select><label class="muted small" for="lbar" style="margin-left:8px">Color:</label><select id="lbar" title="What the colored line next to each name means" style="width:auto;font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="time">Time with you 🌈</option><option value="pack">Their pack</option></select></div><div class="tenkey" id="tenKey" aria-hidden="true"></div>
         <div class="list" id="list"></div>
     </div>
     <div id="stDetail" hidden><button type="button" class="backb" id="backBtn">← All students</button><div id="detail" class="card"></div></div>
@@ -733,8 +734,9 @@ function renderList() {
   /* colored line: how long they've been with you (cool = new, hot = longest), 8 steps */
   const ord = (meta && meta.order) || [];
   const left = s => { const p = curPack(s); const st = p && p.size ? packStats(s, p) : null; return st ? st.classesLeft : 999; };
-  if (lSort !== "next") lSort = "name";
-  ls.sort(lSort === "name" ? byName : (a, b) => ((nx[a.id] ? nx[a.id].t : 9e15) - (nx[b.id] ? nx[b.id].t : 9e15)) || byName(a, b));
+  if (!["next", "long", "new"].includes(lSort)) lSort = "name";
+  const fd0 = s => firstDate(s) || "";
+  ls.sort(lSort === "name" ? byName : lSort === "long" ? (a, b) => (fd0(a) || "9999").localeCompare(fd0(b) || "9999") || byName(a, b) : lSort === "new" ? (a, b) => (fd0(b) || "0000").localeCompare(fd0(a) || "0000") || byName(a, b) : (a, b) => ((nx[a.id] ? nx[a.id].t : 9e15) - (nx[b.id] ? nx[b.id].t : 9e15)) || byName(a, b));
   $("lsort").value = lSort; $("lbar").value = barMode;
   const tk = $("tenKey"); if (tk) { tk.hidden = barMode !== "time"; tk.innerHTML = barMode === "time" ? `<span>newer</span>${TEN.map(t => `<i style="background:${t[1]}" title="${t[2]}"></i>`).join("")}<span>longer</span>` : ""; }
   $("list").innerHTML = ls.map(s => {
@@ -1108,6 +1110,7 @@ document.addEventListener("submit", e => {
     let id = name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     if (S.some(x => x.id === id)) id += "-" + uid().slice(0, 3);
     const st = { id, name, status: "active", kind: f.skind.value, email: f.semail.value.trim(), level: f.slevel.value.trim(), schedule: f.ssched.value.trim(), objective: f.sobj.value.trim(), about: "", zoomKey: name.split(" ")[0], sheetId: "", folderId: "", boleta: "", info: {}, packs: [], classes: [], payments: [], words: [], other: [], created: today() };
+    if (f.sstd && f.sstd.value === "1") st.alwaysStd = true;
     S.push(st); snap[st.id] = ser(st); save(st, true); saveIds(); tab = "packs"; filt = "active"; $("modal").hidden = true; renderAll(); openStu(id); toast("Student added: now add their pack"); return;
   }
 });
@@ -1151,7 +1154,7 @@ $("addStu").onclick = () => {
     <div class="fld"><label>Name</label><input name="sname" required></div><div class="fld"><label>Email</label><input name="semail" type="email"></div>
     <div class="fld"><label>Level</label><input name="slevel" placeholder="B1"></div><div class="fld"><label>Schedule</label><input name="ssched" placeholder="Tue 12:00pm, Thu 11:30am"></div>
     <div class="fld" style="grid-column:1/-1"><label>Objective</label><textarea name="sobj"></textarea></div>
-    <div class="fld"><label>Hour rule</label><select data-f="alwaysStdSel"><option value="" ${s.alwaysStd ? "" : "selected"}>Normal (by time of day)</option><option value="1" ${s.alwaysStd ? "selected" : ""}>Always standard hours</option></select></div>
+    <div class="fld"><label>Hour rule</label><select name="sstd"><option value="" selected>Normal (by time of day)</option><option value="1">Always standard hours</option></select></div>
     <div class="fld"><label>Kind</label><select name="skind"><option value="pack">Paying student</option><option value="trueque">Trueque</option></select></div>
     <div class="row" style="grid-column:1/-1;justify-content:flex-end"><button type="button" id="mClose">Cancel</button><button class="primary" type="submit">Add student</button></div></form></div>`;
   m.querySelector("[name=sname]").focus();
