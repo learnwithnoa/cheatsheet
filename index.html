@@ -829,7 +829,10 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .ap-note{color:var(--muted);font-size:12.5px;font-weight:500;line-height:1.35;margin:4px 0 0}
 
 /* step80: change my name in the profile panel */
-.auth-name{display:flex;flex-wrap:wrap;gap:4px 12px;margin:-2px 0 10px}
+.auth-name{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.auth-npill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:700 13.5px var(--body);cursor:pointer;text-decoration:none}
+.auth-npill:hover{border-color:var(--accent,#5b8def);background:color-mix(in srgb,var(--accent,#5b8def) 10%,transparent)}
+.auth-name button.ap-chg{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--accent,#5b8def);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .auth-nform{display:grid;gap:6px;width:100%}
 .auth-nform label{font-weight:800;font-size:14px}
 .auth-nform input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:inherit;width:100%;box-sizing:border-box}
@@ -9798,7 +9801,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261111194313"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261111194907"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10129,7 +10132,7 @@ function nameBox() {
   const club = !!(window.__clubFeed && window.__clubFeed());
   if (nb.dataset.edit) {
     nb.innerHTML = `<form class="auth-nform"><label for="authNmIn">My name on Hibi</label><input id="authNmIn" maxlength="40" autocomplete="off" value="${escN(gName())}"><small>How everyone sees you. For example, just your first name.${user && user.displayName && user.displayName !== gName() ? ` <button type="button" class="ap-chg" data-nmgoogle>Use my Google name</button>` : ""}</small><div class="auth-nrow"><button type="submit" class="auth-nsave">Save</button><button type="button" class="ap-chg" data-nmx>Cancel</button><span class="auth-nmsg" role="status"></span></div></form>`;
-  } else nb.innerHTML = `<button type="button" class="ap-chg" data-nmedit>✏️ Change my name</button>${club ? ` <button type="button" class="ap-chg" data-nmclub>👤 Edit my club profile</button>` : ""}`;
+  } else nb.innerHTML = `<button type="button" class="auth-npill" data-nmedit>✏️ Change my name</button>${club ? ` <button type="button" class="auth-npill" data-nmclub>👤 Edit my club profile</button>` : ""}`;
 }
 function renderUser() {
   document.body.dataset.auth = user ? "in" : "out";
