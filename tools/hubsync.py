@@ -1148,6 +1148,13 @@ def main():
                 res.append(item)
             total += len(res)
             with open(os.path.join(out, col + ".json"), "w") as f: json.dump(res, f, ensure_ascii=False, indent=0, sort_keys=True)
+        # Noa's private-student hub (the helper can read these one by one, not list the folder)
+        meta = get_doc(tok, tu, "t-hubmeta") or {}; hub = {"t-hubmeta": meta}
+        for sid in meta.get("ids", []):
+            d = get_doc(tok, tu, "t-hub-" + sid)
+            if d is not None: hub["t-hub-" + sid] = d
+        total += len(hub)
+        with open(os.path.join(out, "private-students.json"), "w") as f: json.dump(hub, f, ensure_ascii=False, indent=0, sort_keys=True)
         print(f"ok {total} documents" + (f"; no access to: {', '.join(skipped)}" if skipped else "")); return
     if cmd == "club-sample":  # the sample class recording shown to people who aren't in the club yet; '{}' removes it
         e = json.loads(a[1]) if len(a) > 1 else {}
