@@ -218,6 +218,12 @@
   }
   function pause(){ if(window.csReleaseAudio) window.csReleaseAudio(); playing=false; applyMix(); paint(); setTimeout(()=>{ if(!playing){ clearInterval(timer); timer=null; try{ ac.suspend(); }catch(e){} } },600); }
   playB.addEventListener("click",()=> playing?pause():play());
+  /* keep the music going between Hibi pages: remember it was on, start again on the next page
+     (browsers only allow sound after a tap, so if it can't start by itself the first tap anywhere starts it) */
+  window.addEventListener("pagehide",()=>{ try{ if(playing) localStorage.setItem("cs-music-on",String(Date.now())); else localStorage.removeItem("cs-music-on"); }catch(e){} });
+  (function(){ let t=0; try{ t=+localStorage.getItem("cs-music-on")||0; localStorage.removeItem("cs-music-on"); }catch(e){} if(!t||Date.now()-t>180000) return;
+    const go=()=>{ ["pointerdown","keydown","touchstart"].forEach(ev=>window.removeEventListener(ev,go,true)); btn.classList.remove("mu-wait"); btn.removeAttribute("data-wait"); if(!(ac&&ac.state==="running")) play(); };
+    setTimeout(()=>{ play().then(()=>{ if(ac&&ac.state==="running") return; btn.classList.add("mu-wait"); btn.setAttribute("data-wait","Tap anywhere to keep the music going"); ["pointerdown","keydown","touchstart"].forEach(ev=>window.addEventListener(ev,go,true)); }); },300); })();
   document.getElementById("musicModes").addEventListener("click",e=>{ const b=e.target.closest("[data-mm]"); if(!b) return; mode=b.dataset.mm; LS.set("ncs-music-mode",mode); applyMix(); paint(); if(!playing) play(); });
   vol.addEventListener("input",()=>{ volume=+vol.value; LS.set("ncs-music-vol",volume); applyMix(); });
   bal.addEventListener("input",()=>{ balance=+bal.value; bal.setAttribute("aria-valuetext",balance+"% rain"); LS.set("ncs-music-bal",balance); applyMix(); });

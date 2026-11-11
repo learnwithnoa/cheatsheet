@@ -14,6 +14,9 @@ Usage:
              "hour":"Standard"|"Priority"|"", "credits":3 (optional), "pack":"<id>" (optional)}
   HUB_PASSWORD=... python3 hubsync.py add-note <student-id> '<json>'   {"date":..., "topics":...}
   HUB_PASSWORD=... python3 hubsync.py merge <student-id> '<json>'      shallow-merge profile fields
+  HUB_PASSWORD=... python3 hubsync.py backup <folder>      full copy of the database (as Noa) into JSON files
+  HUB_PASSWORD=... python3 hubsync.py club-sample '{"title":..,"url":<YouTube/Drive link>,"note":..,"wd":3}'   sample class for non-members
+  HUB_PASSWORD=... python3 hubsync.py stoic-add '{"d":"YYYY-MM-DD","title":..,"idea":..,"todo":..}'   Daily Stoic line on the teacher pages
   HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..}]}
   HUB_PASSWORD=... python3 hubsync.py add-words <student-id> '[{"w":"word","tr":"meaning","ex":"example"}, ...]'   (skips words already there)
   HUB_PASSWORD=... python3 hubsync.py club <student-id> on|off   (on = private + club member, sits in the middle of the park)
@@ -1118,6 +1121,42 @@ def main():
                         if b4 != af:
                             out.append({"student": s["name"], "date": d.isoformat(), "where": where, "hours_ahead_of_chile_before": b4 / 60, "after": af / 60})
         print(json.dumps(out, ensure_ascii=False, indent=1)); return
+    if cmd == "backup":  # full copy of everything Noa's account can read, to a folder of JSON files
+        out = a[1] if len(a) > 1 else "backup"; os.makedirs(out, exist_ok=True)
+        TOP = {"users": ["data"], "roles": [], "access": [], "accessRequests": [], "inbox": ["msgs"], "park": ["hearts"],
+               "clubPosts": ["comments"], "clubImgs": [], "clubActivity": [], "clubPublic": [], "clubProfiles": [], "clubStats": [],
+               "clubVotes": [], "clubNotes": [], "clubAccess": [], "clubReports": [], "dms": ["msgs"]}
+        def lst(path):
+            docs, pt = [], ""
+            while True:
+                try: r = http("GET", f"{BASE}/{path}?pageSize=300" + (f"&pageToken={pt}" if pt else ""), token=tok)
+                except SystemExit as e:
+                    if "HTTP 403" in str(e): return None
+                    raise
+                docs += (r or {}).get("documents", []); pt = (r or {}).get("nextPageToken")
+                if not pt: return docs
+        total, skipped = 0, []
+        for col, subs in TOP.items():
+            ds = lst(col)
+            if ds is None: skipped.append(col); continue
+            res = []
+            for d in ds:
+                item = {"name": d["name"].split("/documents/")[1], "fields": d.get("fields", {}), "updateTime": d.get("updateTime")}
+                for sub in subs:
+                    sd = lst(item["name"] + "/" + sub)
+                    if sd: item[sub] = [{"name": x["name"].split("/documents/")[1], "fields": x.get("fields", {}), "updateTime": x.get("updateTime")} for x in sd]; total += len(sd)
+                res.append(item)
+            total += len(res)
+            with open(os.path.join(out, col + ".json"), "w") as f: json.dump(res, f, ensure_ascii=False, indent=0, sort_keys=True)
+        print(f"ok {total} documents" + (f"; no access to: {', '.join(skipped)}" if skipped else "")); return
+    if cmd == "club-sample":  # the sample class recording shown to people who aren't in the club yet; '{}' removes it
+        e = json.loads(a[1]) if len(a) > 1 else {}
+        http("PATCH", f"{BASE}/clubPublic/sample", {"fields": {"json": {"stringValue": json.dumps(e, ensure_ascii=False)}}}, token=tok); print("ok"); return
+    if cmd == "stoic-add":  # one Daily Stoic entry {"d","title","idea","todo"}; replaces the same date
+        e = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}
+        L = [x for x in (m.get("stoic") or []) if x.get("d") != e["d"]] + [e]
+        m["stoic"] = sorted(L, key=lambda x: x["d"])[-60:]
+        set_doc(tok, tu, "t-hubmeta", m); print("ok", len(m["stoic"])); return
     if cmd == "set-meta":
         m = get_doc(tok, tu, "t-hubmeta") or {}
         upd = json.loads(a[1]); m.update(upd); m["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
