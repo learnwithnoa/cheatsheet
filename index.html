@@ -5425,7 +5425,7 @@ trBtn.addEventListener("click",async()=>{
     trOut.dataset.tr=j.translation; trOut.dataset.en= from==="en"? t : j.translation;
     if(j.say&&String(j.say).trim()){ document.getElementById("trSayP").textContent=j.say; document.getElementById("trSay").hidden=false; }
   }catch(e){
-    if(e&&e.code==="rate_limited"){ trOut.textContent="Too many translations in a row. Use Google Translate or DeepL for now."; }
+    if(e&&e.code==="rate_limited"){ trOut.textContent="The translator is busy right now. Try again in a minute, or use Google Translate or DeepL below."; }
     else if(!(e&&e.name==="AbortError")){ trOut.textContent="That didn't work. Use Google Translate or DeepL below."; }
   }finally{ trBtn.disabled=false; }
 });
@@ -9877,12 +9877,12 @@ window.__csPark = {
 
 /* ---------- translator (Gemini via Firebase AI Logic, free tier) ----------
    Same shape as the Claude page's sample(): sample(prompt,{onText}) -> {text} */
-const MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
+const MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
 let ai = null;
 try { ai = getAI(app, { backend: new GoogleAIBackend() }); } catch (e) { console.warn("AI Logic not available", e); }
 const aiCount = k => { try { window.csUse && window.csUse(k); } catch (e) {} };
 async function geminiSample(prompt, opts = {}) {
-  let lastErr; aiCount("ai");
+  let lastErr, limited = false; aiCount("ai");
   for (const name of MODELS) {
     try {
       const model = getGenerativeModel(ai, { model: name, generationConfig: { temperature: 0.2 } });
@@ -9898,10 +9898,12 @@ async function geminiSample(prompt, opts = {}) {
       if (e && e.name === "AbortError") throw e;
       lastErr = e;
       const msg = String((e && (e.message || e.code)) || "");
-      if (/429|quota|exhaust|rate/i.test(msg)) { aiCount("ai-limit"); const err = new Error("rate limited"); err.code = "rate_limited"; throw err; }
-      if (!/not found|404|unsupported|not supported/i.test(msg)) break;   // only try the next model if this one doesn't exist
+      /* busy or out of quota: each model has its own limit, so try the next one before giving up */
+      if (/429|quota|exhaust|rate/i.test(msg)) { aiCount("ai-limit"); limited = true; continue; }
+      if (!/not found|404|unsupported|not supported|503|overloaded|unavailable/i.test(msg)) break;   // try the next model if this one doesn't exist or is overloaded
     }
   }
+  if (limited) { const err = new Error("rate limited"); err.code = "rate_limited"; throw err; }
   console.warn("Translator failed", lastErr); aiCount("ai-fail");
   throw lastErr || new Error("failed");
 }
