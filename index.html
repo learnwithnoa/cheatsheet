@@ -583,6 +583,8 @@ span.bw{display:inline!important}
 :root[data-theme="dark"],:root[data-theme="midnight"]{--gloss-text:linear-gradient(180deg,#8CC8FF 0%,#4A9DF2 50%,#5D7EF2 100%)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="unicorn"]):not([data-theme="sepia"]):not([data-theme="midnight"]){--gloss-text:linear-gradient(180deg,#8CC8FF 0%,#4A9DF2 50%,#5D7EF2 100%)}}
 .brand span,.view h1 em,.welcome h2 em,.quiz-verb{background:var(--gloss-text);-webkit-background-clip:text;background-clip:text}
+/* wrong examples: easier to read (thin, soft strike line) */
+.no,#misBody td.no{text-decoration-thickness:1px!important;text-decoration-color:color-mix(in srgb,var(--red) 55%,transparent)!important;font-weight:700}
 /* top bar order: + Word · Music · Timer | Messages · Profile · Settings */
 .top-in>#clBellWrap,.top-in>#dmTopBtn{order:5}.top-in>.auth-wrap{order:6}.top-in>#csWrap{order:10}
 @media (max-width:480px){#authTxt{display:none!important}.top-in .auth-btn{padding-inline:9px}}
@@ -7384,7 +7386,7 @@ What time ___ the movie start? (do)|does|The movie = it → does.
 
   /* ---- a round ---- */
   let round=null;
-  const nrm=s=>String(s||"").toLowerCase().replace(/[’‘`]/g,"'").replace(/[.?!,]+$/g,"").replace(/\bdidn't\b/g,"did not").replace(/\bwasn't\b/g,"was not").replace(/\bweren't\b/g,"were not").replace(/\bhaven't\b/g,"have not").replace(/\bhasn't\b/g,"has not").replace(/\s+/g," ").trim();
+  const nrm=s=>String(s||"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/[.?!,]+$/g,"").replace(/\bdidn't\b/g,"did not").replace(/\bwasn't\b/g,"was not").replace(/\bweren't\b/g,"were not").replace(/\bhaven't\b/g,"have not").replace(/\bhasn't\b/g,"has not").replace(/\s+/g," ").trim();
   function start(kind,stage){
     let pool, title;
     let story=null;
