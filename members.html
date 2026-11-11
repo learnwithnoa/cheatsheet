@@ -424,7 +424,7 @@ document.addEventListener("click", async e => {
 });
 /* the club roster (from the Skool export), with each person's status for the move off Skool */
 const CST = [["paying", "💳 Paying"], ["free", "🎁 Free"], ["trial", "🧪 Trial"], ["ask", "❓ Ask before the move"], ["watch", "👀 Only if they come"], ["leaving", "🚪 Not moving over"], ["direct", "🤝 Pays you directly"]];
-let clubF = "all", clubOpen = false;
+let clubF = "all", clubOpen = true;
 function renderClub() {
   const box = $("clubBox"); const C = hubMeta && hubMeta.club; if (!box || !C || !Array.isArray(C.members) || !C.members.length) { if (box) box.hidden = true; return; }
   box.hidden = false;

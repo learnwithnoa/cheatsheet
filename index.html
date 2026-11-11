@@ -638,6 +638,25 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + var(--hdr-h,61px) + var(--va-h,
 .cl-sample .i{font-size:26px}.cl-sample b{display:block}.cl-sample small{color:var(--muted)}
 .cl-join-alt{background:none;border:0;padding:0;font:inherit;color:var(--royal,#2563eb);text-decoration:underline;cursor:pointer}
 
+/* step56 */
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#musicBtn .mu-ico{display:inline-flex;color:#2F8CF0}
+#musicBtn .eq{display:none}
+#musicBtn.used .mu-ico{display:none}
+#musicBtn.used .eq{display:inline-flex}
+#musicBtn{padding-inline:11px}
+html[data-theme="unicorn"] #musicBtn .eq i:nth-child(1){background:#FF5FA2}
+html[data-theme="unicorn"] #musicBtn .eq i:nth-child(2){background:#FFC93C}
+html[data-theme="unicorn"] #musicBtn .eq i:nth-child(3){background:#46D3A0}
+html[data-theme="unicorn"] #musicBtn .mu-ico{color:#B86BFF}
+html.cs-signed #authTxt{display:none}
+html.cs-signed #authBtn{padding-inline:6px}
+.auth-panel{max-height:calc(100dvh - var(--hdr-h,61px) - var(--va-h,0px) - 24px);overflow-y:auto;overscroll-behavior:contain}
+.top-in>#tNotif{order:5;position:relative!important;top:auto!important;right:auto!important;margin:0!important;width:auto;display:flex;align-items:center}
+.top-in>#tNotif .tn-bell{padding:6px 11px;font-size:14px}
+.top-in>#tNotif .tn-box{position:absolute;top:calc(100% + 10px);right:0;z-index:45;width:min(480px,calc(100vw - 32px));max-height:calc(100dvh - var(--hdr-h,61px) - var(--va-h,0px) - 24px);overflow:auto;margin:0;box-shadow:0 18px 44px rgba(5,15,30,.35);background:var(--surface)}
+@media (max-width:700px){.top-in>#tNotif .tn-box{position:fixed;left:16px;right:16px;width:auto;top:calc(var(--hdr-h,61px) + var(--va-h,0px) + 6px)}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2077,7 +2096,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <a class="theme-btn t-ico" id="navHub" href="private-students.html" title="Private students" aria-label="Private students" hidden>🎓</a>
     <button class="theme-btn" id="hdrWord" type="button" title="Add a word to My words" aria-label="Add a word" aria-haspopup="dialog" aria-controls="qa"><span aria-hidden="true" style="font-size:17px;line-height:1">＋</span><span class="theme-txt">Word</span></button>
     <div class="music-wrap">
-      <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="theme-txt">Music</span></button>
+      <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="mu-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></svg></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only">Study music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
         <div class="qa-top"><h3>Study music</h3><button class="qa-x" type="button" id="musicClose" aria-label="Close">×</button></div>
         <button class="music-play" type="button" id="musicPlay" aria-pressed="false"><span class="mp-ico" id="mpIco" aria-hidden="true">▶</span><span id="mpTxt">Play</span></button>
@@ -2861,7 +2880,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   const ago=t=>{ const m=Math.round((Date.now()-t)/6e4); if(m<60) return m<=1?"just now":m+" min ago"; const h=Math.round(m/60); if(h<24) return h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); return d===1?"yesterday":d+" days ago"; };
   const dkey=()=>new Date().toDateString();
   let busy=false, data=null;
-  function box(){ let b=document.getElementById("tNotif"); if(!b){ const v=document.getElementById("v-notes"); if(!v) return null; b=document.createElement("div"); b.id="tNotif"; b.className="tn-wrap"; v.insertBefore(b,v.firstChild); } return b; }
+  function box(){ let b=document.getElementById("tNotif"); if(!b){ const aw=document.querySelector(".top-in .auth-wrap"); if(!aw) return null; b=document.createElement("div"); b.id="tNotif"; b.className="tn-wrap"; aw.parentNode.insertBefore(b,aw); } return b; }
   async function load(){
     const b0=document.getElementById("tNotif");
     if(!window.__csTeacher||window.__csPreview||!window.__csTeach||!window.__csTeach.accounts){ if(b0) b0.remove(); return; }
@@ -3495,8 +3514,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* ---------- UI ---------- */
   const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
   let PARKMAP={};
-  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait){ const sv=window.csBuddy.portrait(); if(sv) return `<span class="cs-av cs-avb" aria-hidden="true">${sv}</span>`; } }
-    const pp=PROFS&&profOf(uid); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
+  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait&&!(window.csMyPhotoKind&&window.csMyPhotoKind()==="none")){ const sv=window.csBuddy.portrait(); if(sv) return `<span class="cs-av cs-avb" aria-hidden="true">${sv}</span>`; } }
+    const pp=PROFS&&profOf(uid), noPet=(pp&&pp.pk==="none")||(uid===me()&&window.csMyPhotoKind&&window.csMyPhotoKind()==="none"); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)&&!(!pp.pk&&/googleusercontent\.com/.test(pp.photo))) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=!noPet&&PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
   const who=x=>`<button type="button" class="cs-whob" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}" aria-label="${esc(L("See profile: ","Ver perfil: ")+(x.name||""))}">${av(x.uid,x.name)}</button><span class="cs-who"><b><button type="button" class="cs-nameb" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}">${esc(x.name||L("Member","Miembro"))}</button></b>${x.uid===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}<span class="cs-ago">${ago(x.at)}${x.edited?L(" · edited"," · editado"):""}</span>${G()?`<span class="cs-sample">${L("Sample","Ejemplo")}</span>`:""}</span>`;
   const canDel=x=>x.uid===me()||me()===NOA;
   const canEdit=x=>x.uid===me()&&!G();
@@ -3664,8 +3683,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     parkP=(async()=>{ const fill=l=>{ const myU=me(); (l||[]).forEach(x=>{ const u=x.me?myU:x.uid; if(u&&x.a&&x.on!==false) PARKMAP[u]=x; }); };
       try{ const P=window.__csPark; if(!P||!P.list){ /* the buddy script isn't ready yet: try again in a moment, don't cache an empty park */ parkP=null; setTimeout(parkLate,1500); return []; }
         const full=P.list(), list=await Promise.race([full,new Promise(r=>setTimeout(()=>r(null),4000))]);
-        if(list){ PARK=list; } else { full.then(l=>{ PARK=l||[]; fill(PARK); parkRepaint(); }).catch(()=>{ PARK=[]; }); parkP=null; return []; }
-      }catch(e){ PARK=[]; }
+        if(list){ PARK=list; } else { full.then(l=>{ PARK=l||[]; fill(PARK); parkRepaint(); }).catch(()=>{ PARK=null; setTimeout(parkLate,20000); }); parkP=null; return []; }
+      }catch(e){ PARK=null; parkP=null; setTimeout(parkLate,20000); return []; }
       fill(PARK); parkP=null; return PARK; })(); return parkP; }
   function parkLate(){ if(PARK) return; loadPark().then(l=>{ if(l&&l.length) parkRepaint(); }); }
   function parkRepaint(){ const v=document.getElementById("v-club"); if(!v||v.hidden||box.querySelector("textarea:focus,input:focus,.cl-ytf,.cl-pplay.on")) return; const ms=document.querySelectorAll(".cl-members[data-on='1']"); if(ms.length){ ms.forEach(x=>mountMembers(x)); return; } render(); }
@@ -3682,7 +3701,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return PROFS; }
   const profOf=u=>(PROFS||[]).find(x=>x.id===u||x.uid===u)||null;
   async function saveMe(patch){ if(G()||!me()) return; const cur=profOf(me())||{};
-    const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||""};
+    const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||"",pk:cur.pk||""};
     Object.assign(data,patch||{});
     await api("PATCH","/clubProfiles/"+me(),{fields:{uid:S(me()),name:S(F().name()||""),at:I(Date.now()),json:S(JSON.stringify(data))}});
     const o=Object.assign({id:me(),uid:me(),name:F().name()},data); PROFS=(PROFS||[]).filter(x=>x.id!==me()).concat([o]); return o; }
@@ -3691,13 +3710,14 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const mo=Object.assign({},cur.mo||{}), m=MON(), x=Object.assign({},mo[m]||{}); for(const k in d) x[k]=(x[k]|0)+d[k]; mo[m]=x; Object.keys(mo).sort().slice(0,-6).forEach(k=>delete mo[k]); p.mo=mo;
     await saveMe(p); checkBadges(); }catch(e){} }
   let wT=0; function syncWatched(list){ clearTimeout(wT); wT=setTimeout(async()=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({watched:list.slice(-300)}); checkBadges(); }catch(e){} },800); }
-  document.addEventListener("cs-photo",async e=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({photo:(e.detail&&e.detail.photo)||""}); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); }catch(er){} });
+  document.addEventListener("cs-photo",async e=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({photo:(e.detail&&e.detail.photo)||"",pk:(e.detail&&e.detail.k)||"buddy"}); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); }catch(er){} });
   let meDone=false;
   async function ensureMe(){ if(meDone||G()||!me()||!F()) return; meDone=true;
     try{ await loadProfs(); const cur=profOf(me()); if(!profOK) return;
       const posts=(POSTS||[]).filter(p=>p.uid===me()).length;
       const ph=window.csMyPhoto?window.csMyPhoto():"";
-      if(!cur||cur.name!==F().name()||posts>(cur.posts|0)||(cur.photo||"")!==ph) await saveMe(Object.assign(posts>((cur&&cur.posts)|0)?{posts}:{},{photo:ph}));
+      const pk=window.csMyPhotoKind?window.csMyPhotoKind():"buddy";
+      if(!cur||cur.name!==F().name()||posts>(cur.posts|0)||(cur.photo||"")!==ph||(cur.pk||"")!==pk) await saveMe(Object.assign(posts>((cur&&cur.posts)|0)?{posts}:{},{photo:ph,pk}));
       checkBadges(); }catch(e){} }
   function treat(n,why){ try{ if(window.csBuddy&&window.csBuddy.treat&&window.csBuddy.treat(n,why)) return; }catch(e){} toast(why); }
   /* streaks: weeks in a row with at least one class */
@@ -8801,6 +8821,7 @@ bkRender();
     document.querySelectorAll("[data-mm]").forEach(b=>{ const on=b.dataset.mm===mode; b.setAttribute("aria-checked",on); b.setAttribute("aria-pressed",on); });
   }
   async function play(){
+    btn.classList.add("used"); try{ sessionStorage.setItem("cs-music-used","1"); }catch(e){}
     if(window.csUnlockAudio) window.csUnlockAudio(true);
     if(!ac && !setup()){ toast("Your browser can't play generated music"); return; }
     try{ await ac.resume(); }catch(e){}
@@ -8809,6 +8830,8 @@ bkRender();
   }
   function pause(){ if(window.csReleaseAudio) window.csReleaseAudio(); playing=false; applyMix(); paint(); setTimeout(()=>{ if(!playing){ clearInterval(timer); timer=null; try{ ac.suspend(); }catch(e){} } },600); }
   playB.addEventListener("click",()=> playing?pause():play());
+  try{ if(sessionStorage.getItem("cs-music-used")) btn.classList.add("used"); }catch(e){}
+  btn.title="Study music";
   /* keep the music going between Hibi pages: remember it was on, start again on the next page
      (browsers only allow sound after a tap, so if it can't start by itself the first tap anywhere starts it) */
   window.addEventListener("pagehide",()=>{ try{ if(playing) localStorage.setItem("cs-music-on",String(Date.now())); else localStorage.removeItem("cs-music-on"); }catch(e){} });
@@ -9015,6 +9038,8 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
+    ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
+    ["🎧","A tidier top bar","the music button is now just an icon: 🎧 until you play something, then the little bars. Your profile shows just your photo."],
     ["🧹","Word tools in order","in <b>My words</b> the buttons now follow the steps: <b>Clean up</b> first, then <b>Complete</b>, then practice.","words"],
     ["🎯","Practice next to My words","<b>Practice</b> moved right under <b>My words</b> in the menu, since that’s where your flashcards come from.","quiz"],
     ["📄","Easier to spot","your latest study guide and class recap in <b>My coaching</b> have a clear border now, so they’re easy to see in every theme."],
@@ -9487,7 +9512,8 @@ function status(st) {
   else if (dot) dot.remove();
 }
 /* profile photo: the Google one, one they upload, or none (their buddy shows in the club) */
-function photoPref() { try { const v = JSON.parse(localStorage.getItem("ncs-photo") || "null"); if (v && typeof v === "object") return v; } catch (e) {} return { k: "google" }; }
+function photoPref() { try { const v = JSON.parse(localStorage.getItem("ncs-photo") || "null"); if (v && typeof v === "object") return v; } catch (e) {} return { k: "buddy" }; }
+window.csMyPhotoKind = () => photoPref().k || "buddy";
 function myPhoto() { const p = photoPref(); if (p.k === "custom" && p.d) return p.d; if (p.k === "google" && user && user.photoURL) return user.photoURL; return ""; }
 window.csMyPhoto = () => myPhoto();
 function setPhoto(v) { if (VA) { alertMsg("👁 View as is read-only: nothing is saved"); return; } try { localStorage.setItem("ncs-photo", JSON.stringify(v)); } catch (e) {} try { window.__csOnSet && window.__csOnSet("ncs-photo"); } catch (e) {} renderUser(); document.dispatchEvent(new CustomEvent("cs-photo", { detail: { photo: myPhoto(), k: v.k } })); }
@@ -9501,7 +9527,8 @@ function photoBox() {
   b.innerHTML = `<div class="ap-prev">${ph ? `<img src="${ph.replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer">` : `<span>🐾</span>`}</div><div class="ap-opts"><b>Profile photo</b><small>Shows in the club next to your posts and messages.</small>
     <label><input type="radio" name="phk" value="google" ${p.k === "google" ? "checked" : ""} ${user.photoURL ? "" : "disabled"}> My Google photo</label>
     <label><input type="radio" name="phk" value="custom" ${p.k === "custom" ? "checked" : ""}> My own photo</label>
-    <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> No photo (show my buddy)</label>
+    <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> My buddy 🐾</label>
+    <label><input type="radio" name="phk" value="none" ${p.k === "none" ? "checked" : ""}> No photo (my initials)</label>
     <label class="ap-up">📷 ${p.d ? "Change my photo" : "Upload a photo"}<input type="file" accept="image/*" hidden></label></div>`;
   let lk = document.getElementById("authLinks"); if (!lk) { lk = document.createElement("div"); lk.id = "authLinks"; lk.className = "auth-links"; b.insertAdjacentElement("afterend", lk);
     lk.addEventListener("click", e => { const x = e.target.closest("[data-al]"); if (!x) return; panel.hidden = true; const k = x.dataset.al; if (k === "club") { window.__clubMyProfile && window.__clubMyProfile(); } else if (k === "dm") { window.__clubInbox && window.__clubInbox(); } else if (k === "level") { location.hash = "#quiz"; setTimeout(() => document.querySelector('[data-pr="level"]')?.click(), 300); } else location.hash = "#" + k; }); }
