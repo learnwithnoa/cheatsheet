@@ -448,7 +448,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     if (k === "google" && gphoto) return { html: img(gphoto), kind: "img" };
     const f = buddy && buddy.on === true ? faceOf(buddy) : "";
     if (f) return { html: f, kind: "buddy", bg: (pref && pref.bg) || "" };
-    if (gphoto && k !== "buddy") return { html: img(gphoto), kind: "img" };
+    if (gphoto) return { html: img(gphoto), kind: "img" }; /* buddy chosen but no buddy yet (egg not hatched): their Google photo */
     return { html: ini, kind: "ini" };
   };
   if (window.__bdRender) { window.csBuddyArt = { svg: petSVG, sprites: SP, palFor: (a, c) => Object.assign({}, SP[a].p, ((SP[a].colors[c | 0] || SP[a].colors[0])[1])), LV: [0, 20, 50, 100, 170, 260, 380, 530, 720, 950] }; return; }
@@ -1094,7 +1094,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       if (m && m.dataset.m === "adopt") {
         favKey = ""; S.on = true; S.hi = today(); S.a = draft.a; S.c = draft.c; S.n = draft.n.trim().slice(0, 16);
         if (S.t == null) S.t = START_T; if (S.mw == null) S.mw = counts().words; S.min = false; S.seen = ITEMS.filter(isOpen).map(i => i.id);
-        save(); closeModal(); visible(); hop(); fx(["💛", "🎉", "💛"]);
+        save(); closeModal(); visible(); hop(); fx(["💛", "🎉", "💛"]); try { document.dispatchEvent(new CustomEvent("cs-buddy-hatched")); } catch (e) {}
         say(`Hi! I'm <b>${esc(nameOf())}</b> 👋 I brought ${S.t} treats. Tap me anytime.`, menuActs(true), 7000);
         updateToggle();
         return;

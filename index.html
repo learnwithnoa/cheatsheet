@@ -821,6 +821,13 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 /* step78 */
 .wcard .wpr{font:600 13.5px var(--mono,ui-monospace,monospace);letter-spacing:.02em;color:var(--muted);margin:1px 0 2px}
 
+/* step79 */
+.ag-new{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;text-align:left}
+.ag-new>summary{cursor:pointer;font-weight:800;color:var(--accent,#5b8def);list-style:none;text-align:center;padding:4px 0}
+.ag-new>summary::-webkit-details-marker{display:none}
+.ag-new[open]>summary{margin-bottom:6px}
+.ap-note{color:var(--muted);font-size:12.5px;font-weight:500}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2246,7 +2253,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="#notes" data-go="notes" aria-label="Hibi, go to Home"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b><small class="brand-tag">day by day</small></i></a>
+    <a class="brand" href="./" data-go="notes" aria-label="Hibi, go to Home"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b><small class="brand-tag">day by day</small></i></a>
     <div class="search" id="searchWrap" role="search">
       <label for="gSearch" class="sr">Search the cheat sheet</label>
       <span class="search-ico" aria-hidden="true"></span>
@@ -3058,7 +3065,9 @@ html.cs-calm .cs-rxpal button{transition:none}
   const dkey=()=>new Date().toDateString();
   let busy=false, data=null;
   function box(){ let b=document.getElementById("tNotif"); if(!b){ const aw=document.querySelector(".top-in .auth-wrap"); if(!aw) return null; b=document.createElement("div"); b.id="tNotif"; b.className="tn-wrap"; aw.parentNode.insertBefore(b,aw); } return b; }
-  async function load(){
+  let lastLoad=0;
+  setInterval(()=>{ if(!document.hidden&&window.__csTeacher&&Date.now()-lastLoad>600000) load(); },60000);
+  async function load(){ lastLoad=Date.now();
     const b0=document.getElementById("tNotif");
     if(!window.__csTeacher||window.__csPreview||!window.__csTeach||!window.__csTeach.accounts){ if(b0) b0.remove(); return; }
     if(busy) return; busy=true;
@@ -3137,7 +3146,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-tninv]"); if(!f) return; e.preventDefault(); try{ await approve(f.name.value.trim(),f.email.value); }catch(er){ if(window.toast) window.toast("Couldn’t save that. Did you paste the new Firebase rules?"); return; } f.reset(); if(window.toast) window.toast("✓ Approved. Send the email that just opened."); });
   document.addEventListener("click",async e=>{ const r=e.target.closest("[data-tnrep]"); if(!r) return; try{ await window.__clubSocial.delReport(r.dataset.tnrep); }catch(er){ return; } data.reps=(data.reps||[]).filter(x=>x.id!==r.dataset.tnrep); open=true; paint(); });
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return; const k=t.dataset.tn;
-    if(k==="open"){ open=!open; }
+    if(k==="open"){ open=!open; if(open&&Date.now()-lastLoad>180000) setTimeout(load,0); }
     else if(k==="all") showAll=!showAll;
     else if(k==="seen"){ undoPrev=getSeen(); undoRead=getRead(); setSeen(Date.now()); setRead([...new Set(undoRead.concat(curKeys))]); open=true; }
     else if(k==="undo"){ setSeen(undoPrev||0); if(undoRead) setRead(undoRead); undoPrev=null; undoRead=null; open=true; }
@@ -3233,7 +3242,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 
 <script>
 /* the logo always takes you Home and refreshes the page (even if you're already there) */
-document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} if(location.hash!=="#notes") history.replaceState(null,"","#notes"); location.reload(); },true);
+document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
 <script>
@@ -3281,17 +3290,19 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <button type="button" class="ag-btn ag-alt" data-signin>${G}<span>I’m approved: continue with Google</span></button>`;
     return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
       <h2 id="agTitle">Hibi is for Noa’s students</h2>
-      <p>Ask for access below. Noa will email you when you’re in, and then you sign in with Google.</p>
-      <p class="ag-es" lang="es">Hibi es para los alumnos de Noa. Pide acceso aquí: Noa te escribirá cuando estés dentro.</p>
-      ${reqForm("",false)}
-      <div class="ag-or"><span>Already approved?</span></div>
+      <p><b>Already a student or club member?</b> Just sign in with the Google account Noa added.</p>
+      <p class="ag-es" lang="es">¿Ya eres alumno o del club? Entra con tu cuenta de Google.</p>
       <button type="button" class="ag-btn" data-signin>${G}<span>Continue with Google</span></button>
       <p class="ag-msg" id="agMsg" role="alert" hidden></p>
+      <details class="ag-new"><summary>New here? Ask Noa for access</summary>
+      <p>Noa will email you when you’re in, and then you sign in with Google.</p>
+      <p class="ag-es" lang="es">¿Eres nuevo? Pide acceso aquí: Noa te escribirá cuando estés dentro.</p>
+      ${reqForm("",false)}</details>
       <p class="ag-small">Hibi only uses your name and email to save your progress. Noa never sees your password.</p>`; }
   function reqForm(em,signed){ return `<form class="ag-form" data-agreq>
       <label>Your name<input name="name" required maxlength="80" autocomplete="name"></label>
       <label>Your email <small>(the Google account you’ll sign in with)</small><input name="email" type="email" required maxlength="120" autocomplete="email" value="${esc(em)}" ${signed?"readonly":""}></label>
-      <label>I’m…<select name="who"><option value="club">In Noa’s English Club</option><option value="private">Taking private classes with Noa</option><option value="joining">Interested in joining</option><option value="other">Other</option></select></label>
+      <label>I’m…<select name="who" required><option value="" disabled selected>Choose one</option><option value="club">In Noa’s English Club</option><option value="private">Taking private classes with Noa</option><option value="joining">Interested in joining</option><option value="other">Other</option></select></label>
       <label>Anything to add? <small>(optional)</small><textarea name="msg" rows="2" maxlength="500"></textarea></label>
       <button type="submit" class="ag-btn ag-send">Ask for access</button><p class="ag-fmsg" role="status"></p></form>`; }
   function show(m){
@@ -5199,7 +5210,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=50" defer></script>
+<script src="buddy.js?v=51" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -9041,7 +9052,7 @@ function go(id,push){
   document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", (b.dataset.go===id||(id==="notebook"&&b.dataset.go==="classnotes"))?"true":"false"));
   const cur=document.querySelector('.navbtn[aria-current="true"]'); if(cur&&cur.scrollIntoView&&window.innerWidth<=900) cur.scrollIntoView({block:"nearest",inline:"center"});
   try{localStorage.setItem("eep-view",id);}catch(e){}
-  if(push&&!fromPop){ try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"","#"+id); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"","#"+id); else history.pushState({cs:1,v:id,n:++histN},"","#"+id);}catch(e){} }
+  if(push&&!fromPop){ const U=id==="notes"?location.pathname+location.search:"#"+id; try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"",U); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"",U); else history.pushState({cs:1,v:id,n:++histN},"",U);}catch(e){} }
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]"); if(!b)return; e.preventDefault(); go(b.dataset.go,true); if(b.closest("nav.side,header.top")){ backStack.length=0; renderBack(); } window.scrollTo({top:0}); if(b.dataset.go==="translate") setTimeout(()=>trIn.focus(),50);});
 window.addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h&&h!==curView&&ids.includes(h)) go(h); });
@@ -9050,7 +9061,7 @@ document.getElementById("backFab").addEventListener("click",goBack);
 let start=location.hash.slice(1);
 if(!ids.includes(start)){ try{ start=localStorage.getItem("eep-view")||"notes"; }catch(e){ start="notes"; } }
 go(start);
-try{ history.replaceState({cs:1,v:curView,n:0},"","#"+curView); }catch(e){}
+try{ history.replaceState({cs:1,v:curView,n:0},"",curView==="notes"?location.pathname+location.search:"#"+curView); }catch(e){}
 
 /* ---------------- starred sections ---------------- */
 let stars=LS.get("ncs-stars",[]);
@@ -9770,7 +9781,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261111191331"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261111192156"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10041,12 +10052,15 @@ function status(st) {
   else if (dot) dot.remove();
 }
 /* profile photo: the Google one, one they upload, or none (their buddy shows in the club) */
-function photoPref() { try { const v = JSON.parse(localStorage.getItem("ncs-photo") || "null"); if (v && typeof v === "object") return v; } catch (e) {} return { k: "buddy" }; }
+/* the buddy is the default photo, but only once the egg has hatched; until then the Google photo is used */
+const buddyOut = () => { try { const s = window.csBuddy && window.csBuddy.state; return !!(s && s.on === true && s.a); } catch (e) { return false; } };
+function photoPref() { try { const v = JSON.parse(localStorage.getItem("ncs-photo") || "null"); if (v && typeof v === "object") return v; } catch (e) {} return { k: buddyOut() || !(user && user.photoURL) ? "buddy" : "google" }; }
 window.csMyPhotoKind = () => photoPref().k || "buddy";
 /* the buddy as a photo: "face" zooms in on the head (small round buttons), "full" is the whole buddy, centered */
 window.csBuddyPic = (mode) => { try { const s = window.csBuddy && window.csBuddy.portrait ? window.csBuddy.portrait() : ""; if (mode === "face" && window.csBuddy.face) return window.csBuddy.face() || s; return s.replace(/viewBox="0 0 20 22"/, mode === "face" ? 'viewBox="2.5 2 15 15"' : 'viewBox="-0.5 2.2 21 20"'); } catch (e) { return ""; } };
-function myPhoto() { const p = photoPref(); if (p.k === "custom" && p.d) return p.d; if (p.k === "google" && user && user.photoURL) return user.photoURL; return ""; }
+function myPhoto() { const p = photoPref(); if (p.k === "custom" && p.d) return p.d; if (p.k === "google" && user && user.photoURL) return user.photoURL; if (p.k === "buddy" && !buddyOut() && user && user.photoURL) return user.photoURL; return ""; }
 window.csMyPhoto = () => myPhoto();
+document.addEventListener("cs-buddy-hatched", () => { try { renderUser(); } catch (e) {} });
 function setPhoto(v) { if (VA) { alertMsg("👁 View as is read-only: nothing is saved"); return; } try { localStorage.setItem("ncs-photo", JSON.stringify(v)); } catch (e) {} try { window.__csOnSet && window.__csOnSet("ncs-photo"); } catch (e) {} renderUser(); document.dispatchEvent(new CustomEvent("cs-photo", { detail: { photo: myPhoto(), k: v.k, bg: v.bg || "" } })); }
 window.csMyPhotoBg = () => (photoPref().k === "buddy" && photoPref().bg) || "";
 function shrinkPhoto(file) { return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image(); im.onload = () => { const S = 192, c = document.createElement("canvas"); c.width = c.height = S; const k = Math.max(S / im.naturalWidth, S / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k; c.getContext("2d").drawImage(im, (S - w) / 2, (S - h) / 2, w, h); URL.revokeObjectURL(u); res(c.toDataURL("image/jpeg", .82)); }; im.onerror = rej; im.src = u; }); }
@@ -10063,7 +10077,7 @@ function photoBox() {
   const BGS = [["", "Default"], ["#BFE9D2", "Mint"], ["#C6E2FF", "Sky"], ["#FFD8C2", "Peach"], ["#E2D4FF", "Lavender"], ["#FFF0B3", "Butter"], ["#1F2A44", "Night"]];
   const bgRow = p.k === "buddy" ? `<div class="ap-bgs" role="radiogroup" aria-label="Background color">${BGS.map(([v, n]) => `<button type="button" class="ap-bg${(p.bg || "") === v ? " on" : ""}" data-apbg="${v}" role="radio" aria-checked="${(p.bg || "") === v}" title="${n}" aria-label="${n}" style="background:${v || "var(--surface-2)"}">${v ? "" : "∅"}</button>`).join("")}</div>` : "";
   b.innerHTML = `<div class="ap-prev"${p.k === "buddy" && p.bg ? ` style="background:${p.bg}"` : ""}>${prev}</div><div class="ap-opts"><b>Profile photo</b><small>Shows in the club next to your posts and messages.</small>
-    <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> My buddy 🐾</label>
+    <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> My buddy 🐾${buddyOut() ? "" : ` <small class="ap-note">(once your egg hatches, your Google photo until then)</small>`}</label>
     <label><input type="radio" name="phk" value="google" ${p.k === "google" ? "checked" : ""} ${user.photoURL ? "" : "disabled"}> My Google photo</label>
     <label><input type="radio" name="phk" value="custom" ${p.k === "custom" ? "checked" : ""}> ${p.d ? "My own photo" : "Upload my own photo"}${p.d ? ` <span class="ap-chg" role="button" tabindex="0" data-apchg="1">Change</span>` : ""}</label>
     <label><input type="radio" name="phk" value="none" ${p.k === "none" ? "checked" : ""}> No photo (my initials)</label>
