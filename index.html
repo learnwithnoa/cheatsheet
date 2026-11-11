@@ -657,6 +657,18 @@ html.cs-signed #authBtn{padding-inline:6px}
 .top-in>#tNotif .tn-box{position:absolute;top:calc(100% + 10px);right:0;z-index:45;width:min(480px,calc(100vw - 32px));max-height:calc(100dvh - var(--hdr-h,61px) - var(--va-h,0px) - 24px);overflow:auto;margin:0;box-shadow:0 18px 44px rgba(5,15,30,.35);background:var(--surface)}
 @media (max-width:700px){.top-in>#tNotif .tn-box{position:fixed;left:16px;right:16px;width:auto;top:calc(var(--hdr-h,61px) + var(--va-h,0px) + 6px)}}
 
+/* step57: header order  + Word · 🎧 · ⏱ | 🔔 · 💬 · photo · ⚙ */
+.top-in>#tNotif,.top-in>#clBellWrap{order:5}
+.top-in>#dmTopBtn{order:6}
+.top-in>.auth-wrap{order:7}
+.top-in>#csWrap{order:10}
+.top-in>#tNotif .tn-bell{position:relative;padding-inline:10px!important;gap:0;font-size:15px;border-color:var(--line)}
+.top-in>#tNotif .tn-bell.has{border-color:color-mix(in srgb,#E5533D 55%,var(--line))}
+.top-in>#tNotif .tn-bl{display:none!important}
+.top-in>#tNotif .tn-num{position:absolute;top:-5px;right:-5px;margin:0;min-width:18px;height:18px;line-height:18px;padding:0 5px;box-sizing:border-box;font:800 11px var(--body)}
+html.cs-signed .top-in #authBtn{padding:0 4px!important;gap:0!important;min-width:0;justify-content:center}
+html.cs-signed .top-in #authBtn #authTxt,html.cs-signed .top-in #authBtn .dot{display:none!important}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2916,7 +2928,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const cnt=areq.length+joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length+reps.length;
     b.hidden=false;
     /* closed: a small button that opens it again */
-    const bell=`<button type="button" class="tn-bell${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
+    const bell=`<button type="button" class="tn-bell theme-btn${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
     if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
     b.className="tn-wrap open";
     const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
