@@ -2067,6 +2067,7 @@ html.cs-calm .cs-rxpal button{transition:none}
           <button type="button" class="chip" role="radio" data-mm="piano">Calm piano</button>
           <button type="button" class="chip" role="radio" data-mm="pianorain">Piano + rain</button>
           <button type="button" class="chip" role="radio" data-mm="rain">Just rain</button>
+          <button type="button" class="chip" role="radio" data-mm="ocean">Ocean waves</button>
           <button type="button" class="chip" role="radio" data-mm="brown">Brown noise</button>
           <button type="button" class="chip" role="radio" data-mm="pink">Pink noise</button>
           <button type="button" class="chip" role="radio" data-mm="white">White noise</button>
@@ -4872,7 +4873,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=45" defer></script>
+<script src="buddy.js?v=46" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -8564,7 +8565,7 @@ bkRender();
   let mode=LS.get("ncs-music-mode","lofi"), volume=LS.get("ncs-music-vol",45), balance=LS.get("ncs-music-bal",40);
   vol.value=volume;
   const bal=document.getElementById("musicBal"), balRow=document.getElementById("balRow"); bal.value=balance;
-  let pinkGain=null, whiteGain=null, brownGain=null, pianoBus=null, pianoBar=0;
+  let pinkGain=null, whiteGain=null, brownGain=null, pianoBus=null, pianoBar=0, oceanGain=null;
   let ac=null, master=null, tone=null, musicBus=null, rainGain=null, crackleGain=null, delay=null, noiseBuf=null, crackBuf=null, rainSrc=null, crackSrc=null, timer=null, playing=false;
   let step=0, nextTime=0, bar=0;
   const BPM=76, S16=60/BPM/4;
@@ -8609,6 +8610,18 @@ bkRender();
     const ws=ac.createBufferSource(); ws.buffer=makeWhite(); ws.loop=true;
     const wlp=ac.createBiquadFilter(); wlp.type="lowpass"; wlp.frequency.value=9000;
     ws.connect(wlp).connect(whiteGain); ws.start();
+    // ocean waves: deep surf that swells and breaks (slow, uneven), with a little foam hiss on each crest
+    oceanGain=ac.createGain(); oceanGain.gain.value=0; oceanGain.connect(master);
+    const os=ac.createBufferSource(); os.buffer=makeBrown(); os.loop=true;
+    const olp=ac.createBiquadFilter(); olp.type="lowpass"; olp.frequency.value=650; olp.Q.value=0.2;
+    const owave=ac.createGain(); owave.gain.value=0.46;
+    const ol1=ac.createOscillator(), oa1=ac.createGain(); ol1.frequency.value=0.085; oa1.gain.value=0.32; ol1.connect(oa1).connect(owave.gain); ol1.start();
+    const ol2=ac.createOscillator(), oa2=ac.createGain(); ol2.frequency.value=0.031; oa2.gain.value=0.12; ol2.connect(oa2).connect(owave.gain); ol2.start();
+    const ofq=ac.createGain(); ofq.gain.value=480; ol1.connect(ofq).connect(olp.frequency);
+    os.connect(olp).connect(owave).connect(oceanGain); os.start();
+    const fs=ac.createBufferSource(); fs.buffer=makePink(); fs.loop=true; const fbp=ac.createBiquadFilter(); fbp.type="bandpass"; fbp.frequency.value=2600; fbp.Q.value=0.5;
+    const fg=ac.createGain(); fg.gain.value=0.07; const fa=ac.createGain(); fa.gain.value=0.07; ol1.connect(fa).connect(fg.gain);
+    fs.connect(fbp).connect(fg).connect(oceanGain); fs.start();
     // calm piano: soft piano tones through a gentle room reverb
     pianoBus=ac.createGain(); pianoBus.gain.value=0; pianoBus.connect(master);
     const verb=ac.createConvolver(); verb.buffer=makeImpulse(3.2); const wet=ac.createGain(); wet.gain.value=0.55;
@@ -8727,6 +8740,7 @@ bkRender();
     brownGain.gain.setTargetAtTime(mode==="brown"?0.9:0, t, 0.3);
     pinkGain.gain.setTargetAtTime(mode==="pink"?0.8:0, t, 0.3);
     whiteGain.gain.setTargetAtTime(mode==="white"?0.32:0, t, 0.3);
+    if(oceanGain) oceanGain.gain.setTargetAtTime(mode==="ocean"?1.1:0, t, 0.4);
     pianoBus.gain.setTargetAtTime(mode==="piano"?1 : mode==="pianorain"? Math.cos(b*Math.PI/2)*1.1 : 0, t, 0.3);
   }
   function paint(){
@@ -8740,6 +8754,7 @@ bkRender();
       piano:"<b>Calm piano</b>: slow, gentle piano chords. Good when you need to focus or relax.",
       pianorain:"<b>Piano + rain</b>: calm piano with soft rain. Use <b>Mix</b> to choose how much of each.",
       rain:"<b>Just rain</b>: steady rain, no music. Nice for reading.",
+      ocean:"<b>Ocean waves</b>: slow waves rolling onto the beach. Calm and steady, like a day at the coast.",
       brown:"<b>Brown noise</b>: a deep, steady sound that blocks out distractions.",
       pink:"<b>Pink noise</b>: softer than white noise, like steady rain or wind. Many people find it calming.",
       white:"<b>White noise</b>: a bright, even hiss, like a fan. Good for covering voices and sudden sounds."};
@@ -8962,6 +8977,8 @@ const CHANGELOG=[
     ["🔴","New posts","a red dot on <b>Community</b> tells you when there's something new on the wall.","club"],
     ["⭐","Rate the podcast","give each podcast episode 1 to 5 stars. Noa reads every rating.","club"],
     ["📶","Difficulty levels","every class recording and podcast episode now shows a level from 1 to 10 (1 is about A2+, 10 is about C1), so you can pick what fits you today.","club"],
+    ["🌊","Ocean waves","a new sound in 🎵 Study music: slow waves rolling onto the beach."],
+    ["🖱️","Look around the park","zoomed in on the Buddy park? Drag it with your mouse to see the rest."],
     ["⚙️","Tidier settings","the ⚙️ menu is now organized into Your level, Look &amp; feel, Text &amp; reading, Page tools, Comfort &amp; accessibility and Study buddy."]
   ]},
   {id:"2026-dm", date:"November 10, 2026", title:"Messages, photos and more 💬", items:[

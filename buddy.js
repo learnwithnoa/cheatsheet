@@ -1361,7 +1361,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const cx = (vp.scrollLeft + vp.clientWidth / 2) / Math.max(1, vp.scrollWidth), cy = (vp.scrollTop + vp.clientHeight / 2) / Math.max(1, vp.scrollHeight);
     w.style.setProperty("--z", pz); w.style.setProperty("--zw", Math.max(1, pz));
     const ar = $("parkArea"); ar.querySelectorAll("[data-pz]").forEach(b => { const d = +b.dataset.pz; b.disabled = d < 0 ? pz <= ZL[0] : d > 0 ? pz >= ZL[ZL.length - 1] : pz === (window.innerWidth < 640 ? .8 : 1); });
-    requestAnimationFrame(() => { const nx = keepCenter ? cx : .5, ny = keepCenter ? cy : .5; vp.scrollLeft = nx * vp.scrollWidth - vp.clientWidth / 2; vp.scrollTop = ny * vp.scrollHeight - vp.clientHeight / 2; });
+    requestAnimationFrame(() => { const nx = keepCenter ? cx : .5, ny = keepCenter ? cy : .5; vp.scrollLeft = nx * vp.scrollWidth - vp.clientWidth / 2; vp.scrollTop = ny * vp.scrollHeight - vp.clientHeight / 2; vp.classList.toggle("can-pan", vp.scrollWidth > vp.clientWidth + 2 || vp.scrollHeight > vp.clientHeight + 2); });
   }
   document.addEventListener("click", e => {
     const z = e.target.closest("[data-pz]"); if (!z) return;
@@ -1370,6 +1370,27 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     try { localStorage.setItem("cs-parkz", String(pz)); } catch (err) {}
     applyZoom(d !== 0);
   });
+  /* ---------- park: drag with the mouse to look around when it's bigger than the window ---------- */
+  let pan = null, panMoved = false;
+  document.addEventListener("pointerdown", e => {
+    const vp = e.target.closest && e.target.closest("#parkVp"); if (!vp || e.pointerType !== "mouse" || e.button) return;
+    if (vp.scrollWidth <= vp.clientWidth + 2 && vp.scrollHeight <= vp.clientHeight + 2) return;
+    if (e.target.closest("input,select,textarea,a,label,.park-scene,.park-tools,[data-pz]")) return;
+    pan = { x: e.clientX, y: e.clientY, l: vp.scrollLeft, t: vp.scrollTop, vp, id: e.pointerId }; panMoved = false;
+  });
+  document.addEventListener("pointermove", e => {
+    if (!pan || e.pointerId !== pan.id) return; const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+    if (!panMoved && Math.abs(dx) + Math.abs(dy) < 6) return;
+    if (!panMoved) { panMoved = true; pan.vp.classList.add("panning"); }
+    pan.vp.scrollLeft = pan.l - dx; pan.vp.scrollTop = pan.t - dy; e.preventDefault();
+  });
+  const endPan = () => { if (!pan) return; pan.vp.classList.remove("panning"); pan = null; if (panMoved) setTimeout(() => { panMoved = false; }, 0); };
+  document.addEventListener("pointerup", endPan); document.addEventListener("pointercancel", endPan);
+  /* a drag shouldn't also count as a click on a buddy */
+  document.addEventListener("click", e => { if (panMoved && e.target.closest && e.target.closest("#parkVp")) { e.stopPropagation(); e.preventDefault(); panMoved = false; } }, true);
+  const panCss = document.createElement("style");
+  panCss.textContent = "@media (pointer:fine){.park-vp.can-pan{cursor:grab}.park-vp.panning{cursor:grabbing;user-select:none}.park-vp.panning *{pointer-events:none}}";
+  document.head.appendChild(panCss);
   /* ---------- park: buddies wander, play and say hi ---------- */
   let parkTick = null;
   const calm = () => document.documentElement.classList.contains("cs-calm") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
