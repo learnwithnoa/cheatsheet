@@ -12,10 +12,9 @@ permissions:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Install ffmpeg
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - name: Download and convert
         env:
           HUB_PASSWORD: ${{ secrets.HUB_PASSWORD }}
@@ -30,6 +29,10 @@ jobs:
           echo "Queue:"; cat pod/queue.txt
           for id in $(grep -oE '[A-Za-z0-9_-]{20,}' pod/queue.txt | sort -u); do
             [ -f "pod/$id.mp3" ] && continue
+            # ffmpeg only when there's a new episode (a short network blip used to fail every run), with retries
+            if ! command -v ffmpeg >/dev/null; then
+              for t in 1 2 3; do (sudo apt-get update -qq -o Acquire::Retries=3 && sudo apt-get install -y -qq -o Acquire::Retries=3 ffmpeg) && break; echo "apt failed, retrying"; sleep 30; done
+            fi
             curl -sSL --fail -o /tmp/src "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
             file /tmp/src; ls -la /tmp/src
             ffmpeg -nostdin -loglevel error -y -i /tmp/src -ac 1 -ar 44100 -b:a 64k "pod/$id.mp3"
