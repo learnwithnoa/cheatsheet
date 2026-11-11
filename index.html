@@ -753,6 +753,14 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 #musicModes .mm-cat{flex-basis:100%;margin:6px 0 0;font:800 11.5px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 #musicModes .mm-cat:first-child{margin-top:0}
 
+/* step64 */
+.ap-bgs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+.ap-bg{all:unset;cursor:pointer;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;color:var(--muted);box-sizing:border-box}
+.ap-bg.on{border-color:var(--royal,#3b82f6);box-shadow:0 0 0 2px color-mix(in srgb,var(--royal,#3b82f6) 35%,transparent)}
+.ap-bg:focus-visible{outline:3px solid var(--bright,#4F9DF0)}
+.ap-chg{margin-left:6px;font:700 12.5px var(--body);color:var(--royal,#3b82f6);text-decoration:underline;cursor:pointer}
+.ap-prev .ap-bd{display:grid;place-items:center}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3630,8 +3638,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* ---------- UI ---------- */
   const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
   let PARKMAP={};
-  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait&&!(window.csMyPhotoKind&&window.csMyPhotoKind()==="none")){ const sv=window.csBuddy.portrait(); if(sv) return `<span class="cs-av cs-avb" aria-hidden="true">${sv}</span>`; } }
-    const pp=PROFS&&profOf(uid), noPet=(pp&&pp.pk==="none")||(uid===me()&&window.csMyPhotoKind&&window.csMyPhotoKind()==="none"); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)&&!(!pp.pk&&/googleusercontent\.com/.test(pp.photo))) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=!noPet&&PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
+  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait&&!(window.csMyPhotoKind&&window.csMyPhotoKind()==="none")){ const sv=window.csBuddy.portrait(), mb=window.csMyPhotoBg?window.csMyPhotoBg():""; if(sv) return `<span class="cs-av cs-avb" aria-hidden="true"${mb?` style="background:${mb}"`:""}>${sv}</span>`; } }
+    const pp=PROFS&&profOf(uid), noPet=(pp&&pp.pk==="none")||(uid===me()&&window.csMyPhotoKind&&window.csMyPhotoKind()==="none"); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)&&!(!pp.pk&&/googleusercontent\.com/.test(pp.photo))) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=!noPet&&PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true"${pp&&/^#[0-9A-Fa-f]{6}$/.test(pp.pbg||"")?` style="background:${pp.pbg}"`:""}>${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
   const who=x=>`<button type="button" class="cs-whob" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}" aria-label="${esc(L("See profile: ","Ver perfil: ")+(x.name||""))}">${av(x.uid,x.name)}</button><span class="cs-who"><b><button type="button" class="cs-nameb" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}">${esc(x.name||L("Member","Miembro"))}</button></b>${x.uid===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}<span class="cs-ago">${ago(x.at)}${x.edited?L(" · edited"," · editado"):""}</span>${G()?`<span class="cs-sample">${L("Sample","Ejemplo")}</span>`:""}</span>`;
   const canDel=x=>x.uid===me()||me()===NOA;
   const canEdit=x=>x.uid===me()&&!G();
@@ -3817,7 +3825,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return PROFS; }
   const profOf=u=>(PROFS||[]).find(x=>x.id===u||x.uid===u)||null;
   async function saveMe(patch){ if(G()||!me()) return; const cur=profOf(me())||{};
-    const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||"",pk:cur.pk||""};
+    const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||"",pk:cur.pk||"",pbg:cur.pbg||""};
     Object.assign(data,patch||{});
     await api("PATCH","/clubProfiles/"+me(),{fields:{uid:S(me()),name:S(F().name()||""),at:I(Date.now()),json:S(JSON.stringify(data))}});
     const o=Object.assign({id:me(),uid:me(),name:F().name()},data); PROFS=(PROFS||[]).filter(x=>x.id!==me()).concat([o]); return o; }
@@ -3826,7 +3834,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const mo=Object.assign({},cur.mo||{}), m=MON(), x=Object.assign({},mo[m]||{}); for(const k in d) x[k]=(x[k]|0)+d[k]; mo[m]=x; Object.keys(mo).sort().slice(0,-6).forEach(k=>delete mo[k]); p.mo=mo;
     await saveMe(p); checkBadges(); }catch(e){} }
   let wT=0; function syncWatched(list){ clearTimeout(wT); wT=setTimeout(async()=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({watched:list.slice(-300)}); checkBadges(); }catch(e){} },800); }
-  document.addEventListener("cs-photo",async e=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({photo:(e.detail&&e.detail.photo)||"",pk:(e.detail&&e.detail.k)||"buddy"}); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); }catch(er){} });
+  document.addEventListener("cs-photo",async e=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({photo:(e.detail&&e.detail.photo)||"",pk:(e.detail&&e.detail.k)||"buddy",pbg:(e.detail&&e.detail.bg)||""}); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); }catch(er){} });
   let meDone=false;
   async function ensureMe(){ if(meDone||G()||!me()||!F()) return; meDone=true;
     try{ await loadProfs(); const cur=profOf(me()); if(!profOK) return;
@@ -9652,24 +9660,31 @@ function status(st) {
 /* profile photo: the Google one, one they upload, or none (their buddy shows in the club) */
 function photoPref() { try { const v = JSON.parse(localStorage.getItem("ncs-photo") || "null"); if (v && typeof v === "object") return v; } catch (e) {} return { k: "buddy" }; }
 window.csMyPhotoKind = () => photoPref().k || "buddy";
+/* the buddy as a photo: "face" zooms in on the head (small round buttons), "full" is the whole buddy, centered */
+window.csBuddyPic = (mode) => { try { const s = window.csBuddy && window.csBuddy.portrait ? window.csBuddy.portrait() : ""; return s.replace(/viewBox="0 0 20 22"/, mode === "face" ? 'viewBox="2.5 2 15 15"' : 'viewBox="-0.5 2.2 21 20"'); } catch (e) { return ""; } };
 function myPhoto() { const p = photoPref(); if (p.k === "custom" && p.d) return p.d; if (p.k === "google" && user && user.photoURL) return user.photoURL; return ""; }
 window.csMyPhoto = () => myPhoto();
-function setPhoto(v) { if (VA) { alertMsg("👁 View as is read-only: nothing is saved"); return; } try { localStorage.setItem("ncs-photo", JSON.stringify(v)); } catch (e) {} try { window.__csOnSet && window.__csOnSet("ncs-photo"); } catch (e) {} renderUser(); document.dispatchEvent(new CustomEvent("cs-photo", { detail: { photo: myPhoto(), k: v.k } })); }
+function setPhoto(v) { if (VA) { alertMsg("👁 View as is read-only: nothing is saved"); return; } try { localStorage.setItem("ncs-photo", JSON.stringify(v)); } catch (e) {} try { window.__csOnSet && window.__csOnSet("ncs-photo"); } catch (e) {} renderUser(); document.dispatchEvent(new CustomEvent("cs-photo", { detail: { photo: myPhoto(), k: v.k, bg: v.bg || "" } })); }
+window.csMyPhotoBg = () => (photoPref().k === "buddy" && photoPref().bg) || "";
 function shrinkPhoto(file) { return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image(); im.onload = () => { const S = 192, c = document.createElement("canvas"); c.width = c.height = S; const k = Math.max(S / im.naturalWidth, S / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k; c.getContext("2d").drawImage(im, (S - w) / 2, (S - h) / 2, w, h); URL.revokeObjectURL(u); res(c.toDataURL("image/jpeg", .82)); }; im.onerror = rej; im.src = u; }); }
 function photoBox() {
   if (!panel || !user) return; let b = document.getElementById("authPhoto");
   if (!b) { b = document.createElement("div"); b.id = "authPhoto"; b.className = "auth-photo"; const who = $("authWho"); (who || panel.firstChild).insertAdjacentElement("afterend", b);
+    b.addEventListener("click", e => { if (e.target.closest("[data-apchg]")) { e.preventDefault(); b.querySelector("input[type=file]").click(); return; }
+      const g = e.target.closest("[data-apbg]"); if (g) { setPhoto(Object.assign({}, photoPref(), { bg: g.dataset.apbg })); } });
     b.addEventListener("change", async e => { const r = e.target.closest("[name=phk]"); if (r) { if (r.value === "custom" && !(photoPref().d)) { b.querySelector("input[type=file]").click(); return; } setPhoto(Object.assign({}, photoPref(), { k: r.value })); return; }
       const f = e.target.closest("input[type=file]"); if (f && f.files[0]) { try { const d = await shrinkPhoto(f.files[0]); setPhoto({ k: "custom", d }); alertMsg("✓ Photo saved"); } catch (er) { alertMsg("Couldn't use that photo. Try another one."); } f.value = ""; } }); }
   const p = photoPref(), ph = myPhoto();
   const nm0 = String(user.displayName || user.email || "?").trim(), ini = (nm0.split(/\s+/).slice(0, 2).map(w => w[0] || "").join("") || "?").toUpperCase();
-  const prev = ph ? `<img src="${ph.replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer">` : p.k === "none" ? `<span class="ap-ini">${ini}</span>` : (window.csBuddy && window.csBuddy.portrait ? `<span class="ap-bd">${window.csBuddy.portrait()}</span>` : `<span>🐾</span>`);
-  b.innerHTML = `<div class="ap-prev">${prev}</div><div class="ap-opts"><b>Profile photo</b><small>Shows in the club next to your posts and messages.</small>
-    <label><input type="radio" name="phk" value="google" ${p.k === "google" ? "checked" : ""} ${user.photoURL ? "" : "disabled"}> My Google photo</label>
-    <label><input type="radio" name="phk" value="custom" ${p.k === "custom" ? "checked" : ""}> My own photo</label>
+  const prev = ph ? `<img src="${ph.replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer">` : p.k === "none" ? `<span class="ap-ini">${ini}</span>` : (window.csBuddy && window.csBuddy.portrait ? `<span class="ap-bd">${window.csBuddyPic("full")}</span>` : `<span>🐾</span>`);
+  const BGS = [["", "Default"], ["#BFE9D2", "Mint"], ["#C6E2FF", "Sky"], ["#FFD8C2", "Peach"], ["#E2D4FF", "Lavender"], ["#FFF0B3", "Butter"], ["#1F2A44", "Night"]];
+  const bgRow = p.k === "buddy" ? `<div class="ap-bgs" role="radiogroup" aria-label="Background color">${BGS.map(([v, n]) => `<button type="button" class="ap-bg${(p.bg || "") === v ? " on" : ""}" data-apbg="${v}" role="radio" aria-checked="${(p.bg || "") === v}" title="${n}" aria-label="${n}" style="background:${v || "var(--surface-2)"}">${v ? "" : "∅"}</button>`).join("")}</div>` : "";
+  b.innerHTML = `<div class="ap-prev"${p.k === "buddy" && p.bg ? ` style="background:${p.bg}"` : ""}>${prev}</div><div class="ap-opts"><b>Profile photo</b><small>Shows in the club next to your posts and messages.</small>
     <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> My buddy 🐾</label>
+    <label><input type="radio" name="phk" value="google" ${p.k === "google" ? "checked" : ""} ${user.photoURL ? "" : "disabled"}> My Google photo</label>
+    <label><input type="radio" name="phk" value="custom" ${p.k === "custom" ? "checked" : ""}> ${p.d ? "My own photo" : "Upload my own photo 📷"}${p.d ? ` <span class="ap-chg" role="button" tabindex="0" data-apchg="1">Change</span>` : ""}</label>
     <label><input type="radio" name="phk" value="none" ${p.k === "none" ? "checked" : ""}> No photo (my initials)</label>
-    <label class="ap-up">📷 ${p.d ? "Change my photo" : "Upload a photo"}<input type="file" accept="image/*" hidden></label></div>`;
+    ${bgRow}<input type="file" accept="image/*" hidden></div>`;
   let lk = document.getElementById("authLinks"); if (!lk) { lk = document.createElement("div"); lk.id = "authLinks"; lk.className = "auth-links"; b.insertAdjacentElement("afterend", lk);
     lk.addEventListener("click", e => { const x = e.target.closest("[data-al]"); if (!x) return; panel.hidden = true; const k = x.dataset.al; if (k === "club") { window.__clubMyProfile && window.__clubMyProfile(); } else if (k === "dm") { window.__clubInbox && window.__clubInbox(); } else if (k === "level") { location.hash = "#quiz"; setTimeout(() => document.querySelector('[data-pr="level"]')?.click(), 300); } else location.hash = "#" + k; }); }
   let nW = 0; try { nW = (JSON.parse(localStorage.getItem("ncs-words") || "[]") || []).filter(x => x && !x.sample).length; } catch (e) {}
@@ -9684,8 +9699,9 @@ function renderUser() {
   if (user) {
     const name = user.displayName || user.email || "You";
     const ph = myPhoto();
+    ico.style.background = "";
     if (ph) { ico.innerHTML = ""; const img = new Image(); img.alt = ""; img.referrerPolicy = "no-referrer"; img.src = ph; img.onerror = () => { ico.textContent = name.charAt(0).toUpperCase(); }; ico.appendChild(img); }
-    else if (photoPref().k !== "none" && window.csBuddy && window.csBuddy.portrait) { try { ico.innerHTML = window.csBuddy.portrait(); } catch (e) { ico.textContent = name.charAt(0).toUpperCase(); } }
+    else if (photoPref().k !== "none" && window.csBuddy && window.csBuddy.portrait) { try { ico.innerHTML = window.csBuddyPic("face"); ico.style.background = photoPref().bg || ""; } catch (e) { ico.textContent = name.charAt(0).toUpperCase(); } }
     else ico.textContent = name.charAt(0).toUpperCase();
     photoBox();
     $("authWho").textContent = name + (user.email && user.displayName ? " · " + user.email : "");
