@@ -791,8 +791,8 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .cl-pfbdr select[data-pf-bm]{flex:1 1 130px}.cl-pfbdr select[data-pf-bdd]{flex:0 1 80px}.cl-pfbdr input{flex:1 1 120px}
 .cl-pfbd .cs-chk{margin:0}
 .cl-bdays{display:grid;gap:8px;margin:0 0 12px}
-.cl-bday{text-align:left;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:14px;border:1.5px solid #F0A63A;background:color-mix(in srgb,#F0A63A 12%,var(--surface))}
-.cl-bday>div{flex:1 1 180px;display:grid;gap:2px}.cl-bday>div span{font-size:13.5px;color:var(--muted)}
+.cl-bdcard{text-align:left;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:14px;border:1.5px solid #F0A63A;background:color-mix(in srgb,#F0A63A 12%,var(--surface))}
+.cl-bdcard>div{flex:1 1 180px;display:grid;gap:2px;justify-items:start;text-align:left}.cl-bdcard>div span{font-size:13.5px;color:var(--muted)}
 .cl-bdi{font-size:26px;line-height:1}
 .cl-bsoon,.cl-bask{margin:0;font-size:14px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
 .cl-bsoon small{color:var(--muted)}
@@ -803,6 +803,17 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 /* step73 */
 .ger-prac{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--green);background:color-mix(in srgb,var(--green) 8%,var(--surface))}
 .ger-prac>span{font-size:26px;line-height:1}.ger-prac>div{flex:1 1 220px;display:grid;gap:2px}.ger-prac>div span{font-size:14px;color:var(--muted)}
+
+/* step74: messages as a pop-up */
+.cl-dm-ov{background:rgba(5,10,25,.18);justify-content:flex-end;align-items:flex-start;padding:var(--dmtop,64px) var(--dmright,12px) 12px 12px;box-sizing:border-box}
+.cl-dm{width:min(420px,100%);height:auto;max-height:min(640px,calc(100vh - var(--dmtop,64px) - 12px));max-height:min(640px,calc(100dvh - var(--dmtop,64px) - 12px));border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:dmPop .16s ease-out}
+.cl-dmb{min-height:120px}
+@keyframes dmPop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+@media (max-width:560px){.cl-dm-ov{padding:var(--dmtop,64px) 8px 8px}.cl-dm{width:100%}}
+@media (prefers-reduced-motion:reduce){.cl-dm{animation:none}}
+
+/* step75 */
+.cl-igtop[hidden]{display:none!important}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -3896,8 +3907,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const mine=G()?null:profOf(me()), askK="cs-bd-ask-"+(me()||"g"), ask=!G()&&me()&&mine&&!mine.bdset&&!LSG(askK,false);
     let h="";
     today.forEach(b=>{ const isMe=b.uid===me(), a=ageOf(b.bd,b.by);
-      h+=isMe?`<div class="cl-bday today"><span class="cl-bdi" aria-hidden="true">🎂</span><div><b>${L("Happy birthday","Feliz cumpleaños")}, ${esc(String(b.name).split(" ")[0])}! 🎉</b><span>${L("The whole club is celebrating you today.","Todo el club te celebra hoy.")}</span></div></div>`
-        :`<div class="cl-bday today"><span class="cl-bdi" aria-hidden="true">🎂</span><div><b>${L("Today is","Hoy es el cumpleaños de")} <button type="button" class="cs-nameb" data-prof="${esc(b.uid)}" data-pname="${esc(b.name)}">${esc(b.name)}</button>${L("’s birthday!"," 🎉")}</b>${a?`<span>${L("They’re turning","Cumple")} ${a} 🎈</span>`:""}</div>${me()?`<button type="button" class="cs-send cl-dmbtn" data-dmto="${esc(b.uid)}" data-dmname="${esc(b.name)}">💬 ${L("Say happy birthday","Saludar")}</button>`:""}</div>`; });
+      h+=isMe?`<div class="cl-bdcard"><span class="cl-bdi" aria-hidden="true">🎂</span><div><b>${L("Happy birthday","Feliz cumpleaños")}, ${esc(String(b.name).split(" ")[0])}! 🎉</b><span>${L("The whole club is celebrating you today.","Todo el club te celebra hoy.")}</span></div></div>`
+        :`<div class="cl-bdcard"><span class="cl-bdi" aria-hidden="true">🎂</span><div><b>${L("Today is","Hoy es el cumpleaños de")} <button type="button" class="cs-nameb" data-prof="${esc(b.uid)}" data-pname="${esc(b.name)}">${esc(b.name)}</button>${L("’s birthday!"," 🎉")}</b>${a?`<span>${L("They’re turning","Cumple")} ${a} 🎈</span>`:""}</div>${me()?`<button type="button" class="cs-send cl-dmbtn" data-dmto="${esc(b.uid)}" data-dmname="${esc(b.name)}">💬 ${L("Say happy birthday","Saludar")}</button>`:""}</div>`; });
     if(soon.length) h+=`<p class="cl-bsoon">🎈 ${L("Birthdays coming up:","Cumpleaños que se vienen:")} ${soon.map(b=>`<button type="button" class="cs-nameb" data-prof="${esc(b.uid)}" data-pname="${esc(b.name)}">${esc(String(b.name).split(" ")[0])}</button> <small>(${b.days===1?L("tomorrow","mañana"):esc(b.d.toLocaleDateString(L("en-US","es-CL"),{weekday:"short",month:"short",day:"numeric"}))})</small>`).join(" · ")}</p>`;
     if(ask) h+=`<p class="cl-bask">🎂 ${L("Add your birthday to your profile so the club can celebrate you.","Agrega tu cumpleaños a tu perfil para que el club te celebre.")} <button type="button" class="cs-act" data-bdadd="1">${L("Add it","Agregar")}</button><button type="button" class="tip-x" data-bdno="1" aria-label="${L("Not now","Ahora no")}">×</button></p>`;
     el.innerHTML=h; el.hidden=!h; }
@@ -4305,7 +4316,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function dmBadge(){ const n=(THREADS||[]).filter(t=>t.unread).length; document.querySelectorAll(".cl-dmtop .cl-dmn").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":n; }); }
   function dmPanel(){ let o=document.getElementById("clDm"); if(o) return o; o=document.createElement("div"); o.id="clDm"; o.className="cl-dm-ov"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true"); o.setAttribute("aria-label",L("Messages","Mensajes"));
     o.innerHTML=`<div class="cl-dm"><div class="cl-dmh"><button type="button" class="cs-act cl-dmback" data-dmback="1" hidden aria-label="${L("Back","Volver")}">←</button><b class="cl-dmt">💬 ${L("Messages","Mensajes")}</b><button type="button" class="cl-prof-x" data-dmx="1" aria-label="${L("Close","Cerrar")}">✕</button></div><div class="cl-dmb"></div></div>`;
-    document.body.appendChild(o); o.addEventListener("click",e=>{ if(e.target===o||e.target.closest("[data-dmx]")) closeDm(); }); return o; }
+    document.body.appendChild(o); dmPlace(o); o.addEventListener("click",e=>{ if(e.target===o||e.target.closest("[data-dmx]")) closeDm(); }); return o; }
   const askDel=async(t,b,ok)=> window.csConfirm?window.csConfirm(t,b,ok):confirm(t);
   document.addEventListener("click",async e=>{
     const d=e.target.closest("[data-msgdel]");
@@ -4319,7 +4330,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       try{ await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=h_${me()}&updateMask.fieldPaths=r_${me()}`,{fields:{["h_"+me()]:I(now),["r_"+me()]:I(now)}}); THREADS=(THREADS||[]).filter(x=>x.id!==tid); dmBadge(); openInbox(); toast(L("Chat deleted.","Chat borrado.")); }catch(err){ toast(L("Couldn’t delete it. Try again.","No se pudo borrar. Intenta de nuevo.")); } } },true);
   function closeDm(){ const o=document.getElementById("clDm"); if(o) o.remove(); DMOPEN=null; clearInterval(DMTIMER); }
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("clDm")) closeDm(); });
-  async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
+  function dmPlace(o){ try{ const bt=document.getElementById("dmTopBtn"), r=bt&&!bt.hidden?bt.getBoundingClientRect():null;
+      o.style.setProperty("--dmtop",Math.round(r&&r.bottom>0?r.bottom+8:64)+"px"); o.style.setProperty("--dmright",Math.round(r?Math.max(8,innerWidth-r.right-60):12)+"px"); }catch(e){} }
+  async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); dmPlace(o); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
     b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{}),loadNotes().catch(()=>{})]);
     const ts=THREADS||[];
     b.innerHTML=`<div class="cl-dmnew"><label class="sr" for="dmFind">${L("New message to…","Nuevo mensaje para…")}</label><input id="dmFind" type="search" autocomplete="off" placeholder="✏️ ${L("New message: type a name…","Nuevo mensaje: escribe un nombre…")}"><ul class="cl-dmfind" hidden></ul></div>`+dmSugHTML()+(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(t.names||{})[u]||(profOf(u)||{}).name||L("Member","Miembro");
@@ -9021,7 +9034,7 @@ try{ history.replaceState({cs:1,v:curView,n:0},"","#"+curView); }catch(e){}
 let stars=LS.get("ncs-stars",[]);
 const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl').forEach(x=>x.remove()); return c.textContent.trim(); };
 document.querySelectorAll(".view").forEach(v=>{
-  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","park","coaching"].includes(id)) return;
+  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","park","coaching","club"].includes(id)) return;
   const h=v.querySelector("h1"); if(!h) return;
   const wrap=document.createElement("div"); wrap.className="vhead";
   h.parentNode.insertBefore(wrap,h); wrap.appendChild(h);
