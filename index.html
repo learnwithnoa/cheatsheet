@@ -768,6 +768,14 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 /* step68 */
 .ch-zr small.zr-warn{color:#E0A100;font-weight:700}
 
+/* step69 */
+.wcard .wown{margin-top:4px;font-size:14.5px;padding:4px 8px;border-left:3px solid var(--accent,#2b7de9);background:color-mix(in srgb,var(--accent,#2b7de9) 7%,transparent);border-radius:0 6px 6px 0}
+.wcard .wown-add{display:block;margin-top:4px;padding:0;border:0;background:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.wcard .wown-add:hover{color:var(--ink,inherit)}
+.ai-opts{display:grid;gap:4px;margin:10px 0 4px}
+.ai-opts .cs-chk{padding:6px 10px;margin:0}
+.ai-opts .ai-all{padding-bottom:6px;border-bottom:1px solid var(--line,rgba(127,127,127,.25));margin-bottom:2px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -5087,7 +5095,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=48" defer></script>
+<script src="buddy.js?v=49" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -5676,12 +5684,13 @@ function renderWords(){
       '<div class="field"><label for="ed-w">English word / expression</label><input id="ed-w" type="text" value="'+esc(x.w)+'" spellcheck="false"></div>'+
       '<div class="field"><label for="ed-m">Spanish translation</label><input id="ed-m" type="text" value="'+esc(x.m||"")+'"></div>'+
       '<div class="field wide"><label for="ed-e">Example sentence</label><input id="ed-e" type="text" value="'+esc(x.e||"")+'"></div>'+
+      '<div class="field wide"><label for="ed-own">✍️ My own sentence</label><input id="ed-own" type="text" value="'+esc(x.own||"")+'" placeholder="Write a sentence of your own with this word"></div>'+
       '<div class="field wide"><label for="ed-n">Notes</label><input id="ed-n" type="text" value="'+esc(x.n||"")+'"></div>'+
       '<div class="note-actions"><button class="pill-btn" type="submit">Save changes</button><button class="swap" type="button" data-cancel>Cancel</button></div></form>';
     const isNew = x.sample || isPending(x);
     const picked=wSel&&fcPick.includes(x.id);
     return '<article class="card wcard'+(picked?' picked':'')+'">'+'<span class="w-lead">'+(x.sample?'':'<label class="w-chkw" title="Pick for flashcards"><input type="checkbox" class="w-chk" data-wpick="'+x.id+'" aria-label="Pick '+esc(x.w)+' for flashcards"'+(picked?' checked':'')+'></label>')+sayBtn(x.w.replace(/\(.*?\)/g,""))+'</span>'+
-      '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
+      '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.own?'<div class="wown">✍️ '+esc(x.own)+'</div>':(x.sample?'':'<button class="wown-add" type="button" data-ownw="'+x.id+'">✍️ Write my own sentence</button>'))+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
       '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
   }).join("");
@@ -5709,7 +5718,7 @@ wList.addEventListener("submit",e=>{
   const f=e.target.closest("[data-editform]"); if(!f) return; e.preventDefault();
   const x=words.find(y=>y.id===f.dataset.editform); if(!x) return;
   const nw=document.getElementById("ed-w").value.trim(); if(!nw){ document.getElementById("ed-w").focus(); return; }
-  x.w=nw; x.m=document.getElementById("ed-m").value.trim(); x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; }
+  x.w=nw; x.m=document.getElementById("ed-m").value.trim(); x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; } { const ov=document.getElementById("ed-own").value.trim().slice(0,300); if(ov) x.own=ov; else delete x.own; }
   LS.set("ncs-words",words); editingId=null; renderWords(); toast("Changes saved");
 });
 wList.addEventListener("keydown",e=>{ if(e.key==="Escape" && editingId){ editingId=null; renderWords(); } });
@@ -5718,6 +5727,7 @@ wList.addEventListener("click",e=>{
   const pc=e.target.closest("[data-wpick]");
   if(pc){ const id=pc.dataset.wpick; fcPick=fcPick.includes(id)?fcPick.filter(i=>i!==id):fcPick.concat(id); savePick(); return; }
   const s=e.target.closest("[data-say]"); if(s){ say(s.dataset.say,s); return; }
+  const ow=e.target.closest("[data-ownw]"); if(ow){ editingId=ow.dataset.ownw; renderWords(); const i=document.getElementById("ed-own"); if(i){ i.focus(); i.scrollIntoView({block:"center",behavior:"smooth"}); } return; }
   const ed=e.target.closest("[data-edit]"); if(ed){ editingId=ed.dataset.edit; renderWords(); const i=document.getElementById("ed-w"); if(i){ i.focus(); } return; }
   if(e.target.closest("[data-cancel]")){ editingId=null; renderWords(); return; }
   const d=e.target.closest("[data-del]"); if(!d) return;
@@ -8157,26 +8167,30 @@ const exampleRule=()=>csBeginner()
 /* students can write their own example sentences: then the AI leaves them empty */
 const noEx=()=>LS.get("ncs-noex",false)===true;
 window.csNoEx=noEx;
+const FILLF=["m","def","pos","e"];
+const fillF=()=>{ const v=LS.get("ncs-fillf",null); return Array.isArray(v)?v.filter(f=>FILLF.includes(f)):FILLF.filter(f=>f!=="e"||!noEx()); };
+const missF=(x,fs)=>x&&x.w&&!x.sample&&fs.some(f=>!x[f]);
 const cleanPos=p=>{ p=String(p||"").toLowerCase().trim(); return POS_LIST.includes(p)?p:(p.includes("phrasal")?"phrasal verb":p.slice(0,20)); };
 function saveWordsNow(){ LS.set("ncs-words",words); try{ renderWords(); fcShuffle(); renderFlash(); }catch(e){} }
 
 /* ---------- fill in the details of each word (part of speech, meaning, translation, example) ---------- */
-async function enrichBatch(list){
+async function enrichBatch(list,fs){
+  fs=fs||FILLF.filter(f=>f!=="e"||!noEx()); const want=f=>fs.includes(f);
   const items=list.map(x=>({id:x.id,word:x.w,spanish:x.m||"",example:x.e||""}));
   const p="You help a Spanish-speaking learner of English (from Chile) build their vocabulary list. For EACH item return:\n"+
-    "- pos: the part of speech, one of: "+POS_LIST.join(", ")+"\n"+
-    "- def: a very short, simple English meaning (max 10 words, no quotes)\n"+
-    "- es: a natural Spanish translation ONLY if \"spanish\" is empty, otherwise an empty string\n"+
-    (noEx()?"- ex: always an empty string (the student writes their own examples)\n":"- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n")+
+    (want("pos")?"- pos: the part of speech, one of: "+POS_LIST.join(", ")+"\n":"- pos: always an empty string\n")+
+    (want("def")?"- def: a very short, simple English meaning (max 10 words, no quotes)\n":"- def: always an empty string\n")+
+    (want("m")?"- es: a natural Spanish translation ONLY if \"spanish\" is empty, otherwise an empty string\n":"- es: always an empty string\n")+
+    (!want("e")?"- ex: always an empty string (the student writes their own examples)\n":"- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n")+
     "Use American English. Never change the student's word. Reply with ONLY a JSON array like [{\"id\":\"...\",\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\"}].\n\nITEMS:\n"+JSON.stringify(items);
   const r=await window.__csSample(p);
   const arr=aiJSON(r&&r.text); if(!Array.isArray(arr)) throw new Error("The AI's answer didn't make sense");
   let n=0;
   arr.forEach(a=>{ const x=words.find(w=>w.id===a.id); if(!x) return;
-    if(a.pos&&!x.pos) x.pos=cleanPos(a.pos);
-    if(a.def&&!x.def) x.def=String(a.def).trim().slice(0,140);
-    if(!x.m&&a.es) x.m=String(a.es).trim().slice(0,140);
-    if(!x.e&&a.ex&&!noEx()){ x.e=String(a.ex).trim().slice(0,220); x.aiEx=1; }
+    if(want("pos")&&a.pos&&!x.pos) x.pos=cleanPos(a.pos);
+    if(want("def")&&a.def&&!x.def) x.def=String(a.def).trim().slice(0,140);
+    if(want("m")&&!x.m&&a.es) x.m=String(a.es).trim().slice(0,140);
+    if(want("e")&&!x.e&&a.ex){ x.e=String(a.ex).trim().slice(0,220); x.aiEx=1; }
     x.ai=1; n++; });
   saveWordsNow();
   return n;
@@ -8218,20 +8232,34 @@ function undoWords(){
 document.addEventListener("change",e=>{ if(e.target&&e.target.id==="aiNoEx"){ LS.set("ncs-noex",!!e.target.checked); const t=document.getElementById("aiExTxt"); if(t) t.hidden=!!e.target.checked; toast(e.target.checked?"✍️ The AI won't write example sentences for you":"The AI will add example sentences again"); } });
 function askFirst(title,html,go,label){
   const d=csDialog('<h3 style="margin-top:0">'+title+'</h3>'+html+'<p class="muted" style="font-size:13.5px">If you don\'t like the result, you can undo it afterwards with <b>↩ Undo</b>.</p><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="y">'+label+'</button><button class="swap" type="button" data-a="n">Cancel</button></div>');
-  d.el.addEventListener("click",e=>{ const b=e.target.closest("[data-a]"); if(!b) return; d.close(); if(b.dataset.a==="y") go(); });
+  d.el.addEventListener("click",e=>{ const b=e.target.closest("[data-a]"); if(!b) return; const el=d.el; if(b.dataset.a==="y"&&el.querySelector("[data-opt]")&&!el.querySelector("[data-opt]:checked")){ toast("Tick at least one thing first"); return; } d.close(); if(b.dataset.a==="y") go(el); });
 }
+/* checklists in the AI dialogs: "Select all" + live count */
+document.addEventListener("change",e=>{
+  const t=e.target; if(!t||!t.closest) return; const box=t.closest(".ai-opts"); if(!box) return;
+  const opts=[...box.querySelectorAll("[data-opt]")], all=box.querySelector("[data-selall]");
+  if(t.hasAttribute("data-selall")) opts.forEach(o=>o.checked=t.checked);
+  if(all){ const n=opts.filter(o=>o.checked).length; all.checked=n===opts.length; all.indeterminate=n>0&&n<opts.length; }
+  if(box.dataset.kind==="fill"){ const fs=opts.filter(o=>o.checked).map(o=>o.value), n=words.filter(x=>missF(x,fs)).length, c=document.getElementById("aiFillN"); if(c) c.textContent=n+(n===1?" word":" words"); }
+});
+const optList=(kind,items,on)=>'<div class="ai-opts" data-kind="'+kind+'"><label class="cs-chk ai-all"><input type="checkbox" data-selall'+(items.every(i=>on.includes(i[0]))?' checked':'')+'> <span><b>Select all</b></span></label>'+items.map(i=>'<label class="cs-chk"><input type="checkbox" data-opt value="'+i[0]+'"'+(on.includes(i[0])?' checked':'')+'> <span><b>'+i[1]+'</b>'+(i[2]?'<small>'+i[2]+'</small>':'')+'</span></label>').join("")+'</div>';
+const readOpts=el=>[...el.querySelectorAll("[data-opt]:checked")].map(o=>o.value);
+const CLEANF=[["spell","Spelling","English and Spanish typos"],["caps","Capital letters & punctuation",""],["es","Wrong Spanish meanings",""],["gram","Grammar in example sentences","Sentences you wrote yourself are only suggested, never changed unless you tick them"],["miss","Missing translations & examples",""],["dups","Repeated words","The same word saved twice: keep one and combine their details"]];
+const cleanF=()=>{ const v=LS.get("ncs-cleanf",null); return Array.isArray(v)?v:CLEANF.map(c=>c[0]); };
 setTimeout(showUndo,0);
 
 /* "Complete my words": fill in everything that's missing, in small batches */
-async function completeAll(btn){
-  const list=words.filter(needsInfo);
+async function completeAll(btn,fs){
+  fs=fs||fillF();
+  const list=words.filter(x=>missF(x,fs));
   const st=document.getElementById("aiStatus");
   if(!list.length){ st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
   if(!aiOK()){ st.hidden=false; st.textContent="The AI is still loading. Try again in a few seconds."; return; }
   btn.disabled=true; st.hidden=false; let done=0; wordsSnapshot("complete");
   try{
-    for(let i=0;i<list.length;i+=20){ st.textContent="✨ Filling in your words… "+Math.min(i,list.length)+" of "+list.length; done+=await enrichBatch(list.slice(i,i+20)); }
-    st.textContent="✓ Done! "+done+(done===1?" word":" words")+" now have a translation, meaning, word type and example. Anything you wrote yourself stayed the same.";
+    for(let i=0;i<list.length;i+=20){ st.textContent="✨ Filling in your words… "+Math.min(i,list.length)+" of "+list.length; done+=await enrichBatch(list.slice(i,i+20),fs); }
+    const nm={m:"Spanish translation",def:"simple meaning",pos:"word type",e:"example sentence"}, li=fs.map(f=>nm[f]);
+    st.textContent="✓ Done! Filled in "+(li.length>1?li.slice(0,-1).join(", ")+" and "+li[li.length-1]:li[0])+" for "+done+(done===1?" word":" words")+". Anything you wrote yourself stayed the same.";
   }catch(e){ console.warn(e); st.textContent="Stopped after "+done+" words: the AI didn't answer. Try again in a minute (it continues where it stopped)."; }
   btn.disabled=false;
 }
@@ -8324,23 +8352,26 @@ document.addEventListener("click",e=>{
 
 /* ---------- clean up my words ---------- */
 const dupKey=w=>norm(String(w||"").toLowerCase().replace(/\(.*?\)/g,"").replace(/^to\s+/,"").replace(/[^\p{L}\p{N}' ]+/gu," ").replace(/\s+/g," ").trim());
-async function cleanUp(btn){
+async function cleanUp(btn,co){
+  co=co||cleanF(); const has=k=>co.includes(k);
   const list=words.filter(x=>x&&x.w&&!x.sample);
   if(!list.length){ toast("You don't have any words yet"); return; }
   const dlg=csDialog('<h3 style="margin-top:0">🧹 Clean up my words</h3><div id="cuBody"><p>Checking your <b>'+list.length+'</b> words for spelling, punctuation, capital letters, missing translations and repeated words…</p><p class="muted" id="cuProg">Starting…</p></div>',{cls:"cu-dlg"});
   const body=dlg.el.querySelector("#cuBody"), prog=()=>dlg.el.querySelector("#cuProg");
   // 1) repeated words (done here, no AI needed)
-  const groups={}; list.forEach(x=>{ const k=dupKey(x.w); if(k) (groups[k]=groups[k]||[]).push(x); });
+  const groups={}; if(has("dups")) list.forEach(x=>{ const k=dupKey(x.w); if(k) (groups[k]=groups[k]||[]).push(x); });
   const dups=Object.values(groups).filter(g=>g.length>1).map(g=>{ const score=x=>["m","e","n","pos","def"].filter(f=>x[f]).length; const keep=g.slice().sort((a,b)=>score(b)-score(a)||(a.t||0)-(b.t||0))[0]; return {keep,drop:g.filter(x=>x!==keep)}; });
   // 2) fixes from the AI, 40 words at a time
   const fixes=[]; let failed=false;
-  if(aiOK()){
+  const aiRules=[has("spell")&&"- spelling mistakes (English or Spanish)",has("caps")&&"- capital letters: w lowercase unless it's a name or 'I'; example sentences start with a capital letter\n- punctuation: example sentences end with . ? or !; no stray symbols",has("es")&&"- a wrong Spanish meaning",has("gram")&&"- grammar mistakes in the example",has("miss")&&"- missing m: add the Spanish meaning",has("miss")&&!noEx()&&"- missing e: add a short example. "+exampleRule()].filter(Boolean);
+  if(!aiRules.length){}
+  else if(aiOK()){
     for(let i=0;i<list.length;i+=40){
       if(!document.body.contains(dlg.el)) return;
       const p2=prog(); if(p2) p2.textContent="✨ Checking words "+(i+1)+"–"+Math.min(i+40,list.length)+" of "+list.length+"…";
       const chunk=list.slice(i,i+40).map(x=>({id:x.id,w:x.w,m:x.m||"",e:x.e||"",own:!!(x.e&&!x.aiEx)}));
       const p="You are checking a Spanish-speaking learner's English vocabulary list. For each item: w = English word/expression, m = Spanish meaning, e = example sentence.\n"+
-        "Find ONLY real problems and suggest fixes:\n- spelling mistakes (English or Spanish)\n- capital letters: w lowercase unless it's a name or 'I'; example sentences start with a capital letter\n- punctuation: example sentences end with . ? or !; no stray symbols\n- a wrong Spanish meaning\n- grammar mistakes in the example\n- missing m: add the Spanish meaning\n- missing e: add a short example. "+exampleRule()+"\n"+
+        "Find ONLY these kinds of problems and suggest fixes (ignore every other kind):\n"+aiRules.join("\n")+"\n"+
         "Example sentences the student wrote themselves (own=true) are theirs: only touch them if they have a clear mistake (wrong word, broken grammar, nonsense). Never rewrite them just to sound nicer.\n"+
         "Do NOT rewrite things that are already correct, and don't change the meaning. Reply with ONLY a JSON array of changes like [{\"id\":\"...\",\"field\":\"w\" or \"m\" or \"e\",\"to\":\"the corrected text\",\"why\":\"very short reason, max 6 words\"}]. If nothing needs fixing, reply [].\n\nWORDS:\n"+JSON.stringify(chunk);
       try{ const r=await window.__csSample(p); const arr=aiJSON(r&&r.text); if(Array.isArray(arr)) arr.forEach(c=>{ const x=words.find(w=>w.id===c.id); if(!x||!["w","m","e"].includes(c.field)) return; const from=String(x[c.field]||""), to=String(c.to||"").trim(); if(!to||to===from) return; fixes.push({id:c.id,field:c.field,from,to:to.slice(0,220),why:String(c.why||"").slice(0,60),own:c.field==="e"&&!!from&&!x.aiEx}); }); else failed=true; }
@@ -8373,11 +8404,14 @@ async function cleanUp(btn){
 }
 document.addEventListener("click",e=>{
   const f=e.target.closest("#aiFill"), c=e.target.closest("#aiClean");
-  if(f){ const n=words.filter(needsInfo).length;
+  if(f){ const fs0=fillF(), n=words.filter(x=>missF(x,FILLF)).length;
     if(!n){ const st=document.getElementById("aiStatus"); st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
-    askFirst("✨ Complete my words",'<p>The AI fills in what\'s <b>missing</b> in '+n+(n===1?" word":" words")+': the Spanish translation, a simple meaning, the word type<span id="aiExTxt"'+(noEx()?' hidden':'')+'> and an example sentence</span>.</p><p><b>It never changes anything you already wrote</b>, including your own example sentences.</p>'+
-      '<label class="cs-chk"><input type="checkbox" id="aiNoEx"'+(noEx()?' checked':'')+'> <span><b>I\'ll write my own example sentences</b><small>The AI won\'t add examples, to this or to new words. You can practice writing them in <b>Practice → Use it in a sentence</b>.</small></span></label>',()=>completeAll(f),"Yes, complete them"); }
-  else if(c) askFirst("🧹 Clean up my words",'<p>The AI checks your words for spelling, punctuation, capital letters and repeated words, and fills in missing translations.</p><p>It shows you every change first, and <b>nothing changes until you press Apply</b>. Sentences you wrote yourself are only suggested if they have a clear mistake, and they stay as they are unless you tick them.</p>',()=>cleanUp(c),"Check my words");
+    const n0=words.filter(x=>missF(x,fs0)).length;
+    askFirst("✨ Complete my words",'<p>Choose what the AI fills in. It only fills what\'s <b>missing</b> (<span id="aiFillN">'+n0+(n0===1?" word":" words")+'</span>) and <b>never changes anything you already wrote</b>.</p>'+
+      optList("fill",[["m","Spanish translation"],["def","Simple meaning","A short, easy English meaning"],["pos","Word type","noun, verb, phrasal verb…"],["e","Example sentence","Untick it if you like writing your own. New words won\'t get one either"]],fs0),
+      el=>{ const fs=readOpts(el); LS.set("ncs-fillf",fs); LS.set("ncs-noex",!fs.includes("e")); completeAll(f,fs); },"Complete them"); }
+  else if(c) askFirst("🧹 Clean up my words",'<p>Choose what the AI checks. It shows you every change first, and <b>nothing changes until you press Apply</b>. Your own sentences (✍️) are never touched.</p>'+optList("clean",CLEANF,cleanF()),
+      el=>{ const co=readOpts(el); LS.set("ncs-cleanf",co); cleanUp(c,co); },"Check my words");
   else if(e.target.closest("#aiUndo")) undoWords();
 });
 
@@ -9196,6 +9230,8 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 const CHANGELOG=[
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
     ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
+    ["✍️","My own sentence","in <b>My words</b>, tap <b>✍️ Write my own sentence</b> under any word to add a sentence of your own. You can edit it any time, and the AI never touches it.","words"],
+    ["✅","Choose what the AI does","<b>✨ Complete my words</b> and <b>🧹 Clean up my words</b> now have a checklist (with <b>Select all</b>) so you choose exactly what gets filled in or checked.","words"],
     ["🎥","Your class recordings","private students: <b>My coaching</b> now lists your recent class recordings, with how long each one stays before Zoom deletes it, and a link to your Drive folder.","coaching"],
     ["🔔","Notifications for everyone","the 🔔 at the top now shows everything new for you: class recaps, recommendations, progress reports and new classes from Noa, plus replies and reactions in the club. Tap one to go straight there."],
     ["🗑️","Delete messages and chats","in <b>Messages</b>, tap the ✕ on a message you sent to delete it, or the ✕ next to a chat to remove it from your list. Hibi always asks first."],
@@ -9240,7 +9276,7 @@ const CHANGELOG=[
     ["📊","My English level","take a 5-minute level check or choose your level in <b>Practice → My English level</b>, so your feedback fits you.","quiz"],
     ["⭐","Stars for your sentences","in <b>Practice → Use it in a sentence</b>, every sentence gets 1 to 3 stars <b>for your level</b>, a tip to make the next one richer, and up to 3 🍪 for your buddy.","quiz"],
     ["📌","Your sentence, your example","like the sentence you wrote? Save it as that word's example in <b>My words</b>."],
-    ["✍️","Write your own examples","in <b>✨ Complete my words</b>, tick <b>I'll write my own example sentences</b> and the AI leaves them for you.","words"]
+    ["✍️","Write your own examples","in <b>✨ Complete my words</b>, untick <b>Example sentence</b> and the AI leaves them for you.","words"]
   ]},
   {id:"2026-hibi", date:"November 9, 2026", title:"Say hi to Hibi 日々", items:[
     ["🌱","A new name: Hibi 日々","the Cheat Sheet is now <b>Hibi</b>, Japanese for <b>“day by day”</b>. A little English every day adds up. Same site, same words and notes."],

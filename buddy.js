@@ -435,7 +435,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   }
 
   /* the buddy as a profile photo: zoomed in on the face (some animals' faces aren't in the middle) */
-  const FACE = { llama: "6.5 2 15 15" }, FACE_DEF = "2.5 2 15 15";
+  const FACE = { llama: "6 3.4 16 16" }, FACE_DEF = "2 3.4 16 16";
   const faceOf = x => { if (!x || !SP[x.a]) return ""; try { const pal = Object.assign({}, SP[x.a].p, ((SP[x.a].colors[x.c | 0] || SP[x.a].colors[0])[1])); return petSVG({ a: x.a, pal, wear: { head: x.head, face: x.face, neck: x.neck }, plain: true }).replace(/viewBox="0 0 20 22"/, 'viewBox="' + (FACE[x.a] || FACE_DEF) + '"'); } catch (e) { return ""; } };
   window.csBuddyFace = faceOf;
   /* one avatar for every page: what they chose in their profile (buddy by default, photo, or initials) */
@@ -601,6 +601,8 @@ html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-music .ms-dis
 .bd-toy{cursor:grab}.bd-toy.dragging{cursor:grabbing;opacity:.85}
 .bd-moving .bd-stage-svg{cursor:crosshair;outline:2px dashed var(--green,#2E8B57);outline-offset:-2px}
 .bd-movehint{margin:0 0 8px;text-align:center}
+.bd-toyh{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:4px 0 2px}
+.bd-toyg{margin:8px 0 4px;color:var(--muted)}
 .bd-topr{display:flex;align-items:center;gap:2px}.bd-set-ico{font-size:18px;padding:4px 7px}
 .bd-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .bd-name input{font:800 17px var(--body,sans-serif);color:var(--ink,#222);background:transparent;border:1.5px dashed var(--line,#ddd);border-radius:10px;padding:5px 9px;width:12ch;min-width:0}
@@ -996,7 +998,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const newIn = slots => ITEMS.filter(i => slots.includes(i.slot) && isOpen(i) && !seen.has(i.id)).length;
     const nb = n => n ? ` <span class="bd-new">${n} NEW</span>` : "";
     const top = `<div class="bd-top"><h3 id="bdTitle">${sec ? SECT[sec] : "🏠 " + esc(nameOf()) + "'s home"}</h3><span class="bd-topr">${sec !== "settings" ? `<button class="bd-x bd-set-ico" type="button" data-sec="settings" aria-label="Buddy settings" title="Settings: sounds, seasonal outfits, hide">⚙️</button>` : ""}<button class="bd-x" id="bdClose" type="button" aria-label="Close">×</button></span></div>`;
-    const stage = `<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="Tap your buddy to pet it · drag a toy to move it">${stageSVG(pvOpts())}${pvBanner()}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}${S.tp && Object.keys(S.tp).length ? ` <button class="bd-link" type="button" data-m="toyreset">Put toys back</button>` : ""}</p>` : ""}`;
+    const stage = `<div class="bd-stage-wrap"><div class="bd-stage${S.shiny && isOpen(byId.shiny) ? " bd-shiny" : ""}${moving ? " bd-moving" : ""}" id="bdStage" title="${sec === "room" ? "Drag a toy to move it" : "Tap your buddy to pet it"}">${stageSVG(pvOpts())}${pvBanner()}</div><div class="bd-zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom in" title="Zoom in" ${zoom === 0 ? "disabled" : ""}>＋</button><button type="button" data-zoom="1" aria-label="Zoom out" title="Zoom out: see more of the room" ${zoom === ZW.length - 1 ? "disabled" : ""}>－</button></div></div>${sec === "room" ? `<p class="bd-small bd-movehint">${moving ? `Now tap where the <b>${esc(byId[moving].name.toLowerCase())}</b> should go.` : "✋ Drag a toy in the picture to move it (or tap it, then tap its new spot)."}</p>` : ""}`;
     const foot = `<div class="bd-foot">${sec ? `<button class="bd-link" type="button" data-m="back">← Back</button>` : `<span></span>`}<button class="bd-b go" type="button" data-m="save">${dirty() ? "Save changes" : "Save"}</button></div>`;
     const confirmBox = confirmOpen ? `<div class="bd-confirm" role="alertdialog" aria-labelledby="bdCfT"><p id="bdCfT"><b>Save your changes?</b><br>Your changes won't be saved unless you tap <b>Save</b>.</p><div class="bd-row" style="justify-content:flex-end"><button class="bd-b" type="button" data-m="keep" style="background:transparent">Keep editing</button><button class="bd-b" type="button" data-m="discard">Don't save</button><button class="bd-b go" type="button" data-m="save">Save</button></div></div>` : "";
     let body = "";
@@ -1019,7 +1021,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     } else if (sec === "room") {
       const n = (S.gd || []).length, toys = ITEMS.filter(i => i.slot === "toy");
       body = `${slotRow("room", "Background")}
-      <div class="bd-small" style="margin:4px 0 5px;font-weight:700">Toys</div><div class="bd-row">${toys.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${atW(t)}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${needTxt(t)}</small></span>`).join("")}</div>
+      <div class="bd-toyh"><span class="bd-small" style="font-weight:700">Toys</span><span class="bd-row" style="gap:6px"><button class="bd-link" type="button" data-m="toyreset" title="Put every toy back in its own spot">✨ Tidy up</button>${toys.some(t => isOpen(t) && !(S.toyOff || []).includes(t.id)) ? `<button class="bd-link" type="button" data-m="toysaway">📦 Put all away</button>` : ""}${(S.toyOff || []).length ? `<button class="bd-link" type="button" data-m="toysout">🧸 Bring all out</button>` : ""}</span></div>
+      ${[["📚 From learning words", t => t.l != null], ["🧩 From grammar modules", t => !!t.m], ["⚔️ From duels", t => t.dp != null || t.dw != null]].map(([h, f]) => { const g = toys.filter(f); return g.length ? `<div class="bd-small bd-toyg">${h}</div><div class="bd-row">${g.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${atW(t)}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${needTxt(t)}</small></span>`).join("")}</div>` : ""; }).join("")}
       <p class="bd-small">Tap a toy to put it away or bring it back. New toys show up in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass and 🌍 globe come from finishing grammar modules.</p>
       <p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows on every day you study. Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`;
     } else if (sec === "buddy") {
@@ -1060,7 +1063,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     S.tp = Object.assign({}, S.tp || {}, { [id]: [x, y] }); save();
   }
   modal.addEventListener("pointerdown", e => {
-    const tg = e.target.closest("#bdStage [data-toyg]"); if (!tg || pv) return;
+    const tg = e.target.closest("#bdStage [data-toyg]"); if (!tg || pv || sec !== "room") return;
     const pt = svgPt(e), r = tg.querySelector("rect"); if (!pt) return;
     toyDrag = { id: tg.dataset.toyg, x: e.clientX, y: e.clientY, off: [pt.x - (+r.getAttribute("x") + .5), pt.y - (+r.getAttribute("y") + .5)], on: false, g: tg };
     e.preventDefault();
@@ -1122,12 +1125,14 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (ty) { const id = ty.dataset.toy, off = new Set(S.toyOff || []); off.has(id) ? off.delete(id) : off.add(id); S.toyOff = [...off]; save(); renderModal(); const f = modal.querySelector(`[data-toy="${id}"]`); if (f) f.focus(); return; }
     const zb = e.target.closest("[data-zoom]");
     if (zb) { zoom = Math.max(0, Math.min(ZW.length - 1, zoom + +zb.dataset.zoom)); try { localStorage.setItem("cs-bd-zoom", zoom); } catch (er) {} const sc = modal.scrollTop; renderModal(); modal.scrollTop = sc; const f = modal.querySelector(`[data-zoom="${zb.dataset.zoom}"]`); if (f && !f.disabled) f.focus(); return; }
-    if (m && m.dataset.m === "toyreset") { S.tp = null; moving = null; save(); renderModal(); return; }
+    if (m && m.dataset.m === "toyreset") { S.tp = null; moving = null; save(); renderModal(); toastMsg("✨ All tidy: every toy is back in its spot"); return; }
+    if (m && m.dataset.m === "toysaway") { S.toyOff = ITEMS.filter(i => i.slot === "toy").map(i => i.id); moving = null; save(); renderModal(); return; }
+    if (m && m.dataset.m === "toysout") { S.toyOff = []; moving = null; save(); renderModal(); return; }
     if (e.target.closest("#bdStage")) {
       if (toyJust) return;
       const tg = e.target.closest("[data-toyg]");
-      if (moving) { const pt = svgPt(e); if (pt) placeToy(moving, pt); moving = null; renderModal(); return; }
-      if (tg) { moving = tg.dataset.toyg; renderModal(); return; }
+      if (moving && sec === "room") { const pt = svgPt(e); if (pt) placeToy(moving, pt); moving = null; renderModal(); return; }
+      if (tg && sec === "room") { moving = tg.dataset.toyg; renderModal(); return; }
       if (e.target.closest("#bdStgPet")) petIt(); /* only a tap on the buddy itself pets it */
       return; }
     if (m) {
@@ -1655,13 +1660,20 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     /* window with the sky */
     o += `<clipPath id="msWin"><rect x="0" y="2" width="12" height="11"/></clipPath><g clip-path="url(#msWin)">`;
     /* rain keeps the time of day: a cloudy version of the same sky */
-    const RS = { dawn: ["#B7A6A8", "#C2B2B0", "#CCBFB9", "#D6CCC5"], day: ["#93A4B4", "#A2B1BF", "#B1BECA", "#C1CBD5"], sunset: ["#6A5A78", "#866A82", "#A07C86", "#B69293"], night: ["#1C2240", "#242B4C", "#2D3458", "#363E64"] };
+    const RS = { dawn: ["#E9C2B4", "#EFD0BC", "#F3DDC8", "#F6E7D6"], day: ["#8FC4EA", "#A3CFEE", "#B8DAF2", "#CDE5F6"], sunset: ["#6A5A78", "#866A82", "#A07C86", "#B69293"], night: ["#1C2240", "#242B4C", "#2D3458", "#363E64"] };
     K.b.forEach((c, i) => P(0, 2 + i * 3, 12, 3, rain ? RS[ph][i] : c));
     if (!rain && K.sun) { P(7, K.sun[1] === 5 ? 4 : 9, 3, 3, K.sun[0]); }
+    /* daytime rain: the sun peeks out from behind soft white clouds, so it still feels like day */
+    if (rain && (ph === "day" || ph === "dawn")) {
+      P(8, 3, 3, 3, K.sun[0]); P(7.5, 3.5, 4, 2, K.sun[0], null, .35);
+      const CL = "#FFFFFF", CS = "#E6EEF5";
+      P(5, 5, 6, 2, CL); P(6, 4, 3, 1, CL); P(9, 4.5, 2, 1, CL); P(5, 6.5, 6, .6, CS);
+      P(0, 3, 4, 1.6, CL); P(1, 2.4, 2, .8, CL); P(0, 4.3, 4, .5, CS);
+    }
     if (!rain && K.moon) { P(8, 4, 2, 2, "#F4F1DE"); P(9, 4, 1, 1, K.b[0]); [[1, 3], [4, 5], [2, 8], [10, 7], [6, 3]].forEach(([x, y]) => P(x, y, 1, 1, "#FFF7C2", "ms-star")); }
     /* city skyline, lit windows at night */
     [[0, 9, 3], [3, 7, 2], [5, 10, 3], [8, 8, 2], [10, 9, 2]].forEach(([x, y, w]) => { P(x, y, w, 13 - y, ph === "day" || ph === "dawn" ? "#6E7F99" : "#232842"); if (ph !== "day") P(x + 1, y + 1, 1, 1, "#FFD27A", null, .9); });
-    if (rain) { for (let i = 0; i < 2; i++) { o += `<g class="ms-rain r${i}">`; [[1, 2], [4, 5], [7, 3], [10, 6], [2, 8], [6, 9], [9, 1], [11, 10], [3, 12], [8, 11]].forEach(([x, y]) => P(x, y - 12 * i, .3, 1.4, "#CFE3F5", null, .85)); o += `</g>`; } }
+    if (rain) { for (let i = 0; i < 2; i++) { o += `<g class="ms-rain r${i}">`; [[1, 2], [4, 5], [7, 3], [10, 6], [2, 8], [6, 9], [9, 1], [11, 10], [3, 12], [8, 11]].forEach(([x, y]) => P(x, y - 12 * i, .3, 1.4, ph === "day" || ph === "dawn" ? "#6F9FC8" : "#CFE3F5", null, .85)); o += `</g>`; } }
     o += `</g>`;
     P(-1, 1, 14, 1, "#5A3B2C"); P(-1, 13, 14, 1.5, "#6B4A36"); P(-1, 1, 1, 13, "#5A3B2C"); P(12, 1, 1, 13, "#5A3B2C"); P(5.5, 2, 1, 11, "#5A3B2C"); P(0, 7, 12, .8, "#5A3B2C");
     if (rain) [[2, 4], [9, 6], [4, 10], [10, 11]].forEach(([x, y]) => P(x, y, .6, .6, "#E7F1FA", null, .7));
