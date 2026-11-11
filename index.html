@@ -814,6 +814,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 
 /* step75 */
 .cl-igtop[hidden]{display:none!important}
+.cs-upd{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:999px;background:var(--surface,#16203a);color:inherit;border:1.5px solid var(--accent,#5b8def);box-shadow:0 10px 30px rgba(0,0,0,.35);font:600 14.5px var(--body,inherit);max-width:calc(100vw - 24px)}
+.cs-upd-go{border:0;border-radius:999px;padding:6px 14px;font:700 14px var(--body,inherit);background:var(--accent,#5b8def);color:#fff;cursor:pointer}
+.cs-upd-x{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:2px 6px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -5539,6 +5542,7 @@ trBtn.addEventListener("click",async()=>{
     trOut.dataset.tr=j.translation; trOut.dataset.en= from==="en"? t : j.translation;
     if(j.say&&String(j.say).trim()){ document.getElementById("trSayP").textContent=j.say; document.getElementById("trSay").hidden=false; }
   }catch(e){
+    if(window.csCheckUpdate) window.csCheckUpdate();
     if(e&&e.code==="rate_limited"){ trOut.textContent="The translator is busy right now. Try again in a minute, or use Google Translate or DeepL below."; }
     else if(!(e&&e.name==="AbortError")){ trOut.textContent="That didn't work. Use Google Translate or DeepL below."; }
   }finally{ trBtn.disabled=false; }
@@ -9746,6 +9750,21 @@ else if(LS.get("ncs-seen-version","")!==CL_LATEST){
   else setTimeout(openWN,500);
 }
 document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"]')){ LS.set("ncs-seen-version",CL_LATEST); document.querySelectorAll(".cs-new").forEach(x=>x.classList.remove("cs-new")); } });
+})();
+</script>
+<script>
+/* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
+(function(){ const BUILD="20261111184149"; let hiddenAt=0, shown=false;
+  const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
+  async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
+  function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
+    b.innerHTML='<span>✨ Hibi just got an update.</span><button type="button" class="cs-upd-go">Refresh</button><button type="button" class="cs-upd-x" aria-label="Later">×</button>';
+    b.querySelector(".cs-upd-go").onclick=()=>location.reload(); b.querySelector(".cs-upd-x").onclick=()=>b.remove(); document.body.appendChild(b); }
+  async function check(back){ const v=await latest(); if(!v||v<=BUILD) return; if(back&&!busy()) { location.reload(); return; } offer(); }
+  window.csCheckUpdate=()=>check(false);
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden){ hiddenAt=Date.now(); return; } const away=hiddenAt?Date.now()-hiddenAt:0; check(away>20*60*1000); });
+  setInterval(()=>{ if(!document.hidden) check(false); },30*60*1000);
+  setTimeout(()=>check(false),60*1000);
 })();
 </script>
 
