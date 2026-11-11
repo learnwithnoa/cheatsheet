@@ -151,6 +151,7 @@ td.act{white-space:nowrap;text-align:right}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 .brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px}.kj{font:700 14px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em}
+.av-in{position:absolute;inset:0;border-radius:50%;overflow:hidden;font-style:normal}.av-in>img,.av-in>svg{width:100%;height:100%;display:block;object-fit:cover}
 </style>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -322,7 +323,7 @@ tr.arch td{opacity:.85}
 </main>
 <div id="modal" class="modal" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=47"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=48"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -334,7 +335,7 @@ tr.arch td{opacity:.85}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp, initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=14";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=15";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -397,7 +398,7 @@ async function load() {
     roles = {}; rolesByUid = {}; if (rs) rs.forEach(d => { const r = d.data() || {}; rolesByUid[d.id] = r; if (r.hub) roles[r.hub] = { uid: d.id, ...r }; });
     S.forEach(norm); S.forEach(s => snap[s.id] = ser(s));
     S.forEach(s => { const r = roles[s.id]; if (r && s.uid !== r.uid) { s.uid = r.uid; save(s, true); } });
-    renderAll();
+    renderAll(); loadAvatars();
     loadRate(); fixUsdRates();
     await autoLink();
     loadUsage();
@@ -726,6 +727,18 @@ function hibiSeen(s) { const u = usage[s.id] || {}; const iso = k => { const m =
   const d = Object.keys(u).filter(k => Object.values(u[k] || {}).some(v => v > 0)).map(iso).filter(Boolean).sort().pop(); return d || ""; }
 function syncTip(s) { if (!s.uid) return "No Hibi account yet"; const d = hibiSeen(s); return "Synced with Hibi" + (d ? " · last active " + new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""); }
 function avSync(s) { return s.uid ? ` on" title="${esc(syncTip(s))}` : ""; }
+/* their photo as they chose it in their Hibi profile (buddy by default) */
+let AVS = {};
+async function loadAvatars() {
+  const gp = {}; try { (await getDocs(collection(db, "clubProfiles"))).forEach(d => { try { const j = JSON.parse((d.data() || {}).json || "{}"); if (j.photo) gp[d.id] = j; } catch (e) {} }); } catch (e) {}
+  const rd = async (uid, k) => { try { const d = await getDoc(doc(db, "users", uid, "data", k)); if (!d.exists()) return null; const v = d.data(); return v.deleted ? null : JSON.parse(v.json || "null"); } catch (e) { return null; } };
+  await Promise.all(S.filter(x => x.uid).map(async x => { const [pref, buddy] = await Promise.all([rd(x.uid, "ncs-photo"), rd(x.uid, "ncs-buddy")]); const g = gp[x.uid];
+    AVS[x.id] = { pref: pref || { k: "buddy" }, buddy, gphoto: g && g.photo && /^https:/.test(g.photo) ? g.photo : "" }; }));
+  renderAll();
+}
+function avIn(s) { const a = AVS[s.id]; if (!a || !window.csAvatar) return { html: esc(initials(s.name)), st: "" };
+  const r = window.csAvatar({ name: s.name, pref: a.pref, buddy: a.buddy, gphoto: a.gphoto }); if (r.kind === "ini") return { html: esc(r.html), st: "" };
+  return { html: `<i class="av-in">${r.html}</i>`, st: ";background:" + (r.bg || (r.kind === "buddy" ? "color-mix(in srgb,#BFE3FF 55%,var(--surface))" : "var(--surface)")) }; }
 function renderList() {
   const q = $("q").value.trim().toLowerCase();
   const ls = S.filter(s => (filt === "all" || (filt === "hibi" ? s.uid && s.status !== "inactive" : s.status === filt)) && (!q || (s.name + " " + (s.email || "") + " " + (s.emails || []).join(" ")).toLowerCase().includes(q)));
@@ -744,7 +757,7 @@ function renderList() {
     const pct = st && st.size ? Math.min(100, st.used / st.size * 100) : 0;
     const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
     const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
-    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${barMode === "time" ? tenColor(s)[0] : (p && p.color || "var(--line)")}" title="${barMode === "time" ? esc(tenColor(s)[1]) : ""}"><span class="av${avSync(s)}" style="--av:${avc(s)}">${esc(initials(s.name))}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
+    return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${barMode === "time" ? tenColor(s)[0] : (p && p.color || "var(--line)")}" title="${barMode === "time" ? esc(tenColor(s)[1]) : ""}"><span class="av${avSync(s)}" style="--av:${avc(s)}${avIn(s).st}">${avIn(s).html}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
       <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lSort === "next" && nx[s.id] ? " · " + fmtNext(nx[s.id]) : lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
       ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</span></button>`;
   }).join("") || `<p class="muted">No students here.</p>`;
@@ -792,10 +805,10 @@ function renderDetail() {
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
   const links = [`<a class="linkb" href="index.html?viewas=${encodeURIComponent(s.id)}#coaching" title="Opens Hibi showing exactly what ${esc(s.name.split(" ")[0])} sees (read-only)">👁 Their My coaching</a>`, s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
-  box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px">${esc(initials(s.name))}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
+  box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px${avIn(s).st}">${avIn(s).html}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
+    ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     ${(() => { const LV = ["A1", "A2", "A2-B1", "B1", "B1-B2", "B2", "B2-C1", "C1", "C2"], fromLevel = String(s.level || "").toUpperCase().replace(/[–—]/g, "-").replace(/\s+/g, ""), cur = s.cefr || (LV.includes(fromLevel) ? fromLevel : "");
       return `<label class="cefr-pick" title="Their English level (tap to change). Hibi grades their practice for it, and it shows in the Buddy park"><span class="cp-k">Level</span><b>${cur || "Set…"}</b><span class="cp-car" aria-hidden="true">▾</span><select data-f="cefr" aria-label="English level">${(cur ? [] : [""]).concat(LV).map(l => `<option value="${l}" ${cur === l ? "selected" : ""}>${l || "Set level…"}</option>`).join("")}</select></label>`; })()}
-    ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }, cur = ST[s.status] ? s.status : "active";
       return `<label class="cefr-pick st-pick st-${cur}" title="Status (tap to change)"><b>${ST[cur]}</b><span class="cp-car" aria-hidden="true">▾</span><select id="stStatus" aria-label="Status">${Object.keys(ST).map(k => `<option value="${k}" ${cur === k ? "selected" : ""}>${ST[k]}</option>`).join("")}</select></label>`; })()}</div>
     <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}${links ? `<span class="dlinks">${links}</span>` : ""}${(s.docs || []).length || resFor(s).length ? `<span class="resrow">` : ""}${(s.docs || []).length ? `<span class="docrow">${s.docs.map(g => `<a class="resb docb" href="${esc(g.url)}" target="_blank" rel="noopener" title="Only you see this">${/notion/.test(g.url) ? "📓" : "📎"} ${esc(g.title)}</a>`).join("")}</span>` : ""}${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}${(s.docs || []).length || resFor(s).length ? `</span>` : ""}</p>
@@ -1137,7 +1150,7 @@ function jumpList() {
   const q = normName($("jumpQ").value); const box = $("jumpRes");
   if (!q) { box.hidden = true; return; }
   const hits = S.filter(s => normName(s.name).split(" ").some(w => w.startsWith(q)) || normName(s.name).includes(q)).sort((a, b) => (a.status === "active" ? 0 : 1) - (b.status === "active" ? 0 : 1) || a.name.localeCompare(b.name)).slice(0, 8);
-  box.innerHTML = hits.map((s, i) => `<button type="button" data-jump="${s.id}" class="${i ? "" : "on"}"><span class="av${avSync(s)}" style="--av:${avc(s)};width:26px;height:26px;font-size:11px">${esc(initials(s.name))}</span>${esc(s.name)}<small>${{ active: "active", paused: "paused", inactive: "past" }[s.status] || ""}</small></button>`).join("") || `<p class="muted small" style="margin:6px">Nobody called “${esc($("jumpQ").value)}”.</p>`;
+  box.innerHTML = hits.map((s, i) => `<button type="button" data-jump="${s.id}" class="${i ? "" : "on"}"><span class="av${avSync(s)}" style="--av:${avc(s)};width:26px;height:26px;font-size:11px${avIn(s).st}">${avIn(s).html}</span>${esc(s.name)}<small>${{ active: "active", paused: "paused", inactive: "past" }[s.status] || ""}</small></button>`).join("") || `<p class="muted small" style="margin:6px">Nobody called “${esc($("jumpQ").value)}”.</p>`;
   box.hidden = false;
 }
 $("jumpQ").addEventListener("input", jumpList);

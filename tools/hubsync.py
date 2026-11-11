@@ -17,6 +17,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py backup <folder>      full copy of the database (as Noa) into JSON files
   HUB_PASSWORD=... python3 hubsync.py club-sample '{"title":..,"url":<YouTube/Drive link>,"note":..,"wd":3}'   sample class for non-members
   HUB_PASSWORD=... python3 hubsync.py levels                each Hibi member's level (set by Noa) vs their own choice, level check and module results
+  HUB_PASSWORD=... python3 hubsync.py set-zrecs <id> '[{"date","url":<Zoom share_url>,"until":<auto_delete_date>,"min":<duration>}]'   their class recordings on My coaching
   HUB_PASSWORD=... python3 hubsync.py stoic-add '{"d":"YYYY-MM-DD","title":..,"idea":..,"todo":..}'   Daily Stoic line on the teacher pages
   HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..}]}
   HUB_PASSWORD=... python3 hubsync.py add-words <student-id> '[{"w":"word","tr":"meaning","ex":"example"}, ...]'   (skips words already there)
@@ -342,6 +343,9 @@ def make_view(s, meta=None):
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", ""), "kind": g.get("kind", "")} for g in s.get("guides", []) if g and g.get("url")],
             "lessons": [x for x in (s.get("lessons") or [])[-30:] if x and x.get("id")],
             "map": s.get("map") or None,
+            "folder": s.get("folderId", ""),
+            "zrecs": [{"date": r.get("date", ""), "url": r["url"], "until": r.get("until", ""), "min": r.get("min", 0), "title": r.get("title", "")}
+                      for r in (s.get("zrecs") or []) if r.get("url") and (not r.get("until") or r["until"] >= datetime.date.today().isoformat())][-8:],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "pack": r.get("pack", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
 
@@ -1327,6 +1331,10 @@ def main():
         if added:
             save(tok, tu, s)
         print(json.dumps({"added": added}, ensure_ascii=False)); return
+    if cmd == "set-zrecs":  # this student's Zoom class recordings: [{"date","url","until","min","title"}] (newest last); replaces the list
+        L = json.loads(a[2]) if a[2].strip().startswith("[") else json.load(open(a[2].lstrip("@")))
+        s["zrecs"] = sorted([{"date": str(r.get("date", ""))[:10], "url": r["url"], "until": str(r.get("until", ""))[:10], "min": int(r.get("min") or 0), "title": str(r.get("title", ""))[:120]} for r in L if r.get("url")], key=lambda r: r["date"])[-12:]
+        save(tok, tu, s); print("ok", len(s["zrecs"])); return
     if cmd in ("add-class", "add-note"):
         if cmd == "add-class":
             if any(c.get("kind") != "note" and c.get("date") == data["date"] for c in s.get("classes", [])):

@@ -111,6 +111,8 @@ export function makeView(s, meta) {
     lessons: (s.lessons || []).filter(x => x && x.id).slice(-30),
     map: s.map || null,
     guides: (s.guides || []).filter(g => g && g.url).map(g => ({ title: g.title || "Guide", url: g.url, date: g.date || "", kind: g.kind || "" })),
+    folder: s.folderId || "",
+    zrecs: (s.zrecs || []).filter(r => r && r.url && (!r.until || r.until >= new Date().toISOString().slice(0, 10))).slice(-8).map(r => ({ date: r.date || "", url: r.url, until: r.until || "", min: r.min || 0, title: r.title || "" })),
     tips: (meta.recs || []).filter(r => r && r.hub === s.id && !r.done).slice(-5).map(r => ({ title: r.title || "", mod: r.mod || "", stage: r.stage || null, page: r.page || "", pack: r.pack || "", why: r.why || "", date: r.date || "" })),
     words: (s.words || []).map((w, i) => ({ w: w.w, tr: w.tr || "", ex: w.ex || "", i })),
     updated: Date.now()

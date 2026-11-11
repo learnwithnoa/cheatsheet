@@ -765,6 +765,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .cs-avb{padding:0!important}
 .ap-bgs{gap:5px!important}.ap-bg{width:21px!important;height:21px!important;font-size:11px!important}
 
+/* step68 */
+.ch-zr small.zr-warn{color:#E0A100;font-weight:700}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2780,6 +2783,11 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${gRecap.length?`<div><button type="button" class="ch-k ch-khead" data-ctgo="recaps" title="See all your class recaps">📼 ${gRecap.length>1?"Latest class recap":"Class recap"} <span>${gRecap.length>1?`· all ${gRecap.length} →`:"→"}</span></button><div class="ch-glist">${gRow(gRecap,"📼")}</div></div>`:""}
       </div></div>`:"";
     const res=v.resources||[];
+    /* their class recordings (Zoom deletes them after a while) and their Drive folder */
+    const zr=(v.zrecs||[]).slice().sort((a,b)=>b.date.localeCompare(a.date)), tdy=new Date().toISOString().slice(0,10);
+    const dLeft=u=>u?Math.round((Date.parse(u+"T12:00")-Date.parse(tdy+"T12:00"))/864e5):999;
+    const zrRow=r=>{ const n=dLeft(r.until), warn=n<=14; return `<a class="ch-resb ch-zr" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">🎥</span><span><b>${fd(r.date)}${r.min?` · ${r.min} min`:""}</b><small class="${warn?"zr-warn":""}">${r.until?(n<=0?"Deleted today":warn?`⚠️ Deleted in ${n} ${n===1?"day":"days"} (${fs(r.until)})`:`Available until ${fs(r.until)}`):""}</small></span></a>`; };
+    const zBox=zr.length||v.folder?`<div class="ch-res ch-tint ch-s" id="chZrecs"><div class="ch-k">🎥 Your class recordings</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">${zr.length?"Watch our classes again. Zoom deletes each recording after a while, so the date shows how long it stays.":"Recordings of our classes will show up here."}</p>${zr.length?`<div class="ch-resl">${zr.map(zrRow).join("")}</div>`:""}${v.folder?`<p style="margin:10px 0 0"><a class="ch-go" href="https://drive.google.com/drive/folders/${esc(v.folder)}" target="_blank" rel="noopener">📁 Your Drive folder ↗</a></p>`:""}</div>`:"";
     const resBox=res.length?`<div class="ch-res ch-tint ch-a"><div class="ch-k">🧰 Class resources</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">The websites we use in class. Tap one to open it.</p><div class="ch-resl">${res.map(r=>`<a class="ch-resb" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">${r.ico}</span><span><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span></a>`).join("")}</div></div>`:"";
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
@@ -2807,7 +2815,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
     const mapBox=v.map?`<button type="button" class="em-card ch-s" data-openmap="1"><span class="em-ci" aria-hidden="true">🗺️</span><span><b>Your English Map</b><small>Your level, your superpower, 3 focus areas and the route to ${esc((v.map.goal||"your goal").replace(/\.$/,""))}</small></span><span class="em-cgo" aria-hidden="true">→</span></button>`:"";
-    box.innerHTML=newsBox+top+mapBox+recapBox+tipsBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    box.innerHTML=newsBox+top+mapBox+recapBox+zBox+tipsBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
     const one=e.target.closest("[data-rcw]"), all=e.target.closest("[data-rcall]"); if(!one&&!all) return;
@@ -3643,8 +3651,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* ---------- UI ---------- */
   const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
   let PARKMAP={};
-  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait&&!(window.csMyPhotoKind&&window.csMyPhotoKind()==="none")){ const sv=String(window.csBuddy.portrait()||"").replace(/viewBox="0 0 20 22"/,'viewBox="2.5 2 15 15"'), mb=window.csMyPhotoBg?window.csMyPhotoBg():""; if(sv) return `<span class="cs-av cs-avb" aria-hidden="true"${mb?` style="background:${mb}"`:""}>${sv}</span>`; } }
-    const pp=PROFS&&profOf(uid), noPet=(pp&&pp.pk==="none")||(uid===me()&&window.csMyPhotoKind&&window.csMyPhotoKind()==="none"); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)&&!(!pp.pk&&/googleusercontent\.com/.test(pp.photo))) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=!noPet&&PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=String(bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd)||"").replace(/viewBox="0 0 20 22"/,'viewBox="2.5 2 15 15"'); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true"${pp&&/^#[0-9A-Fa-f]{6}$/.test(pp.pbg||"")?` style="background:${pp.pbg}"`:""}>${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
+  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait&&!(window.csMyPhotoKind&&window.csMyPhotoKind()==="none")){ const sv=window.csBuddy.face?window.csBuddy.face():String(window.csBuddy.portrait()||""), mb=window.csMyPhotoBg?window.csMyPhotoBg():""; if(sv) return `<span class="cs-av cs-avb" aria-hidden="true"${mb?` style="background:${mb}"`:""}>${sv}</span>`; } }
+    const pp=PROFS&&profOf(uid), noPet=(pp&&pp.pk==="none")||(uid===me()&&window.csMyPhotoKind&&window.csMyPhotoKind()==="none"); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)&&!(!pp.pk&&/googleusercontent\.com/.test(pp.photo))) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=!noPet&&PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.face?window.csBuddy.face():window.csBuddyFace?window.csBuddyFace(bd):String(window.csBuddy.of(bd)||""); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true"${pp&&/^#[0-9A-Fa-f]{6}$/.test(pp.pbg||"")?` style="background:${pp.pbg}"`:""}>${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
   const who=x=>`<button type="button" class="cs-whob" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}" aria-label="${esc(L("See profile: ","Ver perfil: ")+(x.name||""))}">${av(x.uid,x.name)}</button><span class="cs-who"><b><button type="button" class="cs-nameb" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}">${esc(x.name||L("Member","Miembro"))}</button></b>${x.uid===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}<span class="cs-ago">${ago(x.at)}${x.edited?L(" · edited"," · editado"):""}</span>${G()?`<span class="cs-sample">${L("Sample","Ejemplo")}</span>`:""}</span>`;
   const canDel=x=>x.uid===me()||me()===NOA;
   const canEdit=x=>x.uid===me()&&!G();
@@ -5079,7 +5087,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=47" defer></script>
+<script src="buddy.js?v=48" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -9188,6 +9196,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 const CHANGELOG=[
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
     ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
+    ["🎥","Your class recordings","private students: <b>My coaching</b> now lists your recent class recordings, with how long each one stays before Zoom deletes it, and a link to your Drive folder.","coaching"],
     ["🔔","Notifications for everyone","the 🔔 at the top now shows everything new for you: class recaps, recommendations, progress reports and new classes from Noa, plus replies and reactions in the club. Tap one to go straight there."],
     ["🗑️","Delete messages and chats","in <b>Messages</b>, tap the ✕ on a message you sent to delete it, or the ✕ next to a chat to remove it from your list. Hibi always asks first."],
     ["🎧","A tidier top bar","the music button is now just an icon: 🎧 until you play something, then the little bars. Your profile shows just your photo."],
@@ -9666,7 +9675,7 @@ function status(st) {
 function photoPref() { try { const v = JSON.parse(localStorage.getItem("ncs-photo") || "null"); if (v && typeof v === "object") return v; } catch (e) {} return { k: "buddy" }; }
 window.csMyPhotoKind = () => photoPref().k || "buddy";
 /* the buddy as a photo: "face" zooms in on the head (small round buttons), "full" is the whole buddy, centered */
-window.csBuddyPic = (mode) => { try { const s = window.csBuddy && window.csBuddy.portrait ? window.csBuddy.portrait() : ""; return s.replace(/viewBox="0 0 20 22"/, mode === "face" ? 'viewBox="2.5 2 15 15"' : 'viewBox="-0.5 2.2 21 20"'); } catch (e) { return ""; } };
+window.csBuddyPic = (mode) => { try { const s = window.csBuddy && window.csBuddy.portrait ? window.csBuddy.portrait() : ""; if (mode === "face" && window.csBuddy.face) return window.csBuddy.face() || s; return s.replace(/viewBox="0 0 20 22"/, mode === "face" ? 'viewBox="2.5 2 15 15"' : 'viewBox="-0.5 2.2 21 20"'); } catch (e) { return ""; } };
 function myPhoto() { const p = photoPref(); if (p.k === "custom" && p.d) return p.d; if (p.k === "google" && user && user.photoURL) return user.photoURL; return ""; }
 window.csMyPhoto = () => myPhoto();
 function setPhoto(v) { if (VA) { alertMsg("👁 View as is read-only: nothing is saved"); return; } try { localStorage.setItem("ncs-photo", JSON.stringify(v)); } catch (e) {} try { window.__csOnSet && window.__csOnSet("ncs-photo"); } catch (e) {} renderUser(); document.dispatchEvent(new CustomEvent("cs-photo", { detail: { photo: myPhoto(), k: v.k, bg: v.bg || "" } })); }
