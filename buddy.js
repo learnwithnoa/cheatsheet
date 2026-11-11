@@ -1638,7 +1638,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     P(13, 21, 22, 3, "#C9707A"); P(14, 22, 20, 1, "#E39AA0");
     /* window with the sky */
     o += `<clipPath id="msWin"><rect x="0" y="2" width="12" height="11"/></clipPath><g clip-path="url(#msWin)">`;
-    K.b.forEach((c, i) => P(0, 2 + i * 3, 12, 3, rain ? ["#5E6B80", "#6B788C", "#7A869A", "#8792A6"][i] : c));
+    /* rain keeps the time of day: a cloudy version of the same sky */
+    const RS = { dawn: ["#B7A6A8", "#C2B2B0", "#CCBFB9", "#D6CCC5"], day: ["#93A4B4", "#A2B1BF", "#B1BECA", "#C1CBD5"], sunset: ["#6A5A78", "#866A82", "#A07C86", "#B69293"], night: ["#1C2240", "#242B4C", "#2D3458", "#363E64"] };
+    K.b.forEach((c, i) => P(0, 2 + i * 3, 12, 3, rain ? RS[ph][i] : c));
     if (!rain && K.sun) { P(7, K.sun[1] === 5 ? 4 : 9, 3, 3, K.sun[0]); }
     if (!rain && K.moon) { P(8, 4, 2, 2, "#F4F1DE"); P(9, 4, 1, 1, K.b[0]); [[1, 3], [4, 5], [2, 8], [10, 7], [6, 3]].forEach(([x, y]) => P(x, y, 1, 1, "#FFF7C2", "ms-star")); }
     /* city skyline, lit windows at night */

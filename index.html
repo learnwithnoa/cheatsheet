@@ -740,6 +740,19 @@ html.np-mode #tNotif .tn-box,html.np-mode #tNotif .tn-box *{visibility:visible!i
 html.np-mode #tNotif .tn-box{position:fixed!important;inset:0!important;width:auto!important;max-height:none!important;height:100%!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:auto!important;z-index:2147483647}
 html.np-mode dialog,html.np-mode .toast{display:none!important}
 
+/* step63: one close button for every pop-up in the top bar */
+.qa-x,.cs-x,.cl-prof-x,.tn-x{all:unset;box-sizing:border-box;cursor:pointer;width:34px!important;height:34px!important;padding:0!important;display:grid!important;place-items:center;border-radius:50%!important;font-size:24px!important;line-height:1!important;color:var(--muted)}
+.cl-prof-x{font-size:18px!important}
+.qa-x:hover,.cs-x:hover,.cl-prof-x:hover,.tn-x:hover,.qa-x:focus-visible,.cs-x:focus-visible,.cl-prof-x:focus-visible,.tn-x:focus-visible{background:color-mix(in srgb,var(--ink) 9%,transparent);color:var(--ink)}
+.tn-h .tn-x{margin-left:2px}
+/* profile photo preview: buddy or initials */
+.ap-prev .ap-bd{display:block;width:100%;height:100%}.ap-prev .ap-bd svg{width:100%;height:100%;display:block}
+.ap-prev .ap-ini{display:grid;place-items:center;width:100%;height:100%;font:900 22px var(--body);color:#fff;background:linear-gradient(135deg,#4F9DF0,#7C5CF2)}
+.g-ico svg{width:100%;height:100%;display:block}
+/* study music in two groups */
+#musicModes .mm-cat{flex-basis:100%;margin:6px 0 0;font:800 11.5px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+#musicModes .mm-cat:first-child{margin-top:0}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2184,10 +2197,12 @@ html.cs-calm .cs-rxpal button{transition:none}
         <div class="qa-top"><h3>Study music</h3><button class="qa-x" type="button" id="musicClose" aria-label="Close">×</button></div>
         <button class="music-play" type="button" id="musicPlay" aria-pressed="false"><span class="mp-ico" id="mpIco" aria-hidden="true">▶</span><span id="mpTxt">Play</span></button>
         <div class="chips" role="radiogroup" aria-label="Sound" id="musicModes">
+          <span class="mm-cat" aria-hidden="true">🎵 Music</span>
           <button type="button" class="chip" role="radio" data-mm="lofi">Lo-fi beats</button>
           <button type="button" class="chip" role="radio" data-mm="both">Lo-fi + rain</button>
           <button type="button" class="chip" role="radio" data-mm="piano">Calm piano</button>
           <button type="button" class="chip" role="radio" data-mm="pianorain">Piano + rain</button>
+          <span class="mm-cat" aria-hidden="true">🌊 Sounds</span>
           <button type="button" class="chip" role="radio" data-mm="rain">Just rain</button>
           <button type="button" class="chip" role="radio" data-mm="ocean">Ocean waves</button>
           <button type="button" class="chip" role="radio" data-mm="brown">Brown noise</button>
@@ -2987,6 +3002,9 @@ html.cs-calm .cs-rxpal button{transition:none}
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
   }
   let showAll=false, open=false, undoPrev=null;
+  const READ="ncs-tnotif-read"; let curKeys=[], undoRead=null;
+  function getRead(){ try{ const v=JSON.parse(localStorage.getItem(READ)||"[]"); return Array.isArray(v)?v:[]; }catch(e){ return []; } }
+  function setRead(v){ try{ localStorage.setItem(READ,JSON.stringify(v.slice(-300))); }catch(e){} }
   function getSeen(){ try{ return +JSON.parse(localStorage.getItem(SEEN)||"0")||0; }catch(e){ return 0; } }
   function setSeen(v){ try{ localStorage.setItem(SEEN,JSON.stringify(v)); }catch(e){} if(window.__csOnSet) try{ window.__csOnSet(SEEN); }catch(e){} }
   function paint(){
@@ -3006,7 +3024,10 @@ html.cs-calm .cs-rxpal button{transition:none}
     const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
     const reps=data.reps||[], areq=data.areq||[];
     const mineNew=(data.mine||[]).filter(n=>n.at>since);
-    const cnt=areq.length+joins.length+packs.length+clocks.length+(unl?1:0)+clubNew.length+reps.length+mineNew.length;
+    /* things that stay on the list until they're dealt with (packs, requests…) only count until you mark them as read */
+    const rd=getRead(), keys=[...areq.map(r=>"a:"+r.id),...reps.map(r=>"r:"+(r.id||r.pid||r.at)),...packs.map(t=>"p:"+t),...clocks.map(t=>"c:"+t)].concat(unl?["u:"+unl]:[]);
+    curKeys=keys;
+    const cnt=keys.filter(k=>!rd.includes(k)).length+joins.length+clubNew.length+mineNew.length;
     try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){} npSay({n:cnt});
     b.hidden=false;
     /* closed: a small button that opens it again */
@@ -3014,7 +3035,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
     b.className="tn-wrap open";
     const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
-    b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span class="tn-only">only you see this</span><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo “Got it”</button>`:""}${joins.length||clubNew.length?`<button type="button" class="tn-btn" data-tn="seen">Got it ✓</button>`:""}<button type="button" class="tn-btn" data-tn="hide">Close</button></div>
+    b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
       ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}${r.n>1?` · asked ${r.n} times`:""}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
 
       ${reps.length?`<h4>⚑ Reported on the club wall</h4><ul>${reps.map(r=>`<li>⚑ <b>${esc(r.name)}</b> reported ${esc(r.author||"a post")}’s ${String(r.path||"").split("/").length>2?"comment":"post"}${r.text?`: <span class="muted">“${esc(r.text.slice(0,90))}”</span>`:""}${r.why?` · <i>${esc(r.why)}</i>`:""} <span class="muted">· ${ago(r.at)}</span> <a class="tn-go" href="#club" data-bgo="${esc(r.pid||"")}">Open →</a> <button type="button" class="tn-btn" data-tnrep="${esc(r.id)}">Done ✓</button></li>`).join("")}</ul>`:""}
@@ -3045,8 +3066,8 @@ html.cs-calm .cs-rxpal button{transition:none}
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-tn]"); if(!t) return; const k=t.dataset.tn;
     if(k==="open"){ open=!open; }
     else if(k==="all") showAll=!showAll;
-    else if(k==="seen"){ undoPrev=getSeen(); setSeen(Date.now()); open=true; }
-    else if(k==="undo"){ setSeen(undoPrev||0); undoPrev=null; open=true; }
+    else if(k==="seen"){ undoPrev=getSeen(); undoRead=getRead(); setSeen(Date.now()); setRead([...new Set(undoRead.concat(curKeys))]); open=true; }
+    else if(k==="undo"){ setSeen(undoPrev||0); if(undoRead) setRead(undoRead); undoPrev=null; undoRead=null; open=true; }
     else if(k==="hide"){ if(NP){ npSay({close:1}); return; } open=false; undoPrev=null; }
     paint(); });
   document.addEventListener("click",e=>{ if(NP) return; if(open&&e.target.isConnected&&!e.target.closest("#tNotif")){ open=false; undoPrev=null; paint(); } });
@@ -5045,7 +5066,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=46" defer></script>
+<script src="buddy.js?v=47" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -9641,7 +9662,9 @@ function photoBox() {
     b.addEventListener("change", async e => { const r = e.target.closest("[name=phk]"); if (r) { if (r.value === "custom" && !(photoPref().d)) { b.querySelector("input[type=file]").click(); return; } setPhoto(Object.assign({}, photoPref(), { k: r.value })); return; }
       const f = e.target.closest("input[type=file]"); if (f && f.files[0]) { try { const d = await shrinkPhoto(f.files[0]); setPhoto({ k: "custom", d }); alertMsg("✓ Photo saved"); } catch (er) { alertMsg("Couldn't use that photo. Try another one."); } f.value = ""; } }); }
   const p = photoPref(), ph = myPhoto();
-  b.innerHTML = `<div class="ap-prev">${ph ? `<img src="${ph.replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer">` : `<span>🐾</span>`}</div><div class="ap-opts"><b>Profile photo</b><small>Shows in the club next to your posts and messages.</small>
+  const nm0 = String(user.displayName || user.email || "?").trim(), ini = (nm0.split(/\s+/).slice(0, 2).map(w => w[0] || "").join("") || "?").toUpperCase();
+  const prev = ph ? `<img src="${ph.replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer">` : p.k === "none" ? `<span class="ap-ini">${ini}</span>` : (window.csBuddy && window.csBuddy.portrait ? `<span class="ap-bd">${window.csBuddy.portrait()}</span>` : `<span>🐾</span>`);
+  b.innerHTML = `<div class="ap-prev">${prev}</div><div class="ap-opts"><b>Profile photo</b><small>Shows in the club next to your posts and messages.</small>
     <label><input type="radio" name="phk" value="google" ${p.k === "google" ? "checked" : ""} ${user.photoURL ? "" : "disabled"}> My Google photo</label>
     <label><input type="radio" name="phk" value="custom" ${p.k === "custom" ? "checked" : ""}> My own photo</label>
     <label><input type="radio" name="phk" value="buddy" ${p.k === "buddy" ? "checked" : ""}> My buddy 🐾</label>
@@ -9651,7 +9674,7 @@ function photoBox() {
     lk.addEventListener("click", e => { const x = e.target.closest("[data-al]"); if (!x) return; panel.hidden = true; const k = x.dataset.al; if (k === "club") { window.__clubMyProfile && window.__clubMyProfile(); } else if (k === "dm") { window.__clubInbox && window.__clubInbox(); } else if (k === "level") { location.hash = "#quiz"; setTimeout(() => document.querySelector('[data-pr="level"]')?.click(), 300); } else location.hash = "#" + k; }); }
   let nW = 0; try { nW = (JSON.parse(localStorage.getItem("ncs-words") || "[]") || []).filter(x => x && !x.sample).length; } catch (e) {}
   const lv = (() => { try { return window.csLevel ? (window.csLevel().lv || "") : ""; } catch (e) { return ""; } })(), club = !!window.__clubInbox && !!document.getElementById("dmTopBtn") && !document.getElementById("dmTopBtn").hidden;
-  lk.innerHTML = `<button type="button" data-al="words">📚 ${nW} ${nW === 1 ? "word" : "words"}</button><button type="button" data-al="level">📊 ${lv ? "Level " + lv : "My level"}</button>${club ? `<button type="button" data-al="club">🙂 My club profile</button>` : ""}`;
+  lk.innerHTML = `${club ? `<button type="button" data-al="club">🙂 My club profile</button>` : ""}<button type="button" data-al="words">📚 ${nW} ${nW === 1 ? "word" : "words"}</button><button type="button" data-al="level">📊 ${lv ? "Level " + lv : "My level"}</button>`;
 }
 function renderUser() {
   document.body.dataset.auth = user ? "in" : "out";
@@ -9662,6 +9685,7 @@ function renderUser() {
     const name = user.displayName || user.email || "You";
     const ph = myPhoto();
     if (ph) { ico.innerHTML = ""; const img = new Image(); img.alt = ""; img.referrerPolicy = "no-referrer"; img.src = ph; img.onerror = () => { ico.textContent = name.charAt(0).toUpperCase(); }; ico.appendChild(img); }
+    else if (photoPref().k !== "none" && window.csBuddy && window.csBuddy.portrait) { try { ico.innerHTML = window.csBuddy.portrait(); } catch (e) { ico.textContent = name.charAt(0).toUpperCase(); } }
     else ico.textContent = name.charAt(0).toUpperCase();
     photoBox();
     $("authWho").textContent = name + (user.email && user.displayName ? " · " + user.email : "");
