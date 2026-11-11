@@ -828,6 +828,16 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .ag-new[open]>summary{margin-bottom:6px}
 .ap-note{color:var(--muted);font-size:12.5px;font-weight:500;line-height:1.35;margin:4px 0 0}
 
+/* step80: change my name in the profile panel */
+.auth-name{display:flex;flex-wrap:wrap;gap:4px 12px;margin:-2px 0 10px}
+.auth-nform{display:grid;gap:6px;width:100%}
+.auth-nform label{font-weight:800;font-size:14px}
+.auth-nform input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:inherit;width:100%;box-sizing:border-box}
+.auth-nform small{color:var(--muted);font-size:12.5px}
+.auth-nrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.auth-nsave{border:0;border-radius:999px;padding:6px 16px;font:800 14px var(--body);background:var(--accent,#5b8def);color:#fff;cursor:pointer}
+.auth-nmsg{font-size:13px;color:var(--muted)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3943,6 +3953,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   let wT=0; function syncWatched(list){ clearTimeout(wT); wT=setTimeout(async()=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({watched:list.slice(-300)}); checkBadges(); }catch(e){} },800); }
   document.addEventListener("cs-photo",async e=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({photo:(e.detail&&e.detail.photo)||"",pk:(e.detail&&e.detail.k)||"buddy",pbg:(e.detail&&e.detail.bg)||""}); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); }catch(er){} });
   let meDone=false;
+  document.addEventListener("cs-nick",()=>{ meDone=false; setTimeout(()=>ensureMe().catch(()=>{}),300); });
   async function ensureMe(){ if(meDone||G()||!me()||!F()) return; meDone=true;
     try{ if(window.__csNickReady) await Promise.race([window.__csNickReady,new Promise(r=>setTimeout(r,4000))]); await loadProfs(); const cur=profOf(me()); if(!profOK) return;
       const posts=(POSTS||[]).filter(p=>p.uid===me()).length;
@@ -9781,7 +9792,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261111193306"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261111193646"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10089,6 +10100,29 @@ function photoBox() {
   const lv = (() => { try { return window.csLevel ? (window.csLevel().lv || "") : ""; } catch (e) { return ""; } })(), club = !!window.__clubInbox && !!document.getElementById("dmTopBtn") && !document.getElementById("dmTopBtn").hidden;
   lk.innerHTML = `${club ? `<button type="button" data-al="club">🙂 My club profile</button>` : ""}<button type="button" data-al="words">📚 ${nW} ${nW === 1 ? "word" : "words"}</button><button type="button" data-al="level">📊 ${lv ? "Level " + lv : "My level"}</button>`;
 }
+/* change my name (and, for club members, a shortcut to the full club profile) right from the profile panel */
+const escN = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+function nameBox() {
+  const who = $("authWho"); if (!who || VA) return;
+  let nb = $("authName");
+  if (!nb) { nb = document.createElement("div"); nb.id = "authName"; nb.className = "auth-name"; who.insertAdjacentElement("afterend", nb);
+    nb.addEventListener("click", async e => {
+      if (e.target.closest("[data-nmedit]")) { e.stopPropagation(); nb.dataset.edit = "1"; nameBox(); const i = nb.querySelector("input"); if (i) { i.focus(); i.select(); } return; }
+      if (e.target.closest("[data-nmx]")) { e.stopPropagation(); delete nb.dataset.edit; nameBox(); return; }
+      if (e.target.closest("[data-nmgoogle]")) { e.stopPropagation(); const i = nb.querySelector("input"); if (i) i.value = (user && user.displayName) || ""; return; }
+      if (e.target.closest("[data-nmclub]")) { e.stopPropagation(); panel.hidden = true; try { await window.__clubMyProfile(); setTimeout(() => document.querySelector(".cl-prof-ov [data-pedit]")?.click(), 60); } catch (er) {} return; }
+    });
+    nb.addEventListener("submit", async e => { e.preventDefault(); e.stopPropagation(); const i = nb.querySelector("input"), m = nb.querySelector(".auth-nmsg"), v = i.value.replace(/\s+/g, " ").trim();
+      if (!v) { m.textContent = "Write a name first."; return; }
+      try { await window.__csSetNick(v === ((user && user.displayName) || "") ? "" : v); delete nb.dataset.edit; renderUser();
+        try { window.__clubSocial && window.__clubSocial.refreshMe && window.__clubSocial.refreshMe(); } catch (er) {} }
+      catch (er) { m.textContent = "Couldn't save. Try again."; } });
+  }
+  const club = !!(window.__clubFeed && window.__clubFeed());
+  if (nb.dataset.edit) {
+    nb.innerHTML = `<form class="auth-nform"><label for="authNmIn">My name on Hibi</label><input id="authNmIn" maxlength="40" autocomplete="off" value="${escN(gName())}"><small>How everyone sees you. For example, just your first name.${user && user.displayName && user.displayName !== gName() ? ` <button type="button" class="ap-chg" data-nmgoogle>Use my Google name</button>` : ""}</small><div class="auth-nrow"><button type="submit" class="auth-nsave">Save</button><button type="button" class="ap-chg" data-nmx>Cancel</button><span class="auth-nmsg" role="status"></span></div></form>`;
+  } else nb.innerHTML = `<button type="button" class="ap-chg" data-nmedit>✏️ Change my name</button>${club ? ` <button type="button" class="ap-chg" data-nmclub>👤 Edit my club profile</button>` : ""}`;
+}
 function renderUser() {
   document.body.dataset.auth = user ? "in" : "out";
   btn.classList.toggle("in", !!user);
@@ -10103,6 +10137,7 @@ function renderUser() {
     else ico.textContent = name.charAt(0).toUpperCase();
     photoBox();
     $("authWho").textContent = name + (user.email && user.displayName ? " · " + user.email : "");
+    nameBox();
     const tl = $("teacherLink"); if (tl) tl.hidden = (user.email || "").toLowerCase() !== "learnwithnoa@gmail.com";
     const isT = (user.email || "").toLowerCase() === "learnwithnoa@gmail.com" && user.emailVerified;
     /* remembered for the next page load, so the top bar shows "you" right away instead of "Sign in" first */
