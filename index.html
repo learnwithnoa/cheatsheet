@@ -2847,7 +2847,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <p class="em-sign">Let's go, ${esc(first)}. Noa</p></div>`; }
   let openMap=false;
   const lprog=()=>{ try{ return JSON.parse(localStorage.getItem(LES_K)||"{}")||{}; }catch(e){ return {}; } };
-  const lsave=(id,p)=>{ try{ const all=lprog(); all[id]=p; localStorage.setItem(LES_K,JSON.stringify(all)); }catch(e){} };
+  const lsave=(id,p)=>{ if(window.__csViewAsMode) return; try{ const all=lprog(); all[id]=p; localStorage.setItem(LES_K,JSON.stringify(all)); }catch(e){} try{ window.__csOnSet&&window.__csOnSet(LES_K); }catch(e){} };
   const md=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/\*([^*]+)\*/g,"<i>$1</i>");
   const NRM=t=>String(t||"").toLowerCase().replace(/[‘’`´]/g,"'").replace(/[“”]/g,'"')
     .replace(/\bcan't\b/g,"cannot").replace(/\bwon't\b/g,"will not").replace(/n't\b/g," not").replace(/'ve\b/g," have").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ll\b/g," will")
@@ -2903,13 +2903,15 @@ html.cs-calm .cs-rxpal button{transition:none}
     const sh=t.closest("[data-lxshow]"); if(sh){ const k=sh.closest("[data-k]").dataset.k, p=lprog()[L.id]||{}; p.show=p.show||{}; p.show[k]=true; lsave(L.id,p); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
     const w=t.closest("[data-lxw]"); if(w){ let x={}; try{ x=JSON.parse(w.dataset.lxw); }catch(er){} if(window.csAddWord&&window.csAddWord(x.w,x.tr,x.ex)&&window.toast) window.toast("Saved to My words ✓"); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
     if(t.closest("[data-lxsaveall]")){ let n=0; (L.sections||[]).filter(s=>s.type==="vocab").forEach(s=>s.items.forEach(x=>{ if(window.csAddWord&&window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; })); if(n&&window.toast) window.toast(`Saved ${n} words to My words ✓`); const y=window.scrollY; render(); window.scrollTo(0,y); return; } });
+  /* if the page reloads (an update, a sync) while a recap is open, open it again where they were */
+  addEventListener("pagehide",()=>{ if(openLes&&location.hash==="#coaching"&&!window.__csViewAsMode) try{ sessionStorage.setItem(LES_P,openLes); sessionStorage.setItem("cs-les-y",String(Math.round(scrollY))); }catch(e){} });
   /* typing keeps the answer even before "Check" (so a re-render never loses it) */
   box.addEventListener("input",e=>{ const v=window.__csHubView; if(!openLes||!v) return; const li=e.target.closest(".lx-it"); if(!li) return; const k=li.dataset.k, p=lprog()[openLes]||{}; p.ans=p.ans||{};
     const ins=li.querySelectorAll("input[data-b]"); p.ans[k]=ins.length?[...ins].map(n=>n.value):e.target.value; lsave(openLes,p); });
   box.addEventListener("keydown",e=>{ if(e.key!=="Enter"||!e.target.matches(".lx input")) return; e.preventDefault(); const part=e.target.closest("[data-part]"); if(part){ const v=window.__csHubView, L=lesOf(v).find(x=>x.id===openLes); if(L) lesCheck(L,+part.dataset.part); } });
   function takePending(v){
     if(v&&v.map){ let mp=null; try{ mp=sessionStorage.getItem(MAP_P); }catch(e){} if(mp){ try{ sessionStorage.removeItem(MAP_P); }catch(e){} openMap=true; if(location.hash!=="#coaching") location.hash="#coaching"; setTimeout(()=>window.scrollTo({top:0}),60); } }
-    if(v){ let lp=null; try{ lp=sessionStorage.getItem(LES_P); }catch(e){} if(lp){ try{ sessionStorage.removeItem(LES_P); }catch(e){} if(lesOf(v).some(x=>x.id===lp)){ openLes=lp; if(location.hash!=="#coaching") location.hash="#coaching"; setTimeout(()=>window.scrollTo({top:0}),60); } } }
+    if(v){ let lp=null; try{ lp=sessionStorage.getItem(LES_P); }catch(e){} if(lp){ try{ sessionStorage.removeItem(LES_P); }catch(e){} if(lesOf(v).some(x=>x.id===lp)){ openLes=lp; if(location.hash!=="#coaching") location.hash="#coaching"; let y0=0; try{ y0=+sessionStorage.getItem("cs-les-y")||0; sessionStorage.removeItem("cs-les-y"); }catch(e){} setTimeout(()=>window.scrollTo({top:y0}),60); } } }
     let p=null; try{ p=sessionStorage.getItem(REP_P); }catch(e){} if(!p) return;
     if(!v){ return; }
     try{ sessionStorage.removeItem(REP_P); }catch(e){}
@@ -9723,6 +9725,7 @@ const CHANGELOG=[
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
     ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
     ["📸","Photos in messages","tap a photo to see it big, with a <b>⬇ Download</b> button. GIFs in messages play now too."],
+    ["✏️","Your recap exercises are safe","your answers in class recaps and study guides are now saved to your account as you go, so they're there on every device, even if the page reloads."],
     ["🐾","Your buddy has more to say","every pet now has two sounds, and you'll hear one every time you pet or feed them (if buddy sounds are on)."]
   ]},
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
@@ -9976,8 +9979,8 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112112456"; let hiddenAt=0, shown=false;
-  const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
+(function(){ const BUILD="20261112113928"; let hiddenAt=0, shown=false;
+  const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
     b.innerHTML='<span>✨ Hibi just got an update.</span><button type="button" class="cs-upd-go">Refresh</button><button type="button" class="cs-upd-x" aria-label="Later">×</button>';
@@ -10164,11 +10167,22 @@ function mergeKey(k, l, c) {
   if (k === "ncs-fc" && L && C && typeof L === "object" && typeof C === "object") {
     const o = Object.assign({}, L); for (const [id, b] of Object.entries(C)) o[id] = Math.max(o[id] || 0, b || 0); return JSON.stringify(o);
   }
+  /* class recap exercises: never lose a right answer from either copy */
+  if (k === "ncs-lesson-prog" && L && C && typeof L === "object" && typeof C === "object") return JSON.stringify(mergeLes(L, C));
   if (k === "ncs-lastcopy") return JSON.stringify(Math.max(+L || 0, +C || 0));
   if (k === "ncs-freenotes") return (typeof L === "string" && L.trim()) ? l : c;
   return c;
 }
 
+function mergeLes(L, C) {
+  const o = Object.assign({}, C);
+  for (const [id, a] of Object.entries(L)) { const b = C[id]; if (!a || typeof a !== "object") continue; if (!b || typeof b !== "object") { o[id] = a; continue; }
+    const m = { ans: Object.assign({}, b.ans, a.ans), ok: Object.assign({}, b.ok, a.ok), show: Object.assign({}, b.show, a.show), done: !!(a.done || b.done) };
+    for (const k of Object.keys(b.ok || {})) if (b.ok[k] === true && m.ok[k] !== true) { m.ok[k] = true; m.ans[k] = (b.ans || {})[k]; }
+    o[id] = m; }
+  return o;
+}
+const MERGED = new Set(["ncs-lesson-prog"]);   /* keys merged both ways on every sync (not "the cloud wins") */
 /* ---------- lists that can change on two devices at once (words, class notes, stars) ----------
    Before: the last device to save won, so a phone could add 3 words and an old tab on the laptop
    could save its older list over them. Now: a 3-way merge with what this device last saw in the cloud
@@ -10195,6 +10209,10 @@ function merge3(k, b, l, c) {
 /* ---------- cloud I/O ---------- */
 async function pushKey(k) {
   let v = getRaw(k);
+  if (MERGED.has(k) && v != null) {
+    try { const d = await getDoc(doc(db, "users", user.uid, "data", k)); const c = d.exists() && !d.data().deleted && typeof d.data().json === "string" ? d.data().json : null;
+      const m = mergeKey(k, v, c); if (m !== v) { setRaw(k, m); v = m; } } catch (e) { console.warn("merge", k, e); }
+  }
   if (LISTS[k] && v != null) {
     try { const d = await getDoc(doc(db, "users", user.uid, "data", k)); const c = d.exists() && !d.data().deleted && typeof d.data().json === "string" ? d.data().json : null;
       const m = merge3(k, getRaw(BASE(k)), v, c);
@@ -10240,10 +10258,10 @@ async function syncDown() {
     for (const k of keys) {
       if (!isSynced(k)) continue;
       const l = getRaw(k), c = (k in cloud) ? cloud[k] : null;
-      let v = first ? mergeKey(k, l, c) : LISTS[k] ? merge3(k, getRaw(BASE(k)), l, c) : (c != null ? c : l);
+      let v = first || MERGED.has(k) ? mergeKey(k, l, c) : LISTS[k] ? merge3(k, getRaw(BASE(k)), l, c) : (c != null ? c : l);
       /* never bring back an older "What's new" version: that made the pop-up show again (and again) after closing it */
       if (k === "ncs-seen-version" && l != null && window.__csClLatest && l === JSON.stringify(window.__csClLatest)) v = l;
-      if (v !== l) { setRaw(k, v); changed = true; }
+      if (v !== l) { setRaw(k, v); if (!MERGED.has(k)) changed = true; }
       if (v != null && v !== c) toPush.push(k);
       else if (LISTS[k] && v != null) setRaw(BASE(k), v);
     }
