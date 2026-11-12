@@ -10088,7 +10088,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112142523"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112170002"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10802,7 +10802,9 @@ onAuthStateChanged(auth, u => {
   if (VA) { let hv = null; try { hv = VA.data && VA.data.__hubview ? JSON.parse(VA.data.__hubview) : null; } catch (e) {} setHubView(hv || VA.view || null); window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } })); return; }
   loadHubView();
   /* the English level Noa set for club members (from club class recordings), for level-adapted feedback */
-  if (u) getDoc(doc(db, "roles", u.uid)).then(d => { const r = d.exists() ? d.data() || {} : {}; try { if (r.lv) localStorage.setItem("cs-cefr", JSON.stringify({ lv: r.lv })); else localStorage.removeItem("cs-cefr"); } catch (e) {} }).catch(() => {});
+  if (u) getDoc(doc(db, "roles", u.uid)).then(d => { const r = d.exists() ? d.data() || {} : {}; try { if (r.lv) localStorage.setItem("cs-cefr", JSON.stringify({ lv: r.lv })); else localStorage.removeItem("cs-cefr"); } catch (e) {}
+      /* A1/A2 set by Noa and they never chose a mode themselves: beginner mode on (more Spanish, simpler examples); they can still turn it off */
+      if (/^A[12]/.test(String(r.lv || "")) && !VA) setTimeout(() => { try { if (localStorage.getItem("ncs-level") == null && window.csSetLevel) window.csSetLevel(true); } catch (e) {} }, 6000); }).catch(() => {});
   if (u) syncDown();
   window.__csAuth = !!u; window.dispatchEvent(new CustomEvent("cs-auth", { detail: { signedIn: !!u } }));
 });
