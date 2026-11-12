@@ -3964,7 +3964,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     el.innerHTML=h; el.hidden=!h; }
   document.addEventListener("click",e=>{ if(e.target.closest("[data-bdno]")){ LSS("cs-bd-ask-"+(me()||"g"),true); const p=e.target.closest(".cl-bask"); if(p) p.remove(); return; }
     if(e.target.closest("[data-bdadd]")){ openProfile(me()).then(()=>{ const b=document.querySelector(".cl-prof-ov [data-pedit]"); if(b){ b.click(); setTimeout(()=>document.querySelector(".cl-prof-ov [data-pf-bm]")?.scrollIntoView({block:"center",behavior:"smooth"}),60); } }); } });
-  async function saveMe(patch){ if(G()||!me()) return; const cur=profOf(me())||{};
+  async function saveMe(patch){ if(G()||!me()) return;
+    const d0=await api("GET","/clubProfiles/"+me()); const cur=d0&&d0.fields?fromDoc(d0):{}; /* api throws on any error except "not found", so a failed read never overwrites the saved profile */
     const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||"",pk:cur.pk||"",pbg:cur.pbg||"",job:cur.job||"",bd:cur.bd||"",by:cur.by||"",bdset:cur.bdset||0};
     Object.assign(data,patch||{});
     await api("PATCH","/clubProfiles/"+me(),{fields:{uid:S(me()),name:S(F().name()||""),at:I(Date.now()),json:S(JSON.stringify(data))}});
@@ -9818,7 +9819,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112014413"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112014812"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
