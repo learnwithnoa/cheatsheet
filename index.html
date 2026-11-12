@@ -981,6 +981,12 @@ select:not([multiple]):not([size]){-webkit-appearance:none;-moz-appearance:none;
   nav.side .nfg.folded .navbtn:not([aria-current="true"]){display:none!important}
 }
 
+/* step99: the chat header is a button to the person's profile */
+.cl-dmwho{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:10px;max-width:100%;padding:4px 10px 4px 4px;border-radius:999px;font:inherit;font-weight:800}
+.cl-dmwho:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.cl-dmwho:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
+.cl-dmwho span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4235,14 +4241,14 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return `🔔 ${nm}`; }
   let CNSNAP=null;
   const isClubber=()=>{ const fd=window.__clubFeed&&window.__clubFeed(); return !!fd; };
-  function paintBell(){ const b=document.getElementById("clBell"); if(!b) return; const CN=window.__csCoachNews?window.__csCoachNews.list():[], club=isClubber(), seen=+LSG(BSEEN,0)||0, n=(club?NOTES.filter(x=>x.at>seen).length:0)+CN.length;
+  function paintBell(){ const b=document.getElementById("clBell"); if(!b) return; const CN=window.__csCoachNews?window.__csCoachNews.list():[], club=isClubber(), seen=+LSG(BSEEN,0)||0, n=(club?NOTES.filter(x=>x.kind!=="dm"&&x.at>seen).length:0)+CN.length;
     b.classList.toggle("has",!!n); const c=b.querySelector(".clb-n"); c.hidden=!n; c.textContent=n>9?"9+":String(n);
     b.setAttribute("aria-label",L("Notifications","Notificaciones")+(n?` (${n})`:""));
     const pn=document.getElementById("clBellPanel"); if(!pn||pn.hidden) return;
     const cn=CNSNAP||CN, fdt=d=>{ try{ return new Date(d+"T12:00").toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}); }catch(e){ return d; } };
     const coachHTML=cn.length?`<h4 class="clb-sec">📚 ${L("Your classes","Tus clases")}</h4><ul>${cn.map(x=>`<li><button type="button" class="clb-i new" data-cngo="${esc(x.tab||"top")}"><span>${x.ico} ${x.t}</span><em>${fdt(x.d)}</em></button></li>`).join("")}</ul>`:"";
     if(!club){ pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+(coachHTML||`<p class="clb-e">${L("Nothing new right now. When Noa adds a class recap, a recommendation or a progress report, you’ll see it here.","Nada nuevo por ahora. Cuando Noa suba un resumen de clase, una recomendación o un informe de progreso, lo verás aquí.")}</p>`); return; }
-    pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+coachHTML+(coachHTML?`<h4 class="clb-sec">🌼 ${L("Club","Club")}</h4>`:"")+`${NOTES.length?`<ul>${NOTES.map(x=>`<li><button type="button" class="clb-i${x.at>(+pn.dataset.seen||0)?" new":""}" data-bgo="${esc(x.pid||"")}"><span>${noteTxt(x)}${x.text&&!/^react/.test(x.kind)?`<small>“${esc(x.text)}”</small>`:""}</span><em>${ago(x.at)}</em></button></li>`).join("")}</ul>`:`<p class="clb-e">${L("Nothing yet. When someone replies to you, reacts to your posts or mentions you, it shows up here.","Nada aún. Cuando alguien te responda, reaccione a tus posts o te mencione, aparece aquí.")}</p>`}`; }
+    pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+coachHTML+(coachHTML?`<h4 class="clb-sec">🌼 ${L("Club","Club")}</h4>`:"")+`${NOTES.some(x=>x.kind!=="dm")?`<ul>${NOTES.filter(x=>x.kind!=="dm").map(x=>`<li><button type="button" class="clb-i${x.at>(+pn.dataset.seen||0)?" new":""}" data-bgo="${esc(x.pid||"")}"><span>${noteTxt(x)}${x.text&&!/^react/.test(x.kind)?`<small>“${esc(x.text)}”</small>`:""}</span><em>${ago(x.at)}</em></button></li>`).join("")}</ul>`:`<p class="clb-e">${L("Nothing yet. When someone replies to you, reacts to your posts or mentions you, it shows up here.","Nada aún. Cuando alguien te responda, reaccione a tus posts o te mencione, aparece aquí.")}</p>`}`; }
   function buildBell(){ if(document.getElementById("clBellWrap")) return; const anchor=document.getElementById("tmWrap")||document.getElementById("csWrap"); if(!anchor||!anchor.parentNode) return;
     const w=document.createElement("div"); w.id="clBellWrap"; w.className="cs-wrap clb-wrap"; w.hidden=true;
     w.innerHTML=`<button type="button" id="clBell" class="cs-btn clb-btn" aria-expanded="false" aria-controls="clBellPanel" title="${L("Notifications","Notificaciones")}"><span aria-hidden="true">🔔</span><span class="clb-n" hidden></span></button><div id="clBellPanel" class="cs-panel clb-panel" role="dialog" aria-label="${L("Club notifications","Notificaciones del club")}" hidden></div>`;
@@ -4548,7 +4554,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return `<div class="cl-msg${mine?" mine":""}">${mine&&m.id&&!G()?`<button type="button" class="cl-msgdel" data-msgdel="${esc(m.id)}" aria-label="${L("Delete this message","Borrar este mensaje")}" title="${L("Delete","Borrar")}">✕</button>`:""}${m.text?`<p>${txtHTML(m.text)}</p>`:""}${(m.imgs||[]).map(i=>`<img data-img="${esc(i)}" alt="${L("Photo","Foto")}" class="cl-msgimg">`).join("")}${(m.gifs||[]).map(g=>{ const s=typeof g==="string"?g:(g&&(g.u||g.url||g.s))||""; return /^https:\/\/media\d*\.giphy\.com\//.test(s)?`<img src="${esc(s)}" alt="${esc((g&&g.t)||"GIF")}" class="cl-msgimg cl-msggif" loading="lazy">`:""; }).join("")}<em>${new Date(m.at).toLocaleString(L("en-US","es-CL"),{hour:"numeric",minute:"2-digit",month:"short",day:"numeric"})}</em></div>`; }
   async function openChat(u,nm){ if(!u||u===me()) return; if(!G()&&!me()){ toast(L("Sign in first.","Primero inicia sesión.")); return; }
     const o=dmPanel(), b=o.querySelector(".cl-dmb"), tid=G()?"me_"+u:tidOf(me(),u); DMOPEN={tid,u,nm};
-    o.querySelector(".cl-dmback").hidden=false; o.querySelector(".cl-dmt").innerHTML=`${av(u,nm)} ${esc(nm||L("Member","Miembro"))}`;
+    o.querySelector(".cl-dmback").hidden=false; o.querySelector(".cl-dmt").innerHTML=`<button type="button" class="cl-dmwho" data-prof="${esc(u)}" data-pname="${esc(nm||"")}" title="${L("See profile","Ver perfil")}">${av(u,nm)}<span>${esc(nm||L("Member","Miembro"))}</span></button>`;
     b.innerHTML=`<div class="cl-msgs" aria-live="polite"><p class="cs-load">${L("Loading…","Cargando…")}</p></div>${composer("dm",u,L("Write a message…","Escribe un mensaje…"))}`;
     const ta=b.querySelector("textarea"); if(ta){ ta.rows=2; ta.focus(); ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); ta.form.requestSubmit(); } }); }
     await paintChat(true); clearInterval(DMTIMER); DMTIMER=setInterval(async()=>{ if(!(document.getElementById("clDm")&&DMOPEN&&!document.hidden)) return; if(G()){ paintChat(false); return; }
@@ -4558,7 +4564,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(G()) ms=[{from:DMOPEN.u,text:"Hi! Are you coming on Wednesday? 😊",at:H(3)},{from:"me",text:"Yes! See you there 👋",at:H(2)}];
     else { try{ ms=await query("dms/"+tid,"msgs","ASCENDING",300); }catch(e){ ms=[]; } }
     const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
-    box.innerHTML=ms.length?ms.map(msgHTML).join(""):`<p class="cl-empty">${L("Say hi 👋","Saluda 👋")}</p>`; paintImgs(box); if(scroll||near) box.scrollTop=box.scrollHeight;
+    box.innerHTML=ms.length?ms.map(msgHTML).join(""):`<p class="cl-empty">${L("Say hi 👋","Saluda 👋")}</p>`; paintImgs(box);
+    if(scroll||near){ const down=()=>{ box.scrollTop=box.scrollHeight; }; down(); requestAnimationFrame(down);
+      /* photos and GIFs load a moment later and make the chat taller: keep it at the bottom while they do */
+      box.querySelectorAll("img").forEach(im=>{ if(!im.complete) im.addEventListener("load",()=>{ if(box.scrollHeight-box.scrollTop-box.clientHeight<400) down(); },{once:true}); });
+      const mo=new MutationObserver(()=>down()); mo.observe(box,{subtree:true,attributes:true,attributeFilter:["src"]}); setTimeout(()=>mo.disconnect(),2500); }
     const thr=(THREADS||[]).find(x=>x.id===tid);
     if(!G()&&((thr&&thr.unread)||(ms.length&&ms[ms.length-1].from!==me()))){ try{ await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=r_${me()}`,{fields:{["r_"+me()]:I(Date.now())}}); const t=(THREADS||[]).find(x=>x.id===tid); if(t) t.unread=false; dmBadge(); }catch(e){} } }
   async function sendDm(form,text,files,gif){ const u=form.dataset.target, tid=tidOf(me(),u), now=Date.now();
@@ -9950,7 +9960,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112103405"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112103911"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
