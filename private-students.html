@@ -353,7 +353,7 @@ html.emb body{background:transparent}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp, initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ } from "./hubview.js?v=15";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ, BOTH_DEFAULT } from "./hubview.js?v=15";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -420,6 +420,7 @@ async function load() {
     loadRate(); fixUsdRates();
     grantAccess();
     await autoLink();
+    await syncClub();
     loadUsage();
     publishAll();
     saveIds();
@@ -500,6 +501,31 @@ async function grantAccess() {
       for (const em of ems) if (!have.has(em)) { await setDoc(doc(db, "access", em), { name: s.name || "", at: Date.now(), by: "hub" }); have.add(em); }
     }
   } catch (e) { console.warn("grantAccess", e); }
+}
+/* club access, right away (the nightly sync does the same): anyone who should have the club but isn't on the list yet
+   (private + club students, accounts marked club, Hibi accounts that match the Skool roster) gets it now.
+   Only adds: taking the club away is still left to the nightly sync. */
+const nEmail = e => { e = String(e || "").trim().toLowerCase(); if (!e.includes("@")) return e; const [u, d] = e.split("@"); return d === "gmail.com" || d === "googlemail.com" ? u.split("+")[0].replace(/\./g, "") + "@gmail.com" : e; };
+const nName = n => String(n || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
+async function syncClub() {
+  try {
+    if (!meta || !meta.clubFeed || !accounts.length) return;
+    const roster = (meta.club && meta.club.members) || [], rE = new Set(roster.filter(x => x.email).map(x => nEmail(x.email))), rN = new Set(roster.filter(x => x.name).map(x => nName(x.name)));
+    const should = new Set([tUid]);
+    for (const a of accounts) { const r = rolesByUid[a.uid] || {};
+      if (r.club === true) { should.add(a.uid); continue; } if (r.club === false) continue;
+      if (r.hub) { if (BOTH_DEFAULT.includes(r.hub)) should.add(a.uid); continue; }
+      if ((a.email && rE.has(nEmail(a.email))) || (a.name && nName(a.name).split(" ").length >= 2 && rN.has(nName(a.name)))) should.add(a.uid); }
+    const have = new Set(meta.clubUids || []), add = [...should].filter(u => !have.has(u)); if (!add.length) return;
+    meta.clubUids = [...have, ...add].sort(); await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(meta), deleted: false, at: serverTimestamp() });
+    for (const u of add) { const a = accounts.find(x => x.uid === u) || {};
+      try { await setDoc(doc(db, "clubAccess", u), { on: true, name: a.name || "" }, { merge: true }); } catch (e) { console.warn("clubAccess", u, e); }
+      const st = S.find(x => x.uid === u);
+      if (st) await publish(st, true);
+      else { const cur = await getDoc(doc(db, "users", u, "data", "hub-view")).catch(() => null), cv = cur && cur.exists() && !cur.data().deleted ? JSON.parse(cur.data().json || "null") : null;
+        if (!cv || cv.clubOnly) await setDoc(doc(db, "users", u, "data", "hub-view"), { json: JSON.stringify({ v: 1, clubOnly: true, club: meta.clubFeed, updated: new Date().toISOString() }), deleted: false, at: serverTimestamp() }); } }
+    toast("🎟️ Club access added for " + add.map(u => ((accounts.find(x => x.uid === u) || {}).name || "someone").split(" ")[0]).join(", "));
+  } catch (e) { console.warn("club sync", e); }
 }
 async function autoLink() {
   try {
