@@ -3674,7 +3674,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const now=Date.now(), cl=classesOf(f,p), isNew=p.id!==seen();
     const next=cl.find(c=>now<=c.end.getTime());
     hc.hidden=false; hc.className="hc-club"; setTimeout(homeWall,0);
-    const pod=(()=>{ const e=window.__clubLatestPod&&window.__clubLatestPod(); return e&&e.date&&Date.now()-new Date(String(e.date).slice(0,10)+"T12:00:00").getTime()<10*864e5?e:null; })();
+    const pod=(()=>{ const e=window.__clubLatestPod&&window.__clubLatestPod(); return e&&e.date&&Date.now()-new Date(String(e.date).slice(0,10)+"T12:00:00").getTime()<14*864e5?e:null; })();
     hc.innerHTML=`<div class="hc-h"><b>🌼 This week in the club${isNew&&!window.__csPreview?'<span class="hc-new">NEW</span>':""}</b><button type="button" class="hc-go" data-go="club">Open →</button></div>
       <div class="hc-list">${cl.map(c=>`<div class="${now>c.end.getTime()?"past":""}"><span class="d">${c.ico} ${WD[c.wd]} ${esc(fmtT(c.start,TZ).replace(":00",""))}</span><span>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</span></div>`).join("")}</div>
       <button type="button" class="hc-wall" data-hcwall="1" hidden></button>${pod?`<button type="button" class="hc-wall" data-hcgo="recordings">🎧 ${L("This week's club podcast","El podcast de esta semana")}${pod.title?`: ${esc(pod.title)}`:""} →</button>`:""}${(()=>{ const r=[recList(f).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0]].filter(it=>it&&!watched().includes(it.id)&&Date.now()-new Date(it.date+"T12:00:00").getTime()<8*864e5)[0]; if(!r) return ""; const rd=new Date(r.date+"T12:00:00").toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}), rt=r.x&&r.x.title&&r.x.title!==r.c.name?r.x.title:"";
@@ -10077,7 +10077,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112131418"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112131434"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
