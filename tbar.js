@@ -7,7 +7,7 @@
   const st = document.createElement("style");
   st.textContent = [
     "#csWrap,#tmWrap,#outBtn,.music-wrap,.tb-bw{display:none!important}",
-    ".tbx{position:relative;flex:none;width:150px;height:52px;margin:-8px -10px -8px 0}",
+    ".tbx{position:relative;flex:none;width:150px;height:52px;margin:-8px 0}",
     /* the frame is always as wide as the page (so Home uses the same layout as here); this box only shows the part you need */
     ".tbx-c{position:absolute;top:0;right:0;overflow:hidden;width:100%;height:100%;z-index:90}",
     ".tbx.open .tbx-c{z-index:1000}",

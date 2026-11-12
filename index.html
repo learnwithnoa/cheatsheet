@@ -961,6 +961,14 @@ select:not([multiple]):not([size]){-webkit-appearance:none;-moz-appearance:none;
 /* step96 */
 @media (min-width:641px){nav.side .t-mnav{display:none!important}}
 
+/* step97: class-note buttons as pills */
+.cn-card .wbtns{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.cn-card .wbtns button{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--ink) 4%,var(--surface));color:var(--ink);font:700 13.5px var(--display,var(--body));white-space:nowrap;transition:background .15s,border-color .15s}
+.cn-card .wbtns button:hover{border-color:var(--royal);background:color-mix(in srgb,var(--royal) 12%,var(--surface))}
+.cn-card .wbtns button:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
+.cn-card .wbtns button[data-cnwords]{color:var(--royal)}
+.cn-card .wbtns .cn-delb:hover{border-color:#E5533D;background:color-mix(in srgb,#E5533D 12%,var(--surface));color:#E5533D}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2593,8 +2601,8 @@ html.cs-calm .cs-rxpal button{transition:none}
   <div class="card cn-editor">
     <div class="cn-top"><label for="freeNotes" class="cn-date" id="cnToday">Today</label><span class="count" id="freeSaved">Your draft is saved as you type</span></div>
     <textarea id="freeNotes" placeholder="Write your notes for today's class: corrections, things to practice, questions for next class…"></textarea>
-    <div class="note-actions"><button class="swap" type="button" id="cnDraft" title="Keep what you've written here, so you can keep adding to it during class">💾 Save draft</button><button class="pill-btn pill-green" type="button" id="cnSave" title="Add this note to My class notes and start a fresh one">📥 Move to my notes</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
-    <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here (and in your account if you're signed in). When the class is over, press <b>Move to my notes</b>.</p>
+    <div class="note-actions"><button class="swap" type="button" id="cnDraft" title="Keep what you've written here, so you can keep adding to it during class">💾 Save draft</button><button class="pill-btn pill-green" type="button" id="cnSave" title="Add this note to My class notes, find its new words for you, and start a fresh one">📥 Move to my notes + ✨ find words</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
+    <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here (and in your account if you're signed in). When the class is over, press <b>Move to my notes</b>: Hibi files it and finds the new words and expressions in it, ready to add to My words.</p>
     <div id="cnSuggest" class="cn-sug" hidden aria-live="polite"></div>
     <p class="cn-warn dismissible when-out">Saved notes go to <b>My class notes</b>, sorted by date. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to keep them in your account. Until then, they're only saved in this browser.</p>
   </div>
@@ -3122,9 +3130,11 @@ html.cs-calm .cs-rxpal button{transition:none}
       const id=n.dataset.go, v=document.getElementById("v-"+id); if(!v||v.querySelector(".rec-bar")) return;
       const bar=document.createElement("button"); bar.type="button"; bar.className="star-btn rec-bar"; bar.dataset.recpage=id; bar.title="Recommend this page to a student (only you see this button)";
       bar.innerHTML=`<span aria-hidden="true">💡</span><span class="star-txt">Recommend</span>`;
-      const sb=v.querySelector(".vhead .star-btn"); if(sb) sb.insertAdjacentElement("beforebegin",bar); else { const h=v.querySelector("h1"); if(h) h.insertAdjacentElement("afterend",bar); else v.prepend(bar); }
+      const lb=v.querySelector(".vhead .cs-read"), sb=v.querySelector(".vhead .star-btn"); if(lb) lb.insertAdjacentElement("beforebegin",bar); else if(sb) sb.insertAdjacentElement("beforebegin",bar); else { const h=v.querySelector("h1"); if(h) h.insertAdjacentElement("afterend",bar); else v.prepend(bar); }
     }));
   }
+  /* keep 💡 Recommend first, then 🔊 Listen, then ☆ Star (Listen can arrive a moment later) */
+  setInterval(()=>{ document.querySelectorAll(".vhead .rec-bar").forEach(r=>{ const l=r.closest(".vhead").querySelector(".cs-read"); if(l&&(r.compareDocumentPosition(l)&Node.DOCUMENT_POSITION_PRECEDING)) l.insertAdjacentElement("beforebegin",r); }); },1500);
   document.addEventListener("cs-teacher",recButtons); document.addEventListener("cs-preview",recButtons); setTimeout(recButtons,1600);
   let recPeople=null;
   document.addEventListener("click",async e=>{
@@ -9068,7 +9078,7 @@ function renderCN(){
     if(x.id===cnEditing){
       html+='<form class="card cn-card" data-cnform="'+x.id+'"><div class="cn-head"><span class="cn-day">'+fmtLong(x.t)+'</span></div><label for="cnEdit" class="sr">Edit note</label><textarea id="cnEdit">'+esc(x.text)+'</textarea><div class="note-actions"><button class="pill-btn" type="submit">Save changes</button><button class="swap" type="button" data-cncancel>Cancel</button></div></form>';
     } else {
-      html+='<article class="card cn-card"><div class="cn-head"><span class="cn-day">'+fmtLong(x.t)+'</span><span class="cn-time">'+fmtTime(x.t)+'</span><div class="wbtns"><button class="del edit" type="button" data-cnwords="'+x.id+'" title="Find new words and expressions in this note">✨ Find words</button><button class="del edit" type="button" data-cncopy="'+x.id+'">Copy</button><button class="del edit" type="button" data-cnedit="'+x.id+'">Edit</button><button class="del" type="button" data-cndel="'+x.id+'">Delete</button></div></div><div class="cn-text">'+esc(x.text)+'</div></article>';
+      html+='<article class="card cn-card"><div class="cn-head"><span class="cn-day">'+fmtLong(x.t)+'</span><span class="cn-time">'+fmtTime(x.t)+'</span><div class="wbtns"><button class="del edit" type="button" data-cnwords="'+x.id+'" title="Find new words and expressions in this note">✨ Find words</button><button class="del edit" type="button" data-cncopy="'+x.id+'">📋 Copy</button><button class="del edit" type="button" data-cnedit="'+x.id+'">✏️ Edit</button><button class="del cn-delb" type="button" data-cndel="'+x.id+'">🗑️ Delete</button></div></div><div class="cn-text">'+esc(x.text)+'</div></article>';
     }
   });
   cnList.innerHTML=html;
@@ -9927,7 +9937,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112095705"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112102626"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
