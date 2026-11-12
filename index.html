@@ -3330,9 +3330,9 @@ html.cs-calm .cs-rxpal button{transition:none}
       data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>{ const dk="c:"+p.key+"|"+r.text; if(!DIS().includes(dk)) clocks.push(`<li data-tnk="${esc("c:"+p.key+"|"+r.text)}">🕐 ${esc(r.text)} <a class="tn-go" href="private-students.html#s/${esc(p.key.slice(4))}">Open →</a><button type="button" class="tn-dis" data-tndis="${esc(dk)}" aria-label="Hide this notification" title="Hide this">×</button></li>`); })); }
     const unl=data.acc.filter(a=>a.kind==="new").length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
-    const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
+    const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73"), clubAll=(data.club||[]).filter(a=>a.at>wk&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
     const reps=data.reps||[], areq=data.areq||[];
-    const mineNew=(data.mine||[]).filter(n=>n.at>since);
+    const mineNew=(data.mine||[]).filter(n=>n.at>since), mineAll=(data.mine||[]).filter(n=>n.at>wk);
     /* things that stay on the list until they're dealt with (packs, requests…) only count until you mark them as read */
     const kOf=h=>(String(h).match(/data-tnk="([^"]*)"/)||[])[1]||h;
     const rd=getRead(), keys=[...areq.map(r=>"a:"+r.id),...reps.map(r=>"r:"+(r.id||r.pid||r.at)),...packs.map(kOf),...clocks.map(kOf)].concat(unl?["u:"+unl]:[]);
@@ -3351,11 +3351,11 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}${r.n>1?` · asked ${r.n} times`:""}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
 
       ${reps.length?`<h4>⚑ Reported on the club wall</h4><ul>${reps.map(r=>`<li>⚑ <b>${esc(r.name)}</b> reported ${esc(r.author||"a post")}’s ${String(r.path||"").split("/").length>2?"comment":"post"}${r.text?`: <span class="muted">“${esc(r.text.slice(0,90))}”</span>`:""}${r.why?` · <i>${esc(r.why)}</i>`:""} <span class="muted">· ${ago(r.at)}</span> <a class="tn-go" href="#club" data-bgo="${esc(r.pid||"")}">Open →</a> <button type="button" class="tn-btn" data-tnrep="${esc(r.id)}">Done ✓</button></li>`).join("")}</ul>`:""}
-      ${clubNew.length?`<h4>Club community</h4><ul>${clubNew.map(a=>`<li>${a.kind==="post"?"📝":a.kind==="challenge"?"✍️":"💬"} <b>${esc(a.name)}</b> ${a.kind==="post"?"posted on the wall":a.kind==="challenge"?"answered the weekly challenge":/^w\d{8}$/.test(a.pid||"")?"commented on the weekly post":"commented on a post"}${a.img?" 📷":""}${a.text?`: <span class="muted">“${esc(a.text)}”</span>`:""} <span class="muted">· ${ago(a.at)}</span> <a class="tn-go" href="#club" data-go="club">Open →</a></li>`).join("")}</ul>`:""}
-      ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length&&!clubNew.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
+      ${clubAll.length?`<h4>Club community</h4><ul>${clubAll.map(a=>`<li${a.at>since?"":' class="tn-read"'}>${a.kind==="post"?"📝":a.kind==="challenge"?"✍️":"💬"} <b>${esc(a.name)}</b> ${a.kind==="post"?"posted on the wall":a.kind==="challenge"?"answered the weekly challenge":/^w\d{8}$/.test(a.pid||"")?"commented on the weekly post":"commented on a post"}${a.img?" 📷":""}${a.text?`: <span class="muted">“${esc(a.text)}”</span>`:""} <span class="muted">· ${ago(a.at)}</span> <a class="tn-go" href="#club" data-go="club"${a.pid?` data-bgo="${esc(a.pid)}"`:""}>Open →</a></li>`).join("")}</ul>`:""}
+      ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length&&!clubAll.length&&!mineAll.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
       ${older.length?`<button type="button" class="tn-link" data-tn="all">${showAll?"Hide earlier ones":`Show earlier sign-ups (${older.length})`}</button>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
-      ${mineNew.length?`<h4>💛 About you in the club</h4><ul>${mineNew.map(n=>`<li>${n.html}${n.text&&!/^react/.test(n.kind)?` <span class="muted">“${esc(n.text)}”</span>`:""} <span class="muted">· ${ago(n.at)}</span> <a class="tn-go" href="#club" data-go="club"${n.pid?` data-bgo="${esc(n.pid)}"`:""}>Open →</a></li>`).join("")}</ul>`:""}
+      ${mineAll.length?`<h4>💛 About you in the club</h4><ul>${mineAll.map(n=>`<li${n.at>since?"":' class="tn-read"'}>${n.html}${n.text&&!/^react/.test(n.kind)?` <span class="muted">“${esc(n.text)}”</span>`:""} <span class="muted">· ${ago(n.at)}</span> <a class="tn-go" href="#club" data-go="club"${n.pid?` data-bgo="${esc(n.pid)}"`:""}>Open →</a></li>`).join("")}</ul>`:""}
       ${packs.length?`<h4>Packs</h4><ul>${packs.map(rowR).join("")}</ul>`:""}
       ${clocks.length?`<h4>Clock changes</h4><ul>${clocks.map(rowR).join("")}</ul>`:""}
       <p class="tn-line tn-more"><a class="tn-go" href="members.html">More student news (milestones, ✨ love, practice tips) on Members →</a></p></div>`;
@@ -10037,7 +10037,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112124836"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112125002"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
