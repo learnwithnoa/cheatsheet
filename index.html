@@ -1036,6 +1036,15 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .va-eye{display:inline-flex;align-items:center;justify-content:center}
 .va-eye.on{color:#fff;background:linear-gradient(180deg,#B18CFF,#7348D8)!important;border-color:transparent!important}
 
+/* step108: My coaching hierarchy */
+.ch-n{--k:var(--muted)}
+.ch-res.ch-tint.ch-n{background:var(--surface-2,rgba(255,255,255,.04))!important;border-color:var(--line)!important}
+.ch-pkmini{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding-top:10px;border-top:1px dashed color-mix(in srgb,var(--k) 35%,transparent);font-size:13.5px;color:var(--muted)}
+.ch-pkmini b{color:var(--ink)}
+.ch-rc-wbox h4{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ch-rc-wbox h4 .ch-rc-hint{margin-left:auto}
+.ch-rc-all{font-size:12.5px;padding:4px 11px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3010,9 +3019,6 @@ html.cs-calm .cs-rxpal button{transition:none}
     const held=(v.classes||[]).filter(c=>c.att==="Present"||!c.att);
     let streak=0; for(const c of (v.classes||[]).slice().reverse()){ if(c.att==="Present"||!c.att) streak++; else if(c.att==="Cancelled on time") continue; else break; }
     const stats=cur&&cur.size?`<div class="ch-stats">
-      <div class="ch-tint ch-g ch-stat"><b>${left}</b><span>${cur.unit} left</span></div>
-      <div class="ch-tint ch-a ch-stat"><b>${Math.floor(left/per)}</b><span>${Math.floor(left/per)===1?"class":"classes"} left (about)</span></div>
-      ${cur.deadline?`<div class="ch-tint ch-p ch-stat"><b>${fs(cur.deadline)}</b><span>your pack ends</span></div>`:""}
       <div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div>
       <div class="ch-tint ch-s ch-stat">${(()=>{ const m=held.length*45; return m<60?`<b>${m}</b><span>minutes of English together</span>`:`<b>${Math.round(m/60*10)/10}</b><span>hours of English together</span>`; })()}</div>
       ${streak>=3?`<div class="ch-tint ch-g ch-stat"><b>🔥 ${streak}</b><span>classes in a row</span></div>`:""}</div>`:`<div class="ch-stats"><div class="ch-tint ch-v ch-stat"><b>${(v.classes||[]).length}</b><span>classes with Noa</span></div></div>`;
@@ -3032,8 +3038,9 @@ html.cs-calm .cs-rxpal button{transition:none}
       else if(du.left!=null&&du.left<=0) dueTxt=`Your pack is used up. To keep your spot, renew it <b>at least 48 hours before your next class</b>.`;
       else if(du.classesLeft!=null&&du.classesLeft<=1) dueTxt=`You have about <b>${du.classesLeft} ${du.classesLeft===1?"class":"classes"}</b> left. To keep your spot, renew <b>at least 48 hours before your next class</b>.`;
       else if(du.half&&du.instAt) dueTxt=du.nextNo>=du.instAt?`Your <b>2nd payment</b> is due now (class #${du.instAt} of this pack).`:`Your <b>2nd payment</b> is due at class <b>#${du.instAt}</b> of this pack. Your next class is #${du.nextNo}.`; }
+    const packLine=cur&&cur.size?`<div class="ch-pkmini"><span>💳 <b>${left}</b> ${esc(cur.unit)} left</span><span>≈ <b>${Math.floor(left/per)}</b> ${Math.floor(left/per)===1?"class":"classes"} left</span>${cur.deadline?`<span>pack ends <b>${fs(cur.deadline)}</b></span>`:""}</div>`:"";
     const top=`<div class="ch-top">
-      <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${v.recap&&v.recap.homework?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(v.recap.homework)}</div>`:lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}</div>
+      <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${v.recap&&v.recap.homework?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(v.recap.homework)}</div>`:lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}${packLine}</div>
       ${newRep?`<div class="ch-tint ch-v ch-card"><div class="ch-k">📈 New progress report</div><div>Your report for <b>${fs(newRep.from)} – ${fs(newRep.to)}</b> is ready.</div><button type="button" class="ch-go" data-rep="${esc(newRep.id)}" style="margin-top:6px">Read it →</button></div>`:""}
       ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
@@ -3045,31 +3052,32 @@ html.cs-calm .cs-rxpal button{transition:none}
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
       const voc=(rc.vocab||[]).filter(x=>x&&x.w), unsaved=voc.filter(x=>!have.has(x.w.toLowerCase().trim())).length;
       const rcL=lesOf(v).find(x=>x.kind==="recap"&&x.date===rc.date);
-      recapBox=`<div class="ch-recap ch-tint ch-s" id="chRecap"><div class="ch-rc-h"><div><div class="ch-k">📼 Your last class</div><b>${fd(rc.date)}</b></div>${rcL?`<button type="button" class="ch-go" data-lesson="${esc(rcL.id)}">📖 Full recap + exercises →</button>`:""}${voc.length&&unsaved?`<button type="button" class="ch-go" data-rcall="1">＋ Save all ${unsaved} ${unsaved===1?"word":"words"}</button>`:""}</div>
+      recapBox=`<div class="ch-recap ch-tint ch-g" id="chRecap"><div class="ch-rc-h"><div><div class="ch-k">📼 Your last class</div><b>${fd(rc.date)}</b></div>${rcL?`<button type="button" class="ch-go" data-lesson="${esc(rcL.id)}">📖 Full recap + exercises →</button>`:""}</div>
         ${rc.summary?`<p class="ch-rc-sum">${esc(rc.summary)}</p>`:""}
         <div class="ch-rc-grid">
         ${(rc.talked||[]).length?`<div><h4>💬 What we talked about</h4><ul>${rc.talked.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
 
         ${(rc.heads||[]).length?`<div class="ch-rc-heads"><h4>📌 Don’t forget</h4><ul>${rc.heads.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
         </div>
-        ${voc.length?`<div class="ch-rc-wbox"><h4>✨ New words <span class="muted">(${voc.length})</span>${voc.length>2?'<span class="ch-rc-hint">scroll →</span>':""}</h4><div class="ch-rc-words" role="list">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w" role="listitem"><div><b>${esc(x.w)}</b>${x.tr?`<span class="muted">${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
+        ${voc.length?`<div class="ch-rc-wbox"><h4>✨ New words <span class="muted">(${voc.length})</span>${unsaved?`<button type="button" class="ch-go ch-rc-all" data-rcall="1">＋ Save all ${unsaved} to My words</button>`:""}${voc.length>2?'<span class="ch-rc-hint">scroll →</span>':""}</h4><div class="ch-rc-words" role="list">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w" role="listitem"><div><b>${esc(x.w)}</b>${x.tr?`<span class="muted">${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
         </div>`;
     }
     const lpAll=lprog(), lBadge=g=>{ const L=lesOf(v).find(x=>x.id===g.lesson); if(!L) return ""; const tot=lesTotal(L), p=lpAll[L.id]||{}, sc=lesScore(L,p); return tot?(p.done?' <span class="ch-lbadge done">✅ done</span>':sc?` <span class="ch-lbadge">${sc}/${tot}</span>`:` <span class="ch-lbadge new">✏️ ${tot} exercises</span>`):""; };
     const gItem=(g,ico,cls)=>g.lesson?`<button type="button" class="${cls}" data-lesson="${esc(g.lesson)}">${cls==="ch-gl"?`<span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}${lBadge(g)}</b>${g.date?`<small>${fd(g.date)} · on Hibi</small>`:""}</span>`:`<b>${ico} ${esc(g.title)}${lBadge(g)}</b><span>${g.date?fd(g.date):""}</span>`}</button>`
       :`<a class="${cls}" href="${esc(g.url)}" target="_blank" rel="noopener">${cls==="ch-gl"?`<span aria-hidden="true">${ico}</span><span><b>${esc(g.title)}</b>${g.date?`<small>${fd(g.date)}</small>`:""}</span>`:`<b>${ico} ${esc(g.title)}</b><span>${g.date?fd(g.date):""}</span>`}</a>`;
     const gRow=(list,ico)=>list.slice(0,1).map(g=>gItem(g,ico,"ch-gl")).join("");  /* just the newest one here; the tab below has them all */
-    const guideBox=gAll.length?`<div class="ch-gbox ch-tint ch-a"><div class="ch-gcols">
-      ${gStudy.length?`<div><button type="button" class="ch-k ch-khead" data-ctgo="guides" title="See all your study guides">📄 ${gStudy.length>1?"Latest study guide":"Study guide"} <span>${gStudy.length>1?`· all ${gStudy.length} →`:"→"}</span></button><div class="ch-glist">${gRow(gStudy,"📄")}</div></div>`:""}
-      ${gRecap.length?`<div><button type="button" class="ch-k ch-khead" data-ctgo="recaps" title="See all your class recaps">📼 ${gRecap.length>1?"Latest class recap":"Class recap"} <span>${gRecap.length>1?`· all ${gRecap.length} →`:"→"}</span></button><div class="ch-glist">${gRow(gRecap,"📼")}</div></div>`:""}
+    const RECENT=g=>!!g.date&&Date.now()-Date.parse(g.date+"T12:00")<30*864e5, gS2=gStudy.filter(RECENT), gR2=gRecap.filter(RECENT);
+    const guideBox=gS2.length||gR2.length?`<div class="ch-gbox ch-tint ch-p"><div class="ch-gcols">
+      ${gS2.length?`<div><button type="button" class="ch-k ch-khead" data-ctgo="guides" title="See all your study guides">📄 ${gStudy.length>1?"Latest study guide":"Study guide"} <span>${gStudy.length>1?`· all ${gStudy.length} →`:"→"}</span></button><div class="ch-glist">${gRow(gS2,"📄")}</div></div>`:""}
+      ${gR2.length?`<div><button type="button" class="ch-k ch-khead" data-ctgo="recaps" title="See all your class recaps">📼 ${gRecap.length>1?"Latest class recap":"Class recap"} <span>${gRecap.length>1?`· all ${gRecap.length} →`:"→"}</span></button><div class="ch-glist">${gRow(gR2,"📼")}</div></div>`:""}
       </div></div>`:"";
     const res=v.resources||[];
     /* their class recordings (Zoom deletes them after a while) and their Drive folder */
     const zr=(v.zrecs||[]).slice().sort((a,b)=>b.date.localeCompare(a.date)), tdy=new Date().toISOString().slice(0,10);
     const dLeft=u=>u?Math.round((Date.parse(u+"T12:00")-Date.parse(tdy+"T12:00"))/864e5):999;
     const zrRow=r=>{ const n=dLeft(r.until), warn=n<=14; return `<a class="ch-resb ch-zr" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">🎥</span><span><b>${fd(r.date)}${r.min?` · ${r.min} min`:""}</b><small class="${warn?"zr-warn":""}">${r.until?(n<=0?"Deleted today":warn?`⚠️ Deleted in ${n} ${n===1?"day":"days"} (${fs(r.until)})`:`Available until ${fs(r.until)}`):""}</small></span></a>`; };
-    const zBox=zr.length||v.folder?`<div class="ch-res ch-tint ch-s" id="chZrecs"><div class="ch-k">🎥 Your class recordings</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">${zr.length?"Watch our classes again. Zoom deletes each recording after a while, so the date shows how long it stays.":"Recordings of our classes will show up here."}</p>${zr.length?`<div class="ch-resl">${zr.map(zrRow).join("")}</div>`:""}${v.folder?`<p style="margin:10px 0 0"><a class="ch-go" href="https://drive.google.com/drive/folders/${esc(v.folder)}" target="_blank" rel="noopener">📁 Your Drive folder ↗</a></p>`:""}</div>`:"";
-    const resBox=res.length?`<div class="ch-res ch-tint ch-a"><div class="ch-k">🧰 Class resources</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">The websites we use in class. Tap one to open it.</p><div class="ch-resl">${res.map(r=>`<a class="ch-resb" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">${r.ico}</span><span><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span></a>`).join("")}</div></div>`:"";
+    const zBox=zr.length?`<div class="ch-res ch-tint ch-v" id="chZrecs"><div class="ch-k">🎥 Your class recordings</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">${zr.length?"Watch our classes again. Zoom deletes each recording after a while, so the date shows how long it stays.":"Recordings of our classes will show up here."}</p>${zr.length?`<div class="ch-resl">${zr.map(zrRow).join("")}</div>`:""}</div>`:"";
+    const resBox=res.length||v.folder?`<div class="ch-res ch-tint ch-n"><div class="ch-k">🧰 Class resources</div><p class="muted" style="margin:2px 0 8px;font-size:13.5px">${res.length?"The websites we use in class, and your own folder. Tap one to open it.":"Your own folder with Noa."}</p><div class="ch-resl">${v.folder?`<a class="ch-resb" href="https://drive.google.com/drive/folders/${esc(v.folder)}" target="_blank" rel="noopener"><span class="i">📁</span><span><b>Your Drive folder</b><small>Files and materials from your classes</small></span></a>`:""}${res.map(r=>`<a class="ch-resb" href="${esc(r.url)}" target="_blank" rel="noopener"><span class="i">${r.ico}</span><span><b>${esc(r.name)}</b><small>${esc(r.note)}</small></span></a>`).join("")}</div></div>`:"";
     let body="";
     const pc=id=>((v.packs||[]).find(p=>p.id===id)||{}).color||"";
     if(tab==="classes"){
@@ -3096,7 +3104,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
     const mapBox=v.map?`<button type="button" class="em-card ch-s" data-openmap="1"><span class="em-ci" aria-hidden="true">🗺️</span><span><b>Your English Map</b><small>Your level, your superpower, 3 focus areas and the route to ${esc((v.map.goal||"your goal").replace(/\.$/,""))}</small></span><span class="em-cgo" aria-hidden="true">→</span></button>`:"";
-    box.innerHTML=newsBox+top+mapBox+recapBox+zBox+tipsBox+guideBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    box.innerHTML=newsBox+top+mapBox+recapBox+tipsBox+guideBox+zBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
     const one=e.target.closest("[data-rcw]"), all=e.target.closest("[data-rcall]"); if(!one&&!all) return;
@@ -9783,6 +9791,7 @@ const CHANGELOG=[
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
     ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
     ["📸","Photos in messages","tap a photo to see it big, with a <b>⬇ Download</b> button. GIFs in messages play now too."],
+    ["🎓","My coaching, tidier","your next class now shows how much is left in your pack, your last class has the <b>Save all</b> button right next to its new words, and each box has its own color so it's easier to find things.","coaching"],
     ["☁️","Your progress always follows you","everything you do on Hibi (practice, flashcards, class recap exercises, recordings you've watched…) is saved to your account as you go. Switch devices, close the tab or reload: it's all still there."],
     ["🐾","Your buddy has more to say","every pet now has two sounds, and you'll hear one every time you pet or feed them (if buddy sounds are on)."]
   ]},
@@ -10037,7 +10046,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112125002"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112125317"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
