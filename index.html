@@ -930,6 +930,9 @@ span.cs-av{display:grid!important;place-items:center!important;flex-direction:ro
 .cs-lb .cs-lbdl{all:unset;position:fixed;top:14px;right:64px;height:40px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.18);color:#fff;font:700 14.5px var(--body,inherit);display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 .cs-lb .cs-lbdl:hover,.cs-lb .cs-lbdl:focus-visible{background:rgba(255,255,255,.3)}
 
+/* step92: an older rule ("all:unset") was undoing the GIF box, so each GIF filled the screen */
+.cs-gg .cs-gi{position:relative!important;display:block!important;height:100%!important;aspect-ratio:auto!important}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4033,7 +4036,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     el.innerHTML=h; el.hidden=!h; }
   document.addEventListener("click",e=>{ if(e.target.closest("[data-bdno]")){ LSS("cs-bd-ask-"+(me()||"g"),true); const p=e.target.closest(".cl-bask"); if(p) p.remove(); return; }
     if(e.target.closest("[data-bdadd]")){ openProfile(me()).then(()=>{ const b=document.querySelector(".cl-prof-ov [data-pedit]"); if(b){ b.click(); setTimeout(()=>document.querySelector(".cl-prof-ov [data-pf-bm]")?.scrollIntoView({block:"center",behavior:"smooth"}),60); } }); } });
-  async function saveMe(patch){ if(G()||!me()) return;
+  let SAVEQ=Promise.resolve();
+  function saveMe(patch){ const run=()=>saveMe0(patch); const r=SAVEQ.then(run,run); SAVEQ=r.catch(()=>{}); return r; }  /* one save at a time: each one starts from the result of the one before */
+  async function saveMe0(patch){ if(G()||!me()) return;
     const d0=await api("GET","/clubProfiles/"+me()); const cur=d0&&d0.fields?fromDoc(d0):{}; /* api throws on any error except "not found", so a failed read never overwrites the saved profile */
     const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||"",pk:cur.pk||"",pbg:cur.pbg||"",job:cur.job||"",bd:cur.bd||"",by:cur.by||"",bdset:cur.bdset||0};
     Object.assign(data,patch||{});
@@ -4127,7 +4132,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       ${mine?`<p class="cl-prof-tip">${L("Each new badge gives your buddy 5 treats 🍪","Cada insignia nueva le da 5 galletas a tu buddy 🍪")}</p>`:""}</div>`;
     document.body.appendChild(o); o.querySelector(".cl-prof-x").focus();
     o.addEventListener("click",async e=>{ if(e.target===o||e.target.closest("[data-pclose]")){ o.remove(); return; }
-      if(e.target.closest("[data-pedit]")){ const box=o.querySelector("[data-pabout]"), cur=profOf(me())||{}; e.target.closest("[data-pedit]").hidden=true;
+      if(e.target.closest("[data-pedit]")){ const box=o.querySelector("[data-pabout]"); e.target.closest("[data-pedit]").hidden=true;
+        let cur=profOf(me())||{}; try{ await SAVEQ; const d0=await api("GET","/clubProfiles/"+me()); if(d0&&d0.fields) cur=fromDoc(d0); }catch(er){}
         const gn=window.__csGoogleName?window.__csGoogleName():"", nmNow=F().name()||"", ys=new Date().getFullYear();
         box.innerHTML=`<label class="cl-pf">${L("My name","Mi nombre")}<input type="text" data-pf-name maxlength="40" value="${esc(nmNow)}" autocomplete="off">${gn&&gn!==nmNow?`<small class="cl-pfh">${L("Your Google name:","Tu nombre de Google:")} ${esc(gn)} · <button type="button" class="foot-link" data-pf-gn>${L("Use it","Usarlo")}</button></small>`:`<small class="cl-pfh">${L("How everyone sees you on Hibi. For example, just your first name.","Cómo te ven todos en Hibi. Por ejemplo, solo tu primer nombre.")}</small>`}</label>
           <label class="cl-pf">${L("My title","Mi título")} <small>(${L("optional","opcional")})</small><input type="text" data-pf-job maxlength="50" value="${esc(cur.job||"")}" placeholder="${L("e.g. Nurse, Gamer, Coffee lover, Student","ej. Enfermera, Gamer, Amante del café, Estudiante")}"></label>
@@ -4455,7 +4461,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function dmPlace(o){ try{ const bt=window.__nmAnchor?window.__nmAnchor():document.getElementById("dmTopBtn"), r=bt&&bt.offsetParent!==null?bt.getBoundingClientRect():null;
       o.style.setProperty("--dmtop",Math.round(r&&r.bottom>0?r.bottom+(bt&&bt.id==="dmTopBtn"?8:10):64)+"px"); o.style.setProperty("--dmright",Math.round(r?Math.max(8,innerWidth-r.right-(bt&&bt.id==="dmTopBtn"?60:0)):12)+"px"); }catch(e){} }
   const DMALIAS=new Map();  /* every name we've seen for a person (club profile, roster, old posts), so the search finds them by any of them */
-  async function openInbox(){ if(!PROFS) loadProfs().then(()=>{ const i=document.getElementById("dmFind"); if(i&&i.value.trim()) i.dispatchEvent(new Event("input",{bubbles:true})); }).catch(()=>{}); const o=dmPanel(), b=o.querySelector(".cl-dmb"); dmPlace(o); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
+  async function openInbox(){ loadProfs(true).then(()=>{ const i=document.getElementById("dmFind"); if(i&&i.value.trim()) i.dispatchEvent(new Event("input",{bubbles:true})); }).catch(()=>{}); const o=dmPanel(), b=o.querySelector(".cl-dmb"); dmPlace(o); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
     b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{}),loadNotes().catch(()=>{})]);
     const ts=THREADS||[];
     b.innerHTML=`<div class="cl-dmnew"><label class="sr" for="dmFind">${L("New message to…","Nuevo mensaje para…")}</label><input id="dmFind" type="search" autocomplete="off" placeholder="✏️ ${L("New message: type a name…","Nuevo mensaje: escribe un nombre…")}"><ul class="cl-dmfind" hidden></ul></div>`+dmSugHTML()+(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(profOf(u)||{}).name||(t.names||{})[u]||L("Member","Miembro");
@@ -9893,7 +9899,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112091447"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112092847"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -9922,7 +9928,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
   const tabs=cur=>`<div class="nm-tabs" role="tablist" aria-label="Notifications and messages"><button type="button" role="tab" data-nm="n" aria-selected="${cur==="n"}">🔔 Notifications</button><button type="button" role="tab" data-nm="m" aria-selected="${cur==="m"}">${mLabel(dmCount())}</button></div>`;
   function openNotif(){ const b=bell(); if(!b) return; if(b.k==="c"){ const pn=document.getElementById("clBellPanel"); if(pn&&pn.hidden) b.btn.click(); } else if(!document.querySelector("#tNotif .tn-box")) b.btn.click(); }
   function closeNotif(){ const b=bell(); if(!b) return; if(b.k==="c"){ const pn=document.getElementById("clBellPanel"); if(pn&&!pn.hidden) b.btn.click(); } else { const x=document.querySelector('#tNotif [data-tn="hide"]'); if(x) x.click(); } }
-  document.addEventListener("click",e=>{ if(e.target.closest("[data-nmx]")){ e.preventDefault(); e.stopPropagation(); closeNotif(); const b=bell(); if(b) b.btn.focus(); return; } },true);
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-nmclose]")){ e.preventDefault(); e.stopPropagation(); closeNotif(); const b=bell(); if(b) b.btn.focus(); return; } },true);
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-nm]"); if(!t) return; e.preventDefault(); e.stopPropagation();
     if(t.getAttribute("aria-selected")==="true") return;
     try{ localStorage.setItem("cs-nmtab",t.dataset.nm); }catch(er){}
@@ -9941,7 +9947,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
   let q=0;
   function decorate(){ q=0;
     const b=bell(), want=hasDM()&&!!b; if(on()!==want) document.documentElement.classList.toggle("nm-on",want); if(!want) return;
-    const ch=document.querySelector("#clBellPanel .clb-h"); if(ch&&!ch.querySelector(".nm-tabs")) ch.innerHTML=tabs("n")+'<button type="button" class="nm-x" data-nmx="1" aria-label="Close">×</button>';
+    const ch=document.querySelector("#clBellPanel .clb-h"); if(ch&&!ch.querySelector(".nm-tabs")) ch.innerHTML=tabs("n")+'<button type="button" class="nm-x" data-nmclose="1" aria-label="Close">×</button>';
     const th=document.querySelector("#tNotif .tn-h"); if(th&&!th.querySelector(".nm-tabs")){ const t=th.querySelector(":scope > b"); if(t) t.outerHTML=tabs("n"); }
     const dh=document.querySelector("#clDm .cl-dmh"); if(dh){ const bk=dh.querySelector(".cl-dmback"), inbox=!bk||bk.hidden, tb=dh.querySelector(".nm-tabs");
       if(inbox&&!tb) dh.insertAdjacentHTML("afterbegin",tabs("m")); else if(!inbox&&tb) tb.remove(); if(dh.classList.contains("nm-hasTabs")!==inbox) dh.classList.toggle("nm-hasTabs",inbox); }
