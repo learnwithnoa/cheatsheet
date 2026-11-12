@@ -969,6 +969,18 @@ select:not([multiple]):not([size]){-webkit-appearance:none;-moz-appearance:none;
 .cn-card .wbtns button[data-cnwords]{color:var(--royal)}
 .cn-card .wbtns .cn-delb:hover{border-color:#E5533D;background:color-mix(in srgb,#E5533D 12%,var(--surface));color:#E5533D}
 
+/* step98 */
+@media (max-width:900px){
+  nav.side .nfg>h4{display:flex!important;align-items:center;margin:0!important;padding:0!important;border:0!important;flex:none}
+  nav.side .nfg-h{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px;border-radius:999px;border:1.5px dashed color-mix(in srgb,var(--ng,var(--royal)) 60%,var(--line));background:color-mix(in srgb,var(--ng,var(--royal)) 10%,var(--surface));color:var(--ng,var(--ink));font:800 13px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+  nav.side .nfg-h:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
+  nav.side .nfg-h .nfg-n{display:inline!important;opacity:.75}
+  nav.side .nfg-h .nfg-c{display:inline-block;transition:transform .15s}
+  nav.side .nfg.folded .nfg-h .nfg-c{transform:rotate(-90deg)}
+  nav.side .nfg:not(.folded) .nfg-h{border-style:solid}
+  nav.side .nfg.folded .navbtn:not([aria-current="true"]){display:none!important}
+}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -9685,6 +9697,7 @@ const CHANGELOG=[
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
+    ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
     ["📸","Photos in messages","tap a photo to see it big, with a <b>⬇ Download</b> button. GIFs in messages play now too."],
     ["🐾","Your buddy has more to say","every pet now has two sounds, and you'll hear one every time you pet or feed them (if buddy sounds are on)."]
   ]},
@@ -9937,7 +9950,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112102626"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112103405"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
