@@ -884,6 +884,9 @@ html.nm-on .cl-dm-ov .cl-dm{pointer-events:auto;width:var(--nmw,min(360px,calc(1
 html.nm-on.nm-t .cl-dm-ov .cl-dm{width:min(480px,calc(100vw - 32px))}
 @media (max-width:700px){html.nm-on .cl-dm-ov{justify-content:stretch;padding:calc(env(safe-area-inset-top,0px) + 66px) max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))!important}html.nm-on .cl-dm-ov .cl-dm,html.nm-on.nm-t .cl-dm-ov .cl-dm{width:100%}}
 
+/* step87 */
+html.pt-on.cs-signed .top-in>#csWrap{display:none}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -9845,7 +9848,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112082129"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112082246"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -9859,7 +9862,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 })();
 </script>
 <script>try{var _h=JSON.parse(localStorage.getItem("cs-auth-hint")||"null");if(_h&&_h.t)document.documentElement.classList.add("t-hint");}catch(e){}
-(function(){var t0=Date.now();(function w(){var ok=document.getElementById("tmWrap")&&document.getElementById("csWrap")&&document.getElementById("csWrap").offsetWidth>0;if(ok||Date.now()-t0>1200){document.documentElement.classList.add("hdr-ok");return;}requestAnimationFrame(w);})();})();</script>
+(function(){var t0=Date.now();(function w(){var ok=document.getElementById("tmWrap")&&document.getElementById("csPanel");if(ok||Date.now()-t0>1200){document.documentElement.classList.add("hdr-ok");return;}requestAnimationFrame(w);})();})();</script>
 <script>
 /* step85: one 🔔 window, two tabs. Works with the club bell (members) and Noa's bell, and the 💬 Messages pop-up. */
 (function(){
