@@ -160,7 +160,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=25" defer></script>
+<script src="comfort.js?v=26" defer></script>
 <script src="tbar.js?v=2" defer></script>
 </head>
 <body>
@@ -724,7 +724,7 @@ function renderTrends() {
   const L = (c, n) => `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px"><i style="width:12px;height:4px;border-radius:2px;background:${c};display:inline-block"></i>${n}</span>`;
   $("trendBox").innerHTML = `<h2>📈 Trends <span class="muted small" style="font-weight:600">· last 12 months</span></h2>
     <div class="kpis" style="margin:6px 0 10px">
-      <div class="kpi tint k-violet"><div class="kl">Private students</div><div class="kv">${act}</div><div class="ks">active now · ${S.length} in the hub</div></div>
+      <div class="kpi tint k-violet"><div class="kl">Private students</div><div class="kv">${act}</div><div class="ks">active now · ${S.length} in your list</div></div>
       <div class="kpi tint k-amber"><div class="kl">Club members on Hibi</div><div class="kv">${clubOnly + both}</div><div class="ks">${clubOnly} club only · ${both} also private</div></div>
       <div class="kpi tint k-sky"><div class="kl">Hours this month</div><div class="kv">${hours[11]} h</div><div class="ks">last month ${hours[10]} h</div></div>
       <div class="kpi tint k-pink"><div class="kl">Standard vs priority</div><div class="kv">${std[11]} · ${pri[11]}</div><div class="ks">classes this month (standard · priority)</div></div>
@@ -935,7 +935,7 @@ function tInfo(s) {
     <div class="fld"><label for="f_emails">Other emails <span class="muted">(comma between them)</span></label><input id="f_emails" data-emails="1" value="${esc((s.emails || []).join(", "))}"></div>
     ${f("boleta", "Boleta reference no. (for the SII)")}${f("zoomKey", "Name in Zoom meetings")}${f("sheetId", "English Journey sheet ID")}${f("folderId", "Drive folder ID")}${info}</div>
     <p class="hint" style="margin-top:12px">Changes save automatically.</p>
-    <p style="margin-top:18px"><button type="button" class="ib del" data-act="delStu">Delete this student from the hub</button></p>`;
+    <p style="margin-top:18px"><button type="button" class="ib del" data-act="delStu">Delete this student</button></p>`;
 }
 let wEdit = null;
 function wordRows(s) {
@@ -1205,7 +1205,7 @@ $("impFile").onchange = async e => {
   const list = Array.isArray(data) ? data : data.students; if (!Array.isArray(list)) { toast("That file isn't a hub file"); return; }
   const clash = list.filter(x => S.some(s => s.id === x.id)).length;
   const m = $("modal"); m.hidden = false;
-  m.innerHTML = `<div class="card"><h2 style="margin-top:0">Import ${list.length} students?</h2><p>${clash ? `${clash} of them are already in the hub. Importing replaces them with the version in the file.` : "None of them are in the hub yet."}</p><div class="row" style="justify-content:flex-end"><button type="button" id="mClose">Cancel</button><button type="button" class="primary" id="mGo">Import</button></div></div>`;
+  m.innerHTML = `<div class="card"><h2 style="margin-top:0">Import ${list.length} students?</h2><p>${clash ? `${clash} of them are already in your list. Importing replaces them with the version in the file.` : "None of them are in your list yet."}</p><div class="row" style="justify-content:flex-end"><button type="button" id="mClose">Cancel</button><button type="button" class="primary" id="mGo">Import</button></div></div>`;
   $("mClose").onclick = () => m.hidden = true;
   $("mGo").onclick = async () => {
     $("mGo").disabled = true; $("mGo").textContent = "Importing…";

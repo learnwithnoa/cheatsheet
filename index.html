@@ -43,7 +43,7 @@
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=25" defer></script>
+<script src="comfort.js?v=26" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -987,6 +987,15 @@ select:not([multiple]):not([size]){-webkit-appearance:none;-moz-appearance:none;
 .cl-dmwho:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 .cl-dmwho:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
 .cl-dmwho span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* step100: sweep */
+.when-out{display:none!important}
+#v-backup,[data-go="backup"]{display:none!important}
+@media (min-width:701px){#musicPanel,#tmPanel{width:min(380px,calc(100vw - 32px))!important}}
+@media (min-width:701px){html body form.qa.qa{top:calc(env(safe-area-inset-top,0px) + var(--hdr-h,61px) + var(--va-h,0px) - 2px)!important}}
+.cs-dlg:focus{outline:none}
+@media (max-width:560px){.vhead{flex-direction:column;gap:4px}.vhead .cs-read-row{max-width:none;justify-content:flex-start}}
+.cl-older{display:block;margin:6px auto 24px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -2415,7 +2424,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   <div class="top-in">
     <a class="brand" href="./" data-go="notes" aria-label="Hibi, go to Home"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b><small class="brand-tag">day by day</small></i></a>
     <div class="search" id="searchWrap" role="search">
-      <label for="gSearch" class="sr">Search the cheat sheet</label>
+      <label for="gSearch" class="sr">Search Hibi</label>
       <span class="search-ico" aria-hidden="true"></span>
       <input id="gSearch" type="search" placeholder="Search everything… (try “since” or “make”)" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="gResults" aria-autocomplete="list">
       <kbd class="search-kbd" aria-hidden="true">/</kbd>
@@ -2460,7 +2469,7 @@ html.cs-calm .cs-rxpal button{transition:none}
         <p class="auth-who" id="authWho"></p>
         <p class="auth-status" id="authStatus"></p>
         <div class="auth-stats" id="authStats"></div>
-        <p class="music-note">Your words, class notes, stars and flashcard progress save to your Google account automatically. Sign in with the same account on your phone or another computer to see them there.</p>
+
         <div id="authOutBox"><button class="swap" type="button" id="authOut">Sign out</button></div>
         <div class="confirm-bar" id="authOutConfirm" hidden><p><b>Sign out?</b> Your notes stay safe in your Google account. They'll be removed from this device until you sign in again.</p><div class="note-actions"><button class="pill-btn" type="button" id="authOutYes">Sign out</button><button class="swap" type="button" id="authOutNo">Cancel</button></div></div>
       </div>
@@ -2590,12 +2599,12 @@ html.cs-calm .cs-rxpal button{transition:none}
       <div class="tw-m" id="twMean"></div>
       <div class="tw-ex" id="twEx"></div>
       <div class="tw-watch" id="twWatch" hidden></div>
-      <div class="note-actions"><button class="pill-btn pill-green" type="button" id="twSave">+ Save to my words</button></div>
+      <div class="note-actions"><button class="pill-btn pill-green" type="button" id="twSave">+ Save to My words</button></div>
     </div>
     <div class="card today-thought">
       <span class="tag td-tag2">Thought for today</span>
       <p class="tt" id="ttText"></p>
-      <div class="tt-row"><button class="tt-love" type="button" id="ttLove" aria-pressed="false"><span class="tt-ico" aria-hidden="true">✨</span><span id="ttLoveTxt">Send love</span></button></div>
+      <div class="tt-row"><button class="tt-love" type="button" id="ttLove" aria-pressed="false"><span class="tt-ico" aria-hidden="true">💛</span><span id="ttLoveTxt">I like this</span></button></div>
     </div>
   </div>
   <div class="card rv-card" id="rvBox" hidden>
@@ -2628,13 +2637,13 @@ html.cs-calm .cs-rxpal button{transition:none}
   </div></div>
 
   <div id="slotAwHome"><div id="addWordBlock">
-  <h2>Add a word</h2>
+  <h2>Save a word</h2>
   <form id="noteForm" class="card note-form" autocomplete="off">
     <div class="field"><label for="nWord">English word / expression</label><input id="nWord" type="text" placeholder="e.g. figure out" spellcheck="false"></div>
     <div class="field"><label for="nMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="nMeaning" type="text" placeholder="Leave it empty and we’ll add it for you"></div>
     <div class="field wide"><label for="nExample">Example sentence <span class="opt">(optional)</span></label><input id="nExample" type="text" placeholder="e.g. I couldn't figure out the answer."></div>
     <div class="field wide"><label for="nNote">Notes <span class="opt">(optional)</span></label><input id="nNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
-    <div class="note-actions"><button class="pill-btn" type="submit">+ Add word</button><button class="swap" type="button" data-go="words" id="wAllBtn">All my words →</button><span class="count">Tip: press Enter to save</span></div>
+    <div class="note-actions"><button class="pill-btn" type="submit">+ Save word</button><button class="swap" type="button" data-go="words" id="wAllBtn">All my words →</button><span class="count">Tip: press Enter to save</span></div>
   </form>
   </div></div>
 
@@ -2764,7 +2773,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 <section class="view" id="v-notebook" hidden>
   <h1>My class <em>notes</em></h1>
   <div class="cn-tabs" role="tablist" aria-label="Class notes"><button type="button" role="tab" data-go="classnotes" aria-selected="false">✏️ My notes</button><button type="button" role="tab" data-go="notebook" aria-selected="true">📓 Weekly summaries</button></div>
-  <p class="lede">The same notes, grouped by week, with a short summary of each week: the main topics, corrections to remember and new expressions. Tap <b>+ save</b> to add an expression to your words. To write a new note, go to <b>✏️ My notes</b>.</p>
+  <p class="lede">The same notes, grouped by week, with a short summary of each week: the main topics, corrections to remember and new expressions. Tap <b>+ Save</b> to add an expression to your words. To write a new note, go to <b>✏️ My notes</b>.</p>
   <div class="note-actions" style="margin-bottom:12px"><button class="pill-btn" type="button" id="nbMonthBtn" hidden>✨ Summarize this month</button></div>
   <p class="muted" id="nbAiMsg" hidden style="font-size:14px">The summaries use AI, which is still loading or isn't available right now. Your notes are below.</p>
   <div id="nbMonth"></div>
@@ -2932,7 +2941,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   const today=()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
   function markSeen(v){ try{ localStorage.setItem(SEEN_K,JSON.stringify({d:today(),f:v&&v.focus?hsh(v.focus):0})); }catch(e){} }
   function nav(){
-    const v=window.__csHubView, b=document.getElementById("navCoaching"); if(b) b.hidden=!v;
+    const v=window.__csHubView, b=document.getElementById("navCoaching"); if(b) b.hidden=!v||(!!window.__csTeacher&&!window.__csPreview&&!window.__csViewAsMode);
     if(b&&v&&!window.__csPreview){ const n=newsFor(v).length; let dot=b.querySelector(".co-dot"); if(n){ if(!dot){ dot=document.createElement("span"); dot.className="co-dot"; b.appendChild(dot); } dot.textContent=n; dot.title=n+" new"; } else if(dot) dot.remove(); }
     const t=!!window.__csTeacher && !window.__csPreview; ["navTeacher","navHub","mnavTeacher","mnavHub"].forEach(id=>{ const e=document.getElementById(id); if(e) e.hidden=!t; });
         if(!v && location.hash.replace("#","")==="coaching" && window.csGo) window.csGo("notes");
@@ -3516,7 +3525,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 
 <section class="view" id="v-club" hidden>
   <h1>Noa's English <em>Club</em></h1>
-  <p class="lede">This week's classes, the community wall, your Zoom links and past weeks.</p>
+  <p class="lede">This week's classes and Zoom links, the community wall, recordings, the calendar and everyone in the club.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
 <script>
@@ -4610,7 +4619,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <div class="out placeholder" id="trOut" aria-live="polite">Your translation shows up here.</div>
       <p class="tr-note" id="trNote" hidden></p>
       <div class="tr-say" id="trSay" hidden><span class="tr-say-l">How to say it</span><span class="tr-say-p" id="trSayP"></span><button class="say" type="button" id="trSayBtn" aria-label="Listen">🔊</button></div>
-      <div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" id="trSave" type="button">+ Save to my words</button></div>
+      <div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" id="trSave" type="button">+ Save to My words</button></div>
     </div>
   </div>
   <div class="note dismissible">Tip: translate whole ideas, not word by word. And try saying it in English <i>first</i>, then check. That's how you actually get faster.</div>
@@ -5436,10 +5445,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 
   <div class="wl-step" data-step="3" hidden>
     <h2>Time to <em>practice</em> 🎯</h2>
-    <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find three parts:</p>
+    <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find four parts:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>present simple</b>, <b>past simple</b> and <b>present perfect</b>, in stages from easy to harder. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Vocabulary:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My words</b> to practice just those.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> 3 practice rounds a week. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
@@ -5475,8 +5484,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <ul class="wl-list">
       <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
       <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (your photo, top right): pick your photo (your Google one, your own, or your buddy), and jump to your words and your club profile. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (tap your photo, top right, then <b>⚙ Settings</b>): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music:</b> lo-fi, piano, rain or calm noise while you study.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (tap your photo, top right, then <b>⚙ Settings</b>): themes, bigger text, easier fonts, bionic reading, calm mode and more.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⏱</span><div><b>Study timer</b> (⏱ at the top): focus for 25 minutes, then take a short break.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music</b> (🎧 at the top): lo-fi, piano, rain or calm noise while you study.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
       <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Something missing?</b> Use “Tell Noa” at the bottom of any page.</div></li>
     </ul>
@@ -5654,7 +5664,7 @@ const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 function renderVerbs(){
   const q=norm(vs.value.trim());
   const rows=IRR.filter(r=>!q || r.some(c=>norm(c).includes(q)));
-  tbody.innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td><div class="rowbtns"><button class="rowbtn" type="button" data-v="'+r[0]+'">see tenses</button><button class="rowbtn save" type="button" data-save data-w="'+esc(r[0]+" · "+r[1]+" · "+r[2])+'" data-m="'+esc(r[3])+'" data-e="">+ save</button></div></td></tr>').join("");
+  tbody.innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td><div class="rowbtns"><button class="rowbtn" type="button" data-v="'+r[0]+'">see tenses</button><button class="rowbtn save" type="button" data-save data-w="'+esc(r[0]+" · "+r[1]+" · "+r[2])+'" data-m="'+esc(r[3])+'" data-e="">+ Save</button></div></td></tr>').join("");
   ve.hidden = rows.length>0;
   vc.textContent = q ? rows.length+" of "+IRR.length+" verbs" : IRR.length+" verbs";
 }
@@ -5826,7 +5836,7 @@ const PH=[
 ["take care of","cuidar; encargarse","I'll take care of it."],["take up","empezar (un hobby)","I took up yoga."],["throw away","botar","Don't throw that away!"],
 ["go on","continuar; pasar","What's going on? / Go on, I'm listening."],["bring up","mencionar (un tema); criar","Don't bring up politics."],["cheer up","animar(se)","Cheer up! It's Friday."]
 ];
-searchable("phSearch","phBody","phCount","phEmpty",PH,r=>'<tr><td><b>'+r[0]+'</b></td><td class="es">'+r[1]+'</td><td>'+r[2]+'</td><td><button class="rowbtn save" type="button" data-save data-w="'+esc(r[0])+'" data-m="'+esc(r[1])+'" data-e="'+esc(r[2])+'">+ save</button></td></tr>',"phrasal verbs");
+searchable("phSearch","phBody","phCount","phEmpty",PH,r=>'<tr><td><b>'+r[0]+'</b></td><td class="es">'+r[1]+'</td><td>'+r[2]+'</td><td><button class="rowbtn save" type="button" data-save data-w="'+esc(r[0])+'" data-m="'+esc(r[1])+'" data-e="'+esc(r[2])+'">+ Save</button></td></tr>',"phrasal verbs");
 
 /* ---------------- pronunciation ---------------- */
 const canSpeak = "speechSynthesis" in window && typeof SpeechSynthesisUtterance!=="undefined";
@@ -6102,7 +6112,7 @@ qa.addEventListener("submit",e=>{
 /* + save buttons in lists */
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-save]"); if(!b) return;
-  if(addWord(b.dataset.w,b.dataset.m,b.dataset.e)){ b.textContent="✓ saved"; b.classList.add("done"); }
+  if(addWord(b.dataset.w,b.dataset.m,b.dataset.e)){ b.textContent="✓ Saved"; b.classList.add("done"); }
 });
 
 /* save from translator */
@@ -6250,7 +6260,7 @@ document.getElementById("wSelGo").addEventListener("click",()=>{ wSel=false; ren
 (function(){
   const b=document.getElementById("ttLove"); if(!b) return;
   const day=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
-  const paint=()=>{ const on=LS.get("ncs-ttlove","")===day(); b.setAttribute("aria-pressed",String(on)); document.getElementById("ttLoveTxt").textContent=on?"Love sent":"Send love"; };
+  const paint=()=>{ const on=LS.get("ncs-ttlove","")===day(); b.setAttribute("aria-pressed",String(on)); document.getElementById("ttLoveTxt").textContent=on?"Liked":"I like this"; };
   paint();
   b.addEventListener("click",()=>{
     const first=LS.get("ncs-ttlove","")!==day();
@@ -6415,7 +6425,7 @@ fcShuffle();
         const t=line.replace(/^[-*•]\s+/,"");
         if(!inList){ html+="<ul>"; inList=true; }
         let extra="";
-        if(/words|expressions/i.test(sec)){ const m=t.split(/\s+[—–-]\s+/); if(m.length>=2&&m[0].length<60){ const w=m[0].replace(/\*\*/g,"").replace(/^["“]|["”]$/g,"").trim(), mean=m.slice(1).join(" - ").replace(/\*\*/g,"").trim(); extra=' <button class="nb-add" type="button" data-w="'+esc(w)+'" data-m="'+esc(mean)+'">+ save</button>'; } }
+        if(/words|expressions/i.test(sec)){ const m=t.split(/\s+[—–-]\s+/); if(m.length>=2&&m[0].length<60){ const w=m[0].replace(/\*\*/g,"").replace(/^["“]|["”]$/g,"").trim(), mean=m.slice(1).join(" - ").replace(/\*\*/g,"").trim(); extra=' <button class="nb-add" type="button" data-w="'+esc(w)+'" data-m="'+esc(mean)+'">+ Save</button>'; } }
         if(/correction/i.test(sec)){ const pp=ppStage(t); const st=pp?0:psStage(t); if(pp) extra+=' <button class="nb-prac" type="button" data-psgo="'+pp+'" data-psmod="pp" title="Practice the present perfect">Practice this →</button>'; else if(st) extra+=' <button class="nb-prac" type="button" data-psgo="'+st+'" title="Practice the past simple">Practice this →</button>'; }
         html+="<li>"+inline(t)+extra+"</li>"; return;
       }
@@ -6466,7 +6476,7 @@ fcShuffle();
   monthBtn.addEventListener("click",()=>{ const l=monthList(); if(!l.length){ errs["m-30"]="You don't have any class notes from the last 30 days yet."; paint(); return; } summarize("m-30","the last 30 days",l,false); });
   document.getElementById("v-notebook").addEventListener("click",e=>{
     const b=e.target.closest("[data-nbsum]"); if(b){ const k=b.dataset.nbsum, g=G.find(x=>"w-"+x.key===k); if(g) summarize(k,"the week of "+rangeTxt(g.start),g.list,false); return; }
-    const a=e.target.closest(".nb-add"); if(a){ if(addWord(a.dataset.w,a.dataset.m)){ a.textContent="✓ saved"; a.disabled=true; } return; }
+    const a=e.target.closest(".nb-add"); if(a){ if(addWord(a.dataset.w,a.dataset.m)){ a.textContent="✓ Saved"; a.disabled=true; } return; }
     if(e.target.closest("#nbMonthClose")){ const mk="m-30"; delete sums[mk]; LS.set("ncs-nbsum",sums); paint(); }
   });
   function onOpen(){
@@ -6540,7 +6550,7 @@ function csDialog(html,opts){
   bd.addEventListener("click",close); d.querySelector(".cs-dlg-x").addEventListener("click",close);
   d.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); close(); } });
   document.body.append(bd,d);
-  setTimeout(()=>{ const f=d.querySelector("[data-autofocus]")||d.querySelector("button:not(.cs-dlg-x)")||d.querySelector(".cs-dlg-x"); if(f) f.focus(); },30);
+  setTimeout(()=>{ const f=d.querySelector("[data-autofocus]")||d.querySelector("button:not(.cs-dlg-x)"); if(f) f.focus(); else { d.tabIndex=-1; d.focus({preventScroll:true}); } },30);
   return {el:d,close};
 }
 window.csDialog=csDialog; /* buddy.js (duels) uses it too */
@@ -8033,6 +8043,7 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
+  window.__csModInfo=()=>Object.values(MODS).map(md=>[md.id,md.stages.length]);
   const ITEM={}; Object.values(MODS).forEach(md=>md.stages.forEach(st=>st.items.forEach(q=>{ q.mod=md.id; ITEM[q.id]=q; }))); VOC_SETS.forEach(v=>v.qs.forEach(q=>ITEM[q.id]=q));
   const VSET={}; VOC_SETS.forEach(v=>VSET[v.id]=v);
   const vprog=()=>{ const v=LS.get("ncs-vocab",{}); return v&&typeof v==="object"?v:{}; };
@@ -8300,7 +8311,7 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
     const ws=(LS.get("ncs-words",[])||[]).filter(w=>w&&w.w), ns=(LS.get("ncs-classnotes",[])||[]).filter(n=>n&&n.text);
     const fc=LS.get("ncs-fc",{})||{}, learned=Object.values(fc).filter(v=>v>=3).length;
     const bd=LS.get("ncs-buddy",{})||{}, days=Array.isArray(bd.gd)?bd.gd.length:0;
-    const mods=LS.get("ncs-mods",{})||{}, ps=mods.ps||{}, st=["ps","pp"].reduce((t,k)=>t+Object.values((mods[k]||{}).s||{}).reduce((a,b)=>a+(b|0),0),0), outs=["ps","pp"].filter(k=>mods[k]&&mods[k].to&&mods[k].to.sc>=15).length;
+    const mods=LS.get("ncs-mods",{})||{}, ps=mods.ps||{}, MI=window.__csModInfo?window.__csModInfo():[["ps",7],["pp",7]], MK=MI.map(x=>x[0]), STT=MI.reduce((t,x)=>t+x[1]*3,0), st=MK.reduce((t,k)=>t+Object.values((mods[k]||{}).s||{}).reduce((a,b)=>a+(b|0),0),0), outs=MK.filter(k=>mods[k]&&mods[k].to&&mods[k].to.sc>=15).length;
     const pt=LS.get("ncs-ptime",null)||{s:0,since:Date.now()};
     const times=[...ws.map(w=>w.t),...ns.map(n=>n.t),LS.get("ncs-joined",0),pt.since].filter(t=>t>1e12);
     const joined=times.length?Math.min(...times):Date.now();
@@ -8311,10 +8322,10 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
       row("📅","Here since",fmtD(joined))+
       row("⏱️","Practice time","≈ "+fmtT(pt.s|0)+'<small>since '+fmtD(pt.since)+'</small>')+
       row("🌱","Study days",days)+
-      row("📚","Words saved",ws.length)+
+
       row("✅","Words learned",learned)+
       row("📝","Class notes",ns.length)+
-      row("🧩","Grammar stars",st+" / 42 ★"+(outs?" 🎓":""))+
+      row("🧩","Grammar stars",st+" / "+STT+" ★"+(outs?" 🎓":""))+
       buddy+
       '<div class="note-actions" style="margin-top:8px"><button class="swap" type="button" data-recap="now">📸 My monthly recap</button></div>';
   }
@@ -8923,7 +8934,7 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
   }
   addHints();
   /* beginner mode: each page's description in Spanish (the English one hides) */
-  const LEDE_ES={"club": "Las clases de esta semana, tus links de Zoom y las semanas anteriores. Solo los miembros del club ven esta página.", "tenses": "Escribe cualquier verbo y elige un sujeto. Los 12 tiempos se actualizan solos, en afirmativo (+), negativo (−) y pregunta (?).", "verbs": "Busca en inglés o en español. Toca <span class=\"mono\">see tenses</span> para ver un verbo en los 12 tiempos.", "notes": "Tu palabra del día, tus apuntes de clase y tus palabras nuevas, todo en un solo lugar.", "feedback": "¿Falta algo, algo es confuso o no funciona? Cuéntame. Leo todos los mensajes y los uso para mejorar esta página. Escribirlo en inglés es buena práctica, pero en español también está bien.", "words": "Todas las palabras que guardas, las más nuevas primero. Practícalas con tarjetas o agrega una lista que ya tengas.", "classnotes": "Escribe aquí o en tu página de inicio los apuntes de hoy. Cada nota que guardas aparece abajo, la más nueva primero.", "notebook": "Tus mismos apuntes, agrupados por semana, con un resumen corto de cada semana: los temas, las correcciones para recordar y las expresiones nuevas. Toca <b>+ save</b> para agregar una expresión a tus palabras.", "park": "Las mascotas de estudio de todos, juntas. Toca una para ver de quién es y mandarle cariño: gana <b>+2 de amistad</b> (una vez al día por mascota). Usa <b>− / +</b> para alejar o acercar.", "coaching": "Tus clases privadas con Noa: tu próxima clase, la tarea, tus metas, guías y tu pack. Noa lo actualiza después de cada clase.", "translate": "Escribe una palabra o frase en español <i>o</i> en inglés y toca <b>Translate here</b>. Reconoce el idioma solo y te muestra cómo se pronuncia el inglés. También puedes abrirlo en Google Translate o DeepL.", "mistakes": "Los errores más comunes de quienes hablan español, y cómo corregirlos. Todos los cometemos, así que tranquilo: solo intenta darte cuenta.", "place": "Para lugares, piensa en <b>in</b> como dentro de un espacio, <b>on</b> como sobre una superficie o una línea, y <b>at</b> como un punto en el mapa. Para movimiento, la preposición muestra la dirección.", "usedto": "Se ven casi iguales, pero significan tres cosas distintas. El truco: después de <b>be used to</b> y <b>get used to</b> va un sustantivo o un verbo + -ing.", "passive": "Usa la voz pasiva cuando la acción importa más que quién la hizo, o cuando no sabes quién fue. <b>Estructura: be + participio.</b> Solo el verbo <i>be</i> cambia de tiempo.", "reported": "Cómo contarle a alguien lo que dijo otra persona. Normalmente el verbo da un paso atrás en el pasado.", "backup": "¿No has iniciado sesión? Tus palabras, apuntes y secciones favoritas viven solo en este navegador. Usa esta página para guardar una copia o pasar todo a otro computador, navegador o a tu teléfono. O simplemente inicia sesión con Google y todo se sincroniza solo.", "changelog": "Todo lo que se ha agregado a Hibi, lo más nuevo primero.", "be": "Un verbo con dos significados en español: <b>ser</b> y <b>estar</b>. Se usa para identidad, sentimientos, lugar, edad y descripciones.", "modals": "Modal + verbo base. Sin <b>to</b>, sin <b>-s</b>, sin <b>-ed</b>: <span class=\"ok\">she can swim</span> · <span class=\"no\">she cans swim</span> · <span class=\"no\">she can to swim</span>", "domake": "Los dos significan <b>hacer</b>. La regla rápida: <b>do</b> es para actividades y tareas; <b>make</b> es para crear o producir algo. Después hay combinaciones que simplemente se aprenden.", "time": "Piénsalo de grande a pequeño. <b>In</b> para periodos largos, <b>on</b> para días, <b>at</b> para momentos exactos.", "tofor": "Los dos pueden ser <b>para</b> o <b>a</b> en español, por eso confunden. Aquí ves cuándo se usa cada uno.", "pronouns": "Lee cada fila de izquierda a derecha: la misma persona, con distinta función en la oración.", "quantity": "Primero pregúntate: ¿se puede contar? <i>One apple, two apples</i> = contable. <i>Water, information, advice, money</i> = incontable (siempre en singular).", "frequency": "¿Con qué frecuencia lo haces?", "conversation": "Una conversación no es una entrevista de trabajo. Responde, agrega algo más y haz una pregunta de vuelta. Conectar es más importante que responder perfecto.", "linking": "Los conectores que de verdad vas a usar, agrupados por lo que hacen. Empieza con los dos primeros de cada grupo.", "false": "Parecen palabras en español, pero no lo son.", "basics": "El inglés es estricto con el orden de las palabras. En español puedes moverlas; en inglés casi no.", "summary": "Úsalo cuando me cuentes del podcast, video o historia que escuchaste o leíste. Sigue este orden y no te vas a perder.", "stuck": "No te cambies al español. Usa una de estas frases y sigue. Quedarse pegado es normal; lo importante es salir en inglés.", "opinions": "Formas de decir lo que piensas, estar de acuerdo y no estarlo, sin sonar mal educado.", "conditionals": "Elige un ejemplo o escribe el tuyo. Los cuatro condicionales se actualizan abajo para que los compares lado a lado.", "perfect": "La pregunta clave: <b>¿digo (o sé) cuándo pasó?</b> Si la respuesta es sí, past simple. Si hablas de tu vida hasta ahora, present perfect.", "gerund": "Cuando un verbo va después de otro, el segundo toma una de dos formas: el <b>gerundio</b> (verbo + -ing) o el <b>infinitivo</b> (to + verbo). Depende del primer verbo.", "phrasal": "Verbo + una palabrita = un significado nuevo. Estos son los que vas a escuchar todos los días. Busca en inglés o en español.", "compare": "Comparativo = comparar dos cosas (<i>bigger than</i>). Superlativo = el que más de un grupo (<i>the biggest</i>).", "pronunciation": "Palabras que confunden a casi todos. Toca 🔊 para escucharlas. La parte en <b>negrita</b> es la sílaba acentuada.", "numbers": "El inglés usa el punto y la coma al revés que en Chile. Esto confunde a mucha gente en reuniones.", "email": "Frases listas para copiar y pegar en el trabajo. Neutras y profesionales, sin sonar rígidas.", "interview": "Las preguntas que casi siempre te van a hacer, cómo empezar tus respuestas y frases para ganar unos segundos para pensar.", "quiz": "Elige qué quieres practicar hoy. Cada ronda que terminas ayuda a tu mascota y a tu meta de la semana."};
+  const LEDE_ES={"club": "Las clases de esta semana, tus links de Zoom y las semanas anteriores. Solo los miembros del club ven esta página.", "tenses": "Escribe cualquier verbo y elige un sujeto. Los 12 tiempos se actualizan solos, en afirmativo (+), negativo (−) y pregunta (?).", "verbs": "Busca en inglés o en español. Toca <span class=\"mono\">see tenses</span> para ver un verbo en los 12 tiempos.", "notes": "Tu palabra del día, tus apuntes de clase y tus palabras nuevas, todo en un solo lugar.", "feedback": "¿Falta algo, algo es confuso o no funciona? Cuéntame. Leo todos los mensajes y los uso para mejorar esta página. Escribirlo en inglés es buena práctica, pero en español también está bien.", "words": "Todas las palabras que guardas, las más nuevas primero. Practícalas con tarjetas o agrega una lista que ya tengas.", "classnotes": "Escribe aquí o en tu página de inicio los apuntes de hoy. Cada nota que guardas aparece abajo, la más nueva primero.", "notebook": "Tus mismos apuntes, agrupados por semana, con un resumen corto de cada semana: los temas, las correcciones para recordar y las expresiones nuevas. Toca <b>+ Save</b> para agregar una expresión a tus palabras.", "park": "Las mascotas de estudio de todos, juntas. Toca una para ver de quién es y mandarle cariño: gana <b>+2 de amistad</b> (una vez al día por mascota). Usa <b>− / +</b> para alejar o acercar.", "coaching": "Tus clases privadas con Noa: tu próxima clase, la tarea, tus metas, guías y tu pack. Noa lo actualiza después de cada clase.", "translate": "Escribe una palabra o frase en español <i>o</i> en inglés y toca <b>Translate here</b>. Reconoce el idioma solo y te muestra cómo se pronuncia el inglés. También puedes abrirlo en Google Translate o DeepL.", "mistakes": "Los errores más comunes de quienes hablan español, y cómo corregirlos. Todos los cometemos, así que tranquilo: solo intenta darte cuenta.", "place": "Para lugares, piensa en <b>in</b> como dentro de un espacio, <b>on</b> como sobre una superficie o una línea, y <b>at</b> como un punto en el mapa. Para movimiento, la preposición muestra la dirección.", "usedto": "Se ven casi iguales, pero significan tres cosas distintas. El truco: después de <b>be used to</b> y <b>get used to</b> va un sustantivo o un verbo + -ing.", "passive": "Usa la voz pasiva cuando la acción importa más que quién la hizo, o cuando no sabes quién fue. <b>Estructura: be + participio.</b> Solo el verbo <i>be</i> cambia de tiempo.", "reported": "Cómo contarle a alguien lo que dijo otra persona. Normalmente el verbo da un paso atrás en el pasado.", "backup": "¿No has iniciado sesión? Tus palabras, apuntes y secciones favoritas viven solo en este navegador. Usa esta página para guardar una copia o pasar todo a otro computador, navegador o a tu teléfono. O simplemente inicia sesión con Google y todo se sincroniza solo.", "changelog": "Todo lo que se ha agregado a Hibi, lo más nuevo primero.", "be": "Un verbo con dos significados en español: <b>ser</b> y <b>estar</b>. Se usa para identidad, sentimientos, lugar, edad y descripciones.", "modals": "Modal + verbo base. Sin <b>to</b>, sin <b>-s</b>, sin <b>-ed</b>: <span class=\"ok\">she can swim</span> · <span class=\"no\">she cans swim</span> · <span class=\"no\">she can to swim</span>", "domake": "Los dos significan <b>hacer</b>. La regla rápida: <b>do</b> es para actividades y tareas; <b>make</b> es para crear o producir algo. Después hay combinaciones que simplemente se aprenden.", "time": "Piénsalo de grande a pequeño. <b>In</b> para periodos largos, <b>on</b> para días, <b>at</b> para momentos exactos.", "tofor": "Los dos pueden ser <b>para</b> o <b>a</b> en español, por eso confunden. Aquí ves cuándo se usa cada uno.", "pronouns": "Lee cada fila de izquierda a derecha: la misma persona, con distinta función en la oración.", "quantity": "Primero pregúntate: ¿se puede contar? <i>One apple, two apples</i> = contable. <i>Water, information, advice, money</i> = incontable (siempre en singular).", "frequency": "¿Con qué frecuencia lo haces?", "conversation": "Una conversación no es una entrevista de trabajo. Responde, agrega algo más y haz una pregunta de vuelta. Conectar es más importante que responder perfecto.", "linking": "Los conectores que de verdad vas a usar, agrupados por lo que hacen. Empieza con los dos primeros de cada grupo.", "false": "Parecen palabras en español, pero no lo son.", "basics": "El inglés es estricto con el orden de las palabras. En español puedes moverlas; en inglés casi no.", "summary": "Úsalo cuando me cuentes del podcast, video o historia que escuchaste o leíste. Sigue este orden y no te vas a perder.", "stuck": "No te cambies al español. Usa una de estas frases y sigue. Quedarse pegado es normal; lo importante es salir en inglés.", "opinions": "Formas de decir lo que piensas, estar de acuerdo y no estarlo, sin sonar mal educado.", "conditionals": "Elige un ejemplo o escribe el tuyo. Los cuatro condicionales se actualizan abajo para que los compares lado a lado.", "perfect": "La pregunta clave: <b>¿digo (o sé) cuándo pasó?</b> Si la respuesta es sí, past simple. Si hablas de tu vida hasta ahora, present perfect.", "gerund": "Cuando un verbo va después de otro, el segundo toma una de dos formas: el <b>gerundio</b> (verbo + -ing) o el <b>infinitivo</b> (to + verbo). Depende del primer verbo.", "phrasal": "Verbo + una palabrita = un significado nuevo. Estos son los que vas a escuchar todos los días. Busca en inglés o en español.", "compare": "Comparativo = comparar dos cosas (<i>bigger than</i>). Superlativo = el que más de un grupo (<i>the biggest</i>).", "pronunciation": "Palabras que confunden a casi todos. Toca 🔊 para escucharlas. La parte en <b>negrita</b> es la sílaba acentuada.", "numbers": "El inglés usa el punto y la coma al revés que en Chile. Esto confunde a mucha gente en reuniones.", "email": "Frases listas para copiar y pegar en el trabajo. Neutras y profesionales, sin sonar rígidas.", "interview": "Las preguntas que casi siempre te van a hacer, cómo empezar tus respuestas y frases para ganar unos segundos para pensar.", "quiz": "Elige qué quieres practicar hoy. Cada ronda que terminas ayuda a tu mascota y a tu meta de la semana."};
   document.querySelectorAll("section.view").forEach(v=>{ const id=v.id.replace(/^v-/,""), t=LEDE_ES[id], l=v.querySelector("p.lede:not(.lede-es)"); if(!t||!l||v.querySelector(".lede-es")) return;
     const p=document.createElement("p"); p.className="lede lede-es"; p.lang="es"; p.innerHTML=t; l.insertAdjacentElement("afterend",p); });
   /* Thought for today, in Spanish too (translated once, then remembered) */
@@ -9064,6 +9075,7 @@ document.getElementById("bkRestore").addEventListener("click",()=>{
   toast("Backup restored");
 });
 document.addEventListener("click",e=>{ if(e.target.closest('[data-go="backup"]')) bkRender(); });
+if(location.hash==="#backup") setTimeout(()=>{ const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); },0);
 
 /* class notes: draft on Home, saved notes list sorted by date */
 const freeNotes=document.getElementById("freeNotes"), freeSaved=document.getElementById("freeSaved"); let freeT;
@@ -9187,7 +9199,8 @@ function renderBack(){
     const nb=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+prev.id+'"]');
     const nbt=nb?(()=>{ const c=nb.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl,svg').forEach(x=>x.remove()); return c.textContent.trim(); })():"";
     const name= prev.id==="notes"?"Home":prev.id==="classnotes"?"My class notes":prev.id==="words"?"My words":prev.id==="changelog"?"What's new":(nbt||prev.id);
-    document.getElementById("backTxt").textContent=name;
+    const h1=document.querySelector("#v-"+prev.id+" h1"); const h1t=h1?(()=>{ const c=h1.cloneNode(true); c.querySelectorAll(".lvl,.badge,small,span[class*='lvl']").forEach(x=>x.remove()); return c.textContent.trim(); })():"";
+    document.getElementById("backTxt").textContent=(name===prev.id&&h1t)?h1t:name;
     link.setAttribute("aria-label","Back to "+name);
     fabB.setAttribute("aria-label","Back to "+name); fabB.title="Back to "+name;
   }
@@ -9899,7 +9912,7 @@ const CHANGELOG=[
     ["🌈","A third look","tap the theme button at the top (next to Music) to switch between dark, light and a bright rainbow <b>Unicorn</b> mode.",null]
   ]},
   {id:"2026-today", date:"October 29, 2026", title:"Something new every day ☀️", items:[
-    ["📖","Word of the day","a useful word or expression on your Home page every day, with an example. Tap <b>+ Save to my words</b> to keep it.","notes"],
+    ["📖","Word of the day","a useful word or expression on your Home page every day, with an example. Tap <b>+ Save to My words</b> to keep it.","notes"],
     ["🌱","Thought for today","a short daily reminder about patience, progress and learning at your own pace.","notes"],
     ["⇄","Translator, pinned","it now sits in the green menu with Home, My class notes and My words.","translate"]
   ]},
@@ -9939,9 +9952,11 @@ const CHANGELOG=[
 ];
 const CL_POP=CHANGELOG.find(e=>!e.quiet), CL_LATEST=CL_POP.id; window.__csClLatest=CL_LATEST;
 function clItems(e){
-  return '<ul class="cl-items">'+e.items.map(([ic,b,t,go])=>'<li><span class="cl-ic" aria-hidden="true">'+ic+'</span><div><b>'+b+':</b> '+t+(go?' <button class="foot-link cl-go" type="button" '+(go==="music"?'data-openmusic':'data-go="'+go+'"')+'>'+(go==="music"?'Try it':'Open')+' →</button>':'')+'</div></li>').join("")+'</ul>';
+  return '<ul class="cl-items">'+e.items.filter(it=>it[3]!=="backup").map(([ic,b,t,go])=>'<li><span class="cl-ic" aria-hidden="true">'+ic+'</span><div><b>'+b+':</b> '+t+(go?' <button class="foot-link cl-go" type="button" '+(go==="music"?'data-openmusic':'data-go="'+go+'"')+'>'+(go==="music"?'Try it':'Open')+' →</button>':'')+'</div></li>').join("")+'</ul>';
 }
-document.getElementById("clList").innerHTML=CHANGELOG.map((e,i)=>'<article class="card cl-entry"><div class="cl-head"><span class="cl-date">'+e.date+'</span>'+(i===0?'<span class="badge new">latest</span>':'')+'</div><h2 class="cl-title">'+e.title+'</h2>'+clItems(e)+'</article>').join("");
+const CL_T=e=>{ const t=Date.parse(e.date); return isNaN(t)?0:t; }, CL_CUT=CL_T(CHANGELOG[0])-14*864e5;
+document.getElementById("clList").innerHTML=CHANGELOG.map((e,i)=>(i>0&&CL_T(e)&&CL_T(e)<CL_CUT?'<div class="cl-old" hidden>':'<div>')+'<article class="card cl-entry"><div class="cl-head"><span class="cl-date">'+e.date+'</span>'+(i===0?'<span class="badge new">latest</span>':'')+'</div><h2 class="cl-title">'+e.title+'</h2>'+clItems(e)+'</article></div>').join("")+'<button type="button" class="swap cl-older" id="clOlder">Show older updates</button>';
+(function(){ const b=document.getElementById("clOlder"); if(!document.querySelector("#clList .cl-old")){ b.remove(); return; } b.addEventListener("click",()=>{ document.querySelectorAll("#clList .cl-old").forEach(x=>x.hidden=false); b.remove(); }); })();
 const wn=document.getElementById("whatsnew"), wnBd=document.getElementById("wnBackdrop");
 document.getElementById("wnBody").innerHTML='<p class="cl-date" style="margin:0 0 6px">'+CL_POP.date+' · '+CL_POP.title+'</p>'+clItems(CL_POP);
 function openWN(){ wn.hidden=false; wnBd.hidden=false; setTimeout(()=>document.getElementById("wnOk").focus(),30); }
@@ -9961,7 +9976,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112111218"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112112456"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

@@ -134,7 +134,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=25" defer></script>
+<script src="comfort.js?v=26" defer></script>
 <script src="tbar.js?v=2" defer></script>
 </head>
 <body>
@@ -626,7 +626,7 @@ async function linkHub(s, hubId, oldId) {
     h.uid = s.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + h.id), { json: JSON.stringify(h), deleted: false, at: serverTimestamp() });
     await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(h, hubMeta || {})), deleted: false, at: serverTimestamp() });
     toast("Linked: " + s.name.split(" ")[0] + " can now see “My coaching”");
-  } catch (e) { console.warn(e); toast("Couldn't link the hub page. Try again."); }
+  } catch (e) { console.warn(e); toast("Couldn't link their My coaching page. Try again."); }
 }
 let editW = null, editN = null;
 let tSort = { k: "t", d: -1 }; // newest first
