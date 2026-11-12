@@ -12,14 +12,25 @@
     "html.emb header{position:fixed;top:6px;right:10px;left:auto;background:none!important;border:0!important;box-shadow:none!important;z-index:60;pointer-events:none}",
     "html.emb header .top>*:not(#saving){display:none!important}",
     "html.emb main{max-width:none!important;margin:0!important;padding:0 0 32px!important}",
-    "html.emb #vMain>h1,html.emb .dh h1.hubt{display:none!important}",
-    "html.emb .dh{justify-content:flex-end}",
+    "html.emb #vMain>h1{display:none!important}",
+    "html.emb .dh{align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}",
     "html.emb footer,html.emb .site-foot,html.emb .foot{display:none!important}",
+    /* lists and panels that had their own height (based on the window) just grow; Home's page scrolls them */
+    "html.emb .list{max-height:none!important;overflow:visible!important}",
+    "html.emb .modal .card{max-height:calc(var(--vh,100vh) - 32px)!important}",
+    "html.emb .hist ul{max-height:calc(var(--vh,100vh) * .6)!important}",
     /* pop-ups: in the part of the frame Noa can see (the frame itself is as tall as the page) */
     "html.emb .modal,html.emb .csc-bd{position:absolute!important;inset:auto!important;left:0!important;right:0!important;top:var(--vt,0px)!important;height:var(--vh,100vh)!important}",
     "html.emb .toast{position:absolute!important;bottom:auto!important;top:calc(var(--vt,0px) + var(--vh,100vh) - 76px)!important}"
   ].join("\n");
   (document.head || root).appendChild(st);
+  /* 1:1 students: this page's own title row (title + New student / Import / Backup on one line) stands in for Home's title, styled like Home's */
+  function title() { const h = document.querySelector(".dh h1.hubt"); if (!h || ID !== "students") return; let ref = null;
+    try { ref = P.document.querySelector("#v-members > h1") || P.document.querySelector(".view h1"); } catch (e) {}
+    h.innerHTML = '1:1 <em>students</em>'; h.style.flex = "1";
+    if (ref) { const c = P.getComputedStyle(ref); ["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "color"].forEach(k => h.style[k] = c[k]);
+      const re = ref.querySelector("em"), e = h.querySelector("em"); if (re && e) { const ce = P.getComputedStyle(re); ["color", "fontStyle", "fontFamily", "fontWeight", "backgroundImage", "backgroundClip", "webkitBackgroundClip", "webkitTextFillColor"].forEach(k => { try { e.style[k] = ce[k]; } catch (er) {} }); } } }
+  document.addEventListener("DOMContentLoaded", title); addEventListener("load", title);
   /* the visible part of this frame, for pop-ups */
   function vis() { try { const r = FR.getBoundingClientRect(), top = Math.max(0, -r.top), bot = Math.min(r.height, P.innerHeight - r.top);
     root.style.setProperty("--vt", Math.round(top) + "px"); root.style.setProperty("--vh", Math.max(200, Math.round(bot - top)) + "px"); } catch (e) {} }
