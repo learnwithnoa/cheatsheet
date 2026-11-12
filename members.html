@@ -268,10 +268,22 @@ async function loadTPrefs() {
     if (cs > ls) localStorage.setItem(NEWS_KEY, String(cs)); else if (ls > cs) saveTPref("t-news-seen", ls);
   } catch (e) { console.warn("teacher prefs", e); }
 }
+/* a welcome counts as sent when Noa already has a Hibi chat with that person (e.g. a welcome sent from the 🔔 on Home) */
+async function dmWelcomed() {
+  try {
+    const u = auth.currentUser; if (!u) return; const tok = await u.getIdToken();
+    const r = await fetch("https://firestore.googleapis.com/v1/projects/learnwithnoa-cheatsheet/databases/(default)/documents:runQuery", { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" },
+      body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "dms" }], where: { fieldFilter: { field: { fieldPath: "members" }, op: "ARRAY_CONTAINS", value: { stringValue: u.uid } } }, limit: 300 } }) });
+    if (!r.ok) return; const res = await r.json(); const m = kdSent(); let more = false;
+    (res || []).forEach(x => { const f = x.document && x.document.fields; if (!f || !f.members) return; ((f.members.arrayValue || {}).values || []).map(v => v.stringValue).filter(id => id && id !== u.uid).forEach(id => { const k = id + "-join"; if (!m[k]) { m[k] = Date.now(); more = true; } }); });
+    if (more) { localStorage.setItem("cs-kudos-sent", JSON.stringify(m)); saveTPref("t-kudos-sent", m); try { renderNews(); } catch (e) {} }
+  } catch (e) { console.warn("welcomed", e); }
+}
 function saveTPref(id, val) { if (!tUid) return; setDoc(doc(db, "users", tUid, "data", id), { json: JSON.stringify(val), deleted: false, at: serverTimestamp() }).catch(e => console.warn("save pref", e)); }
 async function load() {
   $("summary").textContent = "Loading…"; $("loadErr").hidden = true;
   await loadTPrefs(); await loadHubList();
+  dmWelcomed();
   try {
     const snap = await getDocs(collection(db, "users"));
     const roles = {};

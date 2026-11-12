@@ -1070,6 +1070,8 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .ch-nacts a.ch-zoom{background:#2D8CFF;border-color:#2D8CFF;color:#fff}
 .ch-nacts a.ch-zoom:hover{background:#1A73E8}
 
+.tn-hint.tn-done{color:var(--c-green,#3DDC97);opacity:.9}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3339,7 +3341,9 @@ html.cs-calm .cs-rxpal button{transition:none}
       let reps=[]; try{ reps=window.__clubSocial&&window.__clubSocial.reports?await window.__clubSocial.reports():[]; }catch(e){}
       let areq=[]; try{ areq=await accessReqs(); }catch(e){}
       let mine=[]; try{ mine=window.__clubSocial&&window.__clubSocial.myNotes?await window.__clubSocial.myNotes():[]; }catch(e){}
-      data={acc,priv,club,reps,areq,mine}; if(NP) open=true;
+      let welc={}; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-kudos-sent"); welc=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"{}")||{}; }catch(e){}
+      try{ const th=window.__clubSocial&&window.__clubSocial.dms?await window.__clubSocial.dms():[], me=window.__csFire&&window.__csFire.uid(); (th||[]).forEach(t=>(t.members||[]).forEach(u=>{ if(u&&u!==me) welc[u+"-join"]=welc[u+"-join"]||1; })); }catch(e){}
+      data={acc,priv,club,reps,areq,mine,welc}; if(NP) open=true;
       try{ if(new URLSearchParams(location.search).get("notif")){ open=true; history.replaceState(null,"",location.pathname+location.hash); } }catch(e){}
       paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
@@ -3380,7 +3384,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
     b.className="tn-wrap open";
     const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
-      return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`:""}</li>`; };
+      return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`${(data.welc||{})[a.uid+"-join"]?`<span class="tn-hint tn-done">✓ Welcomed · open the chat</span>`:`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`}`:""}</li>`; };
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
       ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}${r.n>1?` · asked ${r.n} times`:""}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
 
@@ -10084,7 +10088,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112133018"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112142523"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
