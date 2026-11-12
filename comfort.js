@@ -281,7 +281,7 @@
   function addReadButtons() {
     if (!isMain || !(canSpeak || window.csVoice)) return;
     document.querySelectorAll("main section.view").forEach(v => {
-      if (v.querySelector(".cs-read") || ["v-feedback", "v-backup", "v-changelog", "v-notes", "v-words", "v-quiz"].includes(v.id)) return;
+      if (v.querySelector(".cs-read") || ["v-feedback", "v-backup", "v-changelog", "v-notes", "v-words", "v-quiz", "v-club", "v-classnotes", "v-park"].includes(v.id)) return;
       const btn = document.createElement("button"); btn.type = "button"; btn.className = "cs-read"; btn.innerHTML = "🔊 Listen";
       btn.title = "Read this page aloud (or select some text first to hear just that part)";
       btn.setAttribute("aria-label", "Read this page aloud");
