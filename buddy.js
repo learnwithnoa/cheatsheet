@@ -843,6 +843,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       if (!sac) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; sac = new AC(); }
       if (sac.state === "suspended") sac.resume();
       const t = sac.currentTime + .02, V = .12;
+      if (Math.random() < .5 && altSound(a, t, V)) return;  /* every pet has two sounds; pick one at random */
       if (a === "max" || a === "miki") { const f = a === "max" ? 330 : 470; tone("square", f, f * .55, t, .12, V, { lp: 1400 }); tone("square", f * 1.05, f * .5, t + .2, .14, V, { lp: 1400 }); }
       else if (a === "cat") tone("sawtooth", 480, 420, t, .55, V * .8, { mid: 820, lp: 1800, vib: 6, vd: 15 });
       else if (a === "chicken") [0, .13, .26].forEach((d, i) => tone("square", i === 2 ? 900 : 700, 450, t + d, .09, V * .8, { lp: 2200 }));
@@ -854,8 +855,21 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       else if (a === "axolotl") { tone("sine", 280, 900, t, .08, V * 1.2, { lp: 4000 }); tone("sine", 340, 1100, t + .14, .07, V, { lp: 4000 }); }
     } catch (e) {}
   }
+  /* the second sound for each pet */
+  function altSound(a, t, V) {
+    if (a === "max" || a === "miki") { const f = a === "max" ? 420 : 600; tone("sawtooth", f * 1.3, f * 1.05, t, .42, V * .55, { mid: f * 1.75, lp: 1500, vib: 6, vd: 12 }); return true; }  /* happy whine */
+    if (a === "cat") { tone("sawtooth", 62, 58, t, .5, V * 1.1, { trem: 26, lp: 420 }); tone("sawtooth", 58, 54, t + .62, .55, V * 1.1, { trem: 24, lp: 420 }); return true; }  /* purr */
+    if (a === "chicken") { tone("square", 500, 880, t, .16, V * .8, { lp: 2200 }); tone("square", 880, 480, t + .19, .26, V * .8, { lp: 2200 }); return true; }  /* ba-gawk */
+    if (a === "frog") { [0, .11, .22].forEach((d, i) => tone("square", 430 - i * 30, 330, t + d, .08, V, { trem: 60, lp: 1300 })); return true; }  /* ribbit-it-it */
+    if (a === "llama") { tone("sawtooth", 170, 115, t, .28, V * .9, { lp: 650, trem: 28 }); return true; }  /* snort */
+    if (a === "unicorn") { [2093, 1568, 1319, 1047].forEach((f, i) => tone("sine", f, f * 1.01, t + i * .08, .3, V * .6, { lp: 6000, vib: 7, vd: 8 })); return true; }  /* sparkle down */
+    if (a === "pudu") { [0, .2].forEach(d => tone("triangle", 900, 700, t + d, .14, V * .8, { vib: 12, vd: 50, lp: 2600 })); return true; }  /* two bleats */
+    if (a === "capybara") { [0, .11, .22].forEach((d, i) => tone("sine", 520 + i * 40, 720 + i * 40, t + d, .08, V, { lp: 3000 })); return true; }  /* chirp-chirp-chirp */
+    if (a === "axolotl") { [0, .08, .17, .24].forEach(d => tone("sine", 500 + Math.random() * 400, 1300 + Math.random() * 400, t + d, .05, V * .8, { lp: 4500 })); return true; }  /* bubbles */
+    return false;
+  }
   function petIt() {
-    hop(); fx(["💛", "🩷", "💛"]); animalSound(animal());
+    hop(); fx(["💛", "🩷", "💛"]); animalSound(animal(), true);
     if (!S.pd || S.pd[0] !== today()) S.pd = [today(), 0];
     if (S.pd[1] < 5) { S.pd[1]++; addFP(1); }
     refreshPanel(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.m === "pet" ? '[data-m="pet"]' : null, ["💛", "🩷", "💛"]);
@@ -890,7 +904,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (S.fd && S.fd[0] === today() && S.fd[1] >= FEED_PER_DAY) { say("I'm full! 😋 Let's study instead.", "", 3500); return; }
     if (!(S.t > 0)) { say("No treats left. Save a new word or finish a flashcard round to earn more 🍪", `<button class="bd-b" type="button" data-bd="open">How it works</button>`, 6500); return; }
     S.t -= 1; S.fd = [today(), (S.fd && S.fd[0] === today() ? S.fd[1] : 0) + 1]; addFP(3);
-    hop(); fx(["🍪", "😋", "💛"]);
+    hop(); fx(["🍪", "😋", "💛"]); animalSound(animal(), true);
     say(infoLine() + ["Nom nom! 😋", "Yum, thank you!", "Delicious 🍪", "*happy crunching*"][Math.floor(Math.random() * 4)], menuActs(), 4500);
     refreshPanel('[data-m="feed"]', ["🍪", "😋", "💛"]);
   }
@@ -1312,7 +1326,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (fedToday(uid)) { parkToast(pb, "You already fed " + bn + " today 🍪"); return; }
     if ((S.t | 0) < 1) { parkToast(pb, "You don't have any treats. Study a little to earn some 🍪"); return; }
     const P = window.__csPark; if (!P || !P.feed) return;
-    try { await P.feed(uid, pb.dataset.a); S.t = (S.t | 0) - 1; save(); markFed(uid); parkToast(pb, "🍪 You fed " + bn + "! (+3 friendship for them)"); const b = pb.querySelector(".pb-feed"); if (b) b.remove(); }
+    try { await P.feed(uid, pb.dataset.a); S.t = (S.t | 0) - 1; save(); markFed(uid); animalSound(pb.dataset.a, true); parkToast(pb, "🍪 You fed " + bn + "! (+3 friendship for them)"); const b = pb.querySelector(".pb-feed"); if (b) b.remove(); }
     catch (e) { if (/permission/i.test(String(e && (e.code || e.message)))) { markFed(uid); parkToast(pb, "You already fed " + bn + " today 🍪"); } else parkToast(pb, "Couldn't feed them. Try again."); }
   }
   async function claimLove() {
@@ -1489,7 +1503,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const dm = e.target.closest("[data-pdm]"); if (dm) { e.preventDefault(); e.stopPropagation(); if (window.__clubDM) window.__clubDM(dm.dataset.pdm, dm.dataset.first); return; }
     const dz = e.target.closest("[data-duel]"); if (dz) { e.preventDefault(); e.stopPropagation(); duelDialog(dz.dataset.duel, dz.dataset.first); return; }
     if (pb && e.target.closest("[data-feed]")) { e.preventDefault(); e.stopPropagation(); clearTimeout(pb._it); pb._it = setTimeout(() => pb.classList.remove("show-info"), 4000); feedOther(pb); ["🍪", "💛", "🍪"].forEach((ch, i) => setTimeout(() => parkFx(pb, ch), i * 130)); return; }
-    if (pb && pb.dataset.a) animalSound(pb.dataset.a);
+    if (pb && pb.dataset.a) animalSound(pb.dataset.a, true);
     if (pb && !pb.classList.contains("me") && pb.dataset.uid) sendLove(pb);
     if (pb) {
       document.querySelectorAll(".park-b.show-info").forEach(x => { if (x !== pb) x.classList.remove("show-info"); });

@@ -3041,9 +3041,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     const pb=x=>`<button type="button" data-va="${esc(x.key)}">${x.both?"🌳🌼":"🌳"} ${esc(x.view.name)}</button>`;
     L.querySelector(".va-res").innerHTML=(q?"":`<div class="va-h">Generic</div><div class="va-grid"><button type="button" data-va="club">🌼 Club member</button><button type="button" data-va="private">🌳 Private student</button><button type="button" data-va="both">🌳🌼 Both</button></div>`)+
       (act.length?`<div class="va-h">Private students (${act.length})</div><div class="va-grid">${act.map(pb).join("")}</div>`:"")+
-      (old.length?`<div class="va-h">Past private students (${old.length})</div><div class="va-grid">${old.map(pb).join("")}</div>`:"")+
-      (cl.length?`<div class="va-h">Club members (${cl.length})</div><div class="va-grid">${cl.map(x=>`<button type="button" data-va="${esc(x.key)}">🌼 ${esc(x.name)}</button>`).join("")}</div>`:"")+
-      (q&&!pv.length&&!cl.length?`<p class="muted">Nobody called “${esc(q)}”.</p>`:"");
+      ((cl.length||old.some(x=>x.both))?`<div class="va-h">Club members (${cl.length+old.filter(x=>x.both).length})</div><div class="va-grid">${old.filter(x=>x.both).map(pb).join("")}${cl.map(x=>`<button type="button" data-va="${esc(x.key)}">🌼 ${esc(x.name)}</button>`).join("")}</div>`:"")+
+      (q&&!act.length&&!old.some(x=>x.both)&&!cl.length?`<p class="muted">Nobody called “${esc(q)}”.</p>`:"");
   }
   function banner(label){ let b=document.getElementById("vaBanner"); if(!label){ if(b) b.remove(); return; } if(!b){ b=document.createElement("div"); b.id="vaBanner"; b.className="va-banner"; document.body.prepend(b); } b.innerHTML=`👁 Viewing as ${esc(label)} <button type="button" id="vaExit">Back to my view</button>`; }
   function preview(label,view,kind){ window.__csPreview={label,kind:kind||(view?"private":"club")}; window.__csHubView=view; banner(label); document.dispatchEvent(new CustomEvent("cs-hubview")); document.dispatchEvent(new CustomEvent("cs-preview")); const c=document.getElementById("csClose"); if(c) c.click(); const vp=document.getElementById("vaPop"); if(vp) vp.hidden=true; if(view){ const b=document.getElementById("navCoaching"); if(b) b.click(); } else { const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); } }
@@ -5317,7 +5316,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=51" defer></script>
+<script src="buddy.js?v=52" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -9641,7 +9640,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 const CHANGELOG=[
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
-    ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages show as a little green number on the bell."]
+    ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
+    ["📸","Photos in messages","tap a photo to see it big, with a <b>⬇ Download</b> button. GIFs in messages play now too."],
+    ["🐾","Your buddy has more to say","every pet now has two sounds, and you'll hear one every time you pet or feed them (if buddy sounds are on)."]
   ]},
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
     ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
@@ -9892,7 +9893,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112091248"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112091447"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -9924,6 +9925,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
   document.addEventListener("click",e=>{ if(e.target.closest("[data-nmx]")){ e.preventDefault(); e.stopPropagation(); closeNotif(); const b=bell(); if(b) b.btn.focus(); return; } },true);
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-nm]"); if(!t) return; e.preventDefault(); e.stopPropagation();
     if(t.getAttribute("aria-selected")==="true") return;
+    try{ localStorage.setItem("cs-nmtab",t.dataset.nm); }catch(er){}
     if(t.dataset.nm==="m"){ if(window.__clubInbox) window.__clubInbox(); const t0=Date.now(); (function w(){ if(document.getElementById("clDm")||Date.now()-t0>1500){ requestAnimationFrame(()=>{ window.__nmProg=true; try{ closeNotif(); }finally{ window.__nmProg=false; } }); return; } requestAnimationFrame(w); })(); }
     else { window.__nmProg=true; try{ openNotif(); }finally{ window.__nmProg=false; } requestAnimationFrame(()=>{ if(document.getElementById("clDm")){ if(window.__clubDmClose) window.__clubDmClose(); else document.getElementById("clDm").remove(); } }); } },true);
   /* Messages is a drop-down now: a click outside closes it, and the bell closes it (like the profile window) */
@@ -9931,6 +9933,11 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
   document.addEventListener("click",e=>{ if(!on()||window.__nmProg) return; const o=document.getElementById("clDm"); if(!o) return; const b=bell();
     if(b&&b.btn.contains(e.target)){ if(window.__nmProg) return; e.preventDefault(); e.stopPropagation(); dmClose(); return; }
     if(!e.target.closest(".cl-dm,[data-nm],.csc-bd,.cs-lb,[role=alertdialog],[role=dialog]:not(#clDm)")&&document.contains(e.target)) dmClose(); },true);
+  /* tapping the bell opens the tab you used last */
+  document.addEventListener("click",e=>{ if(!on()||window.__nmProg||document.getElementById("clDm")) return; const b=bell(); if(!b||!b.btn.contains(e.target)) return;
+    let last="n"; try{ last=localStorage.getItem("cs-nmtab")||"n"; }catch(er){} if(last!=="m"||!window.__clubInbox) return;
+    const open=b.k==="c"?!document.getElementById("clBellPanel").hidden:!!document.querySelector("#tNotif .tn-box"); if(open) return;
+    e.preventDefault(); e.stopPropagation(); window.__clubInbox(); },true);
   let q=0;
   function decorate(){ q=0;
     const b=bell(), want=hasDM()&&!!b; if(on()!==want) document.documentElement.classList.toggle("nm-on",want); if(!want) return;
