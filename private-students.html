@@ -665,6 +665,9 @@ function renderStoic() {
   const b = $("stoicBox"), L = (meta && meta.stoic) || []; if (!L.length) { b.hidden = true; return; }
   const td = today(), e = L.slice().sort((a, b) => a.d.localeCompare(b.d)).filter(x => x.d <= td).pop() || L[L.length - 1];
   b.hidden = false; b.innerHTML = `<span class="st-k">🏛️ Daily Stoic${e.d === td ? "" : " · " + fmtShort(e.d)}</span><b>${esc(e.title)}</b><span class="st-i">${esc(e.idea)}</span>${e.todo ? `<span class="st-t">✔︎ ${esc(e.todo)}</span>` : ""}`;
+  /* it lives on Home now (Noa's Home, above the club), not on this page */
+  try { if (window.top !== window.self) window.parent.postMessage({ stoicHTML: b.innerHTML }, location.origin); } catch (er) {}
+  b.hidden = true;
 }
 setInterval(() => { try { if (meta && S) renderNext(); } catch (e) {} }, 60e3);   /* keep "live now" and "in 20 min" current */
 function renderAll() { renderStoic(); renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); route(); }

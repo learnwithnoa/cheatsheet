@@ -1052,6 +1052,17 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 #slotCnHome,#slotAwHome{display:none}
 #v-students>h1{display:none}
 
+/* step111 */
+.cs-sub .cs-c{position:relative;margin-left:22px;padding-left:14px;border-top:0;border-left:2px solid color-mix(in srgb,var(--c-sky,#5AB8FF) 40%,var(--line))}
+.cs-sub .cs-c::before{content:"↳";position:absolute;left:-20px;top:9px;color:var(--muted);font-size:15px;line-height:1}
+.cs-sub .cs-c+.cs-c{margin-top:6px}
+.cs-sub .cs-comp,.cs-sub form{margin-left:22px}
+.cl-watch .cl-yt{background:none!important;border:0!important;box-shadow:none!important;filter:none!important;border-radius:0}
+#v-notes .sync-info{display:none!important}
+.t-stoic{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:10px 16px;margin:14px 0 14px;border-radius:14px;background:linear-gradient(90deg,color-mix(in srgb,#C9A26B 22%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,#C9A26B 40%,var(--line))}
+.t-stoic .st-k{font:700 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:#C9A26B}
+.t-stoic .st-t{color:var(--muted);font-size:13px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2648,6 +2659,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 <section class="view" id="v-notes" hidden>
   <h1>Your <em>home</em></h1>
   <p class="lede">Your word of the day, a thought for today and what's new in the club.</p>
+  <div id="tStoic" class="t-stoic" hidden></div>
   <div id="homeClub" hidden></div>
   <div class="today" id="todayBox">
     <div class="card today-word">
@@ -3720,7 +3732,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=r.vocab||[], ph=r.phrases||[];
     const name=c.name||x.title||L("Class","Clase"), topic=c.title&&c.name?c.title:"", q=[name,topic,x.title,x.summary,c.teaser,it.p.title,voc.map(v=>v.w).join(" ")].join(" ").toLowerCase();
     return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${voc.length?` · 📚 ${voc.length} ${L("words","palabras")}`:""}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
-      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}"><svg class="cl-yt" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15V9l5.2 3z"/></svg>${L("Watch on YouTube","Ver en YouTube")}<span class="cl-ext" aria-hidden="true">↗</span></a>${planBtn(it.date,x.wd)}<span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span><button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
+      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}"><svg class="cl-yt" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15V9l5.2 3z"/></svg>${L("Watch on YouTube","Ver en YouTube")}<span class="cl-ext" aria-hidden="true">↗</span></a>${planBtn(it.date,x.wd)}<span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span><button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
         ${diffHTML(x)}${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:`<p class="cl-planintro" data-pintro="${esc(it.date)}"></p>`}
         ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
         ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
@@ -3837,7 +3849,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function rulesHTML(f,inWelcome){ const r=((f.info||{}).rules||[]).length?f.info.rules:L(RULES_EN,RULES_ES);
     return `<div class="cl-sec cl-rules">${inWelcome?"":`<h2>🤝 ${L("Club guidelines","Normas del club")}</h2>`}<ol>${r.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`; }
   const WELC="cs-club-welcomed";
-  function welcomeHTML(f){ try{ if(localStorage.getItem(WELC)) return ""; }catch(e){ return ""; } if(window.__csPreview&&!window.__csGuest) return "";
+  function welcomeHTML(f){ try{ if(localStorage.getItem(WELC)) return ""; }catch(e){ return ""; } if((window.__csPreview&&!window.__csGuest)||window.__csViewAsMode) return "";
     const nm=(window.__csFire&&window.__csFire.name&&window.__csFire.name()||"").split(" ")[0];
     return `<div class="cl-welc"><button type="button" class="cl-welc-x" data-welcx="1" aria-label="${L("Close","Cerrar")}">✕</button><h2>👋 ${L("Welcome to the club","Bienvenido al club")}${nm?", "+esc(nm):""}!</h2><p>${L("A few small things to get started:","Unas cositas para empezar:")}</p>
       <ol class="cl-steps"><li><b>${L("Say hi on the wall","Saluda en el muro")}</b><span>${L("Tell us your name, where you’re from and why you’re learning English.","Cuéntanos tu nombre, de dónde eres y por qué aprendes inglés.")}</span><button type="button" class="cl-join" style="--k:var(--c2)" data-intro="1">👋 ${L("Introduce yourself","Preséntate")}</button></li>
@@ -3848,7 +3860,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* ---------- 🚀 coming soon (members vote; filled by the community script) ---------- */
   const SOON=[["dm","💬",["Direct messages","Mensajes directos"],["Chat privately with other members.","Chatea en privado con otros miembros."]],["digest","📧",["Weekly email digest","Resumen semanal por email"],["What you missed in the club, once a week.","Lo que te perdiste en el club, una vez por semana."]],["courses","🎓",["Club courses","Cursos del club"],["Short courses only for members, e.g. speaking confidence.","Cursos cortos solo para miembros, por ejemplo seguridad al hablar."]],["join","💳",["Join and pay on Hibi","Unirse y pagar en Hibi"],["Membership right here, no Skool needed.","La membresía aquí mismo, sin Skool."]]];
   function soonHTML(){ return `<div class="cl-sec cl-soon"><h2>🚀 ${L("Coming soon","Muy pronto")}</h2><p class="cl-note">${L("Vote for what you want first. Noa sees the votes.","Vota por lo que quieres primero. Noa ve los votos.")}</p><div class="cl-soonl">${SOON.map(s=>`<div class="cl-soonc"><span class="i" aria-hidden="true">${s[1]}</span><span class="t"><b>${esc(L(s[2][0],s[2][1]))}</b><span>${esc(L(s[3][0],s[3][1]))}</span></span><span class="cl-soonv" data-soon="${s[0]}"></span></div>`).join("")}</div></div>`; }
-  async function homeWall(){ const b=document.querySelector("#homeClub [data-hcwall]"); if(!b||!window.__clubSocial) return; const n=await window.__clubSocial.unread(); b.hidden=!n; b.textContent=`💬 ${n} new on the community wall →`; }
+  async function homeWall(){ const b=document.querySelector("#homeClub [data-hcwall]"); if(!b||!window.__clubSocial) return; const n=await window.__clubSocial.unread(); b.hidden=!n; b.textContent=`💬 ${n} new on the community wall →`;
+    try{ const pid=window.__clubSocial.unreadPid&&window.__clubSocial.unreadPid(); if(pid) b.dataset.bgo=pid; else delete b.dataset.bgo; }catch(e){} }
   document.addEventListener("click",e=>{ if(e.target.closest("[data-hcwall]")){ tab="wall"; location.hash="#club"; setTimeout(render,0); } });
   function render(){
     { const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=!feed(); }
@@ -3868,7 +3881,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
     if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
   }
-  document.addEventListener("click",e=>{ const g=e.target.closest("[data-recgo]"); if(!g) return; RFOCUS=g.dataset.recgo; tab="recordings"; if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>{ render(); setTimeout(()=>document.querySelector(`.cl-rcard[open]`)?.scrollIntoView({block:"center",behavior:"smooth"}),80); },0); });
+  document.addEventListener("click",e=>{ const g=e.target.closest("[data-recgo]"); if(!g) return; const id=g.dataset.recgo, away=location.hash!=="#club";
+    const apply=()=>{ RFOCUS=id; tab="recordings"; render(); setTimeout(()=>{ const c=document.querySelector(`.cl-rcard[open]`); if(c){ c.scrollIntoView({block:"center",behavior:"smooth"}); c.classList.add("cs-flash"); } },120); };
+    if(away){ const n=document.querySelector('.navbtn[data-go="club"]'); if(n) n.click(); else location.hash="#club"; setTimeout(apply,300); } else setTimeout(apply,0); });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&CALPOP){ CALPOP=false; render(); } });
   document.addEventListener("cs-club-bdays",()=>{ const v=document.getElementById("v-club"); if(tab==="calendar"&&v&&!v.hidden&&!CALPOP) render(); });
   box.addEventListener("input",e=>{ const q=e.target.closest("[data-recq]"); if(!q) return; const v=q.value.trim().toLowerCase(); let n=0; box.querySelectorAll(".cl-rcard").forEach(c=>{ const hit=!v||v.split(/\s+/).every(w=>c.dataset.q.includes(w)); c.hidden=!hit; if(hit) n++; }); const no=box.querySelector("[data-rnone]"); if(no) no.hidden=!!n; });
@@ -4006,13 +4021,17 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const isNew=(p,seen)=>seen&&((p.at>seen&&p.uid!==me())||(p.lastAt>seen&&p.lastAt>p.at+2000));
   /* how many posts are new or have new comments since you last opened Community (for the tab and the Home card) */
   let unreadAt=0;
+  function unreadPid(){ const s=getSeen()||(Date.now()-7*864e5); const l=(POSTS||[]).filter(p=>isNew(p,s)&&p.uid!==me()).sort((a,b)=>(b.lastAt||b.at||0)-(a.lastAt||a.at||0)); return l[0]?l[0].id:(G()?"s1":""); }
   async function unread(){ if(G()) return 1; try{ if(!POSTS||Date.now()-unreadAt>600000){ POSTS=await listPosts(); unreadAt=Date.now(); } }catch(e){ return 0; } const s=getSeen()||(Date.now()-7*864e5); return POSTS.filter(p=>isNew(p,s)&&p.uid!==me()).length; }
   async function mountWall(el){
     el.dataset.on="1"; if(POSTS) paintWall(el); else el.innerHTML='<p class="cs-load">Loading…</p>';
     try{ const [ps]=await Promise.all([listPosts(),loadPins(),loadPark()]); POSTS=ps; }catch(e){ el.innerHTML=state==="off"?OFF:`<p class="cs-off">${L("The wall couldn’t load. Check your connection and try again.","No se pudo cargar el muro. Revisa tu conexión e intenta de nuevo.")}</p>`; return; }
     SEEN_AT=getSeen(); NEWIDS=new Set(POSTS.filter(p=>isNew(p,SEEN_AT)).map(p=>p.id)); if(G()) NEWIDS=new Set(["s1"]);
     paintWall(el); if(!G()) setSeen(Date.now()); badge(0);
-    if(FOCUS){ const id=FOCUS; FOCUS=null; const art=el.querySelector(`[data-pid="${CSS.escape(id)}"]`); if(art){ art.scrollIntoView({block:"center",behavior:"smooth"}); art.classList.add("cs-flash"); openSub(art,id); } }
+    if(FOCUS){ const id=FOCUS; FOCUS=null; const art=el.querySelector(`[data-pid="${CSS.escape(id)}"]`); if(art){ art.scrollIntoView({block:"center",behavior:"smooth"}); art.classList.add("cs-flash");
+      (async()=>{ const sub=art.querySelector(".cs-sub"); if(art._subP) await art._subP.catch(()=>{}); else if(sub&&sub.hidden) await openSub(art,id);
+        /* go down to the newest reply */
+        const cs=art.querySelectorAll(".cs-sub .cs-c"), last=cs[cs.length-1]; if(last){ setTimeout(()=>{ last.scrollIntoView({block:"center",behavior:"smooth"}); last.classList.add("cs-flash"); },250); } })(); } }
   }
   function badge(n){ document.querySelectorAll("[data-unread]").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":String(n); }); }
   async function refreshBadge(){ const n=await unread(); const onWall=document.querySelector(".cl-wall[data-on='1']"); badge(onWall?0:n); return n; }
@@ -4035,6 +4054,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const old=el.querySelector(".cs-new form"), keep=old?{v:old.querySelector("textarea").value,cat:(old.querySelector(".cs-cat.on")||{dataset:{}}).dataset.cat,focus:old.contains(document.activeElement)}:null;
     el.innerHTML=flt+`<div class="cs-new">${composer("post","",L("Share something with the club: a question, a photo, a small win…","Comparte algo con el club: una pregunta, una foto, un pequeño logro…"))}</div>${list.map(postHTML).join("")||`<p class="cs-empty">${L("Nothing here yet. Say hi, ask a question, or share a photo 👋","Aún no hay nada. Saluda, haz una pregunta o comparte una foto 👋")}</p>`}`;
     paintImgs(el); paintPolls(el);
+    /* comments show under each post by default (the first posts with replies), so replies are never hidden behind a button */
+    list.filter(p=>(p.n|0)>0).slice(0,12).forEach(p=>{ const art=el.querySelector(`[data-pid="${CSS.escape(p.id)}"]`), sub=art&&art.querySelector(".cs-sub"); if(sub&&sub.hidden) art._subP=openSub(art,p.id); });
     if(keep&&(keep.v||keep.cat)){ const fm=el.querySelector(".cs-new form"), ta=fm&&fm.querySelector("textarea"); if(ta){ ta.value=keep.v; if(keep.cat){ const ct=fm.querySelector(`.cs-cat[data-cat="${keep.cat}"]`); if(ct){ ct.classList.add("on"); ct.setAttribute("aria-pressed","true"); } } if(keep.focus) ta.focus(); } }
     if(window.__clubIntro){ window.__clubIntro=false; const fm=el.querySelector(".cs-new form"), ta=fm&&fm.querySelector("textarea"); if(ta){ ta.value=L("Hi everyone! I’m … from … I’m learning English because … Fun fact about me: …","¡Hola a todos! Soy … de … Estoy aprendiendo inglés porque … Un dato curioso sobre mí: …"); const ct=fm.querySelector('.cs-cat[data-cat="intro"]'); if(ct){ ct.classList.add("on"); ct.setAttribute("aria-pressed","true"); } ta.focus(); ta.setSelectionRange(0,0); ta.scrollIntoView({block:"center",behavior:"smooth"}); } }
   }
@@ -4673,7 +4694,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(e.target.closest("[data-dmback]")){ openInbox(); return; }
     if(e.target.closest("[data-dminbox]")){ openInbox(); return; } });
   async function myNotes(){ await loadNotes(); return (NOTES||[]).filter(n=>n.kind!=="dm"&&n.kind!=="comment").map(n=>Object.assign({},n,{html:noteTxt(n)})); }
-  window.__clubSocial={ mount, dms:loadThreads, recent, myNotes, refreshBadge, unread, reports, delReport, watched:syncWatched };
+  window.__clubSocial={ mount, dms:loadThreads, recent, myNotes, refreshBadge, unread, unreadPid, reports, delReport, watched:syncWatched };
   const b=document.getElementById("clubMain"); if(b) mount(b);
 })();
 </script>
@@ -10056,7 +10077,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112130310"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112131418"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10217,6 +10238,15 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tnrd]"); 
 </script><script>
 document.addEventListener("cs-club-pods",()=>{ try{ document.dispatchEvent(new CustomEvent("cs-club")); }catch(e){} },{once:true});
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-hcgo]"); if(!b) return; const n=document.querySelector('.navbtn[data-go="club"]'); if(n) n.click(); else location.hash="#club"; setTimeout(()=>{ window.__clubTab&&window.__clubTab(b.dataset.hcgo); },120); });
+</script><script>
+/* Noa only: the Daily Stoic on Home (it comes from the 1:1 students page, which loads quietly in the background) */
+(function(){ const b=document.getElementById("tStoic"); if(!b) return; const K="cs-stoic-cache";
+  const show=h=>{ const ok=window.__csTeacher===true&&!window.__csPreview&&!window.__csViewAsMode; b.hidden=!(ok&&h); if(ok&&h) b.innerHTML=h; };
+  const cached=()=>{ try{ const c=JSON.parse(localStorage.getItem(K)||"null"); return c&&c.d===new Date().toDateString()?c.h:""; }catch(e){ return ""; } };
+  setTimeout(()=>show(cached()),400);
+  addEventListener("message",e=>{ if(e.origin!==location.origin||!e.data||e.data.stoicHTML===undefined) return; show(e.data.stoicHTML); try{ localStorage.setItem(K,JSON.stringify({d:new Date().toDateString(),h:e.data.stoicHTML})); }catch(er){} });
+  ["cs-teacher","cs-preview"].forEach(ev=>document.addEventListener(ev,()=>{ if(!(window.__csTeacher===true&&!window.__csPreview)) b.hidden=true; else if(b.hidden) show(b.innerHTML||cached()); }));
+})();
 </script>
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------

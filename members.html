@@ -247,7 +247,7 @@ let students = [], current = null;
 let tUid = null;
 let hubMeta = null;
 function renderStoicM() {
-  const b = document.getElementById("stoicBox"), L = (hubMeta && hubMeta.stoic) || []; if (!b) return; if (!L.length) { b.hidden = true; return; }
+  const b = document.getElementById("stoicBox"); if (b) b.hidden = true; return;   /* the Daily Stoic lives on Home now */
   const E = t => String(t || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const d = new Date(), td = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const e = L.slice().sort((a, b) => a.d.localeCompare(b.d)).filter(x => x.d <= td).pop() || L[L.length - 1];
