@@ -44,7 +44,7 @@
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=26" defer></script>
+<script src="comfort.js?v=27" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -997,6 +997,15 @@ select:not([multiple]):not([size]){-webkit-appearance:none;-moz-appearance:none;
 .cs-dlg:focus{outline:none}
 @media (max-width:560px){.vhead{flex-direction:column;gap:4px}.vhead .cs-read-row{max-width:none;justify-content:flex-start}}
 .cl-older{display:block;margin:6px auto 24px}
+
+/* step102: Noa's 1:1 students tab */
+.st-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}.st-head h1{margin:0}
+.st-full{margin-left:auto;font:700 13.5px var(--body);color:var(--muted)}
+.st-frame iframe{display:block;width:100%;height:calc(100dvh - 170px);min-height:560px;border:0;border-radius:16px;background:var(--bg)}
+#v-students .rec-bar{display:none!important}
+.st-live{margin-left:auto;font:800 10px var(--mono);letter-spacing:.06em;color:#fff;background:#E5484D;border-radius:999px;padding:2px 7px;animation:stp 1.6s ease-in-out infinite}
+@keyframes stp{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.st-live{animation:none}}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -2489,6 +2498,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
       <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2"/><circle cx="16.8" cy="9.5" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.4 1.4 5 4.6"/></svg><span>Hibi members</span></button>
       <button class="navbtn cn-nav t-mnav" type="button" data-href="private-students.html" id="mnavHub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>Private students</span></button>
+      <button class="navbtn cn-nav coach-nav" data-go="students" id="navStudents" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>1:1 students</span><span class="st-live" id="stLiveDot" hidden>LIVE</span></button>
       <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>My coaching</span></button>
       <button class="navbtn cn-nav club-nav" data-go="club" id="navClub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.2V15.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M17 9.5h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v2.7l-3.4-2.7H12"/></svg><span>Club</span></button><script>try{var _w=localStorage.getItem("cs-club-nav");if(_w){var _b=document.getElementById("navClub");_b.hidden=false;if(_w==="2")_b.classList.add("locked");}}catch(e){}</script>
       <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
@@ -2788,6 +2798,10 @@ html.cs-calm .cs-rxpal button{transition:none}
   <div class="park" id="parkArea" aria-live="polite"></div>
 </section>
 
+<section class="view" id="v-students" hidden>
+  <div class="st-head"><h1>1:1 <em>students</em></h1><a class="st-full" href="private-students.html">Open the full page ↗</a></div>
+  <div class="st-frame" id="stFrame"><p class="muted">Loading…</p></div>
+</section>
 <section class="view" id="v-coaching" hidden>
   <h1>My <em>coaching</em></h1>
   <p class="lede">Your private classes with Noa: your next class, homework, guides, class recaps, goals and your pack. Noa keeps it up to date after your classes.</p>
@@ -2946,7 +2960,8 @@ html.cs-calm .cs-rxpal button{transition:none}
   function nav(){
     const v=window.__csHubView, b=document.getElementById("navCoaching"); if(b) b.hidden=!v||(!!window.__csTeacher&&!window.__csPreview&&!window.__csViewAsMode);
     if(b&&v&&!window.__csPreview){ const n=newsFor(v).length; let dot=b.querySelector(".co-dot"); if(n){ if(!dot){ dot=document.createElement("span"); dot.className="co-dot"; b.appendChild(dot); } dot.textContent=n; dot.title=n+" new"; } else if(dot) dot.remove(); }
-    const t=!!window.__csTeacher && !window.__csPreview; ["navTeacher","navHub","mnavTeacher","mnavHub"].forEach(id=>{ const e=document.getElementById(id); if(e) e.hidden=!t; });
+    const t=!!window.__csTeacher && !window.__csPreview; ["navTeacher","navHub","mnavTeacher"].forEach(id=>{ const e=document.getElementById(id); if(e) e.hidden=!t; });
+    { const e=document.getElementById("mnavHub"); if(e) e.hidden=true; const s=document.getElementById("navStudents"); if(s) s.hidden=!(t&&!window.__csViewAsMode); }
         if(!v && location.hash.replace("#","")==="coaching" && window.csGo) window.csGo("notes");
   }
   function render(){
@@ -9256,7 +9271,7 @@ try{ history.replaceState({cs:1,v:curView,n:0},"",curView==="notes"?location.pat
 let stars=LS.get("ncs-stars",[]);
 const navLabel=id=>{ const b=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+id+'"]'); if(!b) return id; const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl').forEach(x=>x.remove()); return c.textContent.trim(); };
 document.querySelectorAll(".view").forEach(v=>{
-  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","park","coaching","club"].includes(id)) return;
+  const id=v.id.slice(2); if(["notes","classnotes","notebook","feedback","words","backup","changelog","quiz","park","coaching","club","students"].includes(id)) return;
   const h=v.querySelector("h1"); if(!h) return;
   const wrap=document.createElement("div"); wrap.className="vhead";
   h.parentNode.insertBefore(wrap,h); wrap.appendChild(h);
@@ -9264,7 +9279,7 @@ document.querySelectorAll(".view").forEach(v=>{
   wrap.appendChild(b);
 });
 function renderStars(){
-  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","park","coaching","club"].includes(id));
+  stars=stars.filter(id=>document.getElementById("v-"+id)&&!["quiz","park","coaching","club","students"].includes(id));
   document.querySelectorAll("[data-star]").forEach(b=>{
     const on=stars.includes(b.dataset.star);
     b.setAttribute("aria-pressed",on?"true":"false");
@@ -9980,7 +9995,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112120323"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112123105"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10086,7 +10101,19 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
     if(document.getElementById("clDm")&&window.__clubDmClose) window.__clubDmClose(); });
 })();
 </script>
-
+<script>
+/* Noa's 1:1 students tab: loads the Private students page inside Home the first time it's opened */
+(function(){ const sec=document.getElementById("v-students"); if(!sec) return; let loaded=false;
+  const ok=()=>!!window.__csTeacher&&!window.__csPreview&&!window.__csViewAsMode;
+  function load(bg){ if(loaded||(sec.hidden&&bg!==true)) return; if(!ok()){ if(window.__csTeacher===false&&window.csGo) window.csGo("notes"); return; } loaded=true;
+    const box=document.getElementById("stFrame"); box.innerHTML='<iframe src="private-students.html?embed=1#overview" title="Your private students" allow="clipboard-write"></iframe>'; }
+  new MutationObserver(load).observe(sec,{attributes:true,attributeFilter:["hidden"]}); document.addEventListener("cs-teacher",()=>setTimeout(()=>load(true),2500)); setTimeout(load,800);
+  /* for Noa, load it quietly in the background too, so the menu can show LIVE during a class and the tab opens instantly */
+  setTimeout(()=>{ if(window.__csTeacher===true) load(true); },3000);
+  /* the page tells Home when a class is live, for the LIVE tag in the menu */
+  addEventListener("message",e=>{ if(e.origin!==location.origin||!e.data||e.data.stLive===undefined) return; const d=document.getElementById("stLiveDot"); if(d) d.hidden=!e.data.stLive; });
+})();
+</script>
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
    Every "ncs-*" key in localStorage is mirrored to users/{uid}/data/{key}.

@@ -160,7 +160,10 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=26" defer></script>
+<script>(function(){ if(/[?&]embed=1/.test(location.search)&&window.top!==window.self){ document.documentElement.classList.add("emb"); window.__psEmbed=true;
+  /* links to other pages open in the whole window (not inside Home's frame) */
+  document.addEventListener("click",e=>{ const a=e.target.closest("a[href]"); if(!a||a.target==="_blank"||a.getAttribute("href").charAt(0)==="#"||/^(mailto|tel|javascript):/.test(a.getAttribute("href"))) return; a.target="_top"; },true); } })();</script>
+<script src="comfort.js?v=27" defer></script>
 <script src="tbar.js?v=2" defer></script>
 </head>
 <body>
@@ -265,6 +268,18 @@ tr.arch td{opacity:.85}
 .nextc li{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:8px 10px;border-radius:10px;background:var(--surface-2)}
 .nextc .t{font:700 12.5px var(--mono);color:var(--c-sky)}
 .prof{white-space:pre-wrap;line-height:1.55}
+/* live now / starting soon in Coming up */
+.nx-live{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#E5484D 14%,var(--surface-2));border-left:4px solid #E5484D}
+.nx-live .lv{font:800 11px var(--mono);letter-spacing:.06em;color:#fff;background:#E5484D;border-radius:999px;padding:3px 8px}
+.nx-live.soon{background:color-mix(in srgb,var(--c-sky) 12%,var(--surface-2));border-left-color:var(--c-sky)}.nx-live.soon .lv{background:var(--c-sky)}
+.nextc li.live{outline:2px solid #E5484D;outline-offset:-2px}
+.nextc .in{font:700 11.5px var(--mono);color:var(--muted);margin-left:6px}
+/* inside Home's "1:1 students" tab: no page header (Home has its own), just the hub */
+html.emb header{position:fixed;top:6px;right:10px;left:auto;background:none!important;border:0!important;box-shadow:none!important;z-index:60;pointer-events:none}
+html.emb header .top>*:not(#saving){display:none!important}
+html.emb main{padding-top:12px}
+html.emb .dh h1.hubt{visibility:hidden;flex:1}
+html.emb body{background:transparent}
 </style>
 <header><div class="top">
   <a class="brand" href="./"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
@@ -628,6 +643,7 @@ function renderStoic() {
   const td = today(), e = L.slice().sort((a, b) => a.d.localeCompare(b.d)).filter(x => x.d <= td).pop() || L[L.length - 1];
   b.hidden = false; b.innerHTML = `<span class="st-k">🏛️ Daily Stoic${e.d === td ? "" : " · " + fmtShort(e.d)}</span><b>${esc(e.title)}</b><span class="st-i">${esc(e.idea)}</span>${e.todo ? `<span class="st-t">✔︎ ${esc(e.todo)}</span>` : ""}`;
 }
+setInterval(() => { try { if (meta && S) renderNext(); } catch (e) {} }, 60e3);   /* keep "live now" and "in 20 min" current */
 function renderAll() { renderStoic(); renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); route(); }
 function renderSummary() {
   const act = S.filter(s => s.status === "active");
@@ -652,11 +668,21 @@ function renderNext() {
   if (!nextDay || !days.includes(nextDay)) nextDay = days.includes(td) ? td : days[0];
   const i = days.indexOf(nextDay), up = all.filter(u => dkey(new Date(u.start)) === nextDay), d0 = new Date(nextDay + "T12:00");
   const lbl = nextDay === td ? "Today" : nextDay === dkey(new Date(Date.now() + 864e5)) ? "Tomorrow" : d0.toLocaleDateString("en-US", { weekday: "long" });
-  box.innerHTML = `<div class="nx-h"><h2><span class="kc">📅</span> Coming up</h2>
+  const now = Date.now(), LEN = 60 * 60e3;
+  const nm = u => { const s = S.find(x => x.id === u.student); return s ? s.name : u.name || ""; };
+  const tm = d => new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const live = all.find(u => { const a = Date.parse(u.start), b = u.end ? Date.parse(u.end) : a + LEN; return a <= now && now < b; });
+  const soon = !live && all.find(u => { const a = Date.parse(u.start); return a > now && a - now <= 60 * 60e3; });
+  const inTxt = ms => { const m = Math.max(1, Math.round(ms / 60e3)); return m < 60 ? `in ${m} min` : `in ${Math.floor(m / 60)}h ${m % 60 ? (m % 60) + "m" : ""}`.trim(); };
+  const banner = live ? `<div class="nx-live"><span class="lv">● LIVE NOW</span><span><b>${esc(nm(live))}</b> · started ${tm(live.start)}${live.end ? " · ends " + tm(live.end) : ""}</span><button type="button" class="linkb" data-open="${esc(live.student)}" style="margin-left:auto">Open their page →</button></div>`
+    : soon ? `<div class="nx-live soon"><span class="lv">NEXT</span><span><b>${esc(nm(soon))}</b> at ${tm(soon.start)} · ${inTxt(Date.parse(soon.start) - now)}</span><button type="button" class="linkb" data-open="${esc(soon.student)}" style="margin-left:auto">Open their page →</button></div>` : "";
+  try { if (window.top !== window.self) window.parent.postMessage({ stLive: !!live }, location.origin); } catch (e) {}
+  box.innerHTML = banner + `<div class="nx-h"><h2><span class="kc">📅</span> Coming up</h2>
       <div class="nx-nav"><button type="button" class="ib" data-nday="-1" ${i <= 0 ? "disabled" : ""} aria-label="Previous day">‹</button><b>${lbl}</b><span class="muted small">${d0.toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${up.length} ${up.length === 1 ? "class" : "classes"}</span><button type="button" class="ib" data-nday="1" ${i >= days.length - 1 ? "disabled" : ""} aria-label="Next day">›</button></div></div>
     <ul class="nextc">${up.map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
     const note = u.note ? esc(u.note) : lc ? `last time: ${esc(lc.topics)}${lc.homework ? " · homework: " + esc(lc.homework) : ""}` : "";
-    return `<li><span class="t">${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span><span><button type="button" class="linkb" data-open="${esc(u.student)}"><b>${esc(s ? s.name : u.name || "")}</b></button>${note ? `<span class="nx-note">${note}</span>` : ""}</span></li>`; }).join("")}</ul>`;
+    const isLive = live && u === live, st = Date.parse(u.start), extra = isLive ? `<span class="in" style="color:#E5484D">● live</span>` : st > now && st - now < 12 * 3600e3 && nextDay === td ? `<span class="in">${inTxt(st - now)}</span>` : "";
+    return `<li${isLive ? ' class="live"' : ""}><span class="t">${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}${extra}</span><span><button type="button" class="linkb" data-open="${esc(u.student)}"><b>${esc(s ? s.name : u.name || "")}</b></button>${note ? `<span class="nx-note">${note}</span>` : ""}</span></li>`; }).join("")}</ul>`;
 }
 const GM = (to, su, body) => "https://mail.google.com/mail/?authuser=" + encodeURIComponent(TEACHER) + "&view=cm&fs=1&to=" + encodeURIComponent(to || "") + "&su=" + encodeURIComponent(su || "") + "&body=" + encodeURIComponent(body || "");
 function reminderFor(s, a) {
