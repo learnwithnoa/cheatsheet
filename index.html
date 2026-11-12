@@ -43,7 +43,7 @@
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=23" defer></script>
+<script src="comfort.js?v=24" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -846,6 +846,19 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 html.t-hint .top-in .tn-wrap:empty{display:block!important;width:38px;height:38px}
 html:not(.hdr-ok) .top-in>:not(.brand):not(#searchWrap):not(.spacer){opacity:0}
 html.hdr-ok .top-in>*{transition:opacity .15s ease}
+
+/* step83: one window, two tabs (👤 Profile · ⚙ Settings) */
+html.pt-on.cs-signed .top-in #csBtn{display:none}
+html.pt-on .auth-wrap .auth-panel{width:min(380px,calc(100vw - 32px))}
+html.pt-on .auth-wrap > .cs-panel{z-index:36}
+.pt-tabs{display:none}
+html.pt-on.cs-signed .pt-tabs{flex:1;display:flex;gap:4px;min-width:0;background:var(--surface-2,color-mix(in srgb,var(--ink) 5%,transparent));border:1px solid var(--line);border-radius:999px;padding:4px;margin-right:10px}
+.pt-tabs button{all:unset;box-sizing:border-box;flex:1;text-align:center;cursor:pointer;font:700 14.5px var(--display,inherit);color:var(--muted);padding:8px 10px;border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
+.pt-tabs button:hover{color:var(--ink)}
+.pt-tabs button:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
+.pt-tabs button[aria-selected="true"]{background:var(--gloss,var(--royal));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 8px rgba(5,15,30,.25);text-shadow:0 1px 2px rgba(5,15,30,.35)}
+html.pt-on.cs-signed .auth-panel .qa-top > h3,html.pt-on.cs-signed .cs-panel .cs-head > h3{display:none}
+html.pt-on.cs-signed .cs-panel .cs-head{margin-bottom:4px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -5323,7 +5336,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <ul class="wl-list">
       <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
       <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (top right): pick your photo (your Google one, your own, or your buddy), and jump to your words and your club profile. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (top right): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (tap your photo, top right, then <b>⚙ Settings</b>): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music:</b> lo-fi, piano, rain or calm noise while you study.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
       <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Something missing?</b> Use “Tell Noa” at the bottom of any page.</div></li>
@@ -9553,6 +9566,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
+    ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."]
+  ]},
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
     ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
     ["🗣️","How to say your words","short words and expressions in <b>My words</b> now show how to say them, like <b>LEV-er-ij</b> (CAPITALS = the strong part). Your saved words get it little by little, and you can edit it.","words"],
@@ -9802,7 +9818,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261111210440"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112014413"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10065,7 +10081,7 @@ let lastStatus = "out";
 function status(st) {
   lastStatus = st;
   const txt = { syncing: "Syncing…", saving: "Saving…", synced: "Saved", error: "Offline", out: "Sign in" }[st] || "Saved";
-  const t = $("authTxt"); if (t) t.textContent = user ? (st === "error" ? "Offline" : "Profile") : "Sign in";
+  const t = $("authTxt"); if (t) t.textContent = user ? (st === "error" ? "Offline" : "Me") : "Sign in";
   if (btn) { btn.classList.toggle("st-busy", !!user && (st === "saving" || st === "syncing")); btn.classList.toggle("st-err", !!user && st === "error"); btn.classList.toggle("st-ok", !!user && st !== "saving" && st !== "syncing" && st !== "error"); btn.title = user ? txt : ""; }
   document.documentElement.classList.toggle("cs-signed", !!user);
   const s = $("authStatus");
@@ -10133,7 +10149,7 @@ function nameBox() {
   const club = !!(window.__clubFeed && window.__clubFeed());
   if (nb.dataset.edit) {
     nb.innerHTML = `<form class="auth-nform"><label for="authNmIn">My name on Hibi</label><input id="authNmIn" maxlength="40" autocomplete="off" value="${escN(gName())}"><small>How everyone sees you. For example, just your first name.${user && user.displayName && user.displayName !== gName() ? ` <button type="button" class="ap-chg" data-nmgoogle>Use my Google name</button>` : ""}</small><div class="auth-nrow"><button type="submit" class="auth-nsave">Save</button><button type="button" class="ap-chg" data-nmx>Cancel</button><span class="auth-nmsg" role="status"></span></div></form>`;
-  } else nb.innerHTML = `<button type="button" class="auth-npill" data-nmedit>✏️ Change my name</button>${club ? ` <button type="button" class="auth-npill" data-nmclub>👤 Edit my club profile</button>` : ""}`;
+  } else nb.innerHTML = `<button type="button" class="auth-npill" data-nmedit>✏️ Change my name</button>`;
 }
 function renderUser() {
   document.body.dataset.auth = user ? "in" : "out";
@@ -10157,13 +10173,40 @@ function renderUser() {
   } else { if (ready || auth.currentUser === null) { try { localStorage.removeItem("cs-auth-hint"); } catch (e) {} } ico.textContent = "G"; panel.hidden = true; const tl = $("teacherLink"); if (tl) tl.hidden = true; if (window.__csTeacher) { window.__csTeacher = false; document.dispatchEvent(new CustomEvent("cs-teacher")); } }
   status(user ? lastStatus === "out" ? "syncing" : lastStatus : "out");
 }
+/* one window, two tabs: 👤 Profile (this panel) and ⚙ Settings (the comfort panel, moved in next to it). Signed out, the gear stays as before. */
+const PT = { tab() { try { return localStorage.getItem("cs-ptab") === "s" ? "s" : "p"; } catch (e) { return "p"; } } };
+function ptSetup() {
+  const sp = $("csPanel"); if (!sp || !panel) return null;
+  if (!sp.dataset.pt) {
+    sp.dataset.pt = "1"; document.documentElement.classList.add("pt-on");
+    panel.insertAdjacentElement("afterend", sp);
+    const mk = () => { const t = document.createElement("div"); t.className = "pt-tabs"; t.setAttribute("role", "tablist"); t.setAttribute("aria-label", "Profile and settings");
+      t.innerHTML = '<button type="button" role="tab" data-pt="p">👤 Profile</button><button type="button" role="tab" data-pt="s">⚙ Settings</button>';
+      t.addEventListener("click", e => { const b = e.target.closest("[data-pt]"); if (b) { e.stopPropagation(); ptShow(b.dataset.pt, true); } }); return t; };
+    const h1 = panel.querySelector(".qa-top"), h2 = sp.querySelector(".cs-head");
+    if (h1) h1.insertBefore(mk(), h1.firstChild); if (h2) h2.insertBefore(mk(), h2.firstChild);
+  }
+  return sp;
+}
+function ptShow(t, focus) {
+  const sp = ptSetup(); if (!sp) { panel.hidden = false; btn.setAttribute("aria-expanded", "true"); return; }
+  try { localStorage.setItem("cs-ptab", t); } catch (e) {}
+  panel.hidden = t !== "p";
+  if (window.__csSettingsOpen) window.__csSettingsOpen(t === "s"); else sp.hidden = t !== "s";
+  document.querySelectorAll(".pt-tabs [data-pt]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.pt === t)));
+  btn.setAttribute("aria-expanded", "true");
+  if (focus) { const b = (t === "p" ? panel : sp).querySelector('.pt-tabs [data-pt="' + t + '"]'); if (b) b.focus(); }
+}
+function ptOpen() { const sp = $("csPanel"); return !panel.hidden || !!(sp && sp.dataset.pt && !sp.hidden); }
+function ptClose() { panel.hidden = true; const sp = $("csPanel"); if (sp && sp.dataset.pt && !sp.hidden) { if (window.__csSettingsOpen) window.__csSettingsOpen(false); else sp.hidden = true; } btn.setAttribute("aria-expanded", "false"); }
 btn.addEventListener("click", () => {
   if (!user) { signIn(); return; }
-  panel.hidden = !panel.hidden; btn.setAttribute("aria-expanded", panel.hidden ? "false" : "true");
+  if (ptOpen()) ptClose(); else ptShow(PT.tab());
 });
 $("authClose").addEventListener("click", () => { panel.hidden = true; btn.setAttribute("aria-expanded", "false"); btn.focus(); });
 panel.addEventListener("keydown", e => { if (e.key === "Escape") { panel.hidden = true; btn.focus(); } });
 document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest(".auth-wrap")) panel.hidden = true; });
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => setTimeout(ptSetup, 0)); else setTimeout(ptSetup, 0);
 $("authOut").addEventListener("click", async () => {
   if (!window.csConfirm) { $("authOutConfirm").hidden = false; $("authOutBox").hidden = true; return; }
   if (await window.csConfirm("Sign out?", "<p>Your words, notes and buddy are saved in your account. Sign back in with Google anytime to get them back.</p>", "Sign out")) doSignOut();

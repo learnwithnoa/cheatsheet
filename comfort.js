@@ -442,9 +442,11 @@
     const btn = $("csBtn"), panel = $("csPanel");
     const open = o => { panel.hidden = !o; btn.setAttribute("aria-expanded", String(o)); if (o) { paintPanel(); loadFont("atkinson"); loadFont("book"); loadFont("classic"); } };
     btn.onclick = () => open(panel.hidden);
-    $("csClose").onclick = () => { open(false); btn.focus(); };
-    panel.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); btn.focus(); } });
-    document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest("#csWrap")) open(false); });
+    window.__csSettingsOpen = o => open(!!o);  /* Hibi: the profile window opens Settings as its second tab */
+    const back = () => { const a = document.getElementById("authBtn"); (btn.offsetParent === null && a ? a : btn).focus(); };
+    $("csClose").onclick = () => { open(false); back(); };
+    panel.addEventListener("keydown", e => { if (e.key === "Escape") { open(false); back(); } });
+    document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest("#csWrap, .auth-wrap")) open(false); });
     $("csThemes").onclick = e => { const b = e.target.closest("[data-cstheme]"); if (b) setTheme(b.dataset.cstheme); };
     $("csFonts").onclick = e => { const b = e.target.closest("[data-csfont]"); if (!b) return; S.font = b.dataset.csfont; save(); applyAll(); };
     const SIZES = [.8, .9, 1, 1.1, 1.2, 1.35, 1.5];
