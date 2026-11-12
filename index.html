@@ -860,6 +860,21 @@ html.pt-on.cs-signed .pt-tabs{flex:1;display:flex;gap:4px;min-width:0;background
 html.pt-on.cs-signed .auth-panel .qa-top > h3,html.pt-on.cs-signed .cs-panel .cs-head > h3{display:none}
 html.pt-on.cs-signed .cs-panel .cs-head{margin-bottom:4px}
 
+/* step85: 🔔 Notifications · 💬 Messages tabs */
+html.nm-on .top-in #dmTopBtn{display:none!important}
+.nm-tabs{flex:1;display:flex;gap:4px;min-width:0;background:var(--surface-2,color-mix(in srgb,var(--ink) 5%,transparent));border:1px solid var(--line);border-radius:999px;padding:4px}
+.nm-tabs button{all:unset;box-sizing:border-box;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;font:700 14px var(--display,inherit);color:var(--muted);padding:7px 10px;border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
+.nm-tabs button:hover{color:var(--ink)}
+.nm-tabs button:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
+.nm-tabs button[aria-selected="true"]{background:var(--gloss,var(--royal));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 8px rgba(5,15,30,.25);text-shadow:0 1px 2px rgba(5,15,30,.35)}
+.nm-c{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#22a06b;color:#fff;font-size:11.5px;font-weight:800;text-shadow:none;box-sizing:border-box}
+#clBellPanel .clb-h:has(.nm-tabs){display:flex;margin-bottom:8px}
+#tNotif .tn-h .nm-tabs{flex:0 1 330px}
+#clDm .cl-dmh.nm-hasTabs .cl-dmt{display:none}
+#clDm .cl-dmh .nm-tabs{margin-right:8px}
+.nm-n{position:absolute;bottom:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#22a06b;color:#fff;font:800 10.5px/17px var(--display,inherit);text-align:center;box-shadow:0 0 0 2px var(--bg,#0d1424);pointer-events:none;z-index:2}
+#clBell,#tNotif .tn-bell{position:relative}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4380,10 +4395,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       if(!(await askDel(L("Delete this chat?","¿Borrar este chat?"),`<p>${L(`Your chat with <b>${esc(nm)}</b> disappears from your messages. If they write to you again, it comes back.`,`Tu chat con <b>${esc(nm)}</b> desaparece de tus mensajes. Si te vuelve a escribir, aparece de nuevo.`)}</p>`,L("Delete","Borrar")))) return;
       const now=Date.now();
       try{ await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=h_${me()}&updateMask.fieldPaths=r_${me()}`,{fields:{["h_"+me()]:I(now),["r_"+me()]:I(now)}}); THREADS=(THREADS||[]).filter(x=>x.id!==tid); dmBadge(); openInbox(); toast(L("Chat deleted.","Chat borrado.")); }catch(err){ toast(L("Couldn’t delete it. Try again.","No se pudo borrar. Intenta de nuevo.")); } } },true);
+  window.__clubDmClose=()=>closeDm();
   function closeDm(){ const o=document.getElementById("clDm"); if(o) o.remove(); DMOPEN=null; clearInterval(DMTIMER); }
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("clDm")) closeDm(); });
-  function dmPlace(o){ try{ const bt=document.getElementById("dmTopBtn"), r=bt&&!bt.hidden?bt.getBoundingClientRect():null;
-      o.style.setProperty("--dmtop",Math.round(r&&r.bottom>0?r.bottom+8:64)+"px"); o.style.setProperty("--dmright",Math.round(r?Math.max(8,innerWidth-r.right-60):12)+"px"); }catch(e){} }
+  function dmPlace(o){ try{ const bt=window.__nmAnchor?window.__nmAnchor():document.getElementById("dmTopBtn"), r=bt&&bt.offsetParent!==null?bt.getBoundingClientRect():null;
+      o.style.setProperty("--dmtop",Math.round(r&&r.bottom>0?r.bottom+8:64)+"px"); o.style.setProperty("--dmright",Math.round(r?Math.max(8,innerWidth-r.right-(bt&&bt.id==="dmTopBtn"?60:0)):12)+"px"); }catch(e){} }
   async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); dmPlace(o); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
     b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{}),loadNotes().catch(()=>{})]);
     const ts=THREADS||[];
@@ -5313,7 +5329,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>).</div></li>
       <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
     </ul>
   </div>
@@ -5336,7 +5352,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Make it <em>yours</em> ⚙️</h2>
     <ul class="wl-list">
       <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
-      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (top right): pick your photo (your Google one, your own, or your buddy), and jump to your words and your club profile. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
+      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (your photo, top right): pick your photo (your Google one, your own, or your buddy), and jump to your words and your club profile. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
       <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (tap your photo, top right, then <b>⚙ Settings</b>): themes, bigger text, easier fonts, bionic reading, calm mode, a study timer and more.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music:</b> lo-fi, piano, rain or calm noise while you study.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
@@ -9568,7 +9584,8 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
-    ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."]
+    ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
+    ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages show as a little green number on the bell."]
   ]},
   {id:"2026-1111", date:"November 11, 2026", title:"Small things, smoother", items:[
     ["🐾","Your buddy is your photo","in the club, everyone’s photo is now their buddy, unless they pick something else. Change it in your profile: your Google photo, your own photo, your buddy, or just your initials."],
@@ -9819,7 +9836,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112014812"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112015108"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -9834,6 +9851,39 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>try{var _h=JSON.parse(localStorage.getItem("cs-auth-hint")||"null");if(_h&&_h.t)document.documentElement.classList.add("t-hint");}catch(e){}
 (function(){var t0=Date.now();(function w(){var ok=document.getElementById("tmWrap")&&document.getElementById("csWrap")&&document.getElementById("csWrap").offsetWidth>0;if(ok||Date.now()-t0>1200){document.documentElement.classList.add("hdr-ok");return;}requestAnimationFrame(w);})();})();</script>
+<script>
+/* step85: one 🔔 window, two tabs. Works with the club bell (members) and Noa's bell, and the 💬 Messages pop-up. */
+(function(){
+  const dmBtn=()=>document.getElementById("dmTopBtn");
+  const hasDM=()=>{ const m=dmBtn(); return !!m&&!m.hidden; };
+  function bell(){ const w=document.getElementById("clBellWrap"); if(w&&!w.hidden){ const b=document.getElementById("clBell"); if(b) return {k:"c",btn:b}; }
+    const t=document.querySelector("#tNotif .tn-bell"); return t?{k:"t",btn:t}:null; }
+  const on=()=>document.documentElement.classList.contains("nm-on");
+  window.__nmAnchor=()=>{ const b=bell(); return on()&&b?b.btn:dmBtn(); };
+  const dmCount=()=>{ const n=document.querySelector("#dmTopBtn .cl-dmn"); return n&&!n.hidden?(parseInt(n.textContent,10)||0):0; };
+  const mLabel=n=>`💬 Messages${n?` <span class="nm-c">${n}</span>`:""}`;
+  const tabs=cur=>`<div class="nm-tabs" role="tablist" aria-label="Notifications and messages"><button type="button" role="tab" data-nm="n" aria-selected="${cur==="n"}">🔔 Notifications</button><button type="button" role="tab" data-nm="m" aria-selected="${cur==="m"}">${mLabel(dmCount())}</button></div>`;
+  function openNotif(){ const b=bell(); if(!b) return; if(b.k==="c"){ const pn=document.getElementById("clBellPanel"); if(pn&&pn.hidden) b.btn.click(); } else if(!document.querySelector("#tNotif .tn-box")) b.btn.click(); }
+  function closeNotif(){ const b=bell(); if(!b) return; if(b.k==="c"){ const pn=document.getElementById("clBellPanel"); if(pn&&!pn.hidden) b.btn.click(); } else { const x=document.querySelector('#tNotif [data-tn="hide"]'); if(x) x.click(); } }
+  document.addEventListener("click",e=>{ const t=e.target.closest("[data-nm]"); if(!t) return; e.preventDefault(); e.stopPropagation();
+    if(t.getAttribute("aria-selected")==="true") return;
+    if(t.dataset.nm==="m"){ closeNotif(); setTimeout(()=>{ window.__clubInbox&&window.__clubInbox(); },0); }
+    else { if(document.getElementById("clDm")){ if(window.__clubDmClose) window.__clubDmClose(); else document.getElementById("clDm").remove(); } setTimeout(openNotif,0); } },true);
+  let q=0;
+  function decorate(){ q=0;
+    const b=bell(), want=hasDM()&&!!b; if(on()!==want) document.documentElement.classList.toggle("nm-on",want); if(!want) return;
+    const ch=document.querySelector("#clBellPanel .clb-h"); if(ch&&!ch.querySelector(".nm-tabs")) ch.innerHTML=tabs("n");
+    const th=document.querySelector("#tNotif .tn-h"); if(th&&!th.querySelector(".nm-tabs")){ const t=th.querySelector(":scope > b"); if(t) t.outerHTML=tabs("n"); }
+    const dh=document.querySelector("#clDm .cl-dmh"); if(dh){ const bk=dh.querySelector(".cl-dmback"), inbox=!bk||bk.hidden, tb=dh.querySelector(".nm-tabs");
+      if(inbox&&!tb) dh.insertAdjacentHTML("afterbegin",tabs("m")); else if(!inbox&&tb) tb.remove(); if(dh.classList.contains("nm-hasTabs")!==inbox) dh.classList.toggle("nm-hasTabs",inbox); }
+    const n=dmCount(), lab=mLabel(n); document.querySelectorAll('.nm-tabs [data-nm="m"]').forEach(x=>{ if(x.innerHTML!==lab) x.innerHTML=lab; });
+    let bd=b.btn.querySelector(".nm-n"); if(n){ if(!bd){ bd=document.createElement("span"); bd.className="nm-n"; bd.setAttribute("aria-hidden","true"); b.btn.appendChild(bd); } if(bd.textContent!==String(n)) bd.textContent=String(n); b.btn.setAttribute("aria-description",n+" new message"+(n===1?"":"s")); } else if(bd){ bd.remove(); b.btn.removeAttribute("aria-description"); }
+  }
+  const kick=()=>{ if(!q) q=requestAnimationFrame(decorate); };
+  const start=()=>{ new MutationObserver(kick).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]}); kick(); };
+  if(document.body) start(); else document.addEventListener("DOMContentLoaded",start);
+})();
+</script>
 
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
