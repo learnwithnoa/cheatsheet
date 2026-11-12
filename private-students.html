@@ -403,6 +403,7 @@ async function load() {
     S.forEach(s => { const r = roles[s.id]; if (r && s.uid !== r.uid) { s.uid = r.uid; save(s, true); } });
     renderAll(); loadAvatars();
     loadRate(); fixUsdRates();
+    grantAccess();
     await autoLink();
     loadUsage();
     publishAll();
@@ -474,6 +475,17 @@ async function pushSheetWords(s) {
   appWords[s.id] = list; s.pushedWords = (s.pushedWords || []).concat(add.map(w => w.w)); save(s, true);
 }
 /* link new Hibi sign-ups to hub students */
+/* every active private student can sign in to Hibi right away (no "request access" form): their email goes on the sign-in list */
+async function grantAccess() {
+  try {
+    const have = new Set(); (await getDocs(collection(db, "access"))).forEach(d => have.add(d.id.toLowerCase()));
+    for (const s of S) {
+      if (s.status === "inactive" || s.status === "past") continue;
+      const ems = String(s.email || "").toLowerCase().split(/[\s,;]+/).filter(e => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(e));
+      for (const em of ems) if (!have.has(em)) { await setDoc(doc(db, "access", em), { name: s.name || "", at: Date.now(), by: "hub" }); have.add(em); }
+    }
+  } catch (e) { console.warn("grantAccess", e); }
+}
 async function autoLink() {
   try {
     const us = await getDocs(collection(db, "users")); accounts = [];
