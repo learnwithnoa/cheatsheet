@@ -19,7 +19,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py levels                each Hibi member's level (set by Noa) vs their own choice, level check and module results
   HUB_PASSWORD=... python3 hubsync.py set-zrecs <id> '[{"date","url":<Zoom share_url>,"until":<auto_delete_date>,"min":<duration>}]'   their class recordings on My coaching
   HUB_PASSWORD=... python3 hubsync.py stoic-add '{"d":"YYYY-MM-DD","title":..,"idea":..,"todo":..}'   Daily Stoic line on the teacher pages
-  HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..}]}
+  HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..,"zoom":"https://us06web.zoom.us/j/…"}]}
   HUB_PASSWORD=... python3 hubsync.py add-words <student-id> '[{"w":"word","tr":"meaning","ex":"example"}, ...]'   (skips words already there)
   HUB_PASSWORD=... python3 hubsync.py club <student-id> on|off   (on = private + club member, sits in the middle of the park)
   HUB_PASSWORD=... python3 hubsync.py recommend '{"hub":"laura","name":"Laura Porcile","mod":"pp","stage":6,"title":"Present perfect or past simple?","why":"said 'I have seen it yesterday' twice","from":"private class Nov 9"}'
@@ -338,7 +338,7 @@ def make_view(s, meta=None):
                         for c in s.get("classes", []) if c.get("kind") != "note"],
             "payments": [{"date": p.get("date", ""), "what": p.get("what", ""), "amount": p.get("amount", "")} for p in s.get("payments", [])],
             "words": [{"w": w.get("w", ""), "tr": w.get("tr", ""), "ex": w.get("ex", ""), "i": i} for i, w in enumerate(s.get("words", []))],
-            "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "tz": s.get("tz", ""), "country": s.get("country", ""), "next": ups[0]["start"] if ups else "", "due": due,
+            "focus": s.get("focus", ""), "recap": s.get("recap") or None, "resources": res_for(s), "tz": s.get("tz", ""), "country": s.get("country", ""), "next": ups[0]["start"] if ups else "", "nextZoom": (ups[0].get("zoom") or "") if ups and re.match(r"^https://[\w.-]*zoom\.us/", ups[0].get("zoom") or "") else "", "book": BOOK_URL if re.search(r"flexib", s.get("schedule", ""), re.I) else "", "due": due,
             "club": (meta.get("clubFeed") or None) if s.get("uid") and s.get("uid") in (meta.get("clubUids") or []) else None,
             "reports": [view_report(r) for r in (s.get("reports") or [])[-12:] if r and r.get("id")],
             "guides": [{"title": g.get("title") or "Guide", "url": g["url"], "date": g.get("date", ""), "kind": g.get("kind", "")} for g in s.get("guides", []) if g and g.get("url")],
@@ -635,6 +635,7 @@ def summary(s):
 
 # ---- linking (same rules as hubview.js matchAccounts) ----
 import unicodedata, re as _re
+BOOK_URL = "https://cal.com/learn-with-noa/english-coaching-session"   # booking page for students with a flexible schedule
 BOTH_DEFAULT = ["laura", "felipe-torres", "belen"]
 HELPER_EMAIL = EMAIL
 

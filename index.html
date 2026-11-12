@@ -1063,6 +1063,13 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .t-stoic .st-k{font:700 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:#C9A26B}
 .t-stoic .st-t{color:var(--muted);font-size:13px}
 
+/* step112 */
+.ch-nacts{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+.ch-nacts a.ch-go{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--k) 55%,transparent);background:color-mix(in srgb,var(--k) 12%,transparent);color:var(--ink);font:800 13.5px var(--body);text-decoration:none}
+.ch-nacts a.ch-go:hover{background:color-mix(in srgb,var(--k) 22%,transparent)}
+.ch-nacts a.ch-zoom{background:#2D8CFF;border-color:#2D8CFF;color:#fff}
+.ch-nacts a.ch-zoom:hover{background:#1A73E8}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3059,7 +3066,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       else if(du.half&&du.instAt) dueTxt=du.nextNo>=du.instAt?`Your <b>2nd payment</b> is due now (class #${du.instAt} of this pack).`:`Your <b>2nd payment</b> is due at class <b>#${du.instAt}</b> of this pack. Your next class is #${du.nextNo}.`; }
     const packLine=cur&&cur.size?`<div class="ch-pkmini"><span>💳 <b>${left}</b> ${esc(cur.unit)} left</span><span>≈ <b>${Math.floor(left/per)}</b> ${Math.floor(left/per)===1?"class":"classes"} left</span>${cur.deadline?`<span>pack ends <b>${fs(cur.deadline)}</b></span>`:""}</div>`:"";
     const top=`<div class="ch-top">
-      <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):"Ask Noa or check your calendar invite"}</b>${v.recap&&v.recap.homework?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(v.recap.homework)}</div>`:lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}${packLine}</div>
+      <div class="ch-tint ch-s ch-card"><div class="ch-k">🗓 Next class</div><b>${nextTxt?esc(nextTxt):v.book?"Book your next class whenever it suits you":"Ask Noa or check your calendar invite"}</b>${v.nextZoom||v.book?`<div class="ch-nacts">${v.nextZoom&&nextTxt?`<a class="ch-go ch-zoom" href="${esc(v.nextZoom)}" target="_blank" rel="noopener">🎥 Join on Zoom ↗</a>`:""}${v.book?`<a class="ch-go" href="${esc(v.book)}" target="_blank" rel="noopener">📅 ${nextTxt?"Book another class":"Book a class"} ↗</a>`:""}</div>`:""}${v.recap&&v.recap.homework?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(v.recap.homework)}</div>`:lastHw?`<div class="ch-hw"><span>📝 Homework for it</span>${esc(lastHw)}</div>`:""}${packLine}</div>
       ${newRep?`<div class="ch-tint ch-v ch-card"><div class="ch-k">📈 New progress report</div><div>Your report for <b>${fs(newRep.from)} – ${fs(newRep.to)}</b> is ready.</div><button type="button" class="ch-go" data-rep="${esc(newRep.id)}" style="margin-top:6px">Read it →</button></div>`:""}
       ${dueTxt?`<div class="ch-tint ch-p ch-card"><div class="ch-k">💳 Coming up</div><div>${dueTxt}</div></div>`:""}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
@@ -3415,7 +3422,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher&&window.__csAway&&window.__csAway(300000)) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
   /* clock-change helper (also used by My coaching) */
-  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=14").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
+  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=16").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
 </script>
 
@@ -10077,7 +10084,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112131434"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112133018"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10247,6 +10254,15 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-hcgo]"); 
   addEventListener("message",e=>{ if(e.origin!==location.origin||!e.data||e.data.stoicHTML===undefined) return; show(e.data.stoicHTML); try{ localStorage.setItem(K,JSON.stringify({d:new Date().toDateString(),h:e.data.stoicHTML})); }catch(er){} });
   ["cs-teacher","cs-preview"].forEach(ev=>document.addEventListener(ev,()=>{ if(!(window.__csTeacher===true&&!window.__csPreview)) b.hidden=true; else if(b.hidden) show(b.innerHTML||cached()); }));
 })();
+</script><script>
+/* the menu button of the page you're already on: back to that page's first tab */
+document.addEventListener("click",e=>{ const b=e.target.closest("nav .navbtn[data-go]"); if(!b||b.getAttribute("aria-current")!=="true") return; const k=b.dataset.go;
+  setTimeout(()=>{ try{
+    if(k==="club"&&window.__clubTab) window.__clubTab("week");
+    else if(k==="students"){ const f=document.querySelector("#stFrame iframe"); if(f) f.contentWindow.location.hash="#overview"; }
+    else if(k==="members"){ const f=document.querySelector("#mbFrame iframe"), t=f&&f.contentDocument.querySelector("#mTabs [data-mtab]"); if(t) t.click(); }
+    scrollTo({top:0});
+  }catch(er){} },30); },true);
 </script>
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
@@ -10256,7 +10272,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-hcgo]"); 
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, AgentPlatformBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
-import { makeView, tzReminders } from "./hubview.js?v=14";
+import { makeView, tzReminders } from "./hubview.js?v=16";
 window.__csTzRem = tzReminders;
 
 const firebaseConfig = {

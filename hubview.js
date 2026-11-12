@@ -105,7 +105,7 @@ export function makeView(s, meta) {
     packs,
     classes: (s.classes || []).filter(c => c.kind !== "note").map(c => ({ date: c.date || "", dateText: c.dateText || "", topics: c.topics || "", homework: c.homework || "", att: c.att || "", hour: c.hour || "", credits: c.credits ?? null, pack: c.pack || "" })),
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),
-    focus: s.focus || "", recap: s.recap || null, resources: resFor(s), tz: s.tz || "", country: s.country || "", next: up ? up.start : "", due,
+    focus: s.focus || "", recap: s.recap || null, resources: resFor(s), tz: s.tz || "", country: s.country || "", next: up ? up.start : "", nextZoom: up && /^https:\/\/[\w.-]*zoom\.us\//.test(up.zoom || "") ? up.zoom : "", book: /flexib/i.test(s.schedule || "") ? BOOK_URL : "", due,
     club: s.uid && (meta.clubUids || []).includes(s.uid) ? (meta.clubFeed || null) : null,
     reports: (s.reports || []).filter(r => r && r.id).slice(-12).map(r => ({ id: r.id, from: r.from || "", to: r.to || "", sessions: r.sessions || 0, snapshot: r.snapshot || "", clicking: r.clicking || [], topics: r.topics || [], patterns: r.patterns || [], focus: r.focus || [], resource: r.resource || null, recordings: r.recordings || [], month: r.month || "", closing: r.closing || "", at: r.at || "" })),
     lessons: (s.lessons || []).filter(x => x && x.id).slice(-30),
@@ -122,6 +122,8 @@ export function makeView(s, meta) {
 /* ---------- linking Hibi accounts to hub students ---------- */
 export const normEmail = e => { e = String(e || "").trim().toLowerCase(); const [u, d] = e.split("@"); if (!d) return e; return (d === "gmail.com" || d === "googlemail.com" ? u.split("+")[0].replace(/\./g, "") + "@gmail.com" : e); };
 export const normName = n => String(n || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
+/* Noa's booking page for students with a flexible schedule */
+export const BOOK_URL = "https://cal.com/learn-with-noa/english-coaching-session";
 export const BOTH_DEFAULT = ["laura", "felipe-torres", "belen"];
 /* accounts: [{uid,name,email}], roles: {uid:{...}} → {sure:[{uid,hub}], maybe:[{uid,hub,why}]} */
 export function matchAccounts(students, accounts, roles) {
