@@ -875,6 +875,15 @@ html.nm-on .top-in #dmTopBtn{display:none!important}
 .nm-n{position:absolute;bottom:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#22a06b;color:#fff;font:800 10.5px/17px var(--display,inherit);text-align:center;box-shadow:0 0 0 2px var(--bg,#0d1424);pointer-events:none;z-index:2}
 #clBell,#tNotif .tn-bell{position:relative}
 
+/* step86: one red number on the bell (notifications + new messages); Messages opens as a drop-down, no dark page */
+html.nm-on #clBell .clb-n,html.nm-on #tNotif .tn-bell .tn-num{display:none!important}
+.nm-n{top:-5px;bottom:auto;right:-5px;min-width:18px;height:18px;padding:0 4px;background:#E5533D;font:800 11px/18px var(--body,inherit);box-shadow:none}
+.nm-c{background:#E5533D}
+html.nm-on .cl-dm-ov{background:transparent!important;pointer-events:none}
+html.nm-on .cl-dm-ov .cl-dm{pointer-events:auto;width:var(--nmw,min(360px,calc(100vw - 24px)));animation:none;box-shadow:0 18px 44px rgba(5,15,30,.35)}
+html.nm-on.nm-t .cl-dm-ov .cl-dm{width:min(480px,calc(100vw - 32px))}
+@media (max-width:700px){html.nm-on .cl-dm-ov{justify-content:stretch;padding:calc(env(safe-area-inset-top,0px) + 66px) max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))!important}html.nm-on .cl-dm-ov .cl-dm,html.nm-on.nm-t .cl-dm-ov .cl-dm{width:100%}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4399,7 +4408,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function closeDm(){ const o=document.getElementById("clDm"); if(o) o.remove(); DMOPEN=null; clearInterval(DMTIMER); }
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("clDm")) closeDm(); });
   function dmPlace(o){ try{ const bt=window.__nmAnchor?window.__nmAnchor():document.getElementById("dmTopBtn"), r=bt&&bt.offsetParent!==null?bt.getBoundingClientRect():null;
-      o.style.setProperty("--dmtop",Math.round(r&&r.bottom>0?r.bottom+8:64)+"px"); o.style.setProperty("--dmright",Math.round(r?Math.max(8,innerWidth-r.right-(bt&&bt.id==="dmTopBtn"?60:0)):12)+"px"); }catch(e){} }
+      o.style.setProperty("--dmtop",Math.round(r&&r.bottom>0?r.bottom+(bt&&bt.id==="dmTopBtn"?8:10):64)+"px"); o.style.setProperty("--dmright",Math.round(r?Math.max(8,innerWidth-r.right-(bt&&bt.id==="dmTopBtn"?60:0)):12)+"px"); }catch(e){} }
   async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); dmPlace(o); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
     b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{}),loadNotes().catch(()=>{})]);
     const ts=THREADS||[];
@@ -9836,7 +9845,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112015108"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112082129"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -9869,6 +9878,11 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
     if(t.getAttribute("aria-selected")==="true") return;
     if(t.dataset.nm==="m"){ closeNotif(); setTimeout(()=>{ window.__clubInbox&&window.__clubInbox(); },0); }
     else { if(document.getElementById("clDm")){ if(window.__clubDmClose) window.__clubDmClose(); else document.getElementById("clDm").remove(); } setTimeout(openNotif,0); } },true);
+  /* Messages is a drop-down now: a click outside closes it, and the bell closes it (like the profile window) */
+  const dmClose=()=>{ if(window.__clubDmClose) window.__clubDmClose(); else { const o=document.getElementById("clDm"); if(o) o.remove(); } };
+  document.addEventListener("click",e=>{ if(!on()) return; const o=document.getElementById("clDm"); if(!o) return; const b=bell();
+    if(b&&b.btn.contains(e.target)){ e.preventDefault(); e.stopPropagation(); dmClose(); return; }
+    if(!e.target.closest(".cl-dm,[data-nm],.csc-bd,[role=alertdialog],[role=dialog]:not(#clDm)")&&document.contains(e.target)) dmClose(); },true);
   let q=0;
   function decorate(){ q=0;
     const b=bell(), want=hasDM()&&!!b; if(on()!==want) document.documentElement.classList.toggle("nm-on",want); if(!want) return;
@@ -9877,7 +9891,12 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
     const dh=document.querySelector("#clDm .cl-dmh"); if(dh){ const bk=dh.querySelector(".cl-dmback"), inbox=!bk||bk.hidden, tb=dh.querySelector(".nm-tabs");
       if(inbox&&!tb) dh.insertAdjacentHTML("afterbegin",tabs("m")); else if(!inbox&&tb) tb.remove(); if(dh.classList.contains("nm-hasTabs")!==inbox) dh.classList.toggle("nm-hasTabs",inbox); }
     const n=dmCount(), lab=mLabel(n); document.querySelectorAll('.nm-tabs [data-nm="m"]').forEach(x=>{ if(x.innerHTML!==lab) x.innerHTML=lab; });
-    let bd=b.btn.querySelector(".nm-n"); if(n){ if(!bd){ bd=document.createElement("span"); bd.className="nm-n"; bd.setAttribute("aria-hidden","true"); b.btn.appendChild(bd); } if(bd.textContent!==String(n)) bd.textContent=String(n); b.btn.setAttribute("aria-description",n+" new message"+(n===1?"":"s")); } else if(bd){ bd.remove(); b.btn.removeAttribute("aria-description"); }
+    const nat=(()=>{ const e=b.k==="c"?b.btn.querySelector(".clb-n"):b.btn.querySelector(".tn-num"); if(!e||e.hidden) return 0; const t=e.textContent.trim(); return t.endsWith("+")?10:(parseInt(t,10)||0); })();
+    if(document.documentElement.classList.contains("nm-t")!==(b.k==="t")) document.documentElement.classList.toggle("nm-t",b.k==="t");
+    const dmo=document.getElementById("clDm"); if(dmo&&dmo.getAttribute("aria-modal")!=="false") dmo.setAttribute("aria-modal","false");
+    const tot=nat+n, tt=tot>9?"9+":String(tot);
+    let bd=b.btn.querySelector(".nm-n"); if(tot){ if(!bd){ bd=document.createElement("span"); bd.className="nm-n"; bd.setAttribute("aria-hidden","true"); b.btn.appendChild(bd); } if(bd.textContent!==tt) bd.textContent=tt; } else if(bd) bd.remove();
+    if(n) b.btn.setAttribute("aria-description",n+" new message"+(n===1?"":"s")); else b.btn.removeAttribute("aria-description");
   }
   const kick=()=>{ if(!q) q=requestAnimationFrame(decorate); };
   const start=()=>{ new MutationObserver(kick).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]}); kick(); };
