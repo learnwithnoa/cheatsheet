@@ -119,8 +119,11 @@ REPORT json (write everything TO the student, "you", at their level; plain text,
    "focus":[{"area":"...","tip":"one concrete tip"}, ...]   (2-3),
    "resource":{"title":"...","url":"https://...","why":"..."},
    "recordings":[{"date":"2026-10-21","url":"https://zoom.us/rec/share/..."}, ...],
-   "month":"(optional) Zooming out: your month at a glance",
+   "hibi":["(optional) what they did on Hibi this period, from: hubsync activity <id> <from> <to>", ...]   (0-4 short lines),
+   "lang":"en" | "es"   (es: the whole report in Spanish, and Hibi shows the section titles in Spanish),
    "closing":"short warm note"}
+  HUB_PASSWORD=... python3 hubsync.py activity <student-id> <from YYYY-MM-DD> <to YYYY-MM-DD>   what the student did on Hibi in that period
+      (days active, which pages, words they saved, recap exercises and how they did, modules, flashcards) — for the "Your Hibi" part of a report
 """
 import json, os, re, sys, random, string, datetime, urllib.request, urllib.error, urllib.parse
 
@@ -430,6 +433,8 @@ def clean_report(d):
            "patterns": [_txt(x, 500) for x in (d.get("patterns") or []) if _txt(x)][:6],
            "focus": [], "resource": None, "recordings": [],
            "month": _txt(d.get("month"), 1500), "closing": _txt(d.get("closing"), 600),
+           "hibi": [_txt(x, 300) for x in (d.get("hibi") or []) if _txt(x)][:6],   # "Your Hibi": what they did on Hibi this period (from the activity command)
+           "lang": "es" if str(d.get("lang", "")).lower().startswith("es") else "en",
            "at": datetime.date.today().isoformat()}
     for c in (d.get("clicking") or [])[:6]:
         c = c if isinstance(c, dict) else {"win": c}
@@ -453,7 +458,7 @@ def clean_report(d):
 
 
 def view_report(r):
-    return {k: r.get(k) for k in ("id", "from", "to", "sessions", "snapshot", "clicking", "topics", "patterns", "focus", "resource", "recordings", "month", "closing", "at")}
+    return {k: r.get(k) for k in ("id", "from", "to", "sessions", "snapshot", "clicking", "topics", "patterns", "focus", "resource", "recordings", "month", "closing", "hibi", "lang", "at")}
 
 
 def club_member_uids(tok, tu, m, students=None):
@@ -1206,7 +1211,7 @@ def main():
         raise SystemExit(f"No hub student '{sid}'")
     if cmd == "get":
         print(json.dumps(s, ensure_ascii=False, indent=1)); return
-    raw = a[2] if len(a) > 2 and cmd not in ("resources", "del-report") else ""
+    raw = a[2] if len(a) > 2 and cmd not in ("resources", "del-report", "activity") else ""
     if raw == "-":
         raw = sys.stdin.read()          # json from stdin (avoids shell quoting trouble with apostrophes)
     elif raw.startswith("@"):
@@ -1270,6 +1275,50 @@ def main():
         else:
             print("no change:", cur); return
         s["res"] = [k for k in RES_KEYS if k in cur]; save(tok, tu, s); print("ok", s["res"]); return
+    if cmd == "activity":  # what a student did on Hibi between two dates (for progress reports)
+        d0, d1 = a[2][:10], a[3][:10]
+        if not s.get("uid"):
+            print(json.dumps({"onHibi": False}, ensure_ascii=False)); return
+        u = s["uid"]
+        def rd(k):
+            try: return get_doc(tok, u, k)
+            except SystemExit: return None
+        def nd(k):
+            m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})$", str(k)); return f"{m[1]}-{int(m[2]):02d}-{int(m[3]):02d}" if m else str(k)
+        t0 = int(datetime.datetime.fromisoformat(d0).timestamp() * 1000); t1 = int((datetime.datetime.fromisoformat(d1) + datetime.timedelta(days=1)).timestamp() * 1000)
+        usage = {nd(k): v for k, v in (rd("ncs-usage") or {}).items() if d0 <= nd(k) <= d1}
+        PN = {"words": "My words", "quiz": "Practice", "coaching": "My coaching", "classnotes": "My class notes", "notes": "Home", "park": "Buddy park", "club": "Club", "translate": "Translator", "flash": "Flashcards", "grammar": "Grammar"}
+        pages = {}
+        for v in usage.values():
+            for k, n in (v or {}).items():
+                if k.startswith("p:"): nm = PN.get(k[2:], "Grammar: " + k[2:]); pages[nm] = pages.get(nm, 0) + n
+        words = rd("ncs-words") or []
+        # words they saved themselves: not imports (from their sheet, or many saved in the same instant)
+        sheetw = {norm_name(w.get("w", "")).replace(" ", "") for w in s.get("words", [])}
+        same = {}
+        for w in words:
+            if isinstance(w, dict): same[int(w.get("t") or 0)] = same.get(int(w.get("t") or 0), 0) + 1
+        mine = [w for w in words if isinstance(w, dict) and w.get("src") != "sheet" and t0 <= int(w.get("t") or 0) < t1
+                and same.get(int(w.get("t") or 0), 0) < 5 and norm_name(w.get("w", "")).replace(" ", "") not in sheetw
+                and not re.match(r"^(leverage|drawbacks)\b", str(w.get("w", "")).strip(), re.I)]   # the sheet template's two examples
+        prog = rd("ncs-lesson-prog") or {}
+        les = []
+        for L in s.get("lessons") or []:
+            if not (d0 <= str(L.get("date", ""))[:10] <= d1) and L.get("id") not in prog: continue
+            p = prog.get(L.get("id")) or {}
+            ok = sum(1 for v in (p.get("ok") or {}).values() if v is True); tried = len([1 for v in (p.get("ans") or {}).values() if v not in ("", [""], None)])
+            les.append({"date": L.get("date"), "title": L.get("title", ""), "kind": L.get("kind", ""), "answered": tried, "right": ok, "done": bool(p.get("done"))})
+        mods = {}
+        for k, v in (rd("ncs-mods") or {}).items():
+            if isinstance(v, dict) and (v.get("b") or {}): mods[k] = {"stagesDone": len(v["b"]), "bestScores": v["b"]}
+        fc = rd("ncs-fc") or {}
+        pt = rd("ncs-ptime") or {}
+        out = {"onHibi": True, "from": d0, "to": d1, "daysActive": len([d for d, v in usage.items() if v]),
+               "pages": dict(sorted(pages.items(), key=lambda x: -x[1])), "aiHelps": sum(int((v or {}).get("ai") or 0) for v in usage.values()),
+               "wordsTotal": len(words), "wordsSavedThisPeriod": len(mine), "wordsSavedExamples": [w.get("w") for w in mine[-8:]],
+               "recaps": les, "modules": mods, "flashcardsPracticed": len(fc),
+               "minutesOnHibiTotal": round((pt.get("s") or 0) / 60), "note": "Use this for the 'hibi' lines only where it's meaningful for this student; never shame low use."}
+        print(json.dumps(out, ensure_ascii=False, indent=1)); return
     if cmd == "add-report":
         r = clean_report(data)
         reps = [x for x in (s.get("reports") or []) if x.get("id") != r["id"]]

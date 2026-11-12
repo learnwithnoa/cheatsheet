@@ -2889,16 +2889,19 @@ html.cs-calm .cs-rxpal button{transition:none}
   const markRepRead=id=>{ try{ const r=repRead(); if(!r.includes(id)){ r.push(id); localStorage.setItem(REP_READ,JSON.stringify(r.slice(-40))); } }catch(e){} };
   const repsOf=v=>((v&&v.reports)||[]).filter(r=>r&&r.id).slice().sort((a,b)=>(b.to||"").localeCompare(a.to||""));
   function repHTML(r,forPrint){
-    const L=(arr,f)=>(arr||[]).length?arr.map(f).join(""):"";
+    const L=(arr,f)=>(arr||[]).length?arr.map(f).join(""):"", es=r.lang==="es";
+    const T=es?{c:"✅ Lo que está funcionando",t:"💬 Temas que vimos",p:"🔎 Patrones al hablar",f:"🎯 En qué enfocarte ahora",r:"📚 Recurso recomendado",m:"🔭 Mirando el mes completo",h:"📱 Tu Hibi",rec:"🎥 Tus grabaciones de clase",cl:"Clase del "}
+                :{c:"✅ What’s clicking",t:"💬 Topics we covered",p:"🔎 Speaking patterns worth noting",f:"🎯 What to focus on next",r:"📚 Resource pick",m:"🔭 Zooming out: your month at a glance",h:"📱 Your Hibi",rec:"🎥 Your class recordings",cl:"Class on "};
     return `${r.snapshot?`<p class="ch-rp-snap">${esc(r.snapshot)}</p>`:""}
-      ${(r.clicking||[]).length?`<div class="ch-rp-sec"><h4>✅ What’s clicking</h4>${L(r.clicking,c=>`<div class="ch-rp-win"><b>${esc(c.win)}</b>${c.example?`<small>${esc(c.example)}</small>`:""}</div>`)}</div>`:""}
-      ${(r.topics||[]).length?`<div class="ch-rp-sec"><h4>💬 Topics we covered</h4><div class="ch-rp-chips">${L(r.topics,x=>`<span>${esc(x)}</span>`)}</div></div>`:""}
-      ${(r.patterns||[]).length?`<div class="ch-rp-sec"><h4>🔎 Speaking patterns worth noting</h4><ul>${L(r.patterns,x=>`<li>${esc(x)}</li>`)}</ul></div>`:""}
-      ${(r.focus||[]).length?`<div class="ch-rp-sec"><h4>🎯 What to focus on next</h4>${L(r.focus,f=>`<div class="ch-rp-foc"><b>${esc(f.area)}</b>${f.tip?`<div>💡 ${esc(f.tip)}</div>`:""}</div>`)}</div>`:""}
-      ${r.resource?`<div class="ch-rp-sec"><h4>📚 Resource pick</h4>${r.resource.url&&!forPrint?`<a class="ch-rp-res" href="${esc(r.resource.url)}" target="_blank" rel="noopener"><b>${esc(r.resource.title)} ↗</b>${r.resource.why?`<small>${esc(r.resource.why)}</small>`:""}</a>`:`<div class="ch-rp-res"><b>${esc(r.resource.title)}</b>${r.resource.url?`<small>${esc(r.resource.url)}</small>`:""}${r.resource.why?`<small>${esc(r.resource.why)}</small>`:""}</div>`}</div>`:""}
-      ${r.month?`<div class="ch-rp-sec"><h4>🔭 Zooming out: your month at a glance</h4><p>${esc(r.month)}</p></div>`:""}
+      ${(r.clicking||[]).length?`<div class="ch-rp-sec"><h4>${T.c}</h4>${L(r.clicking,c=>`<div class="ch-rp-win"><b>${esc(c.win)}</b>${c.example?`<small>${esc(c.example)}</small>`:""}</div>`)}</div>`:""}
+      ${(r.topics||[]).length?`<div class="ch-rp-sec"><h4>${T.t}</h4><div class="ch-rp-chips">${L(r.topics,x=>`<span>${esc(x)}</span>`)}</div></div>`:""}
+      ${(r.patterns||[]).length?`<div class="ch-rp-sec"><h4>${T.p}</h4><ul>${L(r.patterns,x=>`<li>${esc(x)}</li>`)}</ul></div>`:""}
+      ${(r.focus||[]).length?`<div class="ch-rp-sec"><h4>${T.f}</h4>${L(r.focus,f=>`<div class="ch-rp-foc"><b>${esc(f.area)}</b>${f.tip?`<div>💡 ${esc(f.tip)}</div>`:""}</div>`)}</div>`:""}
+      ${r.resource?`<div class="ch-rp-sec"><h4>${T.r}</h4>${r.resource.url&&!forPrint?`<a class="ch-rp-res" href="${esc(r.resource.url)}" target="_blank" rel="noopener"><b>${esc(r.resource.title)} ↗</b>${r.resource.why?`<small>${esc(r.resource.why)}</small>`:""}</a>`:`<div class="ch-rp-res"><b>${esc(r.resource.title)}</b>${r.resource.url?`<small>${esc(r.resource.url)}</small>`:""}${r.resource.why?`<small>${esc(r.resource.why)}</small>`:""}</div>`}</div>`:""}
+      ${(r.hibi||[]).length?`<div class="ch-rp-sec"><h4>${T.h}</h4><ul>${L(r.hibi,x=>`<li>${esc(x)}</li>`)}</ul></div>`:""}
+      ${r.month?`<div class="ch-rp-sec"><h4>${T.m}</h4><p>${esc(r.month)}</p></div>`:""}
       ${r.closing?`<p class="ch-rp-close">${esc(r.closing)}<br>— Noa</p>`:""}
-      ${(r.recordings||[]).length&&!forPrint?`<div class="ch-rp-sec"><h4>🎥 Your class recordings</h4><div class="ch-rp-recs">${L(r.recordings,x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">▶ ${esc(x.label||("Class on "+fs(x.date)))}</a>`)}</div></div>`:""}`;
+      ${(r.recordings||[]).length&&!forPrint?`<div class="ch-rp-sec"><h4>${T.rec}</h4><div class="ch-rp-recs">${L(r.recordings,x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">▶ ${esc(x.label||(T.cl+fs(x.date)))}</a>`)}</div></div>`:""}`;
   }
   function printRep(r){
     const w=window.open("","_blank"); if(!w){ if(window.toast) window.toast("Allow pop-ups to print"); return; }
@@ -3115,7 +3118,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     } else if(tab==="reports"){
       if(openRep!=="__none"&&(!openRep||!reps.some(r=>r.id===openRep))) openRep=reps[0].id;
       if(openRep!=="__none") markRepRead(openRep);
-      body=`<p class="muted" style="font-size:14px">Every few weeks Noa looks back at your classes: what’s working, what to focus on next, and a resource just for you.</p><div class="ch-reps">${reps.map(r=>{ const o=r.id===openRep; return `<div class="ch-rep ch-tint ch-v" id="rep-${esc(r.id)}"><button type="button" class="ch-rep-h" data-rep="${esc(r.id)}" aria-expanded="${o}"><span><span class="ch-k">📈 Progress report</span><b>${fs(r.from)} – ${fs(r.to)}</b><small>${r.sessions} ${r.sessions===1?"class":"classes"}</small></span><span class="ch-rep-car" aria-hidden="true">${o?"▾":"▸"}</span></button>${o?`<div class="ch-rep-b">${repHTML(r)}<div class="ch-rep-f"><button type="button" class="ch-go" data-repprint="${esc(r.id)}">🖨 Print or save as PDF</button></div></div>`:""}</div>`; }).join("")}</div>`;
+      body=`<p class="muted" style="font-size:14px">Every few weeks Noa looks back at your classes: what’s working, what to focus on next, and a resource just for you.</p><div class="ch-reps">${reps.map(r=>{ const o=r.id===openRep; return `<div class="ch-rep ch-tint ch-v" id="rep-${esc(r.id)}"><button type="button" class="ch-rep-h" data-rep="${esc(r.id)}" aria-expanded="${o}"><span><span class="ch-k">📈 ${r.lang==="es"?"Reporte de progreso":"Progress report"}</span><b>${fs(r.from)} – ${fs(r.to)}</b><small>${r.sessions} ${r.lang==="es"?(r.sessions===1?"clase":"clases"):(r.sessions===1?"class":"classes")}</small></span><span class="ch-rep-car" aria-hidden="true">${o?"▾":"▸"}</span></button>${o?`<div class="ch-rep-b">${repHTML(r)}<div class="ch-rep-f"><button type="button" class="ch-go" data-repprint="${esc(r.id)}">🖨 Print or save as PDF</button></div></div>`:""}</div>`; }).join("")}</div>`;
     } else if(tab==="pack"){
       body=(v.packs||[]).slice().reverse().map(p=>{ const pct=p.size?Math.min(100,p.used/p.size*100):0; return `<div class="ch-tint ch-pk" style="--pc:${p.color||"var(--line)"};--k:${p.current?"var(--c-g)":"var(--line)"}"><b>${esc(p.label)}</b>${p.current?' <span class="ch-pill" style="background:color-mix(in srgb,var(--c-g) 20%,transparent);color:var(--c-g)">current</span>':""}${p.paid==="half"?' <span class="ch-pill">½ paid</span>':""}
         ${p.size?`<div class="ch-bar"><i style="width:${pct}%"></i></div>`:""}<div class="muted" style="font-size:13.5px">${p.size?`${p.used} of ${p.size} ${p.unit} used · `:""}${p.done} ${p.done===1?"class":"classes"}${p.deadline?" · ends "+fd(p.deadline):""}</div></div>`; }).join("")
@@ -3426,7 +3429,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&window.__csTeacher&&window.__csAway&&window.__csAway(300000)) load(); });
   window.__csNotifLoad=load; setTimeout(load,2000);
   /* clock-change helper (also used by My coaching) */
-  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=16").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
+  if(typeof window.__csTzRem!=="function") import("./hubview.js?v=17").then(m=>{ window.__csTzRem=m.tzReminders; paint(); document.dispatchEvent(new CustomEvent("cs-hubview")); }).catch(()=>{});
 })();
 </script>
 
@@ -10088,7 +10091,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112170002"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112170718"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10276,7 +10279,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("nav .navbtn[dat
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, AgentPlatformBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
-import { makeView, tzReminders } from "./hubview.js?v=16";
+import { makeView, tzReminders } from "./hubview.js?v=17";
 window.__csTzRem = tzReminders;
 
 const firebaseConfig = {

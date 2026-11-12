@@ -107,7 +107,7 @@ export function makeView(s, meta) {
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),
     focus: s.focus || "", recap: s.recap || null, resources: resFor(s), tz: s.tz || "", country: s.country || "", next: up ? up.start : "", nextZoom: up && /^https:\/\/[\w.-]*zoom\.us\//.test(up.zoom || "") ? up.zoom : "", book: /flexib/i.test(s.schedule || "") ? BOOK_URL : "", due,
     club: s.uid && (meta.clubUids || []).includes(s.uid) ? (meta.clubFeed || null) : null,
-    reports: (s.reports || []).filter(r => r && r.id).slice(-12).map(r => ({ id: r.id, from: r.from || "", to: r.to || "", sessions: r.sessions || 0, snapshot: r.snapshot || "", clicking: r.clicking || [], topics: r.topics || [], patterns: r.patterns || [], focus: r.focus || [], resource: r.resource || null, recordings: r.recordings || [], month: r.month || "", closing: r.closing || "", at: r.at || "" })),
+    reports: (s.reports || []).filter(r => r && r.id).slice(-12).map(r => ({ id: r.id, from: r.from || "", to: r.to || "", sessions: r.sessions || 0, snapshot: r.snapshot || "", clicking: r.clicking || [], topics: r.topics || [], patterns: r.patterns || [], focus: r.focus || [], resource: r.resource || null, recordings: r.recordings || [], month: r.month || "", closing: r.closing || "", hibi: r.hibi || [], lang: r.lang === "es" ? "es" : "en", at: r.at || "" })),
     lessons: (s.lessons || []).filter(x => x && x.id).slice(-30),
     map: s.map || null,
     guides: (s.guides || []).filter(g => g && g.url).map(g => ({ title: g.title || "Guide", url: g.url, date: g.date || "", kind: g.kind || "" })),
