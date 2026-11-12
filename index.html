@@ -863,7 +863,7 @@ html.pt-on.cs-signed .cs-panel .cs-head{margin-bottom:4px}
 /* step85: 🔔 Notifications · 💬 Messages tabs */
 html.nm-on .top-in #dmTopBtn{display:none!important}
 .nm-tabs{flex:1;display:flex;gap:4px;min-width:0;background:var(--surface-2,color-mix(in srgb,var(--ink) 5%,transparent));border:1px solid var(--line);border-radius:999px;padding:4px}
-.nm-tabs button{all:unset;box-sizing:border-box;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;font:700 14px var(--display,inherit);color:var(--muted);padding:7px 10px;border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
+.nm-tabs button{all:unset;box-sizing:border-box;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;font:700 14.5px var(--display,inherit);color:var(--muted);padding:8px 10px;border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
 .nm-tabs button:hover{color:var(--ink)}
 .nm-tabs button:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
 .nm-tabs button[aria-selected="true"]{background:var(--gloss,var(--royal));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 8px rgba(5,15,30,.25);text-shadow:0 1px 2px rgba(5,15,30,.35)}
@@ -898,7 +898,7 @@ html.nm-on #tNotif .tn-h:has(.nm-tabs) .nm-tabs{flex:1 1 calc(100% - 50px);order
 html.nm-on #tNotif .tn-h:has(.nm-tabs) .tn-x{order:1;margin:0}
 html.nm-on #tNotif .tn-h:has(.nm-tabs) .tn-btn{order:2}
 html.nm-on #clBellPanel .clb-h:has(.nm-tabs){display:flex;align-items:center;gap:8px;padding:0;margin:0 0 10px}
-.nm-x{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;font-size:24px;line-height:1;color:var(--muted)}
+.nm-x{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;font-size:24px;line-height:1;color:var(--muted)}
 .nm-x:hover,.nm-x:focus-visible{background:color-mix(in srgb,var(--ink) 9%,transparent);color:var(--ink)}
 html.nm-on .cl-dm-ov .cl-dmh.nm-hasTabs{gap:8px;border-bottom:0;padding:16px 18px 6px}
 html.nm-on .cl-dm-ov .cl-dmh.nm-hasTabs .cl-prof-x{position:static;flex:none;width:34px;height:34px;font-size:24px!important;color:var(--muted)}
@@ -906,10 +906,18 @@ html.nm-on .cl-dm-ov .cl-dmh.nm-hasTabs+.cl-dmb{padding-top:6px}
 html.nm-on #clBellPanel{padding:16px 18px!important}
 html.nm-on.nm-t .cl-dm-ov .cl-dm,html.nm-on #clBellPanel{width:var(--nmW)!important}
 html.nm-on{--nmW:min(380px,calc(100vw - 32px))}
-html.nm-on.nm-t{--nmW:min(480px,calc(100vw - 32px))}
+html.nm-on.nm-t{--nmW:min(380px,calc(100vw - 32px))}
+html.nm-on #tNotif .tn-box{width:var(--nmW)!important}
 html.nm-on .cl-dm-ov .cl-dm{width:var(--nmW)!important}
 html.nm-on #tNotif .tn-box{padding-top:16px!important}
 @media (max-width:700px){html.nm-on #tNotif .tn-box{top:calc(env(safe-area-inset-top,0px) + 66px)!important}html.nm-on .cl-dm-ov .cl-dm,html.nm-on #clBellPanel{width:auto!important}html.nm-on .cl-dm-ov .cl-dm{width:100%!important}}
+
+html.nm-on .cl-dm-ov .cl-dmh.nm-hasTabs .cl-prof-x,html.nm-on #tNotif .tn-h:has(.nm-tabs) .tn-x{width:36px!important;height:36px!important}
+/* step89: in the top menu row, every pill is the same height */
+@media (max-width:900px){nav.side .navbtn{box-sizing:border-box;height:40px;min-height:40px;padding-top:0!important;padding-bottom:0!important;align-items:center}}
+
+/* the flashcards pill flows with the other pills (no lonely pill stuck to the right when the row wraps) */
+.w-goflash{margin-left:0!important}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -9872,7 +9880,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112083625"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112085507"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -9904,12 +9912,12 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
   document.addEventListener("click",e=>{ if(e.target.closest("[data-nmx]")){ e.preventDefault(); e.stopPropagation(); closeNotif(); const b=bell(); if(b) b.btn.focus(); return; } },true);
   document.addEventListener("click",e=>{ const t=e.target.closest("[data-nm]"); if(!t) return; e.preventDefault(); e.stopPropagation();
     if(t.getAttribute("aria-selected")==="true") return;
-    if(t.dataset.nm==="m"){ closeNotif(); setTimeout(()=>{ window.__clubInbox&&window.__clubInbox(); },0); }
-    else { if(document.getElementById("clDm")){ if(window.__clubDmClose) window.__clubDmClose(); else document.getElementById("clDm").remove(); } setTimeout(openNotif,0); } },true);
+    if(t.dataset.nm==="m"){ if(window.__clubInbox) window.__clubInbox(); const t0=Date.now(); (function w(){ if(document.getElementById("clDm")||Date.now()-t0>1500){ requestAnimationFrame(()=>{ window.__nmProg=true; try{ closeNotif(); }finally{ window.__nmProg=false; } }); return; } requestAnimationFrame(w); })(); }
+    else { window.__nmProg=true; try{ openNotif(); }finally{ window.__nmProg=false; } requestAnimationFrame(()=>{ if(document.getElementById("clDm")){ if(window.__clubDmClose) window.__clubDmClose(); else document.getElementById("clDm").remove(); } }); } },true);
   /* Messages is a drop-down now: a click outside closes it, and the bell closes it (like the profile window) */
   const dmClose=()=>{ if(window.__clubDmClose) window.__clubDmClose(); else { const o=document.getElementById("clDm"); if(o) o.remove(); } };
-  document.addEventListener("click",e=>{ if(!on()) return; const o=document.getElementById("clDm"); if(!o) return; const b=bell();
-    if(b&&b.btn.contains(e.target)){ e.preventDefault(); e.stopPropagation(); dmClose(); return; }
+  document.addEventListener("click",e=>{ if(!on()||window.__nmProg) return; const o=document.getElementById("clDm"); if(!o) return; const b=bell();
+    if(b&&b.btn.contains(e.target)){ if(window.__nmProg) return; e.preventDefault(); e.stopPropagation(); dmClose(); return; }
     if(!e.target.closest(".cl-dm,[data-nm],.csc-bd,[role=alertdialog],[role=dialog]:not(#clDm)")&&document.contains(e.target)) dmClose(); },true);
   let q=0;
   function decorate(){ q=0;
