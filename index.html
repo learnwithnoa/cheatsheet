@@ -955,7 +955,8 @@ select:not([multiple]):not([size]){-webkit-appearance:none;-moz-appearance:none;
 /* step95 */
 @media (max-width:900px){
   nav.side,nav.side .navgroup{align-items:center!important}
-  nav.side .navbtn{margin:0!important;display:inline-flex!important;align-items:center;flex:none;line-height:1.2}
+  nav.side .navbtn:not([hidden]){margin:0!important;display:inline-flex!important;align-items:center;flex:none;line-height:1.2}
+  nav.side .navbtn[hidden]{display:none!important}
 }
 
 /* step96 */
@@ -9960,7 +9961,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112105540"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112111218"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
