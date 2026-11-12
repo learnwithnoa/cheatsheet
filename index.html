@@ -1007,6 +1007,18 @@ select:not([multiple]):not([size]){-webkit-appearance:none;-moz-appearance:none;
 @keyframes stp{50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.st-live{animation:none}}
 
+/* step103: whole notifications are clickable */
+.tn-box li[data-dmto],.tn-box li[data-tnmail],.tn-box li:has(> .tn-go),.tn-box p.tn-line:has(> .tn-go){cursor:pointer;border-radius:10px;transition:background .15s,box-shadow .15s;position:relative}
+.tn-box li[data-dmto]:hover,.tn-box li[data-tnmail]:hover,.tn-box li:has(> .tn-go):hover,.tn-box p.tn-line:has(> .tn-go):hover,
+.tn-box li[data-dmto]:focus-visible,.tn-box li[data-tnmail]:focus-visible,.tn-box li:has(> .tn-go):focus-visible,.tn-box p.tn-line:has(> .tn-go):focus-visible{background:color-mix(in srgb,var(--c-sky,#5AB8FF) 14%,transparent);box-shadow:inset 3px 0 0 var(--c-sky,#5AB8FF);outline:none}
+.tn-box li > .tn-go,.tn-box p.tn-line > .tn-go{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tn-box li:has(> .tn-dis){padding-right:34px}
+.tn-dis{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:26px;height:26px;border-radius:999px;border:0;background:transparent;color:var(--muted);font-size:17px;line-height:1;cursor:pointer;opacity:.55}
+.tn-dis:hover,.tn-dis:focus-visible{opacity:1;background:var(--surface-2)}
+.tn-hint{display:block;font:700 12px var(--body);color:var(--c-sky,#5AB8FF);margin-top:2px;opacity:0;transition:opacity .15s}
+.tn-box li:hover .tn-hint,.tn-box li:focus-visible .tn-hint{opacity:1}
+@media (hover:none){.tn-hint{opacity:.85}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3251,6 +3263,9 @@ html.cs-calm .cs-rxpal button{transition:none}
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const ago=t=>{ const m=Math.round((Date.now()-t)/6e4); if(m<60) return m<=1?"just now":m+" min ago"; const h=Math.round(m/60); if(h<24) return h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); return d===1?"yesterday":d+" days ago"; };
   const dkey=()=>new Date().toDateString();
+  /* notifications Noa dismissed with × (they come back if anything about them changes) */
+  const DISK="ncs-tnotif-dis"; const DIS=()=>{ try{ const v=JSON.parse(localStorage.getItem(DISK)||"[]"); return Array.isArray(v)?v:[]; }catch(e){ return []; } };
+  const welcome=n=>{ const f=String(n||"").trim().split(/\s+/)[0]||""; return `Hi ${f}! 👋 Welcome to Hibi, I'm really happy you're here. Have a look around: save new words, practice a bit, and say hi in the club. If you need anything, just write me here. Noa`; };
   let busy=false, data=null;
   function box(){ let b=document.getElementById("tNotif"); if(!b){ const aw=document.querySelector(".top-in .auth-wrap"); if(!aw) return null; b=document.createElement("div"); b.id="tNotif"; b.className="tn-wrap"; aw.parentNode.insertBefore(b,aw); } return b; }
   let lastLoad=0;
@@ -3286,9 +3301,9 @@ html.cs-calm .cs-rxpal button{transition:none}
     const packs=[];
     data.priv.filter(p=>p.status!=="inactive"&&p.status!=="paused").forEach(p=>{ const v=p.view||{}, du=v.due; if(!du) return; const nm=esc(v.name), id=esc(p.key.slice(4));
       let t=""; if(du.pending) t=`<b>${nm}</b>: pack not paid yet`; else if(du.left!=null&&du.left<=0) t=`<b>${nm}</b>: pack used up`; else if(du.classesLeft!=null&&du.classesLeft<=1) t=`<b>${nm}</b>: ${du.classesLeft} class left in the pack`; else if(du.half&&du.instAt&&du.nextNo>=du.instAt) t=`<b>${nm}</b>: 2nd payment due`;
-      if(t) packs.push(`<li>💳 ${t} <a class="tn-go" href="private-students.html#s/${id}">Open →</a></li>`); });
+      const dk="p:"+id+"|"+t.replace(/<[^>]+>/g,"")+"|"+JSON.stringify(du); if(t&&!DIS().includes(dk)) packs.push(`<li>💳 ${t} <a class="tn-go" href="private-students.html#s/${id}">Open →</a><button type="button" class="tn-dis" data-tndis="${esc(dk)}" aria-label="Hide this notification" title="Hide this (it comes back if something changes)">×</button></li>`); });
     const clocks=[]; if(typeof window.__csTzRem==="function"){ const td=new Date(), ti=td.getFullYear()+"-"+String(td.getMonth()+1).padStart(2,"0")+"-"+String(td.getDate()).padStart(2,"0");
-      data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>clocks.push(`<li>🕐 ${esc(r.text)} <a class="tn-go" href="private-students.html#s/${esc(p.key.slice(4))}">Open →</a></li>`))); }
+      data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>{ const dk="c:"+p.key+"|"+r.text; if(!DIS().includes(dk)) clocks.push(`<li>🕐 ${esc(r.text)} <a class="tn-go" href="private-students.html#s/${esc(p.key.slice(4))}">Open →</a><button type="button" class="tn-dis" data-tndis="${esc(dk)}" aria-label="Hide this notification" title="Hide this">×</button></li>`); })); }
     const unl=data.acc.filter(a=>a.kind==="new").length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
     const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
@@ -3304,7 +3319,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     const bell=`<button type="button" class="tn-bell theme-btn${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
     if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
     b.className="tn-wrap open";
-    const li=(a,old)=>`<li class="${old?"tn-old":""}">🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span></li>`;
+    const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
+      return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`:""}</li>`; };
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
       ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}${r.n>1?` · asked ${r.n} times`:""}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
 
@@ -3313,7 +3329,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${joins.length||(showAll&&older.length)?`<h4>New on Hibi</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length&&!clubNew.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
       ${older.length?`<button type="button" class="tn-link" data-tn="all">${showAll?"Hide earlier ones":`Show earlier sign-ups (${older.length})`}</button>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
-      ${mineNew.length?`<h4>💛 About you in the club</h4><ul>${mineNew.map(n=>`<li>${n.html}${n.text&&!/^react/.test(n.kind)?` <span class="muted">“${esc(n.text)}”</span>`:""} <span class="muted">· ${ago(n.at)}</span></li>`).join("")}</ul>`:""}
+      ${mineNew.length?`<h4>💛 About you in the club</h4><ul>${mineNew.map(n=>`<li>${n.html}${n.text&&!/^react/.test(n.kind)?` <span class="muted">“${esc(n.text)}”</span>`:""} <span class="muted">· ${ago(n.at)}</span> <a class="tn-go" href="#club" data-go="club"${n.pid?` data-bgo="${esc(n.pid)}"`:""}>Open →</a></li>`).join("")}</ul>`:""}
       ${packs.length?`<h4>Packs</h4><ul>${packs.join("")}</ul>`:""}
       ${clocks.length?`<h4>Clock changes</h4><ul>${clocks.join("")}</ul>`:""}
       <p class="tn-line tn-more"><a class="tn-go" href="members.html">More student news (milestones, ✨ love, practice tips) on Members →</a></p></div>`;
@@ -9995,7 +10011,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112123105"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112123253"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10112,6 +10128,27 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
   setTimeout(()=>{ if(window.__csTeacher===true) load(true); },3000);
   /* the page tells Home when a class is live, for the LIVE tag in the menu */
   addEventListener("message",e=>{ if(e.origin!==location.origin||!e.data||e.data.stLive===undefined) return; const d=document.getElementById("stLiveDot"); if(d) d.hidden=!e.data.stLive; });
+})();
+</script><script>
+/* Noa's notifications: click anywhere on a notification to open it; × hides one; "joined" opens a welcome message */
+(function(){
+  const rowOf=t=>t.closest(".tn-box li, .tn-box p.tn-line");
+  const act=row=>{ if(row.dataset.tnmail){ const f=String(row.dataset.tnname||"").trim().split(/\s+/)[0]||"";
+      const body=`Hi ${f}!\n\nWelcome to Hibi, I'm really happy you're here. 🎉 Have a look around: save new words, practice a bit, and check My coaching for your classes.\n\nIf you need anything, just reply to this email.\n\nNoa`;
+      window.open("https://mail.google.com/mail/?authuser=learnwithnoa%40gmail.com&view=cm&fs=1&to="+encodeURIComponent(row.dataset.tnmail)+"&su="+encodeURIComponent("Welcome to Hibi 🎉")+"&body="+encodeURIComponent(body),"_blank"); return true; }
+    const go=row.querySelector(":scope > a.tn-go"); if(go){ go.click(); return true; } return false; };
+  document.addEventListener("click",e=>{ const d=e.target.closest("[data-tndis]"); if(d){ e.preventDefault(); e.stopPropagation(); let v=[]; try{ v=JSON.parse(localStorage.getItem("ncs-tnotif-dis")||"[]")||[]; }catch(er){}
+      v=[...new Set(v.concat(d.dataset.tndis))].slice(-200); try{ localStorage.setItem("ncs-tnotif-dis",JSON.stringify(v)); }catch(er){}
+      const row=d.closest("li"); if(row) row.remove(); if(window.toast) window.toast("Hidden. It comes back if something about it changes."); try{ document.dispatchEvent(new CustomEvent("cs-teacher")); }catch(er){} return; }
+    const row=rowOf(e.target); if(!row||row.dataset.dmto||e.target.closest("a,button,input,textarea,select,form")) return;
+    if(act(row)) e.preventDefault(); },true);
+  /* a welcome message: open the chat with it ready to send (Noa can edit it first) */
+  document.addEventListener("click",e=>{ const t=e.target.closest("[data-dmdraft]"); if(!t) return; const draft=t.dataset.dmdraft;
+    let n=0; const put=()=>{ const ta=document.querySelector("#clDm textarea"); if(ta){ if(!ta.value.trim()){ ta.value=draft; ta.dispatchEvent(new Event("input",{bubbles:true})); } ta.focus(); try{ ta.setSelectionRange(ta.value.length,ta.value.length); }catch(er){} return; } if(++n<20) setTimeout(put,100); }; setTimeout(put,80); });
+  /* keyboard: notifications can be reached with Tab and opened with Enter */
+  const tag=()=>document.querySelectorAll(".tn-box li[data-dmto], .tn-box li[data-tnmail], .tn-box li:has(> .tn-go), .tn-box p.tn-line:has(> .tn-go)").forEach(r=>{ if(!r.hasAttribute("tabindex")){ r.tabIndex=0; r.setAttribute("role","link"); } });
+  new MutationObserver(tag).observe(document.documentElement,{childList:true,subtree:true});
+  document.addEventListener("keydown",e=>{ if(e.key!=="Enter"&&e.key!==" ") return; const r=e.target.closest&&e.target.closest(".tn-box li[tabindex], .tn-box p.tn-line[tabindex]"); if(!r||e.target!==r) return; e.preventDefault(); r.click(); });
 })();
 </script>
 <script type="module">
