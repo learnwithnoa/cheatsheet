@@ -2390,6 +2390,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 .lb-all:disabled{opacity:.75;cursor:default}
 .lb-mat{margin-right:auto;border:1.5px solid #dfe5f3;border-radius:999px;padding:11px 16px;font:900 14.5px/1 "Nunito","Lexend",sans-serif;cursor:pointer;color:#141b3a;background:#fff;box-shadow:0 6px 16px rgba(20,27,58,.10)}
 .lb-ov.dark .lb-mat{background:#111c42;border-color:#2b3b6e;color:#fff}
+.lb-box[hidden]{display:none}.lb-matc{max-width:820px;margin:0 auto;padding:6px clamp(16px,4vw,44px) 50px;font-size:17px;line-height:1.55}.lb-matc h2{font-weight:900;font-size:clamp(26px,3.4vw,38px);line-height:1.1;margin:4px 0 16px}.lb-matc h3,.lb-matc h4{font-weight:900;margin:22px 0 8px}.lb-matc a{color:#2563eb}.lb-ov.dark .lb-matc a{color:#7dd3fc}.lb-matc blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid #93c5fd;background:rgba(147,197,253,.12);border-radius:8px}.lb-matc li{margin:4px 0}
 .lb-short{display:none}
 @media (max-width:600px){.lb-long{display:none}.lb-short{display:inline}.lb-mat{padding:11px 14px;font-size:14px}}
 .lb-wrap{padding-top:0!important;margin-top:-14px}
@@ -4640,10 +4641,16 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       window.__lbFrom=b;
     }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });
-  document.addEventListener("click",e=>{ const m=e.target.closest("[data-lbplan]"); if(!m) return; e.preventDefault(); e.stopPropagation();
-    const from=window.__lbFrom, pl=from&&from.parentElement?from.parentElement.querySelector('[data-plan="'+m.dataset.lbplan+'"]'):document.querySelector('[data-plan="'+m.dataset.lbplan+'"]');
-    closeBoard(); if(!pl) return; if(pl.getAttribute("aria-expanded")!=="true") pl.click();
-    setTimeout(()=>{ const box=pl.parentElement&&pl.parentElement.nextElementSibling; (box&&box.classList.contains("cl-plan")?box:pl.parentElement).scrollIntoView({behavior:"smooth",block:"start"}); },400); },true);
+  /* 📄 the class material opens on top of the board (← back returns to the board where you were) */
+  document.addEventListener("click",async e=>{ const m=e.target.closest("[data-lbplan]"); if(!m) return; e.preventDefault(); e.stopPropagation();
+    const ov=m.closest(".lb-ov"), box=m.closest(".lb-box"); if(!ov||!box) return; const [wk,wd]=m.dataset.lbplan.split("|");
+    try{ if(!PLANDOC[wk]){ const r=await api("GET","/clubStats/_plans_"+wk.replace(/-/g,"")); PLANDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
+      const pl=(PLANDOC[wk].plans||{})[wd]; if(!pl){ toast(L("Couldn’t find it.","No lo encontré.")); return; }
+      ov.querySelectorAll(".lb-matbox").forEach(x=>x.remove()); box.hidden=true;
+      ov.insertAdjacentHTML("beforeend",`<div class="lb-box lb-matbox"><div class="lb-bar"><button type="button" class="lb-mat" data-lbback="1">← <span class="lb-long">${L("Back to the board","Volver a la pizarra")}</span><span class="lb-short">${L("Board","Pizarra")}</span></button><button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-matc"><div class="lb-lbl">📄 ${L("Class material","Material de la clase")}</div><h2>${esc(pl.title||"")}</h2>${mdHTML(pl.md)}</div></div>`);
+      const bk=ov.querySelector("[data-lbback]"); if(bk) bk.focus();
+    }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } },true);
+  document.addEventListener("click",e=>{ const bk=e.target.closest("[data-lbback]"); if(!bk) return; e.stopPropagation(); const ov=bk.closest(".lb-ov"); bk.closest(".lb-matbox").remove(); const b0=ov&&ov.querySelector(".lb-box"); if(b0) b0.hidden=false; },true);
   function lbPop(btn,msg){ const box=btn.closest(".lb-box"); if(!box) return; box.querySelectorAll(".lb-pop").forEach(p=>p.remove());
     const r=btn.getBoundingClientRect(), br=box.getBoundingClientRect(), p=document.createElement("div"); p.className="lb-pop"; p.textContent=msg;
     p.style.left=Math.min(br.width-130,Math.max(130,r.left-br.left+r.width/2))+"px"; p.style.top=(r.bottom-br.top+box.scrollTop)+"px"; box.appendChild(p); setTimeout(()=>p.remove(),1900); }
@@ -10277,7 +10284,7 @@ const CHANGELOG=[
     ["🏠","New: There is / there are","<b>hay, había, habrá</b> in English: <b>there is / there are</b>, <b>there was / there were</b>, <b>there will be</b>, negatives and questions. 7 short stages with Spanish help, in <b>Practice → Grammar</b>. Finish it for a 🏠 little house for your buddy.","quiz"]
   ]},
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
-    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>. The full class material is inside it too: tap <b>📄 Full class material</b> at the top.","club"],
+    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>. The full class material is inside it too: tap <b>📄 Full class material</b> at the top (and <b>← Back to the board</b> to return).","club"],
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
     ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
@@ -10537,7 +10544,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261113101138"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261113101532"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
