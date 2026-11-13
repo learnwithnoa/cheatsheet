@@ -9252,6 +9252,8 @@ document.getElementById("bkCopy").addEventListener("click",async()=>{
   if(await copyText(code)){ out.hidden=true; toast("Backup code copied. Paste it somewhere safe."); }
   else { out.hidden=false; out.value=code; out.focus(); out.select(); toast("Select the code below and copy it by hand"); }
 });
+window.__csListsReload=function(){ words=LS.get("ncs-words",[])||[]; cnotes=LS.get("ncs-classnotes",[])||[]; stars=LS.get("ncs-stars",[])||[];
+  renderStars(); renderSheet(); renderWords(); renderCN(); fcShuffle(); renderFlash(); return true; };
 document.getElementById("bkRestore").addEventListener("click",()=>{
   const msg=document.getElementById("bkMsg"), inp=document.getElementById("bkIn");
   let d; try{ d=bkDecode(inp.value); }catch(e){ msg.innerHTML='<span style="color:var(--red);font-weight:800">That code doesn\'t look right.</span> Make sure you copied all of it. It starts with CHEATSHEET1:'; return; }
@@ -10175,7 +10177,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112222016"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261113010742"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10549,7 +10551,7 @@ async function pushKey(k) {
   if (LISTS[k] && v != null) {
     try { const d = await getDoc(doc(db, "users", user.uid, "data", id)); const c = d.exists() && !d.data().deleted && typeof d.data().json === "string" ? d.data().json : null;
       const m = merge3(k, getRaw(BASE(k)), v, c);
-      if (m !== v) { setRaw(k, m); v = m; mergedNeedsReload(); } } catch (e) { console.warn("merge", k, e); }
+      if (m !== v) { setRaw(k, m); v = m; mergedNeedsReload(true); } } catch (e) { console.warn("merge", k, e); }
   }
   await setDoc(doc(db, "users", user.uid, "data", id), { json: v, deleted: v == null, at: serverTimestamp() });
   if (LISTS[k]) setRaw(BASE(k), v);
@@ -10557,7 +10559,8 @@ async function pushKey(k) {
 }
 /* the page keeps lists in memory: after a merge brought in something from another device, reload it (not while typing) */
 let reloadWanted = false;
-function mergedNeedsReload() { reloadWanted = true; tryReload(); }
+/* saved words, class notes and stars are redrawn in place (a full reload in the middle of browsing felt like the page "jumping") */
+function mergedNeedsReload(listsOnly) { if (listsOnly && window.__csListsReload) { try { if (window.__csListsReload()) return; } catch (e) {} } reloadWanted = true; tryReload(); }
 function tryReload() { if (!reloadWanted) return; const a = document.activeElement; if ((a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.value) || document.querySelector("dialog[open], .cs-dlg")) { setTimeout(tryReload, 4000); return; }
   const last = +(sessionStorage.getItem("ncs-reload-at") || 0); if (Date.now() - last < 8000) { setTimeout(tryReload, 8000); return; }
   sessionStorage.setItem("ncs-reload-at", String(Date.now())); location.reload(); }
@@ -10589,14 +10592,14 @@ async function syncDown() {
     const dz = dirty();
     const first = getRaw("ncs-sync-uid") !== user.uid;
     const keys = new Set([...Object.keys(cloud), ...lsKeys()]);
-    let changed = false; const toPush = [];
+    let changed = false, changedOther = false; const toPush = [];
     for (const k of keys) {
       if (!isSynced(k)) continue;
       const l = getRaw(k), c = (k in cloud) ? cloud[k] : null;
       let v = first ? mergeKey(k, l, c) : LISTS[k] ? merge3(k, getRaw(BASE(k)), l, c) : dz.has(k) ? mergeDirty(k, l, c) : (c != null ? c : l);
       /* never bring back an older "What's new" version: that made the pop-up show again (and again) after closing it */
       if (k === "ncs-seen-version" && l != null && window.__csClLatest && l === JSON.stringify(window.__csClLatest)) v = l;
-      if (v !== l) { setRaw(k, v); if (k !== "ncs-lesson-prog") changed = true; }
+      if (v !== l) { setRaw(k, v); if (k !== "ncs-lesson-prog") { changed = true; if (!LISTS[k]) changedOther = true; } }
       if (v === c) setDirty(k, false);
       if (v != null && v !== c) toPush.push(k);
       else if (LISTS[k] && v != null) setRaw(BASE(k), v);
@@ -10613,7 +10616,7 @@ async function syncDown() {
     if (toPush.length) await Promise.all(toPush.map(pushKey));
     status("synced");
     checkInbox();
-    if (changed) mergedNeedsReload();   /* show what came from another device (waits while they're typing or doing a recap) */
+    if (changed) mergedNeedsReload(!changedOther);   /* show what came from another device (waits while they're typing or doing a recap) */
   } catch (e) {
     console.warn("Hibi sync failed", e);
     status("error");
