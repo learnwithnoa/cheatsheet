@@ -726,6 +726,41 @@ def main():
     cmd = a[0]
     if cmd == "whoami":
         print(json.dumps({"teacherUid": tu})); return
+    if cmd == "backup":
+        # Full copy of Hibi's database (everything the teacher account can read) into one gzipped JSON file.
+        # backup /tmp/hibi-backup.json.gz  -> prints a short summary (collections, docs, size). Read only: changes nothing.
+        import gzip
+        out_path = a[1] if len(a) > 1 else "/tmp/hibi-backup.json.gz"
+        def listall(path):
+            docs, pt = [], ""
+            while True:
+                try:
+                    x = http("GET", f"{BASE}/{path}?pageSize=300" + (f"&pageToken={pt}" if pt else ""), token=tok)
+                except BaseException:
+                    return None
+                docs += x.get("documents", []); pt = x.get("nextPageToken")
+                if not pt: return docs
+        TOP = ["users", "roles", "access", "accessRequests", "park", "clubPosts", "clubProfiles", "clubPublic", "clubStats",
+               "clubAccess", "clubActivity", "clubImgs", "clubReports", "clubVotes", "clubNotes", "inbox", "dms"]
+        SUB = {"users": ["data"], "park": ["hearts"], "clubPosts": ["comments", "likes"], "inbox": ["msgs"], "dms": ["msgs"]}
+        dump, counts, skipped = {}, {}, []
+        for c in TOP:
+            docs = listall(c)
+            if docs is None:
+                skipped.append(c); continue
+            for d in docs:
+                rel = d["name"].split("/documents/", 1)[1]
+                dump[rel] = {"fields": d.get("fields", {}), "updateTime": d.get("updateTime")}
+                for sc in SUB.get(c, []):
+                    for sd in (listall(rel + "/" + sc) or []):
+                        dump[sd["name"].split("/documents/", 1)[1]] = {"fields": sd.get("fields", {}), "updateTime": sd.get("updateTime")}
+            counts[c] = sum(1 for k in dump if k.split("/")[0] == c)
+        blob = json.dumps({"project": "learnwithnoa-cheatsheet", "at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                           "docs": dump}, ensure_ascii=False).encode("utf-8")
+        with gzip.open(out_path, "wb") as f:
+            f.write(blob)
+        print(json.dumps({"ok": True, "file": out_path, "docs": len(dump), "collections": counts, "skipped": skipped,
+                          "mb": round(os.path.getsize(out_path) / 1e6, 2), "mbUncompressed": round(len(blob) / 1e6, 2)})); return
     if cmd == "list":
         roles = get_roles(tok); by_hub = {r.get("hub"): (u, r) for u, r in roles.items() if r.get("hub")}
         out = []
