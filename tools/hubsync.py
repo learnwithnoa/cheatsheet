@@ -47,6 +47,9 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py club-plans-todo [days]   club classes that already happened but whose lesson plan isn't on Hibi yet
   HUB_PASSWORD=... python3 hubsync.py club-plan <class date YYYY-MM-DD> @/tmp/plan.json   {"title":"Wildcard Wednesday: The Pitch","md":"<the Notion plan's content, as fetched>"}
       shows that class's lesson plan to members ("📄 Class material"). Refuses before the class has ended: plans are NEVER shown before class.
+  HUB_PASSWORD=... python3 hubsync.py club-board <class date YYYY-MM-DD> @/tmp/board.json   the live board Noa shared in class, saved for members ("🧩 Live board"
+      next to that class's recording and on This week). Same json as the live board: {"title","subtitle","prompt","countLabel","cards":[{"n","emoji","text","meaning",
+      "example","english","uk","section","questions":[...],"style":"wrap"}]}. Same date again = replaces it. Refuses before the class has ended.
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
@@ -885,6 +888,47 @@ def main():
         weeks[wk] = sorted(set((weeks.get(wk) or []) + [wd]))
         http("PATCH", f"{BASE}/clubStats/_plans", {"fields": {"uid": {"stringValue": "_plans"}, "json": {"stringValue": json.dumps({"weeks": weeks})}}}, token=tok)
         print(json.dumps({"ok": True, "week": wk, "wd": wd})); return
+    if cmd == "club-board":
+        # the live board from class (the one Noa screen-shares), shown to members after class: club-board <class date> @board.json
+        from zoneinfo import ZoneInfo
+        cl = ZoneInfo("America/Santiago"); now = datetime.datetime.now(cl)
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        sch = {int(x["wd"]): x for x in ((m.get("clubFeed") or {}).get("info") or {}).get("schedule") or []}
+        day = datetime.date.fromisoformat(a[1][:10]); wd = (day.weekday() + 1) % 7; s0 = sch.get(wd) or {}
+        hh, mm = (s0.get("time") or "20:00").split(":")
+        if now < datetime.datetime(day.year, day.month, day.day, int(hh), int(mm), tzinfo=cl) + datetime.timedelta(minutes=int(s0.get("dur") or 90)):
+            raise SystemExit("not yet: the board only goes to members after the class has ended")
+        d = json.load(open(a[2][1:], encoding="utf-8")) if a[2].startswith("@") else json.loads(a[2])
+        cards = []
+        for c in (d.get("cards") or [])[:120]:
+            if not isinstance(c, dict) or c.get("hidden") or not _txt(c.get("text"), 200):
+                continue
+            x = {k: _txt(c.get(k), n) for k, n in (("emoji", 16), ("text", 200), ("meaning", 600), ("example", 400), ("english", 200), ("uk", 200), ("section", 80), ("who", 60)) if c.get(k)}
+            x["n"] = float(c.get("n") or len(cards) + 1)
+            qs = [_txt(q, 240) for q in (c.get("questions") or []) if _txt(q, 240)][:6]
+            if qs: x["questions"] = qs
+            if c.get("style") == "wrap": x["style"] = "wrap"
+            cards.append(x)
+        if not cards:
+            raise SystemExit("need the board's cards")
+        board = {"title": _txt(d.get("title"), 120), "subtitle": _txt(d.get("subtitle"), 200), "prompt": _txt(d.get("prompt"), 200),
+                 "countLabel": _txt(d.get("countLabel"), 40), "date": day.isoformat(), "cards": cards, "at": int(now.timestamp() * 1000)}
+        wk = (day - datetime.timedelta(days=day.weekday())).isoformat(); key = "_boards_" + wk.replace("-", ""); path = f"{BASE}/clubStats/{key}"
+        r = http("GET", path, token=tok) or {}
+        try:
+            doc = json.loads(r.get("fields", {}).get("json", {}).get("stringValue") or "{}")
+        except ValueError:
+            doc = {}
+        doc.setdefault("boards", {})[str(wd)] = board
+        http("PATCH", path, {"fields": {"uid": {"stringValue": key}, "json": {"stringValue": json.dumps(doc, ensure_ascii=False)}}}, token=tok)
+        idx = http("GET", f"{BASE}/clubStats/_boards", token=tok) or {}
+        try:
+            weeks = json.loads(idx.get("fields", {}).get("json", {}).get("stringValue") or "{}").get("weeks") or {}
+        except ValueError:
+            weeks = {}
+        weeks[wk] = sorted(set((weeks.get(wk) or []) + [wd]))
+        http("PATCH", f"{BASE}/clubStats/_boards", {"fields": {"uid": {"stringValue": "_boards"}, "json": {"stringValue": json.dumps({"weeks": weeks})}}}, token=tok)
+        print(json.dumps({"ok": True, "week": wk, "wd": wd, "cards": len(cards), "link": SITE + "#club"})); return
     if cmd == "club-rec-set":
         # change a Library recording: club-rec-set <id or YYYY-MM-DD> '{"summary":"…","diff":6,"diffWhy":"…","topic":"…"}'
         d = json.loads(a[2]) if not a[2].startswith("@") else json.load(open(a[2][1:], encoding="utf-8"))

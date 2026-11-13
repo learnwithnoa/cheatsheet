@@ -63,7 +63,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Nunito:wght@700;800;900&display=swap">
 <style>
 /* Layout: sticky glossy header, side nav (chip strip on narrow windows), one reference view at a time — built to sit next to Zoom */
 :root{
@@ -2371,6 +2371,42 @@ html.cs-calm .cs-rxpal button{transition:none}
 /* lesson plans after class */
 .cl-plan{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 16px;max-height:70vh;overflow:auto}
 .cl-planh{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-12px;background:var(--surface);padding:6px 0;border-bottom:1px solid var(--line);margin-bottom:8px}
+.lb-lock,.lb-lock body{overflow:hidden}
+.lb-ov{position:fixed;inset:0;z-index:9999;overflow:auto;-webkit-overflow-scrolling:touch;color:#141b3a;font-family:"Nunito","Lexend",system-ui,sans-serif;
+  background-color:#fbfcff;background-image:radial-gradient(600px 380px at 50% 0%,rgba(59,130,246,.10),transparent 70%),radial-gradient(700px 400px at 100% 100%,rgba(74,222,128,.12),transparent 70%),radial-gradient(#d7deee 1.2px,transparent 1.3px);background-size:auto,auto,26px 26px}
+.lb-wrap{max-width:1300px;margin:0 auto;padding:22px clamp(14px,3vw,40px) 60px;position:relative}
+.lb-x{position:sticky;top:10px;float:right;z-index:2;border:1.5px solid #dfe5f3;background:#fff;color:#141b3a;border-radius:999px;padding:8px 16px;font:800 15px/1 "Nunito","Lexend",sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(20,27,58,.10)}
+.lb-lbl{font-family:"Space Mono",monospace;font-weight:700;text-transform:uppercase;letter-spacing:.28em;color:#2563eb;font-size:13px;margin-bottom:10px}
+.lb-head{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;margin:8px 0 22px;clear:both}
+.lb-h{font-weight:900;font-size:clamp(34px,5vw,64px);line-height:1.02;letter-spacing:-.02em;margin:0;color:#141b3a}
+.lb-ul{background:linear-gradient(90deg,#2563eb,#4ade80) bottom/100% .12em no-repeat;padding-bottom:.06em}
+.lb-sub{font-weight:700;color:#4a5170;font-size:clamp(16px,1.6vw,22px);margin-top:10px}
+.lb-badge{background:#141b3a;color:#fff;border-radius:20px;padding:14px 24px;transform:rotate(-4deg);text-align:center;box-shadow:0 14px 28px rgba(20,27,58,.25)}
+.lb-badge b{display:block;font-weight:900;font-size:clamp(40px,5vw,64px);line-height:.95}.lb-badge span{font-weight:800;color:#93c5fd;font-size:15px}
+.lb-pill{display:flex;align-items:center;gap:12px;width:fit-content;max-width:100%;margin:0 0 26px;background:#fff;border:1.5px solid #dfe5f3;border-radius:999px;padding:8px 22px 8px 8px;box-shadow:0 8px 22px rgba(37,99,235,.08)}
+.lb-pill span{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:21px;background:linear-gradient(135deg,#3b82f6,#4ade80)}
+.lb-pill b{font-weight:900;font-size:clamp(18px,2vw,26px)}
+.lb-sec{margin-bottom:28px}.lb-sec.alt>.lb-lbl{color:#d97706}.lb-sec.wrapsec>.lb-lbl{text-align:center}
+.lb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:14px}
+.lb-card{background:#fff;border:1.5px solid #dfe5f3;border-radius:20px;padding:16px 20px 18px;box-shadow:0 6px 18px rgba(20,27,58,.05)}
+.lb-sec.alt .lb-card{background:#fffaf2;border-color:#f6d3a3}
+.lb-card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(14px,2.4vw,36px);align-items:start;padding:22px 26px}
+.lb-card.wide .lb-id{font-size:clamp(28px,3vw,44px)}
+.lb-top{display:flex;gap:10px;align-items:flex-start}.lb-emo{font-size:28px;line-height:1.1}
+.lb-id{font-weight:900;font-size:clamp(22px,2vw,29px);line-height:1.15}
+.lb-mean{font-weight:700;color:#4a5170;font-size:17px;margin-top:8px;line-height:1.35}
+.lb-ex{font-weight:700;font-style:italic;color:#2563eb;font-size:16px;margin-top:10px;padding-left:12px;border-left:3px solid #93c5fd;line-height:1.35}
+.lb-eq{display:inline-block;margin:10px 8px 0 0;padding:5px 12px;border-radius:999px;font-weight:800;font-size:15px;color:#15803d;background:#ecfdf3;border:1.5px solid #bbf0cf}
+.lb-eq.uk{color:#1e40af;background:#eef4ff;border-color:#c7d8fb}
+.lb-save.cl-addw{margin-top:12px}
+.lb-qs{background:#f5f8ff;border:1.5px solid #dbe5fb;border-radius:16px;padding:14px 18px}.lb-sec.alt .lb-qs{background:#fff;border-color:#f6d3a3}
+.lb-ql{font-family:"Space Mono",monospace;font-weight:700;text-transform:uppercase;letter-spacing:.22em;color:#d97706;font-size:12px;margin-bottom:6px}
+.lb-qs ol{margin:0;padding-left:1.3em}.lb-qs li{font-weight:800;font-size:clamp(17px,1.5vw,22px);line-height:1.3;margin:8px 0}
+.lb-card.wrap{grid-column:1/-1;text-align:center;padding:clamp(26px,4vw,52px) clamp(18px,5vw,70px);border:none;color:#fff;background:linear-gradient(120deg,#3b82f6,#8b5cf6 55%,#ec4899)!important;box-shadow:0 20px 44px rgba(139,92,246,.30)}
+.lb-card.wrap .lb-top{flex-direction:column;align-items:center;gap:6px}.lb-card.wrap .lb-emo{font-size:clamp(38px,4vw,58px)}
+.lb-card.wrap .lb-id{color:#fff;font-size:clamp(30px,4vw,56px)}.lb-card.wrap .lb-mean{color:rgba(255,255,255,.93);font-size:clamp(17px,1.7vw,24px);max-width:860px;margin:12px auto 0}
+.lb-card.wrap .lb-ex{color:#fff;border:none;padding:0;font-style:normal;margin-top:12px}
+@media (max-width:760px){.lb-head{grid-template-columns:1fr}.lb-badge{justify-self:start}.lb-card.wide{grid-template-columns:1fr}.lb-pill{border-radius:20px}}
 .cl-planb2{font-size:15px;line-height:1.6}.cl-planb2 h3,.cl-planb2 h4,.cl-planb2 h5{margin:14px 0 6px}.cl-planb2 p{margin:6px 0}.cl-planb2 ul,.cl-planb2 ol{margin:6px 0;padding-left:22px}
 .cl-planb2 blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--accent,#8B5CF6);background:color-mix(in srgb,var(--accent,#8B5CF6) 7%,transparent);border-radius:0 8px 8px 0}
 .cl-planb2 hr{border:0;border-top:1px dashed var(--line);margin:12px 0}
@@ -3661,7 +3697,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       return Object.assign({},s,c,{wd,date,start,end,ico:c.ico||s.ico||"📅",name:c.name||s.name||"",zoom:c.zoom||s.zoom||"",k:"k"+(((wd===1?1:wd===3?2:wd===4?3:4)))}); });
   }
   const planBtn=(date,wd)=>{ const d=new Date(date+"T12:00:00"); d.setDate(d.getDate()-((d.getDay()+6)%7)); const wk=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-    return ((window.__clubPlans||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb" data-plan="${wk}|${wd}" aria-expanded="false">📄 ${L("Class material","Material de la clase")}</button>`:""; };
+    return (((window.__clubPlans||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb" data-plan="${wk}|${wd}" aria-expanded="false">📄 ${L("Class material","Material de la clase")}</button>`:"")
+      +(((window.__clubBoards||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb cl-boardb" data-board="${wk}|${wd}">🧩 ${L("Live board","Pizarra en vivo")}</button>`:""); };
   function clsCard(c,now,rs){
     const live=now>=c.start.getTime()-10*60000&&now<=c.end.getTime(), past=now>c.end.getTime(), today=new Date(c.start).toDateString()===new Date(now).toDateString();
     return `<div class="cl-cls ${c.k}${past?" past":""}"><div class="cl-when"><b>${c.ico} ${esc(fd(c.date))}</b><span>${esc(timeTxt(c.start))}</span>${live?'<span class="cl-live">● Live now</span>':today&&!past?'<span class="cl-today">Today</span>':""}</div>
@@ -4514,6 +4551,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   let PLANS=null, plansAt=0; const PLANDOC={};
   async function loadPlans(force){ if(G()) return; if(PLANS&&!force&&Date.now()-plansAt<300000) return; plansAt=Date.now();
     try{ const r=await api("GET","/clubStats/_plans"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PLANS=j.weeks||{}; }catch(e){ PLANS=PLANS||{}; retryLoad("plans",()=>loadPlans(true)); }
+    try{ const r=await api("GET","/clubStats/_boards"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; window.__clubBoards=j.weeks||{}; }catch(e){ window.__clubBoards=window.__clubBoards||{}; }
     window.__clubPlans=PLANS; document.dispatchEvent(new CustomEvent("cs-club-plans")); }
   function mdHTML(md){ const inl=t=>esc(t).replace(/&lt;br\s*\/?&gt;/g,"<br>").replace(/&lt;(\/?)(b|i|strong|em|u)&gt;/g,"<$1$2>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*?)\*/g,"$1<i>$2</i>")
       .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g,(m,a,u)=>`<a href="${u.replace(/&amp;/g,"&").replace(/"/g,"%22")}" target="_blank" rel="noopener">${a}</a>`).replace(/\\([$_*#\-\[\]()>])/g,"$1");
@@ -4536,6 +4574,33 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       b.parentElement.insertAdjacentHTML("afterend",`<div class="cl-plan"><div class="cl-planh"><b>📄 ${esc(pl.title||L("Class material","Material de la clase"))}</b><button type="button" class="cs-act" data-planx="1">✕ ${L("Close","Cerrar")}</button></div><div class="cl-planb2">${mdHTML(pl.md)}</div></div>`);
     }catch(er){ b.setAttribute("aria-expanded","false"); toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
   document.addEventListener("click",e=>{ const x=e.target.closest("[data-planx]"); if(!x) return; const p=x.closest(".cl-plan"), b=p.previousElementSibling&&p.previousElementSibling.querySelector("[data-plan]"); if(b) b.setAttribute("aria-expanded","false"); p.remove(); });
+  /* 🧩 live board: the board Noa shares on screen in class, saved after class (clubStats/_boards index + _boards_<week>) */
+  const BOARDDOC={};
+  function boardHTML(b){ const t=String(b.title||L("Live board","Pizarra en vivo")).split(" "), last=t.pop();
+    const cards=(b.cards||[]).filter(c=>!c.hidden).slice().sort((x,y)=>(x.n||0)-(y.n||0)), order=[], groups={};
+    cards.forEach(c=>{ const k=c.section||""; if(!(k in groups)){ groups[k]=[]; order.push(k); } groups[k].push(c); });
+    const n=cards.filter(c=>c.style!=="wrap").length;
+    const card=c=>{ const qs=Array.isArray(c.questions)&&c.questions.length, save=c.style!=="wrap"&&(c.english||c.meaning);
+      const main=`<div><div class="lb-top">${c.emoji?`<span class="lb-emo" aria-hidden="true">${esc(c.emoji)}</span>`:""}<div class="lb-id">${esc(c.text||"")}</div></div>
+        ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
+        ${c.english?`<span class="lb-eq">🇺🇸 ${esc(c.english)}</span>`:""}${c.uk?`<span class="lb-eq uk">🇬🇧 ${esc(c.uk)}</span>`:""}
+        ${save?`<div><button type="button" class="cl-addw lb-save" data-clw="${esc(JSON.stringify({w:c.text,tr:c.english||c.meaning||"",ex:c.example||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`:""}</div>`;
+      return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}">${main}${qs?`<div class="lb-qs"><div class="lb-ql">${L("Let's use it!","¡Usémoslo!")}</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>`:""}</div>`; };
+    return `<div class="lb-head"><div><div class="lb-lbl">Noa's English Club${b.date?` · ${esc(new Date(b.date+"T12:00:00").toLocaleDateString(L("en-US","es-CL"),{weekday:"long",month:"long",day:"numeric"}))}`:""}</div>
+        <h2 class="lb-h">${esc(t.join(" "))} <span class="lb-ul">${esc(last)}</span></h2>${b.subtitle?`<div class="lb-sub">${esc(b.subtitle)}</div>`:""}</div>
+        <div class="lb-badge"><b>${n}</b><span>${esc(b.countLabel||L("ideas","ideas"))}</span></div></div>
+      ${b.prompt?`<div class="lb-pill"><span aria-hidden="true">💬</span><b>${esc(b.prompt)}</b></div>`:""}
+      ${order.map((k,i)=>`<section class="lb-sec${i%2?" alt":""}${groups[k].some(c=>c.style==="wrap")?" wrapsec":""}">${k?`<div class="lb-lbl">${esc(k)}</div>`:""}<div class="lb-grid">${groups[k].map(card).join("")}</div></section>`).join("")}`; }
+  function closeBoard(){ const o=document.querySelector(".lb-ov"); if(o){ o.remove(); document.documentElement.classList.remove("lb-lock"); } }
+  document.addEventListener("click",async e=>{ if(e.target.closest("[data-boardx]")||e.target.classList.contains("lb-ov")){ closeBoard(); return; }
+    const b=e.target.closest("[data-board]"); if(!b) return; e.preventDefault(); const [wk,wd]=b.dataset.board.split("|");
+    try{ if(!BOARDDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BOARDDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
+      const bd=(BOARDDOC[wk].boards||{})[wd]; if(!bd){ toast(L("Couldn’t find it.","No la encontré.")); return; }
+      closeBoard(); document.documentElement.classList.add("lb-lock");
+      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-wrap"><button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">✕ ${L("Close","Cerrar")}</button>${boardHTML(bd)}</div></div>`);
+      const x=document.querySelector(".lb-x"); if(x) x.focus();
+    }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });
   /* the first lines of a class's plan intro (for recordings that have no summary yet) */
   async function planIntro(date){ if(G()||!date) return ""; const wk=weekOf(new Date(date+"T12:00:00")), wd=new Date(date+"T12:00:00").getDay();
     if(!PLANDOC[wk]){ const r=await api("GET","/clubStats/_plans_"+wk.replace(/-/g,"")); PLANDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
@@ -9835,6 +9900,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
+    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression to <b>My words</b>.","club"],
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
     ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
