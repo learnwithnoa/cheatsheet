@@ -2375,10 +2375,27 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-plan{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 16px;max-height:70vh;overflow:auto}
 .cl-planh{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-12px;background:var(--surface);padding:6px 0;border-bottom:1px solid var(--line);margin-bottom:8px}
 .lb-lock,.lb-lock body{overflow:hidden}
-.lb-ov{position:fixed;inset:0;z-index:9999;overflow:auto;-webkit-overflow-scrolling:touch;color:#141b3a;font-family:"Nunito","Lexend",system-ui,sans-serif;
+.lb-ov{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vh,32px) clamp(8px,3vw,40px);background:rgba(6,10,26,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.lb-box{position:relative;width:100%;max-width:1240px;height:100%;max-height:100%;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.45);color:#141b3a;font-family:"Nunito","Lexend",system-ui,sans-serif;
   background-color:#fbfcff;background-image:radial-gradient(600px 380px at 50% 0%,rgba(59,130,246,.10),transparent 70%),radial-gradient(700px 400px at 100% 100%,rgba(74,222,128,.12),transparent 70%),radial-gradient(#d7deee 1.2px,transparent 1.3px);background-size:auto,auto,26px 26px}
 .lb-wrap{max-width:1300px;margin:0 auto;padding:22px clamp(14px,3vw,40px) 60px;position:relative}
-.lb-x{position:sticky;top:10px;float:right;z-index:2;border:1.5px solid #dfe5f3;background:#fff;color:#141b3a;border-radius:999px;padding:8px 16px;font:800 15px/1 "Nunito","Lexend",sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(20,27,58,.10)}
+.lb-bar{position:sticky;top:0;z-index:3;display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:12px 14px 0;pointer-events:none}
+.lb-bar>*{pointer-events:auto}
+.lb-bar{padding-bottom:12px;background:linear-gradient(rgba(251,252,255,.97) 72%,rgba(251,252,255,0))}
+.lb-ov.dark .lb-bar{background:linear-gradient(rgba(11,20,48,.97) 72%,rgba(11,20,48,0))}
+.lb-x{width:46px;height:46px;flex:none;display:grid;place-items:center;border:1.5px solid #dfe5f3;background:#fff;color:#141b3a;border-radius:50%;padding:0;font:400 30px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(20,27,58,.14)}
+.lb-all{border:0;border-radius:999px;padding:12px 18px;font:900 15px/1 "Nunito","Lexend",sans-serif;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#16a34a);box-shadow:0 8px 20px rgba(37,99,235,.28)}
+.lb-all:disabled{opacity:.75;cursor:default}
+.lb-wrap{padding-top:0!important;margin-top:-14px}
+.lb-save.cl-addw{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:7px 14px;border-radius:999px;font:900 14px/1.1 "Nunito","Lexend",sans-serif;color:#1d4ed8;background:#eef4ff;border:1.5px solid #bcd0fb}
+.lb-save.cl-addw:hover{background:#e0eaff}
+.lb-save.cl-addw:disabled{cursor:default;color:#15803d;background:#ecfdf3;border:1.5px solid #bbf0cf}
+.lb-ov.dark .lb-save.cl-addw{color:#bfdbfe;background:rgba(59,130,246,.18);border-color:rgba(147,197,253,.45)}
+.lb-ov.dark .lb-save.cl-addw:disabled{color:#86efac;background:rgba(34,197,94,.14);border-color:rgba(134,239,172,.4)}
+.lb-pop{position:absolute;z-index:4;transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;background:#141b3a;color:#fff;font:800 13.5px/1.2 "Nunito","Lexend",sans-serif;padding:8px 12px;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.25);pointer-events:none;animation:lbPop 1.8s ease forwards}
+.lb-pop a{color:#93c5fd}
+@keyframes lbPop{0%{opacity:0;transform:translate(-50%,-80%)}12%{opacity:1;transform:translate(-50%,-100%)}80%{opacity:1}100%{opacity:0}}
+@media (max-width:600px){.lb-ov{padding:10px 6px}.lb-box{border-radius:20px}.lb-all{padding:11px 14px;font-size:14px}}
 .lb-lbl{font-family:"Space Mono",monospace;font-weight:700;text-transform:uppercase;letter-spacing:.28em;color:#2563eb;font-size:13px;margin-bottom:10px}
 .lb-head{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;margin:8px 0 22px;clear:both}
 .lb-h{font-weight:900;font-size:clamp(34px,5vw,64px);line-height:1.02;letter-spacing:-.02em;margin:0;color:#141b3a}
@@ -2409,8 +2426,8 @@ html.cs-calm .cs-rxpal button{transition:none}
 .lb-card.wrap .lb-top{flex-direction:column;align-items:center;gap:6px}.lb-card.wrap .lb-emo{font-size:clamp(38px,4vw,58px)}
 .lb-card.wrap .lb-id{color:#fff;font-size:clamp(30px,4vw,56px)}.lb-card.wrap .lb-mean{color:rgba(255,255,255,.93);font-size:clamp(17px,1.7vw,24px);max-width:860px;margin:12px auto 0}
 .lb-card.wrap .lb-ex{color:#fff;border:none;padding:0;font-style:normal;margin-top:12px}
-.lb-ov.dark{color:#f1f5ff;background-color:#0b1430;background-image:radial-gradient(700px 420px at 50% 0%,rgba(59,130,246,.22),transparent 70%),radial-gradient(800px 500px at 100% 100%,rgba(139,92,246,.22),transparent 70%),radial-gradient(rgba(148,170,230,.13) 1.2px,transparent 1.3px)}
-.lb-ov.dark .lb-x{background:#111c42;border-color:#2b3b6e;color:#fff}
+.lb-ov.dark .lb-box{color:#f1f5ff;background-color:#0b1430;background-image:radial-gradient(700px 420px at 50% 0%,rgba(59,130,246,.22),transparent 70%),radial-gradient(800px 500px at 100% 100%,rgba(139,92,246,.22),transparent 70%),radial-gradient(rgba(148,170,230,.13) 1.2px,transparent 1.3px)}
+.lb-ov.dark .lb-x{background:#111c42;border-color:#2b3b6e;color:#fff}.lb-ov.dark .lb-pop{background:#fff;color:#0b1430}
 .lb-ov.dark .lb-lbl{color:#7dd3fc}.lb-ov.dark .lb-head .lb-lbl,.lb-ov.dark .lb-sec.alt>.lb-lbl,.lb-ov.dark .lb-ql{color:#facc15}
 .lb-ov.dark .lb-h,.lb-ov.dark .lb-id,.lb-ov.dark .lb-pill b,.lb-ov.dark .lb-qs li{color:#fff}
 .lb-ov.dark .lb-ul{background:linear-gradient(90deg,#3b82f6,#5eead4) bottom/100% .1em no-repeat}
@@ -4612,10 +4629,22 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{ if(!BOARDDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BOARDDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
       const bd=(BOARDDOC[wk].boards||{})[wd]; if(!bd){ toast(L("Couldn’t find it.","No la encontré.")); return; }
       closeBoard(); document.documentElement.classList.add("lb-lock");
-      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-wrap"><button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">✕ ${L("Close","Cerrar")}</button>${boardHTML(bd)}</div></div>`);
+      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ ${L("Add all to My words","Agregar todas a Mis palabras")}</button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
       const x=document.querySelector(".lb-x"); if(x) x.focus();
     }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });
+  function lbPop(btn,msg){ const box=btn.closest(".lb-box"); if(!box) return; box.querySelectorAll(".lb-pop").forEach(p=>p.remove());
+    const r=btn.getBoundingClientRect(), br=box.getBoundingClientRect(), p=document.createElement("div"); p.className="lb-pop"; p.textContent=msg;
+    p.style.left=Math.min(br.width-90,Math.max(90,r.left-br.left+r.width/2))+"px"; p.style.top=(r.top-br.top+box.scrollTop)+"px"; box.appendChild(p); setTimeout(()=>p.remove(),1900); }
+  const lbAdd=x=>{ try{ return typeof window.csAddWord==="function"&&!!window.csAddWord(x.w,x.tr||"",x.ex||""); }catch(er){ return false; } };
+  document.addEventListener("click",e=>{ const ov=e.target.closest(".lb-ov"); if(!ov) return;
+    const one=e.target.closest(".lb-save[data-clw]"); if(one){ e.stopPropagation(); if(one.disabled) return; let x={}; try{ x=JSON.parse(one.dataset.clw); }catch(er){}
+      const ok=lbAdd(x); one.disabled=true; one.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
+      lbPop(one,ok?L("Added to My words ✓","Agregada a Mis palabras ✓"):L("Already in My words","Ya está en Mis palabras")); return; }
+    const all=e.target.closest("[data-lball]"); if(all){ e.stopPropagation(); if(all.disabled) return; let n=0;
+      ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); });
+      all.disabled=true; all.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ All in your words","✓ Ya están todas");
+      lbPop(all,n?L(`${n} ${n===1?"word":"words"} added to My words ✓`,`${n} ${n===1?"palabra agregada":"palabras agregadas"} a Mis palabras ✓`):L("They're all in My words already","Ya estaban todas en Mis palabras")); return; } },true);
   /* the first lines of a class's plan intro (for recordings that have no summary yet) */
   async function planIntro(date){ if(G()||!date) return ""; const wk=weekOf(new Date(date+"T12:00:00")), wd=new Date(date+"T12:00:00").getDay();
     if(!PLANDOC[wk]){ const r=await api("GET","/clubStats/_plans_"+wk.replace(/-/g,"")); PLANDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
@@ -9917,7 +9946,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
-    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression to <b>My words</b>.","club"],
+    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>.","club"],
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
     ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
@@ -10177,7 +10206,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261113011115"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261113091303"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
