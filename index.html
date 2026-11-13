@@ -2387,14 +2387,14 @@ html.cs-calm .cs-rxpal button{transition:none}
 .lb-all{border:0;border-radius:999px;padding:12px 18px;font:900 15px/1 "Nunito","Lexend",sans-serif;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#16a34a);box-shadow:0 8px 20px rgba(37,99,235,.28)}
 .lb-all:disabled{opacity:.75;cursor:default}
 .lb-wrap{padding-top:0!important;margin-top:-14px}
-.lb-save.cl-addw{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:7px 14px;border-radius:999px;font:900 14px/1.1 "Nunito","Lexend",sans-serif;color:#1d4ed8;background:#eef4ff;border:1.5px solid #bcd0fb}
-.lb-save.cl-addw:hover{background:#e0eaff}
-.lb-save.cl-addw:disabled{cursor:default;color:#15803d;background:#ecfdf3;border:1.5px solid #bbf0cf}
-.lb-ov.dark .lb-save.cl-addw{color:#bfdbfe;background:rgba(59,130,246,.18);border-color:rgba(147,197,253,.45)}
-.lb-ov.dark .lb-save.cl-addw:disabled{color:#86efac;background:rgba(34,197,94,.14);border-color:rgba(134,239,172,.4)}
-.lb-pop{position:absolute;z-index:4;transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;background:#141b3a;color:#fff;font:800 13.5px/1.2 "Nunito","Lexend",sans-serif;padding:8px 12px;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.25);pointer-events:none;animation:lbPop 1.8s ease forwards}
+.lb-save.cl-addw{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 15px;border-radius:12px;font:900 14px/1.1 "Nunito","Lexend",sans-serif;color:#fff;background:#141b3a;border:1.5px solid #141b3a;box-shadow:0 4px 10px rgba(20,27,58,.18)}
+.lb-save.cl-addw:hover{background:#2a3566}
+.lb-save.cl-addw:disabled{cursor:default;color:#4a5170;background:transparent;border:1.5px dashed #b8c2dc;box-shadow:none}
+.lb-ov.dark .lb-save.cl-addw{color:#0b1430;background:#fff;border-color:#fff}
+.lb-ov.dark .lb-save.cl-addw:disabled{color:#b6c2e2;background:transparent;border:1.5px dashed #3b4c80}
+.lb-pop{position:absolute;z-index:4;transform:translate(-50%,0);margin-top:10px;white-space:nowrap;background:#141b3a;color:#fff;font:800 13.5px/1.2 "Nunito","Lexend",sans-serif;padding:8px 12px;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.25);pointer-events:none;animation:lbPop 1.8s ease forwards}
 .lb-pop a{color:#93c5fd}
-@keyframes lbPop{0%{opacity:0;transform:translate(-50%,-80%)}12%{opacity:1;transform:translate(-50%,-100%)}80%{opacity:1}100%{opacity:0}}
+@keyframes lbPop{0%{opacity:0;transform:translate(-50%,-6px)}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
 @media (max-width:600px){.lb-ov{padding:10px 6px}.lb-box{border-radius:20px}.lb-all{padding:11px 14px;font-size:14px}}
 .lb-lbl{font-family:"Space Mono",monospace;font-weight:700;text-transform:uppercase;letter-spacing:.28em;color:#2563eb;font-size:13px;margin-bottom:10px}
 .lb-head{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;margin:8px 0 22px;clear:both}
@@ -4635,7 +4635,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });
   function lbPop(btn,msg){ const box=btn.closest(".lb-box"); if(!box) return; box.querySelectorAll(".lb-pop").forEach(p=>p.remove());
     const r=btn.getBoundingClientRect(), br=box.getBoundingClientRect(), p=document.createElement("div"); p.className="lb-pop"; p.textContent=msg;
-    p.style.left=Math.min(br.width-90,Math.max(90,r.left-br.left+r.width/2))+"px"; p.style.top=(r.top-br.top+box.scrollTop)+"px"; box.appendChild(p); setTimeout(()=>p.remove(),1900); }
+    p.style.left=Math.min(br.width-130,Math.max(130,r.left-br.left+r.width/2))+"px"; p.style.top=(r.bottom-br.top+box.scrollTop)+"px"; box.appendChild(p); setTimeout(()=>p.remove(),1900); }
   const lbAdd=x=>{ try{ return typeof window.csAddWord==="function"&&!!window.csAddWord(x.w,x.tr||"",x.ex||""); }catch(er){ return false; } };
   document.addEventListener("click",e=>{ const ov=e.target.closest(".lb-ov"); if(!ov) return;
     const one=e.target.closest(".lb-save[data-clw]"); if(one){ e.stopPropagation(); if(one.disabled) return; let x={}; try{ x=JSON.parse(one.dataset.clw); }catch(er){}
@@ -10206,7 +10206,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261113091303"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261113095411"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
