@@ -2406,6 +2406,18 @@ html.cs-calm .cs-rxpal button{transition:none}
 .lb-card.wrap .lb-top{flex-direction:column;align-items:center;gap:6px}.lb-card.wrap .lb-emo{font-size:clamp(38px,4vw,58px)}
 .lb-card.wrap .lb-id{color:#fff;font-size:clamp(30px,4vw,56px)}.lb-card.wrap .lb-mean{color:rgba(255,255,255,.93);font-size:clamp(17px,1.7vw,24px);max-width:860px;margin:12px auto 0}
 .lb-card.wrap .lb-ex{color:#fff;border:none;padding:0;font-style:normal;margin-top:12px}
+.lb-ov.dark{color:#f1f5ff;background-color:#0b1430;background-image:radial-gradient(700px 420px at 50% 0%,rgba(59,130,246,.22),transparent 70%),radial-gradient(800px 500px at 100% 100%,rgba(139,92,246,.22),transparent 70%),radial-gradient(rgba(148,170,230,.13) 1.2px,transparent 1.3px)}
+.lb-ov.dark .lb-x{background:#111c42;border-color:#2b3b6e;color:#fff}
+.lb-ov.dark .lb-lbl{color:#7dd3fc}.lb-ov.dark .lb-head .lb-lbl,.lb-ov.dark .lb-sec.alt>.lb-lbl,.lb-ov.dark .lb-ql{color:#facc15}
+.lb-ov.dark .lb-h,.lb-ov.dark .lb-id,.lb-ov.dark .lb-pill b,.lb-ov.dark .lb-qs li{color:#fff}
+.lb-ov.dark .lb-ul{background:linear-gradient(90deg,#3b82f6,#5eead4) bottom/100% .1em no-repeat}
+.lb-ov.dark .lb-sub,.lb-ov.dark .lb-mean{color:#b6c2e2}
+.lb-ov.dark .lb-badge{background:#fff;color:#0b1430}.lb-ov.dark .lb-badge span{color:#2563eb}
+.lb-ov.dark .lb-pill{background:rgba(15,25,60,.85);border-color:#2b3b6e}
+.lb-ov.dark .lb-card{background:rgba(16,27,64,.92);border-color:#2b3b6e}.lb-ov.dark .lb-sec.alt .lb-card{background:rgba(30,30,58,.92);border-color:#6b5a1e}
+.lb-ov.dark .lb-ex{color:#7dd3fc;border-left-color:#3b82f6}
+.lb-ov.dark .lb-eq{color:#86efac;background:rgba(34,197,94,.12);border-color:rgba(134,239,172,.35)}.lb-ov.dark .lb-eq.uk{color:#93c5fd;background:rgba(59,130,246,.14);border-color:rgba(147,197,253,.35)}
+.lb-ov.dark .lb-qs,.lb-ov.dark .lb-sec.alt .lb-qs{background:rgba(11,20,48,.7);border-color:#2b3b6e}
 @media (max-width:760px){.lb-head{grid-template-columns:1fr}.lb-badge{justify-self:start}.lb-card.wide{grid-template-columns:1fr}.lb-pill{border-radius:20px}}
 .cl-planb2{font-size:15px;line-height:1.6}.cl-planb2 h3,.cl-planb2 h4,.cl-planb2 h5{margin:14px 0 6px}.cl-planb2 p{margin:6px 0}.cl-planb2 ul,.cl-planb2 ol{margin:6px 0;padding-left:22px}
 .cl-planb2 blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--accent,#8B5CF6);background:color-mix(in srgb,var(--accent,#8B5CF6) 7%,transparent);border-radius:0 8px 8px 0}
@@ -4597,7 +4609,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{ if(!BOARDDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BOARDDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
       const bd=(BOARDDOC[wk].boards||{})[wd]; if(!bd){ toast(L("Couldn’t find it.","No la encontré.")); return; }
       closeBoard(); document.documentElement.classList.add("lb-lock");
-      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-wrap"><button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">✕ ${L("Close","Cerrar")}</button>${boardHTML(bd)}</div></div>`);
+      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-wrap"><button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">✕ ${L("Close","Cerrar")}</button>${boardHTML(bd)}</div></div>`);
       const x=document.querySelector(".lb-x"); if(x) x.focus();
     }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });

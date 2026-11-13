@@ -48,7 +48,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py club-plan <class date YYYY-MM-DD> @/tmp/plan.json   {"title":"Wildcard Wednesday: The Pitch","md":"<the Notion plan's content, as fetched>"}
       shows that class's lesson plan to members ("📄 Class material"). Refuses before the class has ended: plans are NEVER shown before class.
   HUB_PASSWORD=... python3 hubsync.py club-board <class date YYYY-MM-DD> @/tmp/board.json   the live board Noa shared in class, saved for members ("🧩 Live board"
-      next to that class's recording and on This week). Same json as the live board: {"title","subtitle","prompt","countLabel","cards":[{"n","emoji","text","meaning",
+      next to that class's recording and on This week). Same json as the live board: {"title","subtitle","prompt","countLabel","theme":"light"|"dark","cards":[{"n","emoji","text","meaning",
       "example","english","uk","section","questions":[...],"style":"wrap"}]}. Same date again = replaces it. Refuses before the class has ended.
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
@@ -912,7 +912,8 @@ def main():
         if not cards:
             raise SystemExit("need the board's cards")
         board = {"title": _txt(d.get("title"), 120), "subtitle": _txt(d.get("subtitle"), 200), "prompt": _txt(d.get("prompt"), 200),
-                 "countLabel": _txt(d.get("countLabel"), 40), "date": day.isoformat(), "cards": cards, "at": int(now.timestamp() * 1000)}
+                 "countLabel": _txt(d.get("countLabel"), 40), "theme": "dark" if d.get("theme") == "dark" else "light",
+                 "date": day.isoformat(), "cards": cards, "at": int(now.timestamp() * 1000)}
         wk = (day - datetime.timedelta(days=day.weekday())).isoformat(); key = "_boards_" + wk.replace("-", ""); path = f"{BASE}/clubStats/{key}"
         r = http("GET", path, token=tok) or {}
         try:
