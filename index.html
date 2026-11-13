@@ -1075,6 +1075,9 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .search-toggle .search-ico{width:12px;height:12px;border-width:2px;transform:translate(-1px,-1px)}
 .search-toggle .search-ico::after{height:6px;right:-3px;bottom:-5px}
 
+#authPanel #authName{margin-bottom:0!important}
+#authPanel #authPhoto{margin-top:4px!important}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4701,7 +4704,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const otherOf=t=>(t.members||[]).find(u=>u!==(G()?"me":me()))||"";
   function dmBadge(){ const n=(THREADS||[]).filter(t=>t.unread).length; document.querySelectorAll(".cl-dmtop .cl-dmn").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":n; }); }
   function dmPanel(){ let o=document.getElementById("clDm"); if(o) return o; o=document.createElement("div"); o.id="clDm"; o.className="cl-dm-ov"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true"); o.setAttribute("aria-label",L("Messages","Mensajes"));
-    o.innerHTML=`<div class="cl-dm"><div class="cl-dmh"><button type="button" class="cs-act cl-dmback" data-dmback="1" hidden aria-label="${L("Back","Volver")}">←</button><b class="cl-dmt">💬 ${L("Messages","Mensajes")}</b><button type="button" class="cl-prof-x" data-dmx="1" aria-label="${L("Close","Cerrar")}">✕</button></div><div class="cl-dmb"></div></div>`;
+    o.innerHTML=`<div class="cl-dm"><div class="cl-dmh"><button type="button" class="cs-act cl-dmback" data-dmback="1" hidden aria-label="${L("Back","Volver")}">←</button><b class="cl-dmt">💬 ${L("Messages","Mensajes")}</b><button type="button" class="cl-prof-x" data-dmx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="cl-dmb"></div></div>`;
     document.body.appendChild(o); dmPlace(o); o.addEventListener("click",e=>{ if(e.target===o||e.target.closest("[data-dmx]")) closeDm(); }); return o; }
   const askDel=async(t,b,ok)=> window.csConfirm?window.csConfirm(t,b,ok):confirm(t);
   document.addEventListener("click",async e=>{
@@ -10172,7 +10175,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261112182511"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261112222016"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10351,7 +10354,26 @@ document.addEventListener("click",e=>{ const b=e.target.closest("nav .navbtn[dat
     else if(k==="members"){ const f=document.querySelector("#mbFrame iframe"), t=f&&f.contentDocument.querySelector("#mTabs [data-mtab]"); if(t) t.click(); }
     scrollTo({top:0});
   }catch(er){} },30); },true);
+</script><script>
+/* step116: the buttons in the top bar each open one pop-up; opening one closes the others, and the 🔔 closes its own window from either tab */
+(function(){
+  const BELL='#tNotif .tn-bell,#clBell', BTN=BELL+',#authBtn,#musicBtn,#tmBtn,#searchToggle,#vaHdr,#dmTopBtn';
+  const vis=id=>{ const e=document.getElementById(id); return !!e&&!e.hidden&&e.getClientRects().length>0; };
+  let busy=false; const press=el=>{ if(!el) return; busy=true; try{ el.click(); }finally{ busy=false; } };
+  function notifOpen(){ return !!document.querySelector("#tNotif .tn-box")||vis("clBellPanel"); }
+  function closeNotif(){ const x=document.querySelector('#tNotif [data-tn="hide"]'); if(x) return press(x); if(vis("clBellPanel")) press(document.getElementById("clBell")); }
+  function closeDm(){ if(!document.getElementById("clDm")) return false; if(window.__clubDmClose) window.__clubDmClose(); else document.getElementById("clDm").remove(); return true; }
+  window.addEventListener("click",e=>{ if(busy) return; const b=e.target.closest&&e.target.closest(BTN); if(!b) return;
+    const isBell=b.matches(BELL);
+    if(closeDm()&&isBell){ e.preventDefault(); e.stopImmediatePropagation(); return; }   /* 🔔 on the Messages tab = close */
+    if(!b.matches("#authBtn")&&vis("authPanel")) press(document.getElementById("authClose"));
+    if(!b.matches("#musicBtn")&&vis("musicPanel")) press(document.getElementById("musicClose"));
+    if(!b.matches("#tmBtn")&&vis("tmPanel")) press(document.getElementById("tmClose"));
+    if(!isBell&&notifOpen()) closeNotif();
+  },true);
+})();
 </script>
+
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
    Every "ncs-*" key in localStorage is mirrored to users/{uid}/data/{key}.
