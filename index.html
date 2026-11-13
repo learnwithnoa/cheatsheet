@@ -2388,6 +2388,10 @@ html.cs-calm .cs-rxpal button{transition:none}
 .lb-x{width:46px;height:46px;flex:none;display:grid;place-items:center;border:1.5px solid #dfe5f3;background:#fff;color:#141b3a;border-radius:50%;padding:0;font:400 30px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(20,27,58,.14)}
 .lb-all{border:0;border-radius:999px;padding:12px 18px;font:900 15px/1 "Nunito","Lexend",sans-serif;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#16a34a);box-shadow:0 8px 20px rgba(37,99,235,.28)}
 .lb-all:disabled{opacity:.75;cursor:default}
+.lb-mat{margin-right:auto;border:1.5px solid #dfe5f3;border-radius:999px;padding:11px 16px;font:900 14.5px/1 "Nunito","Lexend",sans-serif;cursor:pointer;color:#141b3a;background:#fff;box-shadow:0 6px 16px rgba(20,27,58,.10)}
+.lb-ov.dark .lb-mat{background:#111c42;border-color:#2b3b6e;color:#fff}
+.lb-short{display:none}
+@media (max-width:600px){.lb-long{display:none}.lb-short{display:inline}.lb-mat{padding:11px 14px;font-size:14px}}
 .lb-wrap{padding-top:0!important;margin-top:-14px}
 .lb-save.cl-addw{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 15px;border-radius:12px;font:900 14px/1.1 "Nunito","Lexend",sans-serif;color:#fff;background:#141b3a;border:1.5px solid #141b3a;box-shadow:0 4px 10px rgba(20,27,58,.18)}
 .lb-save.cl-addw:hover{background:#2a3566}
@@ -3731,8 +3735,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       return Object.assign({},s,c,{wd,date,start,end,ico:c.ico||s.ico||"📅",name:c.name||s.name||"",zoom:c.zoom||s.zoom||"",k:"k"+(((wd===1?1:wd===3?2:wd===4?3:4)))}); });
   }
   const planBtn=(date,wd)=>{ const d=new Date(date+"T12:00:00"); d.setDate(d.getDate()-((d.getDay()+6)%7)); const wk=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-    return (((window.__clubPlans||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb" data-plan="${wk}|${wd}" aria-expanded="false">📄 ${L("Class material","Material de la clase")}</button>`:"")
-      +(((window.__clubBoards||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb cl-boardb" data-board="${wk}|${wd}">🧩 ${L("Live board","Pizarra en vivo")}</button>`:""); };
+    return (((window.__clubPlans||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb" data-plan="${wk}|${wd}" aria-expanded="false"${(((window.__clubBoards||{})[wk]||[]).includes(Number(wd)))?" hidden":""}>📄 ${L("Class material","Material de la clase")}</button>`:"")
+      +(((window.__clubBoards||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb cl-boardb" data-board="${wk}|${wd}"${(((window.__clubPlans||{})[wk]||[]).includes(Number(wd)))?" data-hasplan=\"1\"":""}>🧩 ${L("Live board","Pizarra en vivo")}</button>`:""); };
   function clsCard(c,now,rs){
     const live=now>=c.start.getTime()-10*60000&&now<=c.end.getTime(), past=now>c.end.getTime(), today=new Date(c.start).toDateString()===new Date(now).toDateString();
     return `<div class="cl-cls ${c.k}${past?" past":""}"><div class="cl-when"><b>${c.ico} ${esc(fd(c.date))}</b><span>${esc(timeTxt(c.start))}</span>${live?'<span class="cl-live">● Live now</span>':today&&!past?'<span class="cl-today">Today</span>':""}</div>
@@ -4631,10 +4635,15 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{ if(!BOARDDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BOARDDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
       const bd=(BOARDDOC[wk].boards||{})[wd]; if(!bd){ toast(L("Couldn’t find it.","No la encontré.")); return; }
       closeBoard(); document.documentElement.classList.add("lb-lock");
-      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ ${L("Add all to My words","Agregar todas a Mis palabras")}</button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
+      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${b.dataset.hasplan?`<button type="button" class="lb-mat" data-lbplan="${esc(b.dataset.board)}">📄 <span class="lb-long">${L("Full class material","Material completo de la clase")}</span><span class="lb-short">${L("Material","Material")}</span></button>`:""}${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Add all to My words","Agregar todas a Mis palabras")}</span><span class="lb-short">${L("Add all","Agregar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
       const x=document.querySelector(".lb-x"); if(x) x.focus();
+      window.__lbFrom=b;
     }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });
+  document.addEventListener("click",e=>{ const m=e.target.closest("[data-lbplan]"); if(!m) return; e.preventDefault(); e.stopPropagation();
+    const from=window.__lbFrom, pl=from&&from.parentElement?from.parentElement.querySelector('[data-plan="'+m.dataset.lbplan+'"]'):document.querySelector('[data-plan="'+m.dataset.lbplan+'"]');
+    closeBoard(); if(!pl) return; if(pl.getAttribute("aria-expanded")!=="true") pl.click();
+    setTimeout(()=>{ const box=pl.parentElement&&pl.parentElement.nextElementSibling; (box&&box.classList.contains("cl-plan")?box:pl.parentElement).scrollIntoView({behavior:"smooth",block:"start"}); },400); },true);
   function lbPop(btn,msg){ const box=btn.closest(".lb-box"); if(!box) return; box.querySelectorAll(".lb-pop").forEach(p=>p.remove());
     const r=btn.getBoundingClientRect(), br=box.getBoundingClientRect(), p=document.createElement("div"); p.className="lb-pop"; p.textContent=msg;
     p.style.left=Math.min(br.width-130,Math.max(130,r.left-br.left+r.width/2))+"px"; p.style.top=(r.bottom-br.top+box.scrollTop)+"px"; box.appendChild(p); setTimeout(()=>p.remove(),1900); }
@@ -10268,7 +10277,7 @@ const CHANGELOG=[
     ["🏠","New: There is / there are","<b>hay, había, habrá</b> in English: <b>there is / there are</b>, <b>there was / there were</b>, <b>there will be</b>, negatives and questions. 7 short stages with Spanish help, in <b>Practice → Grammar</b>. Finish it for a 🏠 little house for your buddy.","quiz"]
   ]},
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
-    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>.","club"],
+    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>. The full class material is inside it too: tap <b>📄 Full class material</b> at the top.","club"],
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
     ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
@@ -10528,7 +10537,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261113095710"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261113101138"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
