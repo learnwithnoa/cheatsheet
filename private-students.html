@@ -840,6 +840,8 @@ const REC_MODS = { prs: { name: "Present simple", stages: ["I, you, we, they", "
   ps: { name: "Past simple", stages: ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"] },
   pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] },
   ing: { name: "Verb + -ing", stages: ["Before, after, without + -ing", "Verbs that take -ing", "suggest, recommend, propose", "good at, interested in, look forward to", "-ing or to?", "Mix it up", "Tell the story"] },
+  th: { name: "There is / there are", stages: ["There is / there are", "Negatives: there isn't / aren't", "Questions: Is there…? Are there…?", "Past: there was / there were", "Future: there will be", "Mix it up", "Tell the story"] },
+  cou: { name: "Could vs was able to", stages: ["can, could, be able to", "could: ability in general", "was able to: one specific moment", "Negatives: couldn't", "Questions: Could you…? Were you able to…?", "will be able to, have been able to", "Tell the story"] },
   ed: { name: "-ed endings (pronunciation)", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
 function recBox(s) {
   const mine = ((meta && meta.recs) || []).filter(r => r.hub === s.id && !r.done).slice(-3).reverse();

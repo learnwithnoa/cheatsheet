@@ -590,6 +590,8 @@ function weekKeyT() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.
 const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] },
   prs: { name: "Present simple", stages: ["I, you, we, they", "He, she, it + -s", "Spelling: -es, -ies, has", "Negatives: don't / doesn't", "Questions: do / does", "Mix it up", "Tell the story"] },
   ing: { name: "Verb + -ing", stages: ["Before, after, without + -ing", "Verbs that take -ing", "suggest, recommend, propose", "good at, interested in, look forward to", "-ing or to?", "Mix it up", "Tell the story"] },
+  th: { name: "There is / there are", stages: ["There is / there are", "Negatives: there isn't / aren't", "Questions: Is there…? Are there…?", "Past: there was / there were", "Future: there will be", "Mix it up", "Tell the story"] },
+  cou: { name: "Could vs was able to", stages: ["can, could, be able to", "could: ability in general", "was able to: one specific moment", "Negatives: couldn't", "Questions: Could you…? Were you able to…?", "will be able to, have been able to", "Tell the story"] },
   ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
 function modBlock(s, id) {
   const T = MODT[id], p = s.mods[id] || {}, b = p.b || {}, st = p.s || {}, rec = s.modrec[id] || 0;
@@ -602,7 +604,7 @@ function modBlock(s, id) {
 function practiceBox(s) {
   const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
   const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
-  return `<div class="parkbox"><b>Practice</b>${modBlock(s, "prs")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "ed")}
+  return `<div class="parkbox"><b>Practice</b>${modBlock(s, "prs")}${modBlock(s, "th")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "cou")}${modBlock(s, "ed")}
     <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
     <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. Tap it again to remove it.</p></div>`;
 }

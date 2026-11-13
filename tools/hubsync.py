@@ -26,6 +26,8 @@ Usage:
       mod: "ps" (Past simple: 1 Regular verbs, 2 Irregular verbs, 3 Was/were, 4 Negatives, 5 Questions, 6 Mix it up, 7 Tell the story)
            "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
            "prs" (Present simple, A1-A2: 1 I/you/we/they, 2 He/she/it + -s, 3 Spelling: -es/-ies/has, 4 Negatives: don't/doesn't, 5 Questions: do/does, 6 Mix it up, 7 Tell the story)
+           "th" (There is / there are, A1-A2 with Spanish help: 1 There is/there are, 2 Negatives: there isn't/aren't, 3 Questions: Is there/Are there, 4 Past: there was/were, 5 Future: there will be, 6 Mix it up, 7 Tell the story)
+           "cou" (Could vs was able to, B1: 1 can/could/be able to, 2 could: ability in general, 3 was able to: one specific moment, 4 Negatives: couldn't, 5 Questions: Could you/Were you able to, 6 will be able to/have been able to, 7 Tell the story)
            "ing" (Verb + -ing, B1: 1 Before/after/without + -ing, 2 Verbs that take -ing, 3 suggest/recommend/propose, 4 good at/interested in/look forward to, 5 -ing or to?, 6 Mix it up, 7 Tell the story)
            "ed" (-ed endings, pronunciation: 1 Extra syllable or not?, 2 The /t/ sound, 3 The /d/ sound, 4 Mix it up, 5 Spelling tricks, 6 Odd one out, 7 Feelings: -ed adjectives)
       or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work)
@@ -1256,7 +1258,7 @@ def main():
         roles = {}
         for d in (http("GET", f"{BASE}/roles?pageSize=300", token=tok) or {}).get("documents", []):
             f = d.get("fields", {}); roles[d["name"].split("/")[-1]] = (f.get("lv") or {}).get("stringValue", "")
-        MODN = {"ps": "past simple", "pp": "present perfect", "prs": "present simple", "ing": "verb + -ing", "ed": "-ed endings"}
+        MODN = {"ps": "past simple", "pp": "present perfect", "prs": "present simple", "th": "there is / there are", "ing": "verb + -ing", "cou": "could vs was able to", "ed": "-ed endings"}
         out = []
         for d in users.get("documents", []):
             uid = d["name"].split("/")[-1]; f = d.get("fields", {}); g = lambda k: (f.get(k) or {}).get("stringValue", "")

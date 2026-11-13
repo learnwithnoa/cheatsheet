@@ -1078,6 +1078,8 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 #authPanel #authName{margin-bottom:0!important}
 #authPanel #authPhoto{margin-top:4px!important}
 
+#v-quiz .pr-tile .pr-newb{justify-self:start;align-self:start;width:max-content;display:inline-block;margin-left:6px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2988,7 +2990,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   const MAP_P="cs-open-map";
   try{ const sp=new URLSearchParams(location.search); if(sp.has("map")){ sessionStorage.setItem(MAP_P,"1"); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
   const LV=["A1","A2","B1","B2","C1","C2"];
-  const MODNM={prs:"Present simple",ps:"Past simple",pp:"Present perfect",ing:"Verb + -ing",ed:"-ed endings"};
+  const MODNM={prs:"Present simple",th:"There is / there are",ps:"Past simple",pp:"Present perfect",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"};
   function mapHTML(v){ const m=v.map||{}, lv=String(m.level||v.level||"").toUpperCase().match(/[ABC][12]/), cur=lv?lv[0]:"", first=(v.name||"").split(" ")[0];
     const nextRev=(m.reviews||[]).filter(d=>!(m.reviewed||[]).includes(d)).sort()[0];
     const route=(m.route||[]).slice(0,4);
@@ -3093,7 +3095,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     lesOf(v).forEach(x=>{ if(x.date&&x.date>since) out.push({d:x.date,ico:x.kind==="guide"?"📄":"📼",t:`${x.kind==="guide"?"New study guide":"Your class recap"}: <b>${esc(x.title)}</b> (with exercises)`,tab:x.kind==="guide"?"guides":"recaps"}); });
     (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
-    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ing:"Verb + -ing",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
+    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
@@ -3148,7 +3150,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
     </div>`;
     /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
-    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",ing:"Verb + -ing",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -5552,7 +5554,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prThTile" data-modtile="th"><span class="pr-ico" aria-hidden="true">🏠</span><b>There is / there are</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prCouTile" data-modtile="cou"><span class="pr-ico" aria-hidden="true">💪</span><b>Could vs was able to</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My words</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
@@ -5617,7 +5619,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=52" defer></script>
+<script src="buddy.js?v=53" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -8253,6 +8255,320 @@ Instead of ___, he went home. (stay)|staying|instead of + -ing.
 She managed ___ on time. (arrive)|to arrive|manage + to + verb.
 `.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"ingt-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
 
+/* ---------- Could vs was able to question bank (B1 friendly, Spanish help on every question) ----------
+   same format as the other banks: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint */
+const COU_STAGES=[
+ {n:1, t:"can, could, be able to", sub:"I can, I could, I'll be able to", why:"Ability now: can. Ability in the past: could. Future: will be able to (never 'will can').", es:"Habilidad ahora: can. En el pasado: could. En el futuro: will be able to (nunca 'will can').", q:`
+I ___ speak three languages. (now)|can|could,am able,can to|Now → can.|Ahora → can.
+When I was ten, I ___ run really fast. (then)|could|can,could to,was can|Past → could.|Pasado → could.
+Next year, I ___ drive. (future)|will be able to/'ll be able to|will can,can,could|Future: will be able to. 'Will can' doesn't exist.|Futuro: will be able to. 'Will can' no existe.
+My grandma ___ read without glasses, even at 90. (now)|can|cans,could to,is can|Now → can (no -s, even with she).|Ahora → can (sin -s, aunque sea she).
+Before the accident, he ___ play the piano. (then)|could|can,coulds,could to|Past → could.|Pasado → could.
+I hope I ___ visit you in March. (future)|will be able to/'ll be able to|will can,can to,could to|Future: will be able to.|Futuro: will be able to.
+She ___ swim, but she doesn't like it. (now)|can|can to,cans,is able|Now → can + verb (no 'to').|Ahora → can + verbo (sin 'to').
+At university, we ___ sleep until noon. (then)|could|can,could to,were can|Past → could.|Pasado → could.
+After this course, you ___ write better emails. (future)|will be able to/'ll be able to|will can,can,could|Future: will be able to.|Futuro: will be able to.
+He ___ cook, but he can bake great bread. (now, negative)|can't/cannot|couldn't,can not to,doesn't can|Now, negative → can't.|Ahora, negativo → can't.
+When I was a baby, I ___ talk. (then, negative)|couldn't/could not|can't,didn't could,couldn't to|Past, negative → couldn't.|Pasado, negativo → couldn't.
+Don't worry, you ___ do it tomorrow. (future)|will be able to/'ll be able to|will can,can to,could to|Future: will be able to.|Futuro: will be able to.
+My dog ___ open the door by himself. It's scary. (now)|can|cans,could to,is can|Now → can.|Ahora → can.
+Ten years ago, I ___ eat anything and not get fat. (then)|could|can,could to,was can|Past → could.|Pasado → could.
+`},
+ {n:2, t:"could: ability in general", sub:"when I was a kid, I could…", why:"For a general ability in the past (something you could do any time), use could. Was/were able to is also correct here.", es:"Para una habilidad general en el pasado (algo que podías hacer siempre), usa could. Was/were able to también está bien aquí.", q:`
+When I was five, I ___ already read. (read)|could/was able to|can,could to,could read|General past ability → could.|Habilidad general en el pasado → could.
+My grandpa ___ fix anything in the house. (fix)|could/was able to|can,could fixed,could to|Something he could always do → could.|Algo que siempre podía hacer → could.
+As a teenager, she ___ dance for hours. (dance)|could/was able to|can,could danced,could to|General past ability → could.|Habilidad general en el pasado → could.
+In my old job, I ___ work from home on Fridays. (work)|could/was able to|can,could worked,could to|It was possible every Friday → could.|Era posible todos los viernes → could.
+Before the surgery, he ___ walk very well. (walk, negative)|couldn't/could not/wasn't able to/was not able to|can't,didn't could,couldn't walked|General, negative → couldn't.|General, negativo → couldn't.
+In the 90s, you ___ smoke in restaurants. (smoke)|could/were able to|can,could smoked,could to|It was allowed back then → could.|Estaba permitido en esa época → could.
+My sister ___ speak French when she lived in Paris. (speak)|could/was able to|can,could spoke,could to|General past ability → could.|Habilidad general en el pasado → could.
+When we were kids, we ___ play in the street all day. (play)|could/were able to|can,could played,could to|General past ability → could.|Habilidad general en el pasado → could.
+I ___ understand my teacher at first. She talked so fast! (understand, negative)|couldn't/could not/wasn't able to/was not able to|can't,didn't could,couldn't understood|Negative → couldn't.|Negativo → couldn't.
+Our old house was on a hill. We ___ see the ocean from the kitchen. (see)|could/were able to|can,could saw,could to|See, hear, smell → could, even for one moment.|Con see, hear, smell → could, incluso para un momento.
+From my window I ___ hear the neighbours every night. (hear)|could/was able to|can,could heard,could to|Senses (hear, see) → could.|Con los sentidos (hear, see) → could.
+He was a great student. He ___ remember everything. (remember)|could/was able to|can,could remembered,could to|General past ability → could.|Habilidad general en el pasado → could.
+When I lived in Chile, I ___ eat avocado every day. (eat)|could/was able to|can,could ate,could to|General past ability → could.|Habilidad general en el pasado → could.
+At 20, my mom ___ already drive a truck. (drive)|could/was able to|can,could drove,could to|General past ability → could.|Habilidad general en el pasado → could.
+`},
+ {n:3, t:"was able to: one specific moment", sub:"I was able to fix it", why:"For ONE specific success in the past (you did it, maybe it was difficult), use was/were able to or managed to. Not could.", es:"Para UN logro específico en el pasado (lo lograste, quizás con esfuerzo), usa was/were able to o managed to. No could.", q:`
+The exam was hard, but I ___ pass it. (pass)|was able to|could,can,could to|One specific success → was able to.|Un logro específico → was able to: logré aprobar.
+The door was stuck, but finally we ___ open it. (open)|were able to|could,can,was able to|One specific moment + we → were able to.|Un momento específico + we → were able to.
+There was a lot of traffic, but she ___ arrive on time. (arrive)|was able to|could,can,were able to|She did it that day → was able to.|Lo logró ese día → was able to.
+The fire spread fast, but everyone ___ escape. (escape)|was able to|could,can,were able|One specific success → was able to.|Un logro específico → was able to.
+I lost my keys yesterday, but I ___ find them in the car. (find)|was able to|could,can,could to|Yesterday, one success → was able to.|Ayer, un logro → was able to.
+After three hours, the mechanic ___ fix my car. (fix)|was able to|could,can,could fixed|One specific success → was able to.|Un logro específico → was able to.
+The flight was full, but we ___ get two seats together. (get)|were able to|could,can,was able to|We + one success → were able to.|We + un logro → were able to.
+I ___ talk to the manager and solve the problem. (talk)|was able to|could,can,could to|One specific success → was able to.|Un logro específico → was able to.
+It was raining all day, but they ___ finish the race. (finish)|were able to|could,can,was able to|They + one success → were able to.|They + un logro → were able to.
+My phone died, but I ___ call you from a friend's phone. (call)|was able to|could,can,could called|One specific moment → was able to.|Un momento específico → was able to.
+The interview was in English, and I ___ answer every question. (answer)|was able to|could,can,could answered|One specific success → was able to.|Un logro específico → was able to.
+The concert was sold out, but Ana ___ buy a ticket online. (buy)|was able to|could,can,were able to|One specific success → was able to.|Un logro específico → was able to.
+The ice was thin, but the kids ___ cross the lake. (cross)|were able to|could,can,was able to|The kids = they → were able to.|The kids = they → were able to.
+I was really tired, but I ___ stay awake until the end of the movie. (stay)|was able to|could,can,could to|One specific success → was able to.|Un logro específico → was able to.
+`},
+ {n:4, t:"Negatives: couldn't", sub:"I couldn't open it", why:"In the negative, couldn't works for everything: general ability AND one specific moment. Wasn't/weren't able to is also correct.", es:"En negativo, couldn't sirve para todo: habilidad general Y un momento específico. Wasn't/weren't able to también está bien.", q:`
+I tried and tried, but I ___ open the jar. (open)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't to|Negative → couldn't works, even for one moment.|Negativo → couldn't sirve, incluso para un momento.
+She ___ come to the party. She was sick. (come)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't came|Negative → couldn't.|Negativo → couldn't.
+We ___ find a parking spot, so we went home. (find)|couldn't/could not/weren't able to/were not able to|didn't could,can't,couldn't found|Negative → couldn't (+ verb in base form).|Negativo → couldn't (+ verbo en forma base).
+I ___ sleep last night. The neighbours were so loud! (sleep)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't slept|Negative → couldn't + base verb.|Negativo → couldn't + verbo base.
+They ___ understand the instructions. (understand)|couldn't/could not/weren't able to/were not able to|didn't could,can't,couldn't understood|Negative → couldn't.|Negativo → couldn't.
+He ___ swim until he was 30. (swim)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't swam|General, negative → couldn't.|General, negativo → couldn't.
+Sorry, I ___ answer your call. I was in a meeting. (answer)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't answered|Negative → couldn't.|Negativo → couldn't.
+The wifi was terrible, so I ___ join the class. (join)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't joined|Negative → couldn't.|Negativo → couldn't.
+My parents ___ afford a car when I was a kid. (afford)|couldn't/could not/weren't able to/were not able to|didn't could,can't,couldn't afforded|Negative → couldn't.|Negativo → couldn't.
+I ___ believe it when I heard the news! (believe)|couldn't/could not|didn't could,can't,couldn't believed|Common expression: I couldn't believe it.|Expresión común: I couldn't believe it (no lo podía creer).
+The doctor ___ see me until Friday. (see)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't saw|Negative → couldn't.|Negativo → couldn't.
+We ___ hear you. Can you repeat that? (hear)|couldn't/could not|didn't could,can't heard,couldn't heard|Negative → couldn't + base verb.|Negativo → couldn't + verbo base.
+She ___ remember his name at the meeting. (remember)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't remembered|Negative → couldn't.|Negativo → couldn't.
+I ___ say no. He looked so sad! (say)|couldn't/could not|didn't could,can't said,couldn't said|Negative → couldn't + base verb.|Negativo → couldn't + verbo base.
+`},
+ {n:5, t:"Questions: Could you…? Were you able to…?", sub:"Were you able to fix it?", why:"Question about general past ability: Could you…? About one specific moment: Were you able to…? (Could you…? now is also a polite request.)", es:"Pregunta sobre habilidad general pasada: Could you…? Sobre un momento específico: Were you able to…? (Could you…? en presente también es una petición amable.)", q:`
+___ you swim when you were a kid? (general)|Could|Were,Did,Can|General past ability → Could you…?|Habilidad general pasada → Could you…?
+___ you able to fix the printer yesterday? (one moment)|Were|Could,Did,Was|One specific moment → Were you able to…?|Un momento específico → Were you able to…?
+Was she ___ to get a ticket? (one moment)|able|could,can,possible|Was she able to…?|Was she able to…?
+___ you speak English when you moved to London? (general)|Could|Were,Did,Can|General past ability → Could you…?|Habilidad general pasada → Could you…?
+___ they able to finish the project on time? (one moment)|Were|Could,Did,Was|They + one moment → Were they able to…?|They + un momento → Were they able to…?
+___ you pass me the salt, please? (polite request)|Could|Were,Did,Are|Polite request → Could you…?|Petición amable → Could you…?
+Were you able to ___ him? (call)|call|called,calling,to call|After 'able to' → base verb.|Después de 'able to' → verbo base.
+Could you ___ the music from your room? (hear)|hear|heard,hearing,to hear|After could → base verb.|Después de could → verbo base.
+___ he able to come to the meeting? (one moment)|Was|Could,Did,Were|He + one moment → Was he able to…?|He + un momento → Was he able to…?
+___ you help me with this box? (polite request)|Could|Were,Did,Was|Polite request → Could you…?|Petición amable → Could you…?
+Was your dad able to ___ the car? (fix)|fix|fixed,fixing,to fix|After 'able to' → base verb.|Después de 'able to' → verbo base.
+Were you able to sleep on the plane? Yes, I ___. (short answer)|was|could,did,were|Short answer: Yes, I was.|Respuesta corta: Yes, I was.
+Could she read when she was four? No, she ___. (short answer)|couldn't/could not|wasn't,didn't,can't|Short answer: No, she couldn't.|Respuesta corta: No, she couldn't.
+___ you able to find the restaurant OK last night? (one moment)|Were|Could,Did,Was|One specific moment → Were you able to…?|Un momento específico → Were you able to…?
+`},
+ {n:6, t:"will be able to, have been able to", sub:"other tenses: use be able to", why:"Can and could only have these two forms. For the future, the present perfect or after another modal, use be able to: will be able to, have been able to, might be able to.", es:"Can y could solo tienen esas dos formas. Para el futuro, el present perfect o después de otro modal, usa be able to: will be able to, have been able to, might be able to.", q:`
+In two months, you ___ have basic conversations. (future)|will be able to/'ll be able to|will can,can,could|Future → will be able to.|Futuro → will be able to.
+I ___ sleep well since I moved. (present perfect, negative)|haven't been able to/have not been able to|didn't can,haven't could,couldn't been|Present perfect → have been able to.|Present perfect → have been able to.
+She ___ finish the report yet. (present perfect, negative)|hasn't been able to/has not been able to|hasn't could,didn't can,isn't able|Present perfect → has been able to.|Present perfect → has been able to.
+I'm busy now, but I ___ help you later. (might)|might be able to|might can,might could,might able to|After another modal (might) → be able to.|Después de otro modal (might) → be able to.
+I'd love ___ play the guitar. (would love + to)|to be able to|to can,can,could|After 'love to', 'want to' → be able to.|Después de 'love to', 'want to' → be able to.
+Have you ___ talk to your boss? (present perfect)|been able to|could,can,be able to|Present perfect → have you been able to…?|Present perfect → have you been able to…?
+When the new metro line opens, we ___ get to work in 20 minutes. (future)|will be able to/'ll be able to|will can,can,could to|Future → will be able to.|Futuro → will be able to.
+Since I started practicing, I ___ understand movies without subtitles. (present perfect)|'ve been able to/have been able to|could,can,have could|Present perfect → have been able to.|Present perfect → have been able to.
+You need ___ speak English for this job. (need to)|to be able to|to can,can,could|After 'need to' → be able to.|Después de 'need to' → be able to.
+If you practice every day, you ___ speak with more confidence. (future)|will be able to/'ll be able to|will can,can,could|Future → will be able to.|Futuro → will be able to.
+We ___ meet next week. I'll let you know. (may)|may be able to|may can,may could,may able to|After may → be able to.|Después de may → be able to.
+They ___ fix the problem yet. (present perfect, negative)|haven't been able to/have not been able to|didn't can,haven't could,couldn't been|Present perfect → have been able to.|Present perfect → have been able to.
+I hate not ___ sleep. (not + -ing)|being able to|can,could,be able|After a preposition or 'not' + -ing → being able to.|Con -ing → being able to.
+One day, robots ___ do all the housework. (future)|will be able to/'ll be able to|will can,can,could|Future → will be able to.|Futuro → will be able to.
+`},
+ {n:7, t:"Tell the story", sub:"a hard day, 10 blanks", story:true, why:"General past ability → could. One specific success → was/were able to. Negative → couldn't. Future → will be able to.", es:"Habilidad general pasada → could. Un logro específico → was/were able to. Negativo → couldn't. Futuro → will be able to.", q:`
+#The job interview
+When I was at school, I ___ speak English very well. (speak, negative)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't spoke
+But I practiced a lot, and now I ___ have long conversations. (now)|can|could,can to,am able
+Last Monday, I had a big job interview in English. My bus was late, but I ___ arrive on time. (arrive)|was able to|could,can,could arrived
+The first questions were easy, so I ___ answer them without problems. (answer)|was able to|can,could answered,could to
+Then they asked a technical question, and I ___ remember the word "budget"! (remember, negative)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't remembered
+I stayed calm and ___ explain the idea with other words. (explain)|was able to|could,can,could explained
+They asked: "___ you start next month?" (polite question)|Could|Were,Did,Are
+I said: "Yes, I'll ___ start on the 1st." (future)|be able to|can,could,able to
+Yesterday they called me. I ___ believe it: I got the job! (believe, negative)|couldn't/could not|didn't could,can't,couldn't believed
+Now I'm sure I ___ work in English every day. (future)|will be able to/'ll be able to|will can,can,could
+#My grandma's village
+My grandma grew up in a small village. As a girl, she ___ climb any tree. (climb)|could/was able to|can,could climbed,could to
+There was no school nearby, so she ___ read until she was twelve. (read, negative)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't read to
+From her house, she ___ hear the river at night. (hear)|could/was able to|can,could heard,could to
+One winter, a big storm came, but her family ___ save all the animals. (save)|was able to|could,can,were able to
+Her brother ___ find the road home for two days. (find, negative)|couldn't/could not/wasn't able to/was not able to|didn't could,can't,couldn't found
+Finally, he ___ get home with help from a neighbour. (get)|was able to|could,can,could got
+Today she's 85, and she ___ still cook for twenty people. (now)|can|could,can to,is able
+Last month she ___ walk to the river by herself! (one success)|was able to|could,can,were able to
+Next summer, I hope I ___ visit the village with her. (future)|will be able to/'ll be able to|will can,can,could
+I'm sure I ___ understand her stories better then. (future)|will be able to/'ll be able to|will can,can,could
+`}
+];
+COU_STAGES.forEach(st=>{
+  if(st.story){ st.stories=[]; let cur=null, k=0; st.items=[]; st.q.trim().split("\n").forEach(l=>{ if(l.startsWith("#")){ cur={title:l.slice(1).trim(),items:[]}; st.stories.push(cur); return; } const p=l.split("|").map(x=>x.trim()); const it={id:"cou"+st.n+"-"+(k++), st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es, story:cur.title}; cur.items.push(it); st.items.push(it); }); delete st.q; return; }
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"cou"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+const COU_TEST=`
+I ___ ride a bike. I learned last year. (now)|can|Now → can.
+When I was six, I ___ already swim. (general past)|could/was able to|General past ability → could.
+The test was hard, but I ___ pass it. (one success)|was able to|One specific success → was able to, not could.
+We ___ find the hotel, so we asked for help. (negative)|couldn't/could not/weren't able to/were not able to|Negative → couldn't.
+Next year I ___ drive. (future)|will be able to/'ll be able to|Future → will be able to.
+I ___ sleep well lately. (present perfect, negative)|haven't been able to/have not been able to|Present perfect → haven't been able to.
+___ you able to call him yesterday? (one moment)|Were|One moment → Were you able to…?
+___ you play an instrument when you were a kid? (general)|Could|General → Could you…?
+The traffic was crazy, but they ___ arrive on time. (one success)|were able to|They + one success → were able to.
+She ___ come yesterday. She was working. (negative)|couldn't/could not/wasn't able to/was not able to|Negative → couldn't.
+From the hotel we ___ see the mountains. (senses)|could/were able to|See, hear → could.
+I might ___ help you on Friday. (might)|be able to|After might → be able to.
+After many tries, he ___ open the box. (one success)|was able to|One success → was able to.
+My grandpa ___ fix anything. (general past)|could/was able to|General past ability → could.
+___ you help me, please? (polite request)|Could|Polite request → Could you…?
+Were you able to fix it? Yes, I ___. (short answer)|was|Yes, I was.
+I want ___ speak English fluently. (want to)|to be able to|After want to → be able to.
+She ___ finish the project yet. (present perfect, negative)|hasn't been able to/has not been able to|Present perfect → hasn't been able to.
+I ___ believe my eyes! (negative)|couldn't/could not|I couldn't believe it.
+The fire was big, but everyone ___ get out. (one success)|was able to|One success → was able to.
+In two weeks, you ___ use these words. (future)|will be able to/'ll be able to|Future → will be able to.
+Could you ___ the music? (hear)|hear|After could → base verb.
+They ___ afford a house when they were young. (negative)|couldn't/could not/weren't able to/were not able to|Negative → couldn't.
+Have you ___ talk to her? (present perfect)|been able to|Have you been able to…?
+My sister ___ speak Japanese now. (now)|can|Now → can (no -s).
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"cout-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
+
+/* ---------- There is / there are question bank (A1-A2 friendly, Spanish help on every question) ----------
+   same format as the other banks: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint */
+const TH_STAGES=[
+ {n:1, t:"There is / there are", sub:"there's a park, there are two cafés", why:"'Hay' in English: there is + one thing (a/an), there are + two or more. Never 'has' or 'have' for 'hay'.", es:"'Hay' en inglés: there is + una cosa (a/an), there are + dos o más. Nunca uses 'has' o 'have' para decir 'hay'.", q:`
+___ a park near my house. (one park)|There is/There's|There are,It has,Is|One thing → There is.|Una cosa → There is: hay un parque.
+___ two supermarkets on my street. (two)|There are|There is,It has,Are|Two or more → There are.|Dos o más → There are: hay dos supermercados.
+In my city, ___ a lot of museums. (many)|there are|there is,has,it have|Many museums (plural) → there are. Not 'has'.|Muchos museos (plural) → there are. No uses 'has' para 'hay'.
+___ a cat on the sofa. (one)|There is/There's|There are,It has,Has|One cat → There is.|Un gato → There is.
+___ some books on the table. (plural)|There are|There is,Has,Are|Books (plural) → There are.|Books (plural) → There are.
+___ an apple in my bag. (one)|There is/There's|There are,Has,It is|One thing → There is.|Una cosa → There is.
+___ three bedrooms in the apartment. (three)|There are|There is,It has three,Has|Three → There are.|Tres → There are.
+___ some milk in the fridge. (milk = uncountable)|There is/There's|There are,Has,It have|Milk can't be counted → There is (some milk).|La leche no se cuenta → There is (some milk).
+___ many people at the party. (many)|There are|There is,It has,Have|People is plural → There are.|People es plural → There are.
+___ a problem with my computer. (one)|There is/There's|There are,Has,It has a|One problem → There is.|Un problema → There is.
+___ two students from Brazil in my class. (two)|There are|There is,Have,Has|Two → There are.|Dos → There are.
+___ a lot of traffic today. (traffic = uncountable)|There is/There's|There are,Has,It have|Traffic can't be counted → There is.|Traffic no se cuenta → There is.
+___ a good restaurant in this neighborhood. (one)|There is/There's|There are,Has,It have|One → There is.|Uno → There is.
+In Chile ___ many volcanoes. (many)|there are|there is,has,have|Many volcanoes → there are.|Muchos volcanes → there are.
+`},
+ {n:2, t:"Negatives: there isn't / there aren't", sub:"there isn't any milk", why:"There isn't (a/any) + one thing. There aren't (any) + plural. Use any in negatives.", es:"There isn't (a/any) + una cosa. There aren't (any) + plural. En negativo se usa any: no hay → there isn't / there aren't.", q:`
+___ any milk in the fridge. (negative)|There isn't/There is not|There aren't,There don't,Hasn't|Milk (uncountable) → There isn't any.|Milk (no se cuenta) → There isn't any.
+___ any chairs in the room. (negative)|There aren't/There are not|There isn't,There don't,Haven't|Chairs (plural) → There aren't any.|Chairs (plural) → There aren't any.
+___ a bank near here. (negative)|There isn't/There is not|There aren't,There don't is,Hasn't|One bank → There isn't a.|Un banco → There isn't a.
+___ many people today. (negative)|There aren't/There are not|There isn't,There don't,Hasn't|People (plural) → There aren't.|People (plural) → There aren't.
+___ any problems. Everything is OK. (negative)|There aren't/There are not|There isn't,There don't,Haven't|Problems (plural) → There aren't any.|Problems (plural) → There aren't any.
+There aren't ___ eggs. We need to buy some. (any / some)|any|some,a,no any|Negative → any.|En negativo → any.
+There isn't ___ sugar in my coffee. (any / some)|any|some,a,an|Negative → any.|En negativo → any.
+___ a supermarket in my village. (negative)|There isn't/There is not|There aren't,Hasn't,There don't|One → There isn't.|Uno → There isn't.
+___ any good movies on TV tonight. (negative)|There aren't/There are not|There isn't,There don't,Hasn't|Movies (plural) → There aren't.|Movies (plural) → There aren't.
+___ time to talk now. Sorry! (negative)|There isn't/There is not|There aren't,There don't,Hasn't|Time (uncountable) → There isn't.|Time (no se cuenta) → There isn't.
+___ any windows in the bathroom. (negative)|There aren't/There are not|There isn't,Hasn't,There don't|Windows (plural) → There aren't.|Windows (plural) → There aren't.
+There's no milk. = There isn't ___ milk. (same meaning)|any|some,no,a|There's no = There isn't any.|There's no = There isn't any: no hay leche.
+___ a bus after midnight. (negative)|There isn't/There is not|There aren't,There don't,Hasn't|One bus → There isn't.|Un bus → There isn't.
+___ enough chairs for everyone. (negative)|There aren't/There are not|There isn't,There don't,Haven't|Chairs (plural) → There aren't.|Chairs (plural) → There aren't.
+`},
+ {n:3, t:"Questions: Is there…? Are there…?", sub:"Is there a bank near here?", why:"Questions: Is there + one thing? Are there + plural? Short answers: Yes, there is. / No, there aren't.", es:"Preguntas: Is there + una cosa? Are there + plural? (¿Hay…?) Respuestas cortas: Yes, there is. / No, there aren't.", q:`
+___ a bank near here? (one)|Is there|Are there,There is,Has|One bank → Is there…?|Un banco → Is there…? (¿Hay un banco…?)
+___ any good restaurants in this area? (plural)|Are there|Is there,There are,Have|Restaurants (plural) → Are there…?|Restaurants (plural) → Are there…?
+___ any milk left? (uncountable)|Is there|Are there,There is,Has|Milk → Is there…?|Milk → Is there…?
+How many people ___ in your family? (question)|are there|there are,is there,have|How many + plural → are there?|How many + plural → are there?
+Is there a pharmacy on this street? Yes, ___. (short answer)|there is|there's,it is,is there|Short answer: Yes, there is. (Not 'there's'.)|Respuesta corta: Yes, there is. (No 'there's'.)
+Are there any questions? No, ___. (short answer)|there aren't/there are not|there isn't,they aren't,aren't there|Short answer: No, there aren't.|Respuesta corta: No, there aren't.
+___ a problem? You look worried. (one)|Is there|Are there,There is,Has|One problem → Is there…?|Un problema → Is there…?
+___ any tickets for tonight? (plural)|Are there|Is there,There are,Have|Tickets (plural) → Are there…?|Tickets (plural) → Are there…?
+How much water ___ in the bottle? (uncountable)|is there|are there,there is,has|How much + uncountable → is there?|How much + no contable → is there?
+Is there any coffee? No, ___. (short answer)|there isn't/there is not|there aren't,it isn't,isn't there|Short answer: No, there isn't.|Respuesta corta: No, there isn't.
+___ a gym in your building? (one)|Is there|Are there,There is,Has|One gym → Is there…?|Un gimnasio → Is there…?
+Are there many tourists in summer? Yes, ___. (short answer)|there are|there is,they are,are there|Short answer: Yes, there are.|Respuesta corta: Yes, there are.
+___ any shops open on Sunday? (plural)|Are there|Is there,There are,Have|Shops (plural) → Are there…?|Shops (plural) → Are there…?
+What ___ in the box? (one thing, unknown)|is there|are there,there is,has|What + is there?|What is there…? (¿Qué hay…?)
+`},
+ {n:4, t:"Past: there was / there were", sub:"there was a party, there were 20 people", why:"'Había / hubo': there was + one thing, there were + plural. Negatives: wasn't / weren't. Questions: Was there…? Were there…?", es:"'Había / hubo': there was + una cosa, there were + plural. Negativo: wasn't / weren't. Preguntas: Was there…? Were there…?", q:`
+___ a party at my house last night. (past, one)|There was|There were,There is,Had|Past + one → There was.|Pasado + uno → There was: hubo una fiesta.
+___ twenty people at the party. (past, plural)|There were|There was,There are,Had|Past + plural → There were.|Pasado + plural → There were: había veinte personas.
+___ a lot of traffic this morning. (past, uncountable)|There was|There were,There is,Had|Traffic → There was.|Traffic → There was.
+When I was a kid, ___ a big tree in our garden. (past, one)|there was|there were,there is,had|Past + one → there was.|Pasado + uno → there was.
+___ many cars in the 1950s. (past, negative, plural)|There weren't/There were not|There wasn't,There didn't,Didn't have|Past + plural, negative → There weren't.|Pasado + plural, negativo → There weren't.
+___ any food left at the end. (past, negative, uncountable)|There wasn't/There was not|There weren't,There didn't,Didn't have|Food → There wasn't.|Food → There wasn't.
+___ a problem with your flight? (past question, one)|Was there|Were there,There was,Had|Past question + one → Was there…?|Pregunta pasada + uno → Was there…?
+___ many people at the concert? (past question, plural)|Were there|Was there,There were,Had|Past question + plural → Were there…?|Pregunta pasada + plural → Were there…?
+Was there a lot of snow? Yes, ___. (short answer)|there was|there were,it was,was there|Short answer: Yes, there was.|Respuesta corta: Yes, there was.
+Were there any messages for me? No, ___. (short answer)|there weren't/there were not|there wasn't,they weren't,weren't there|Short answer: No, there weren't.|Respuesta corta: No, there weren't.
+___ an accident on the highway yesterday. (past, one)|There was|There were,There is,Had|Past + one → There was.|Pasado + uno → There was: hubo un accidente.
+In my old school, ___ only two computers. (past, plural)|there were|there was,there are,had|Past + plural → there were.|Pasado + plural → there were.
+___ any wifi at the hotel. (past, negative)|There wasn't/There was not|There weren't,There didn't,Didn't have|Wifi → There wasn't.|Wifi → There wasn't.
+How many students ___ in your class last year? (past question)|were there|there were,was there,had|How many + plural, past → were there?|How many + plural, pasado → were there?
+`},
+ {n:5, t:"Future: there will be", sub:"there will be a meeting, there won't be time", why:"'Habrá': there will be (one or many, it doesn't change!). Negative: there won't be. Question: Will there be…? Never 'there doesn't will be'.", es:"'Habrá': there will be (uno o muchos, ¡no cambia!). Negativo: there won't be. Pregunta: Will there be…? Nunca 'there doesn't will be'.", q:`
+___ a meeting tomorrow at 10. (future)|There will be/There'll be|There is going,There will,Will be|Future → There will be.|Futuro → There will be: habrá una reunión.
+___ a lot of people at the concert. (future, plural)|There will be/There'll be|There wills be,There will are,Will have|Future → There will be (even with plural!).|Futuro → There will be (¡también con plural!).
+Don't worry, ___ a problem. (future, negative)|there won't be/there will not be|there doesn't will be,there won't,there isn't will be|Future negative → there won't be. Not 'there doesn't will be'.|Futuro negativo → there won't be. No 'there doesn't will be'.
+___ time to see everything. The trip is too short. (future, negative)|There won't be/There will not be|There doesn't will be,There won't,There not will be|Future negative → There won't be.|Futuro negativo → There won't be.
+___ food at the party? (future question)|Will there be|There will be,Will be there,Is there will|Future question → Will there be…?|Pregunta futura → Will there be…? (¿Habrá…?)
+Will there be any tickets left? Yes, ___. (short answer)|there will|there will be,it will,will there|Short answer: Yes, there will.|Respuesta corta: Yes, there will.
+I think ___ more electric cars in 2030. (future, plural)|there will be/there'll be|there will are,there are will,will have|Future → there will be.|Futuro → there will be.
+___ any classes next Monday. It's a holiday. (future, negative)|There won't be/There will not be|There don't will be,There won't,There aren't will be|Future negative → There won't be.|Futuro negativo → There won't be.
+Look at those clouds. There's going ___ a storm. (going to)|to be|be,to have,will be|There's going to be = there will be (when you can see it coming).|There's going to be = va a haber (cuando lo ves venir).
+___ going to be a big party on Saturday. (going to)|There's/There is|It's,There are,Is|There is going to be…|There is going to be… (va a haber).
+Will there be parking at the hotel? No, ___. (short answer)|there won't/there will not|there won't be,it won't,won't there|Short answer: No, there won't.|Respuesta corta: No, there won't.
+___ a test at the end of the course? (future question)|Will there be|There will be,Will be there,Is there will|Future question → Will there be…?|Pregunta futura → Will there be…?
+In the future, ___ flying cars. (future, plural)|there will be/there'll be|there will are,there wills be,will have|Future → there will be.|Futuro → there will be.
+___ enough chairs for everyone? (future question)|Will there be|There will be,Will be there,Are there will|Future question → Will there be…?|Pregunta futura → Will there be…?
+`},
+ {n:6, t:"Mix it up", sub:"now, before and later", why:"Look at the time: now → is/are, past → was/were, future → will be. Then: one thing or many?", es:"Mira el tiempo: ahora → is/are, pasado → was/were, futuro → will be. Luego: ¿una cosa o varias?", q:`
+Yesterday ___ a big storm. (past)|there was|there were,there is,had|Yesterday + one → there was.|Ayer + uno → there was.
+Right now ___ three people in the office. (now)|there are|there is,there were,has|Now + plural → there are.|Ahora + plural → there are.
+Tomorrow ___ a test. (future)|there will be/there'll be|there is will,there will,will have|Tomorrow → there will be.|Mañana → there will be.
+Last year ___ any good concerts here. (past, negative)|there weren't/there were not|there wasn't,there didn't,there aren't|Past + plural, negative → there weren't.|Pasado + plural, negativo → there weren't.
+Next week ___ a class on Friday. It's a holiday. (future, negative)|there won't be/there will not be|there doesn't will be,there isn't,there won't|Future negative → there won't be.|Futuro negativo → there won't be.
+___ a doctor here? It's an emergency! (now, question)|Is there|Are there,Was there,Has|Now + one, question → Is there…?|Ahora + uno, pregunta → Is there…?
+In 1990, ___ no cell phones. (past)|there were|there was,there are,had|Past + plural → there were.|Pasado + plural → there were.
+___ a lot of noise last night. Did you hear it? (past)|There was|There were,There is,Had|Noise (uncountable), past → There was.|Noise (no se cuenta), pasado → There was.
+How many people ___ at the wedding next month? (future question)|will there be|there will be,will be there,are there will|Future question → will there be?|Pregunta futura → will there be?
+___ any coffee? I need some! (now, question)|Is there|Are there,Was there,Has|Coffee (uncountable) → Is there…?|Coffee (no se cuenta) → Is there…?
+My city is small. ___ many things to do. (now, negative)|There aren't/There are not|There isn't,There don't,Hasn't|Now + plural, negative → There aren't.|Ahora + plural, negativo → There aren't.
+When I arrived, ___ anyone at home. (past, negative)|there wasn't/there was not|there weren't,there didn't,there isn't|Anyone → singular → there wasn't.|Anyone → singular → there wasn't.
+___ a new mall in my neighborhood next year. (future)|There will be/There'll be|There is will,There will,Will have|Next year → There will be.|El próximo año → There will be.
+___ any problems with the order? (past question)|Were there|Was there,Are there,Had|Past + plural, question → Were there…?|Pasado + plural, pregunta → Were there…?
+`},
+ {n:7, t:"Tell the story", sub:"my neighborhood, 10 blanks", story:true, why:"Now → is/are, past → was/were, future → will be. One thing or many? Negatives with any.", es:"Ahora → is/are, pasado → was/were, futuro → will be. ¿Una cosa o varias? Negativos con any.", q:`
+#My neighborhood
+I live in Ñuñoa. ___ a big park near my apartment. (now, one)|There is/There's|There are,It has,Has
+___ also many small cafés on my street. (now, plural)|There are|There is,Has,Have
+Ten years ago, ___ any cafés here. (past, negative, plural)|there weren't/there were not|there wasn't,there didn't,there aren't
+___ only an old bakery and a small shop. (past)|There were|There was,There is,Had
+___ a metro station either. (past, negative, one)|There wasn't/There was not|There weren't,There didn't,There isn't
+Now ___ a new station, so it's easy to go downtown. (now, one)|there is/there's|there are,has,there was
+But ___ a lot of traffic in the mornings. (now, uncountable)|there is/there's|there are,has,there were
+Next year ___ a new library. (future)|there will be/there'll be|there is will,there will,will have
+I hope ___ more trees too. (future, plural)|there will be/there'll be|there will are,there wills be,will have
+And you? ___ a park near your house? (now, question)|Is there|Are there,There is,Has
+#The party
+Last Saturday ___ a party at Sofía's house. (past, one)|there was|there were,there is,had
+___ about thirty people. (past, plural)|There were|There was,There are,Had
+___ a lot of food: empanadas, pizza and cake. (past, uncountable)|There was|There were,There is,Had
+But ___ any ice for the drinks! (past, negative)|there wasn't/there was not|there weren't,there didn't,there isn't
+___ a shop open at that time? (past question, one)|Was there|Were there,Is there,Had
+Yes, ___, so I went to buy some. (short answer)|there was|there were,it was,was there
+When I came back, ___ music and everyone was dancing. (past, uncountable)|there was|there were,there is,had
+___ a problem with the neighbors? No, they came to the party too! (past question)|Was there|Were there,Is there,Had
+Sofía says ___ another party in December. (future)|there will be/there'll be|there is will,there will,will have
+I'm sure ___ enough ice next time! (future)|there will be/there'll be|there will,there is will,will have
+`}
+];
+TH_STAGES.forEach(st=>{
+  if(st.story){ st.stories=[]; let cur=null, k=0; st.items=[]; st.q.trim().split("\n").forEach(l=>{ if(l.startsWith("#")){ cur={title:l.slice(1).trim(),items:[]}; st.stories.push(cur); return; } const p=l.split("|").map(x=>x.trim()); const it={id:"th"+st.n+"-"+(k++), st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es, story:cur.title}; cur.items.push(it); st.items.push(it); }); delete st.q; return; }
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"th"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+const TH_TEST=`
+___ a supermarket near my house. (now, one)|There is/There's|One → There is.
+___ two bathrooms in the apartment. (now, plural)|There are|Plural → There are.
+In my city ___ many parks. (now, plural)|there are|Not 'has': there are.
+___ any milk. (now, negative)|There isn't/There is not|Milk → There isn't any.
+___ any eggs. (now, negative)|There aren't/There are not|Eggs → There aren't any.
+___ a bank near here? (question, one)|Is there|One → Is there…?
+___ any good cafés here? (question, plural)|Are there|Plural → Are there…?
+Is there a gym? Yes, ___. (short answer)|there is|Yes, there is.
+Are there any tickets? No, ___. (short answer)|there aren't/there are not|No, there aren't.
+___ a party last night. (past, one)|There was|Past + one → There was.
+___ a lot of people at the concert. (past, plural)|There were|Past + plural → There were.
+___ any wifi at the hotel. (past, negative)|There wasn't/There was not|Past, negative → There wasn't.
+___ many students in class yesterday. (past, negative, plural)|There weren't/There were not|Past + plural, negative → There weren't.
+___ a problem with the flight? (past question)|Was there|Past + one → Was there…?
+___ a meeting tomorrow. (future)|There will be/There'll be|Future → There will be.
+___ a problem. Don't worry. (future, negative)|There won't be/There will not be|Not 'there doesn't will be' → There won't be.
+___ food at the party? (future question)|Will there be|Future question → Will there be…?
+Look at the sky. There's going ___ a storm. (going to)|to be|There's going to be.
+How many people ___ in your family? (now, question)|are there|How many + plural → are there?
+___ some water in the bottle. (now, uncountable)|There is/There's|Water → There is.
+Ten years ago ___ a metro station here. (past, negative)|there wasn't/there was not|Past + one, negative → there wasn't.
+Next year ___ more buses. (future, plural)|there will be/there'll be|Future → there will be (same for plural).
+___ time to finish. Hurry! (now, negative)|There isn't/There is not|Time → There isn't.
+Were there any messages? Yes, ___. (short answer)|there were|Yes, there were.
+How much money ___ in your wallet? (now, question)|is there|How much → is there?
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"tht-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
+
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
 (function(){
   const view=document.getElementById("v-quiz"), hub=document.getElementById("prHub"); if(!view||!hub) return;
@@ -8265,6 +8581,8 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
     pp:{id:"pp",name:"Present perfect",lname:"present perfect",stages:PP_STAGES,test:PP_TEST,toy:"🌍 Little globe",toyName:"Little globe",ico:"🌍"},
     prs:{id:"prs",name:"Present simple",lname:"present simple",stages:PRS_STAGES,test:PRS_TEST,toy:"☕ Coffee mug",toyName:"Coffee mug",ico:"☀️"},
     ing:{id:"ing",name:"Verb + -ing",lname:"verb + -ing",stages:ING_STAGES,test:ING_TEST,toy:"🛹 Skateboard",toyName:"Skateboard",ico:"🏃"},
+    th:{id:"th",name:"There is / there are",lname:"“there is / there are”",the:"",stages:TH_STAGES,test:TH_TEST,toy:"🏠 Little house",toyName:"Little house",ico:"🏠"},
+    cou:{id:"cou",name:"Could vs was able to",lname:"“could vs was able to”",the:"",stages:COU_STAGES,test:COU_TEST,toy:"🔑 Golden key",toyName:"Golden key",ico:"💪"},
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
@@ -8346,8 +8664,8 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
   function renderStages(){ psLede(false);
     const box=$("psArea"); if(!box) return; const p=ps(), r=rec()[M], md=MD(); setMod(M);
     const to=p.to, triedToday=p.tod===today();
-    const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of the '+esc(md.lname)+'</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
-      :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at the '+esc(md.lname)+'?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span></div>'+
+    const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of '+(md.the!=null?md.the:"the ")+esc(md.lname)+'</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
+      :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at '+(md.the!=null?md.the:"the ")+esc(md.lname)+'?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span></div>'+
         (triedToday?'<button class="pill-btn" type="button" disabled>Try again tomorrow</button>':'<button class="pill-btn pill-green" type="button" data-tostart>Take the test</button>')+'</div>';
     box.innerHTML=toCard+'<div class="ps-list">'+md.stages.map(st=>{
       const open=unlocked(st.n), best=p.b[st.n];
@@ -8475,7 +8793,7 @@ She managed ___ on time. (arrive)|to arrive|manage + to + verb.
     const finished=pass&&!wasDone;
     const box=area(); round=null;
     box.innerHTML='<div class="card ps-res"><div class="ps-big">'+sc+' / 15</div>'+(pass?stars(3):"")+
-      '<p class="ps-sent">'+(pass?"Perfect! 🎓 You tested out of the "+md.lname+".":sc>=13?"So close! You need 15/15 to test out. 💪":"Good try! You need 15/15 to test out. 💪")+'</p>'+
+      '<p class="ps-sent">'+(pass?"Perfect! 🎓 You tested out of "+(md.the!=null?md.the:"the ")+md.lname+".":sc>=13?"So close! You need 15/15 to test out. 💪":"Good try! You need 15/15 to test out. 💪")+'</p>'+
       (finished?'<p class="ps-unlock">'+md.toy.split(" ")[0]+' Every stage is done, and your buddy got the <b>'+md.toyName+'</b>!</p>':"")+
       (pass?"":'<p class="muted">You can try the test again tomorrow, or practice the stages to get there step by step.</p>')+
       (R.missed.length?'<div class="ps-miss"><b>'+(R.missed.length===1?"The one you missed":"The ones you missed")+'</b><ul>'+R.missed.map(x=>'<li>'+esc(x.q.q).replace("___","<b>"+esc(x.q.a[0])+"</b>")+(x.val?' <small>(you wrote: '+esc(x.val)+')</small>':"")+'<br><span class="muted">'+esc(x.q.why)+'</span></li>').join("")+'</ul></div>':"")+
@@ -9945,6 +10263,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1113-mods", date:"November 13, 2026", title:"Two new grammar modules", items:[
+    ["💪","New: Could vs was able to","<b>I could swim</b> (always) vs <b>I was able to fix it</b> (that one time), <b>couldn't</b>, <b>will be able to</b>… 7 stages in <b>Practice → Grammar</b>. Finish it for a 🔑 golden key for your buddy.","quiz"],
+    ["🏠","New: There is / there are","<b>hay, había, habrá</b> in English: <b>there is / there are</b>, <b>there was / there were</b>, <b>there will be</b>, negatives and questions. 7 short stages with Spanish help, in <b>Practice → Grammar</b>. Finish it for a 🏠 little house for your buddy.","quiz"]
+  ]},
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
     ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>.","club"],
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
@@ -10206,7 +10528,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261113095411"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261113095710"; let hiddenAt=0, shown=false;
   const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
