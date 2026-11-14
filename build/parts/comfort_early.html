@@ -1,0 +1,42 @@
+<script>
+/* first paint: show the page you're opening (not a default one), and you as signed in, from what this device remembers; the real data replaces it a moment later */
+(function(){ try{
+  var id=(location.hash||"").slice(1); if(!id){ try{ id=JSON.parse(localStorage.getItem("eep-view")||"null")||localStorage.getItem("eep-view"); }catch(e){ id=localStorage.getItem("eep-view"); } } id=String(id||"notes").replace(/[^\w-]/g,"");
+  var st=document.createElement("style"); st.id="csBootView"; st.textContent="#v-"+id+"[hidden]{display:block!important}"; document.head.appendChild(st);
+  var hint=null; try{ hint=JSON.parse(localStorage.getItem("cs-auth-hint")||"null"); }catch(e){}
+  var va=null; try{ va=sessionStorage.getItem("cs-viewas"); }catch(e){}
+  if(hint&&hint.u) document.documentElement.classList.add("cs-signed");
+  document.addEventListener("DOMContentLoaded",function(){
+    var b=document.getElementById("csBootView"); if(b) b.remove();
+    if(!hint||!hint.u) return;
+    var t=document.getElementById("authTxt"), ic=document.getElementById("authIco");
+    if(t&&t.textContent==="Sign in") t.textContent="Syncing…";
+    if(ic&&hint.p&&!ic.querySelector("img")){ var im=new Image(); im.alt=""; im.referrerPolicy="no-referrer"; im.src=hint.p; im.onerror=function(){ ic.textContent=(hint.n||"?").charAt(0).toUpperCase(); }; ic.textContent=""; ic.appendChild(im); }
+    if(va) return;
+    if(hint.t&&window.__csTeacher!==true){ window.__csTeacher=true; document.dispatchEvent(new CustomEvent("cs-teacher")); }
+    if(!window.__csHubView&&!window.__csClub){ var c=null; try{ c=JSON.parse(localStorage.getItem("cs-hv-cache-"+hint.u)||"null"); }catch(e){}
+      if(c){ window.__csClub=c.club||null; window.__csHubView=c.clubOnly?null:c; document.dispatchEvent(new CustomEvent("cs-club")); document.dispatchEvent(new CustomEvent("cs-hubview")); } }
+  });
+}catch(e){} })();
+</script>
+<script>
+/* Noa's "View as" a real student: show their own saved words, notes and buddy, read-only (nothing is written to Noa's or their account) */
+(function(){ try{ const raw=sessionStorage.getItem("cs-viewas"); if(!raw) return; const va=JSON.parse(raw); if(!va||!va.data) return; window.__csViewAsMode=va; const ov=va.data;
+  const KEEP=new Set(["ncs-theme","ncs-welcomed","ncs-seen-version","ncs-comfort","ncs-sync-uid","ncs-music-mode","ncs-music-vol","ncs-music-bal"]);
+  const MINE=new Set(["cs-cefr","cs-club-watched","cs-rep-read","cs-coach-seen","cs-club-seen","cs-wall-seen","cs-club-welcomed","cs-today5","cs-pomo-today"]);
+  const theirs=k=>typeof k==="string"&&((k.indexOf("ncs-")===0&&!KEEP.has(k))||MINE.has(k));
+  const P=Storage.prototype, g=P.getItem, s=P.setItem, r=P.removeItem, ls=window.localStorage;
+  P.getItem=function(k){ return this===ls&&theirs(k)?(Object.prototype.hasOwnProperty.call(ov,k)?ov[k]:null):g.call(this,k); };
+  P.setItem=function(k,v){ if(this===ls&&theirs(k)){ ov[k]=String(v); return; } return s.call(this,k,v); };
+  P.removeItem=function(k){ if(this===ls&&theirs(k)){ delete ov[k]; return; } return r.call(this,k); };
+}catch(e){} })();
+</script>
+<script src="ios-sound.js?v=2"></script>
+<link rel="stylesheet" href="comfort.css?v=20">
+<script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
+<script src="comfort.js?v=28" defer></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<meta name="theme-color" content="#1D4ED8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cheat Sheet">

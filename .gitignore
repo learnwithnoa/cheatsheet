@@ -1,1 +1,4 @@
 __pycache__/
+build/site/
+build/__pycache__/
+build/parts/__pycache__/

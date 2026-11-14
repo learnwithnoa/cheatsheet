@@ -1,0 +1,17 @@
+.tr-ico{font-size:13px;line-height:14px}
+.today{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;margin:0 0 18px}
+@media (max-width:760px){.today{grid-template-columns:minmax(0,1fr)}}
+.today .card{display:flex;flex-direction:column;gap:6px}
+.td-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.td-tag{background:var(--green-soft);color:var(--green)}
+.td-tag2{align-self:flex-start;background:color-mix(in srgb,#F5B800 18%,var(--surface));color:#A87700}
+:root[data-theme="dark"] .td-tag2{color:#F5C842}
+.tw-row{display:flex;align-items:center;gap:10px;margin-top:4px}
+.tw-w{font-family:var(--display);font-weight:700;font-size:30px;line-height:1.1;color:var(--ink)}
+.tw-m{color:var(--green);font-weight:800}
+.tw-ex{color:var(--muted);font-style:italic}
+.today .note-actions{margin-top:6px}
+.today-thought{background:linear-gradient(160deg,color-mix(in srgb,#F5B800 9%,var(--surface)),var(--surface))}
+.tt{margin:6px 0 0;font-family:var(--display);font-size:21px;line-height:1.35;color:var(--ink)}
+.tw-watch{font-size:14px;color:var(--ink);background:color-mix(in srgb,#F5B800 14%,var(--surface));border-left:3px solid #E0A100;border-radius:0 8px 8px 0;padding:6px 10px}
+.tw-watch::before{content:"⚠ Watch out: ";font-weight:800}

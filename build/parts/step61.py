@@ -1,0 +1,2 @@
+# step61: "Invite someone to Hibi" moved to the Hibi members page
+R('''      <details class="tn-invite"><summary>＋ Invite someone to Hibi</summary><form data-tninv><input name="name" placeholder="Name" maxlength="80" required><input name="email" type="email" placeholder="Their Google email" maxlength="120" required><button type="submit" class="tn-btn">Approve + email them</button></form></details>''','')

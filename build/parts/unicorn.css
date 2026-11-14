@@ -1,0 +1,29 @@
+/* ---------- 🦄 unicorn mode: bright, rainbowy, still readable ---------- */
+:root[data-theme="unicorn"]{
+  --bg:#FFF6FC; --surface:#FFFFFF; --surface-2:#FFF4FB; --line:#F2C6EA;
+  --ink:#341043; --muted:#714A80;
+  --royal:#8A2BC9; --bright:#E0418F; --sky:#FBE3F5; --green:#0E9466; --green-soft:#DAF7EA; --red:#CF2A57; --red-soft:#FFE0EA;
+  --gloss:linear-gradient(90deg,#F43F7A 0%,#F97316 18%,#EAB308 34%,#22C55E 50%,#0EA5E9 66%,#8B5CF6 83%,#EC4899 100%);
+  --shadow:0 1px 2px rgba(138,43,201,.08),0 8px 22px rgba(236,72,153,.12);
+  color-scheme:light}
+:root[data-theme="unicorn"] body{
+  background:linear-gradient(135deg,#FFE3EE 0%,#FFF0DA 18%,#FFFAD2 34%,#E2FAE6 50%,#DDF2FF 66%,#ECE4FF 83%,#FFE3F4 100%) fixed}
+:root[data-theme="unicorn"] .top{background:rgba(255,255,255,.88);backdrop-filter:blur(8px)}
+:root[data-theme="unicorn"] .top::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--gloss)}
+:root[data-theme="unicorn"] .top{position:sticky}
+:root[data-theme="unicorn"] nav.side{background:transparent}
+@media (max-width:900px){:root[data-theme="unicorn"] nav.side{background:rgba(255,246,252,.92);backdrop-filter:blur(8px)}}
+/* rainbow text gets darker colors so it stays readable */
+:root[data-theme="unicorn"] .brand span,:root[data-theme="unicorn"] .view h1 em,:root[data-theme="unicorn"] .welcome h2 em,:root[data-theme="unicorn"] .quiz-verb{
+  background:linear-gradient(90deg,#D61F5C,#E0590B,#B58105,#15913F,#0272B0,#6D28D9,#C2186F);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* white text on the rainbow needs a little shadow */
+:root[data-theme="unicorn"] .pill-btn:not(.pill-green),:root[data-theme="unicorn"] .navbtn[aria-current="true"]:not(.cn-nav):not(.notes-nav),:root[data-theme="unicorn"] .time-label{text-shadow:0 1px 2px rgba(60,10,70,.55)}
+:root[data-theme="unicorn"] .card{border-color:#F5CDEB}
+:root[data-theme="unicorn"] .theme-btn,:root[data-theme="unicorn"] .search input{background:#fff}
+:root[data-theme="unicorn"] .td-tag2{color:#9A6400}
+:root[data-theme="unicorn"] .today-word{background:linear-gradient(160deg,#F0FFF7,#fff 60%)}
+:root[data-theme="unicorn"] .today-thought{background:linear-gradient(160deg,#FFF6D8,#FFEFFA)}
+@media (prefers-reduced-motion:no-preference){
+  :root[data-theme="unicorn"] .top::after{background-size:200% 100%;animation:uniShift 8s linear infinite}
+  @keyframes uniShift{from{background-position:0 0}to{background-position:200% 0}}
+}

@@ -1,0 +1,64 @@
+  /* ===== class recaps & study guides hosted on Hibi, with interactive exercises (?lesson=<id>#coaching opens one) ===== */
+  const LES_P="cs-open-lesson", LES_K="ncs-lesson-prog";
+  let openLes=null;
+  try{ const q=new URLSearchParams(location.search).get("lesson"); if(q){ sessionStorage.setItem(LES_P,q.replace(/[^\w-]/g,"").slice(0,60)); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
+  const lesOf=v=>((v&&v.lessons)||[]).filter(x=>x&&x.id);
+  const lprog=()=>{ try{ return JSON.parse(localStorage.getItem(LES_K)||"{}")||{}; }catch(e){ return {}; } };
+  const lsave=(id,p)=>{ try{ const all=lprog(); all[id]=p; localStorage.setItem(LES_K,JSON.stringify(all)); }catch(e){} };
+  const md=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/\*([^*]+)\*/g,"<i>$1</i>");
+  const NRM=t=>String(t||"").toLowerCase().replace(/[‘’`´]/g,"'").replace(/[“”]/g,'"')
+    .replace(/\bcan't\b/g,"cannot").replace(/\bwon't\b/g,"will not").replace(/n't\b/g," not").replace(/'ve\b/g," have").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ll\b/g," will")
+    .replace(/[.,!?;:"()]/g," ").replace(/\s+/g," ").trim();
+  const same=(a,b)=>NRM(a)===NRM(b);
+  function lesTotal(L){ return (L.exercises||[]).reduce((n,x)=>n+x.items.length,0); }
+  function lesScore(L,p){ let ok=0; (L.exercises||[]).forEach((x,i)=>x.items.forEach((_,j)=>{ if((p.ok||{})[i+"-"+j]===true) ok++; })); return ok; }
+  function blanks(q){ return String(q).split(/_{2,}/); }
+  function exItem(L,x,i,j,p){ const k=i+"-"+j, it=x.items[j], ok=(p.ok||{})[k], ans=(p.ans||{})[k], tried=ok!==undefined, show=(p.show||{})[k];
+    const mark=ok===true?'<span class="lx-mark ok" aria-label="Correct">✓</span>':tried?'<span class="lx-mark no" aria-label="Not yet">✗</span>':"";
+    const note=it.note&&tried?`<div class="lx-note">💡 ${md(it.note)}</div>`:"";
+    if(x.type==="choice"){ const parts=blanks(it.q);
+      return `<li class="lx-it${ok===true?" ok":tried?" no":""}" data-k="${k}"><div class="lx-q">${parts.length>1?md(parts[0])+'<span class="lx-blank">'+(ok===true?esc(it.opts[it.a]):"____")+"</span>"+md(parts.slice(1).join("____")):md(it.q)} ${mark}</div>
+        <div class="lx-opts">${it.opts.map((o,n)=>`<button type="button" class="lx-opt${ans===n?(n===it.a?" ok":" no"):""}${ok===true&&n===it.a?" ok":""}" data-lxopt="${n}" ${ok===true?"disabled":""}>${esc(o)}</button>`).join("")}</div>${note}</li>`; }
+    if(x.type==="gap"){ const parts=blanks(it.q), vals=Array.isArray(ans)?ans:[];
+      return `<li class="lx-it${ok===true?" ok":tried?" no":""}" data-k="${k}"><div class="lx-q lx-gapq">${parts.map((t,n)=>md(t)+(n<parts.length-1?`<input type="text" class="lx-in" data-b="${n}" value="${esc(vals[n]||"")}" aria-label="Blank ${n+1}" autocomplete="off" autocapitalize="off" spellcheck="false" ${ok===true?"disabled":""} size="${Math.max(8,Math.min(22,((it.a[n]||[""])[0]||"").length+2))}">`:"")).join("")} ${mark}</div>
+        ${tried&&ok!==true?`<div class="lx-fb">${show?`<span class="lx-ans">✅ ${it.a.map(a=>esc(a[0])).join(" · ")}</span>`:`<button type="button" class="lx-link" data-lxshow="1">Show the answer</button>`}</div>`:""}${note}</li>`; }
+    return `<li class="lx-it${ok===true?" ok":tried?" no":""}" data-k="${k}"><div class="lx-q">${md(it.q)} ${mark}</div>
+      <textarea class="lx-in lx-ta" rows="2" aria-label="Your answer" ${ok===true?"disabled":""} spellcheck="false">${esc(ans||"")}</textarea>
+      ${tried&&ok!==true?`<div class="lx-fb">${show?`<span class="lx-ans">✅ ${it.a.map(esc).join(" <i>or</i> ")}</span>`:`<span>Not quite yet. Try again, or </span><button type="button" class="lx-link" data-lxshow="1">see a good answer</button>`}</div>`:ok===true&&it.a.length&&!it.a.some(a=>same(a,ans))?`<div class="lx-fb"><span class="lx-ans">Also good: ${esc(it.a[0])}</span></div>`:""}${note}</li>`; }
+  function lessonHTML(L){ const p=lprog()[L.id]||{}, tot=lesTotal(L), sc=lesScore(L,p);
+    let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
+    const sec=s=>{ if(s.type==="list") return `<section class="lx-sec"><h3>${esc(s.h)}</h3><ul>${s.items.map(t=>`<li>${md(t)}</li>`).join("")}</ul></section>`;
+      if(s.type==="fixes") return `<section class="lx-sec"><h3>${esc(s.h)}</h3><div class="lx-fixes">${s.rows.map(r=>`<div class="lx-fix"><div class="said"><small>You said</small><s>${md(r.said)}</s></div><div class="try"><small>Try instead</small><span>${md(r.try)}</span></div>${r.why?`<div class="why">${md(r.why)}</div>`:""}</div>`).join("")}</div>${s.bonus?`<p class="lx-bonus"><b>Bonus:</b> ${md(s.bonus)}</p>`:""}</section>`;
+      if(s.type==="vocab"){ const un=s.items.filter(v=>!have.has(v.w.toLowerCase().trim())).length;
+        return `<section class="lx-sec"><div class="lx-sech"><h3>${esc(s.h)}</h3>${un?`<button type="button" class="ch-go" data-lxsaveall="1">＋ Save all ${un} to My words</button>`:""}</div><div class="lx-voc">${s.items.map((v,n)=>{ const okw=have.has(v.w.toLowerCase().trim()); return `<div class="lx-w"><div><b>${esc(v.w)}</b>${v.pos?` <span class="lx-pos">${esc(v.pos)}</span>`:""}${v.tr?`<span class="lx-tr">${esc(v.tr)}</span>`:""}${v.ex?`<small>“${esc(v.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-lxw='${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}' ${okw?"disabled":""}>${okw?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></section>`; }
+      return `<section class="lx-sec"><h3>${esc(s.h)}</h3>${String(s.body||"").split(/\n{2,}/).map(par=>{ const ls=par.split("\n"); return ls.every(x=>/^\s*[-•]/.test(x))?`<ul>${ls.map(x=>`<li>${md(x.replace(/^\s*[-•]\s*/,""))}</li>`).join("")}</ul>`:`<p>${ls.map(md).join("<br>")}</p>`; }).join("")}</section>`; };
+    return `<div class="lx" data-lesson-id="${esc(L.id)}"><button type="button" class="ch-tab lx-back" data-lxback="1">← Back to My coaching</button>
+      <header class="lx-head ch-tint ${L.kind==="guide"?"ch-a":"ch-s"}"><div class="ch-k">${L.kind==="guide"?"📄 Study guide":"📼 Class recap"} · ${fd(L.date)}</div><h2>${esc(L.title)}</h2>${L.topic?`<p class="lx-topic"><b>Topic:</b> ${md(L.topic)}</p>`:""}${L.nutshell?`<p class="lx-nut">${md(L.nutshell)}</p>`:""}
+        ${tot?`<div class="lx-prog"><div class="ch-bar"><i style="width:${Math.round(sc*100/tot)}%"></i></div><span>${sc}/${tot} exercises right${p.done?" · ✅ done":""}</span><button type="button" class="ch-go" data-lxjump="1">✏️ Go to the practice</button></div>`:""}</header>
+      ${(L.sections||[]).map(sec).join("")}
+      ${(L.exercises||[]).length?`<section class="lx-sec lx-practice" id="lxPractice"><h3>✏️ Practice time</h3><p class="muted">Hibi checks your answers as you go. Small differences like contractions (didn’t / did not) are fine.</p>
+        ${L.exercises.map((x,i)=>`<div class="lx-part" data-part="${i}"><h4>${esc(x.h||"")}</h4><ol class="lx-items">${x.items.map((_,j)=>exItem(L,x,i,j,p)).join("")}</ol>${x.type!=="choice"?`<button type="button" class="ch-go lx-check" data-lxcheck="${i}">Check my answers</button>`:""}</div>`).join("")}</section>`:""}
+      ${L.yourTurn?`<section class="lx-sec lx-turn ch-tint ch-v"><h3>🎤 Your turn</h3><p>${md(L.yourTurn)}</p></section>`:""}
+      ${tot&&sc===tot?`<div class="lx-done">🎉 All ${tot} right! Great work.</div>`:""}</div>`; }
+  function lesCheck(L,i){ const box2=document.querySelector(`.lx [data-part="${i}"]`); if(!box2) return; const x=L.exercises[i], p=lprog()[L.id]||{}; p.ans=p.ans||{}; p.ok=p.ok||{};
+    x.items.forEach((it,j)=>{ const k=i+"-"+j, li=box2.querySelector(`[data-k="${k}"]`); if(!li||p.ok[k]===true) return;
+      if(x.type==="gap"){ const vals=[...li.querySelectorAll("input[data-b]")].map(n=>n.value); if(vals.every(v=>!v.trim())) return; p.ans[k]=vals; p.ok[k]=vals.every((v,n)=>(it.a[n]||[]).some(a=>same(a,v))); }
+      else { const v=(li.querySelector("textarea")||{}).value||""; if(!v.trim()) return; p.ans[k]=v; p.ok[k]=it.a.some(a=>same(a,v)); } });
+    lesFinish(L,p); }
+  function lesFinish(L,p){ const tot=lesTotal(L), sc=lesScore(L,p);
+    if(tot&&sc===tot&&!p.done){ p.done=true; setTimeout(()=>{ try{ if(window.csBuddy&&window.csBuddy.treat) window.csBuddy.treat(5,"🎉 You finished every exercise!"); else if(window.toast) window.toast("🎉 You finished every exercise!"); }catch(e){} },300); }
+    lsave(L.id,p); const y=window.scrollY; render(); window.scrollTo(0,y); }
+  box.addEventListener("click",e=>{ const v=window.__csHubView; if(!v) return; const t=e.target;
+    const op=t.closest("[data-lesson]"); if(op){ e.preventDefault(); openLes=op.dataset.lesson; render(); window.scrollTo({top:0}); return; }
+    if(!openLes) return; const L=lesOf(v).find(x=>x.id===openLes); if(!L) return;
+    if(t.closest("[data-lxback]")){ openLes=null; render(); window.scrollTo({top:0}); return; }
+    if(t.closest("[data-lxjump]")){ document.getElementById("lxPractice")?.scrollIntoView({behavior:"smooth",block:"start"}); return; }
+    const o=t.closest("[data-lxopt]"); if(o){ const li=o.closest("[data-k]"), k=li.dataset.k, [i,j]=k.split("-").map(Number), it=L.exercises[i].items[j], n=+o.dataset.lxopt, p=lprog()[L.id]||{}; p.ans=p.ans||{}; p.ok=p.ok||{}; if(p.ok[k]===true) return; p.ans[k]=n; p.ok[k]=n===it.a; lesFinish(L,p); return; }
+    const c=t.closest("[data-lxcheck]"); if(c){ lesCheck(L,+c.dataset.lxcheck); return; }
+    const sh=t.closest("[data-lxshow]"); if(sh){ const k=sh.closest("[data-k]").dataset.k, p=lprog()[L.id]||{}; p.show=p.show||{}; p.show[k]=true; lsave(L.id,p); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+    const w=t.closest("[data-lxw]"); if(w){ let x={}; try{ x=JSON.parse(w.dataset.lxw); }catch(er){} if(window.csAddWord&&window.csAddWord(x.w,x.tr,x.ex)&&window.toast) window.toast("Saved to My words ✓"); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+    if(t.closest("[data-lxsaveall]")){ let n=0; (L.sections||[]).filter(s=>s.type==="vocab").forEach(s=>s.items.forEach(x=>{ if(window.csAddWord&&window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; })); if(n&&window.toast) window.toast(`Saved ${n} words to My words ✓`); const y=window.scrollY; render(); window.scrollTo(0,y); return; } });
+  /* typing keeps the answer even before "Check" (so a re-render never loses it) */
+  box.addEventListener("input",e=>{ const v=window.__csHubView; if(!openLes||!v) return; const li=e.target.closest(".lx-it"); if(!li) return; const k=li.dataset.k, p=lprog()[openLes]||{}; p.ans=p.ans||{};
+    const ins=li.querySelectorAll("input[data-b]"); p.ans[k]=ins.length?[...ins].map(n=>n.value):e.target.value; lsave(openLes,p); });
+  box.addEventListener("keydown",e=>{ if(e.key!=="Enter"||!e.target.matches(".lx input")) return; e.preventDefault(); const part=e.target.closest("[data-part]"); if(part){ const v=window.__csHubView, L=lesOf(v).find(x=>x.id===openLes); if(L) lesCheck(L,+part.dataset.part); } });

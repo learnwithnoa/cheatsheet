@@ -1,0 +1,5 @@
+# step82: the home card's "New recording" says which class (date + topic), so it isn't confused with this week's class
+R('''return r?`<button type="button" class="hc-wall" data-recgo="${esc(r.id)}">🎬 ${L("New recording:","Nueva grabación:")} ${esc(r.c.name||r.x.title||"")} →</button>`:"";''','''if(!r) return ""; const rd=new Date(r.date+"T12:00:00").toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}), rt=r.x&&r.x.title&&r.x.title!==r.c.name?r.x.title:"";
+      return `<button type="button" class="hc-wall" data-recgo="${esc(r.id)}">🎬 ${L("Recording of","Grabación de")} ${esc(r.c.name||rt||"")} ${L("on","del")} ${esc(rd)}${rt?`: ${esc(rt)}`:""} →</button>`;''')
+# only the newest recording (if not watched yet and from the last 8 days), never an older one
+R('''const r=recList(f).filter(it=>!watched().includes(it.id)&&Date.now()-new Date(it.date+"T12:00:00").getTime()<8*864e5)[0];''','''const r=[recList(f).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0]].filter(it=>it&&!watched().includes(it.id)&&Date.now()-new Date(it.date+"T12:00:00").getTime()<8*864e5)[0];''')

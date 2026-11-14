@@ -1,0 +1,970 @@
+<section class="view" id="v-club" hidden>
+  <h1>Noa's English <em>Club</em></h1>
+  <p class="lede">This week's classes, the community wall, your Zoom links and past weeks.</p>
+  <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
+</section>
+<script>
+(function(){
+  const box=document.getElementById("clubMain"); if(!box) return;
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const TZ="America/Santiago", WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const SEEN="cs-club-seen";
+  /* beginner mode: the club's buttons and labels in Spanish */
+  const isBeg=()=>{ try{ const v=localStorage.getItem("ncs-level")||""; return v==="beginner"||v==='"beginner"'; }catch(e){ return false; } };
+  const L=(en,es)=>isBeg()?es:en; window.__clL=L;
+  let tab="week";
+  const feed=()=>{ if(window.__csPreview&&window.__csPreview.kind==="private") return null; return window.__csClub||null; };
+  const posts=f=>((f&&f.posts)||[]).filter(p=>p&&p.week).slice().sort((a,b)=>b.week.localeCompare(a.week));
+  const seen=()=>{ try{ return localStorage.getItem(SEEN)||""; }catch(e){ return ""; } };
+  const markSeen=id=>{ try{ localStorage.setItem(SEEN,id); }catch(e){} };
+  /* class times are Chile time; show the member's own time too when it's different */
+  function tzOff(tz,d){ const p=new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(d).reduce((o,x)=>(o[x.type]=x.value,o),{}); return (Date.UTC(+p.year,+p.month-1,+p.day,+p.hour%24,+p.minute)-d.getTime())/60000; }
+  function chileAt(iso,hm){ const [y,m,d]=iso.split("-").map(Number), [h,mi]=String(hm||"20:00").split(":").map(Number); let t=Date.UTC(y,m-1,d,h,mi); t-=tzOff(TZ,new Date(t))*60000; t=Date.UTC(y,m-1,d,h,mi)-tzOff(TZ,new Date(t))*60000; return new Date(t); }
+  const fmtT=(d,tz)=>d.toLocaleTimeString("en-US",Object.assign({hour:"numeric",minute:"2-digit"},tz?{timeZone:tz}:{}));
+  const myTz=(()=>{ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone||TZ; }catch(e){ return TZ; } })();
+  function timeTxt(d){ const ch=fmtT(d,TZ); if(tzOff(myTz,d)===tzOff(TZ,d)) return ch+" (Chile)"; return ch+" Chile · "+fmtT(d)+" your time"; }
+  const fd=iso=>{ const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}); };
+  function sched(f,wd){ return ((f&&f.info&&f.info.schedule)||[]).find(s=>s.wd===wd)||null; }
+  function weekDates(week){ const [y,m,d]=week.split("-").map(Number); return i=>{ const x=new Date(y,m-1,d+i); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }; }
+  function classesOf(f,p){
+    const at=weekDates(p.week);
+    return (p.classes||[]).map((c,i)=>{ const wd=c.wd!=null?c.wd:Math.max(0,WD.indexOf(String(c.day||"").slice(0,3))); const s=sched(f,wd)||{}; const date=c.date||at((wd+6)%7); const start=chileAt(date,c.time||s.time||"20:00"); const end=new Date(start.getTime()+((c.dur||s.dur||90)*60000));
+      return Object.assign({},s,c,{wd,date,start,end,ico:c.ico||s.ico||"📅",name:c.name||s.name||"",zoom:c.zoom||s.zoom||"",k:"k"+(((wd===1?1:wd===3?2:wd===4?3:4)))}); });
+  }
+  const planBtn=(date,wd)=>{ const d=new Date(date+"T12:00:00"); d.setDate(d.getDate()-((d.getDay()+6)%7)); const wk=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    return ((window.__clubPlans||{})[wk]||[]).includes(Number(wd))?`<button type="button" class="cs-act cl-planb" data-plan="${wk}|${wd}" aria-expanded="false">📄 ${L("Class material","Material de la clase")}</button>`:""; };
+  function clsCard(c,now,rs){
+    const live=now>=c.start.getTime()-10*60000&&now<=c.end.getTime(), past=now>c.end.getTime(), today=new Date(c.start).toDateString()===new Date(now).toDateString();
+    return `<div class="cl-cls ${c.k}${past?" past":""}"><div class="cl-when"><b>${c.ico} ${esc(fd(c.date))}</b><span>${esc(timeTxt(c.start))}</span>${live?'<span class="cl-live">● Live now</span>':today&&!past?'<span class="cl-today">Today</span>':""}</div>
+      <h3>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</h3>${c.teaser?`<p>${esc(c.teaser)}</p>`:""}
+      <div class="cl-cact">${c.zoom&&!past?`<a class="cl-join" href="${esc(c.zoom)}" target="_blank" rel="noopener">${live?L("🎥 Join now","🎥 Entrar ahora"):"🎥 Zoom link"}</a>`:""}${rs&&!past?`<span class="cl-rsvp" data-rsvp="${esc(rs)}" data-wd="${c.wd}"></span>`:""}${past?planBtn(c.date,c.wd):""}</div></div>`;
+  }
+  function postHTML(f,p,now,head,cur){
+    return `<article class="cl-post">${head?`<div class="cl-meta">${L("Week of","Semana del")} ${esc(fd(p.week))}</div>`:""}${p.title?`<h2>${esc(p.title)}</h2>`:""}${p.intro?`<p class="cl-intro">${esc(p.intro)}</p>`:""}
+      ${(p.classes||[]).length?`<div class="cl-classes">${classesOf(f,p).map(c=>clsCard(c,now,cur?p.week:"")).join("")}</div>`:""}${p.closing?`<p class="cl-closing">${esc(p.closing)}</p>`:""}${recapHTML(p)}${chalHTML(p,cur)}</article>`;
+  }
+  /* after class: recordings, notes, words and phrases (added by Noa's nightly helper) */
+  function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=r.vocab||[], ph=r.phrases||[]; if(!recs.length&&!voc.length&&!ph.length&&!r.notes) return "";
+    return `<div class="cl-recap"><h3>🎬 ${L("After class","Después de clase")}</h3>${recs.length?`<div class="cl-recs">${recs.map(x=>`<a class="cl-rec" href="${esc(x.url)}" target="_blank" rel="noopener"><span>▶</span><b>${esc(x.title||L("Recording","Grabación"))}</b>${x.wd!=null?`<small>${WD[x.wd]}</small>`:""}</a>`).join("")}</div>`:""}
+      ${r.notes?`<p class="cl-rnote">${esc(r.notes)}</p>`:""}
+      ${voc.length?`<h4>📚 ${L("Words from class","Palabras de la clase")}</h4><ul class="cl-voc">${voc.map((v,i)=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
+      ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}</div>`; }
+  /* weekly challenge: Noa's prompt + members' answers (filled by the community script) */
+  function chalHTML(p,cur){ const c=p.challenge; if(!c||!(c.title||c.prompt)) return "";
+    return `<div class="cl-chal"><div class="cl-chal-h"><span class="cl-chal-ic" aria-hidden="true">✍️</span><div><div class="cl-meta">${L("Weekly challenge","Desafío semanal")}</div><h3>${esc(c.title||"")}</h3></div></div>${c.prompt?`<p>${esc(c.prompt)}</p>`:""}<div class="cl-chal-list" data-chal="${esc(p.id)}" data-cur="${cur?1:""}"></div></div>`; }
+  function nav(){
+    const f=feed(), b=document.getElementById("navClub"); if(b){ const signed=window.__csAuth===true||!!window.__csGuest||!!window.__csPreview; b.hidden=!f&&!signed; b.classList.toggle("locked",!f); b.title=f?"":"Club members only"; const ps=posts(f); let dot=b.querySelector(".club-dot"); const n=ps[0]&&ps[0].id!==seen()&&!window.__csPreview; if(n&&!dot){ dot=document.createElement("span"); dot.className="club-dot"; dot.title="New this week"; b.appendChild(dot); } else if(!n&&dot) dot.remove(); }
+    home();
+  }
+  function home(){
+    const hc=document.getElementById("homeClub"); if(!hc) return; const f=feed(), p=posts(f)[0];
+    if(!f||!p){ hc.hidden=true; return; }
+    const now=Date.now(), cl=classesOf(f,p), isNew=p.id!==seen();
+    const next=cl.find(c=>now<=c.end.getTime());
+    hc.hidden=false; hc.className="hc-club"; setTimeout(homeWall,0);
+    hc.innerHTML=`<div class="hc-h"><b>🌼 This week in the club${isNew&&!window.__csPreview?'<span class="hc-new">NEW</span>':""}</b><button type="button" class="hc-go" data-go="club">Open →</button></div>
+      <div class="hc-list">${cl.map(c=>`<div class="${now>c.end.getTime()?"past":""}"><span class="d">${c.ico} ${WD[c.wd]} ${esc(fmtT(c.start,TZ).replace(":00",""))}</span><span>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</span></div>`).join("")}</div>
+      <button type="button" class="hc-wall" data-hcwall="1" hidden></button>${(()=>{ const r=recList(f).filter(it=>!watched().includes(it.id)&&Date.now()-new Date(it.date+"T12:00:00").getTime()<8*864e5)[0]; return r?`<button type="button" class="hc-wall" data-recgo="${esc(r.id)}">🎬 ${L("New recording:","Nueva grabación:")} ${esc(r.c.name||r.x.title||"")} →</button>`:""; })()}
+      ${next&&next.zoom&&now>=next.start.getTime()-10*60000?`<a class="cl-join" style="--k:#E5533D" href="${esc(next.zoom)}" target="_blank" rel="noopener">🎥 ${esc(next.name)} is live: join now</a>`:""}`;
+  }
+  /* not a club member: a locked page with what the club is, how to join, and this week's topics (no Zoom links) */
+  let PUB=null, pubTried=false;
+  async function loadPublic(){ if(pubTried) return; pubTried=true;
+    try{ const F=window.__csFire; if(!F) return; const tok=await F.token(); if(!tok) return;
+      const r=await fetch(F.base+"/clubPublic/week",{headers:{Authorization:"Bearer "+tok}}); if(!r.ok) return; const d=await r.json(); PUB=JSON.parse(d.fields.json.stringValue); render(); }catch(e){} }
+  function locked(){
+    const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
+    const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
+    box.innerHTML=`<div class="cl-lock"><div class="cl-lock-h"><h2>Club members only</h2><div class="cl-lock-badge" aria-hidden="true">🔒</div></div>
+      <p>Noa’s English Club is where you practice speaking with other learners every week, in a relaxed, friendly group. It’s for B1 to C1 learners: fluency and confidence first, grammar second.</p>
+      <ul class="cl-lock-list"><li>🧠 <b>Deep Dive Monday</b> · a thought-provoking topic, often with a short video</li><li>🃏 <b>Wildcard Wednesday</b> · games and activities, pure speaking</li><li>💬 <b>Word Up Thursday</b> · useful expressions, then conversation</li><li>😎 <b>Free Talk Friday</b> · relaxed conversation to close the week</li></ul>
+      <p class="cl-lock-small">Members get every weekly class, the community wall to chat with other members, all past class recordings, the weekly club podcast 🎧, and our 📸 Instagram group to keep practicing (and send memes) between classes.</p>
+      <a class="cl-join-btn" href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}&body=${encodeURIComponent("Hi Noa! I'd like to join the club.\n\nMy name: "+((window.__csFire&&window.__csFire.name&&window.__csFire.name())||"")+"\nMy level (if I know it): \n\n")}">💛 I want to join</a><p class="cl-lock-small">Tap the button to email Noa, and he’ll send you everything you need. Prefer Instagram? <a href="https://ig.me/m/learnwithnoa" target="_blank" rel="noopener">Message @learnwithnoa</a>.</p></div>
+      ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
+    loadPublic();
+  }
+  /* ---------- 🎬 recordings library: every recorded class, with its class page ---------- */
+  const WKEY="cs-club-watched";
+  const watched=()=>{ try{ return JSON.parse(localStorage.getItem(WKEY)||"[]"); }catch(e){ return []; } };
+  function setWatched(id,on){ let w=watched().filter(x=>x!==id); if(on) w.push(id); try{ localStorage.setItem(WKEY,JSON.stringify(w)); }catch(e){} try{ window.__clubSocial&&window.__clubSocial.watched&&window.__clubSocial.watched(w); }catch(e){} }
+  function recList(f){ const out=[]; posts(f).forEach(p=>{ const r=p.recap||{}, cl=classesOf(f,p); (r.recordings||[]).forEach((x,i)=>{ const c=cl.find(y=>y.wd===x.wd)||(x.wd!=null?(()=>{ const s=sched(f,x.wd)||{}; return {name:s.name,ico:s.ico,date:weekDates(p.week)((x.wd+6)%7)}; })():{});
+      out.push({id:p.week+"_"+(x.wd!=null?x.wd:"r"+i),week:p.week,p,x,c:Object.assign({},c,{ico:(sched(f,x.wd)||{}).ico||c.ico}),date:c.date||p.week}); }); });
+    /* recordings Noa added by hand (YouTube links), with or without a weekly post */
+    (window.__clubRecs||[]).forEach(r=>{ if(!r||!r.url||!r.date) return; const d=new Date(r.date+"T12:00:00"), wd=d.getDay(), mon=new Date(d); mon.setDate(d.getDate()-((wd+6)%7)); const wk=mon.getFullYear()+"-"+String(mon.getMonth()+1).padStart(2,"0")+"-"+String(mon.getDate()).padStart(2,"0");
+      const p=posts(f).find(x=>x.week===wk), s=sched(f,r.wd!=null?r.wd:wd)||{}, pc=p?classesOf(f,p).find(y=>y.wd===(r.wd!=null?r.wd:wd)):null;
+      const id="yt_"+r.id; if(out.some(o=>o.x.url===r.url)) return;
+      out.push({id,week:wk,p:p||{recap:{},title:""},x:{url:r.url,title:r.name||s.name,summary:r.summary||"",wd:r.wd!=null?r.wd:wd,rid:r.id,diff:r.diff,diffWhy:r.diffWhy},c:{name:r.name||(pc&&pc.name)||s.name||"",title:r.topic||(pc&&pc.title)||"",ico:s.ico||(pc&&pc.ico)||"🎬",teaser:pc&&pc.teaser,date:r.date},date:r.date}); });
+    return out.sort((a,b)=>b.date.localeCompare(a.date)); }
+  /* difficulty 1-10 for club material (1 ≈ A2+, 10 ≈ C1) */
+  const DLV=n=>n<=2?"A2+":n<=4?"B1":n<=6?"B1+":n<=8?"B2":n<=9?"B2+":"C1";
+  function diffHTML(o){ const n=+(o&&o.diff)||0; if(!n) return ""; return `<span class="cl-diff" title="${esc((o.diffWhy?o.diffWhy+" · ":"")+L("Difficulty for club members: 1 is about A2+, 10 is about C1","Dificultad para el club: 1 es como A2+, 10 es como C1"))}"><span class="cl-dbar" aria-hidden="true">${Array.from({length:10},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span><b>${n}/10</b><small>${DLV(n)}</small><span class="sr">${L("Difficulty","Dificultad")} ${n} ${L("of","de")} 10</span></span>`; }
+  const ytId=u=>{ const m=String(u||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m?m[1]:""; };
+  function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=r.vocab||[], ph=r.phrases||[];
+    const name=c.name||x.title||L("Class","Clase"), topic=c.title&&c.name?c.title:"", q=[name,topic,x.title,x.summary,c.teaser,it.p.title,voc.map(v=>v.w).join(" ")].join(" ").toLowerCase();
+    return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${voc.length?` · 📚 ${voc.length} ${L("words","palabras")}`:""}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
+      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">▶ ${L("Watch the recording","Ver la grabación")}</a>${planBtn(it.date,x.wd)}<span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span><button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
+        ${diffHTML(x)}${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:`<p class="cl-planintro" data-pintro="${esc(it.date)}"></p>`}
+        ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
+        ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
+  let RFOCUS=null;
+  /* ---------- 🎧 the weekly club podcast (episodes stored in clubStats/_podcast: Noa adds, members listen) ---------- */
+  const pods=()=>(window.__clubPods||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.at||0)-(a.at||0));
+  function podPlayer(u){ u=String(u||""); const yt=ytId(u); { const dm=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(dm) return `<div class="cl-pplay" data-drive="${dm[1]}"><button type="button" class="cl-pbtn" data-pplay="1" aria-label="${L("Play","Reproducir")}">▶</button><div class="cl-pmid"><input type="range" class="cl-pbar" min="0" max="1000" value="0" aria-label="${L("Position","Posición")}"><div class="cl-ptime"><span data-pt="cur">0:00</span><span data-pt="dur">–:––</span></div></div><button type="button" class="cs-act cl-pskip" data-pskip="-15" aria-label="${L("Back 15 seconds","Atrás 15 segundos")}">↺ 15</button><button type="button" class="cs-act cl-pskip" data-pskip="15" aria-label="${L("Forward 15 seconds","Adelante 15 segundos")}">15 ↻</button><button type="button" class="cs-act cl-pspeed" data-pspeed="1">1×</button><label class="cl-pvolw" title="${L("Volume","Volumen")}"><button type="button" class="cl-pmute" data-pmute="1" aria-label="${L("Mute","Silenciar")}">🔊</button><input type="range" class="cl-pvol" min="0" max="100" value="100" aria-label="${L("Volume","Volumen")}"></label><audio preload="metadata" src="pod/${dm[1]}.mp3" data-alt="https://drive.usercontent.google.com/download?id=${dm[1]}&export=download&confirm=t"></audio></div>`; } if(yt) return `<button type="button" class="cl-yt" data-yt="${yt}" data-watched="pod_${yt}" aria-label="${L("Play the episode","Reproducir el episodio")}"><img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`;
+    let m=u.match(/open\.spotify\.com\/(episode|show)\/([\w]+)/); if(m) return `<iframe class="cl-podsp" src="https://open.spotify.com/embed/${m[1]}/${m[2]}" title="Podcast episode" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen; picture-in-picture"></iframe>`;
+    m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{20,})/); if(m) return `<iframe class="cl-poddr" src="https://drive.google.com/file/d/${m[1]}/preview" title="Podcast episode" loading="lazy" allow="autoplay"></iframe>`;
+    if(/\.(mp3|m4a|wav|ogg|aac)(\?|$)/i.test(u)) return `<audio class="cl-podau" controls preload="none" src="${esc(u)}"></audio>`;
+    return `<a class="cl-watch" href="${esc(u)}" target="_blank" rel="noopener">🎧 ${L("Listen","Escuchar")}</a>`; }
+  function podHTML(f){ const ps=pods(), noa=isNoaNow();
+    const add=noa?`<details class="cl-podadd"><summary>＋ Add an episode <span class="muted">(only you see this)</span></summary><form class="cl-recform" data-podform="1"><label>Link to the episode<input name="url" type="url" required placeholder="Google Drive, YouTube or Spotify link"></label><div class="cl-rf2"><label>Week of (Monday)<input name="date" type="date" required value="${weekOf(Date.now())}"></label><label>Title<input name="title" maxlength="120" placeholder="e.g. Pets, interviews & animal verbs"></label></div><label>Show notes <span class="muted">(optional: what we cover, new words)</span><textarea name="notes" rows="3" maxlength="1500"></textarea></label><div class="cs-row"><span class="cs-msg" role="status"></span><button type="submit" class="cs-send">Add the episode</button></div><p class="cl-note">Google Drive: share the audio file as “Anyone with the link can view”, then paste its link.</p></form></details>`:"";
+    if(!ps.length) return `<div class="cl-sec cl-pod"><div class="cl-podh"><span class="cl-podic" aria-hidden="true">🎧</span><div><h2>${L("The club podcast","El podcast del club")}</h2><p class="cl-note">${L("Coming soon: a short weekly recap of our classes, with the topics and new words, to listen to on the bus, at the gym or while you cook.","Muy pronto: un resumen semanal corto de nuestras clases, con los temas y las palabras nuevas, para escuchar en la micro, en el gym o mientras cocinas.")}</p></div><span class="cl-soonb">${L("Coming soon","Muy pronto")}</span></div>${add}</div>`;
+    const [e,...older]=ps;
+    return `<div class="cl-sec cl-pod"><div class="cl-podh"><span class="cl-podic" aria-hidden="true">🎧</span><div><div class="cl-meta">${L("The club podcast","El podcast del club")} · ${L("Week of","Semana del")} ${esc(fd(e.date))}</div><h2>${esc(e.title||L("This week in the club","Esta semana en el club"))}</h2>${diffHTML(e)}</div>${noa?`<button type="button" class="cl-podx" data-poddel="${esc(e.id)}" title="Remove this episode (only you see this)" aria-label="Remove this episode">🗑</button>`:""}</div>
+      <div class="cl-podp">${podPlayer(e.url)}</div><div class="cl-stars" data-stars="pr_${esc(e.id)}"></div>${e.notes||(e.vocab||[]).length?`<details class="cl-podn"><summary>📝 ${L("Show notes","Notas del episodio")}${(e.vocab||[]).length?` <span class="muted">· ${e.vocab.length} ${L("words","palabras")}</span>`:""}</summary>${e.notes?`<p>${esc(e.notes).replace(/\n/g,"<br>")}</p>`:""}${podVocab(e)}</details>`:""}
+      ${older.length?`<details class="cl-podold"><summary>${L("Earlier episodes","Episodios anteriores")} (${older.length})</summary>${older.map(x=>`<details class="cl-rcard"><summary><span class="cl-rico" aria-hidden="true">🎧</span><span class="cl-rt"><b>${esc(x.title||L("Club podcast","Podcast del club"))}</b><small>${L("Week of","Semana del")} ${esc(fd(x.date))}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span></summary><div class="cl-rbody">${diffHTML(x)}${podPlayer(x.url)}<div class="cl-stars" data-stars="pr_${esc(x.id)}"></div>${x.notes?`<p>${esc(x.notes).replace(/\n/g,"<br>")}</p>`:""}${noa?`<button type="button" class="cs-act" data-poddel="${esc(x.id)}">✕ Remove</button>`:""}</div></details>`).join("")}</details>`:""}${add}</div>`; }
+  function podVocab(e){ const v=(e.vocab||[]).filter(x=>x&&x.w); if(!v.length) return "";
+    return `<div class="cl-pvh"><b>📚 ${L("Words from this episode","Palabras de este episodio")}</b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Add all to My words","Agregar todas a Mis palabras")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`).join("")}</div>`; }
+  function weekOf(t){ const d=new Date(t); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function podNewHTML(){ const e=pods()[0]; if(!e||Date.now()-new Date(e.date+"T12:00:00").getTime()>10*864e5) return "";
+    return `<button type="button" class="cl-catch cl-podnew" data-clt="recordings"><span aria-hidden="true">🎧</span><span><b>${L("New podcast episode:","Nuevo episodio del podcast:")}</b> ${esc(e.title||L("this week in the club","esta semana en el club"))}</span><span class="cl-mego">→</span></button>`; }
+  const isNoaNow=()=>!window.__csPreview&&!window.__csGuest&&window.__csFire&&window.__csFire.uid&&window.__csFire.uid()==="J8D2tjQmBaaA2QN730tSfSrjfm73";
+  function recAddHTML(f){ if(!isNoaNow()) return ""; const sc=((f.info||{}).schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7)); const d=new Date(), iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    return `<details class="cl-sec cl-recadd"><summary>＋ Add a recording <span class="muted">(only you see this)</span></summary><form class="cl-recform" data-recform="1">
+      <label>YouTube link<input name="url" type="url" required placeholder="https://youtu.be/…"></label>
+      <div class="cl-rf2"><label>Class date<input name="date" type="date" required value="${iso}"></label><label>Class<select name="wd">${sc.map(s=>`<option value="${s.wd}">${esc((s.ico||"")+" "+s.name)}</option>`).join("")}<option value="">Other</option></select></label></div>
+      <label>Topic <span class="muted">(optional: filled in from that week’s post)</span><input name="topic" maxlength="120" placeholder="e.g. Pets, People & Why Animals Feel Safe"></label>
+      <label>Short summary <span class="muted">(optional)</span><textarea name="summary" rows="2" maxlength="500" placeholder="1–2 lines on what we did"></textarea></label>
+      <div class="cs-row"><span class="cs-msg" role="status"></span><button type="submit" class="cs-send">Add to the Library</button></div>
+      <p class="cl-note">Upload the class to YouTube as <b>Unlisted</b>, then paste the link here. Members watch it inside Hibi.</p></form></details>`; }
+  function recTab(f){ const list=recList(f), n=list.filter(x=>watched().includes(x.id)).length;
+    if(!list.length) return recAddHTML(f)+`<p class="cl-empty">${L("Class recordings will collect here: each one with its words and phrases. Free Talk Friday usually appears the day after class.","Aquí se juntan las grabaciones de las clases, cada una con sus palabras y frases. Free Talk Friday normalmente aparece el día después de la clase.")}</p>`;
+    const open=RFOCUS; RFOCUS=null;
+    return recAddHTML(f)+`<div class="cl-rhead"><input type="search" class="cl-rsearch" data-recq="1" placeholder="${L("Search by topic, class or word…","Busca por tema, clase o palabra…")}" aria-label="${L("Search recordings","Buscar grabaciones")}"><span class="cl-rcount">${n}/${list.length} ${L("watched","vistas")}</span></div>
+      <div class="cl-rlist">${list.map(it=>recCard(it,open===it.id)).join("")}</div><p class="cl-empty" data-rnone hidden>${L("No recordings match that.","Ninguna grabación coincide.")}</p>`; }
+  /* missed a class this week? */
+  function catchHTML(f,p,now){ const list=recList(f).filter(it=>it.week===p.week&&!watched().includes(it.id)); if(!list.length) return "";
+    const it=list[list.length-1], voc=((p.recap||{}).vocab||[]).length;
+    return `<button type="button" class="cl-catch" data-recgo="${esc(it.id)}"><span aria-hidden="true">🎬</span><span><b>${L("Missed","¿Te perdiste")} ${esc(it.c.name||it.x.title||"")}${L("?","?")}</b> ${L("Watch the recording","Mira la grabación")}${voc?` ${L("and save","y guarda")} ${voc} ${L("new words","palabras nuevas")}`:""}.</span><span class="cl-mego">→</span></button>`; }
+  /* ---------- 📅 calendar ---------- */
+  let CALM=0, CALD=null, CALPOP=false;
+  const isoD=x=>x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");
+  function eventsIn(f,y,m){ const ev=[], ps=posts(f), info=f.info||{}, covered=new Set();
+    ps.forEach(p=>{ const at=weekDates(p.week); for(let i=0;i<7;i++) covered.add(at(i)); classesOf(f,p).forEach(c=>{ const d=new Date(c.date+"T12:00:00"); if(d.getFullYear()===y&&d.getMonth()===m) ev.push(Object.assign({},c,{post:p})); }); });
+    const days=new Date(y,m+1,0).getDate();
+    for(let i=1;i<=days;i++){ const d=new Date(y,m,i), iso=isoD(d); if(covered.has(iso)) continue;
+      (info.schedule||[]).filter(s=>s.wd===d.getDay()).forEach(s=>{ const start=chileAt(iso,s.time||"20:00"); ev.push(Object.assign({},s,{date:iso,start,end:new Date(start.getTime()+(s.dur||90)*60000),title:"",teaser:s.desc||""})); }); }
+    const recs=recList(f); ev.forEach(e=>{ e.rec=recs.find(r=>r.date===e.date&&(r.c.name===e.name||r.x.wd===e.wd)); });
+    return ev.sort((a,b)=>a.start-b.start); }
+  const icsT=d=>d.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+  function gcal(e){ const q=new URLSearchParams({action:"TEMPLATE",text:`${e.name}${e.title?": "+e.title:""} · Noa's English Club`,dates:icsT(e.start)+"/"+icsT(e.end),details:(e.teaser?e.teaser+"\n\n":"")+(e.zoom?"Zoom: "+e.zoom:"")}); return "https://calendar.google.com/calendar/render?"+q.toString(); }
+  function icsFile(list,weekly){ const L2=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Hibi//Club//EN","CALSCALE:GREGORIAN"];
+    list.forEach((e,i)=>{ L2.push("BEGIN:VEVENT","UID:hibi-club-"+(weekly?"w"+e.wd:icsT(e.start))+"-"+i+"@learnwithnoa","DTSTAMP:"+icsT(new Date()),"DTSTART:"+icsT(e.start),"DTEND:"+icsT(e.end));
+      if(weekly) L2.push("RRULE:FREQ=WEEKLY");
+      L2.push("SUMMARY:"+(e.name+(e.title?": "+e.title:"")+" · Noa's English Club").replace(/[,;]/g,"\\$&"),"DESCRIPTION:"+((e.teaser||"")+(e.zoom?" Zoom: "+e.zoom:"")).replace(/[,;]/g,"\\$&").replace(/\n/g,"\\n"));
+      if(e.zoom) L2.push("URL:"+e.zoom); L2.push("BEGIN:VALARM","TRIGGER:-PT30M","ACTION:DISPLAY","DESCRIPTION:Club class in 30 minutes","END:VALARM","END:VEVENT"); });
+    L2.push("END:VCALENDAR"); return "data:text/calendar;charset=utf-8,"+encodeURIComponent(L2.join("\r\n")); }
+  function calTab(f,now){ const base=new Date(); const y0=new Date(base.getFullYear(),base.getMonth()+CALM,1), y=y0.getFullYear(), m=y0.getMonth();
+    const ev=eventsIn(f,y,m), today=isoD(new Date()); if(!CALD||CALD.slice(0,7)!==isoD(y0).slice(0,7)){ const nx=ev.find(e=>e.date>=(CALM===0?today:isoD(y0))); CALD=CALM===0?(ev.some(e=>e.date===today)?today:(nx?nx.date:today)):(nx?nx.date:isoD(y0)); }
+    const first=(y0.getDay()+6)%7, days=new Date(y,m+1,0).getDate(), cells=[];
+    for(let i=0;i<first;i++) cells.push('<span class="cl-cd empty"></span>');
+    for(let i=1;i<=days;i++){ const iso=isoD(new Date(y,m,i)), es=ev.filter(e=>e.date===iso);
+      cells.push(`<button type="button" class="cl-cd${iso===today?" today":""}${iso===CALD?" sel":""}${iso<today?" past":""}" data-cald="${iso}" aria-label="${esc(fd(iso))}${es.length?": "+es.map(e=>e.name).join(", "):""}" aria-pressed="${iso===CALD}"><span class="n">${i}</span><span class="e">${es.map(e=>`<i class="${e.k||""}">${esc(e.ico||"📅")}</i>`).join("")}</span></button>`); }
+    const sel=ev.filter(e=>e.date===CALD), sched2=((f.info||{}).schedule||[]).map(s=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===s.wd){ const st=chileAt(isoD(x),s.time||"20:00"); return Object.assign({},s,{start:st,end:new Date(st.getTime()+(s.dur||90)*60000),title:"",teaser:s.desc||""}); } } }).filter(Boolean);
+    const mname=y0.toLocaleDateString(L("en-US","es-CL"),{month:"long",year:"numeric"}), wds=L("Mon Tue Wed Thu Fri Sat Sun","Lun Mar Mié Jue Vie Sáb Dom").split(" ");
+    const allBox=sched2.length?`<div class="cl-calall"><p>${L("Want every class in your calendar, with a reminder 30 minutes before?","¿Quieres todas las clases en tu calendario, con un recordatorio 30 minutos antes?")}</p><a class="cl-join" style="--k:var(--c4)" href="${icsFile(sched2,true)}" download="noas-english-club.ics">⬇ ${L("Add all weekly classes to my calendar","Agregar todas las clases semanales a mi calendario")}</a><small>${L("Opens in Google Calendar, Apple Calendar or Outlook. Moved or cancelled classes show up here and on the weekly post.","Se abre en Google Calendar, Apple Calendar u Outlook. Las clases cambiadas o canceladas aparecen aquí y en el post semanal.")}</small></div>`:"";
+    const pop=CALPOP?`<div class="cl-cpop" role="dialog" aria-label="${esc(fd(CALD))}"><div class="cl-cpoph"><h3>${esc(fd(CALD))}</h3><button type="button" class="cs-act" data-calx="1" aria-label="${L("Close","Cerrar")}">✕</button></div>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}${e.dur?" · "+e.dur+" min":""}${e.host?" · "+L("with","con")+" "+esc(e.host):""}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
+        <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:`<span class="muted">${L("This class already happened.","Esta clase ya pasó.")}</span>`):`${e.zoom?`<a class="cs-act cl-zoomb" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>`:"";
+    return `<div class="cl-cal"><div class="cl-calh"><button type="button" class="cs-act" data-calm="-1" aria-label="${L("Previous month","Mes anterior")}">‹</button><b>${esc(mname)}</b><button type="button" class="cs-act" data-calm="1" aria-label="${L("Next month","Mes siguiente")}">›</button></div>
+      <div class="cl-cgrid">${wds.map(w=>`<span class="cl-cw">${w}</span>`).join("")}${cells.join("")}</div>${pop}<p class="cl-chint">${L("Tap a day to see its classes and Zoom links.","Toca un día para ver sus clases y links de Zoom.")}</p></div>${allBox}
+      <div class="cl-cday" hidden><h3>${esc(fd(CALD))}</h3>${sel.length?sel.map(e=>{ const past=now>e.end.getTime(); return `<div class="cl-cev ${e.k||""}${past?" past":""}"><div><b>${esc(e.ico||"📅")} ${esc(e.name)}${e.title?`: ${esc(e.title)}`:""}</b><span>${esc(timeTxt(e.start))}</span>${e.teaser?`<p>${esc(e.teaser)}</p>`:""}</div>
+        <div class="cl-cact">${past?(e.rec?`<button type="button" class="cl-join" style="--k:#E5533D" data-recgo="${esc(e.rec.id)}">🎬 ${L("Recording","Grabación")}</button>`:""):`${e.zoom?`<a class="cl-join" href="${esc(e.zoom)}" target="_blank" rel="noopener">🎥 Zoom</a>`:""}<a class="cs-act" href="${esc(gcal(e))}" target="_blank" rel="noopener">📅 Google Calendar</a><a class="cs-act" href="${icsFile([e],false)}" download="club-class.ics">⬇ .ics</a>`}</div></div>`; }).join(""):`<p class="cl-empty">${L("No club classes this day.","No hay clases del club este día.")}</p>`}</div>
+      `; }
+  /* past weeks: under the recordings in the Library tab */
+  function pastHTML(f,ps,now){ const old=ps.slice(1); if(!old.length) return "";
+    return `<div class="cl-sec cl-pastw"><h2>🗂 ${L("Past weeks","Semanas anteriores")} <small>(${old.length})</small></h2><p class="cl-note">${L("Every weekly post, with its topics, words and comments.","Cada post semanal, con sus temas, palabras y comentarios.")}</p>${old.map(p=>`<details class="cl-past"><summary>${esc(p.title||"Week of "+fd(p.week))}<span>${p.recap&&(p.recap.recordings||[]).length?"🎬 ":""}${L("Week of","Semana del")} ${esc(fd(p.week))}</span></summary>${postHTML(f,p,now,false)}<div class="cl-thread" data-thread="${esc(p.id)}" data-lazy="1"></div></details>`).join("")}</div>`; }
+  /* the next class, first thing on "This week" */
+  function nextHTML(f,p,now){ const cl=classesOf(f,p), c=cl.find(x=>now<=x.end.getTime()); if(!c) return "";
+    const live=now>=c.start.getTime()-10*60000, today=new Date(c.start).toDateString()===new Date(now).toDateString();
+    return `<div class="cl-next ${c.k}"><div class="cl-next-k">${live?`<span class="cl-live">● ${L("Live now","En vivo")}</span>`:`⏭ ${L("Next class","Próxima clase")}${today?` · <b>${L("today","hoy")}</b>`:""}`}</div>
+      <div class="cl-next-b"><span class="cl-next-ic" aria-hidden="true">${esc(c.ico)}</span><div><h3>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</h3><span>${esc(fd(c.date))} · ${esc(timeTxt(c.start))}</span></div></div>
+      <div class="cl-cact">${c.zoom?`<a class="cl-join" href="${esc(c.zoom)}" target="_blank" rel="noopener">${live?L("🎥 Join now","🎥 Entrar ahora"):"🎥 Zoom link"}</a>`:""}<span class="cl-rsvp" data-rsvp="${esc(p.week)}" data-wd="${c.wd}"></span></div></div>`; }
+  /* weekly schedule + useful links (shown under the calendar) */
+  function linksHTML(f){ const info=f.info||{};
+      const sc=(info.schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7));
+      const nextDate=wd=>{ const d=new Date(); for(let i=0;i<8;i++){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i); if(x.getDay()===wd) return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); } };
+      return `<div class="cl-sec" hidden><h2>🗓 ${L("Every week","Todas las semanas")}</h2>${sc.map(s=>{ const st=chileAt(nextDate(s.wd),s.time); return `<div class="cl-row"><span class="i">${s.ico||"📅"}</span><span class="t"><b>${esc(s.name)}</b><span>${["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"][s.wd]} · ${esc(timeTxt(st))} · ${s.dur||90} min${s.host?" · with "+esc(s.host):""}</span>${s.desc?`<br><span>${esc(s.desc)}</span>`:""}</span>${s.zoom?`<a class="cl-join" style="--k:var(--c2)" href="${esc(s.zoom)}" target="_blank" rel="noopener">🎥 Zoom link</a>`:""}</div>`; }).join("")}
+        <p class="cl-note">${L("All classes are optional and open to every level. The Zoom links stay the same every week.","Todas las clases son opcionales y abiertas a todos los niveles. Los links de Zoom son los mismos cada semana.")}</p></div>
+        ${(info.links||[]).length?`<div class="cl-sec"><h2>🔗 ${L("Useful links","Links útiles")}</h2>${info.links.map(l=>`<div class="cl-row"><span class="i">${esc(l.ico||"🔗")}</span><span class="t"><b>${esc(l.title)}</b>${l.note?`<span>${esc(l.note)}</span>`:""}</span><a class="cl-join" style="--k:var(--c4)" href="${esc(l.url)}" target="_blank" rel="noopener">Open ↗</a></div>`).join("")}</div>`:""}`;
+  }
+  /* ---------- 👋 welcome + guidelines ---------- */
+  const RULES_EN=["✔️ Respect everyone, whatever their level. Laugh with people, never at them.","💡 Mistakes are welcome here. That’s how we learn.","💬 Bring positive energy, and stick to English as much as you can (a little Spanish to get unstuck is fine).","🔒 What’s shared in the club stays in the club.","🚫 No spam, no self-promotion.","🛟 Questions? Just ask, we’ve got you."];
+  const RULES_ES=["✔️ Respeta a todos, sin importar su nivel. Ríete con las personas, nunca de ellas.","💡 Aquí los errores son bienvenidos. Así se aprende.","💬 Trae buena energía y usa el inglés lo más que puedas (un poco de español para destrabarte está bien).","🔒 Lo que se comparte en el club, queda en el club.","🚫 Nada de spam ni autopromoción.","🛟 ¿Dudas? Solo pregunta, aquí te ayudamos."];
+  const IG_GROUP="https://www.instagram.com/j/AbYEKteyhp-zyxxc/";
+  function igNudge(){ try{ if(!localStorage.getItem(WELC)||localStorage.getItem("cs-ig-nudged")||window.__csPreview||!feed()) return; localStorage.setItem("cs-ig-nudged","1"); }catch(e){ return; }
+    setTimeout(()=>{ if(!window.csDialog) return; const d=window.csDialog(`<h3 style="margin-top:0">📸 ${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</h3><p>${L("Class reminders, memes and chats with the club between classes. It’s where the club hangs out during the week.","Recordatorios de clases, memes y conversación con el club entre clases. Ahí se junta el club durante la semana.")}</p><div class="note-actions"><a class="pill-btn pill-green" href="${IG_GROUP}" target="_blank" rel="noopener" data-a="go">${L("Join the group","Unirme al grupo")}</a><button class="swap" type="button" data-a="x">${L("Maybe later","Más tarde")}</button></div><p class="muted" style="font-size:13px;margin:10px 0 0">${L("It’s always at the top of the club page too.","También está siempre arriba en la página del club.")}</p>`); d.el.addEventListener("click",ev=>{ if(ev.target.closest("[data-a]")) setTimeout(d.close,50); }); },1500); }
+  function dmTop(){ const aw=document.querySelector(".top-in .auth-wrap"); if(!aw) return; let m=document.getElementById("dmTopBtn"); if(!m){ m=document.createElement("button"); m.type="button"; m.id="dmTopBtn"; m.className="theme-btn cl-dmtop"; m.dataset.dminbox="1"; m.title=L("Messages","Mensajes"); m.setAttribute("aria-label",L("Messages","Mensajes")); m.innerHTML=`<span aria-hidden="true">💬</span><span class="cl-dmn" hidden></span>`; aw.parentNode.insertBefore(m,aw); } m.hidden=!feed(); try{ window.__clubSocial&&window.__clubSocial.dms&&window.__clubSocial.dms(); }catch(e){} }
+  document.addEventListener("cs-club",()=>setTimeout(dmTop,50)); window.addEventListener("load",()=>setTimeout(dmTop,1500));
+  function igTop(){ const v=document.getElementById("v-club"); if(!v) return; const put=()=>{ const row=v.querySelector(".cs-read-row"); if(!row) return false; let a=row.querySelector(".cl-igtop"); if(!a){ a=document.createElement("a"); a.className="cl-igtop"; a.href=IG_GROUP; a.target="_blank"; a.rel="noopener"; row.insertBefore(a,row.firstChild); } a.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>${L("Instagram group","Grupo de Instagram")}`; a.hidden=!feed(); dmTop(); try{ window.__clubSocial&&window.__clubSocial.dms&&window.__clubSocial.dms(); }catch(e){} return true; }; if(!put()){ let n=0; const t=setInterval(()=>{ if(put()||++n>20) clearInterval(t); },250); } }
+  function igHTML(compact){ return `<a class="cl-ig${compact?" compact":""}" href="${IG_GROUP}" target="_blank" rel="noopener"><span class="cl-ig-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span><span><b>${L("Join our Instagram group","Únete a nuestro grupo de Instagram")}</b>${compact?"":`<small>${L("Reminders, memes and chats with the club between classes.","Recordatorios, memes y conversación con el club entre clases.")}</small>`}</span><span class="cl-ig-go">→</span></a>`; }
+  /* good to know: how the classes work */
+  function faqHTML(){ const Q=[
+      ["📅",["Can I come to more than one class a week?","¿Puedo ir a más de una clase por semana?"],["Absolutely! All classes are open to everyone, so join as many as you like in the same week. You can also just listen quietly if you’re not up to talking that day. No pressure.","¡Claro! Todas las clases están abiertas para todos, así que ven a las que quieras en la misma semana. También puedes solo escuchar si ese día no tienes ganas de hablar. Sin presión."]],
+      ["📚",["Do I need to prepare?","¿Tengo que preparar algo?"],["Usually no: all classes are drop-in. Sometimes there’s a little homework, and it’s always in the weekly post (the This week tab), so you’ll know in advance. It’s never anything too time-consuming.","Normalmente no: todas las clases son sin preparación. A veces hay una pequeña tarea, y siempre está en el post semanal (pestaña Esta semana), para que lo sepas antes. Nunca es algo que tome mucho tiempo."]]];
+    const T=L(["💻 Use a computer if you can: it’s easier to see the materials and your classmates.","📷 Keep your camera on: it makes the conversation feel more natural.","🎧 Use headphones if possible: better audio for everyone.","🔇 Only mute yourself if there’s background noise. No need to be on mute the whole time."],["💻 Usa un computador si puedes: es más fácil ver los materiales y a tus compañeros.","📷 Deja tu cámara encendida: la conversación se siente más natural.","🎧 Usa audífonos si puedes: mejor audio para todos.","🔇 Silénciate solo si hay ruido de fondo. No hace falta estar en silencio todo el rato."]);
+    return `<div class="cl-sec cl-faq"><h2>🙋 ${L("Good to know","Bueno saber")}</h2>${Q.map(q=>`<details><summary>${q[0]} ${esc(L(q[1][0],q[1][1]))}</summary><p>${esc(L(q[2][0],q[2][1]))}</p></details>`).join("")}<h3>🎧 ${L("A few tips","Algunos consejos")}</h3><ul>${T.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`; }
+  function rulesHTML(f,inWelcome){ const r=((f.info||{}).rules||[]).length?f.info.rules:L(RULES_EN,RULES_ES);
+    return `<div class="cl-sec cl-rules">${inWelcome?"":`<h2>🤝 ${L("Club guidelines","Normas del club")}</h2>`}<ol>${r.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`; }
+  const WELC="cs-club-welcomed";
+  function welcomeHTML(f){ try{ if(localStorage.getItem(WELC)) return ""; }catch(e){ return ""; } if(window.__csPreview&&!window.__csGuest) return "";
+    const nm=(window.__csFire&&window.__csFire.name&&window.__csFire.name()||"").split(" ")[0];
+    return `<div class="cl-welc"><button type="button" class="cl-welc-x" data-welcx="1" aria-label="${L("Close","Cerrar")}">✕</button><h2>👋 ${L("Welcome to the club","Bienvenido al club")}${nm?", "+esc(nm):""}!</h2><p>${L("A few small things to get started:","Unas cositas para empezar:")}</p>
+      <ol class="cl-steps"><li><b>${L("Say hi on the wall","Saluda en el muro")}</b><span>${L("Tell us your name, where you’re from and why you’re learning English.","Cuéntanos tu nombre, de dónde eres y por qué aprendes inglés.")}</span><button type="button" class="cl-join" style="--k:var(--c2)" data-intro="1">👋 ${L("Introduce yourself","Preséntate")}</button></li>
+        <li><b>${L("Read the club guidelines","Lee las normas del club")}</b><details><summary>${L("Show them","Mostrar")}</summary>${rulesHTML(f,true)}</details></li>
+        <li><b>${L("Join our Instagram group","Únete al grupo de Instagram")}</b><span>${L("Reminders and chats with the club between classes.","Recordatorios y conversación con el club entre clases.")}</span><a class="cl-join" style="--k:#E1306C" href="${IG_GROUP}" target="_blank" rel="noopener">📸 ${L("Join the group","Unirme al grupo")}</a></li>
+        <li><b>${L("Come to a class","Ven a una clase")}</b><span>${L("Tap “🙋 I’m going” on a class below. All levels, camera optional.","Toca “🙋 Voy” en una clase de abajo. Todos los niveles, cámara opcional.")}</span></li></ol>
+      <button type="button" class="cs-act" data-welcx="1">${L("Got it","Entendido")} ✓</button></div>`; }
+  /* ---------- 🚀 coming soon (members vote; filled by the community script) ---------- */
+  const SOON=[["dm","💬",["Direct messages","Mensajes directos"],["Chat privately with other members.","Chatea en privado con otros miembros."]],["digest","📧",["Weekly email digest","Resumen semanal por email"],["What you missed in the club, once a week.","Lo que te perdiste en el club, una vez por semana."]],["courses","🎓",["Club courses","Cursos del club"],["Short courses only for members, e.g. speaking confidence.","Cursos cortos solo para miembros, por ejemplo seguridad al hablar."]],["join","💳",["Join and pay on Hibi","Unirse y pagar en Hibi"],["Membership right here, no Skool needed.","La membresía aquí mismo, sin Skool."]]];
+  function soonHTML(){ return `<div class="cl-sec cl-soon"><h2>🚀 ${L("Coming soon","Muy pronto")}</h2><p class="cl-note">${L("Vote for what you want first. Noa sees the votes.","Vota por lo que quieres primero. Noa ve los votos.")}</p><div class="cl-soonl">${SOON.map(s=>`<div class="cl-soonc"><span class="i" aria-hidden="true">${s[1]}</span><span class="t"><b>${esc(L(s[2][0],s[2][1]))}</b><span>${esc(L(s[3][0],s[3][1]))}</span></span><span class="cl-soonv" data-soon="${s[0]}"></span></div>`).join("")}</div></div>`; }
+  async function homeWall(){ const b=document.querySelector("#homeClub [data-hcwall]"); if(!b||!window.__clubSocial) return; const n=await window.__clubSocial.unread(); b.hidden=!n; b.textContent=`💬 ${n} new on the community wall →`; }
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-hcwall]")){ tab="wall"; location.hash="#club"; setTimeout(render,0); } });
+  function render(){
+    { const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=!feed(); }
+    nav(); const f=feed();
+    if(!f){ locked(); return; }
+    const ps=posts(f), now=Date.now(), info=f.info||{};
+    const nRec=recList(f).length, isNoa=window.__csFire&&window.__csFire.uid&&window.__csFire.uid()==="J8D2tjQmBaaA2QN730tSfSrjfm73"&&!window.__csPreview;
+    const tabs=[["week",L("This week","Esta semana")],["wall",L("Community","Comunidad")+' <span class="cl-unread" data-unread hidden></span>'],["recordings",`🎬 ${L("Library","Biblioteca")}${nRec?" ("+nRec+")":""}`],["calendar",`📅 ${L("Calendar","Calendario")}`],["members",L("Members","Miembros")]].concat(isNoa?[["insights","📈 Insights"]]:[]);
+    let body="";
+    if(tab==="wall"||tab==="say"){ tab="wall"; body='<div class="cl-say" data-say="1"></div><div class="cl-wall" data-wall="1"></div>'; }
+    else if(tab==="members"){ body='<div class="cl-members" data-members="1"></div>'; }
+    else if(tab==="insights"){ body='<div class="cl-insights" data-insights="1"></div>'; }
+    else if(tab==="recordings"||tab==="past"){ tab="recordings"; body=podHTML(f)+recTab(f)+pastHTML(f,ps,now); }
+    else if(tab==="calendar"||tab==="links"){ tab="calendar"; body=`<div class="cl-keyinfo"><span>✅ ${L("All classes are optional and open to every level","Todas las clases son opcionales y para todos los niveles")}</span><span>🔗 ${L("The Zoom links stay the same every week","Los links de Zoom son los mismos cada semana")}</span><span>🙋 ${L("Come to as many as you like","Ven a todas las que quieras")}</span></div>`+calTab(f,now)+`<div class="cl-infogrid">${faqHTML()}${rulesHTML(f,false)}</div>`+linksHTML(f); }
+    else if(tab==="week"){ body=ps[0]?welcomeHTML(f)+nextHTML(f,ps[0],now)+catchHTML(f,ps[0],now)+podNewHTML()+postHTML(f,ps[0],now,true,true)+`<p class="cl-towall">💬 ${L("Questions or something to share?","¿Preguntas o algo que compartir?")} <button type="button" class="cs-act" data-clt="wall">${L("Post it in Community","Publícalo en Comunidad")} →</button></p>`:`<p class="cl-empty">${L("This week’s post isn’t up yet. It usually arrives on Monday.","El post de esta semana aún no está. Normalmente llega el lunes.")}</p>`; if(ps[0]&&!window.__csPreview&&document.getElementById("v-club")&&!document.getElementById("v-club").hidden){ markSeen(ps[0].id); setTimeout(nav,0); } }
+    igTop(); igNudge();
+    box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
+    if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
+  }
+  document.addEventListener("click",e=>{ const g=e.target.closest("[data-recgo]"); if(!g) return; RFOCUS=g.dataset.recgo; tab="recordings"; if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>{ render(); setTimeout(()=>document.querySelector(`.cl-rcard[open]`)?.scrollIntoView({block:"center",behavior:"smooth"}),80); },0); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&CALPOP){ CALPOP=false; render(); } });
+  box.addEventListener("input",e=>{ const q=e.target.closest("[data-recq]"); if(!q) return; const v=q.value.trim().toLowerCase(); let n=0; box.querySelectorAll(".cl-rcard").forEach(c=>{ const hit=!v||v.split(/\s+/).every(w=>c.dataset.q.includes(w)); c.hidden=!hit; if(hit) n++; }); const no=box.querySelector("[data-rnone]"); if(no) no.hidden=!!n; });
+  box.addEventListener("click",e=>{ const t=e.target.closest("[data-clt]"); if(t){ tab=t.dataset.clt; render(); return; }
+    const cm=e.target.closest("[data-calm]"); if(cm){ CALM+=+cm.dataset.calm; CALD=null; CALPOP=false; render(); return; }
+    const cd=e.target.closest("[data-cald]"); if(cd){ CALD=cd.dataset.cald; CALPOP=true; render(); return; }
+    if(e.target.closest("[data-calx]")){ CALPOP=false; render(); return; }
+    if(CALPOP&&e.target.closest(".cl-cal")&&!e.target.closest(".cl-cpop")){ CALPOP=false; render(); return; }
+    const wt=e.target.closest("[data-wtoggle]"); if(wt){ const id=wt.dataset.wtoggle, on=!watched().includes(id); setWatched(id,on); RFOCUS=id; render(); return; }
+    const yt=e.target.closest("[data-yt]"); if(yt){ const id=yt.dataset.yt; if(!watched().includes(yt.dataset.watched)) setWatched(yt.dataset.watched,true); yt.outerHTML=`<div class="cl-ytf"><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1" title="Class recording" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`; return; }
+    const wa=e.target.closest("[data-watched]"); if(wa){ if(!watched().includes(wa.dataset.watched)){ setWatched(wa.dataset.watched,true); const id=wa.dataset.watched; setTimeout(()=>{ RFOCUS=id; render(); },300); } return; }
+    if(e.target.closest("[data-welcx]")){ try{ localStorage.setItem(WELC,"1"); }catch(er){} render(); return; }
+    if(e.target.closest("[data-intro]")){ try{ localStorage.setItem(WELC,"1"); }catch(er){} window.__clubIntro=true; tab="wall"; render(); return; }
+    const wAll=e.target.closest("[data-clwall]"); if(wAll){ let arr=[]; try{ arr=JSON.parse(wAll.dataset.clwall); }catch(er){} let n=0; arr.forEach(x=>{ try{ if(typeof window.csAddWord==="function"&&window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; }catch(er){} }); wAll.closest(".cl-podn,.cl-recap,details")?.querySelectorAll("[data-clw]").forEach(b=>{ b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); }); wAll.disabled=true; wAll.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ Already in your words","✓ Ya están en tus palabras"); return; }
+    const pp=e.target.closest(".cl-pplay"); if(pp){ const au=pp.querySelector("audio"); if(e.target.closest("[data-pplay]")){ if(au.paused){ au.play().catch(()=>podFallback(pp)); } else au.pause(); return; } const sk=e.target.closest("[data-pskip]"); if(sk){ au.currentTime=Math.max(0,(au.currentTime||0)+ +sk.dataset.pskip); return; } const sp=e.target.closest("[data-pspeed]"); if(sp){ const R2=[1,1.25,1.5,0.75], nx=R2[(R2.indexOf(au.playbackRate||1)+1)%R2.length]; au.playbackRate=nx; sp.textContent=nx+"×"; return; } }
+    const w=e.target.closest("[data-clw]"); if(w){ let x={}; try{ x=JSON.parse(w.dataset.clw); }catch(er){} let ok=false; try{ ok=typeof window.csAddWord==="function"&&window.csAddWord(x.w,x.tr||"",x.ex||""); }catch(er){} w.disabled=true; w.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras"); } });
+  document.addEventListener("cs-level",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden) render(); });
+  /* data updates never wipe something half-typed: they wait until the text is sent or cleared */
+  let pend=false; const typing=()=>[...box.querySelectorAll("textarea,input[type=text]")].some(x=>x.value.trim());
+  const soft=()=>{ if(typing()){ pend=true; nav(); return; } pend=false; render(); };
+  document.addEventListener("cs-club",soft); box.addEventListener("focusout",()=>setTimeout(()=>{ if(pend&&!typing()) soft(); },200)); document.addEventListener("submit",()=>setTimeout(()=>{ if(pend&&!typing()) soft(); },1500)); document.addEventListener("cs-hubview",nav); window.addEventListener("cs-auth",()=>{ pubTried=false; setTimeout(soft,0); });
+  window.addEventListener("hashchange",()=>{ if(location.hash==="#club") setTimeout(render,0); });
+  document.addEventListener("click",e=>{ if(e.target.closest('[data-go="club"]')) setTimeout(render,0); });
+  /* keep "Live now" fresh, but never while someone is typing a comment */
+  setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing) render(); else home(); } },60000);
+  window.__clubTab=k=>{ tab=k; render(); };
+  document.addEventListener("cs-club-plans",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,.cl-plan,iframe,audio,textarea:focus,input:focus")) render(); });
+  const fmtPT=t=>!isFinite(t)?"–:––":Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
+  function podFallback(pp){ if(!pp||!pp.isConnected||pp.dataset.fb) return; pp.dataset.fb="1"; pp.outerHTML=`<iframe class="cl-poddr" src="https://drive.google.com/file/d/${pp.dataset.drive}/preview" title="Podcast episode" loading="lazy" allow="autoplay"></iframe>`; }
+  ["play","pause","timeupdate","loadedmetadata","error","ended"].forEach(ev=>document.addEventListener(ev,e=>{ const au=e.target; if(!au||au.tagName!=="AUDIO") return; const pp=au.closest(".cl-pplay"); if(!pp) return;
+    if(ev==="error"){ if(au.dataset.alt&&!au.dataset.tried){ au.dataset.tried="1"; au.src=au.dataset.alt; au.load(); return; } podFallback(pp); return; } const b=pp.querySelector("[data-pplay]"); b.textContent=au.paused?"▶":"❚❚"; b.setAttribute("aria-label",au.paused?L("Play","Reproducir"):L("Pause","Pausa")); pp.classList.toggle("on",!au.paused);
+    pp.querySelector('[data-pt="cur"]').textContent=fmtPT(au.currentTime||0); pp.querySelector('[data-pt="dur"]').textContent=fmtPT(au.duration); if(au.duration&&!pp._drag) pp.querySelector(".cl-pbar").value=Math.round((au.currentTime/au.duration)*1000); },true));
+  document.addEventListener("input",e=>{ const v=e.target.closest(".cl-pplay .cl-pvol"); if(!v) return; const pp=v.closest(".cl-pplay"), au=pp.querySelector("audio"); au.volume=v.value/100; au.muted=false; pp.querySelector("[data-pmute]").textContent=v.value==0?"🔇":v.value<50?"🔉":"🔊"; });
+  document.addEventListener("click",e=>{ const m=e.target.closest(".cl-pplay [data-pmute]"); if(!m) return; e.preventDefault(); const pp=m.closest(".cl-pplay"), au=pp.querySelector("audio"); au.muted=!au.muted; m.textContent=au.muted?"🔇":"🔊"; });
+  document.addEventListener("input",e=>{ const r=e.target.closest(".cl-pplay .cl-pbar"); if(!r) return; const au=r.closest(".cl-pplay").querySelector("audio"); if(au.duration) au.currentTime=r.value/1000*au.duration; });
+  document.addEventListener("cs-club-pods",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,iframe,.cl-pplay.on,textarea:focus,input:focus")) render(); });
+  document.addEventListener("cs-club-recs",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,textarea:focus,input:focus")) render(); else home(); });
+  window.__clubFeed=feed;
+  render();
+})();
+</script>
+<script>
+/* ---------- Club community: members' posts, comments on the weekly post, photos, likes ----------
+   Everything lives in club-only parts of the database (clubPosts, clubImgs, clubActivity). The database's security
+   rules only let people on the club list read or write there, and only the author (or Noa) can edit/delete. */
+(function(){
+  const NOA="J8D2tjQmBaaA2QN730tSfSrjfm73";
+  const GIPHY_KEY="VFTSkGppzLMC3vvhvEjVsyeV8DT5AlPp"; /* GIPHY web key (public by design); the GIF button stays hidden while this is empty */
+  const L=(en,es)=>window.__clL?window.__clL(en,es):en;
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const linkify=s=>esc(s).replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)"']/g,u=>`<a href="${u}" target="_blank" rel="noopener nofollow">${u.length>48?u.slice(0,45)+"…":u}</a>`);
+  const ago=t=>{ const es=L(0,1), m=Math.round((Date.now()-t)/6e4); if(m<1) return es?"recién":"just now"; if(m<60) return es?"hace "+m+" min":m+" min ago"; const h=Math.round(m/60); if(h<24) return es?"hace "+h+(h===1?" hora":" horas"):h+(h===1?" hour ago":" hours ago"); const d=Math.round(h/24); if(d<7) return d===1?(es?"ayer":"yesterday"):(es?"hace "+d+" días":d+" days ago"); return new Date(t).toLocaleDateString(es?"es-CL":"en-US",{month:"short",day:"numeric"}); };
+  const F=()=>window.__csFire;
+  const me=()=>F()&&F().uid();
+  const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  let state="unknown"; /* unknown | ok | off (rules not switched on) | denied */
+  let roT=0; function toastRO(){ if(Date.now()-roT<4000) return; roT=Date.now(); if(typeof window.toast==="function") window.toast("👁 View as is read-only: nothing is saved"); }
+  async function api(method,path,body){
+    const f=F(); if(!f) throw new Error("not ready");
+    if(f.readOnly&&f.readOnly()&&method!=="GET"&&!/:runQuery$/.test(path)){ toastRO(); const e=new Error("view-as is read-only"); e.code=0; throw e; }
+    const tok=await f.token(); if(!tok) throw new Error("signin");
+    const r=await fetch(f.base+path,{method,headers:{"Authorization":"Bearer "+tok,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+    if(r.status===403){ state=state==="ok"?"ok":"off"; const e=new Error("denied"); e.code=403; throw e; }
+    if(!r.ok&&r.status!==404) throw new Error("http "+r.status);
+    return r.status===404?null:r.json();
+  }
+  const S=v=>({stringValue:String(v)}), I=v=>({integerValue:String(Math.round(v))});
+  function fromDoc(d){ const o={id:d.name.split("/").pop()}; const f=d.fields||{}; for(const k in f){ const v=f[k]; o[k]=v.stringValue!=null?v.stringValue:v.integerValue!=null?+v.integerValue:v.arrayValue?(v.arrayValue.values||[]).map(x=>x.stringValue):v.booleanValue!=null?v.booleanValue:null; } try{ Object.assign(o,JSON.parse(o.json||"{}")); }catch(e){} return o; }
+  async function query(parent,coll,dir,limit){
+    const res=await api("POST",(parent?"/"+parent:"")+":runQuery",{structuredQuery:{from:[{collectionId:coll}],orderBy:[{field:{fieldPath:"at"},direction:dir}],limit}});
+    state="ok"; return (res||[]).filter(x=>x.document).map(x=>fromDoc(x.document));
+  }
+  /* Noa's guest preview: sample posts, nothing is sent anywhere */
+  const G=()=>!!window.__csGuest&&!window.__csPreview, H=h=>Date.now()-h*36e5;
+  const SAMPLE_POSTS=[{id:"s3",uid:"x3",name:"Sam (sample)",at:H(1),text:"Which topic should we do next Deep Dive Monday? 🤔",poll:{opts:["Travel disasters ✈️","Food from home 🍲","Dream jobs 💼"]},likes:["a|🔥"],n:0},{id:"s4",uid:"x2",name:"Alex (sample)",at:H(5),ch:"wSAMPLE",text:"The best advice I ever got: 'Done is better than perfect.' It helped me start speaking in class instead of waiting until my English was perfect.",likes:["a|👏","b|❤️"],n:1},{id:"s5",uid:"x1",name:"Robin (sample)",at:H(20),cat:"intro",text:"Hi everyone! I'm Robin and this is a sample post I'm learning English because I want to work remotely. Fun fact: I have three cats.",likes:["a|❤️","b|👏"],n:0},{id:"s1",uid:"x1",name:"Robin (sample)",at:H(3),cat:"q",text:"Does anyone have a good podcast for practicing listening on the bus? 🎧",likes:["a","b"],n:2},{id:"s2",uid:NOA,name:"Noa (sample)",at:H(26),text:"Welcome to the new club wall! Ask questions, share wins, post your pet photos 🐾",likes:["a","b","c","d"],n:1}];
+  const SAMPLE_COMM={s1:[{id:"c1",uid:"x2",name:"Alex (sample)",at:H(2),text:"6 Minute English from the BBC! Short and easy to follow.",likes:["a"]},{id:"c2",uid:NOA,name:"Noa (sample)",at:H(1),text:"Great pick. Culips is also really good for real conversations.",likes:[]}],s2:[{id:"c3",uid:"x3",name:"Sam (sample)",at:H(20),text:"Love this! 🫰🏻",likes:["a"]}]};
+  const listPosts=()=>G()?Promise.resolve(SAMPLE_POSTS):query("","clubPosts","DESCENDING",50);
+  const listComments=pid=>G()?Promise.resolve(SAMPLE_COMM[pid]||[{id:"c9",uid:"x4",name:"Kim (sample)",at:H(5),text:"This is Kira, she thinks she's a cat 🐶",likes:["a","b","c"]}]):query("clubPosts/"+pid,"comments","ASCENDING",300);
+  async function createDoc(path,id,data){ const fields={uid:S(me()),at:I(Date.now()),name:S(F().name()),json:S(JSON.stringify(data))}; if(path==="clubPosts") { fields.likes={arrayValue:{values:[]}}; fields.n=I(0); fields.lastAt=I(Date.now()); } else fields.likes={arrayValue:{values:[]}};
+    await api("POST","/"+path+"?documentId="+id,{fields}); }
+  async function activity(kind,pid,text,img){ try{ await api("POST","/clubActivity?documentId="+rid(),{fields:{uid:S(me()),at:I(Date.now()),name:S(F().name()),kind:S(kind),pid:S(pid),text:S(String(text||"").slice(0,140)),img:{booleanValue:!!img}}}); }catch(e){} }
+  /* photos: shrunk in the browser to a light JPEG and kept in the database (no separate file storage needed) */
+  function shrink(file){ return new Promise((res,rej)=>{ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{ let w=im.naturalWidth,h=im.naturalHeight; const M=1280; if(Math.max(w,h)>M){ const k=M/Math.max(w,h); w=Math.round(w*k); h=Math.round(h*k); } const c=document.createElement("canvas"); c.width=w; c.height=h; c.getContext("2d").drawImage(im,0,0,w,h); URL.revokeObjectURL(u); let q=.82,d=c.toDataURL("image/jpeg",q); while(d.length>700000&&q>.35){ q-=.12; d=c.toDataURL("image/jpeg",q); } if(d.length>900000){ rej(new Error("too big")); return; } res(d); }; im.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error("not an image")); }; im.src=u; }); }
+  async function uploadImg(file){ const d=await shrink(file), id=rid(); await api("POST","/clubImgs?documentId="+id,{fields:{uid:S(me()),at:I(Date.now()),data:S(d)}}); IMG[id]=d; return id; }
+  const IMG={};
+  async function img(id){ if(IMG[id]) return IMG[id]; const r=await api("GET","/clubImgs/"+id); IMG[id]=r&&r.fields&&r.fields.data?r.fields.data.stringValue:""; return IMG[id]; }
+  function paintImgs(root){ root.querySelectorAll("img[data-img]:not([src])").forEach(async el=>{ try{ const d=await img(el.dataset.img); if(d) el.src=d; else el.closest(".cs-ph")?.remove(); }catch(e){} }); }
+  const RX=["❤️","😂","😮","👏","🔥","🙏"];
+  const rxOf=v=>{ const i=String(v).indexOf("|"); return i<0?[v,"❤️"]:[v.slice(0,i),v.slice(i+1)]; };
+  async function react(path,item,emo){ const mine=me(); const prev=(item.likes||[]).map(rxOf).find(([u])=>u===mine);
+    const rest=(item.likes||[]).filter(v=>rxOf(v)[0]!==mine); item.likes=prev&&prev[1]===emo?rest:rest.concat([mine+"|"+emo]);
+    await api("PATCH","/"+path+"?updateMask.fieldPaths=likes",{fields:{likes:{arrayValue:{values:item.likes.map(S)}}}});
+    if(!(prev&&prev[1]===emo)&&!prev&&item.uid&&item.uid!==mine){ const ps=path.split("/"); note(item.uid,ps.length>2?"reactc":"react",ps[1],emo+(item.text?" "+item.text:"")); } }
+  async function editDoc(path,item,text){ const data={text,imgs:item.imgs||[],edited:Date.now()}; if(item.gifs) data.gifs=item.gifs;
+    await api("PATCH","/"+path+"?updateMask.fieldPaths=json",{fields:{json:S(JSON.stringify(data))}}); item.text=text; item.edited=data.edited; }
+  async function del(path){ await api("DELETE","/"+path); }
+  /* ---------- UI ---------- */
+  const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
+  let PARKMAP={};
+  const av=(uid,name)=>{ if(uid&&uid===me()&&!G()&&window.csMyPhoto){ const mp=window.csMyPhoto(); if(mp) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(mp)}" alt="" referrerpolicy="no-referrer"></span>`; if(!PARKMAP[uid]&&window.csBuddy&&window.csBuddy.portrait){ const sv=window.csBuddy.portrait(); if(sv) return `<span class="cs-av cs-avb" aria-hidden="true">${sv}</span>`; } }
+    const pp=PROFS&&profOf(uid); if(pp&&pp.photo&&/^(data:image\/|https:\/\/)/.test(pp.photo)) return `<span class="cs-av cs-avp" aria-hidden="true"><img src="${esc(pp.photo)}" alt="" referrerpolicy="no-referrer" loading="lazy"></span>`; const bd=PARKMAP[uid]; if(bd&&window.csBuddy&&window.csBuddy.of){ const svg=bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd); if(svg) return `<span class="cs-av cs-avb" aria-hidden="true">${svg}</span>`; } let h=0; for(const c of String(uid)) h=(h*31+c.charCodeAt(0))>>>0; const ini=String(name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); return `<span class="cs-av" style="background:${COLORS[h%COLORS.length]}" aria-hidden="true">${esc(ini||"?")}</span>`; };
+  const who=x=>`<button type="button" class="cs-whob" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}" aria-label="${esc(L("See profile: ","Ver perfil: ")+(x.name||""))}">${av(x.uid,x.name)}</button><span class="cs-who"><b><button type="button" class="cs-nameb" data-prof="${esc(x.uid||"")}" data-pname="${esc(x.name||"")}">${esc(x.name||L("Member","Miembro"))}</button></b>${x.uid===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}<span class="cs-ago">${ago(x.at)}${x.edited?L(" · edited"," · editado"):""}</span>${G()?`<span class="cs-sample">${L("Sample","Ejemplo")}</span>`:""}</span>`;
+  const canDel=x=>x.uid===me()||me()===NOA;
+  const canEdit=x=>x.uid===me()&&!G();
+  const tools=(x,path,isPost)=>`<span class="cs-tools">${x.uid!==me()&&x.uid!==NOA&&me()!==NOA?`<button type="button" class="cs-x cs-rep" data-report="${esc(path)}" title="${L("Report to Noa","Reportar a Noa")}" aria-label="${L("Report to Noa","Reportar a Noa")}">⚑</button>`:""}${canEdit(x)?`<button type="button" class="cs-x" data-edit="${esc(path)}" title="${L("Edit","Editar")}" aria-label="${L("Edit","Editar")}">✏️</button>`:""}${canDel(x)?`<button type="button" class="cs-x" data-del="${esc(path)}" title="${isPost?L("Delete post","Borrar post"):L("Delete","Borrar")}" aria-label="${isPost?L("Delete post","Borrar post"):L("Delete","Borrar")}">✕</button>`:""}</span>`;
+  const txtHTML=s=>linkify(s).replace(/(^|\s)@([A-ZÁÉÍÓÚÑ][\wáéíóúñ]+)/g,'$1<b class="cs-at">@$2</b>');
+  const gifs=x=>(x.gifs||[]).filter(g=>g&&/^https:\/\/media\d*\.giphy\.com\//.test(g.u)).map(g=>`<div class="cs-gif"><img src="${esc(g.u)}" alt="${esc(g.t||"GIF")}" loading="lazy"${g.w&&g.h?` width="${+g.w}" height="${+g.h}"`:""}></div>`).join("");
+  const imgs=x=>gifs(x)+((x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"");
+  const likeBtn=(x,path)=>{ const c={}; let mine=null; (x.likes||[]).forEach(v=>{ const [u,e]=rxOf(v); c[e]=(c[e]||0)+1; if(u===me()) mine=e; });
+    return `<span class="cs-rx" data-rxpath="${esc(path)}">${RX.filter(e=>c[e]).map(e=>`<button type="button" class="cs-act${mine===e?" on":""}" data-rx="${e}" aria-pressed="${mine===e}" aria-label="${e} ${c[e]}">${e} ${c[e]}</button>`).join("")}<span class="cs-rxadd"><button type="button" class="cs-act cs-rxbtn" data-rxopen="1" aria-label="${L("Add a reaction","Reaccionar")}" aria-expanded="false">${mine?"":"🤍 "}＋</button><span class="cs-rxpal" hidden>${RX.map(e=>`<button type="button" data-rx="${e}" aria-label="React ${e}">${e}</button>`).join("")}</span></span></span>`; };
+  function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><div class="cs-taw"><textarea rows="${kind==="comment"||kind==="poll"?2:3}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-ment" role="listbox" hidden></div></div><div class="cs-pollbox"${kind==="poll"?"":" hidden"}>${kind==="poll"?`<p class="cs-ph2">${L("Options (2 to 6):","Opciones (de 2 a 6):")}</p><div class="cs-popts">${optIn(1)}${optIn(2)}</div><button type="button" class="cs-act" data-polladd="1">＋ ${L("Option","Opción")}</button>`:""}</div>${kind==="idea"?`<div class="cs-cats" role="group" aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}${kind==="post"?`<div class="cs-cats" role="group" aria-label="${L("Topic (optional)","Tema (opcional)")}"><span>${L("Topic:","Tema:")}</span>${CATS.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div><div class="cs-cats cs-ideak" role="group" hidden aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat cs-ik" data-ik="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}<div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><label class="cs-act cs-addph">📷 ${L("Photo","Foto")}<input type="file" accept="image/*" multiple hidden></label>${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?L("Post","Publicar"):kind==="chal"?L("Send my answer","Enviar mi respuesta"):kind==="poll"?L("Start the poll","Publicar encuesta"):kind==="idea"?L("Send my idea","Enviar mi idea"):kind==="dm"?L("Send","Enviar"):L("Comment","Comentar")}</button></div></form>`; }
+  const OFF=`<p class="cs-off">💬 ${L("Comments and posts are almost ready. They’ll switch on very soon.","Los comentarios y posts están casi listos. Se activan muy pronto.")}</p>`;
+  const COMM={};
+  async function mountThread(el){
+    const pid=el.dataset.thread; el.dataset.on="1";
+    if(el.dataset.lazy&&!el.closest("details")?.open){ el.closest("details")?.addEventListener("toggle",()=>mountThread(el),{once:true}); el.dataset.on=""; return; }
+    if(COMM[pid]) paintThread(el,pid,COMM[pid]); else el.innerHTML=`<div class="cs-th"><h3 class="cs-h">💬 ${L("Comments","Comentarios")}</h3><p class="cs-load">${L("Loading…","Cargando…")}</p></div>`;
+    let list=[]; try{ [list]=await Promise.all([listComments(pid),loadPark()]); COMM[pid]=list; }catch(e){ el.innerHTML=state==="off"?OFF:`<p class="cs-off">${L("Comments couldn’t load. Check your connection and try again.","No se pudieron cargar los comentarios. Revisa tu conexión e intenta de nuevo.")}</p>`; return; }
+    paintThread(el,pid,list);
+  }
+  function commentHTML(pid,c){ const path=`clubPosts/${pid}/comments/${c.id}`; return `<div class="cs-c" data-cid="${esc(c.id)}"><div class="cs-top">${who(c)}${tools(c,path,false)}</div>${c.text?`<p class="cs-txt">${txtHTML(c.text)}</p>`:'<p class="cs-txt" hidden></p>'}${imgs(c)}<div class="cs-acts">${likeBtn(c,path)}<button type="button" class="cs-act" data-reply="${esc(String(c.name||"").split(/\s+/)[0])}" data-ruid="${esc(c.uid||"")}">↩ ${L("Reply","Responder")}</button></div></div>`; }
+  function paintThread(el,pid,list){
+    el.innerHTML=`<div class="cs-th"><h3 class="cs-h">💬 ${L("Comments","Comentarios")}${list.length?` <span>${list.length}</span>`:""}</h3>${list.map(c=>commentHTML(pid,c)).join("")||`<p class="cs-empty">${L("No comments yet. Be the first! Photos welcome 📷","Aún no hay comentarios. ¡Sé el primero! Las fotos son bienvenidas 📷")}</p>`}${composer("comment",pid,L("Write a comment…","Escribe un comentario…"))}</div>`;
+    paintImgs(el);
+  }
+  let POSTS=null, PINS=[], NEWIDS=new Set(), SEEN_AT=0;
+  const WSEEN="cs-wall-seen";
+  const getSeen=()=>{ try{ return +localStorage.getItem(WSEEN)||0; }catch(e){ return 0; } };
+  const setSeen=v=>{ try{ localStorage.setItem(WSEEN,String(v)); }catch(e){} };
+  let pinsAt=0;
+  async function loadPins(){ if(G()){ PINS=["s2"]; PICKS={wSAMPLE:"s4"}; return; } if(Date.now()-pinsAt<20000) return; try{ const r=await api("GET","/clubPublic/pins"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PINS=j.ids||[]; PICKS=j.picks||{}; IDEAST=j.ideas||{}; pinsAt=Date.now(); }catch(e){ PINS=PINS||[]; } }
+  async function savePins(){ await api("PATCH","/clubPublic/pins",{fields:{json:S(JSON.stringify({ids:PINS,picks:PICKS,ideas:IDEAST}))}}); pinsAt=Date.now(); }
+  const isNew=(p,seen)=>seen&&((p.at>seen&&p.uid!==me())||(p.lastAt>seen&&p.lastAt>p.at+2000));
+  /* how many posts are new or have new comments since you last opened Community (for the tab and the Home card) */
+  let unreadAt=0;
+  async function unread(){ if(G()) return 1; try{ if(!POSTS||Date.now()-unreadAt>600000){ POSTS=await listPosts(); unreadAt=Date.now(); } }catch(e){ return 0; } const s=getSeen()||(Date.now()-7*864e5); return POSTS.filter(p=>isNew(p,s)&&p.uid!==me()).length; }
+  async function mountWall(el){
+    el.dataset.on="1"; if(POSTS) paintWall(el); else el.innerHTML='<p class="cs-load">Loading…</p>';
+    try{ const [ps]=await Promise.all([listPosts(),loadPins(),loadPark()]); POSTS=ps; }catch(e){ el.innerHTML=state==="off"?OFF:`<p class="cs-off">${L("The wall couldn’t load. Check your connection and try again.","No se pudo cargar el muro. Revisa tu conexión e intenta de nuevo.")}</p>`; return; }
+    SEEN_AT=getSeen(); NEWIDS=new Set(POSTS.filter(p=>isNew(p,SEEN_AT)).map(p=>p.id)); if(G()) NEWIDS=new Set(["s1"]);
+    paintWall(el); if(!G()) setSeen(Date.now()); badge(0);
+    if(FOCUS){ const id=FOCUS; FOCUS=null; const art=el.querySelector(`[data-pid="${CSS.escape(id)}"]`); if(art){ art.scrollIntoView({block:"center",behavior:"smooth"}); art.classList.add("cs-flash"); openSub(art,id); } }
+  }
+  function badge(n){ document.querySelectorAll("[data-unread]").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":String(n); }); }
+  async function refreshBadge(){ const n=await unread(); const onWall=document.querySelector(".cl-wall[data-on='1']"); badge(onWall?0:n); return n; }
+  const CATS=[["intro","👋",["Introductions","Presentaciones"]],["q","❓",["Questions","Preguntas"]],["win","🏆",["Wins","Logros"]],["res","📎",["Resources","Recursos"]],["fun","🎉",["Off-topic","Off-topic"]],["idea","💡",["Class idea","Idea para clase"]]];
+  const catOf=k=>CATS.find(c=>c[0]===k);
+  const IDEAK=[["topic","💡",["Topic","Tema"]],["grammar","🧩",["Grammar","Gramática"]],["vocab","📚",["Vocabulary","Vocabulario"]],["game","🎲",["Activity or game","Actividad o juego"]],["other","✨",["Other","Otro"]]];
+  let WCAT="";
+  const cmtLbl=n=>`💬 ${n?n+" ":""}${n===1?L("comment","comentario"):L("comments","comentarios")}`;
+  function ideaBits(p){ if(!p.idea) return {flag:"",up:""}; const k=IDEAK.find(c=>c[0]===(p.idea||{}).k)||IDEAK[4], up=(p.likes||[]).map(rxOf).filter(x=>x[1]==="👍"), mine=up.some(x=>x[0]===(G()?"me":me())), st=IDEAST[p.id]||"";
+    return {flag:`<span class="cs-catf">${k[1]} ${esc(L(k[2][0],k[2][1]))}</span>${st==="planned"?`<span class="cs-pickf">🗓 ${L("Planned","Planeada")}</span>`:st==="done"?`<span class="cs-chf">✅ ${L("Done in class","Hecha en clase")}</span>`:""}`,
+      up:`<button type="button" class="cs-act cl-iup2${mine?" on":""}" data-iup="${esc(p.id)}" aria-pressed="${mine}">👍 ${up.length?up.length+" ":""}${L("I want this","Lo quiero")}</button>${me()===NOA&&!G()?`<button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="planned">${st==="planned"?"✓ ":""}🗓 Planned</button><button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="done">${st==="done"?"✓ ":""}✅ Done</button>`:""}`}; }
+  function postHTML(p){ const path=`clubPosts/${p.id}`, pin=PINS.includes(p.id), nw=NEWIDS.has(p.id), pick=p.ch&&PICKS[p.ch]===p.id, ib=ideaBits(p);
+    return `<article class="cs-p${pin?" pinned":""}${nw?" isnew":""}" data-pid="${esc(p.id)}">${pin||nw||p.ch||p.cat||p.idea?`<div class="cs-flags">${pin?`<span class="cs-pin">📌 ${L("Pinned","Fijado")}</span>`:""}${p.ch?`<span class="cs-chf">✍️ ${L("Weekly challenge","Desafío semanal")}</span>`:""}${p.cat&&catOf(p.cat)?`<span class="cs-catf">${catOf(p.cat)[1]} ${esc(L(catOf(p.cat)[2][0],catOf(p.cat)[2][1]))}</span>`:""}${ib.flag}${pick?`<span class="cs-pickf">⭐ ${L("Noa’s pick","Elegido por Noa")}</span>`:""}${nw?`<span class="cs-newf">${p.at>SEEN_AT&&p.uid!==me()?L("New","Nuevo"):L("New comments","Comentarios nuevos")}</span>`:""}</div>`:""}<div class="cs-top">${who(p)}${tools(p,path,true)}</div>${p.text?`<p class="cs-txt">${txtHTML(p.text)}</p>`:'<p class="cs-txt" hidden></p>'}${p.poll&&(p.poll.opts||[]).length?`<div class="cs-poll" data-poll="${esc(p.id)}">${pollHTML(p,null)}</div>`:""}${imgs(p)}
+      <div class="cs-acts">${p.idea?ib.up:likeBtn(p,path)}<button type="button" class="cs-act" data-open="${esc(p.id)}" aria-expanded="false">${cmtLbl(p.n|0)}</button>${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pin="${esc(p.id)}">${pin?"📌 Unpin":"📌 Pin"}</button>${p.ch?`<button type="button" class="cs-act" data-pick="${esc(p.id)}" data-ch="${esc(p.ch)}">${pick?"⭐ Unpick":"⭐ Pick"}</button>`:""}`:""}</div><div class="cs-sub" hidden></div></article>`; }
+  function paintWall(el){
+    const all=(POSTS||[]).filter(p=>!p.poll).map(p=>p.idea&&!p.cat?Object.assign(p,{cat:"idea"}):p).sort((a,b)=>(PINS.includes(b.id)-PINS.includes(a.id))||(b.at-a.at));
+    const list=WCAT?all.filter(p=>WCAT==="ch"?p.ch:p.cat===WCAT):all.filter(p=>!(p.idea&&IDEAST[p.id]==="done"));
+    const chips=[["","✨",[L("All","Todo"),""]]].concat(CATS).concat(all.some(p=>p.ch)?[["ch","✍️",["Challenges","Desafíos"]]]:[]).filter(c=>!c[0]||all.some(p=>c[0]==="ch"?p.ch:p.cat===c[0]));
+    const flt=chips.length>1?`<div class="cs-wcats" role="group" aria-label="${L("Filter the wall","Filtrar el muro")}">${chips.map(c=>`<button type="button" class="cs-wcat${WCAT===c[0]?" on":""}" data-wcat="${c[0]}" aria-pressed="${WCAT===c[0]}">${c[1]} ${esc(c[0]?L(c[2][0],c[2][1]):c[2][0])}</button>`).join("")}</div>`:"";
+    const old=el.querySelector(".cs-new form"), keep=old?{v:old.querySelector("textarea").value,cat:(old.querySelector(".cs-cat.on")||{dataset:{}}).dataset.cat,focus:old.contains(document.activeElement)}:null;
+    el.innerHTML=flt+`<div class="cs-new">${composer("post","",L("Share something with the club: a question, a photo, a small win…","Comparte algo con el club: una pregunta, una foto, un pequeño logro…"))}</div>${list.map(postHTML).join("")||`<p class="cs-empty">${L("Nothing here yet. Say hi, ask a question, or share a photo 👋","Aún no hay nada. Saluda, haz una pregunta o comparte una foto 👋")}</p>`}`;
+    paintImgs(el); paintPolls(el);
+    if(keep&&(keep.v||keep.cat)){ const fm=el.querySelector(".cs-new form"), ta=fm&&fm.querySelector("textarea"); if(ta){ ta.value=keep.v; if(keep.cat){ const ct=fm.querySelector(`.cs-cat[data-cat="${keep.cat}"]`); if(ct){ ct.classList.add("on"); ct.setAttribute("aria-pressed","true"); } } if(keep.focus) ta.focus(); } }
+    if(window.__clubIntro){ window.__clubIntro=false; const fm=el.querySelector(".cs-new form"), ta=fm&&fm.querySelector("textarea"); if(ta){ ta.value=L("Hi everyone! I’m … from … I’m learning English because … Fun fact about me: …","¡Hola a todos! Soy … de … Estoy aprendiendo inglés porque … Un dato curioso sobre mí: …"); const ct=fm.querySelector('.cs-cat[data-cat="intro"]'); if(ct){ ct.classList.add("on"); ct.setAttribute("aria-pressed","true"); } ta.focus(); ta.setSelectionRange(0,0); ta.scrollIntoView({block:"center",behavior:"smooth"}); } }
+  }
+  async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
+    try{ const list=COMM[pid]=await listComments(pid); sub.innerHTML=list.map(c=>commentHTML(pid,c)).join("")+composer("comment",pid,L("Write a comment…","Escribe un comentario…")); paintImgs(sub); }catch(e){ sub.innerHTML=`<p class="cs-off">${L("Couldn’t load the comments.","No se pudieron cargar los comentarios.")}</p>`; } }
+  function mount(root){ root.querySelectorAll(".cl-thread[data-thread]:not([data-on='1'])").forEach(mountThread); root.querySelectorAll(".cl-wall:not([data-on='1'])").forEach(mountWall);
+    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); try{ paintStars(root); paintIntro(root); }catch(e){} root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); loadPlans(); paintSoon(root); paintFav(root); ensureMe(); }
+  /* picked photos (up to 4) */
+  const PICK=new WeakMap();
+  document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
+    const pv=form.querySelector(".cs-prev"); pv.innerHTML=arr.map((f,i)=>`<span class="cs-pv"><img src="${URL.createObjectURL(f)}" alt=""><button type="button" data-unpick="${i}" aria-label="Remove photo">✕</button></span>`).join(""); });
+  document.addEventListener("submit",async e=>{ const form=e.target.closest(".cs-comp"); if(!form) return; e.preventDefault();
+    const ta=form.querySelector("textarea"), msg=form.querySelector(".cs-msg"), btn=form.querySelector(".cs-send"), text=ta.value.trim(), files=PICK.get(form)||[], gif=GIF.get(form);
+    const poll=readPoll(form);
+    if(poll&&poll.err){ msg.textContent=poll.err; return; }
+    if(form.dataset.comp==="poll"&&!poll){ msg.textContent=L("Add at least 2 options.","Agrega al menos 2 opciones."); return; }
+    if(poll&&!text){ msg.textContent=L("Write your question first.","Escribe tu pregunta primero."); ta.focus(); return; }
+    if(!text&&!files.length&&!gif){ ta.focus(); return; }
+    if(G()){ msg.textContent=L("Guest preview: posting is off here.","Vista de invitado: aquí no se publica."); return; }
+    if(!me()){ msg.textContent=L("Sign in first.","Primero inicia sesión."); return; }
+    if(form.dataset.comp==="dm"){ btn.disabled=true; msg.textContent=files.length?L("Uploading photo…","Subiendo foto…"):""; try{ await sendDm(form,text,files,gif); PICK.delete(form); GIF.delete(form); ta.value=""; form.querySelector(".cs-prev").innerHTML=""; const gp=form.querySelector(".cs-gifpick"); if(gp) gp.hidden=true; msg.textContent=""; await paintChat(true); }catch(er){ msg.textContent=er&&er.code===403?L("Messages aren’t switched on yet.","Los mensajes aún no están activados."):L("Couldn’t send. Try again.","No se pudo enviar. Intenta de nuevo."); } btn.disabled=false; ta.focus(); return; }
+    btn.disabled=true; msg.textContent=files.length?L("Uploading photo…","Subiendo foto…"):L("Posting…","Publicando…");
+    try{
+      const ids=[]; for(const f of files){ ids.push(await uploadImg(f)); }
+      const id=rid(), kind=form.dataset.comp, pid=form.dataset.target;
+      const data={text,imgs:ids}; if(gif) data.gifs=[gif]; if(poll&&poll.opts) data.poll={opts:poll.opts}; if(kind==="chal") data.ch=pid; { const ct=form.querySelector(".cs-cat.on"); if(ct&&kind==="post") data.cat=ct.dataset.cat; if(kind==="idea") data.idea={k:ct?ct.dataset.cat:"other"}; if(kind==="post"&&ct&&ct.dataset.cat==="idea"){ const ik=form.querySelector(".cs-ik.on"); data.idea={k:ik?ik.dataset.ik:"other"}; } }
+      const ats=mentionsIn(form,text);
+      if(kind==="post"||kind==="chal"||kind==="poll"||kind==="idea"){ await createDoc("clubPosts",id,data); activity(kind==="chal"?"challenge":kind==="idea"?"idea":kind==="poll"?"poll":"post",id,text||(gif?"(GIF)":""),ids.length); if(POSTS) POSTS.unshift(Object.assign({id,uid:me(),name:F().name(),at:Date.now(),likes:[],n:0},data));
+        bump(kind==="chal"?{posts:1,ch:1}:{posts:1}); if(kind==="chal") treat(5,L("Thanks for taking the challenge!","¡Gracias por hacer el desafío!"));
+        ats.forEach(u=>note(u,"mention",id,text)); }
+      else { await createDoc(`clubPosts/${pid}/comments`,id,data); activity("comment",pid,text||(gif?"(GIF)":""),ids.length); bump({comments:1});
+        { const p=(POSTS||[]).find(x=>x.id===pid); if(p&&p.uid&&!ats.includes(p.uid)) note(p.uid,"comment",pid,text||"(GIF)"); ats.forEach(u=>note(u,"mention",pid,text)); }
+        if(!/^w\d{8}$/.test(pid)){ try{ const p=(POSTS||[]).find(x=>x.id===pid); const n=((COMM[pid]||[]).length||0)+1; if(p) p.n=n; await api("PATCH",`/clubPosts/${pid}?updateMask.fieldPaths=n&updateMask.fieldPaths=lastAt`,{fields:{n:I(n),lastAt:I(Date.now())}}); }catch(er){} } }
+      PICK.delete(form); GIF.delete(form); ta.value=""; form._at={};
+      const th=form.closest(".cl-thread"), sub=form.closest(".cs-sub"), wall=form.closest(".cl-wall"), chl=form.closest(".cl-chal-list");
+      const say=form.closest(".cl-say");
+      if(say){ mountSay(say); }
+      else if(chl){ chl.dataset.on=""; mountChal(chl); }
+      else if(th) mountThread(th); else if(sub){ const art=sub.closest(".cs-p"); sub.hidden=true; openSub(art,pid); const b=art.querySelector("[data-open]"); if(b){ const n=(COMM[pid]||[]).length+1; b.innerHTML=cmtLbl(n); } } else if(wall) mountWall(wall);
+      setSeen(Date.now());
+      if(typeof window.toast==="function") window.toast(kind==="comment"?L("Comment added ✓","Comentario agregado ✓"):kind==="idea"?L("Thanks for the idea! 💡","¡Gracias por la idea! 💡"):L("Posted ✓","Publicado ✓"));
+    }catch(er){ msg.textContent=er.code===0?"👁 View as is read-only: nothing is saved.":er.code===403?L("You can’t post here yet.","Aún no puedes publicar aquí."):er.message==="too big"?L("That photo is too big. Try another one.","Esa foto es muy grande. Prueba con otra."):er.message==="not an image"?L("That file isn’t a photo.","Ese archivo no es una foto."):L("Didn’t work. Try again.","No funcionó. Intenta de nuevo."); btn.disabled=false; return; }
+    btn.disabled=false; msg.textContent=""; });
+  /* GIF picker (GIPHY): trending when it opens, search after you stop typing; results cached so the free key's limit lasts */
+  const GIF=new WeakMap(), GCACHE={};
+  async function giphy(q){ const k=(q||"").trim().toLowerCase(); if(GCACHE[k]) return GCACHE[k];
+    const u=k?`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_KEY}&q=${encodeURIComponent(k)}&limit=24&rating=pg&lang=en&bundle=messaging_non_clips`:`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_KEY}&limit=24&rating=pg&bundle=messaging_non_clips`;
+    const r=await fetch(u); if(!r.ok) throw new Error("giphy "+r.status); const j=await r.json();
+    return GCACHE[k]=(j.data||[]).map(g=>{ const s=g.images&&(g.images.fixed_width_small||g.images.fixed_width), b=g.images&&(g.images.fixed_width||g.images.downsized); return s&&b?{s:s.url,u:b.url,w:+b.width||0,h:+b.height||0,t:g.title||"GIF"}:null; }).filter(Boolean); }
+  function gifGrid(pick,list){ const grid=pick.querySelector(".cs-gg"); grid.innerHTML=list.length?list.map((g,i)=>`<button type="button" class="cs-gi" data-gifi="${i}" aria-label="${esc(g.t)}"><img src="${esc(g.s)}" alt="" loading="lazy"></button>`).join(""):'<p class="cs-empty">No GIFs found. Try another word.</p>'; pick._list=list; }
+  async function gifLoad(pick,q){ const grid=pick.querySelector(".cs-gg"); grid.innerHTML='<p class="cs-load">Loading…</p>'; try{ gifGrid(pick,await giphy(q)); }catch(e){ grid.innerHTML='<p class="cs-off">GIFs couldn\u2019t load right now. Try again in a bit.</p>'; } }
+  function gifShow(form){ const g=GIF.get(form), pv=form.querySelector(".cs-prev"); pv.querySelectorAll(".cs-pvg").forEach(x=>x.remove()); if(g) pv.insertAdjacentHTML("beforeend",`<span class="cs-pv cs-pvg"><img src="${esc(g.s||g.u)}" alt="GIF"><button type="button" data-ungif="1" aria-label="Remove GIF">✕</button></span>`); }
+  let gTimer=null;
+  document.addEventListener("input",e=>{ const inp=e.target.closest(".cs-gq"); if(!inp) return; clearTimeout(gTimer); const pick=inp.closest(".cs-gifpick"), q=inp.value.trim(); gTimer=setTimeout(()=>{ if(q.length===1) return; gifLoad(pick,q); },650); });
+  document.addEventListener("click",e=>{
+    const op=e.target.closest("[data-gifopen]"); if(op){ const form=op.closest("form"), pick=form.querySelector(".cs-gifpick"); const show=pick.hidden; pick.hidden=!show; op.setAttribute("aria-expanded",String(show));
+      if(show&&!pick.dataset.ready){ pick.dataset.ready="1"; pick.innerHTML=`<div class="cs-gtop"><input class="cs-gq" type="search" placeholder="Search GIFs" aria-label="Search GIFs"><span class="cs-giphy">Powered by GIPHY</span></div><div class="cs-gg"></div>`; gifLoad(pick,""); }
+      if(show) setTimeout(()=>pick.querySelector(".cs-gq")?.focus(),50); return; }
+    const gi=e.target.closest("[data-gifi]"); if(gi){ const pick=gi.closest(".cs-gifpick"), form=pick.closest("form"), g=(pick._list||[])[+gi.dataset.gifi]; if(!g) return; GIF.set(form,g); gifShow(form); pick.hidden=true; form.querySelector("[data-gifopen]")?.setAttribute("aria-expanded","false"); return; }
+    const ug=e.target.closest("[data-ungif]"); if(ug){ const form=ug.closest("form"); GIF.delete(form); gifShow(form); return; }
+  });
+  document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)&&e.target.closest(".cs-comp textarea")){ e.preventDefault(); e.target.closest("form").requestSubmit(); } });
+  document.addEventListener("click",async e=>{
+    const t=e.target;
+    const un=t.closest("[data-unpick]"); if(un){ const form=un.closest("form"); const arr=PICK.get(form)||[]; arr.splice(+un.dataset.unpick,1); PICK.set(form,arr); un.parentElement.remove(); form.querySelectorAll("[data-unpick]").forEach((b,i)=>b.dataset.unpick=i); return; }
+    const ro=t.closest("[data-rxopen]"); if(ro){ const pal=ro.parentElement.querySelector(".cs-rxpal"); const o=pal.hidden; document.querySelectorAll(".cs-rxpal").forEach(x=>{ x.hidden=true; }); pal.hidden=!o; ro.setAttribute("aria-expanded",String(o)); return; }
+    if(!t.closest(".cs-rxadd")) document.querySelectorAll(".cs-rxpal:not([hidden])").forEach(x=>x.hidden=true);
+    if(G()&&t.closest("[data-rx],[data-del],[data-edit],[data-pin],[data-pick],[data-report]")) return;
+    const rx=t.closest("[data-rx]"); if(rx){ const wrap=rx.closest("[data-rxpath]"), path=wrap.dataset.rxpath, parts=path.split("/"), id=parts[parts.length-1];
+      const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
+      try{ await react(path,item,rx.dataset.rx); }catch(er){ return; } wrap.outerHTML=likeBtn(item,path); return; }
+    const rp=t.closest("[data-reply]"); if(rp){ const box=rp.closest(".cs-th,.cs-sub"), ta=box&&box.querySelector(".cs-comp textarea"); if(ta){ const tag="@"+rp.dataset.reply+" "; const fm=ta.closest("form"); if(fm&&rp.dataset.ruid){ fm._at=fm._at||{}; fm._at[rp.dataset.reply]=rp.dataset.ruid; } if(!ta.value.startsWith(tag)) ta.value=tag+ta.value; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } return; }
+    const ed=t.closest("[data-edit]"); if(ed){ const path=ed.dataset.edit, parts=path.split("/"), id=parts[parts.length-1];
+      const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
+      const card=ed.closest(".cs-c,.cs-p"), p=card.querySelector(":scope > .cs-txt"); if(!p||card.querySelector(".cs-edit")) return;
+      p.hidden=true; p.insertAdjacentHTML("afterend",`<div class="cs-edit"><textarea rows="3" maxlength="3000" aria-label="Edit">${esc(item.text||"")}</textarea><div class="cs-row"><span class="cs-msg" role="status"></span><button type="button" class="cs-act" data-edcancel="1">Cancel</button><button type="button" class="cs-send" data-edsave="${esc(path)}">Save</button></div></div>`);
+      const ta=card.querySelector(".cs-edit textarea"); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); return; }
+    const ec=t.closest("[data-edcancel]"); if(ec){ const card=ec.closest(".cs-c,.cs-p"); card.querySelector(".cs-edit").remove(); const p=card.querySelector(":scope > .cs-txt"); p.hidden=!p.textContent.trim(); return; }
+    const es=t.closest("[data-edsave]"); if(es){ const path=es.dataset.edsave, parts=path.split("/"), id=parts[parts.length-1], card=es.closest(".cs-c,.cs-p"), box=card.querySelector(".cs-edit"), text=box.querySelector("textarea").value.trim();
+      const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
+      if(!text&&!(item.imgs||[]).length&&!(item.gifs||[]).length){ box.querySelector(".cs-msg").textContent="Write something first."; return; }
+      es.disabled=true; try{ await editDoc(path,item,text); }catch(er){ box.querySelector(".cs-msg").textContent="Couldn’t save. Try again."; es.disabled=false; return; }
+      const fresh=parts.length>2?commentHTML(parts[1],item):postHTML(item); card.outerHTML=fresh; const host=document.querySelector(`[data-cid="${id}"],[data-pid="${id}"]`); if(host){ paintImgs(host); paintPolls(host); } return; }
+    const pn=t.closest("[data-pin]"); if(pn){ const id=pn.dataset.pin; PINS=PINS.includes(id)?PINS.filter(x=>x!==id):[id].concat(PINS).slice(0,3); try{ await savePins(); }catch(er){ if(typeof window.toast==="function") window.toast("Couldn’t pin it."); return; } const w=pn.closest(".cl-wall"); if(w) paintWall(w); return; }
+    const dl=t.closest("[data-del]"); if(dl){ if(!confirm(L("Delete this? It can't be undone.","¿Borrar esto? No se puede deshacer."))) return; const path=dl.dataset.del; try{ await del(path); }catch(er){ if(typeof window.toast==="function") window.toast("Couldn’t delete it."); return; }
+      const parts=path.split("/"); if(parts.length>2){ const pid=parts[1]; COMM[pid]=(COMM[pid]||[]).filter(x=>x.id!==parts[3]); dl.closest(".cs-c").remove(); } else { POSTS=(POSTS||[]).filter(x=>x.id!==parts[1]); dl.closest(".cs-p").remove(); } return; }
+    const op=t.closest("[data-open]"); if(op){ openSub(op.closest(".cs-p"),op.dataset.open); return; }
+    const big=t.closest("[data-big]"); if(big){ const d=IMG[big.dataset.big]; if(!d) return; const o=document.createElement("div"); o.className="cs-lb"; o.setAttribute("role","dialog"); o.setAttribute("aria-label","Photo"); o.innerHTML=`<img src="${d}" alt="Photo"><button type="button" aria-label="Close">✕</button>`; o.addEventListener("click",()=>o.remove()); document.body.appendChild(o); o.querySelector("button").focus(); return; }
+  });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const lb=document.querySelector(".cs-lb"); if(lb) lb.remove(); } });
+  /* Noa's bell: recent club activity */
+  async function recent(){ try{ return await query("","clubActivity","DESCENDING",40); }catch(e){ return null; } }
+  /* ================= club extras: buddies as avatars, profiles & badges, member bell, @mentions, polls, RSVPs, weekly challenge, reports ================= */
+  let FOCUS=null, PICKS={};
+  const LSG=(k,d)=>{ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } };
+  const LSS=(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} };
+  const toast=m=>{ if(typeof window.toast==="function") window.toast(m); };
+  const first=n=>String(n||"").trim().split(/\s+/)[0]||"";
+  /* everyone's buddy, from the Buddy park */
+  let PARK=null, parkP=null;
+  function loadPark(){ if(PARK) return Promise.resolve(PARK); if(parkP) return parkP;
+    parkP=(async()=>{ const fill=l=>{ const myU=me(); (l||[]).forEach(x=>{ const u=x.me?myU:x.uid; if(u&&x.a&&x.on!==false) PARKMAP[u]=x; }); };
+      try{ const P=window.__csPark; if(!P||!P.list){ /* the buddy script isn't ready yet: try again in a moment, don't cache an empty park */ parkP=null; setTimeout(parkLate,1500); return []; }
+        const full=P.list(), list=await Promise.race([full,new Promise(r=>setTimeout(()=>r(null),4000))]);
+        if(list){ PARK=list; } else { full.then(l=>{ PARK=l||[]; fill(PARK); parkRepaint(); }).catch(()=>{ PARK=[]; }); parkP=null; return []; }
+      }catch(e){ PARK=[]; }
+      fill(PARK); parkP=null; return PARK; })(); return parkP; }
+  function parkLate(){ if(PARK) return; loadPark().then(l=>{ if(l&&l.length) parkRepaint(); }); }
+  function parkRepaint(){ const v=document.getElementById("v-club"); if(!v||v.hidden||box.querySelector("textarea:focus,input:focus,.cl-ytf,.cl-pplay.on")) return; const ms=document.querySelectorAll(".cl-members[data-on='1']"); if(ms.length){ ms.forEach(x=>mountMembers(x)); return; } render(); }
+  /* ---------- profiles (clubProfiles/{uid}) and attendance (clubStats/{uid}, written by Noa's nightly helper) ---------- */
+  const SMO=(()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); })();
+  const SAMPLE_PROFS=[{id:NOA,uid:NOA,name:"Noa (sample)",about:"This is a sample profile.",country:"Chile",since:Date.now()-200*864e5,posts:12,comments:40,ch:0},{id:"x3",uid:"x3",name:"Sam (sample)",about:"This is a sample profile.",country:"Chile",since:Date.now()-180*864e5,posts:6,comments:22,ch:3,mo:{[SMO]:{posts:2,comments:9,ch:1}},watched:["a","b","c"]},{id:"x2",uid:"x2",name:"Alex (sample)",about:"This is a sample profile.",country:"Chile",since:Date.now()-60*864e5,posts:2,comments:11,ch:1,mo:{[SMO]:{posts:1,comments:4,ch:1}}},{id:"x1",uid:"x1",name:"Robin (sample)",about:"",country:"",since:Date.now()-9*864e5,posts:1,comments:2,ch:0}];
+  const SAMPLE_STATS={x3:{weeks:wk(-5,0)},x2:{weeks:wk(-2,0)},x1:{weeks:wk(0,0)}};
+  function wk(a,b){ const out=[], d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)); for(let i=a;i<=b;i++){ const x=new Date(d); x.setDate(d.getDate()+7*i); out.push(iso(x)); } return out; }
+  function iso(x){ return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }
+  let PROFS=null, STATS=null, profOK=true;
+  async function loadProfs(force){ if(G()){ PROFS=SAMPLE_PROFS; STATS=SAMPLE_STATS; return PROFS; } if(PROFS&&!force) return PROFS;
+    try{ const r=await api("GET","/clubProfiles?pageSize=300"); PROFS=((r&&r.documents)||[]).map(fromDoc); profOK=true; }catch(e){ PROFS=PROFS||[]; profOK=false; }
+    try{ const r=await api("GET","/clubStats?pageSize=300"); STATS={}; ((r&&r.documents)||[]).forEach(d=>{ const o=fromDoc(d); STATS[o.id]=o; }); }catch(e){ STATS=STATS||{}; }
+    return PROFS; }
+  const profOf=u=>(PROFS||[]).find(x=>x.id===u||x.uid===u)||null;
+  async function saveMe(patch){ if(G()||!me()) return; const cur=profOf(me())||{};
+    const data={about:cur.about||"",country:cur.country||"",since:cur.since||Date.now(),badges:cur.badges||[],posts:cur.posts|0,comments:cur.comments|0,ch:cur.ch|0,mo:cur.mo||{},watched:cur.watched||[],photo:cur.photo||""};
+    Object.assign(data,patch||{});
+    await api("PATCH","/clubProfiles/"+me(),{fields:{uid:S(me()),name:S(F().name()||""),at:I(Date.now()),json:S(JSON.stringify(data))}});
+    const o=Object.assign({id:me(),uid:me(),name:F().name()},data); PROFS=(PROFS||[]).filter(x=>x.id!==me()).concat([o]); return o; }
+  const MON=()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); };
+  async function bump(d){ if(G()||!me()) return; try{ await loadProfs(); const cur=profOf(me())||{}; const p={}; for(const k in d) p[k]=(cur[k]|0)+d[k];
+    const mo=Object.assign({},cur.mo||{}), m=MON(), x=Object.assign({},mo[m]||{}); for(const k in d) x[k]=(x[k]|0)+d[k]; mo[m]=x; Object.keys(mo).sort().slice(0,-6).forEach(k=>delete mo[k]); p.mo=mo;
+    await saveMe(p); checkBadges(); }catch(e){} }
+  let wT=0; function syncWatched(list){ clearTimeout(wT); wT=setTimeout(async()=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({watched:list.slice(-300)}); checkBadges(); }catch(e){} },800); }
+  document.addEventListener("cs-photo",async e=>{ if(G()||!me()) return; try{ await loadProfs(); await saveMe({photo:(e.detail&&e.detail.photo)||""}); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); }catch(er){} });
+  let meDone=false;
+  async function ensureMe(){ if(meDone||G()||!me()||!F()) return; meDone=true;
+    try{ await loadProfs(); const cur=profOf(me()); if(!profOK) return;
+      const posts=(POSTS||[]).filter(p=>p.uid===me()).length;
+      const ph=window.csMyPhoto?window.csMyPhoto():"";
+      if(!cur||cur.name!==F().name()||posts>(cur.posts|0)||(cur.photo||"")!==ph) await saveMe(Object.assign(posts>((cur&&cur.posts)|0)?{posts}:{},{photo:ph}));
+      checkBadges(); }catch(e){} }
+  function treat(n,why){ try{ if(window.csBuddy&&window.csBuddy.treat&&window.csBuddy.treat(n,why)) return; }catch(e){} toast(why); }
+  /* streaks: weeks in a row with at least one class */
+  function weekStats(weeks){ const ws=[...new Set(weeks||[])].sort(); let best=0, run=0, prev=null;
+    ws.forEach(w=>{ const t=new Date(w+"T12:00:00").getTime(); run=prev!=null&&Math.round((t-prev)/(7*864e5))===1?run+1:1; best=Math.max(best,run); prev=t; });
+    const thisW=wk(0,0)[0], lastW=wk(-1,-1)[0], cur=ws.length&&(ws[ws.length-1]===thisW||ws[ws.length-1]===lastW)?run:0;
+    return {classes:ws.length,best,cur}; }
+  function statsOf(u){ const p=profOf(u)||{}, st=weekStats(((STATS||{})[u]||{}).weeks); const pick=Object.values(PICKS).filter(id=>{ const x=(POSTS||[]).find(y=>y.id===id); return x&&x.uid===u; }).length;
+    const posts=Math.max(p.posts|0,(POSTS||[]).filter(x=>x.uid===u).length);
+    const watched=u===me()?Math.max((p.watched||[]).length,(()=>{ try{ return JSON.parse(localStorage.getItem("cs-club-watched")||"[]").length; }catch(e){ return 0; } })()):(p.watched||[]).length;
+    const intro=(POSTS||[]).filter(x=>x.uid===u&&x.cat==="intro").length;
+    return Object.assign({posts,comments:p.comments|0,ch:p.ch|0,pick,watched,intro},st); }
+  /* monthly points for the leaderboard: post 5 · comment 2 · challenge +5 · a week with a class 10 */
+  function points(u,m){ const p=profOf(u)||{}, x=((p.mo||{})[m])||{}, wks=(((STATS||{})[u]||{}).weeks||[]).filter(w=>w.slice(0,7)===m).length;
+    const live=(POSTS||[]).filter(y=>y.uid===u&&new Date(y.at).toISOString().slice(0,7)===m).length;
+    return Math.max(x.posts|0,live)*5+(x.comments|0)*2+(x.ch|0)*5+wks*10; }
+  const BADGES=[
+    ["hello","👋","First post","Primer post","Wrote your first post on the wall","Tu primer post en el muro",s=>s.posts>=1],
+    ["intro","🙌","Said hi","Te presentaste","Introduced yourself on the wall","Te presentaste en el muro",s=>s.intro>=1],
+    ["film","🎬","Catch-up pro","Al día","Watched 3 class recordings","Viste 3 grabaciones de clases",s=>s.watched>=3],
+    ["chat","💬","Chatterbox","Conversador","10 comments","10 comentarios",s=>s.comments>=10],
+    ["chal","✍️","Challenger","Desafiante","Took a weekly challenge","Hiciste un desafío semanal",s=>s.ch>=1],
+    ["chal5","🖋️","Writer","Escritor","5 weekly challenges","5 desafíos semanales",s=>s.ch>=5],
+    ["star","⭐","Noa’s pick","Elegido por Noa","Noa picked your challenge answer","Noa eligió tu respuesta",s=>s.pick>=1],
+    ["first","🎟️","First class","Primera clase","Came to your first club class","Viniste a tu primera clase",s=>s.classes>=1],
+    ["fire","🔥","On fire","En racha","3 weeks of classes in a row","3 semanas seguidas de clases",s=>s.best>=3],
+    ["medal","🏅","Regular","Habitual","4 weeks in a row","4 semanas seguidas",s=>s.best>=4],
+    ["grad","🎓","Ten weeks","Diez semanas","Classes in 10 different weeks","Clases en 10 semanas distintas",s=>s.classes>=10]];
+  const earned=u=>{ const s=statsOf(u); return BADGES.filter(b=>b[6](s)); };
+  function checkBadges(){ if(G()||!me()) return; const got=earned(me()).map(b=>b[0]), key="cs-club-badges-"+me(), had=LSG(key,null);
+    if(had===null){ LSS(key,got); syncBadges(got); return; }  /* first time on this device: no fanfare for old badges */
+    const fresh=got.filter(b=>!had.includes(b)); if(!fresh.length){ syncBadges(got); return; }
+    LSS(key,got); syncBadges(got);
+    fresh.forEach((id,i)=>{ const b=BADGES.find(x=>x[0]===id); setTimeout(()=>treat(5,`${b[1]} ${L("New badge:","Nueva insignia:")} <b>${esc(L(b[2],b[3]))}</b>!`),400+i*2500); }); }
+  function syncBadges(got){ const cur=profOf(me()); if(cur&&JSON.stringify(cur.badges||[])!==JSON.stringify(got)) saveMe({badges:got}).catch(()=>{}); }
+  /* your little strip on "This week": streak + badges */
+  async function mountMe(el){ el.dataset.on="1"; if(!me()&&!G()) return; await Promise.all([loadProfs(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{}),loadPins()]);
+    const u=G()?"x3":me(), s=statsOf(u), bs=earned(u);
+    el.innerHTML=`<button type="button" class="cl-mestrip" data-prof="${esc(u)}">${s.cur>=2?`<span class="cl-streak">🔥 ${s.cur} ${L("weeks in a row","semanas seguidas")}</span>`:s.classes?`<span>🎟️ ${s.classes} ${s.classes===1?L("week of classes","semana de clases"):L("weeks of classes","semanas de clases")}</span>`:`<span>👋 ${L("Come to a class this week to start your streak","Ven a una clase esta semana y empieza tu racha")}</span>`}<span class="cl-mebadges">${bs.map(b=>`<i title="${esc(L(b[2],b[3]))}">${b[1]}</i>`).join("")||`<small>${L("No badges yet","Aún sin insignias")}</small>`}</span><span class="cl-mego">${L("My profile","Mi perfil")} →</span></button>`; }
+  /* ---------- Members tab: directory ---------- */
+  async function mountMembers(el){ el.dataset.on="1"; el.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
+    await Promise.all([loadProfs(true),loadPark(),loadPins(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{})]);
+    let list=(PROFS||[]).slice();
+    (POSTS||[]).forEach(p=>{ if(p.uid&&!list.some(x=>x.id===p.uid)) list.push({id:p.uid,uid:p.uid,name:p.name}); });
+    { const fd=window.__clubFeed&&window.__clubFeed(); ((fd&&fd.roster)||[]).forEach(r=>{ if(r.uid&&!list.some(x=>x.id===r.uid)) list.push({id:r.uid,uid:r.uid,name:r.name}); }); }
+    list.sort((a,b)=>(b.id===NOA)-(a.id===NOA)||(b.id===me())-(a.id===me())||String(a.name).localeCompare(String(b.name)));
+    const m=MON(), board=list.filter(x=>x.id!==NOA).map(x=>({x,pt:points(x.id,m)})).filter(b=>b.pt>0).sort((a,b)=>b.pt-a.pt), myI=board.findIndex(b=>b.x.id===me());
+    const lb=`<div class="cl-board"><div class="cl-boardh"><h3>🏆 ${L("This month","Este mes")}</h3><details class="cl-howpts"><summary>${L("How points work","Cómo funcionan los puntos")}</summary><p>${L("A post 5 · a comment 2 · a weekly challenge +5 · each week you come to a class 10. It starts again every month.","Un post 5 · un comentario 2 · un desafío semanal +5 · cada semana que vienes a clase 10. Se reinicia cada mes.")}</p></details></div>
+      ${board.length?`<ol>${board.slice(0,5).map((b,i)=>`<li${b.x.id===me()?' class="me"':""}><span class="r">${["🥇","🥈","🥉","4","5"][i]}</span><button type="button" class="cs-nameb" data-prof="${esc(b.x.id)}" data-pname="${esc(b.x.name||"")}">${av(b.x.id,b.x.name)} ${esc(b.x.name||"")}</button><b>${b.pt}</b></li>`).join("")}</ol>${myI>4?`<p class="cl-myrank">${L("You’re","Vas en el lugar")} #${myI+1} ${L("with","con")} ${board[myI].pt} ${L("points","puntos")}</p>`:""}`:`<p class="cl-empty">${L("No points yet this month. Post, comment or come to a class to get on the board!","Aún no hay puntos este mes. ¡Publica, comenta o ven a clase para aparecer aquí!")}</p>`}</div>`;
+    el.innerHTML=(me()||G()?'<div class="cl-me" data-mestrip="1"></div>':"")+lb+`<p class="cl-mintro">${L("Everyone in the club on Hibi. Tap someone to see their profile, buddy and badges.","Todos los del club en Hibi. Toca a alguien para ver su perfil, su buddy y sus insignias.")}</p>
+      ${!profOK&&!G()?`<p class="cs-off">${L("Profiles are almost ready. They’ll switch on very soon.","Los perfiles están casi listos. Se activan muy pronto.")}</p>`:""}
+      <div class="cl-mgrid">${list.map(x=>{ const s=statsOf(x.id), bs=earned(x.id), bd=PARKMAP[x.id];
+        return `<button type="button" class="cl-mcard${x.id===me()?" me":""}" data-prof="${esc(x.id)}" data-pname="${esc(x.name||"")}"><span class="cl-mav">${av(x.id,x.name)}</span><b>${esc(x.name||L("Member","Miembro"))}${x.id===me()?` <small>(${L("you","tú")})</small>`:""}</b>
+          <span class="cl-msub">${x.id===NOA?L("Teacher","Profe"):[bd&&(bd.cefr||(bd.role&&bd.role.lv))?"📊 "+esc(String(bd.cefr||bd.role.lv).slice(0,7)):"",x.country?esc(x.country):""].filter(Boolean).join(" · ")}</span>
+          ${s.cur>=2?`<span class="cl-mstreak">🔥 ${s.cur}</span>`:""}<span class="cl-mbadges">${bs.slice(-5).map(b=>`<i title="${esc(L(b[2],b[3]))}">${b[1]}</i>`).join("")}</span></button>`; }).join("")}</div>`;  const ms=el.querySelector(".cl-me"); if(ms) mountMe(ms); }
+  /* ---------- profile popup ---------- */
+  async function openProfile(u,nm){ if(!u) return; await Promise.all([loadProfs(),loadPark()]);
+    const p=profOf(u)||{name:nm}, bd=PARKMAP[u], s=statsOf(u), got=earned(u).map(b=>b[0]), mine=u===(G()?"":me());
+    const svg=bd&&window.csBuddy?(bd.me&&window.csBuddy.portrait?window.csBuddy.portrait():window.csBuddy.of(bd)):"";
+    const bn=bd?(bd.n&&String(bd.n).trim())||"":"";
+    const lv=bd&&(bd.cefr||(bd.role&&bd.role.lv));
+    const since=p.since?new Date(p.since).toLocaleDateString(L("en-US","es-CL"),{month:"long",year:"numeric"}):"";
+    const o=document.createElement("div"); o.className="cl-prof-ov"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true"); o.setAttribute("aria-label",L("Profile","Perfil"));
+    o.innerHTML=`<div class="cl-prof"><button type="button" class="cl-prof-x" data-pclose="1" aria-label="${L("Close","Cerrar")}">✕</button>
+      <div class="cl-prof-top">${svg?`<div class="cl-prof-bd">${svg}</div>`:`<div class="cl-prof-bd cl-prof-ini">${av(u,p.name||nm)}</div>`}<div><h2>${esc(p.name||nm||L("Member","Miembro"))}</h2>
+        <p class="cl-prof-meta">${u===NOA?`<span class="cs-noa">${L("Teacher","Profe")}</span>`:""}${lv?`<span>📊 ${esc(String(lv).slice(0,7))}</span>`:""}${p.country?`<span>📍 ${esc(p.country)}</span>`:""}${since?`<span>🌼 ${L("Member since","Miembro desde")} ${esc(since)}</span>`:""}</p>
+        ${bn?`<p class="cl-prof-bn">${L("Buddy:","Buddy:")} <b>${esc(bn)}</b>${bd&&bd.lvl>1?` · 💛 ${bd.lvl|0}`:""}</p>`:""}</div></div>
+      <div class="cl-prof-about" data-pabout>${p.about?`<p>${esc(p.about)}</p>`:mine?`<p class="muted">${L("Tell the club a bit about you.","Cuéntale al club un poco sobre ti.")}</p>`:""}</div>
+      ${mine?`<button type="button" class="cs-act" data-pedit="1">✏️ ${L("Edit my profile","Editar mi perfil")}</button>`:`<button type="button" class="cs-send cl-dmbtn" data-dmto="${esc(u)}" data-dmname="${esc(p.name||nm||"")}">💬 ${L("Message","Mensaje")}</button>`}
+      <div class="cl-prof-stats"><div><b>${s.cur||0}</b><span>🔥 ${L("week streak","semanas seguidas")}</span></div><div><b>${s.classes}</b><span>🎟️ ${L("weeks of classes","semanas con clases")}</span></div><div><b>${s.posts}</b><span>📝 ${L("posts","posts")}</span></div><div><b>${s.comments}</b><span>💬 ${L("comments","comentarios")}</span></div><div><b>${s.ch}</b><span>✍️ ${L("challenges","desafíos")}</span></div></div>
+      <h3>${L("Badges","Insignias")}</h3><div class="cl-prof-badges">${BADGES.filter(b=>mine||got.includes(b[0])).map(b=>`<div class="cl-badge${got.includes(b[0])?"":" off"}"><span>${b[1]}</span><b>${esc(L(b[2],b[3]))}</b><small>${esc(L(b[4],b[5]))}</small></div>`).join("")||`<p class="muted">${L("No badges yet.","Aún no tiene insignias.")}</p>`}</div>
+      ${mine?`<p class="cl-prof-tip">${L("Each new badge gives your buddy 5 treats 🍪","Cada insignia nueva le da 5 galletas a tu buddy 🍪")}</p>`:""}</div>`;
+    document.body.appendChild(o); o.querySelector(".cl-prof-x").focus();
+    o.addEventListener("click",async e=>{ if(e.target===o||e.target.closest("[data-pclose]")){ o.remove(); return; }
+      if(e.target.closest("[data-pedit]")){ const box=o.querySelector("[data-pabout]"), cur=profOf(me())||{}; e.target.closest("[data-pedit]").hidden=true;
+        box.innerHTML=`<label class="cl-pf">${L("About me","Sobre mí")}<textarea maxlength="200" rows="3">${esc(cur.about||"")}</textarea></label><label class="cl-pf">${L("Where are you from?","¿De dónde eres?")}<input type="text" maxlength="40" value="${esc(cur.country||"")}"></label><div class="cs-row"><span class="cs-msg" role="status"></span><button type="button" class="cs-send" data-psave="1">${L("Save","Guardar")}</button></div>`; box.querySelector("textarea").focus(); return; }
+      if(e.target.closest("[data-psave]")){ const box=o.querySelector("[data-pabout]"); const about=box.querySelector("textarea").value.trim(), country=box.querySelector("input").value.trim();
+        try{ await saveMe({about,country}); }catch(er){ box.querySelector(".cs-msg").textContent=L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo."); return; }
+        o.remove(); openProfile(me()); toast(L("Profile saved ✓","Perfil guardado ✓")); document.querySelectorAll(".cl-members[data-on='1']").forEach(x=>{ x.dataset.on=""; mountMembers(x); }); } });
+  }
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ document.querySelector(".cl-prof-ov")?.remove(); document.getElementById("clBellPanel")?.setAttribute("hidden",""); } });
+  /* ---------- notifications for members (clubNotes, addressed to one person) ---------- */
+  async function note(to,kind,pid,text){ if(!to||to===me()||G()||!me()) return; try{ await api("POST","/clubNotes?documentId="+rid(),{fields:{uid:S(me()),name:S(F().name()||""),to:S(to),kind:S(kind),pid:S(pid||""),text:S(String(text||"").slice(0,120)),at:I(Date.now())}}); }catch(e){} }
+  const BSEEN="cs-clbell-seen";
+  let NOTES=[], bellT=0;
+  const SAMPLE_NOTES=[{id:"n1",name:"Sam (sample)",kind:"comment",pid:"s1",text:"Great question! I use Culips.",at:H(1)},{id:"n2",name:"Alex (sample)",kind:"react",pid:"s1",text:"❤️",at:H(4)},{id:"n3",name:"Noa (sample)",kind:"mention",pid:"s2",text:"@Robin welcome to the club!",at:H(30)}];
+  async function loadNotes(){ if(G()){ NOTES=SAMPLE_NOTES; return; } if(!me()) return;
+    try{ const res=await api("POST",":runQuery",{structuredQuery:{from:[{collectionId:"clubNotes"}],where:{fieldFilter:{field:{fieldPath:"to"},op:"EQUAL",value:S(me())}},limit:200}});
+      const all=(res||[]).filter(x=>x.document).map(x=>fromDoc(x.document)); const old=Date.now()-30*864e5;
+      all.filter(n=>n.at<old).slice(0,20).forEach(n=>api("DELETE","/clubNotes/"+n.id).catch(()=>{}));  /* tidy up after a month */
+      NOTES=all.filter(n=>n.at>=old).sort((a,b)=>b.at-a.at).slice(0,40); }catch(e){ NOTES=NOTES||[]; } }
+  function noteTxt(n){ const nm=`<b>${esc(n.name||L("Someone","Alguien"))}</b>`, weekly=/^w\d{8}$/.test(n.pid||"");
+    if(n.kind==="comment") return `💬 ${nm} ${L("commented on your post","comentó tu post")}`;
+    if(n.kind==="react") return `${esc(String(n.text||"").split(" ")[0]||"❤️")} ${nm} ${L("reacted to your post","reaccionó a tu post")}`;
+    if(n.kind==="reactc") return `${esc(String(n.text||"").split(" ")[0]||"❤️")} ${nm} ${L("reacted to your comment","reaccionó a tu comentario")}`;
+    if(n.kind==="dm") return `💬 ${nm} ${L("sent you a message","te envió un mensaje")}`;
+    if(n.kind==="mention") return `@ ${nm} ${L("mentioned you","te mencionó")}${weekly?L(" on the weekly post"," en el post semanal"):""}`;
+    return `🔔 ${nm}`; }
+  function paintBell(){ const b=document.getElementById("clBell"); if(!b) return; const seen=+LSG(BSEEN,0)||0, n=NOTES.filter(x=>x.at>seen).length;
+    b.classList.toggle("has",!!n); const c=b.querySelector(".clb-n"); c.hidden=!n; c.textContent=n>9?"9+":String(n);
+    b.setAttribute("aria-label",L("Club notifications","Notificaciones del club")+(n?` (${n})`:""));
+    const pn=document.getElementById("clBellPanel"); if(!pn||pn.hidden) return;
+    pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Club notifications","Notificaciones del club")}</b></div>${NOTES.length?`<ul>${NOTES.map(x=>`<li><button type="button" class="clb-i${x.at>(+pn.dataset.seen||0)?" new":""}" data-bgo="${esc(x.pid||"")}"><span>${noteTxt(x)}${x.text&&!/^react/.test(x.kind)?`<small>“${esc(x.text)}”</small>`:""}</span><em>${ago(x.at)}</em></button></li>`).join("")}</ul>`:`<p class="clb-e">${L("Nothing yet. When someone replies to you, reacts to your posts or mentions you, it shows up here.","Nada aún. Cuando alguien te responda, reaccione a tus posts o te mencione, aparece aquí.")}</p>`}`; }
+  function buildBell(){ if(document.getElementById("clBellWrap")) return; const anchor=document.getElementById("tmWrap")||document.getElementById("csWrap"); if(!anchor||!anchor.parentNode) return;
+    const w=document.createElement("div"); w.id="clBellWrap"; w.className="cs-wrap clb-wrap"; w.hidden=true;
+    w.innerHTML=`<button type="button" id="clBell" class="cs-btn clb-btn" aria-expanded="false" aria-controls="clBellPanel" title="${L("Club notifications","Notificaciones del club")}"><span aria-hidden="true">🔔</span><span class="clb-n" hidden></span></button><div id="clBellPanel" class="cs-panel clb-panel" role="dialog" aria-label="${L("Club notifications","Notificaciones del club")}" hidden></div>`;
+    anchor.parentNode.insertBefore(w,anchor);
+    w.querySelector("#clBell").addEventListener("click",async()=>{ const pn=document.getElementById("clBellPanel"), open=pn.hidden; pn.hidden=!open; w.querySelector("#clBell").setAttribute("aria-expanded",String(open));
+      if(open){ pn.dataset.seen=String(+LSG(BSEEN,0)||0); paintBell(); await loadNotes(); paintBell(); if(!G()&&!window.__csViewAsMode) LSS(BSEEN,Date.now()); setTimeout(paintBell,0); } else paintBell(); });
+    document.addEventListener("click",e=>{ const pn=document.getElementById("clBellPanel"); if(pn&&!pn.hidden&&!e.target.closest("#clBellWrap")){ pn.hidden=true; document.getElementById("clBell")?.setAttribute("aria-expanded","false"); paintBell(); } }); }
+  function bellCheck(){ const fd=window.__clubFeed&&window.__clubFeed(), on=!!fd&&(G()||(!!me()&&me()!==NOA))&&(!window.__csPreview||!!window.__csViewAsMode); buildBell(); const w=document.getElementById("clBellWrap"); if(!w) return; w.hidden=!on;
+    if(on&&Date.now()-bellT>600000){ bellT=Date.now(); loadNotes().then(paintBell); } }
+  ["cs-club","cs-hubview"].forEach(ev=>document.addEventListener(ev,()=>setTimeout(bellCheck,50))); window.addEventListener("cs-auth",()=>setTimeout(bellCheck,300));
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) bellCheck(); }); setInterval(()=>{ if(!document.hidden) bellCheck(); },60000); setTimeout(bellCheck,800);
+  document.addEventListener("click",e=>{ const g=e.target.closest("[data-bgo]"); if(!g) return; const pid=g.dataset.bgo; const pn=document.getElementById("clBellPanel"); if(pn) pn.hidden=true; paintBell();
+    if(/^dm:/.test(pid)){ const n=(NOTES||[]).find(x=>x.pid===pid); window.__clubDM(pid.slice(3),n&&n.name); return; }
+    if(location.hash!=="#club") location.hash="#club";
+    setTimeout(()=>{ if(/^w\d{8}$/.test(pid)||!pid){ window.__clubTab&&window.__clubTab("week"); setTimeout(()=>document.querySelector(".cl-thread")?.scrollIntoView({block:"start",behavior:"smooth"}),500); } else { FOCUS=pid; window.__clubTab&&window.__clubTab("wall"); } },60); });
+  /* ---------- @mentions: suggestions while typing, and who to notify ---------- */
+  function people(){ const m=new Map(); (PROFS||[]).forEach(p=>m.set(p.id,p.name)); (POSTS||[]).forEach(p=>{ if(p.uid&&!m.has(p.uid)) m.set(p.uid,p.name); }); Object.values(COMM).flat().forEach(c=>{ if(c.uid&&!m.has(c.uid)) m.set(c.uid,c.name); }); m.delete(me()); return [...m].map(([uid,name])=>({uid,name})).filter(x=>x.name); }
+  function mentionsIn(form,text){ const at=form._at||{}, out=new Set(), ppl=people();
+    (String(text).match(/(^|\s)@([A-Za-zÁÉÍÓÚÑáéíóúñü]+)/g)||[]).forEach(m=>{ const w=m.trim().slice(1); if(at[w]){ out.add(at[w]); return; } const hit=ppl.filter(p=>first(p.name).toLowerCase()===w.toLowerCase()); if(hit.length===1) out.add(hit[0].uid); });
+    out.delete(me()); return [...out]; }
+  document.addEventListener("input",async e=>{ const ta=e.target.closest(".cs-comp textarea"); if(!ta) return; const box=ta.parentElement.querySelector(".cs-ment"); if(!box) return;
+    const before=ta.value.slice(0,ta.selectionStart), m=before.match(/(^|\s)@([A-Za-zÁÉÍÓÚÑáéíóúñü]*)$/); if(!m){ box.hidden=true; return; }
+    if(!PROFS) await loadProfs(); const q=m[2].toLowerCase(), list=people().filter(p=>p.name.toLowerCase().split(/\s+/).some(w=>w.startsWith(q))).slice(0,6);
+    if(!list.length){ box.hidden=true; return; } box._q=m[2]; box.innerHTML=list.map((p,i)=>`<button type="button" role="option" class="cs-mi${i?"":" on"}" data-mpick="${esc(p.uid)}" data-mname="${esc(first(p.name))}">${av(p.uid,p.name)}<span>${esc(p.name)}</span></button>`).join(""); box.hidden=false; });
+  function pickMention(btn){ const box=btn.closest(".cs-ment"), ta=box.parentElement.querySelector("textarea"), form=ta.closest("form"), nm=btn.dataset.mname;
+    const pos=ta.selectionStart, before=ta.value.slice(0,pos).replace(/@([A-Za-zÁÉÍÓÚÑáéíóúñü]*)$/,"@"+nm+" "); ta.value=before+ta.value.slice(pos); ta.focus(); ta.setSelectionRange(before.length,before.length);
+    form._at=form._at||{}; form._at[nm]=btn.dataset.mpick; box.hidden=true; }
+  document.addEventListener("keydown",e=>{ const ta=e.target.closest(".cs-comp textarea"); if(!ta) return; const box=ta.parentElement.querySelector(".cs-ment"); if(!box||box.hidden) return;
+    const items=[...box.querySelectorAll(".cs-mi")], i=items.findIndex(x=>x.classList.contains("on"));
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); const j=(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length; items.forEach((x,k)=>x.classList.toggle("on",k===j)); }
+    else if(e.key==="Enter"||e.key==="Tab"){ if(items[i]){ e.preventDefault(); e.stopPropagation(); pickMention(items[i]); } }
+    else if(e.key==="Escape"){ box.hidden=true; } },true);
+  /* ---------- polls and RSVPs (clubVotes: one doc per person per poll) ---------- */
+  const VOTES={};
+  const SAMPLE_VOTES={"p_s3":[{uid:"a",opt:"0",name:"Sample member"},{uid:"b",opt:"1",name:"Sample member"},{uid:"c",opt:"0",name:"Sam (sample)"},{uid:"d",opt:"2",name:"Sample member"}]};
+  async function votes(poll,force){ if(G()) return VOTES[poll]||(VOTES[poll]=(SAMPLE_VOTES[poll]||(/^r_/.test(poll)?[{uid:"x3",name:"Sam (sample)",opt:"1,5"},{uid:"x2",name:"Alex (sample)",opt:"1"},{uid:"x1",name:"Robin (sample)",opt:"3,5"}]:[])).slice());
+    if(VOTES[poll]&&!force) return VOTES[poll];
+    const res=await api("POST",":runQuery",{structuredQuery:{from:[{collectionId:"clubVotes"}],where:{fieldFilter:{field:{fieldPath:"poll"},op:"EQUAL",value:S(poll)}},limit:300}});
+    return VOTES[poll]=(res||[]).filter(x=>x.document).map(x=>fromDoc(x.document)); }
+  async function vote(poll,opt){ const id=poll+"_"+(G()?"me":me()), list=VOTES[poll]||[]; const mine=G()?"me":me();
+    VOTES[poll]=list.filter(v=>v.uid!==mine).concat(opt==null||opt===""?[]:[{uid:mine,name:G()?"You":F().name(),opt:String(opt),poll}]);
+    if(G()) return;
+    if(opt==null||opt==="") await api("DELETE","/clubVotes/"+id); else await api("PATCH","/clubVotes/"+id,{fields:{uid:S(me()),name:S(F().name()||""),poll:S(poll),opt:S(String(opt)),at:I(Date.now())}}); }
+  function pollHTML(p,list){ const opts=p.poll.opts, mineU=G()?"me":me(), vs=list||[], tot=vs.length, mine=vs.find(v=>v.uid===mineU), c=opts.map((_,i)=>vs.filter(v=>v.opt===String(i)).length), voted=!!mine;
+    return `<div class="cs-pollq">${list==null?`<p class="cs-load">${L("Loading votes…","Cargando votos…")}</p>`:""}${opts.map((o,i)=>{ const pc=tot?Math.round(c[i]*100/tot):0, me_=mine&&mine.opt===String(i);
+      return `<button type="button" class="cs-popt${me_?" on":""}${voted?" shown":""}" data-vote="${esc(p.id)}" data-opt="${i}" aria-pressed="${!!me_}"><span class="cs-pbar" style="width:${voted?pc:0}%"></span><span class="cs-ptxt">${me_?"✓ ":""}${esc(o)}</span>${voted?`<span class="cs-ppc">${pc}%</span>`:""}</button>`; }).join("")}
+      <div class="cs-pfoot">${tot} ${tot===1?L("vote","voto"):L("votes","votos")}${voted?` · ${L("tap your answer again to undo","toca tu respuesta otra vez para deshacer")}`:` · ${L("vote to see the results","vota para ver los resultados")}`}</div></div>`; }
+  function paintPolls(root){ root.querySelectorAll(".cs-poll[data-poll]").forEach(async el=>{ const p=(POSTS||[]).find(x=>x.id===el.dataset.poll); if(!p||!p.poll) return;
+    try{ el.innerHTML=pollHTML(p,await votes("p_"+p.id)); }catch(e){ el.innerHTML=pollHTML(p,[]); el.insertAdjacentHTML("beforeend",`<p class="cs-off">${L("Voting opens very soon.","La votación se abre muy pronto.")}</p>`); } }); }
+  function readPoll(form){ const pb=form.querySelector(".cs-pollbox"); if(!pb||pb.hidden) return null; const opts=[...pb.querySelectorAll("input")].map(i=>i.value.trim()).filter(Boolean);
+    if(opts.length<2) return {err:L("Add at least 2 options.","Agrega al menos 2 opciones.")}; return {opts:opts.slice(0,6)}; }
+  const optIn=(i)=>`<input type="text" maxlength="80" placeholder="${L("Option","Opción")} ${i}" aria-label="${L("Option","Opción")} ${i}">`;
+  /* RSVPs: "I'm going" on each class of this week */
+  function rsvpHTML(week,wd,list){ const mineU=G()?"me":me(), going=list.filter(v=>String(v.opt||"").split(",").includes(String(wd))), on=going.some(v=>v.uid===mineU);
+    return `<button type="button" class="cl-going${on?" on":""}" data-rsvpgo="${esc(week)}" data-wd="${wd}" aria-pressed="${on}">${on?L("✓ I’m going","✓ Voy"):L("🙋 I’m going","🙋 Voy")}</button>${going.length?`<span class="cl-gwho" title="${esc(going.map(v=>v.name).join(", "))}">${going.slice(0,4).map(v=>av(v.uid,v.name)).join("")}<small>${going.length} ${L("going","van")}</small></span>`:""}`; }
+  async function paintRsvp(root){ const els=[...root.querySelectorAll(".cl-rsvp[data-rsvp]")]; if(!els.length) return; await loadPark();
+    const weeks=[...new Set(els.map(e=>e.dataset.rsvp))];
+    for(const w of weeks){ let list=[]; try{ list=await votes("r_"+w); }catch(e){ els.filter(x=>x.dataset.rsvp===w).forEach(x=>x.hidden=true); continue; }
+      els.filter(x=>x.dataset.rsvp===w).forEach(x=>{ x.hidden=false; x.innerHTML=rsvpHTML(w,x.dataset.wd,list); }); } }
+  /* ---------- weekly challenge: answers are wall posts tagged with the week; Noa can pick a favourite ---------- */
+  async function mountChal(el){ el.dataset.on="1"; const cid=el.dataset.chal;
+    try{ await Promise.all([POSTS?null:listPosts().then(p=>{ POSTS=p; }),loadPins(),loadPark()]); }catch(e){ el.innerHTML=state==="off"?OFF:""; return; }
+    const cidG=G()?"wSAMPLE":cid, ans=(POSTS||[]).filter(p=>p.ch===cidG).sort((a,b)=>(PICKS[cidG]===b.id)-(PICKS[cidG]===a.id)||a.at-b.at), done=ans.some(p=>p.uid===me());
+    el.innerHTML=`${ans.length?`<div class="cl-chal-ans">${ans.map(p=>`<div class="cl-ans${PICKS[cidG]===p.id?" pick":""}"><div class="cs-top">${who(p)}</div>${PICKS[cidG]===p.id?`<span class="cs-pickf">⭐ ${L("Noa’s pick","Elegido por Noa")}</span>`:""}<p class="cs-txt">${txtHTML(p.text||"")}</p>${imgs(p)}<div class="cs-acts">${likeBtn(p,"clubPosts/"+p.id)}${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pick="${esc(p.id)}" data-ch="${esc(cidG)}">${PICKS[cidG]===p.id?"⭐ Unpick":"⭐ Pick"}</button>`:""}</div></div>`).join("")}</div>`:`<p class="cs-empty">${L("No answers yet. Be the first!","Aún no hay respuestas. ¡Sé el primero!")}</p>`}
+      ${el.dataset.cur?(done?`<p class="cl-chal-done">✅ ${L("You took this week’s challenge. Nice!","Hiciste el desafío de esta semana. ¡Bien!")}</p>`:composer("chal",cid,L("Write your answer… (+5 🍪 for your buddy)","Escribe tu respuesta… (+5 🍪 para tu buddy)"))):""}`;
+    paintImgs(el);
+    /* a little reward when Noa picks your answer */
+    if(!G()&&me()){ const won=Object.values(PICKS).filter(id=>{ const x=(POSTS||[]).find(y=>y.id===id); return x&&x.uid===me(); }), seen=LSG("cs-club-picks",[]); const fresh=won.filter(x=>!seen.includes(x));
+      if(fresh.length){ LSS("cs-club-picks",seen.concat(fresh)); treat(10,L("⭐ Noa picked your challenge answer!","⭐ ¡Noa eligió tu respuesta del desafío!")); checkBadges(); } } }
+  /* ---------- reports (Noa sees them in his bell and the nightly email) ---------- */
+  async function reports(){ if(me()!==NOA) return []; try{ const r=await query("","clubReports","DESCENDING",50); return r; }catch(e){ return []; } }
+  async function delReport(id){ await api("DELETE","/clubReports/"+id); }
+  /* ---------- clicks ---------- */
+  document.addEventListener("click",async e=>{ const t=e.target;
+    const mp=t.closest("[data-mpick]"); if(mp){ pickMention(mp); return; }
+    const pf=t.closest("[data-prof]"); if(pf&&!t.closest(".cl-prof")){ e.preventDefault(); openProfile(pf.dataset.prof,pf.dataset.pname); return; }
+    const po=t.closest("[data-pollopen]"); if(po){ const form=po.closest("form"), pb=form.querySelector(".cs-pollbox"), show=pb.hidden; pb.hidden=!show; po.setAttribute("aria-expanded",String(show));
+      if(show&&!pb.dataset.ready){ pb.dataset.ready="1"; pb.innerHTML=`<p class="cs-ph2">${L("Your text above is the question. Options:","Tu texto de arriba es la pregunta. Opciones:")}</p><div class="cs-popts">${optIn(1)}${optIn(2)}</div><button type="button" class="cs-act" data-polladd="1">＋ ${L("Option","Opción")}</button>`; }
+      if(show) pb.querySelector("input").focus(); return; }
+    const pa=t.closest("[data-polladd]"); if(pa){ const box=pa.parentElement.querySelector(".cs-popts"), n=box.querySelectorAll("input").length; if(n<6){ box.insertAdjacentHTML("beforeend",optIn(n+1)); box.lastElementChild.focus(); } if(n+1>=6) pa.hidden=true; return; }
+    const vt=t.closest("[data-vote]"); if(vt){ const pid=vt.dataset.vote, p=(POSTS||[]).find(x=>x.id===pid), poll="p_"+pid, mineU=G()?"me":me(); if(!p||(!me()&&!G())) return;
+      const cur=(VOTES[poll]||[]).find(v=>v.uid===mineU), opt=cur&&cur.opt===vt.dataset.opt?"":vt.dataset.opt; const el=vt.closest(".cs-poll");
+      try{ await vote(poll,opt); }catch(er){ toast(L("Couldn’t vote. Try again.","No se pudo votar. Intenta de nuevo.")); return; } el.innerHTML=pollHTML(p,VOTES[poll]); return; }
+    const rg=t.closest("[data-rsvpgo]"); if(rg){ if(!me()&&!G()) return; const w=rg.dataset.rsvpgo, wd=rg.dataset.wd, poll="r_"+w, mineU=G()?"me":me(); const cur=(VOTES[poll]||[]).find(v=>v.uid===mineU);
+      let ds=cur?String(cur.opt||"").split(",").filter(Boolean):[]; ds=ds.includes(wd)?ds.filter(x=>x!==wd):ds.concat([wd]);
+      rg.disabled=true; try{ await vote(poll,ds.join(",")); }catch(er){ rg.disabled=false; toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; }
+      if(ds.includes(wd)) toast(L("See you there! 🙌","¡Nos vemos ahí! 🙌"));
+      document.querySelectorAll(`.cl-rsvp[data-rsvp="${CSS.escape(w)}"]`).forEach(x=>{ x.innerHTML=rsvpHTML(w,x.dataset.wd,VOTES[poll]); }); return; }
+    const pk=t.closest("[data-pick]"); if(pk){ const id=pk.dataset.pick, ch=pk.dataset.ch; if(PICKS[ch]===id) delete PICKS[ch]; else PICKS[ch]=id;
+      try{ await savePins(); }catch(er){ toast("Couldn’t save the pick."); return; }
+      const w=pk.closest(".cl-wall"); if(w) paintWall(w); document.querySelectorAll(".cl-chal-list[data-on='1']").forEach(x=>mountChal(x)); return; }
+    const rp=t.closest("[data-report]"); if(rp){ const path=rp.dataset.report, parts=path.split("/"), id=parts[parts.length-1];
+      const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
+      const why=prompt(L("Report this to Noa? Tell him what’s wrong (optional). Only Noa sees reports.","¿Reportar esto a Noa? Cuéntale qué pasa (opcional). Solo Noa ve los reportes."),""); if(why===null) return;
+      try{ await api("POST","/clubReports?documentId="+rid(),{fields:{uid:S(me()),name:S(F().name()||""),path:S(path),pid:S(parts[1]),author:S(item.name||""),text:S(String(item.text||"").slice(0,200)),why:S(String(why).slice(0,300)),at:I(Date.now())}}); }
+      catch(er){ toast(L("Couldn’t send the report. Try again.","No se pudo enviar el reporte. Intenta de nuevo.")); return; }
+      toast(L("Thanks. Noa will take a look 🙏","Gracias. Noa lo va a revisar 🙏")); return; }
+  });
+  /* ---------- 🗳 Polls & ideas tab: class ideas from members (👍 to support one) + polls ---------- */
+  const SAMPLE_IDEAS=[{id:"i1",uid:"x3",name:"Sam (sample)",at:H(30),text:"A class about job interviews: common questions and how to answer them.",idea:{k:"topic"},likes:["a|👍","b|👍","c|👍"]},{id:"i2",uid:"x2",name:"Alex (sample)",at:H(50),text:"When do we use 'since' and 'for'? I always mix them up.",idea:{k:"grammar"},likes:["a|👍"]}];
+  let ISORT="top";
+  function ideaHTML(p){ const k=IDEAK.find(c=>c[0]===(p.idea||{}).k)||IDEAK[4], up=(p.likes||[]).map(rxOf).filter(x=>x[1]==="👍"), mine=up.some(x=>x[0]===(G()?"me":me())), st=IDEAST[p.id]||"";
+    return `<div class="cs-p cl-idea${st?" st-"+st:""}" data-pid="${esc(p.id)}"><button type="button" class="cl-iup${mine?" on":""}" data-iup="${esc(p.id)}" aria-pressed="${mine}" aria-label="${L("Support this idea","Apoyar esta idea")} (${up.length})"><span>👍</span><b>${up.length}</b></button>
+      <div class="cl-ib"><div class="cs-flags"><span class="cs-catf">${k[1]} ${esc(L(k[2][0],k[2][1]))}</span>${st==="planned"?`<span class="cs-pickf">🗓 ${L("Planned","Planeada")}</span>`:st==="done"?`<span class="cs-chf">✅ ${L("Done in class","Hecha en clase")}</span>`:""}</div>
+        <p class="cs-txt">${txtHTML(p.text||"")}</p><div class="cl-imeta">${who(p)}${tools(p,"clubPosts/"+p.id,true)}${me()===NOA&&!G()?`<span class="cl-ist"><button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="planned">${st==="planned"?"✓ ":""}🗓 Planned</button><button type="button" class="cs-act" data-ist="${esc(p.id)}" data-v="done">${st==="done"?"✓ ":""}✅ Done</button></span>`:""}</div></div></div>`; }
+  function paintIdeas(el){ const box=el.querySelector("[data-ideas]"); if(!box) return; let list=(POSTS||[]).filter(p=>p.idea); if(G()) list=SAMPLE_IDEAS.concat(list);
+    const n=p=>(p.likes||[]).map(rxOf).filter(x=>x[1]==="👍").length, rank=p=>IDEAST[p.id]==="done"?1:0;
+    list.sort((a,b)=>rank(a)-rank(b)||(ISORT==="top"?n(b)-n(a)||b.at-a.at:b.at-a.at));
+    box.innerHTML=list.length?list.map(ideaHTML).join(""):`<p class="cs-empty">${L("No ideas yet. Be the first!","Aún no hay ideas. ¡Sé el primero!")}</p>`; }
+  async function mountSay(el){ el.dataset.on="1"; el.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
+    try{ await Promise.all([listPosts().then(p=>{ POSTS=G()?SAMPLE_POSTS.slice():p; }),loadPins(),loadPark()]); }catch(e){ el.innerHTML=state==="off"?OFF:""; return; }
+    const polls=(POSTS||[]).filter(p=>p.poll).sort((a,b)=>b.at-a.at);
+    const ih=el.parentElement&&el.parentElement.querySelector(".cl-sayideas");
+    const pollsH=`<div class="cl-sec cl-polls${polls.length?"":" empty"}"><h2>📊 ${L("Polls","Encuestas")}</h2>${polls.map(postHTML).join("")}
+        <details class="cl-newpoll"><summary>＋ ${L("Start a poll","Crear una encuesta")}</summary>${composer("poll","",L("Your question…","Tu pregunta…"))}</details></div>`;
+    const ideasH=`<div class="cl-sec cl-ideas"><h2>💡 ${L("Ideas for future classes","Ideas para próximas clases")}</h2><p class="cl-note">${L("What would you like to do in class? A topic, a grammar point, vocabulary, a game… Noa reads every idea. Tap 👍 on the ones you like.","¿Qué te gustaría hacer en clase? Un tema, un punto de gramática, vocabulario, un juego… Noa lee todas las ideas. Toca 👍 en las que te gusten.")}</p>
+        ${composer("idea","",L("My idea for a class: …","Mi idea para una clase: …"))}
+        <div class="cs-wcats" role="group" aria-label="${L("Sort ideas","Ordenar ideas")}"><button type="button" class="cs-wcat${ISORT==="top"?" on":""}" data-isort="top" aria-pressed="${ISORT==="top"}">👍 ${L("Most liked","Más apoyadas")}</button><button type="button" class="cs-wcat${ISORT==="new"?" on":""}" data-isort="new" aria-pressed="${ISORT==="new"}">🆕 ${L("Newest","Más nuevas")}</button></div>
+        <div class="cl-ilist2" data-ideas="1"></div></div>`;
+    el.innerHTML=pollsH; paintPolls(el); paintImgs(el); }
+  let IDEAST={};
+  document.addEventListener("click",async e=>{ const u=e.target.closest("[data-iup]"); if(u){ if(!me()&&!G()) return; const id=u.dataset.iup; const item=(POSTS||[]).find(x=>x.id===id)||(G()?SAMPLE_IDEAS.find(x=>x.id===id):null); if(!item) return;
+      if(G()){ const r=(item.likes||[]).filter(v=>rxOf(v)[0]!=="me"); item.likes=r.length!==(item.likes||[]).length?r:r.concat(["me|👍"]); }
+      else { try{ await react("clubPosts/"+id,item,"👍"); }catch(er){ toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } }
+      const card=u.closest(".cl-idea"); if(card){ card.outerHTML=ideaHTML(item); return; } const art=u.closest(".cs-p"); if(art){ const open=!art.querySelector(".cs-sub").hidden; if(!open){ art.outerHTML=postHTML(item); const a2=document.querySelector(`.cs-p[data-pid="${CSS.escape(id)}"]`); if(a2) paintImgs(a2); } else u.outerHTML=ideaBits(item).up.split("</button>")[0]+"</button>"; } return; }
+    const so=e.target.closest("[data-isort]"); if(so){ ISORT=so.dataset.isort; const say=so.closest(".cl-say"); so.parentElement.querySelectorAll("[data-isort]").forEach(b=>{ b.classList.toggle("on",b===so); b.setAttribute("aria-pressed",String(b===so)); }); paintIdeas(say); return; }
+    const st=e.target.closest("[data-ist]"); if(st){ const id=st.dataset.ist, v=st.dataset.v; if(IDEAST[id]===v) delete IDEAST[id]; else IDEAST[id]=v; try{ await savePins(); }catch(er){ toast("Couldn’t save."); return; } const wl=st.closest(".cl-wall"); if(wl) paintWall(wl); else paintIdeas(st.closest(".cl-say")); return; } });
+  /* ---------- 🎬 recordings Noa adds (YouTube), stored in clubStats/_recordings: Noa writes, members read ---------- */
+  /* the first load can happen before sign-in has finished: try again a few times instead of showing nothing */
+  const RETRY={}; function retryLoad(k,fn){ RETRY[k]=(RETRY[k]||0)+1; if(RETRY[k]>6) return; setTimeout(fn,1500*RETRY[k]); }
+  let RECS=null, recsAt=0;
+  async function loadRecs(force){ if(G()) return; if(RECS&&!force&&Date.now()-recsAt<120000) return; recsAt=Date.now();
+    try{ const r=await api("GET","/clubStats/_recordings"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; RECS=j.list||[]; }catch(e){ RECS=RECS||[]; retryLoad("recs",()=>loadRecs(true)); }
+    window.__clubRecs=RECS; document.dispatchEvent(new CustomEvent("cs-club-recs")); }
+  /* lesson plans: the helper uploads each class's plan only AFTER the class (clubStats/_plans index + _plans_<week>) */
+  let PLANS=null, plansAt=0; const PLANDOC={};
+  async function loadPlans(force){ if(G()) return; if(PLANS&&!force&&Date.now()-plansAt<300000) return; plansAt=Date.now();
+    try{ const r=await api("GET","/clubStats/_plans"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PLANS=j.weeks||{}; }catch(e){ PLANS=PLANS||{}; retryLoad("plans",()=>loadPlans(true)); }
+    window.__clubPlans=PLANS; document.dispatchEvent(new CustomEvent("cs-club-plans")); }
+  function mdHTML(md){ const inl=t=>esc(t).replace(/&lt;br\s*\/?&gt;/g,"<br>").replace(/&lt;(\/?)(b|i|strong|em|u)&gt;/g,"<$1$2>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*?)\*/g,"$1<i>$2</i>")
+      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g,(m,a,u)=>`<a href="${u.replace(/&amp;/g,"&").replace(/"/g,"%22")}" target="_blank" rel="noopener">${a}</a>`).replace(/\\([$_*#\-\[\]()>])/g,"$1");
+    const out=[]; let list=null; const close=()=>{ if(list){ out.push(`</${list}>`); list=null; } };
+    String(md||"").replace(/<\/?(content|page|callout|columns?|column|toggle|details|summary|quote|span|empty-block)[^>]*>/gi,"").split("\n").forEach(raw=>{ const l=raw.replace(/\t/g,"  ").trim(); let m;
+      if(!l){ close(); return; }
+      if(/^(---|\*\*\*)$/.test(l)){ close(); out.push("<hr>"); return; }
+      if((m=l.match(/^(#{1,4})\s+(.*)/))){ close(); const h=Math.min(5,m[1].length+2); out.push(`<h${h}>${inl(m[2])}</h${h}>`); return; }
+      if((m=l.match(/^[-*•]\s+(?:\[[ x]\]\s*)?(.*)/))){ if(list!=="ul"){ close(); out.push("<ul>"); list="ul"; } out.push(`<li>${inl(m[1])}</li>`); return; }
+      if((m=l.match(/^\d+[.)]\s+(.*)/))){ if(list!=="ol"){ close(); out.push("<ol>"); list="ol"; } out.push(`<li>${inl(m[1])}</li>`); return; }
+      if((m=l.match(/^>\s?(.*)/))){ close(); out.push(`<blockquote>${inl(m[1])}</blockquote>`); return; }
+      close(); out.push(`<p>${inl(l)}</p>`); });
+    close(); return out.join(""); }
+  document.addEventListener("click",async e=>{ const b=e.target.closest("[data-plan]"); if(!b) return; e.preventDefault();
+    const nx=b.parentElement.nextElementSibling&&b.parentElement.nextElementSibling.classList.contains("cl-plan")?b.parentElement.nextElementSibling:null;
+    if(nx){ nx.remove(); b.setAttribute("aria-expanded","false"); return; }
+    const [wk,wd]=b.dataset.plan.split("|"); b.setAttribute("aria-expanded","true");
+    try{ if(!PLANDOC[wk]){ const r=await api("GET","/clubStats/_plans_"+wk.replace(/-/g,"")); PLANDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
+      const pl=(PLANDOC[wk].plans||{})[wd]; if(!pl){ toast(L("Couldn’t find it.","No lo encontré.")); return; }
+      b.parentElement.insertAdjacentHTML("afterend",`<div class="cl-plan"><div class="cl-planh"><b>📄 ${esc(pl.title||L("Class material","Material de la clase"))}</b><button type="button" class="cs-act" data-planx="1">✕ ${L("Close","Cerrar")}</button></div><div class="cl-planb2">${mdHTML(pl.md)}</div></div>`);
+    }catch(er){ b.setAttribute("aria-expanded","false"); toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
+  document.addEventListener("click",e=>{ const x=e.target.closest("[data-planx]"); if(!x) return; const p=x.closest(".cl-plan"), b=p.previousElementSibling&&p.previousElementSibling.querySelector("[data-plan]"); if(b) b.setAttribute("aria-expanded","false"); p.remove(); });
+  /* the first lines of a class's plan intro (for recordings that have no summary yet) */
+  async function planIntro(date){ if(G()||!date) return ""; const wk=weekOf(new Date(date+"T12:00:00")), wd=new Date(date+"T12:00:00").getDay();
+    if(!PLANDOC[wk]){ const r=await api("GET","/clubStats/_plans_"+wk.replace(/-/g,"")); PLANDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
+    const pl=(PLANDOC[wk].plans||{})[wd]; if(!pl||!pl.md) return "";
+    const lines=String(pl.md).split("\n").map(l=>l.trim()); let i=lines.findIndex(l=>/^#{1,4}\s*(?:🎯\s*)?(intro|class overview)/i.test(l)), out=[];
+    for(let k=i<0?0:i+1;k<lines.length&&out.join(" ").length<260;k++){ const l=lines[k]; if(!l||/^📅|^---$/.test(l)) { if(out.length) break; continue; } if(/^#/.test(l)) break; out.push(l); }
+    const t=out.join(" ").replace(/<br\s*\/?>/gi," · ").replace(/<[^>]+>/g,"").replace(/\*\*|\*|\\/g,"").replace(/\[([^\]]+)\]\([^)]*\)/g,"$1").trim();
+    return t.length>300?t.slice(0,297).replace(/\s\S*$/,"")+"…":t; }
+  let PODS=null, podsAt=0;
+  async function loadPods(force){ if(G()) return; if(PODS&&!force&&Date.now()-podsAt<120000) return; podsAt=Date.now();
+    try{ const r=await api("GET","/clubStats/_podcast"); const j=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; PODS=j.list||[]; }catch(e){ PODS=PODS||[]; retryLoad("pods",()=>loadPods(true)); }
+    window.__clubPods=PODS; document.dispatchEvent(new CustomEvent("cs-club-pods")); }
+  async function savePods(list){ await api("PATCH","/clubStats/_podcast",{fields:{uid:S("_podcast"),json:S(JSON.stringify({list}))}}); PODS=list; window.__clubPods=list; document.dispatchEvent(new CustomEvent("cs-club-pods")); }
+  document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-podform]"); if(!f) return; e.preventDefault(); const msg=f.querySelector(".cs-msg");
+    const ep={id:rid(),url:f.url.value.trim(),date:f.date.value,title:f.title.value.trim(),notes:f.notes.value.trim(),at:Date.now()};
+    msg.textContent="Saving…"; try{ await loadPods(true); await savePods((PODS||[]).concat([ep])); }catch(er){ msg.textContent="Couldn’t save. Try again."; return; } toast("🎧 Episode added ✓"); });
+  document.addEventListener("click",async e=>{ const d=e.target.closest("[data-poddel]"); if(!d) return; if(!confirm("Remove this episode?")) return; try{ await loadPods(true); await savePods((PODS||[]).filter(x=>x.id!==d.dataset.poddel)); }catch(er){ toast("Couldn’t remove it."); } });
+  async function saveRecs(list){ await api("PATCH","/clubStats/_recordings",{fields:{uid:S("_recordings"),json:S(JSON.stringify({list}))}}); RECS=list; window.__clubRecs=list; document.dispatchEvent(new CustomEvent("cs-club-recs")); }
+  document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-recform]"); if(!f) return; e.preventDefault(); const msg=f.querySelector(".cs-msg"), url=f.url.value.trim();
+    if(!/youtu\.?be/.test(url)){ msg.textContent="That doesn’t look like a YouTube link."; return; }
+    const rec={id:rid(),url,date:f.date.value,wd:f.wd.value===""?null:+f.wd.value,topic:f.topic.value.trim(),summary:f.summary.value.trim(),at:Date.now()};
+    const n=f.wd.selectedOptions[0]; if(f.wd.value==="") rec.name="Club class";
+    msg.textContent="Saving…"; try{ await loadRecs(true); await saveRecs((RECS||[]).concat([rec])); }catch(er){ msg.textContent="Couldn’t save. Try again."; return; }
+    toast("🎬 Added to the Library ✓"); });
+  /* picking the class sets the date to its most recent day (e.g. last Wednesday) */
+  document.addEventListener("change",e=>{ const sel=e.target.closest("[data-recform] select[name=wd]"); if(!sel||sel.value==="") return; const wd=+sel.value, d=new Date(); d.setDate(d.getDate()-((d.getDay()-wd+7)%7));
+    sel.form.date.value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); });
+  document.addEventListener("click",async e=>{ const d=e.target.closest("[data-recdel]"); if(!d) return; if(!confirm("Remove this recording from the Library?")) return;
+    try{ await loadRecs(true); await saveRecs((RECS||[]).filter(r=>r.id!==d.dataset.recdel)); }catch(er){ toast("Couldn’t remove it."); } });
+  /* ---------- 🚀 coming-soon votes ---------- */
+  /* ✨ "I enjoyed this class" on recordings (clubVotes, poll rec_<id>) */
+  async function paintFav(root){ const els=[...root.querySelectorAll(".cl-recfav[data-recfav]:not([data-fp])")].filter(x=>x.closest("details")?x.closest("details").open:true); if(!els.length) return; const mineU=G()?"me":me();
+    await Promise.all(els.map(async el=>{ el.dataset.fp="1"; let vs=[]; try{ vs=await votes(el.dataset.recfav); }catch(e){} const on=vs.some(v=>v.uid===mineU);
+      el.innerHTML=`<button type="button" class="cs-act cl-favb${on?" on":""}" data-fav="${esc(el.dataset.recfav)}" aria-pressed="${on}" title="${esc(vs.map(v=>(v.name||"").split(" ")[0]).filter(Boolean).join(", "))}">✨ ${L("I enjoyed this class","Me gustó esta clase")}${vs.length?` · ${vs.length}`:""}</button>`; })); }
+  document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.classList&&d.classList.contains("cl-rcard")&&d.open) paintFav(d); },true);
+  document.addEventListener("click",async e=>{ const b=e.target.closest("[data-fav]"); if(!b) return; if(api&&F()&&F().readOnly&&F().readOnly()){ toastRO(); return; } const poll=b.dataset.fav, mineU=G()?"me":me(), on=(VOTES[poll]||[]).some(v=>v.uid===mineU);
+    b.disabled=true; try{ await vote(poll,on?"":"1"); }catch(er){ b.disabled=false; toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } const el=b.closest(".cl-recfav"); delete el.dataset.fp; paintFav(el.parentElement); if(!on) toast(L("✨ Thanks! Noa will see it.","✨ ¡Gracias! Noa lo verá.")); });
+  /* ⭐ 1-5 star rating for podcast episodes (clubVotes, poll pr_<id>, opt "1".."5") */
+  async function paintStars(root){ const els=[...(root||document).querySelectorAll(".cl-stars[data-stars]:not([data-sp])")]; if(!els.length) return; const mineU=G()?"me":me();
+    await Promise.all(els.map(async el=>{ el.dataset.sp="1"; let vs=[]; try{ vs=await votes(el.dataset.stars); }catch(e){} const mine=vs.find(v=>v.uid===mineU), my=mine?+mine.opt:0, nums=vs.map(v=>+v.opt).filter(n=>n>=1&&n<=5), avg=nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:0;
+      el.innerHTML=`<span class="cl-stl">${my?L("Your rating","Tu nota"):L("Rate this episode","Califica este episodio")}</span><span class="cl-strow" role="radiogroup" aria-label="${L("Rate this episode from 1 to 5 stars","Califica este episodio de 1 a 5 estrellas")}">${[1,2,3,4,5].map(n=>`<button type="button" class="cl-star${n<=my?" on":""}" data-star="${n}" role="radio" aria-checked="${n===my}" aria-label="${n} ${n===1?L("star","estrella"):L("stars","estrellas")}">★</button>`).join("")}</span>${nums.length?`<small class="muted">${avg.toFixed(1)} · ${nums.length} ${nums.length===1?L("rating","nota"):L("ratings","notas")}</small>`:""}`; })); }
+  document.addEventListener("click",async e=>{ const b=e.target.closest(".cl-stars [data-star]"); if(!b) return; if(api&&F()&&F().readOnly&&F().readOnly()){ toastRO(); return; } const el=b.closest(".cl-stars"), poll=el.dataset.stars, n=+b.dataset.star, mineU=G()?"me":me(), cur=(VOTES[poll]||[]).find(v=>v.uid===mineU);
+    const val=cur&&+cur.opt===n?"":String(n); el.querySelectorAll("[data-star]").forEach(x=>x.disabled=true);
+    try{ await vote(poll,val); }catch(er){ toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); } delete el.dataset.sp; paintStars(el.parentElement); if(val) toast(L("⭐ Thanks! Noa will see your rating.","⭐ ¡Gracias! Noa verá tu nota.")); });
+  document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.tagName==="DETAILS"&&d.open){ paintStars(d); paintIntro(d); } },true);
+  /* recordings without a summary: show the first lines of that class's lesson plan intro */
+  async function paintIntro(root){ const els=[...(root||document).querySelectorAll(".cl-planintro[data-pintro]:not([data-ip])")]; for(const el of els){ el.dataset.ip="1"; try{ const t=await planIntro(el.dataset.pintro); if(t) el.textContent=t; else el.remove(); }catch(er){ el.remove(); } } }
+  async function paintSoon(root){ const els=[...root.querySelectorAll(".cl-soonv[data-soon]")]; if(!els.length) return; const mineU=G()?"me":me();
+    for(const el of els){ let list=[]; try{ list=await votes("soon_"+el.dataset.soon); }catch(e){ el.hidden=true; continue; } const on=list.some(v=>v.uid===mineU);
+      el.innerHTML=`<button type="button" class="cl-going${on?" on":""}" data-soonv="${esc(el.dataset.soon)}" aria-pressed="${on}">👍 ${on?L("Voted","Votado"):L("I want this","Lo quiero")}</button><small>${list.length} ${list.length===1?L("vote","voto"):L("votes","votos")}</small>`; } }
+  document.addEventListener("click",async e=>{ const b=e.target.closest("[data-soonv]"); if(!b||(!me()&&!G())) return; const k=b.dataset.soonv, poll="soon_"+k, mineU=G()?"me":me(), on=(VOTES[poll]||[]).some(v=>v.uid===mineU);
+    b.disabled=true; try{ await vote(poll,on?"":"1"); }catch(er){ b.disabled=false; toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } paintSoon(b.closest(".cl-soon")||document); });
+  /* ---------- wall filter + topic chips ---------- */
+  document.addEventListener("click",e=>{ const k=e.target.closest(".cs-ik[data-ik]"); if(k){ const on=!k.classList.contains("on"); k.parentElement.querySelectorAll(".cs-ik").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); if(on){ k.classList.add("on"); k.setAttribute("aria-pressed","true"); } return; }
+    const c=e.target.closest(".cs-cat[data-cat]"); if(c){ const on=!c.classList.contains("on"); c.parentElement.querySelectorAll(".cs-cat").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); if(on){ c.classList.add("on"); c.setAttribute("aria-pressed","true"); } const ik=c.closest("form")&&c.closest("form").querySelector(".cs-ideak"); if(ik){ ik.hidden=!(on&&c.dataset.cat==="idea"); const ta=c.closest("form").querySelector("textarea"); if(ta) ta.placeholder=on&&c.dataset.cat==="idea"?L("My idea for a class: …","Mi idea para una clase: …"):L("Share something with the club: a question, a photo, a small win…","Comparte algo con el club: una pregunta, una foto, un pequeño logro…"); } return; }
+    const w=e.target.closest("[data-wcat]"); if(w){ WCAT=w.dataset.wcat; const wall=w.closest(".cl-wall"); if(wall) paintWall(wall); } });
+  /* ---------- 📈 Noa's insights ---------- */
+  async function mountInsights(el){ el.dataset.on="1"; if(me()!==NOA&&!G()) return; el.innerHTML=`<p class="cs-load">Loading…</p>`;
+    await Promise.all([loadProfs(true),loadPark(),loadPins(),listPosts().then(p=>{ POSTS=p; }).catch(()=>{})]);
+    let acc=[]; try{ const r=await api("GET","/clubAccess?pageSize=300"); acc=((r&&r.documents)||[]).map(d=>({id:d.name.split("/").pop(),name:(d.fields&&d.fields.name&&d.fields.name.stringValue)||""})); }catch(e){}
+    const profs=PROFS||[], byId=new Map(); acc.forEach(a=>byId.set(a.id,{id:a.id,name:a.name})); profs.forEach(p=>byId.set(p.id,Object.assign(byId.get(p.id)||{},{id:p.id,name:p.name||((byId.get(p.id)||{}).name)},{prof:p})));
+    byId.delete(NOA); const all=[...byId.values()], m=MON(), now=Date.now(), wk3=wk(-3,-3)[0];
+    const lastSeen=u=>{ const ts=[(profOf(u)||{}).at|0,...(POSTS||[]).filter(p=>p.uid===u).map(p=>p.at)]; const w=((((STATS||{})[u]||{}).weeks)||[]).slice(-1)[0]; if(w) ts.push(new Date(w+"T20:00:00").getTime()); return Math.max(0,...ts); };
+    const never=all.filter(x=>!x.prof), quiet=all.filter(x=>x.prof&&lastSeen(x.id)<now-21*864e5), fresh=all.filter(x=>x.prof&&x.prof.since&&new Date(x.prof.since).toISOString().slice(0,7)===m);
+    const board=all.map(x=>({x,pt:points(x.id,m)})).sort((a,b)=>b.pt-a.pt);
+    const postsM=(POSTS||[]).filter(p=>new Date(p.at).toISOString().slice(0,7)===m).length, comM=all.reduce((n,x)=>n+((((x.prof||{}).mo||{})[m]||{}).comments|0),0);
+    const thisW=wk(0,0)[0], lastW=wk(-1,-1)[0], came=w=>all.filter(x=>((((STATS||{})[x.id]||{}).weeks)||[]).includes(w)).length;
+    const soon=[]; for(const k of ["dm","digest","courses","join"]){ try{ soon.push([k,(await votes("soon_"+k,true)).length]); }catch(e){} }
+    const nm=x=>`<button type="button" class="cs-nameb" data-prof="${esc(x.id)}" data-pname="${esc(x.name||"")}">${esc(x.name||"(no name)")}</button>`;
+    el.innerHTML=`<p class="cl-mintro">Only you see this tab.</p>
+      <div class="cl-istats"><div><b>${all.length}</b><span>members with the Club page</span></div><div><b>${all.length-never.length}</b><span>opened it</span></div><div><b>${postsM}</b><span>posts this month</span></div><div><b>${comM}</b><span>comments this month</span></div><div><b>${came(lastW)}</b><span>came to class last week</span></div><div><b>${came(thisW)}</b><span>this week so far</span></div></div>
+      <div class="cl-sec"><h2>🌱 Joined this month <small>(${fresh.length})</small></h2>${fresh.length?`<p>${fresh.map(nm).join(" · ")}</p>`:'<p class="muted">Nobody new yet.</p>'}</div>
+      <div class="cl-sec"><h2>😴 Gone quiet <small>(${quiet.length})</small></h2><p class="cl-note">No class, post or visit in 3+ weeks. Maybe a friendly message?</p>${quiet.length?`<ul class="cl-ilist">${quiet.sort((a,b)=>lastSeen(a.id)-lastSeen(b.id)).map(x=>`<li>${nm(x)} <span class="muted">· last seen ${ago(lastSeen(x.id))}</span></li>`).join("")}</ul>`:'<p class="muted">Everyone’s around 🙌</p>'}</div>
+      <div class="cl-sec"><h2>👀 Haven’t opened the Club page yet <small>(${never.length})</small></h2>${never.length?`<p>${never.map(x=>esc(x.name||"(no name)")).join(" · ")}</p>`:'<p class="muted">Everyone has.</p>'}</div>
+      <div class="cl-sec"><h2>🏆 Most active this month</h2><ol class="cl-ilist">${board.slice(0,10).map(b=>`<li>${nm(b.x)} <b>${b.pt}</b> pts</li>`).join("")}</ol></div>
+      ${soon.length?`<div class="cl-sec"><h2>🚀 Coming-soon votes</h2><p>${soon.map(([k,n])=>`${({dm:"💬 Direct messages",digest:"📧 Email digest",courses:"🎓 Club courses",join:"💳 Join & pay on Hibi"})[k]}: <b>${n}</b>`).join(" · ")}</p></div>`:""}`; }
+
+  /* ---------- 💬 direct messages (dms/{a_b} thread + msgs; only the two members can read them) ---------- */
+  const tidOf=(a,b)=>[a,b].sort().join("_");
+  let THREADS=null, thAt=0, DMOPEN=null, DMTIMER=null;
+  const SAMPLE_TH=[{id:"me_x2",members:["me","x2"],names:{x2:"Alex (sample)"},last:{text:"See you on Wednesday! 👋",from:"x2",at:H(2)},at:H(2),unread:true}];
+  async function loadThreads(force){ if(G()){ THREADS=SAMPLE_TH; return THREADS; } if(!me()) return []; if(THREADS&&!force&&Date.now()-thAt<20000) return THREADS;
+    try{ const res=await api("POST",":runQuery",{structuredQuery:{from:[{collectionId:"dms"}],where:{fieldFilter:{field:{fieldPath:"members"},op:"ARRAY_CONTAINS",value:S(me())}},limit:60}});
+      THREADS=(res||[]).filter(x=>x.document).map(x=>{ const o=fromDoc(x.document); o.unread=o.last&&o.last.from!==me()&&(o["r_"+me()]||0)<(o.at||0); return o; }).sort((a,b)=>(b.at||0)-(a.at||0)); thAt=Date.now(); }
+    catch(e){ THREADS=THREADS||[]; } dmBadge(); return THREADS; }
+  const otherOf=t=>(t.members||[]).find(u=>u!==(G()?"me":me()))||"";
+  function dmBadge(){ const n=(THREADS||[]).filter(t=>t.unread).length; document.querySelectorAll(".cl-dmtop .cl-dmn").forEach(b=>{ b.hidden=!n; b.textContent=n>9?"9+":n; }); }
+  function dmPanel(){ let o=document.getElementById("clDm"); if(o) return o; o=document.createElement("div"); o.id="clDm"; o.className="cl-dm-ov"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true"); o.setAttribute("aria-label",L("Messages","Mensajes"));
+    o.innerHTML=`<div class="cl-dm"><div class="cl-dmh"><button type="button" class="cs-act cl-dmback" data-dmback="1" hidden aria-label="${L("Back","Volver")}">←</button><b class="cl-dmt">💬 ${L("Messages","Mensajes")}</b><button type="button" class="cl-prof-x" data-dmx="1" aria-label="${L("Close","Cerrar")}">✕</button></div><div class="cl-dmb"></div></div>`;
+    document.body.appendChild(o); o.addEventListener("click",e=>{ if(e.target===o||e.target.closest("[data-dmx]")) closeDm(); }); return o; }
+  function closeDm(){ const o=document.getElementById("clDm"); if(o) o.remove(); DMOPEN=null; clearInterval(DMTIMER); }
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.getElementById("clDm")) closeDm(); });
+  async function openInbox(){ const o=dmPanel(), b=o.querySelector(".cl-dmb"); DMOPEN=null; clearInterval(DMTIMER); o.querySelector(".cl-dmback").hidden=true; o.querySelector(".cl-dmt").textContent="💬 "+L("Messages","Mensajes");
+    b.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`; await Promise.all([loadThreads(true),loadProfs(),loadPark(),POSTS?null:listPosts().then(p=>{ POSTS=p; }).catch(()=>{}),loadNotes().catch(()=>{})]);
+    const ts=THREADS||[];
+    b.innerHTML=`<div class="cl-dmnew"><label class="sr" for="dmFind">${L("New message to…","Nuevo mensaje para…")}</label><input id="dmFind" type="search" autocomplete="off" placeholder="✏️ ${L("New message: type a name…","Nuevo mensaje: escribe un nombre…")}"><ul class="cl-dmfind" hidden></ul></div>`+dmSugHTML()+(ts.length?`<ul class="cl-dml">${ts.map(t=>{ const u=otherOf(t), nm=(t.names||{})[u]||(profOf(u)||{}).name||L("Member","Miembro");
+      return `<li><button type="button" class="cl-dmi${t.unread?" new":""}" data-dmto="${esc(u)}" data-dmname="${esc(nm)}">${av(u,nm)}<span><b>${esc(nm)}</b><small>${t.last?esc((t.last.from===(G()?"me":me())?L("You: ","Tú: "):"")+(t.last.text||"📷")):""}</small></span><em>${t.at?ago(t.at):""}</em></button></li>`; }).join("")}</ul>`
+      :`<p class="cl-empty">${L("No messages yet. Type a name above to start one, or open someone’s profile and press 💬 Message.","Aún no hay mensajes. Escribe un nombre arriba para empezar uno, o abre el perfil de alguien y presiona 💬 Mensaje.")}</p>`)+`<p class="cl-dmnote">🔒 ${L("Only you and the other person can read your messages.","Solo tú y la otra persona pueden leer sus mensajes.")}</p>`; }
+  /* everyone you can write to: club profiles, people on the wall, the club roster, and always Noa */
+  function dmPeople(){ const out=new Map(), add=(u,n)=>{ if(!u||u===me()||out.has(u)) return; out.set(u,n||(profOf(u)||{}).name||""); };
+    if(G()){ [["x2","Alex (sample)"],["x3","Sam (sample)"],[NOA,"Noa"]].forEach(([u,n])=>add(u,n)); return [...out]; }
+    add(NOA,(profOf(NOA)||{}).name||"Noa");
+    (PROFS||[]).forEach(x=>add(x.id,x.name)); (POSTS||[]).forEach(p=>add(p.uid,p.name));
+    { const fd=window.__clubFeed&&window.__clubFeed(); ((fd&&fd.roster)||[]).forEach(r=>add(r.uid,r.name)); }
+    return [...out].filter(([,n])=>n); }
+  /* smart suggestions: people you've interacted with (DMs, replies, reactions, mentions, duels), plus Noa, always */
+  function dmSuggest(){ const my=G()?"me":me(), sc=new Map(), why=new Map(), names=new Map(dmPeople());
+    const bump=(u,n,w)=>{ if(!u||u===my||u===me()) return; sc.set(u,(sc.get(u)||0)+n); if(w&&!(why.get(u)||[]).includes(w)) why.set(u,(why.get(u)||[]).concat(w)); };
+    (THREADS||[]).forEach(t=>bump(otherOf(t),3,"💬"));
+    (NOTES||[]).forEach(n=>bump(n.uid,n.kind==="react"?2:3,n.kind==="react"?"❤️":n.kind==="mention"?"@":"↩️"));
+    (POSTS||[]).forEach(p=>{ (p.likes||[]).forEach(v=>{ const [u]=rxOf(v); if(p.uid===my) bump(u,2,"❤️"); else if(u===my) bump(p.uid,2,"❤️"); });
+      (COMM[p.id]||[]).forEach(c=>{ if(c.uid===my) bump(p.uid,3,"↩️"); else if(p.uid===my) bump(c.uid,3,"↩️"); (c.likes||[]).forEach(v=>{ const [u]=rxOf(v); if(c.uid===my) bump(u,1,"❤️"); else if(u===my) bump(c.uid,1,"❤️"); }); }); });
+    (PARK||[]).forEach(x=>{ const u=x.me?my:x.uid; (x.dz||[]).forEach(z=>{ if(u===my) bump(z.to,4,"⚔️"); else if(z.to===me()) bump(u,4,"⚔️"); }); });
+    let list=[...sc].filter(([u])=>names.get(u)).sort((a,b)=>b[1]-a[1]).map(([u])=>u).slice(0,6);
+    if(my!==NOA&&!list.includes(NOA)) list.splice(Math.min(list.length,2),0,NOA);   /* Noa is always there: near the top, not necessarily first */
+    if(list.length<4){ (POSTS||[]).forEach(p=>{ if(list.length<6&&p.uid&&p.uid!==my&&p.uid!==me()&&!list.includes(p.uid)&&names.get(p.uid)) list.push(p.uid); }); }
+    return list.slice(0,7).map(u=>[u,names.get(u)||"Noa",u===NOA&&!(why.get(u)||[]).length?["🎓"]:(why.get(u)||[])]); }
+  function dmSugHTML(){ const l=dmSuggest(); if(!l.length) return "";
+    return `<div class="cl-dmsug"><div class="cl-dmsugh">${L("Suggested","Sugerencias")}</div><div class="cl-dmsugr">${l.map(([u,n,w])=>`<button type="button" class="cl-dmsc" data-dmto="${esc(u)}" data-dmname="${esc(n)}" title="${esc(n)}">${av(u,n)}<b>${esc(String(n).split(" ")[0])}</b>${w.length?`<small>${w.slice(0,2).join(" ")}</small>`:""}</button>`).join("")}</div></div>`; }
+  const fold=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  document.addEventListener("input",e=>{ const i=e.target.closest("#dmFind"); if(!i) return; const ul=i.parentNode.querySelector(".cl-dmfind"), q=fold(i.value.trim());
+    if(!q){ ul.hidden=true; ul.innerHTML=""; return; }
+    const hits=dmPeople().filter(([,n])=>fold(n).split(/\s+/).some(w=>w.startsWith(q))||fold(n).includes(q)).sort((a,b)=>(b[0]===NOA)-(a[0]===NOA)||a[1].localeCompare(b[1])).slice(0,8);
+    ul.hidden=false; ul.innerHTML=hits.length?hits.map(([u,n])=>`<li><button type="button" class="cl-dmi" data-dmto="${esc(u)}" data-dmname="${esc(n)}">${av(u,n)}<span><b>${esc(n)}</b>${u===NOA?`<small>${L("Teacher","Profe")}</small>`:""}</span></button></li>`).join(""):`<li class="muted cl-dmnone">${L("Nobody with that name in the club yet.","Nadie con ese nombre en el club todavía.")}</li>`; });
+  document.addEventListener("keydown",e=>{ if(e.key!=="Enter"||!e.target.closest("#dmFind")) return; e.preventDefault(); const f=e.target.parentNode.querySelector(".cl-dmfind [data-dmto]"); if(f) f.click(); });
+  function msgHTML(m){ const mine=m.from===(G()?"me":me());
+    return `<div class="cl-msg${mine?" mine":""}">${m.text?`<p>${txtHTML(m.text)}</p>`:""}${(m.imgs||[]).map(i=>`<img data-img="${esc(i)}" alt="${L("Photo","Foto")}" class="cl-msgimg">`).join("")}${(m.gifs||[]).map(g=>`<img src="${esc(g.url||g)}" alt="GIF" class="cl-msgimg">`).join("")}<em>${new Date(m.at).toLocaleString(L("en-US","es-CL"),{hour:"numeric",minute:"2-digit",month:"short",day:"numeric"})}</em></div>`; }
+  async function openChat(u,nm){ if(!u||u===me()) return; if(!G()&&!me()){ toast(L("Sign in first.","Primero inicia sesión.")); return; }
+    const o=dmPanel(), b=o.querySelector(".cl-dmb"), tid=G()?"me_"+u:tidOf(me(),u); DMOPEN={tid,u,nm};
+    o.querySelector(".cl-dmback").hidden=false; o.querySelector(".cl-dmt").innerHTML=`${av(u,nm)} ${esc(nm||L("Member","Miembro"))}`;
+    b.innerHTML=`<div class="cl-msgs" aria-live="polite"><p class="cs-load">${L("Loading…","Cargando…")}</p></div>${composer("dm",u,L("Write a message…","Escribe un mensaje…"))}`;
+    const ta=b.querySelector("textarea"); if(ta){ ta.rows=2; ta.focus(); ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); ta.form.requestSubmit(); } }); }
+    await paintChat(true); clearInterval(DMTIMER); DMTIMER=setInterval(async()=>{ if(!(document.getElementById("clDm")&&DMOPEN&&!document.hidden)) return; if(G()){ paintChat(false); return; }
+      /* check the thread's "last message" time (1 read) and only reload the messages when something new arrived */
+      try{ const t=DMOPEN.tid, r=await api("GET","/dms/"+t), at=r&&r.fields&&r.fields.at?Number(r.fields.at.integerValue||r.fields.at.doubleValue||0):0; if(!DMOPEN||DMOPEN.tid!==t) return; if(at&&at===DMOPEN.lastAt) return; DMOPEN.lastAt=at; paintChat(false); }catch(e){} },15000); }
+  async function paintChat(scroll){ if(!DMOPEN) return; const {tid}=DMOPEN, box=document.querySelector("#clDm .cl-msgs"); if(!box) return; let ms=[];
+    if(G()) ms=[{from:DMOPEN.u,text:"Hi! Are you coming on Wednesday? 😊",at:H(3)},{from:"me",text:"Yes! See you there 👋",at:H(2)}];
+    else { try{ ms=await query("dms/"+tid,"msgs","ASCENDING",300); }catch(e){ ms=[]; } }
+    const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+    box.innerHTML=ms.length?ms.map(msgHTML).join(""):`<p class="cl-empty">${L("Say hi 👋","Saluda 👋")}</p>`; paintImgs(box); if(scroll||near) box.scrollTop=box.scrollHeight;
+    if(!G()&&ms.length&&ms[ms.length-1].from!==me()){ try{ await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=r_${me()}`,{fields:{["r_"+me()]:I(Date.now())}}); const t=(THREADS||[]).find(x=>x.id===tid); if(t) t.unread=false; dmBadge(); }catch(e){} } }
+  async function sendDm(form,text,files,gif){ const u=form.dataset.target, tid=tidOf(me(),u), now=Date.now();
+    const ids=[]; for(const f of files){ ids.push(await uploadImg(f)); }
+    const names={[me()]:F().name()||"",[u]:(DMOPEN&&DMOPEN.nm)||(profOf(u)||{}).name||""};
+    await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=members&updateMask.fieldPaths=json&updateMask.fieldPaths=at&updateMask.fieldPaths=r_${me()}`,{fields:{members:{arrayValue:{values:[me(),u].sort().map(S)}},json:S(JSON.stringify({names,last:{text:text.slice(0,120)||(gif?"GIF":"📷"),from:me(),at:now}})),at:I(now),["r_"+me()]:I(now)}});
+    const data={text}; if(ids.length) data.imgs=ids; if(gif) data.gifs=[gif];
+    await api("POST",`/dms/${tid}/msgs?documentId=${rid()}`,{fields:{from:S(me()),at:I(now),json:S(JSON.stringify(data))}});
+    const t=(THREADS||[]).find(x=>x.id===tid); if(!t||!t.at||now-t.at>30*60000) note(u,"dm","dm:"+me(),text||"📷"); if(t){ t.at=now; t.last={text,from:me(),at:now}; } }
+  window.__clubMyProfile=()=>{ if(!me()) return; if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>openProfile(me()),200); };
+  window.__clubDM=(u,nm)=>{ if(location.hash!=="#club") location.hash="#club"; setTimeout(()=>openChat(u,nm),u?150:0); };
+  window.__clubInbox=()=>openInbox();
+  document.addEventListener("click",e=>{ const t=e.target.closest("[data-dmto]"); if(t){ e.preventDefault(); document.querySelector(".cl-prof-ov")?.remove(); openChat(t.dataset.dmto,t.dataset.dmname); return; }
+    if(e.target.closest("[data-dmback]")){ openInbox(); return; }
+    if(e.target.closest("[data-dminbox]")){ openInbox(); return; } });
+  window.__clubSocial={ mount, dms:loadThreads, recent, refreshBadge, unread, reports, delReport, watched:syncWatched };
+  const b=document.getElementById("clubMain"); if(b) mount(b);
+})();
+</script>
