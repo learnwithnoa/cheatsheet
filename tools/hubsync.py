@@ -728,8 +728,9 @@ def main():
     cmd = a[0]
     if cmd == "whoami":
         print(json.dumps({"teacherUid": tu})); return
-    if cmd == "backup":
+    if cmd == "backup" and (len(a) < 2 or a[1].endswith(".gz")):
         # Full copy of Hibi's database (everything the teacher account can read) into one gzipped JSON file.
+        # Only for a path ending in .gz (the weekly Drive backup). "backup <folder>" (the nightly GitHub backup) uses the folder version further down.
         # backup /tmp/hibi-backup.json.gz  -> prints a short summary (collections, docs, size). Read only: changes nothing.
         import gzip
         out_path = a[1] if len(a) > 1 else "/tmp/hibi-backup.json.gz"
