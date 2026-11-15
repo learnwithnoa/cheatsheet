@@ -23,6 +23,8 @@ _css = r'''
 .cl-lock-tag{flex:none;font:700 12px var(--mono);letter-spacing:.04em;padding:5px 10px;border-radius:999px;background:var(--surface);border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line));white-space:nowrap;margin-top:3px}
 .cl-lock>p:first-of-type{margin-top:-4px}
 .cl-lock .cl-good{grid-template-columns:1fr 1fr}
+.cl-tile-when{font-size:13.5px;padding:6px 12px}
+.cl-tile b{font-size:16px}
 .cl-lock-week [data-plan],.cl-lock-week [data-board]{display:none!important}
 @media (max-width:560px){.cl-lock .cl-good>div{flex-direction:column;gap:4px;padding:11px 12px}.cl-lock .cl-good p{font-size:13.5px}}
 @media (max-width:480px){.cl-lock .cl-lock-h{flex-direction:column-reverse;gap:8px}.cl-lock h2{font-size:20px}}

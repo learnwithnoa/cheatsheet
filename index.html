@@ -1200,12 +1200,23 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 #hbMem .hb-mem-links{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
 #hbMem .hb-mem-links button{background:none;border:0;padding:0;font:700 13.5px var(--body);color:var(--accent,#2E6FD8);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 #hbMem .hb-mem-links button.danger{color:var(--muted)}
+#hbMem .hb-mem-min{margin-left:auto;background:none;border:1.5px solid var(--line);border-radius:999px;padding:4px 11px;font:700 12.5px var(--body);color:var(--muted);cursor:pointer}
+#hbMem .hb-mem-min:hover{color:var(--ink)}
+#hbMem .hb-mem.min{padding:10px 16px}
+#hbMem .hb-mem.min>:not(.hb-mem-h){display:none}
+/* the join buttons sit in the middle of the card */
+.hb-pay{align-items:center;text-align:center}
+.hb-pay-row{justify-content:center}
+.cl-lock .cl-join-btn{align-self:center}
+.cl-lock .cl-join-btn+.cl-lock-small{text-align:center}
 
 .cl-lock .cl-lock-h{align-items:flex-start}
 .cl-lock h2{padding-right:0}
 .cl-lock-tag{flex:none;font:700 12px var(--mono);letter-spacing:.04em;padding:5px 10px;border-radius:999px;background:var(--surface);border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line));white-space:nowrap;margin-top:3px}
 .cl-lock>p:first-of-type{margin-top:-4px}
 .cl-lock .cl-good{grid-template-columns:1fr 1fr}
+.cl-tile-when{font-size:13.5px;padding:6px 12px}
+.cl-tile b{font-size:16px}
 .cl-lock-week [data-plan],.cl-lock-week [data-board]{display:none!important}
 @media (max-width:560px){.cl-lock .cl-good>div{flex-direction:column;gap:4px;padding:11px 12px}.cl-lock .cl-good p{font-size:13.5px}}
 @media (max-width:480px){.cl-lock .cl-lock-h{flex-direction:column-reverse;gap:8px}.cl-lock h2{font-size:20px}}
@@ -10724,7 +10735,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115203927"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115204406"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11085,13 +11096,15 @@ window.__csBusy = function(){
     const links=[];
     if(m.status==="active"||m.status==="grace") links.push(`<button data-hbmem="card">${m.status==="grace"?"Update my card":"Change card"}</button>`);
     if(m.status==="active") links.push(`<button class="danger" data-hbmem="cancel">Cancel membership</button>`);
-    el.innerHTML=`<div class="hb-mem${warn?" warn":""}"><div class="hb-mem-h"><b>💛 Your membership</b><span class="hb-tag">${tag}</span></div>
+    let min=false; try{ min=localStorage.getItem("hibi-mem-min")==="1"; }catch(e){}
+    el.innerHTML=`<div class="hb-mem${warn?" warn":""}${min?" min":""}"><div class="hb-mem-h"><b>💛 Your membership</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmem="min" aria-expanded="${!min}" title="${min?"Show details":"Minimize"}">${min?"Show ▾":"Minimize ▴"}</button></div>
       <p>${line}</p>${m.card&&m.status!=="ended"?`<p class="hb-pay-note">Card: ${String(m.card).replace(/[<>&]/g,"")}</p>`:""}
       ${links.length?`<div class="hb-mem-links">${links.join("")}</div>`:""}</div>`;
   }
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbmem]"); if(!b) return; e.preventDefault();
-    if(preview()){ say("In View as nothing changes."); return; }
+    if(preview()&&b.dataset.hbmem!=="min"){ say("In View as nothing changes."); return; }
+    if(b.dataset.hbmem==="min"){ const box=b.closest(".hb-mem"), on=!box.classList.contains("min"); try{ localStorage.setItem("hibi-mem-min",on?"1":"0"); }catch(e){} drawMem(); return; }
     if(b.dataset.hbmem==="card"){ b.disabled=true; try{ const d=await call("/api/update-card"); location.href=d.url; }catch(err){ say(err.message); b.disabled=false; } return; }
     if(b.dataset.hbmem==="cancel"){
       if(!b.dataset.sure){ b.dataset.sure="1"; b.textContent="Tap again to cancel"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.sure; b.textContent="Cancel membership"; } },5000); return; }
