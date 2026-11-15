@@ -359,7 +359,7 @@ def make_view(s, meta=None):
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
 
 
-SITE = "https://learnwithnoa.github.io/cheatsheet/"
+SITE = "https://hibi.cl/"
 
 
 def _strs(xs, n, m=600):

@@ -223,7 +223,7 @@ document.addEventListener("submit", async e => {
   try { await setDoc(doc(db, "access", email), { name, at: Date.now(), by: "noa" }); }
   catch (er) { toast("Couldn’t save that. Try again."); return; }
   const first = name.split(/\s+/)[0] || "";
-  const body = `Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://learnwithnoa.github.io/cheatsheet/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
+  const body = `Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://hibi.cl/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
   window.open("https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(email) + "&su=" + encodeURIComponent("You're in! Your Hibi access 🎉") + "&body=" + encodeURIComponent(body), "_blank");
   f.reset(); $("invBox").open = false; toast("✓ Approved. Send the email that just opened.");
 });

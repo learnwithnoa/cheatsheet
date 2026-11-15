@@ -290,7 +290,7 @@
     if(!pop){ pop=document.createElement("div"); pop.id="vaPop"; pop.className="va-pop card"; pop.hidden=true;
       pop.innerHTML=`<div class="cs-sec va-sec" id="vaSec"><h4>👁 View the site as…</h4>
         <div class="va-guest"><div class="va-h">Guest links</div>
-          ${[["New member","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q"],["Club member (sample week)","https://learnwithnoa.github.io/cheatsheet/?guest=hb7k2q&as=club#club"]].map(([l,u])=>`<div class="va-gl"><span>${l}</span><button type="button" class="va-copy" data-vacopy="${u}">Copy link</button></div>`).join("")}</div>
+          ${[["New member","https://hibi.cl/?guest=hb7k2q"],["Club member (sample week)","https://hibi.cl/?guest=hb7k2q&as=club#club"]].map(([l,u])=>`<div class="va-gl"><span>${l}</span><button type="button" class="va-copy" data-vacopy="${u}">Copy link</button></div>`).join("")}</div>
         <div class="va-list" id="vaList"><div class="va-res"><p class="muted">Loading everyone…</p></div></div></div>`;
       document.body.appendChild(pop); }
   }
@@ -495,7 +495,7 @@
     return [...by.values()]; }
   async function approve(name,email){ email=String(email).trim().toLowerCase(); await fsx("PATCH","/access/"+encodeURIComponent(email),{fields:{name:{stringValue:name},at:{integerValue:String(Date.now())},by:{stringValue:"noa"}}});
     const first=String(name).trim().split(/\s+/)[0]||"";
-    const body=`Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://learnwithnoa.github.io/cheatsheet/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
+    const body=`Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://hibi.cl/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
     window.open("https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(email)+"&su="+encodeURIComponent("You're in! Your Hibi access 🎉")+"&body="+encodeURIComponent(body),"_blank"); }
   document.addEventListener("click",async e=>{ const ok=e.target.closest("[data-tnok]"), no=e.target.closest("[data-tnno]"); if(!ok&&!no) return; const id=(ok||no).dataset.tnok||(ok||no).dataset.tnno, r=(data.areq||[]).find(x=>x.id===id); if(!r) return;
     try{ if(ok) await approve(r.name,r.email); for(const x of (r.ids||[id])) await fsx("DELETE","/accessRequests/"+encodeURIComponent(x)); }catch(er){ if(window.toast) window.toast("Couldn’t save that. Did you paste the new Firebase rules?"); return; }

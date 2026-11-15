@@ -7,7 +7,7 @@ const PROJECT = "learnwithnoa-cheatsheet";
 const FS = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents`;
 const TEACHER = "J8D2tjQmBaaA2QN730tSfSrjfm73";
 const GRACE_DAYS = 5;
-const SITE = "https://learnwithnoa.github.io/cheatsheet/";
+const SITE = "https://hibi.cl/";
 const ORIGINS = ["https://learnwithnoa.github.io", "https://hibi.cl", "https://www.hibi.cl", "http://localhost:8768"];
 
 // Plans: standard prices plus each legacy member's monthly price (in CLP).

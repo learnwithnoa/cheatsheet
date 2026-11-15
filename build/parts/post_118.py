@@ -44,7 +44,17 @@ s=open(p,encoding="utf-8").read()
 if '2026-1115-sweep' not in s:
     s=s.replace(a,a+'''  {id:"2026-1115-sweep", date:"November 15, 2026", title:"Tidier top bar", items:[
     ["＋","Save words on your phone","The green <b>＋</b> button is now at the top on phones too, next to search. Tap it on any page to save a new word.",""],
-    ["🪟","One window at a time","Music, timer, notifications, messages and your profile all open in the same place, and opening one closes the others.",""]
+    ["🪟","One window at a time","Music, timer, notifications, messages and your profile each open right under their own button, and opening one closes the others.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+# Nov 15: new address hibi.cl
+s=open(p,encoding="utf-8").read()
+if '2026-1115-domain' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1115-domain", date:"November 15, 2026", title:"Hibi has its own address: hibi.cl", items:[
+    ["🏠","hibi.cl","Hibi now lives at <b>hibi.cl</b>. Old links still work and bring you here.",""],
+    ["🔑","Sign in once more","Because the address is new, you may need to sign in again. All your notes, words and progress are saved to your account, so everything is still here.",""],
+    ["📲","Installed the app?","If you added Hibi to your phone or computer, add it again from <b>hibi.cl</b> (Install the app, at the bottom of any page) and remove the old icon.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
