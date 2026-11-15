@@ -13,7 +13,7 @@ R('''      <p>Noa’s English Club is where you practice speaking with other lea
       </div>''')
 R('''      <p class="cl-lock-small">Members get every weekly class, the community wall to chat with other members, all past class recordings, the weekly club podcast 🎧, and our 📸 Instagram group to keep practicing (and send memes) between classes.</p>''',
 '''      <div class="cl-lock-sub">Members get</div>
-      <div class="cl-pills cl-perks"><span>📅 4 live classes a week</span><span>🎬 All class recordings</span><span>💬 Community wall</span><span>🎧 Weekly club podcast</span><span>📸 Instagram group (memes welcome)</span></div>''')
+      <div class="cl-pills cl-perks"><span>📅 4 live classes a week</span><span>🎬 All class recordings</span><span>💬 Community wall</span><span>🎧 Weekly club podcast</span></div>''')
 _css = '''
 /* step123: club card for non-members */
 .cl-pills{display:flex;flex-wrap:wrap;gap:8px}

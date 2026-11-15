@@ -3857,7 +3857,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       </div>
       ${SAMPLE&&SAMPLE.url?`<a class="cl-sample" href="${esc(SAMPLE.url)}" target="_blank" rel="noopener"><span class="i" aria-hidden="true">🎬</span><span><b>${esc(SAMPLE.title||"Watch a real class")}</b><small>${esc(SAMPLE.note||"See what a club class looks like before you join.")}</small></span></a>`:""}
       <div class="cl-lock-sub">Members get</div>
-      <div class="cl-pills cl-perks"><span>📅 4 live classes a week</span><span>🎬 All class recordings</span><span>💬 Community wall</span><span>🎧 Weekly club podcast</span><span>📸 Instagram group (memes welcome)</span></div>
+      <div class="cl-pills cl-perks"><span>📅 4 live classes a week</span><span>🎬 All class recordings</span><span>💬 Community wall</span><span>🎧 Weekly club podcast</span></div>
       <a class="cl-join-btn" href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}&body=${encodeURIComponent("Hi Noa! I'd like to join the club.\n\nMy name: "+((window.__csFire&&window.__csFire.name&&window.__csFire.name())||"")+"\nMy level (if I know it): \n\n")}" data-joindm="1">💛 I want to join</a><p class="cl-lock-small">Tap the button to send Noa a message here on Hibi, and he’ll send you everything you need. Prefer email? <a href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}">Email Noa</a>.</p></div>
       ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
@@ -10629,7 +10629,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115092948"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115093144"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
