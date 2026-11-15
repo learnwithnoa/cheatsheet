@@ -632,11 +632,26 @@ async function loadHubList() { if (!tUid) return; try { const ds = await getDocs
 const norm = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g, "");
 function guessHub(s) { const e = norm(s.email); const m = hubList.find(h => h.email && norm(h.email) === e) || hubList.find(h => norm(h.name) === norm(s.name)) || hubList.find(h => norm(h.name).split(" ")[0] === norm(s.name).split(" ")[0] && hubList.filter(k => norm(k.name).split(" ")[0] === norm(s.name).split(" ")[0]).length === 1); return m ? m.id : ""; }
 function hubOpts(s) { return `<option value="">— not linked —</option>` + hubList.filter(h => h.status !== "inactive" || h.id === s.role.hub).map(h => `<option value="${esc(h.id)}" ${s.role.hub === h.id ? "selected" : ""}>${esc(h.name)}</option>`).join(""); }
+/* put a Club / Both person on the club list now (fresh copy of Noa's settings, so nothing newer is overwritten) */
+async function clubOn(s) {
+  try {
+    const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); const fm = m.exists() ? JSON.parse(m.data().json || "{}") || {} : {};
+    const ids = new Set(fm.clubUids || []);
+    if (fm.clubFeed && !ids.has(s.uid)) { ids.add(s.uid); fm.clubUids = [...ids].sort(); await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(fm), deleted: false, at: serverTimestamp() }); }
+    hubMeta = fm;
+    try { await setDoc(doc(db, "clubAccess", s.uid), { on: true, name: s.name || "" }, { merge: true }); } catch (e) { console.warn("clubAccess", e); }
+  } catch (e) { console.warn("clubOn", e); }
+}
 async function linkHub(s, hubId, oldId) {
   try {
     const { makeView } = await import("./hubview.js?v=17");
     if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
-    if (!hubId) { await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() }); return; }
+    const inClub = !!(s.role && s.role.club !== false);   /* Club or Both: give club access right away (don't wait for the next sync) */
+    if (inClub) await clubOn(s);
+    if (!hubId) {
+      if (inClub && hubMeta && hubMeta.clubFeed) await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify({ v: 1, clubOnly: true, club: hubMeta.clubFeed, updated: new Date().toISOString() }), deleted: false, at: serverTimestamp() });
+      else await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() });
+      return; }
     const h = hubList.find(x => x.id === hubId); if (!h) return;
     h.uid = s.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + h.id), { json: JSON.stringify(h), deleted: false, at: serverTimestamp() });
     await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(h, hubMeta || {})), deleted: false, at: serverTimestamp() });
