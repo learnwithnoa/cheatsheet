@@ -1201,6 +1201,15 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 #hbMem .hb-mem-links button{background:none;border:0;padding:0;font:700 13.5px var(--body);color:var(--accent,#2E6FD8);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 #hbMem .hb-mem-links button.danger{color:var(--muted)}
 
+.cl-lock .cl-lock-h{align-items:flex-start}
+.cl-lock h2{padding-right:0}
+.cl-lock-tag{flex:none;font:700 12px var(--mono);letter-spacing:.04em;padding:5px 10px;border-radius:999px;background:var(--surface);border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line));white-space:nowrap;margin-top:3px}
+.cl-lock>p:first-of-type{margin-top:-4px}
+.cl-lock .cl-good{grid-template-columns:1fr 1fr}
+.cl-lock-week [data-plan],.cl-lock-week [data-board]{display:none!important}
+@media (max-width:560px){.cl-lock .cl-good>div{flex-direction:column;gap:4px;padding:11px 12px}.cl-lock .cl-good p{font-size:13.5px}}
+@media (max-width:480px){.cl-lock .cl-lock-h{flex-direction:column-reverse;gap:8px}.cl-lock h2{font-size:20px}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3924,19 +3933,19 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function locked(){ loadSample(); document.querySelectorAll("#v-club .cl-igtop").forEach(x=>x.hidden=true);
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
-    box.innerHTML=`<div class="cl-lock"><div class="cl-lock-h"><h2>Club members only</h2><div class="cl-lock-badge" aria-hidden="true">🔒</div></div>
-      <p>Practice speaking English every week with other learners, in a relaxed, friendly group.</p>
+    box.innerHTML=`<div class="cl-lock"><div class="cl-lock-h"><h2>Practice speaking English, every week</h2><span class="cl-lock-tag">🔒 Members only</span></div>
+      <p>Live conversation classes on Zoom with other learners, in a relaxed, friendly group.</p>
       <div class="cl-pills"><span>🎯 B1 to C1</span><span>🗣️ Fluency first, grammar second</span><span>💻 On Zoom, from anywhere</span></div>
       <div class="cl-lock-sub">Every week</div>
       <div class="cl-tiles">${lockSched().map(c=>`<div class="cl-tile"><div class="cl-tile-h"><span class="cl-tile-i" aria-hidden="true">${c.ico}</span><b>${esc(c.name)}</b></div><p>${esc(c.what)}</p><span class="cl-tile-when">${esc(c.when)}</span></div>`).join("")}</div>
       <p class="cl-lock-small">🕐 All times are <b>Chile time</b> (Santiago).</p>
       <div class="cl-good">
-        <div><span aria-hidden="true">🎬</span><p><b>Every class is recorded</b>Missed one? Watch it later, whenever you want.</p></div>
-        <div><span aria-hidden="true">🙌</span><p><b>Come when you can</b>Attendance is optional. Join the classes that fit your week.</p></div>
+        <div><span aria-hidden="true">🎬</span><p><b>Every class is recorded</b>Missed one? Watch it later.</p></div>
+        <div><span aria-hidden="true">🙌</span><p><b>Come when you can</b>Join the classes that fit your week.</p></div>
+        <div><span aria-hidden="true">💬</span><p><b>A community wall</b>Chat with the group between classes.</p></div>
+        <div><span aria-hidden="true">🎧</span><p><b>A weekly club podcast</b>Short episodes to keep listening all week.</p></div>
       </div>
       ${SAMPLE&&SAMPLE.url?`<a class="cl-sample" href="${esc(SAMPLE.url)}" target="_blank" rel="noopener"><span class="i" aria-hidden="true">🎬</span><span><b>${esc(SAMPLE.title||"Watch a real class")}</b><small>${esc(SAMPLE.note||"See what a club class looks like before you join.")}</small></span></a>`:""}
-      <div class="cl-lock-sub">Members get</div>
-      <div class="cl-pills cl-perks"><span>📅 4 live classes a week</span><span>🎬 All class recordings</span><span>💬 Community wall</span><span>🎧 Weekly club podcast</span></div>
       <a class="cl-join-btn" href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}&body=${encodeURIComponent("Hi Noa! I'd like to join the club.\n\nMy name: "+((window.__csFire&&window.__csFire.name&&window.__csFire.name())||"")+"\nMy level (if I know it): \n\n")}" data-joindm="1">💛 I want to join</a><p class="cl-lock-small">Tap the button to send Noa a message here on Hibi, and he’ll send you everything you need. Prefer email? <a href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}">Email Noa</a>.</p></div>
       ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
@@ -10715,7 +10724,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115203715"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115203927"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11037,9 +11046,9 @@ window.__csBusy = function(){
     btn.dataset.hbPay="1";
     const wrap=document.createElement("div"); wrap.className="hb-pay";
     wrap.innerHTML=`<div class="hb-pay-row">
-        <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>Monthly · cancel anytime</small></button>
+        <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>${clp(35000)} a month · cancel anytime</small></button>
         <button class="hb-pay-btn alt" data-hbjoin="yearly">Join for a year<small>${clp(210000)} · half price</small></button></div>
-      <p class="hb-pay-note">You pay safely with your card on Flow. Your price is shown there before you confirm.</p>`;
+      <p class="hb-pay-note">Secure card payment with Flow. You can cancel anytime, right here on Hibi.</p>`;
     btn.parentNode.insertBefore(wrap,btn);
     btn.classList.add("alt"); btn.style.cssText="background:none;box-shadow:none;padding:4px 0;color:var(--ink);text-decoration:underline;font-size:14px";
     btn.textContent="Questions first? Message Noa";

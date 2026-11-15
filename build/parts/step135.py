@@ -50,9 +50,9 @@ _js = r'''<script>
     btn.dataset.hbPay="1";
     const wrap=document.createElement("div"); wrap.className="hb-pay";
     wrap.innerHTML=`<div class="hb-pay-row">
-        <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>Monthly · cancel anytime</small></button>
+        <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>${clp(35000)} a month · cancel anytime</small></button>
         <button class="hb-pay-btn alt" data-hbjoin="yearly">Join for a year<small>${clp(210000)} · half price</small></button></div>
-      <p class="hb-pay-note">You pay safely with your card on Flow. Your price is shown there before you confirm.</p>`;
+      <p class="hb-pay-note">Secure card payment with Flow. You can cancel anytime, right here on Hibi.</p>`;
     btn.parentNode.insertBefore(wrap,btn);
     btn.classList.add("alt"); btn.style.cssText="background:none;box-shadow:none;padding:4px 0;color:var(--ink);text-decoration:underline;font-size:14px";
     btn.textContent="Questions first? Message Noa";
