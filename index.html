@@ -1131,6 +1131,14 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 
 .cl-igtop[hidden]{display:none!important}
 
+/* step126: every top window in the same place (desktop/tablet) */
+@media (min-width:601px){
+  html body #musicPanel, html body #tmPanel, html body #clBellPanel, html body #authPanel, html body #csPanel, html body form.qa.qa.qa, html body .cl-dm-ov .cl-dm{
+    position:fixed!important; top:calc(env(safe-area-inset-top,0px) + var(--hdr-h,61px) + var(--va-h,0px) - 1px)!important;
+    right:calc(16px + env(safe-area-inset-right,0px))!important; left:auto!important; bottom:auto!important; width:380px!important; max-width:calc(100vw - 32px)!important; margin:0!important}
+}
+@media (max-width:600px){ html body #tmPanel{left:max(16px,env(safe-area-inset-left,0px))!important;right:max(16px,env(safe-area-inset-right,0px))!important;width:auto!important} }
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -10632,7 +10640,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115102416"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115125620"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10852,7 +10860,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("nav .navbtn[dat
     const tab=e.target.closest("[data-nm]"), x=e.target.closest("[data-nmclose]"), b=bell(), onBell=b&&b.btn.contains(e.target);
     if(!tab&&!x&&!onBell) return;
     e.preventDefault(); e.stopImmediatePropagation();
-    ["authPanel:authClose","musicPanel:musicClose","tmPanel:tmClose"].forEach(p=>{ const [pid,cid]=p.split(":"); if(vis(document.getElementById(pid))){ const c=document.getElementById(cid); if(c) pass(()=>c.click()); } });
+    ["authPanel:authClose","csPanel:csClose","musicPanel:musicClose","tmPanel:tmClose"].forEach(p=>{ const [pid,cid]=p.split(":"); if(vis(document.getElementById(pid))){ const c=document.getElementById(cid); if(c) pass(()=>c.click()); } });
     if(x){ closeAll(); if(b) b.btn.focus(); return; }
     if(tab){ if(tab.getAttribute("aria-selected")!=="true") show(tab.dataset.nm); return; }
     if(notifOpen()||dmOpen()) closeAll(); else show(last);
@@ -10888,6 +10896,18 @@ window.__csBusy = function(){
       if (e && !e.value) { e.value = d[id]; e.dispatchEvent(new Event("input", {bubbles: true})); delete d[id]; } else if (!e) left++; }
     if (left && ++tries < 20) setTimeout(restore, 500); };
   setTimeout(restore, 300);
+})();
+</script>
+<script>
+/* step126: only one top window open at a time */
+(function(){
+  const P=[["#musicPanel","#musicBtn"],["#tmPanel","#tmBtn"],["#clBellPanel","#clBell,#dmTopBtn"],[".cl-dm-ov","#clBell,#dmTopBtn"],["#authPanel","#authBtn"],["#csPanel","#authBtn"],["#qa","#hdrWord,#fab"]];
+  const vis=e=>!!e&&e.getClientRects().length>0;
+  const closeIt=sel=>{ const e=document.querySelector(sel); if(!vis(e)) return;
+    const x=[...e.querySelectorAll("button")].find(b=>vis(b)&&(/close|cerrar/i.test(b.getAttribute("aria-label")||"")||/^[×✕]$/.test(b.textContent.trim())));
+    if(x) x.click(); else e.hidden=true; };
+  document.addEventListener("click",ev=>{ const b=ev.target.closest&&ev.target.closest("#musicBtn,#tmBtn,#clBell,#dmTopBtn,#authBtn,#hdrWord,#fab"); if(!b) return;
+    setTimeout(()=>{ P.forEach(([sel,own])=>{ if(!b.matches(own)) closeIt(sel); }); },0); },true);
 })();
 </script>
 
