@@ -1,0 +1,11 @@
+name = "hibi-pay"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+FLOW_ENV = "sandbox"   # change to "live" when we switch to real payments
+FIREBASE_API_KEY = "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw"
+
+[triggers]
+crons = ["0 9 * * *"]   # every day at 6:00 Chile time: check payments

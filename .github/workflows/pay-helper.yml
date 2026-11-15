@@ -1,0 +1,50 @@
+name: Pay helper
+# Puts the Hibi pay helper (pay/worker.js) on Cloudflare with its secret keys.
+# The keys live only in this repo's Actions secrets and in Cloudflare; pay/deploy-log.txt shows the result (no secrets).
+on:
+  push:
+    branches: [main]
+    paths: ["pay/worker.js", "pay/wrangler.toml", ".github/workflows/pay-helper.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: pay-helper
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Deploy
+        working-directory: pay
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          FLOW_API_KEY: ${{ secrets.FLOW_API_KEY }}
+          FLOW_SECRET_KEY: ${{ secrets.FLOW_SECRET_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          set +e
+          {
+            echo "Deploy $(date -u +%FT%TZ)"
+            for v in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID FLOW_API_KEY FLOW_SECRET_KEY FIREBASE_SERVICE_ACCOUNT; do
+              if [ -n "${!v}" ]; then echo "$v: set"; else echo "$v: MISSING"; fi
+            done
+            echo "$FIREBASE_SERVICE_ACCOUNT" | python3 -c "import json,sys; d=json.load(sys.stdin); print('Firebase key: valid, project', d.get('project_id'))" 2>/dev/null || echo "Firebase key: not valid JSON"
+          } > /tmp/log.txt
+          npx -y wrangler@4 deploy > /tmp/out.txt 2>&1; echo "deploy exit: $?" >> /tmp/log.txt
+          jq -n --arg a "$FLOW_API_KEY" --arg b "$FLOW_SECRET_KEY" --arg c "$FIREBASE_SERVICE_ACCOUNT" \
+            '{FLOW_API_KEY:$a, FLOW_SECRET_KEY:$b, FIREBASE_SERVICE_ACCOUNT:$c}' > /tmp/sec.json
+          npx -y wrangler@4 secret bulk /tmp/sec.json >> /tmp/out.txt 2>&1; echo "secrets exit: $?" >> /tmp/log.txt
+          rm -f /tmp/sec.json
+          # keep only harmless lines (urls, results, errors), never key values
+          grep -E "https://|Uploaded|Deployed|Success|✨|✘|ERROR|error|Error|subdomain|workers.dev" /tmp/out.txt | head -40 >> /tmp/log.txt
+          cp /tmp/log.txt deploy-log.txt
+      - name: Save the result
+        run: |
+          git config user.name "hibi-bot"; git config user.email "actions@users.noreply.github.com"
+          git add pay/deploy-log.txt
+          git commit -m "Pay helper deploy log [skip ci]" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 5; done
