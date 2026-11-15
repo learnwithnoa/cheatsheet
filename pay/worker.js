@@ -220,7 +220,7 @@ async function nightly(env) {
 
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
-  try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { r.flowApi = e.status === 401 ? "keys rejected" : "ok"; if (e.status === 401) r.ok = false; }
+  try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { r.flowApi = e.status === 401 ? "keys rejected" : "ok"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.flowStatus = e.status; if (e.status === 401) r.ok = false; }
   try { await fs(env, "GET", "roles?pageSize=1"); r.database = "ok"; } catch (e) { r.database = String(e.message).slice(0, 120); r.ok = false; }
   return r;
 }
