@@ -1172,6 +1172,16 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
     right:calc(16px + env(safe-area-inset-right,0px))!important;left:auto!important;width:380px!important;max-width:calc(100vw - 32px)!important;margin:0!important}
 }
 
+/* step134: each top window under its own icon */
+@media (min-width:601px){
+  html body #musicPanel{right:var(--ar-music,16px)!important}
+  html body #tmPanel{right:var(--ar-tm,16px)!important}
+  html body form.qa.qa.qa{right:var(--ar-word,16px)!important}
+  html body #clBellPanel, html body .cl-dm-ov .cl-dm{right:var(--ar-bell,16px)!important}
+  html body #tNotif .tn-box, html.nm-on body #tNotif .tn-box, html.nm-on.nm-t body #tNotif .tn-box{right:var(--ar-bell,16px)!important}
+  html body #authPanel, html body #csPanel{right:var(--ar-auth,16px)!important}
+}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -10681,7 +10691,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115190732"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115193457"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10963,6 +10973,19 @@ window.__csBusy = function(){
     const g2=document.createElement("div"); g2.className="pr-tiles pr-tools"; tools.forEach(t=>g2.appendChild(t));
     grid.after(h2); h2.after(g2); grid.dataset.grouped="1"; }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",go); else go(); setTimeout(go,1500);
+})();
+</script>
+<script>
+/* step134: line each top window up under its own button (right edges match), never closer than 16px to either side */
+(function(){
+  const A={music:"#musicBtn",tm:"#tmBtn",word:"#hdrWord",bell:"#clBell, #tNotif .tn-bell",auth:"#authBtn"};
+  const vis=e=>!!e&&e.getClientRects().length>0;
+  function place(){ const W=window.innerWidth, root=document.documentElement.style;
+    for(const k in A){ const b=[...document.querySelectorAll(A[k])].find(vis); if(!b){ root.removeProperty("--ar-"+k); continue; }
+      let r=Math.round(W-b.getBoundingClientRect().right); r=Math.max(16,Math.min(r,W-380-16)); root.setProperty("--ar-"+k,r+"px"); } }
+  addEventListener("resize",place); addEventListener("pointerdown",place,true); addEventListener("keydown",place,true);
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",place); else place();
+  setTimeout(place,1500); setTimeout(place,4000);
 })();
 </script>
 
