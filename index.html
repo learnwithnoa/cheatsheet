@@ -1157,6 +1157,10 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .hc-join:hover,.hc-join:focus-visible{filter:brightness(1.05)}
 @media (max-width:480px){ .hc-tease .hc-list div{flex-direction:column;gap:0} .hc-tease .hc-list .d{width:auto} }
 
+/* step131: grammar topics + tools */
+.pr-grp{font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:4px 0 10px}
+.pr-grp.pr-grp-tools{margin-top:22px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -10666,7 +10670,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115153506"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115154709"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -10934,6 +10938,20 @@ window.__csBusy = function(){
     if(x) x.click(); else e.hidden=true; };
   document.addEventListener("click",ev=>{ const b=ev.target.closest&&ev.target.closest("#musicBtn,#tmBtn,#clBell,#dmTopBtn,#authBtn,#hdrWord,#fab"); if(!b) return;
     setTimeout(()=>{ P.forEach(([sel,own])=>{ if(!b.matches(own)) closeIt(sel); }); },0); },true);
+})();
+</script>
+<script>
+/* step131: group the grammar tiles */
+(function(){
+  function go(){ const pan=document.querySelector('.pr-panel[data-pp="gram"]'); if(!pan) return; const grid=pan.querySelector(".pr-tiles"); if(!grid||grid.dataset.grouped) return;
+    const ORDER=["prs","th","ps","cou","pp","ing"];   /* easiest first */
+    ORDER.forEach(k=>{ const t=grid.querySelector('[data-modtile="'+k+'"]'); if(t) grid.appendChild(t); });
+    const tools=[grid.querySelector('[data-pr="irr"]'),grid.querySelector('[data-pr="mis"]')].filter(Boolean); if(!tools.length) return;
+    const h1=document.createElement("div"); h1.className="pr-grp"; h1.textContent="Topics"; grid.before(h1);
+    const h2=document.createElement("div"); h2.className="pr-grp pr-grp-tools"; h2.textContent="Tools · review and drills";
+    const g2=document.createElement("div"); g2.className="pr-tiles pr-tools"; tools.forEach(t=>g2.appendChild(t));
+    grid.after(h2); h2.after(g2); grid.dataset.grouped="1"; }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",go); else go(); setTimeout(go,1500);
 })();
 </script>
 
