@@ -436,7 +436,8 @@ function renderLinks() {
   const free = hubList.filter(h => !taken.has(h.id) && h.status !== "inactive");
   const first = x => norm(x).split(" ")[0];
   const sug = s => { const g = guessHub(s); if (g && !taken.has(g)) return g; const f = free.filter(h => first(h.name) && first(h.name) === first(s.name)); return f.length === 1 ? f[0].id : ""; };
-  const loose = students.filter(s => !s.role.hub && !dism.has(s.uid) && !(s.role.club === true && !s.role.private) && (s.role.club === false || s.role.private || free.some(h => first(h.name) && first(h.name) === first(s.name)) || sug(s)));
+  const NOT_LINK = ["Bh1mtEtTgxg6DJagqNddDyqKeiH2"];   /* Noa's own test account: never in "Accounts to link" */
+  const loose = students.filter(s => !NOT_LINK.includes(s.uid) && !s.role.hub && !dism.has(s.uid) && !(s.role.club === true && !s.role.private) && (s.role.club === false || s.role.private || free.some(h => first(h.name) && first(h.name) === first(s.name)) || sug(s)));
   box.hidden = !loose.length; if (!loose.length) { box.innerHTML = ""; return; }
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔗 Accounts to link <span class="news-n" style="background:#0E9F96">${loose.length}</span></h2></div>
     <p class="muted" style="margin:4px 0 8px">These Hibi accounts might be private students. Pick who they are so they get their “My coaching” page, or mark them as club only.</p>
