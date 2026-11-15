@@ -1111,6 +1111,24 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .ps-fb.also{background:var(--green-soft)}
 .ps-fb.also .es{opacity:.85}
 
+/* step123: club card for non-members */
+.cl-pills{display:flex;flex-wrap:wrap;gap:8px}
+.cl-pills span{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13.5px;font-weight:700;background:var(--surface);border:1.5px solid color-mix(in srgb,#F0A63A 35%,var(--line));line-height:1.3}
+.cl-lock-sub{font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.cl-tiles{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:560px){.cl-tiles{grid-template-columns:1fr 1fr}}
+.cl-tile{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.cl-tile-h{display:flex;align-items:center;gap:8px;font-size:15.5px}
+.cl-tile-i{font-size:20px}
+.cl-lock .cl-tile p{font-size:14px;line-height:1.45;color:var(--muted);flex:1}
+.cl-tile-when{align-self:flex-start;font:700 12px var(--mono);padding:4px 9px;border-radius:999px;background:color-mix(in srgb,#F0A63A 14%,var(--surface));border:1px solid color-mix(in srgb,#F0A63A 35%,var(--line))}
+.cl-good{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.cl-good>div{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:color-mix(in srgb,#3FB37F 10%,var(--surface));border:1.5px solid color-mix(in srgb,#3FB37F 35%,var(--line))}
+.cl-good>div>span{font-size:22px;line-height:1.2}
+.cl-lock .cl-good p{font-size:14px;line-height:1.45}
+.cl-good b{display:block;font-size:15px;margin-bottom:2px}
+.cl-perks span{border-color:color-mix(in srgb,#FF7EB6 35%,var(--line))}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3828,11 +3846,18 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
     box.innerHTML=`<div class="cl-lock"><div class="cl-lock-h"><h2>Club members only</h2><div class="cl-lock-badge" aria-hidden="true">🔒</div></div>
-      <p>Noa’s English Club is where you practice speaking with other learners every week, in a relaxed, friendly group. It’s for B1 to C1 learners: fluency and confidence first, grammar second.</p>
-      <ul class="cl-lock-list">${lockSched().map(c=>`<li>${c.ico} <b>${esc(c.name)}</b> · ${esc(c.what)}<br><span class="cl-lock-when">${esc(c.when)}</span></li>`).join("")}</ul>
-      <p class="cl-lock-small">🕐 All times are <b>Chile time</b> (Santiago). On Zoom, from anywhere.</p>
+      <p>Practice speaking English every week with other learners, in a relaxed, friendly group.</p>
+      <div class="cl-pills"><span>🎯 B1 to C1</span><span>🗣️ Fluency first, grammar second</span><span>💻 On Zoom, from anywhere</span></div>
+      <div class="cl-lock-sub">Every week</div>
+      <div class="cl-tiles">${lockSched().map(c=>`<div class="cl-tile"><div class="cl-tile-h"><span class="cl-tile-i" aria-hidden="true">${c.ico}</span><b>${esc(c.name)}</b></div><p>${esc(c.what)}</p><span class="cl-tile-when">${esc(c.when)}</span></div>`).join("")}</div>
+      <p class="cl-lock-small">🕐 All times are <b>Chile time</b> (Santiago).</p>
+      <div class="cl-good">
+        <div><span aria-hidden="true">🎬</span><p><b>Every class is recorded</b>Missed one? Watch it later, whenever you want.</p></div>
+        <div><span aria-hidden="true">🙌</span><p><b>Come when you can</b>Attendance is optional. Join the classes that fit your week.</p></div>
+      </div>
       ${SAMPLE&&SAMPLE.url?`<a class="cl-sample" href="${esc(SAMPLE.url)}" target="_blank" rel="noopener"><span class="i" aria-hidden="true">🎬</span><span><b>${esc(SAMPLE.title||"Watch a real class")}</b><small>${esc(SAMPLE.note||"See what a club class looks like before you join.")}</small></span></a>`:""}
-      <p class="cl-lock-small">Members get every weekly class, the community wall to chat with other members, all past class recordings, the weekly club podcast 🎧, and our 📸 Instagram group to keep practicing (and send memes) between classes.</p>
+      <div class="cl-lock-sub">Members get</div>
+      <div class="cl-pills cl-perks"><span>📅 4 live classes a week</span><span>🎬 All class recordings</span><span>💬 Community wall</span><span>🎧 Weekly club podcast</span><span>📸 Instagram group (memes welcome)</span></div>
       <a class="cl-join-btn" href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}&body=${encodeURIComponent("Hi Noa! I'd like to join the club.\n\nMy name: "+((window.__csFire&&window.__csFire.name&&window.__csFire.name())||"")+"\nMy level (if I know it): \n\n")}" data-joindm="1">💛 I want to join</a><p class="cl-lock-small">Tap the button to send Noa a message here on Hibi, and he’ll send you everything you need. Prefer email? <a href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}">Email Noa</a>.</p></div>
       ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
@@ -10603,7 +10628,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115085030"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115092903"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
