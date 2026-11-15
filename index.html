@@ -3872,8 +3872,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const list=(PUB&&PUB.info&&PUB.info.schedule&&PUB.info.schedule.length)?PUB.info.schedule:def;
     const t12=t=>{ const [h,m]=String(t||"").split(":").map(Number); if(isNaN(h)) return ""; return ((h%12)||12)+(m?":"+String(m).padStart(2,"0"):"")+(h<12?"am":"pm"); };
     return list.map(c=>({ico:c.ico||"",name:c.name,what:what[c.wd]||c.desc||"",when:`${WDN[c.wd]} · ${t12(c.time)}${c.dur?` · ${c.dur} min`:""}`})); }
-  document.addEventListener("click",e=>{ const j=e.target.closest("[data-joindm]"); if(!j||!me()||G()) return; e.preventDefault();
-    window.__clubDM&&window.__clubDM(NOA,"Noa");
+  document.addEventListener("click",e=>{ const j=e.target.closest("[data-joindm]"); if(!j) return;
+    if(window.__csPreview){ e.preventDefault(); if(typeof window.toast==="function") window.toast("In View as nothing is sent. Students get a message to you, ready to send: “Hi Noa! I’m interested in joining…”"); return; }
+    const uid=window.__csFire&&window.__csFire.uid&&window.__csFire.uid(); if(!uid||window.__csGuest||typeof window.__clubDM!=="function") return; e.preventDefault();
+    window.__clubDM("J8D2tjQmBaaA2QN730tSfSrjfm73","Noa");   /* Noa's account */
     setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value="Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
   function locked(){ loadSample(); document.querySelectorAll("#v-club .cl-igtop").forEach(x=>x.hidden=true);
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
@@ -10664,7 +10666,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115150550"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115153506"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
