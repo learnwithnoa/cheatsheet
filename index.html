@@ -1161,6 +1161,11 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .pr-grp{font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:4px 0 10px}
 .pr-grp.pr-grp-tools{margin-top:22px}
 
+/* step132: ✨ I enjoyed this class, first and yellow */
+.cl-ract .cl-favb{font:800 14.5px var(--body)!important;padding:9px 18px!important;color:#1f1300!important;background:linear-gradient(135deg,#F7C548,#F0A63A)!important;border:0!important;box-shadow:0 2px 0 color-mix(in srgb,#F0A63A 60%,#000)}
+.cl-ract .cl-favb:hover,.cl-ract .cl-favb:focus-visible{filter:brightness(1.05)}
+.cl-ract .cl-favb.on{background:color-mix(in srgb,#F5C842 28%,var(--surface))!important;color:var(--ink)!important;border:1.5px solid color-mix(in srgb,#F5C842 65%,var(--line))!important;box-shadow:none}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3922,7 +3927,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=r.vocab||[], ph=r.phrases||[];
     const name=c.name||x.title||L("Class","Clase"), topic=c.title&&c.name?c.title:"", q=[name,topic,x.title,x.summary,c.teaser,it.p.title,voc.map(v=>v.w).join(" ")].join(" ").toLowerCase();
     return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}" data-cls="${esc(c.name||"")}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${voc.length?` · 📚 ${voc.length} ${L("words","palabras")}`:""}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
-      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}"><svg class="cl-yt" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15V9l5.2 3z"/></svg>${L("Watch on YouTube","Ver en YouTube")}<span class="cl-ext" aria-hidden="true">↗</span></a>${planBtn(it.date,x.wd)}<span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span><button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
+      <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span>${ytId(x.url)?"":`<a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">${L("Open the recording","Abrir la grabación")}<span class="cl-ext" aria-hidden="true">↗</span></a>`}${planBtn(it.date,x.wd)}<button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
         ${diffHTML(x)}${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:`<p class="cl-planintro" data-pintro="${esc(it.date)}"></p>`}
         ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
         ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
@@ -3976,7 +3981,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",e=>{ const pc=e.target.closest("[data-rcls]"); const keep=fn=>{ const y=window.scrollY; fn(); render(); window.scrollTo(0,y); }; if(pc){ keep(()=>{ RCLS=pc.dataset.rcls; RSHOW=8; }); return; } if(e.target.closest("[data-rmore]")) keep(()=>{ RSHOW+=8; }); });
   /* missed a class this week? */
   function catchHTML(f,p,now){ const list=recList(f).filter(it=>it.week===p.week&&!watched().includes(it.id)); if(!list.length) return "";
-    const it=list[list.length-1], voc=((p.recap||{}).vocab||[]).length;
+    const it=list[0], voc=((p.recap||{}).vocab||[]).length;
     return `<button type="button" class="cl-catch" data-recgo="${esc(it.id)}"><span aria-hidden="true">🎬</span><span><b>${L("Missed","¿Te perdiste")} ${esc(it.c.name||it.x.title||"")}${L("?","?")}</b> ${L("Watch the recording","Mira la grabación")}${voc?` ${L("and save","y guarda")} ${voc} ${L("new words","palabras nuevas")}`:""}.</span><span class="cl-mego">→</span></button>`; }
   /* ---------- 📅 calendar ---------- */
   let CALM=0, CALD=null, CALPOP=false;
@@ -10670,7 +10675,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115154709"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115190423"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
