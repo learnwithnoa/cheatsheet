@@ -29,7 +29,7 @@ R('.lb-x{position:sticky;top:10px;float:right;z-index:2;border:1.5px solid #dfe5
 @media (max-width:600px){.lb-ov{padding:10px 6px}.lb-box{border-radius:20px}.lb-all{padding:11px 14px;font-size:14px}}''')
 R('.lb-ov.dark .lb-x{background:#111c42;border-color:#2b3b6e;color:#fff}','.lb-ov.dark .lb-x{background:#111c42;border-color:#2b3b6e;color:#fff}.lb-ov.dark .lb-pop{background:#fff;color:#0b1430}')
 R('''<div class="lb-wrap"><button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">✕ ${L("Close","Cerrar")}</button>${boardHTML(bd)}</div></div>`);''',
-  '''<div class="lb-box"><div class="lb-bar">${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Add all to My words","Agregar todas a Mis palabras")}</span><span class="lb-short">${L("Add all","Agregar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);''')
+  '''<div class="lb-box"><div class="lb-bar">${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My words","Guardar todas en Mis palabras")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);''')
 # 2) "＋ My words" inside the board (it lives outside the club page, so it needs its own handler) + "Add all"
 R('''  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });''',
   '''  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });
@@ -40,7 +40,7 @@ R('''  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.qu
   document.addEventListener("click",e=>{ const ov=e.target.closest(".lb-ov"); if(!ov) return;
     const one=e.target.closest(".lb-save[data-clw]"); if(one){ e.stopPropagation(); if(one.disabled) return; let x={}; try{ x=JSON.parse(one.dataset.clw); }catch(er){}
       const ok=lbAdd(x); one.disabled=true; one.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
-      lbPop(one,ok?L("Added to My words ✓","Agregada a Mis palabras ✓"):L("Already in My words","Ya está en Mis palabras")); return; }
+      lbPop(one,ok?L("Saved to My words ✓","Guardada en Mis palabras ✓"):L("Already in My words","Ya está en Mis palabras")); return; }
     const all=e.target.closest("[data-lball]"); if(all){ e.stopPropagation(); if(all.disabled) return; let n=0;
       ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); });
       all.disabled=true; all.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ All in your words","✓ Ya están todas");
@@ -48,7 +48,7 @@ R('''  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.qu
 open(p,"w",encoding="utf-8").write(s)
 s=open(p,encoding="utf-8").read()
 a='and save any expression to <b>My words</b>."'
-if s.count(a)==1: s=s.replace(a,'and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>."')
+if s.count(a)==1: s=s.replace(a,'and save any expression (or all of them at once with <b>＋ Save all</b>) to <b>My words</b>."')
 open(p,"w",encoding="utf-8").write(s)
 # one button per class: when a class has a live board, its "Class material" pill is hidden and the board's top bar links to it
 s=open(p,encoding="utf-8").read()
@@ -82,8 +82,8 @@ if s.count(f)==1:
     s=s.replace(f,f+'\n.lb-mat{margin-right:auto;border:1.5px solid #dfe5f3;border-radius:999px;padding:11px 16px;font:900 14.5px/1 "Nunito","Lexend",sans-serif;cursor:pointer;color:#141b3a;background:#fff;box-shadow:0 6px 16px rgba(20,27,58,.10)}\n.lb-ov.dark .lb-mat{background:#111c42;border-color:#2b3b6e;color:#fff}\n.lb-box[hidden]{display:none}.lb-matc{max-width:820px;margin:0 auto;padding:6px clamp(16px,4vw,44px) 50px;font-size:17px;line-height:1.55}.lb-matc h2{font-weight:900;font-size:clamp(26px,3.4vw,38px);line-height:1.1;margin:4px 0 16px}.lb-matc h3,.lb-matc h4{font-weight:900;margin:22px 0 8px}.lb-matc a{color:#2563eb}.lb-ov.dark .lb-matc a{color:#7dd3fc}.lb-matc blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid #93c5fd;background:rgba(147,197,253,.12);border-radius:8px}.lb-matc li{margin:4px 0}\n.lb-short{display:none}\n@media (max-width:600px){.lb-long{display:none}.lb-short{display:inline}.lb-mat{padding:11px 14px;font-size:14px}}')
 open(p,"w",encoding="utf-8").write(s)
 s=open(p,encoding="utf-8").read()
-a='(or all of them at once with <b>＋ Add all</b>) to <b>My words</b>."'
-if s.count(a)==1: s=s.replace(a,'(or all of them at once with <b>＋ Add all</b>) to <b>My words</b>. The full class material is inside it too: tap <b>📄 Full class material</b> at the top (and <b>← Back to the board</b> to return)."')
+a='(or all of them at once with <b>＋ Save all</b>) to <b>My words</b>."'
+if s.count(a)==1: s=s.replace(a,'(or all of them at once with <b>＋ Save all</b>) to <b>My words</b>. The full class material is inside it too: tap <b>📄 Full class material</b> at the top (and <b>← Back to the board</b> to return)."')
 open(p,"w",encoding="utf-8").write(s)
 # word look-up (double-click / press and hold → save to My words) also works on the live board and its class material: show it above the board
 s=open(p,encoding="utf-8").read()

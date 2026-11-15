@@ -39,3 +39,12 @@ if '2026-1115-answers' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 15: sweep (phone + Word, windows)
+s=open(p,encoding="utf-8").read()
+if '2026-1115-sweep' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1115-sweep", date:"November 15, 2026", title:"Tidier top bar", items:[
+    ["＋","Save words on your phone","The green <b>＋</b> button is now at the top on phones too, next to search. Tap it on any page to save a new word.",""],
+    ["🪟","One window at a time","Music, timer, notifications, messages and your profile all open in the same place, and opening one closes the others.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

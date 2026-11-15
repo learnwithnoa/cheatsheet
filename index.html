@@ -1139,6 +1139,12 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 }
 @media (max-width:600px){ html body #tmPanel{left:max(16px,env(safe-area-inset-left,0px))!important;right:max(16px,env(safe-area-inset-right,0px))!important;width:auto!important} }
 
+/* step127: + Word on phones */
+@media (max-width:480px){ html body #hdrWord{display:inline-flex!important;width:33px;min-width:33px;padding:0!important;justify-content:center;align-items:center} html body #hdrWord .theme-txt{display:none} }
+@media (max-width:360px){ html body #hdrWord{width:31px;min-width:31px} }
+/* step127: bell window × same size as the others */
+.nm-x{width:34px!important;height:34px!important}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -2829,10 +2835,6 @@ html.cs-calm .cs-rxpal button{transition:none}
     <div class="note-actions" style="margin-top:10px"><button class="pill-btn pill-green" type="button" id="rvGo">Practice these 5 →</button></div>
   </div>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your words, class notes and starred sections sync automatically to any device where you sign in.</div></div>
-  <div class="store-info dismissible when-out">
-    <span class="store-ico" aria-hidden="true">!</span>
-    <div><b>You're not signed in.</b> For now, your words and class notes are only saved in this browser. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to save them to your account and see them on any device.</div>
-  </div>
   <div class="nudge when-out" id="nudge" hidden>
     <button class="tip-x" type="button" id="nudgeX" aria-label="Hide this reminder">×</button>
     <div><b id="nudgeTxt">You have words that aren't in your sheet yet.</b><span>Copy them to your sheet now. Tip: sign in (top right) so your words are also saved to your account.</span></div>
@@ -2847,7 +2849,6 @@ html.cs-calm .cs-rxpal button{transition:none}
     <div class="note-actions"><button class="swap" type="button" id="cnDraft" title="Keep what you've written here, so you can keep adding to it during class">💾 Save draft</button><button class="pill-btn pill-green" type="button" id="cnSave" title="Add this note to My class notes, find its new words for you, and start a fresh one">📥 Move to my notes + ✨ find words</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
     <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here (and in your account if you're signed in). When the class is over, press <b>Move to my notes</b>: Hibi files it and finds the new words and expressions in it, ready to add to My words.</p>
     <div id="cnSuggest" class="cn-sug" hidden aria-live="polite"></div>
-    <p class="cn-warn dismissible when-out">Saved notes go to <b>My class notes</b>, sorted by date. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to keep them in your account. Until then, they're only saved in this browser.</p>
   </div>
   </div></div>
 
@@ -2969,10 +2970,6 @@ html.cs-calm .cs-rxpal button{transition:none}
   <div class="cn-tabs" role="tablist" aria-label="Class notes"><button type="button" role="tab" data-go="classnotes" aria-selected="true">✏️ My notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Weekly summaries</button></div>
   <p class="lede">Write today's notes here or on your Home page. Every note you save shows up below, newest first.</p>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
-  <div class="store-info dismissible when-out">
-    <span class="store-ico" aria-hidden="true">!</span>
-    <div><b>You're not signed in.</b> For now, these notes are only saved in this browser. <button class="foot-link" type="button" data-signin>Sign in with Google</button> to save them to your account and see them on any device.</div>
-  </div>
   <div id="slotCnPage" class="page-slot"></div>
   <div class="list-head" style="margin-top:6px">
     <h2 style="margin:0">Notes <span class="count" id="cnCount"></span></h2>
@@ -3916,7 +3913,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       ${older.length?`<details class="cl-podold"><summary>${L("Earlier episodes","Episodios anteriores")} (${older.length})</summary>${older.map(x=>`<details class="cl-rcard"><summary><span class="cl-rico" aria-hidden="true">🎧</span><span class="cl-rt"><b>${esc(x.title||L("Club podcast","Podcast del club"))}</b><small>${L("Week of","Semana del")} ${esc(fd(x.date))}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span></summary><div class="cl-rbody">${diffHTML(x)}${podPlayer(x.url)}<div class="cl-stars" data-stars="pr_${esc(x.id)}"></div>${podNotes(x)}${noa?`<button type="button" class="cs-act" data-poddel="${esc(x.id)}">✕ Remove</button>`:""}</div></details>`).join("")}</details>`:""}${add}</div>`; }
   function podNotes(e){ return e.notes||(e.vocab||[]).length?`<details class="cl-podn"><summary>📝 ${L("Show notes","Notas del episodio")}${(e.vocab||[]).length?` <span class="muted">· ${e.vocab.length} ${L("words","palabras")}</span>`:""}</summary>${e.notes?`<p>${esc(e.notes).replace(/\n/g,"<br>")}</p>`:""}${podVocab(e)}</details>`:""; }
   function podVocab(e){ const v=(e.vocab||[]).filter(x=>x&&x.w); if(!v.length) return "";
-    return `<div class="cl-pvh"><b>📚 ${L("Words from this episode","Palabras de este episodio")}</b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Add all to My words","Agregar todas a Mis palabras")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`).join("")}</div>`; }
+    return `<div class="cl-pvh"><b>📚 ${L("Words from this episode","Palabras de este episodio")}</b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Save all to My words","Guardar todas en Mis palabras")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`).join("")}</div>`; }
   function weekOf(t){ const d=new Date(t); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function podNewHTML(){ const e=pods()[0]; if(!e||Date.now()-new Date(e.date+"T12:00:00").getTime()>10*864e5) return "";
     return `<button type="button" class="cl-catch cl-podnew" data-clt="recordings"><span aria-hidden="true">🎧</span><span><b>${L("New podcast episode:","Nuevo episodio del podcast:")}</b> ${esc(e.title||L("this week in the club","esta semana en el club"))}</span><span class="cl-mego">→</span></button>`; }
@@ -4716,7 +4713,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{ if(!BOARDDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BOARDDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
       const bd=(BOARDDOC[wk].boards||{})[wd]; if(!bd){ toast(L("Couldn’t find it.","No la encontré.")); return; }
       closeBoard(); document.documentElement.classList.add("lb-lock");
-      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${b.dataset.hasplan?`<button type="button" class="lb-mat" data-lbplan="${esc(b.dataset.board)}">📄 <span class="lb-long">${L("Full class material","Material completo de la clase")}</span><span class="lb-short">${L("Material","Material")}</span></button>`:""}${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Add all to My words","Agregar todas a Mis palabras")}</span><span class="lb-short">${L("Add all","Agregar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
+      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${b.dataset.hasplan?`<button type="button" class="lb-mat" data-lbplan="${esc(b.dataset.board)}">📄 <span class="lb-long">${L("Full class material","Material completo de la clase")}</span><span class="lb-short">${L("Material","Material")}</span></button>`:""}${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My words","Guardar todas en Mis palabras")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
       const x=document.querySelector(".lb-x"); if(x) x.focus();
       window.__lbFrom=b;
     }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
@@ -4738,7 +4735,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",e=>{ const ov=e.target.closest(".lb-ov"); if(!ov) return;
     const one=e.target.closest(".lb-save[data-clw]"); if(one){ e.stopPropagation(); if(one.disabled) return; let x={}; try{ x=JSON.parse(one.dataset.clw); }catch(er){}
       const ok=lbAdd(x); one.disabled=true; one.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
-      lbPop(one,ok?L("Added to My words ✓","Agregada a Mis palabras ✓"):L("Already in My words","Ya está en Mis palabras")); return; }
+      lbPop(one,ok?L("Saved to My words ✓","Guardada en Mis palabras ✓"):L("Already in My words","Ya está en Mis palabras")); return; }
     const all=e.target.closest("[data-lball]"); if(all){ e.stopPropagation(); if(all.disabled) return; let n=0;
       ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); });
       all.disabled=true; all.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ All in your words","✓ Ya están todas");
@@ -5088,7 +5085,6 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     </div>
     <div class="card bk-card"><span class="tag" style="background:var(--green-soft);color:var(--green)">step 2 · on the other device</span>
       <h3>Paste it here</h3>
-      <p class="fb-help" style="margin:0"><b>Coming from the old Cheat Sheet?</b> Paste what you copied with <b>Copy my notes</b> there.</p>
       <p class="fb-help" style="margin:0">Open Hibi on the other device, come to this page (<b>Back up or move your notes</b>, at the bottom of any page) and paste the code.</p>
       <label for="bkIn" class="sr">Paste your backup code</label>
       <textarea id="bkIn" spellcheck="false" placeholder="Paste your backup code here"></textarea>
@@ -5810,13 +5806,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (tap your photo, top right, then <b>⚙ Settings</b>): themes, bigger text, easier fonts, bionic reading, calm mode and more.</div></li>
       <li><span class="wl-ico" aria-hidden="true">⏱</span><div><b>Study timer</b> (⏱ at the top): focus for 25 minutes, then take a short break.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music</b> (🎧 at the top): lo-fi, piano, rain or calm noise while you study.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🔊</span><div><b>Listen</b> (next to a page title): Hibi reads the page out loud. Select some text first to hear just that part.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">★</span><div><b>Star</b> (next to a page title): adds that page to the <b>★ Starred</b> list in the menu, so it's one click away.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
       <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Something missing?</b> Use “Tell Noa” at the bottom of any page.</div></li>
     </ul>
-    <div class="wl-warn wl-sign when-out">
-      <h3>Sign in so you never lose your notes</h3>
-      <p>Until you sign in, your words and notes are only saved <b>in this browser, on this device</b>. <button class="foot-link" type="button" data-signin>Sign in with Google</button> and everything saves to your account, on your phone and computer.</p>
-    </div>
   </div>
 
   <div class="wl-nav">
@@ -9431,8 +9425,8 @@ document.getElementById("impPick").addEventListener("click",e=>{
   const have=new Set(words.map(x=>norm(x.w))), base=Date.now(), ids=[];
   idx.forEach((i,k)=>{ const x=impFound[i]; if(!x||have.has(norm(x.w))) return; have.add(norm(x.w)); const id=(base+k).toString(36)+Math.random().toString(36).slice(2,6); words.push({id,w:x.w,m:x.m,e:x.e,t:base-(idx.length-k),imp:true}); ids.push(id); });
   saveWordsNow(); impText.value=""; impFound=[]; document.getElementById("impPick").innerHTML="";
-  impPrev.innerHTML= ids.length? "✓ Added <b>"+ids.length+"</b> "+(ids.length===1?"word":"words")+". ✨ Their meanings and examples are being filled in. <button class=\"foot-link\" type=\"button\" data-go=\"quiz\">Practice them →</button>" : "Nothing new to add.";
-  toast(ids.length?"Added "+ids.length+(ids.length===1?" word":" words"):"Nothing new to add");
+  impPrev.innerHTML= ids.length? "✓ Saved <b>"+ids.length+"</b> "+(ids.length===1?"word":"words")+". ✨ Their meanings and examples are being filled in. <button class=\"foot-link\" type=\"button\" data-go=\"quiz\">Practice them →</button>" : "Nothing new to add.";
+  toast(ids.length?"Saved "+ids.length+(ids.length===1?" word":" words"):"Nothing new to save");
   if(ids.length) queueEnrich(ids);
 });
 
@@ -9458,7 +9452,7 @@ window.csSuggestWords=async function(text,box,manual){
   box.innerHTML='<div class="cn-sug-top"><b>✨ I found '+list.length+' new '+(list.length===1?"word":"words")+' in your note</b><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'+
     (own?'<label class="cs-chk" style="margin:6px 0 8px"><input type="checkbox" data-sugown checked> <span><b>Keep what I wrote in my notes</b><small>Your own meanings and examples stay as you wrote them ('+own+(own===1?' word':' words')+'). If one has a mistake, you get the corrected version instead.</small></span></label>':'')+
     '<div class="imp-list">'+list.map((x,i)=>{ const mine=(x.mn&&String(x.mn).trim())||(x.en&&String(x.en).trim()), shownM=(!x.bad&&x.mn&&String(x.mn).trim())?x.mn:x.m; return '<label class="imp-row"><input type="checkbox" data-sugi="'+i+'" checked><span><b>'+esc(x.w)+'</b>'+(x.pos?' <span class="pos">'+esc(cleanPos(x.pos))+'</span>':'')+(shownM?' · '+esc(shownM):'')+(x.def?'<small>'+esc(x.def)+'</small>':'')+(mine?'<small class="sug-own">'+(x.bad?'✏️ Your note had a small mistake, so the corrected version will be saved':'📝 Your own '+(x.mn&&x.en?'meaning and example':x.mn?'meaning':'example')+' will be kept')+'</small>':'')+'</span></label>'; }).join("")+'</div>'+
-    '<div class="note-actions"><button class="pill-btn pill-green" type="button" data-sug="add">Add to my words</button><button class="swap" type="button" data-sug="x">No thanks</button></div>';
+    '<div class="note-actions"><button class="pill-btn pill-green" type="button" data-sug="add">Save to My words</button><button class="swap" type="button" data-sug="x">No thanks</button></div>';
 };
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-sug]"); if(!b) return;
@@ -9474,7 +9468,7 @@ document.addEventListener("click",e=>{
   saveWordsNow(); box.hidden=true; box.innerHTML="";
   if(!n){ toast("Nothing new to add"); return; }
   if(window.csUse) try{ window.csUse("word"); }catch(er){}
-  const d=csDialog('<h3 style="margin-top:0">✅ Added to My words</h3><p>'+n+(n===1?' new word is':' new words are')+' now in <b>My words</b>:</p><ul class="cs-added">'+added.map(w=>'<li>'+esc(w)+'</li>').join("")+'</ul><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="go">See my words</button><button class="swap" type="button" data-a="ok">OK</button></div>');
+  const d=csDialog('<h3 style="margin-top:0">✅ Saved to My words</h3><p>'+n+(n===1?' new word is':' new words are')+' now in <b>My words</b>:</p><ul class="cs-added">'+added.map(w=>'<li>'+esc(w)+'</li>').join("")+'</ul><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="go">See my words</button><button class="swap" type="button" data-a="ok">OK</button></div>');
   d.el.addEventListener("click",ev=>{ const b2=ev.target.closest("[data-a]"); if(!b2) return; d.close(); if(b2.dataset.a==="go"&&typeof go==="function") go("words",true); });
   try{ document.dispatchEvent(new CustomEvent("cs-wordsadded",{detail:{n}})); }catch(er){}
 });
@@ -10362,6 +10356,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1115-sweep", date:"November 15, 2026", title:"Tidier top bar", items:[
+    ["＋","Save words on your phone","The green <b>＋</b> button is now at the top on phones too, next to search. Tap it on any page to save a new word.",""],
+    ["🪟","One window at a time","Music, timer, notifications, messages and your profile all open in the same place, and opening one closes the others.",""]
+  ]},
   {id:"2026-1115-answers", date:"November 15, 2026", title:"Fairer grammar practice", items:[
     ["✅","More right answers count","Noa checked every question in <b>Practice → Grammar</b>. If there's more than one correct answer (like <b>managed to</b> or <b>was able to</b>), they all count now, and some questions got a clearer time word (<b>yesterday</b>, <b>last night</b>…).","practice"],
     ["👍","\"That's also correct!\"","Wrote something that's correct English but isn't the form the stage is practicing? It won't be marked wrong. Hibi tells you, and you can try the other form.","practice"]
@@ -10380,7 +10378,7 @@ const CHANGELOG=[
     ["🏠","New: There is / there are","<b>hay, había, habrá</b> in English: <b>there is / there are</b>, <b>there was / there were</b>, <b>there will be</b>, negatives and questions. 7 short stages with Spanish help, in <b>Practice → Grammar</b>. Finish it for a 🏠 little house for your buddy.","quiz"]
   ]},
   {id:"2026-1112", date:"November 12, 2026", title:"Profile and settings together", items:[
-    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Add all</b>) to <b>My words</b>. The full class material is inside it too: tap <b>📄 Full class material</b> at the top (and <b>← Back to the board</b> to return).","club"],
+    ["🧩","The live board from class","the board Noa shares on screen during club classes (your ideas, the new expressions and the questions) is saved after class. Open it with <b>🧩 Live board</b> next to the class recording or the class on <b>This week</b>, and save any expression (or all of them at once with <b>＋ Save all</b>) to <b>My words</b>. The full class material is inside it too: tap <b>📄 Full class material</b> at the top (and <b>← Back to the board</b> to return).","club"],
     ["⚙️","One button for you","tap <b>your photo</b> at the top right: <b>👤 Profile</b> has your name, photo and club profile, and <b>⚙ Settings</b> has themes, text size, fonts, focus and calm mode, your buddy and the rest. Hibi remembers which tab you used last."],
     ["🔔","Notifications and messages together","the 🔔 at the top now has two tabs: <b>🔔 Notifications</b> and <b>💬 Messages</b>. New messages count in the bell's number, and the bell opens on the tab you used last."],
     ["🗂️","A shorter menu on small screens","when the window is narrow, the menu sections (Essentials, Grammar notes…) are pills you can open and close, so there's much less scrolling."],
@@ -10640,7 +10638,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115125620"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115131928"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
