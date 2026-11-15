@@ -3847,7 +3847,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     (window.__clubRecs||[]).forEach(r=>{ if(!r||!r.url||!r.date) return; const d=new Date(r.date+"T12:00:00"), wd=d.getDay(), mon=new Date(d); mon.setDate(d.getDate()-((wd+6)%7)); const wk=mon.getFullYear()+"-"+String(mon.getMonth()+1).padStart(2,"0")+"-"+String(mon.getDate()).padStart(2,"0");
       const p=posts(f).find(x=>x.week===wk), s=sched(f,r.wd!=null?r.wd:wd)||{}, pc=p?classesOf(f,p).find(y=>y.wd===(r.wd!=null?r.wd:wd)):null;
       const id="yt_"+r.id; if(out.some(o=>o.x.url===r.url)) return;
-      out.push({id,week:wk,p:p||{recap:{},title:""},x:{url:r.url,title:r.name||s.name,summary:r.summary||"",wd:r.wd!=null?r.wd:wd,rid:r.id,diff:r.diff,diffWhy:r.diffWhy},c:{name:r.name||(pc&&pc.name)||s.name||"",title:r.topic||(pc&&pc.title)||"",ico:s.ico||(pc&&pc.ico)||"🎬",teaser:pc&&pc.teaser,date:r.date},date:r.date}); });
+      const rwd=r.wd!=null?+r.wd:wd; let psum="";
+      for(let k=out.length-1;k>=0;k--){ const o=out[k]; if(!String(o.id).startsWith("yt_")&&o.week===wk&&+o.x.wd===rwd&&!/youtu\.?be/.test(String(o.x.url||""))){ psum=psum||o.x.summary||""; out.splice(k,1); } }
+      out.push({id,week:wk,p:p||{recap:{},title:""},x:{url:r.url,title:r.name||s.name,summary:r.summary||psum||"",wd:r.wd!=null?r.wd:wd,rid:r.id,diff:r.diff,diffWhy:r.diffWhy},c:{name:r.name||(pc&&pc.name)||s.name||"",title:r.topic||(pc&&pc.title)||"",ico:s.ico||(pc&&pc.ico)||"🎬",teaser:pc&&pc.teaser,date:r.date},date:r.date}); });
     return out.sort((a,b)=>b.date.localeCompare(a.date)); }
   /* difficulty 1-10 for club material (1 ≈ A2+, 10 ≈ C1) */
   const DLV=n=>n<=2?"A2+":n<=4?"B1":n<=6?"B1+":n<=8?"B2":n<=9?"B2+":"C1";
@@ -10601,7 +10603,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115000426"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115085030"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
