@@ -1,3 +1,4 @@
+# Hibi pay helper → https://hibi-pay.learnwithnoa.workers.dev
 name = "hibi-pay"
 main = "worker.js"
 compatibility_date = "2026-10-01"
