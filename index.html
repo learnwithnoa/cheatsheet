@@ -1166,6 +1166,12 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .cl-ract .cl-favb:hover,.cl-ract .cl-favb:focus-visible{filter:brightness(1.05)}
 .cl-ract .cl-favb.on{background:color-mix(in srgb,#F5C842 28%,var(--surface))!important;color:var(--ink)!important;border:1.5px solid color-mix(in srgb,#F5C842 65%,var(--line))!important;box-shadow:none}
 
+/* step133: teacher notifications in the same place as the other top windows */
+@media (min-width:601px){
+  html body #tNotif .tn-box, html.nm-on body #tNotif .tn-box, html.nm-on.nm-t body #tNotif .tn-box{position:fixed!important;top:calc(env(safe-area-inset-top,0px) + var(--hdr-h,61px) + var(--va-h,0px) - 1px)!important;
+    right:calc(16px + env(safe-area-inset-right,0px))!important;left:auto!important;width:380px!important;max-width:calc(100vw - 32px)!important;margin:0!important}
+}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -10675,7 +10681,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115190423"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115190732"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
