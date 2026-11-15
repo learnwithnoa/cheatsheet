@@ -48,7 +48,7 @@ async function flow(env, method, path, params = {}) {
 }
 async function ensurePlan(env, kind, amount, workerUrl) {
   const id = planId(kind, amount);
-  try { await flow(env, "GET", "/plans/get", { planId: id }); return id; } catch (e) { if (e.status === 401) throw e; }
+  try { await flow(env, "GET", "/plans/get", { planId: id }); return id; } catch (e) { if (!/not found/i.test(e.message)) throw e; }
   await flow(env, "POST", "/plans/create", {
     planId: id, name: kind === "y" ? "Noa's English Club (yearly)" : "Noa's English Club (monthly)",
     currency: "CLP", amount, interval: kind === "y" ? 4 : 3, interval_count: 1, trial_period_days: 0,
@@ -151,7 +151,7 @@ async function subscribe(env, req, url) {
   const kind = body.plan === "yearly" ? "y" : "m";
   const amount = kind === "y" ? STD_YEAR : await priceFor(env, me.email);
   const b = await getBill(env, me.uid);
-  if (b.status === "active" && b.subscriptionId) return json({ error: "You already have an active membership." }, 400, req);
+  if (["active", "grace", "canceling"].includes(b.status) && b.subscriptionId) return json({ error: "You already have an active membership." }, 400, req);
   let customerId = b.customerId;
   if (!customerId) {
     const c = await flow(env, "POST", "/customer/create", { name: me.name || me.email, email: me.email, externalId: me.uid });
@@ -172,14 +172,27 @@ async function cardReturn(env, req, url) {
   const cust = await flow(env, "GET", "/customer/get", { customerId: st.customerId });
   const uid = cust.externalId; if (!uid) return back(false, "who");
   const b = await getBill(env, uid);
+  const card = st.creditCardType ? `${st.creditCardType} ···${st.last4CardDigits || ""}` : null;
+  if (b.pendingKind === "card" && b.subscriptionId) {       // just a new card for an existing membership
+    await saveBill(env, uid, { card, pendingKind: null });
+    return Response.redirect(SITE + "?membership=card#club", 303);
+  }
   const kind = b.pendingKind || "m", amount = Number(b.pendingAmount) || STD_MONTH;
   const plan = await ensurePlan(env, kind, amount, url.origin);
   const sub = await flow(env, "POST", "/subscription/create", { planId: plan, customerId: st.customerId });
-  const card = st.creditCardType ? `${st.creditCardType} ···${st.last4CardDigits || ""}` : null;
   const paidThrough = (sub.period_end || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31);
-  await saveBill(env, uid, { subscriptionId: sub.subscriptionId, planId: plan, kind, amount, card, status: "active", paidThrough, graceUntil: null, since: b.since || today() });
+  await saveBill(env, uid, { subscriptionId: sub.subscriptionId, planId: plan, kind, amount, card, status: "active", paidThrough, graceUntil: null, since: b.since || today(), pendingKind: null });
   await grantClub(env, uid, b.name || cust.name);
   return back(true);
+}
+
+async function updateCard(env, req, url) {
+  const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
+  const b = await getBill(env, me.uid);
+  if (!b.customerId || !b.subscriptionId) return json({ error: "No membership found." }, 400, req);
+  await patch(env, `billing/${me.uid}`, { pendingKind: "card" });
+  const reg = await flow(env, "POST", "/customer/register", { customerId: b.customerId, url_return: url.origin + "/api/card-return" });
+  return json({ url: reg.url + "?token=" + reg.token }, 200, req);
 }
 
 async function cancel(env, req) {
@@ -220,7 +233,7 @@ async function nightly(env) {
 
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
-  try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { r.flowApi = e.status === 401 ? "keys rejected" : "ok"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.flowStatus = e.status; if (e.status === 401) r.ok = false; }
+  try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
   try { await fs(env, "GET", "roles?pageSize=1"); r.database = "ok"; } catch (e) { r.database = String(e.message).slice(0, 120); r.ok = false; }
   return r;
 }
@@ -236,6 +249,7 @@ export default {
         case "/api/subscribe": return await subscribe(env, req, url);
         case "/api/card-return": return await cardReturn(env, req, url);
         case "/api/cancel": return await cancel(env, req);
+        case "/api/update-card": return await updateCard(env, req, url);
         case "/api/flow-callback": await nightly(env); return new Response("ok");
         case "/api/nightly": {
           const me = await whoIs(env, req); if (!me || me.uid !== TEACHER) return json({ error: "Only Noa can do this." }, 403, req);
