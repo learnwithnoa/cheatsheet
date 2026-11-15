@@ -1,4 +1,4 @@
-Deploy 2026-11-15T23:23:44Z
+Deploy 2026-11-15T23:28:26Z
 CLOUDFLARE_API_TOKEN: set
 CLOUDFLARE_ACCOUNT_ID: set
 FLOW_API_KEY: set
@@ -7,12 +7,12 @@ FIREBASE_SERVICE_ACCOUNT: set
 Firebase key: valid, project learnwithnoa-cheatsheet
 deploy exit: 0
 secrets exit: 0
-Uploaded hibi-pay (1.49 sec)
-Deployed hibi-pay triggers (0.71 sec)
+Uploaded hibi-pay (1.62 sec)
+Deployed hibi-pay triggers (0.88 sec)
   https://hibi-pay.learnwithnoa.workers.dev
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
 ✨ Successfully created secret for key: FLOW_API_KEY
 ✨ Successfully created secret for key: FLOW_SECRET_KEY
 ✨ Successfully created secret for key: FIREBASE_SERVICE_ACCOUNT
 ✨ 3 secrets successfully uploaded
-health: {"ok":false,"flow":"sandbox","flowKeys":true,"firebaseKey":true,"flowApi":"keys rejected","flowSays":"501 Internal Server Error - the plan hibi-health-check was not found","flowStatus":401,"database":"ok"}
+health: {"ok":true,"flow":"sandbox","flowKeys":true,"firebaseKey":true,"flowApi":"ok","database":"ok"}
