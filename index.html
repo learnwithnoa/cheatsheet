@@ -47,7 +47,7 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=28" defer></script>
+<script src="comfort.js?v=29" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -1128,6 +1128,8 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .cl-lock .cl-good p{font-size:14px;line-height:1.45}
 .cl-good b{display:block;font-size:15px;margin-bottom:2px}
 .cl-perks span{border-color:color-mix(in srgb,#FF7EB6 35%,var(--line))}
+
+.cl-igtop[hidden]{display:none!important}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -3842,7 +3844,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",e=>{ const j=e.target.closest("[data-joindm]"); if(!j||!me()||G()) return; e.preventDefault();
     window.__clubDM&&window.__clubDM(NOA,"Noa");
     setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value="Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
-  function locked(){ loadSample();
+  function locked(){ loadSample(); document.querySelectorAll("#v-club .cl-igtop").forEach(x=>x.hidden=true);
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
     box.innerHTML=`<div class="cl-lock"><div class="cl-lock-h"><h2>Club members only</h2><div class="cl-lock-badge" aria-hidden="true">🔒</div></div>
@@ -9900,6 +9902,7 @@ function renderStars(){
     b.setAttribute("aria-pressed",on?"true":"false");
     b.innerHTML='<span aria-hidden="true">'+(on?"★":"☆")+'</span><span class="star-txt">'+(on?"Starred":"Star")+'</span>';
     b.setAttribute("aria-label",(on?"Remove ":"Add ")+navLabel(b.dataset.star)+(on?" from":" to")+" your starred sections");
+    b.title=on?"Starred: this page is in the ★ Starred list in the left menu. Click to remove it.":"Star this page to add it to the ★ Starred list in the left menu, so it's one click away.";
   });
   document.getElementById("starGroup").hidden=!stars.length;
   document.getElementById("starList").innerHTML=stars.map(id=>'<button class="navbtn star-nav" data-go="'+id+'"><span aria-hidden="true">★</span> '+esc(navLabel(id))+'</button>').join("");
@@ -10629,7 +10632,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115093144"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115102416"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
