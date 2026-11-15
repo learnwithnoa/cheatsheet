@@ -231,6 +231,7 @@ export default {
     if (req.method === "OPTIONS") return new Response(null, { headers: cors(req) });
     try {
       switch (url.pathname) {
+        case "/robots.txt": return new Response("User-agent: *\nAllow: /api/health\nDisallow: /\n");
         case "/api/health": return json(await health(env), 200, req);
         case "/api/subscribe": return await subscribe(env, req, url);
         case "/api/card-return": return await cardReturn(env, req, url);
