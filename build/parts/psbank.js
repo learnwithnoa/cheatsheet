@@ -93,48 +93,48 @@ I finally ___ the joke. (understand)|understood|understanded,understand,understo
 We ___ the red one. (choose)|chose|choosed,chosen,choose
 `},
  {n:3, t:"Was / were", sub:"I was, they were", why:"I / he / she / it → was. You / we / they → were.", es:"I, he, she, it → was. You, we, they → were.", q:`
-I ___ tired yesterday.|was|were,am,be
-They ___ at the party last night.|were|was,are,been
-You ___ right!|were|was,are,be|With "you", always use were, even for one person.|Con "you" siempre es were.
-The movie ___ really boring.|was|were,is,been
-We ___ very hungry after the hike.|were|was,are,be
-My parents ___ in Chile last year.|were|was,are,be
-It ___ cold this morning.|was|were,is,be
-She ___ born in 1995.|was|were,is,has|"Be born" uses was / were: I was born, she was born.|"Nací" = I was born.
-There ___ a lot of people at the concert.|were|was,are,had|There were + plural (people).|There were + plural.
-There ___ a problem with my phone.|was|were,is,had|There was + singular (a problem).|There was + singular.
+I ___ tired yesterday. (be)|was|were,am,be
+They ___ at the party last night. (be)|were|was,are,been
+You ___ so funny at the party last night! (be)|were|was,are,be|With "you", always use were, even for one person.|Con "you" siempre es were.
+The movie last night ___ really boring. (be)|was|were,is,been
+We ___ very hungry after the hike yesterday. (be)|were|was,are,be
+My parents ___ in Chile last year. (be)|were|was,are,be
+It ___ cold yesterday morning. (be)|was|were,is,be
+She ___ born in 1995. (be)|was|were,is,has|"Be born" uses was / were: I was born, she was born.|"Nací" = I was born.
+There ___ a lot of people at the concert last night. (be)|were|was,are,had|There were + plural (people).|There were + plural.
+There ___ a problem with my phone yesterday. (be)|was|were,is,had|There was + singular (a problem).|There was + singular.
 I ___ at home, I was at work. (not)|wasn't/was not|weren't,didn't,not was|The negative is wasn't (was not).|Negativo: wasn't = was not.
-They ___ happy with the hotel. (not)|weren't/were not|wasn't,didn't,not were|The negative is weren't (were not).|Negativo: weren't = were not.
-___ you at home last night?|Were|Was,Did,Are|In questions, put was / were first: Were you…?|En preguntas, was / were va primero.
-___ the test difficult?|Was|Were,Did,Is|In questions, put was / were first: Was the test…?|En preguntas, was / were va primero.
-Where ___ you yesterday?|were|was,did,are
-Why ___ she so angry?|was|were,did,is
-The restaurant ___ open on Monday. (not)|wasn't/was not|weren't,didn't,isn't
-My friends and I ___ late for class.|were|was,are,did|"My friends and I" = we → were.|"My friends and I" = we → were.
-How ___ your weekend?|was|were,did,is
-The tickets ___ really expensive.|were|was,are,did
-I ___ born in Santiago.|was|were,am,did|"Be born" uses was / were: I was born.|"Nací" = I was born.
-___ your parents at the wedding?|Were|Was,Did,Are
+They ___ happy with the hotel last summer. (not)|weren't/were not|wasn't,didn't,not were|The negative is weren't (were not).|Negativo: weren't = were not.
+___ you at home last night? (be)|Were|Was,Did,Are|In questions, put was / were first: Were you…?|En preguntas, was / were va primero.
+___ yesterday's test difficult? (be)|Was|Were,Did,Is|In questions, put was / were first: Was the test…?|En preguntas, was / were va primero.
+Where ___ you yesterday? (be)|were|was,did,are
+Why ___ she so angry yesterday? (be)|was|were,did,is
+The restaurant ___ open last Monday. (not)|wasn't/was not|weren't,didn't,isn't
+My friends and I ___ late for class yesterday. (be)|were|was,are,did|"My friends and I" = we → were.|"My friends and I" = we → were.
+How ___ your weekend? Did you do anything fun? (be)|was|were,did,is
+The concert tickets ___ really expensive last year. (be)|were|was,are,did
+I ___ born in Santiago. (be)|was|were,am,did|"Be born" uses was / were: I was born.|"Nací" = I was born.
+___ your parents at the wedding last Saturday? (be)|Were|Was,Did,Are
 He ___ at the meeting, he was sick. (not)|wasn't/was not|weren't,didn't,isn't
-We ___ really excited about the trip.|were|was,are,did
+We ___ really excited before the trip. (be)|were|was,are,did
 Yesterday I ___ to the gym. (go)|went|was go,was went,goed|For actions, use the past verb (went), not was + verb.|Para acciones usa el verbo en pasado, no "was go".
-She ___ very nervous before the interview.|was|were,did,is
-The weather ___ perfect yesterday.|was|were,is,did
-My sister and her husband ___ in Spain last month.|were|was,are,did|"My sister and her husband" = they → were.|"My sister and her husband" = they → were.
-I ___ really happy with my results.|was|were,am,did
-___ it expensive?|Was|Were,Did,Is|In questions, put was / were first: Was it…?|En preguntas, was / were va primero.
-The shops ___ closed on Sunday.|were|was,are,did
+She ___ very nervous before her interview yesterday. (be)|was|were,did,is
+The weather ___ perfect yesterday. (be)|was|were,is,did
+My sister and her husband ___ in Spain last month. (be)|were|was,are,did|"My sister and her husband" = they → were.|"My sister and her husband" = they → were.
+I ___ really happy with my results last semester. (be)|was|were,am,did
+___ your last vacation expensive? (be)|Was|Were,Did,Is|In questions, put was / were first: Was it…?|En preguntas, was / were va primero.
+The shops ___ closed last Sunday. (be)|were|was,are,did
 We ___ late, we arrived on time. (not)|weren't/were not|wasn't,didn't,not were|The negative is weren't (were not).|Negativo: weren't = were not.
-Who ___ at the door?|was|were,did,is
-How ___ your exams?|were|was,did,are|Exams is plural → were.|Exams es plural → were.
-___ your friends nice?|Were|Was,Did,Are|In questions, put was / were first: Were your friends…?|En preguntas, was / were va primero.
+Who ___ at the door last night? (be)|was|were,did,is
+How ___ your exams last week? (be)|were|was,did,are|Exams is plural → were.|Exams es plural → were.
+___ your new classmates nice on the first day? (be)|Were|Was,Did,Are|In questions, put was / were first: Were your friends…?|En preguntas, was / were va primero.
 She ___ at work yesterday, she was sick. (not)|wasn't/was not|weren't,didn't,isn't|The negative is wasn't (was not).|Negativo: wasn't = was not.
-There ___ two cats in the garden.|were|was,are,had|There were + plural (two cats).|There were + plural.
+There ___ two cats in the garden yesterday. (be)|were|was,are,had|There were + plural (two cats).|There were + plural.
 There ___ any milk in the fridge. (not)|wasn't/was not|weren't,didn't,isn't|Milk is uncountable → there wasn't.|Milk es incontable → wasn't.
-What ___ the name of that restaurant?|was|were,did,is
-I ___ so tired that I went to bed at 9.|was|were,did,am
-The children ___ very quiet in class.|were|was,did,are
-It ___ my birthday last Saturday.|was|were,did,is
+What ___ the weather like yesterday? (be)|was|were,did,is
+I ___ so tired that I went to bed at 9. (be)|was|were,did,am
+The children ___ very quiet in class yesterday. (be)|were|was,did,are
+It ___ my birthday last Saturday. (be)|was|were,did,is
 `},
  {n:4, t:"Negatives", sub:"didn't go, didn't eat", why:"After didn't, use the base verb: didn't go, not didn't went.", es:"Después de didn't, el verbo va en forma base: didn't go.", q:`
 I ___ to the party. (not / go)|didn't go/did not go|didn't went,don't went,not went
@@ -159,16 +159,16 @@ He ___ the lesson. (not / understand)|didn't understand/did not understand|didn'
 Fix it: "I didn't went to work." → I didn't ___ to work.|go|went,gone,goes
 Fix it: "She didn't saw me." → She didn't ___ me.|see|saw,seen,sees
 Fix it: "We not watched the game." → We ___ the game.|didn't watch/did not watch|not watched,don't watched,didn't watched|Use didn't + base verb, not just "not".|Usa didn't + verbo base, no solo "not".
-I ___ my phone all day. (not / use)|didn't use/did not use|didn't used,not used,don't used
+I ___ my phone all day yesterday. (not / use)|didn't use/did not use|didn't used,not used,don't used
 They ___ me about the party. (not / tell)|didn't tell/did not tell|didn't told,not told,don't told
 She ___ well, so she stayed home. (not / feel)|didn't feel/did not feel|didn't felt,not felt,wasn't feel
 I ___ the movie. It was boring. (not / enjoy)|didn't enjoy/did not enjoy|didn't enjoyed,not enjoyed,wasn't enjoy
-She ___ to the gym this week. (not / go)|didn't go/did not go|didn't went,not went,wasn't go
+She ___ to the gym last week. (not / go)|didn't go/did not go|didn't went,not went,wasn't go
 We ___ dinner last night, we ordered sushi. (not / cook)|didn't cook/did not cook|didn't cooked,not cooked,wasn't cook
 He ___ his keys anywhere. (not / find)|didn't find/did not find|didn't found,not found,wasn't find
 They ___ the driving test. (not / pass)|didn't pass/did not pass|didn't passed,not passed,wasn't pass
 I ___ you with your new haircut! (not / recognize)|didn't recognize/did not recognize|didn't recognized,not recognized,wasn't recognize
-The phone ___ all day. (not / ring)|didn't ring/did not ring|didn't rang,not rang,wasn't ring
+The phone ___ all day yesterday. (not / ring)|didn't ring/did not ring|didn't rang,not rang,wasn't ring
 We ___ a taxi, we walked. (not / take)|didn't take/did not take|didn't took,not took,wasn't take
 He ___ time for breakfast today. (not / have)|didn't have/did not have|didn't had,hadn't,not had
 I ___ to be rude. (not / want)|didn't want/did not want|didn't wanted,not wanted,wasn't want
@@ -182,7 +182,7 @@ She ___ me about the change. (not / tell)|didn't tell/did not tell|didn't told,n
  {n:5, t:"Questions", sub:"Did you…? Where did you…?", why:"Questions: Did + person + base verb. Did you go? Where did you go?", es:"Preguntas: Did + persona + verbo base.", q:`
 ___ you go to the gym yesterday?|Did|Do,Was,Were
 Did she ___ the email? (send)|send|sent,sends,sending|After Did, use the base verb: Did she send…?|Después de Did, el verbo va en forma base.
-___ they like the food?|Did|Do,Were,Was
+___ they like the food at the party?|Did|Do,Were,Was
 Did you ___ a good time? (have)|have|had,has,having|After Did, use the base verb: Did you have…?|Después de Did, el verbo va en forma base.
 Where ___ last summer? (you / go)|did you go|did you went,you went,were you go
 What ___ for dinner? (you / eat)|did you eat|did you ate,you ate,were you eat
@@ -190,35 +190,35 @@ When ___? (the movie / start)|did the movie start|did the movie started,the movi
 Who ___ at the party? (you / see)|did you see|did you saw,you saw,were you see
 Why ___ early? (she / leave)|did she leave|did she left,she left,was she leave
 How ___ there? (they / get)|did they get|did they got,they got,were they get
-___ he call you back?|Did|Was,Does,Were
+___ he call you back yesterday?|Did|Was,Does,Were
 Did they ___ the game? (win)|win|won,wins,winned|After Did, use the base verb: Did they win…?|Después de Did, el verbo va en forma base.
 What time ___ up? (you / wake)|did you wake|did you woke,you woke,were you wake
 Did you ___ my message? (get)|get|got,gets,getting|After Did, use the base verb: Did you get…?|Después de Did, el verbo va en forma base.
-___ you tired after the trip?|Were|Did,Was,Do|With be (tired, happy, at home…), don't use did: Were you tired?|Con "be" no se usa did: Were you…?
-___ the hotel nice?|Was|Did,Were,Does|With be (nice, big, open…), don't use did: Was the hotel nice?|Con "be" no se usa did: Was it…?
+___ you tired after the trip last weekend? (be)|Were|Did,Was,Do|With be (tired, happy, at home…), don't use did: Were you tired?|Con "be" no se usa did: Were you…?
+___ the hotel nice last summer? (be)|Was|Did,Were,Does|With be (nice, big, open…), don't use did: Was the hotel nice?|Con "be" no se usa did: Was it…?
 What ___ you do last weekend?|did|do,were,was
-Where ___ you born?|were|did,was,are|"Be born" uses was / were: Where were you born?|"¿Dónde naciste?" = Where were you born?
+Where ___ you born? (be)|were|did,was,are|"Be born" uses was / were: Where were you born?|"¿Dónde naciste?" = Where were you born?
 How long ___ there? (you / stay)|did you stay|did you stayed,you stayed,were you stay
 Did she ___ you about her new job? (tell)|tell|told,tells,telling|After Did, use the base verb: Did she tell…?|Después de Did, el verbo va en forma base.
 Fix it: "Did you saw the news?" → Did you ___ the news?|see|saw,seen,sees|After Did, use the base verb: Did you see…?|Después de Did, el verbo va en forma base.
 Fix it: "Where you went?" → Where ___?|did you go|you went,did you went,went you
 ___ it rain yesterday?|Did|Was,Does,Were
-What ___ she say?|did|was,does,were
+What ___ she say yesterday?|did|was,does,were
 How much ___? (it / cost)|did it cost|did it costed,it cost,was it cost
 Which restaurant ___? (you / choose)|did you choose|did you chose,you chose,were you choose
 ___ you sleep well last night?|Did|Do,Were,Was
 Did you ___ the movie? (like)|like|liked,likes,liking|After Did, use the base verb: Did you like…?|Después de Did, el verbo va en forma base.
-What ___ you buy at the store?|did|do,were,was
-Where ___ you meet your best friend?|did|were,do,was
-Who ___ you go with?|did|were,do,was
+What ___ you buy at the store yesterday?|did|do,were,was
+Where ___ you first meet your best friend?|did|were,do,was
+Who ___ you go with last night?|did|were,do,was
 Did they ___ on time? (arrive)|arrive|arrived,arrives,arriving|After Did, use the base verb: Did they arrive…?|Después de Did, el verbo va en forma base.
-How ___ the trip?|was|did,were,is|With be (how was…), don't use did.|Con "be" no se usa did.
+How ___ the trip last month? (be)|was|did,were,is|With be (how was…), don't use did.|Con "be" no se usa did.
 When ___? (you / arrive)|did you arrive|did you arrived,you arrived,were you arrive
 What ___ for your birthday? (you / get)|did you get|did you got,you got,were you get
 Why ___ his job? (he / quit)|did he quit|did he quitted,he quit,was he quit
 How many people ___ to the party? (come)|came|did come,come,comes|"How many people" is the subject here, so no did: How many people came?|Si preguntas por quién hizo la acción, no usas did.
 Did it ___ a lot in the mountains? (snow)|snow|snowed,snows,snowing|After Did, use the base verb: Did it snow…?|Después de Did, el verbo va en forma base.
-___ you at the meeting yesterday?|Were|Did,Was,Do|With be (at the meeting), use Were you…?, not Did.|Con "be" no se usa did.
+___ you at the meeting yesterday? (be)|Were|Did,Was,Do|With be (at the meeting), use Were you…?, not Did.|Con "be" no se usa did.
 Fix it: "Did she went to class?" → Did she ___ to class?|go|went,goes,gone|After Did, use the base verb.|Después de Did, el verbo va en forma base.
 Fix it: "What you did last night?" → What ___ last night?|did you do|you did,did you did,you do
 Where ___ your vacation? (you / spend)|did you spend|did you spent,you spent,were you spend
@@ -226,45 +226,45 @@ Where ___ your vacation? (you / spend)|did you spend|did you spent,you spent,wer
  {n:6, t:"Mix it up", sub:"everything together + fix the mistake", why:"", es:"", q:`
 Last year I ___ to Peru. (travel)|traveled/travelled|travel,was travel,traveling|Regular verb: add -ed.|Verbo regular: agrega -ed.
 She ___ the bus this morning. (not / take)|didn't take/did not take|didn't took,wasn't take,not took|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
-___ you at work yesterday?|Were|Did,Was,Do|With be (at work), use Were you…?, not Did.|Con "be" no se usa did.
+___ you at work yesterday? (be)|Were|Did,Was,Do|With be (at work), use Were you…?, not Did.|Con "be" no se usa did.
 We visited the museum three days ___.|ago|before,last,past|Use "ago" after an amount of time: three days ago.|"three days ago" = hace tres días.
 I ___ him last week. (meet)|met|meeted,meet,was meet|Meet is irregular: met.|Meet es irregular: met.
-What did you do ___ weekend?|last|the last,past,ago|Say "last weekend", not "the last weekend".|"el fin de semana pasado" = last weekend.
-They ___ very happy with the results.|were|was,did,are|They → were.|They → were.
+What did you do ___ weekend?|last/this/that|the last,past,ago|Say "last weekend", not "the last weekend".|"el fin de semana pasado" = last weekend.
+They ___ very happy with the results last year. (be)|were|was,did,are|They → were.|They → were.
 He ___ his keys yesterday. (lose)|lost|losed,was lose,loosed|Lose is irregular: lost.|Lose es irregular: lost.
-___ she like the gift?|Did|Was,Does,Is|Did + person + base verb: Did she like…?|Did + persona + verbo base.
-I ___ busy, so I didn't call you.|was|were,did,am|I → was.|I → was.
+___ she like the gift you gave her yesterday?|Did|Was,Does,Is|Did + person + base verb: Did she like…?|Did + persona + verbo base.
+I ___ busy, so I didn't call you. (be)|was|were,did,am|I → was.|I → was.
 We ___ dinner at home last night. (have)|had|haved,have,was have|Have is irregular: had.|Have es irregular: had.
 Fix it: "I was go to the supermarket." → I ___ to the supermarket.|went|was go,was went,goed|For actions, use the past verb (went), not was + verb.|Para acciones usa el verbo en pasado, no "was go".
 Fix it: "He didn't came to class." → He didn't ___ to class.|come|came,comed,comes|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
 Fix it: "Did you enjoyed the trip?" → Did you ___ the trip?|enjoy|enjoyed,enjoys,was enjoy|After Did, use the base verb.|Después de Did, el verbo va en forma base.
-Fix it: "They was at the beach." → They ___ at the beach.|were|was,did,are|They → were.|They → were.
+Fix it: "They was at the beach." → They ___ at the beach. (be)|were|was,did,are|They → were.|They → were.
 Fix it: "I studyed a lot." → I ___ a lot.|studied|studyed,study,studed|Consonant + y → -ied: studied.|Consonante + y → -ied.
 I ___ English when I was a kid. (not / study)|didn't study/did not study|didn't studied,wasn't study,not studied|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
-How ___ the concert?|was|did,were,is|The concert (it) → was.|The concert (it) → was.
-She sent me a message ___ night.|last|yesterday,ago,the last|Say "last night" (but "yesterday morning").|anoche = last night.
+How ___ the concert last night? (be)|was|did,were,is|The concert (it) → was.|The concert (it) → was.
+She sent me a message ___ night.|last/that|yesterday,ago,the last|Say "last night" (but "yesterday morning").|anoche = last night.
 I ___ you at the party! Where were you? (not / see)|didn't see/did not see|didn't saw,wasn't see,not saw|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
 Where ___ before Santiago? (you / live)|did you live|did you lived,you lived,were you live|Where + did + person + base verb.|Where + did + persona + verbo base.
-It ___ a great day at the beach.|was|were,did,is|It → was.|It → was.
+It ___ a great day at the beach yesterday. (be)|was|were,did,is|It → was.|It → was.
 My sister ___ a new car last month. (buy)|bought|buyed,brought,was buy|Buy is irregular: bought (brought comes from bring).|bought = compró, brought = trajo.
-___ they finish the project on time?|Did|Were,Was,Do|Did + person + base verb: Did they finish…?|Did + persona + verbo base.
+___ they finish the project on time last month?|Did|Were,Was,Do|Did + person + base verb: Did they finish…?|Did + persona + verbo base.
 We ___ to the radio while we cooked. (listen)|listened|listen,were listen,listenned|Regular verb: add -ed.|Verbo regular: agrega -ed.
-I finished my homework ___ evening.|yesterday|last,ago,past|Say "yesterday evening", "yesterday morning" (but "last night").|ayer en la tarde = yesterday evening.
+I finished my homework ___ evening.|yesterday/this/that|before,ago,past|Say "yesterday evening", "yesterday morning" (but "last night").|ayer en la tarde = yesterday evening.
 I ___ to the party because I was sick. (not / go)|didn't go/did not go|didn't went,wasn't go,not went|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
-We ___ really tired after the trip.|were|was,did,are|We → were.|We → were.
+We ___ really tired after the trip last weekend. (be)|were|was,did,are|We → were.|We → were.
 She ___ me a gift for my birthday. (give)|gave|gived,given,was give|Give is irregular: gave.|Give es irregular: gave.
-___ you enjoy the concert?|Did|Were,Was,Do|Did + person + base verb: Did you enjoy…?|Did + persona + verbo base.
+___ you enjoy the concert last night?|Did|Were,Was,Do|Did + person + base verb: Did you enjoy…?|Did + persona + verbo base.
 They moved to Chile ten years ___.|ago|before,last,past|Use "ago" after an amount of time: ten years ago.|"ten years ago" = hace diez años.
 He ___ English very fast. (learn)|learned/learnt|learn,was learn,learnd|Learned (US) and learnt (UK) are both correct.|learned y learnt están bien.
-How ___ your first day at work?|was|did,were,is|Your first day (it) → was.|Your first day (it) → was.
+How ___ your first day at work yesterday? (be)|was|did,were,is|Your first day (it) → was.|Your first day (it) → was.
 Fix it: "Yesterday I go to the beach." → Yesterday I ___ to the beach.|went|go,goed,was go|With yesterday, use the past: went.|Con yesterday, usa el pasado: went.
-Fix it: "We was at home." → We ___ at home.|were|was,did,are|We → were.|We → were.
+Fix it: "We was at home." → We ___ at home. (be)|were|was,did,are|We → were.|We → were.
 Fix it: "Did they won the game?" → Did they ___ the game?|win|won,wins,winned|After Did, use the base verb.|Después de Did, el verbo va en forma base.
 I ___ the email, so I didn't know about the meeting. (not / read)|didn't read/did not read|didn't readed,wasn't read,not read|After didn't, use the base verb.|Después de didn't, el verbo va en forma base.
-Where ___ your parents born?|were|did,was,are|"Be born" uses was / were: Where were your parents born?|"¿Dónde nacieron?" = Where were they born?
-We stayed at home ___ weekend because it rained.|last|the last,past,ago|Say "last weekend", not "the last weekend".|el fin de semana pasado = last weekend.
+Where ___ your parents born? (be)|were|did,was,are|"Be born" uses was / were: Where were your parents born?|"¿Dónde nacieron?" = Where were they born?
+We stayed at home ___ weekend because it rained.|last/this/that|the last,past,ago|Say "last weekend", not "the last weekend".|el fin de semana pasado = last weekend.
 It ___ two hours to get there. (take)|took|taked,was take,takes|Take is irregular: took.|Take es irregular: took.
-What ___ you think of the movie?|did|were,was,do|What + did + person + base verb.|What + did + persona + verbo base.
+What ___ you think of the movie last night?|did|were,was,do|What + did + person + base verb.|What + did + persona + verbo base.
 I ___ my homework before dinner. (finish)|finished|finish,was finish,finisht|Regular verb: add -ed.|Verbo regular: agrega -ed.
 `},
  {n:7, t:"Tell the story", sub:"real stories with 10 blanks", story:true, why:"Read the whole sentence: the story tells you which form you need.", es:"Lee toda la oración: la historia te dice qué forma necesitas.", q:`
@@ -324,9 +324,9 @@ const PS_TEST=`
 Who ___ you last night? (call)|called|When "who" is the person doing the action, don't use did: Who called you?
 What ___ at the meeting? (happen)|happened|"What" is the subject here, so no did: What happened?
 Who ___ the cake? It was delicious! (make)|made|"Who" is the person doing the action, so no did: Who made the cake?
-There ___ a lot of traffic this morning. (be)|was|Traffic is uncountable, so: there was.
-Everybody ___ really happy at the party. (be)|was|Everybody is singular: everybody was.
-The news ___ really surprising. (be)|was|News is uncountable: the news was.
+There ___ a lot of traffic yesterday morning. (be)|was|Traffic is uncountable, so: there was.
+Everybody ___ really happy at the party last night. (be)|was|Everybody is singular: everybody was.
+The news last night ___ really surprising. (be)|was|News is uncountable: the news was.
 My new jeans ___ too small, so I returned them. (be)|were|Jeans are plural: they were.
 She ___ coffee to tea when she was younger. (prefer)|preferred|The stress is at the end (pre-FER), so double the r: preferred.
 The accident ___ on a Monday night. (occur)|occurred|The stress is at the end (oc-CUR), so double the r: occurred.
@@ -334,7 +334,7 @@ He ___ when he saw the spider. (panic)|panicked|Verbs that end in -ic add -ked: 
 I ___ the bill last week. (pay)|paid|Pay is irregular: paid (not payed).
 The police ___ the thief two blocks away. (catch)|caught|catch → caught.
 They ___ for their rights for many years. (fight)|fought|fight → fought.
-She ___ with the problem really well. (deal)|dealt|deal → dealt.
+She ___ with the problem really well yesterday. (deal)|dealt|deal → dealt.
 The price of the tickets ___ a lot last year. (rise)|rose|rise → rose (risen is the participle).
 I'm sorry, I ___ to hurt you. (not / mean)|didn't mean/did not mean|After didn't, use the base verb: didn't mean.
 She ___ the bus because she woke up late. (not / catch)|didn't catch/did not catch|After didn't, use the base verb: didn't catch.
@@ -342,7 +342,7 @@ Why ___ me back? (you / not / call)|didn't you call/did you not call|Negative qu
 How long ago ___ to Santiago? (you / move)|did you move|Did + person + base verb: How long ago did you move…?
 What time ___ yesterday? (the store / close)|did the store close|Did + subject + base verb: did the store close.
 I ___ my keys on the table, and now they're gone! (put)|put|Put doesn't change: put – put – put.
-That shirt ___ a lot of money. (cost)|cost|Cost doesn't change: cost – cost – cost.
+That shirt ___ a lot of money, so I didn't buy it. (cost)|cost|Cost doesn't change: cost – cost – cost.
 The baby ___ at 3 a.m. and didn't go back to sleep. (wake up)|woke up|wake up → woke up.
 We ___ the whole night talking. (spend)|spent|spend → spent.
 She ___ me she was tired. (tell)|told|tell → told.

@@ -30,3 +30,12 @@ if '2026-1114-typing' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 15: fairer grammar answers
+s=open(p,encoding="utf-8").read()
+if '2026-1115-answers' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1115-answers", date:"November 15, 2026", title:"Fairer grammar practice", items:[
+    ["✅","More right answers count","Noa checked every question in <b>Practice → Grammar</b>. If there's more than one correct answer (like <b>managed to</b> or <b>was able to</b>), they all count now, and some questions got a clearer time word (<b>yesterday</b>, <b>last night</b>…).","practice"],
+    ["👍","\\"That's also correct!\\"","Wrote something that's correct English but isn't the form the stage is practicing? It won't be marked wrong. Hibi tells you, and you can try the other form.","practice"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

@@ -6,7 +6,7 @@ Always check your email before ___ it. (send)|sending|send,to send,sent
 I usually have a coffee after ___ lunch. (have)|having|have,to have,had
 She left without ___ goodbye. (say)|saying|say,to say,said|without + -ing.|without + -ing: sin decir → without saying.
 Turn off the lights before ___ the office. (leave)|leaving|leave,to leave,leaveing|Drop the -e: leave → leaving.|Se quita la -e: leave → leaving.
-After ___ the report, I sent it to my boss. (finish)|finishing|finish,to finish,finished
+After ___ the report, I sent it to my boss. (finish)|finishing/having finished|finish,to finish,finished
 You can improve your English by ___ every day. (practice)|practicing/practising|practice,to practice,practiced|by + -ing = how you do something.|by + -ing = cómo lo haces: practicando.
 Instead of ___ a taxi, we took the metro. (take)|taking|take,to take,took
 Wash your hands before ___. (eat)|eating|eat,to eat,ate
@@ -16,7 +16,7 @@ Think carefully before ___ a decision. (make)|making|make,to make,makeing|Drop t
 Read the contract before ___ it. (sign)|signing|sign,to sign,signed
 Thanks for ___ me! (help)|helping|help,to help,helped
 Before ___ to bed, I read a little. (go)|going|go,to go,went
-After ___ in Chile for years, she speaks perfect Spanish. (live)|living|live,to live,lived
+After ___ in Chile for years, she speaks perfect Spanish. (live)|living/having lived|live,to live,lived
 We talked about ___ to Peru. (travel)|traveling/travelling|travel,to travel,traveled
 `},
  {n:2, t:"Verbs that take -ing", sub:"enjoy cooking, avoid eating", why:"Some verbs are always followed by -ing: enjoy, finish, avoid, mind, keep, miss, practice, consider, imagine, give up.", es:"Algunos verbos siempre van con -ing: enjoy, finish, avoid, mind, keep, miss, practice, consider…", q:`
@@ -30,7 +30,7 @@ You need to practice ___ every day. (speak)|speaking|speak,to speak,spoke
 We're considering ___ to a new office. (move)|moving|move,to move,moved
 Imagine ___ in Japan for a year! (work)|working|work,to work,worked
 She stopped ___ because it was bad for her. (smoke)|smoking|smoke,to smoke,smoked|stop + -ing = quit doing it.|stop + -ing = dejar de: dejó de fumar.
-I can't stand ___ in long lines. (wait)|waiting|wait,to wait,waited
+I can't stand ___ in long lines. (wait)|waiting/to wait|wait,to waiting,waited
 He admitted ___ a mistake. (make)|making|make,to make,made
 Don't give up ___ English! (learn)|learning|learn,to learn,learned
 I spent the whole weekend ___. (study)|studying|study,to study,studied|spend time + -ing.|pasar tiempo + -ing: pasé el fin de semana estudiando.
@@ -50,8 +50,8 @@ He proposed ___ the price by 10%. (lower)|lowering|to lower,lower,lowered
 I'd suggest ___ with the easy questions. (start)|starting|to start,start,started
 Experts recommend ___ at least 7 hours a night. (sleep)|sleeping|to sleep,sleep,slept
 We recommend ___ early to get a good seat. (arrive)|arriving|to arrive,arrive,arriveing|Drop the -e: arrive → arriving.|Se quita la -e: arrive → arriving.
-I recommend that you ___ early. (arrive)|arrive|arriving,to arrive,arrives|With "that + person", use the normal verb: I recommend that you arrive.|Con "that + persona", va el verbo normal: that you arrive.
-She suggested that we ___ a taxi. (take)|take|taking,to take,took|suggest that + person + verb (no -ing, no to).|suggest that + persona + verbo (sin -ing, sin to).
+I recommend that you ___ early. (arrive)|arrive/should arrive|arriving,to arrive,arrives|With "that + person", use the normal verb: I recommend that you arrive.|Con "that + persona", va el verbo normal: that you arrive.
+She suggested that we ___ a taxi. (take)|take/should take|taking,to take,takes|suggest that + person + verb (no -ing, no to).|suggest that + persona + verbo (sin -ing, sin to).
 I suggest ___ a short email instead of calling. (send)|sending|to send,send,sent
 Someone proposed ___ the office on Fridays. (close)|closing|to close,close,closeing|propose + -ing. Drop the -e: closing.|propose + -ing. Se quita la -e: closing.
 `},
@@ -157,7 +157,7 @@ He keeps ___ late. (arrive)|arriving|keep + -ing.
 After ___ the email, she felt better. (send)|sending|after + -ing.
 I'm tired of ___ for the bus. (wait)|waiting|tired of + -ing.
 We hope ___ soon. (finish)|to finish|hope + to + verb.
-I suggest that you ___ a break. (take)|take|suggest that + person + verb.
+I suggest that you ___ a break. (take)|take/should take|suggest that + person + verb.
 She avoided ___ the question. (answer)|answering|avoid + -ing.
 Thanks for ___ me. (invite)|inviting|for + -ing.
 I'm used to ___ in English. (work)|working|be used to + -ing.

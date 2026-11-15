@@ -37,6 +37,14 @@ node build/test/smoke.js     # desktop + phone, reports page errors, screenshots
 ```
 `build/test/fbstub3.js` fakes the sign-in so tests never touch real data. Copy `smoke.js` to test a specific change
 (click through it, check the DOM, look at the screenshots on desktop **and** iPhone 13 size). Close the What's new pop-up first.
+`node build/test/questions.js` checks every practice question after you edit a question bank (`build/parts/*bank.js`).
+
+## Practice questions (build/parts/*bank.js)
+
+- Line format: `sentence with ___ (hint) | right answers separated by / | 3 wrong options | why | Spanish`.
+- Every correct answer must be accepted, and no "wrong" option may be correct English (Noa checked this, Nov 2026).
+  If another answer is correct but isn't what the stage practices, add it with `~` (e.g. `has lost/~lost`): it's never marked wrong,
+  Hibi says "That's also correct English!" and lets them try again. Or add a time word so only one answer fits.
 
 ## Deploy
 

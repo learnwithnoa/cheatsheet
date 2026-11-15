@@ -5,7 +5,7 @@ const PRS_STAGES=[
 I ___ in Santiago. (live)|live|lives,living,am live
 We ___ English on Mondays. (study)|study|studies,studys,studying
 They ___ coffee every morning. (drink)|drink|drinks,drinking,are drink
-You ___ really fast! (walk)|walk|walks,walking,are walk
+You ___ really fast! (walk)|walk/~are walking|walks,walking,are walk
 I ___ my mom every Sunday. (call)|call|calls,calling,am call
 My friends ___ football on Saturdays. (play)|play|plays,playing,are play|My friends = they, so no -s.|My friends = they: el verbo va sin -s.
 We ___ at 9 a.m. (start)|start|starts,starting,are start
@@ -24,7 +24,7 @@ She ___ in a bank. (work)|works|work,working,is work
 He ___ coffee every morning. (drink)|drinks|drink,drinking,is drink
 My sister ___ in Concepción. (live)|lives|live,living,is live|My sister = she: add -s.|My sister = she: agrega -s.
 The store ___ at 10 a.m. (open)|opens|open,opening,is open|The store = it: add -s.|The store = it: agrega -s.
-Pedro ___ the guitar. (play)|plays|play,playing,is play|Pedro = he: add -s.|Pedro = he: agrega -s.
+Pedro ___ the guitar. (play)|plays/~is playing|play,playing,is play|Pedro = he: add -s.|Pedro = he: agrega -s.
 My dog ___ a lot. (sleep)|sleeps|sleep,sleeping,is sleep|My dog = it: add -s.|My dog = it: agrega -s.
 She ___ English very well. (speak)|speaks|speak,speaking,is speak
 He ___ the bus to work. (take)|takes|take,taking,is take
@@ -32,7 +32,7 @@ It ___ a lot in winter. (rain)|rains|rain,raining,is rain
 My boss ___ long emails. (write)|writes|write,writing,is write
 Ana ___ pizza. (love)|loves|love,loving,is love
 The class ___ at 8 p.m. (start)|starts|start,starting,is start|The class = it: add -s.|The class = it: agrega -s.
-My brother ___ video games all day. (play)|plays|play,playing,is play
+My brother ___ video games all day. (play)|plays/~is playing|play,playing,is play
 She ___ her mom every day. (call)|calls|call,calling,is call
 He ___ at a restaurant. (cook)|cooks|cook,cooking,is cook
 My phone ___ a lot of money. (cost)|costs|cost,costing,is cost
@@ -48,9 +48,9 @@ The baby ___ a lot at night. (cry)|cries|crys,cry,cryes|Consonant + y → -ies.|
 He ___ cars. (fix)|fixes|fixs,fix,fixies|After -x, add -es.|Después de -x, agrega -es.
 She always ___ the bus. (miss)|misses|miss,misss,missies|After -ss, add -es.|Después de -ss, agrega -es.
 My dad ___ to work at 7. (drive)|drives|drivees,drive,drivies|Normal verb: just add -s.|Verbo normal: solo agrega -s.
-She ___ very hard. (try)|tries|trys,try,tryes|Consonant + y → -ies.|Consonante + y → -ies.
+She ___ very hard. (try)|tries/~is trying|trys,try,tryes|Consonant + y → -ies.|Consonante + y → -ies.
 He ___ to music in the car. (listen)|listens|listenes,listen,listenies|Normal verb: just add -s.|Verbo normal: solo agrega -s.
-My friend ___ a big house. (have)|has|haves,have,haves|have → has.|have → has.
+My friend ___ a big house. (have)|has|haves,have,is have|have → has.|have → has.
 The movie ___ at 9. (finish)|finishes|finishs,finish,finishies|After -sh, add -es.|Después de -sh, agrega -es.
 She ___ video games. (play)|plays|plaies,play,playes|Vowel + y → just -s: plays.|Vocal + y → solo -s: plays.
 He ___ his teeth twice a day. (brush)|brushes|brushs,brush,brushies|After -sh, add -es.|Después de -sh, agrega -es.
@@ -74,21 +74,21 @@ It ___ much in summer. (not / rain)|doesn't rain/does not rain|don't rain,doesn'
 My parents ___ English. (not / speak)|don't speak/do not speak|doesn't speak,not speak,don't speaks|My parents = they → don't.|My parents = they → don't.
 `},
  {n:5, t:"Questions: do / does", sub:"Do you…? Does she…?", why:"Do + I/you/we/they + verb? Does + he/she/it + verb? (no -s after does).", es:"Do + I/you/we/they + verbo? Does + he/she/it + verbo? (sin -s después de does).", q:`
-___ you like pizza?|Do|Does,Are,Is
-___ she work on Saturdays?|Does|Do,Is,Are
-___ they live near here?|Do|Does,Are,Is
-Where ___ you work?|do|does,are,is
-What time ___ the class start?|does|do,is,are|The class = it → does.|The class = it → does.
-___ your brother play football?|Does|Do,Is,Are|Your brother = he → does.|Your brother = he → does.
+___ you like pizza? (do)|Do|Does,Are,Is
+___ she work on Saturdays? (do)|Does|Do,Is,Are
+___ they live near here? (do)|Do|Does,Are,Is
+Where ___ you work? (do)|do|does,are,is
+What time ___ the class start? (do)|does|do,is,are|The class = it → does.|The class = it → does.
+___ your brother play football? (do)|Does|Do,Is,Are|Your brother = he → does.|Your brother = he → does.
 Does he ___ English? (speak)|speak|speaks,speaking,spoke|After does, the verb has no -s.|Después de does, el verbo va sin -s.
 Do you ___ a dog? (have)|have|has,having,haves
 Does she ___ coffee? (drink)|drink|drinks,drinking,drank|After does, the verb has no -s.|Después de does, el verbo va sin -s.
-What ___ you do on weekends?|do|does,are,is
-How ___ he go to work?|does|do,is,are
+What ___ you do on weekends? (do)|do|does,are,is
+How ___ he go to work? (do)|does|do,is,are
 Does it ___ a lot here? (rain)|rain|rains,raining,rained
 Do you like tea? Yes, I ___.|do|does,am,like|Short answer: Yes, I do.|Respuesta corta: Yes, I do.
 Does she live here? No, she ___.|doesn't|don't,isn't,not|Short answer: No, she doesn't.|Respuesta corta: No, she doesn't.
-___ your parents speak English?|Do|Does,Are,Is|Your parents = they → do.|Your parents = they → do.
+___ your parents speak English? (do)|Do|Does,Are,Is|Your parents = they → do.|Your parents = they → do.
 Where does your sister ___? (live)|live|lives,living,lived|After does, the verb has no -s.|Después de does, el verbo va sin -s.
 `},
  {n:6, t:"Mix it up", sub:"routines with always, never…", why:"Check the subject first: he/she/it → -s; and always/usually/never go before the verb.", es:"Mira primero el sujeto: he/she/it → -s; y always/usually/never van antes del verbo.", q:`
@@ -97,17 +97,17 @@ I never ___ late. (arrive)|arrive|arrives,arriving,am arrive
 My dad usually ___ at 7. (get up)|gets up|get up,gets ups,is get up|Phrasal verbs: the -s goes on the verb: gets up.|En los verbos con partícula, la -s va en el verbo: gets up.
 We sometimes ___ out on Fridays. (go)|go|goes,going,are go
 He ___ coffee. (not / drink)|doesn't drink/does not drink|don't drink,doesn't drinks,not drink
-___ you usually cook at home?|Do|Does,Are,Is
+___ you usually cook at home? (do)|Do|Does,Are,Is
 Ana often ___ her grandma. (visit)|visits|visit,visiting,is visit
 My kids ___ TV in the morning. (not / watch)|don't watch/do not watch|doesn't watch,not watch,don't watches
 The metro ___ very full at 8 a.m. (be)|is|are,be,does|Be is different: I am, you/we/they are, he/she/it is.|Be es distinto: I am, you/we/they are, he/she/it is.
 I ___ tired on Mondays. (be)|am|is,are,be|I → am.|I → am.
 She ___ the dishes after lunch. (wash)|washes|wash,washs,washing
-What time ___ your class finish?|does|do,is,are
+What time ___ your class finish? (do)|does|do,is,are
 He ___ two jobs. (have)|has|have,haves,is have
 They usually ___ the bus. (take)|take|takes,taking,are take
 My cat never ___ on the bed. (sleep)|sleeps|sleep,sleeping,is sleep
-___ he like his new job?|Does|Do,Is,Are
+___ he like his new job? (do)|Does|Do,Is,Are
 `},
  {n:7, t:"Tell the story", sub:"a normal day, 10 blanks", story:true, why:"Read the whole sentence: who does it? He/she/it → -s.", es:"Lee toda la oración: ¿quién lo hace? He/she/it → -s.", q:`
 #Camila's normal day

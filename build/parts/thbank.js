@@ -37,17 +37,17 @@ ___ enough chairs for everyone. (negative)|There aren't/There are not|There isn'
 ___ a bank near here? (one)|Is there|Are there,There is,Has|One bank → Is there…?|Un banco → Is there…? (¿Hay un banco…?)
 ___ any good restaurants in this area? (plural)|Are there|Is there,There are,Have|Restaurants (plural) → Are there…?|Restaurants (plural) → Are there…?
 ___ any milk left? (uncountable)|Is there|Are there,There is,Has|Milk → Is there…?|Milk → Is there…?
-How many people ___ in your family? (question)|are there|there are,is there,have|How many + plural → are there?|How many + plural → are there?
+How many people ___ in your family? (question)|are there/~are|there are,is there,have|How many + plural → are there?|How many + plural → are there?
 Is there a pharmacy on this street? Yes, ___. (short answer)|there is|there's,it is,is there|Short answer: Yes, there is. (Not 'there's'.)|Respuesta corta: Yes, there is. (No 'there's'.)
 Are there any questions? No, ___. (short answer)|there aren't/there are not|there isn't,they aren't,aren't there|Short answer: No, there aren't.|Respuesta corta: No, there aren't.
 ___ a problem? You look worried. (one)|Is there|Are there,There is,Has|One problem → Is there…?|Un problema → Is there…?
 ___ any tickets for tonight? (plural)|Are there|Is there,There are,Have|Tickets (plural) → Are there…?|Tickets (plural) → Are there…?
-How much water ___ in the bottle? (uncountable)|is there|are there,there is,has|How much + uncountable → is there?|How much + no contable → is there?
+How much water ___ in the bottle? (uncountable)|is there/~is|are there,there is,has|How much + uncountable → is there?|How much + no contable → is there?
 Is there any coffee? No, ___. (short answer)|there isn't/there is not|there aren't,it isn't,isn't there|Short answer: No, there isn't.|Respuesta corta: No, there isn't.
 ___ a gym in your building? (one)|Is there|Are there,There is,Has|One gym → Is there…?|Un gimnasio → Is there…?
 Are there many tourists in summer? Yes, ___. (short answer)|there are|there is,they are,are there|Short answer: Yes, there are.|Respuesta corta: Yes, there are.
 ___ any shops open on Sunday? (plural)|Are there|Is there,There are,Have|Shops (plural) → Are there…?|Shops (plural) → Are there…?
-What ___ in the box? (one thing, unknown)|is there|are there,there is,has|What + is there?|What is there…? (¿Qué hay…?)
+What ___ in the box? (one thing, unknown)|is there/~is|are there,there is,has|What + is there?|What is there…? (¿Qué hay…?)
 `},
  {n:4, t:"Past: there was / there were", sub:"there was a party, there were 20 people", why:"'Había / hubo': there was + one thing, there were + plural. Negatives: wasn't / weren't. Questions: Was there…? Were there…?", es:"'Había / hubo': there was + una cosa, there were + plural. Negativo: wasn't / weren't. Preguntas: Was there…? Were there…?", q:`
 ___ a party at my house last night. (past, one)|There was|There were,There is,Had|Past + one → There was.|Pasado + uno → There was: hubo una fiesta.
@@ -63,7 +63,7 @@ Were there any messages for me? No, ___. (short answer)|there weren't/there were
 ___ an accident on the highway yesterday. (past, one)|There was|There were,There is,Had|Past + one → There was.|Pasado + uno → There was: hubo un accidente.
 In my old school, ___ only two computers. (past, plural)|there were|there was,there are,had|Past + plural → there were.|Pasado + plural → there were.
 ___ any wifi at the hotel. (past, negative)|There wasn't/There was not|There weren't,There didn't,Didn't have|Wifi → There wasn't.|Wifi → There wasn't.
-How many students ___ in your class last year? (past question)|were there|there were,was there,had|How many + plural, past → were there?|How many + plural, pasado → were there?
+How many students ___ in your class last year? (past question)|were there/~were|there were,was there,had|How many + plural, past → were there?|How many + plural, pasado → were there?
 `},
  {n:5, t:"Future: there will be", sub:"there will be a meeting, there won't be time", why:"'Habrá': there will be (one or many, it doesn't change!). Negative: there won't be. Question: Will there be…? Never 'there doesn't will be'.", es:"'Habrá': there will be (uno o muchos, ¡no cambia!). Negativo: there won't be. Pregunta: Will there be…? Nunca 'there doesn't will be'.", q:`
 ___ a meeting tomorrow at 10. (future)|There will be/There'll be|There is going,There will,Will be|Future → There will be.|Futuro → There will be: habrá una reunión.
@@ -90,7 +90,7 @@ Next week ___ a class on Friday. It's a holiday. (future, negative)|there won't 
 ___ a doctor here? It's an emergency! (now, question)|Is there|Are there,Was there,Has|Now + one, question → Is there…?|Ahora + uno, pregunta → Is there…?
 In 1990, ___ no cell phones. (past)|there were|there was,there are,had|Past + plural → there were.|Pasado + plural → there were.
 ___ a lot of noise last night. Did you hear it? (past)|There was|There were,There is,Had|Noise (uncountable), past → There was.|Noise (no se cuenta), pasado → There was.
-How many people ___ at the wedding next month? (future question)|will there be|there will be,will be there,are there will|Future question → will there be?|Pregunta futura → will there be?
+How many people ___ at the wedding next month? (future question)|will there be/~will be|there will be,will be there,are there will|Future question → will there be?|Pregunta futura → will there be?
 ___ any coffee? I need some! (now, question)|Is there|Are there,Was there,Has|Coffee (uncountable) → Is there…?|Coffee (no se cuenta) → Is there…?
 My city is small. ___ many things to do. (now, negative)|There aren't/There are not|There isn't,There don't,Hasn't|Now + plural, negative → There aren't.|Ahora + plural, negativo → There aren't.
 When I arrived, ___ anyone at home. (past, negative)|there wasn't/there was not|there weren't,there didn't,there isn't|Anyone → singular → there wasn't.|Anyone → singular → there wasn't.
@@ -102,7 +102,7 @@ ___ any problems with the order? (past question)|Were there|Was there,Are there,
 I live in Ñuñoa. ___ a big park near my apartment. (now, one)|There is/There's|There are,It has,Has
 ___ also many small cafés on my street. (now, plural)|There are|There is,Has,Have
 Ten years ago, ___ any cafés here. (past, negative, plural)|there weren't/there were not|there wasn't,there didn't,there aren't
-___ only an old bakery and a small shop. (past)|There were|There was,There is,Had
+___ only an old bakery and a small shop. (past)|There were/There was|There had,There is,Had
 ___ a metro station either. (past, negative, one)|There wasn't/There was not|There weren't,There didn't,There isn't
 Now ___ a new station, so it's easy to go downtown. (now, one)|there is/there's|there are,has,there was
 But ___ a lot of traffic in the mornings. (now, uncountable)|there is/there's|there are,has,there were
@@ -146,11 +146,11 @@ ___ a meeting tomorrow. (future)|There will be/There'll be|Future → There will
 ___ a problem. Don't worry. (future, negative)|There won't be/There will not be|Not 'there doesn't will be' → There won't be.
 ___ food at the party? (future question)|Will there be|Future question → Will there be…?
 Look at the sky. There's going ___ a storm. (going to)|to be|There's going to be.
-How many people ___ in your family? (now, question)|are there|How many + plural → are there?
+How many people ___ in your family? (now, question)|are there/~are|How many + plural → are there?
 ___ some water in the bottle. (now, uncountable)|There is/There's|Water → There is.
 Ten years ago ___ a metro station here. (past, negative)|there wasn't/there was not|Past + one, negative → there wasn't.
 Next year ___ more buses. (future, plural)|there will be/there'll be|Future → there will be (same for plural).
 ___ time to finish. Hurry! (now, negative)|There isn't/There is not|Time → There isn't.
 Were there any messages? Yes, ___. (short answer)|there were|Yes, there were.
-How much money ___ in your wallet? (now, question)|is there|How much → is there?
+How much money ___ in your wallet? (now, question)|is there/~is|How much → is there?
 `.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"tht-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
