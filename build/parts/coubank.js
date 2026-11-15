@@ -7,13 +7,13 @@ When I was ten, I ___ run really fast. (then)|could|can,could to,was can|Past �
 Next year, I ___ drive. (future)|will be able to/'ll be able to|will can,can,could|Future: will be able to. 'Will can' doesn't exist.|Futuro: will be able to. 'Will can' no existe.
 My grandma ___ read without glasses, even at 90. (now)|can|cans,could to,is can|Now → can (no -s, even with she).|Ahora → can (sin -s, aunque sea she).
 Before the accident, he ___ play the piano. (then)|could|can,coulds,could to|Past → could.|Pasado → could.
-I hope I ___ visit you in March. (future)|will be able to/'ll be able to|will can,can to,could to|Future: will be able to.|Futuro: will be able to.
+After a few more lessons, I ___ swim across the pool. (future)|will be able to/'ll be able to|will can,can,could to|Future: will be able to.|Futuro: will be able to.
 She ___ swim, but she doesn't like it. (now)|can|can to,cans,is able|Now → can + verb (no 'to').|Ahora → can + verbo (sin 'to').
 At university, we ___ sleep until noon. (then)|could|can,could to,were can|Past → could.|Pasado → could.
 After this course, you ___ write better emails. (future)|will be able to/'ll be able to|will can,can,could|Future: will be able to.|Futuro: will be able to.
 He ___ cook, but he can bake great bread. (now, negative)|can't/cannot|couldn't,can not to,doesn't can|Now, negative → can't.|Ahora, negativo → can't.
 When I was a baby, I ___ talk. (then, negative)|couldn't/could not|can't,didn't could,couldn't to|Past, negative → couldn't.|Pasado, negativo → couldn't.
-Don't worry, you ___ do it tomorrow. (future)|will be able to/'ll be able to|will can,can to,could to|Future: will be able to.|Futuro: will be able to.
+Don't worry, by next month you ___ do it without help. (future)|will be able to/'ll be able to|will can,can,could to|Future: will be able to.|Futuro: will be able to.
 My dog ___ open the door by himself. It's scary. (now)|can|cans,could to,is can|Now → can.|Ahora → can.
 Ten years ago, I ___ eat anything and not get fat. (then)|could|can,could to,was can|Past → could.|Pasado → could.
 `},
@@ -118,7 +118,7 @@ Her brother ___ find the road home for two days. (find, negative)|couldn't/could
 Finally, he ___ get home with help from a neighbour. (get)|was able to|could,can,could got
 Today she's 85, and she ___ still cook for twenty people. (now)|can|could,can to,is able
 Last month she ___ walk to the river by herself! (one success)|was able to|could,can,were able to
-Next summer, I hope I ___ visit the village with her. (future)|will be able to/'ll be able to|will can,can,could
+By next summer, I ___ talk to her neighbours in their dialect. (future)|will be able to/'ll be able to|will can,can,could
 I'm sure I ___ understand her stories better then. (future)|will be able to/'ll be able to|will can,can,could
 `}
 ];

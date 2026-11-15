@@ -197,7 +197,7 @@ const canon = x => Array.isArray(x) ? x.map(canon) : (x && typeof x === "object"
 function sameJSON(a, b) { try { return JSON.stringify(canon(JSON.parse(a))) === JSON.stringify(canon(JSON.parse(b))); } catch (e) { return a === b; } }
 /* saved words, class notes and stars are redrawn in place (a full reload in the middle of browsing felt like the page "jumping") */
 function mergedNeedsReload(listsOnly) { if (listsOnly && window.__csListsReload) { try { if (window.__csListsReload()) return; } catch (e) {} } reloadWanted = true; tryReload(); }
-function tryReload() { if (!reloadWanted) return; const a = document.activeElement; if ((a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.value) || document.querySelector("dialog[open], .cs-dlg")) { setTimeout(tryReload, 4000); return; }
+function tryReload() { if (!reloadWanted) return; const a = document.activeElement; if ((a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.value) || document.querySelector("dialog[open], .cs-dlg") || (window.__csBusy && window.__csBusy())) { setTimeout(tryReload, 4000); return; }   /* never while they're typing or in a practice round */
   const last = +(sessionStorage.getItem("ncs-reload-at") || 0); if (Date.now() - last < 120000) { reloadWanted = false; return; }   /* at most one automatic reload every 2 minutes, never a loop */
   sessionStorage.setItem("ncs-reload-at", String(Date.now())); location.reload(); }
 async function flush() {

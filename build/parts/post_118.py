@@ -21,3 +21,12 @@ if '2026-1113-clublib' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 14: typing is safe from refreshes, practice feedback box fix
+s=open(p,encoding="utf-8").read()
+if '2026-1114-typing' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1114-typing", date:"November 14, 2026", title:"Your typing is safe", items:[
+    ["✍️","No surprise refreshes","Hibi never refreshes by itself while you're typing or in the middle of a practice round. If you tap <b>Refresh</b> while writing a note, your text comes back.",""],
+    ["💪","Clearer practice feedback","When an answer is wrong, the explanation is easy to read again (it was crossed out by mistake). Three <b>will be able to</b> questions in <b>Could vs was able to</b> are clearer now.","practice"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

@@ -1103,6 +1103,10 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 #v-club .cl-h1row>.cl-igtop{flex:none;margin:0}
 @media (max-width:560px){#v-club .cl-h1row{flex-wrap:nowrap}#v-club .cl-h1row>.cl-igtop{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}#v-club .cl-h1row>.cl-igtop .cl-igl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}#v-club .cl-h1row>.cl-igtop svg{width:19px;height:19px}}
 
+/* step120: the wrong-answer feedback box is not crossed out (only its first line is red) */
+.ps-fb.no{color:inherit;font-weight:inherit;text-decoration:none}
+.ps-fb.no>b{color:var(--red)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -8314,13 +8318,13 @@ When I was ten, I ___ run really fast. (then)|could|can,could to,was can|Past �
 Next year, I ___ drive. (future)|will be able to/'ll be able to|will can,can,could|Future: will be able to. 'Will can' doesn't exist.|Futuro: will be able to. 'Will can' no existe.
 My grandma ___ read without glasses, even at 90. (now)|can|cans,could to,is can|Now → can (no -s, even with she).|Ahora → can (sin -s, aunque sea she).
 Before the accident, he ___ play the piano. (then)|could|can,coulds,could to|Past → could.|Pasado → could.
-I hope I ___ visit you in March. (future)|will be able to/'ll be able to|will can,can to,could to|Future: will be able to.|Futuro: will be able to.
+After a few more lessons, I ___ swim across the pool. (future)|will be able to/'ll be able to|will can,can,could to|Future: will be able to.|Futuro: will be able to.
 She ___ swim, but she doesn't like it. (now)|can|can to,cans,is able|Now → can + verb (no 'to').|Ahora → can + verbo (sin 'to').
 At university, we ___ sleep until noon. (then)|could|can,could to,were can|Past → could.|Pasado → could.
 After this course, you ___ write better emails. (future)|will be able to/'ll be able to|will can,can,could|Future: will be able to.|Futuro: will be able to.
 He ___ cook, but he can bake great bread. (now, negative)|can't/cannot|couldn't,can not to,doesn't can|Now, negative → can't.|Ahora, negativo → can't.
 When I was a baby, I ___ talk. (then, negative)|couldn't/could not|can't,didn't could,couldn't to|Past, negative → couldn't.|Pasado, negativo → couldn't.
-Don't worry, you ___ do it tomorrow. (future)|will be able to/'ll be able to|will can,can to,could to|Future: will be able to.|Futuro: will be able to.
+Don't worry, by next month you ___ do it without help. (future)|will be able to/'ll be able to|will can,can,could to|Future: will be able to.|Futuro: will be able to.
 My dog ___ open the door by himself. It's scary. (now)|can|cans,could to,is can|Now → can.|Ahora → can.
 Ten years ago, I ___ eat anything and not get fat. (then)|could|can,could to,was can|Past → could.|Pasado → could.
 `},
@@ -8425,7 +8429,7 @@ Her brother ___ find the road home for two days. (find, negative)|couldn't/could
 Finally, he ___ get home with help from a neighbour. (get)|was able to|could,can,could got
 Today she's 85, and she ___ still cook for twenty people. (now)|can|could,can to,is able
 Last month she ___ walk to the river by herself! (one success)|was able to|could,can,were able to
-Next summer, I hope I ___ visit the village with her. (future)|will be able to/'ll be able to|will can,can,could
+By next summer, I ___ talk to her neighbours in their dialect. (future)|will be able to/'ll be able to|will can,can,could
 I'm sure I ___ understand her stories better then. (future)|will be able to/'ll be able to|will can,can,could
 `}
 ];
@@ -10313,6 +10317,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1114-typing", date:"November 14, 2026", title:"Your typing is safe", items:[
+    ["✍️","No surprise refreshes","Hibi never refreshes by itself while you're typing or in the middle of a practice round. If you tap <b>Refresh</b> while writing a note, your text comes back.",""],
+    ["💪","Clearer practice feedback","When an answer is wrong, the explanation is easy to read again (it was crossed out by mistake). Three <b>will be able to</b> questions in <b>Could vs was able to</b> are clearer now.","practice"]
+  ]},
   {id:"2026-1113-clublib", date:"November 13, 2026", title:"Club Library filters and a smoother 🔔 window", items:[
     ["🎬","Library: filter by class","In <b>Club → Library</b>, tap <b>Deep Dive Monday</b>, <b>Wildcard Wednesday</b>, <b>Word Up Thursday</b> or <b>Free Talk Friday</b> to see only those recordings. The newest 8 show first, then <b>Show more</b>.","club"],
     ["📸","Instagram group, always at the top","The <b>Instagram group</b> button is back at the top right of the club page, on every tab.","club"],
@@ -10583,8 +10591,8 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261114232154"; let hiddenAt=0, shown=false;
-  const busy=()=>{ const a=document.activeElement; return !!(a&&(a.matches("textarea,input[type=text],input:not([type]),[contenteditable=true]")&&String(a.value||a.textContent||"").trim())) || !!document.querySelector(".ps-q:not([hidden]) input, dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx"); };
+(function(){ const BUILD="20261114233727"; let hiddenAt=0, shown=false;
+  const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
     b.innerHTML='<span>✨ Hibi just got an update.</span><button type="button" class="cs-upd-go">Refresh</button><button type="button" class="cs-upd-x" aria-label="Later">×</button>';
@@ -10812,6 +10820,35 @@ document.addEventListener("click",e=>{ const b=e.target.closest("nav .navbtn[dat
   document.addEventListener("click",e=>{ if(e.target.closest&&e.target.closest("[data-dminbox],[data-dmto]")) last="m"; },true);
 })();
 </script>
+<script>
+/* step120: is the person in the middle of something? Then Hibi never refreshes on its own. */
+window.__csBusy = function(){
+  const vis = e => !!e && e.getClientRects().length > 0;
+  if (document.querySelector("dialog[open], .cs-dlg, #v-coaching:not([hidden]) .lx")) return true;   /* a pop-up, or a class recap in progress */
+  if (vis(document.querySelector("[data-psquit]"))) return true;                      /* a practice round is going */
+  for (const e of document.querySelectorAll("textarea, input[type=text], input:not([type]), [contenteditable=true]")) {
+    if (e.closest(".search-wrap, #searchBox, [data-noguard]")) continue;               /* the search box doesn't count */
+    if (vis(e) && String(e.value != null ? e.value : e.textContent || "").trim()) return true;
+  }
+  return false;
+};
+/* if the page does reload anyway (e.g. they tap Refresh), bring back what they were typing */
+(function(){
+  const KEY = "cs-drafts";
+  const save = () => { try { const d = {};
+      document.querySelectorAll("textarea[id], input[type=text][id], input[id]:not([type])").forEach(e => { const v = String(e.value || ""); if (v.trim() && e.getClientRects().length && !e.closest(".ps-q, .search-wrap, #searchBox")) d[e.id] = v; });   /* not practice answers: the round starts over */
+      d.__h = location.hash; d.__t = Date.now(); sessionStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} };
+  window.addEventListener("pagehide", save);
+  window.addEventListener("beforeunload", save);
+  let d = null; try { d = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY); } catch (e) {}
+  if (!d || Date.now() - (d.__t || 0) > 10 * 60 * 1000) return;
+  let tries = 0; const restore = () => { let left = 0;
+    for (const id in d) { if (id.startsWith("__")) continue; const e = document.getElementById(id);
+      if (e && !e.value) { e.value = d[id]; e.dispatchEvent(new Event("input", {bubbles: true})); delete d[id]; } else if (!e) left++; }
+    if (left && ++tries < 20) setTimeout(restore, 500); };
+  setTimeout(restore, 300);
+})();
+</script>
 
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
@@ -11013,7 +11050,7 @@ const canon = x => Array.isArray(x) ? x.map(canon) : (x && typeof x === "object"
 function sameJSON(a, b) { try { return JSON.stringify(canon(JSON.parse(a))) === JSON.stringify(canon(JSON.parse(b))); } catch (e) { return a === b; } }
 /* saved words, class notes and stars are redrawn in place (a full reload in the middle of browsing felt like the page "jumping") */
 function mergedNeedsReload(listsOnly) { if (listsOnly && window.__csListsReload) { try { if (window.__csListsReload()) return; } catch (e) {} } reloadWanted = true; tryReload(); }
-function tryReload() { if (!reloadWanted) return; const a = document.activeElement; if ((a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.value) || document.querySelector("dialog[open], .cs-dlg")) { setTimeout(tryReload, 4000); return; }
+function tryReload() { if (!reloadWanted) return; const a = document.activeElement; if ((a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.value) || document.querySelector("dialog[open], .cs-dlg") || (window.__csBusy && window.__csBusy())) { setTimeout(tryReload, 4000); return; }   /* never while they're typing or in a practice round */
   const last = +(sessionStorage.getItem("ncs-reload-at") || 0); if (Date.now() - last < 120000) { reloadWanted = false; return; }   /* at most one automatic reload every 2 minutes, never a loop */
   sessionStorage.setItem("ncs-reload-at", String(Date.now())); location.reload(); }
 async function flush() {
