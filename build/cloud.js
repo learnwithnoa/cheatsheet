@@ -181,7 +181,18 @@ async function pushKey(k) {
 /* the page keeps lists in memory: after a merge brought in something from another device, reload it (not while typing) */
 let reloadWanted = false;
 /* counters, "seen" markers and progress the page re-reads anyway: never worth reloading the page for (usage minutes went back and forth between devices and reloaded the page every few seconds) */
-const QUIET = new Set(["ncs-lesson-prog", "ncs-usage", "ncs-ptime", "ncs-tnotif-read", "ncs-seen-version", "ncs-mst", "ncs-fc", "ncs-wk", "ncs-buddy"]);
+const QUIET = new Set(["ncs-lesson-prog", "ncs-usage", "ncs-ptime", "ncs-tnotif-read", "ncs-seen-version", "ncs-mst", "ncs-fc", "ncs-wk", "ncs-buddy",
+  /* small settings and markers (music volume, last copied, dismissed tips, filters…): never worth a reload either */
+  "ncs-music-vol", "ncs-music-mode", "ncs-music-bal", "ncs-lastcopy", "ncs-hidden-tips", "ncs-nudge-snooze", "ncs-tnotif-seen", "ncs-tnotif-dis",
+  "ncs-ttlove", "ncs-ttlove-log", "ncs-recap-bg", "ncs-welcomed", "ncs-joined", "ncs-modrec", "ncs-fcpick", "ncs-photo", "ncs-kudos", "ncs-feedback",
+  "ncs-fillf", "ncs-fillf-v", "ncs-cleanf", "ncs-noex", "ncs-nbsum"]);
+/* coming back to the tab: never reload the page on its own (that felt like Hibi "restarting"); offer a small Refresh button instead */
+function offerSyncRefresh() {
+  if (document.querySelector(".cs-sync-upd")) return;
+  const b = document.createElement("div"); b.className = "cs-upd cs-sync-upd"; b.setAttribute("role", "status");
+  b.innerHTML = '<span>🔄 You made changes on another device.</span><button type="button" class="cs-upd-go">Refresh</button><button type="button" class="cs-upd-x" aria-label="Later">×</button>';
+  b.querySelector(".cs-upd-go").onclick = () => location.reload(); b.querySelector(".cs-upd-x").onclick = () => b.remove(); document.body.appendChild(b);
+}
 const canon = x => Array.isArray(x) ? x.map(canon) : (x && typeof x === "object") ? Object.keys(x).sort().reduce((o, k) => (o[k] = canon(x[k]), o), {}) : x;
 function sameJSON(a, b) { try { return JSON.stringify(canon(JSON.parse(a))) === JSON.stringify(canon(JSON.parse(b))); } catch (e) { return a === b; } }
 /* saved words, class notes and stars are redrawn in place (a full reload in the middle of browsing felt like the page "jumping") */
@@ -207,7 +218,7 @@ window.__csOnSet = k => {
 };
 
 let syncing = false;
-async function syncDown() {
+async function syncDown(fromReturn) {
   if (!user || syncing) return;
   syncing = true; status("syncing");
   try {
@@ -241,7 +252,8 @@ async function syncDown() {
     if (toPush.length) await Promise.all(toPush.map(pushKey));
     status("synced");
     checkInbox();
-    if (changed) mergedNeedsReload(!changedOther);   /* show what came from another device (waits while they're typing or doing a recap) */
+    if (changed && fromReturn && changedOther) { if (window.__csListsReload) { try { window.__csListsReload(); } catch (e) {} } offerSyncRefresh(); }
+    else if (changed) mergedNeedsReload(!changedOther);   /* show what came from another device (waits while they're typing or doing a recap) */
   } catch (e) {
     console.warn("Cheat Sheet sync failed", e);
     status("error");
@@ -450,7 +462,7 @@ window.addEventListener("pagehide", () => { flush(); });
 let hiddenAt = 0; window.__csAway = ms => !!hiddenAt && Date.now() - hiddenAt > ms;
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) { hiddenAt = Date.now(); flush(); return; }
-  if (user && ready && !pending.size && window.__csAway(90000)) syncDown();   // pick up changes made on another device
+  if (user && ready && !pending.size && window.__csAway(90000)) syncDown(true);   // pick up changes made on another device (never a forced reload: see offerSyncRefresh)
 });
 
 /* ---------- private students: "My coaching" (read-only copy written by Noa's student hub) ---------- */
