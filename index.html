@@ -1221,6 +1221,12 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 @media (max-width:560px){.cl-lock .cl-good>div{flex-direction:column;gap:4px;padding:11px 12px}.cl-lock .cl-good p{font-size:13.5px}}
 @media (max-width:480px){.cl-lock .cl-lock-h{flex-direction:column-reverse;gap:8px}.cl-lock h2{font-size:20px}}
 
+.cl-join-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:4px}
+.cl-join-row .cl-join-btn{align-self:auto;margin-top:0}
+.cl-ask-btn{font:700 14px var(--body);padding:9px 16px;border-radius:999px;background:var(--surface);color:var(--ink);text-decoration:none;border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line))}
+.cl-ask-btn:hover{border-color:#E79A1E}
+.cl-lock .cl-join-note{text-align:center;margin:0}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3937,10 +3943,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const t12=t=>{ const [h,m]=String(t||"").split(":").map(Number); if(isNaN(h)) return ""; return ((h%12)||12)+(m?":"+String(m).padStart(2,"0"):"")+(h<12?"am":"pm"); };
     return list.map(c=>({ico:c.ico||"",name:c.name,what:what[c.wd]||c.desc||"",when:`${WDN[c.wd]} · ${t12(c.time)}${c.dur?` · ${c.dur} min`:""}`})); }
   document.addEventListener("click",e=>{ const j=e.target.closest("[data-joindm]"); if(!j) return;
-    if(window.__csPreview){ e.preventDefault(); if(typeof window.toast==="function") window.toast("In View as nothing is sent. Students get a message to you, ready to send: “Hi Noa! I’m interested in joining…”"); return; }
+    const ask=j.dataset.joindm==="ask";
+    if(window.__csPreview||(window.__csFire&&window.__csFire.readOnly&&window.__csFire.readOnly())){ e.preventDefault(); window.toast(ask?"In View as nothing is sent. Students get an empty chat with you, to ask anything.":"In View as nothing is sent. Students get a message to you, ready to send: “Hi Noa! I’m interested in joining…”"); return; }
+    if(window.__csGuest){ e.preventDefault(); window.toast("This is a preview: sign in to message Noa."); return; }
     const uid=window.__csFire&&window.__csFire.uid&&window.__csFire.uid(); if(!uid||window.__csGuest||typeof window.__clubDM!=="function") return; e.preventDefault();
     window.__clubDM("J8D2tjQmBaaA2QN730tSfSrjfm73","Noa");   /* Noa's account */
-    setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value="Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
+    if(!ask) setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value="Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
   function locked(){ loadSample(); document.querySelectorAll("#v-club .cl-igtop").forEach(x=>x.hidden=true);
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
@@ -3957,7 +3965,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
         <div><span aria-hidden="true">🎧</span><p><b>A weekly club podcast</b>Short episodes to keep listening all week.</p></div>
       </div>
       ${SAMPLE&&SAMPLE.url?`<a class="cl-sample" href="${esc(SAMPLE.url)}" target="_blank" rel="noopener"><span class="i" aria-hidden="true">🎬</span><span><b>${esc(SAMPLE.title||"Watch a real class")}</b><small>${esc(SAMPLE.note||"See what a club class looks like before you join.")}</small></span></a>`:""}
-      <a class="cl-join-btn" href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}&body=${encodeURIComponent("Hi Noa! I'd like to join the club.\n\nMy name: "+((window.__csFire&&window.__csFire.name&&window.__csFire.name())||"")+"\nMy level (if I know it): \n\n")}" data-joindm="1">💛 I want to join</a><p class="cl-lock-small">Tap the button to send Noa a message here on Hibi, and he’ll send you everything you need. Prefer email? <a href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}">Email Noa</a>.</p></div>
+      <div class="cl-join-row"><a class="cl-join-btn" href="mailto:learnwithnoa@gmail.com?subject=${encodeURIComponent("I want to join Noa's English Club 💛")}" data-joindm="1">💛 I want to join</a><a class="cl-ask-btn" href="mailto:learnwithnoa@gmail.com" data-joindm="ask">💬 Message Noa</a></div><p class="cl-lock-small cl-join-note">Both open a chat with Noa here on Hibi. He’ll send you everything you need to get started.</p></div>
       ${p?`<div class="cl-lock-week"><div class="cl-meta">${L("This week’s classes · preview","Clases de esta semana · vista previa")}</div>${p.title?`<h2>${esc(p.title)}</h2>`:""}<div class="cl-classes">${classesOf(f2,p).map(c=>clsCard(Object.assign({},c,{zoom:""}),now)).join("")}</div></div>`:""}`;
     loadPublic();
   }
@@ -10735,7 +10743,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115204406"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115205047"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11053,17 +11061,17 @@ window.__csBusy = function(){
   /* ---- join buttons on the members-only card ---- */
   function decorateJoin(){
     if(!payOn()) return;
-    const btn=document.querySelector("#v-club .cl-lock .cl-join-btn"); if(!btn||btn.dataset.hbPay) return;
-    btn.dataset.hbPay="1";
+    const row=document.querySelector("#v-club .cl-lock .cl-join-row"); if(!row||row.dataset.hbPay) return;
+    row.dataset.hbPay="1";
     const wrap=document.createElement("div"); wrap.className="hb-pay";
     wrap.innerHTML=`<div class="hb-pay-row">
         <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>${clp(35000)} a month · cancel anytime</small></button>
         <button class="hb-pay-btn alt" data-hbjoin="yearly">Join for a year<small>${clp(210000)} · half price</small></button></div>
       <p class="hb-pay-note">Secure card payment with Flow. You can cancel anytime, right here on Hibi.</p>`;
-    btn.parentNode.insertBefore(wrap,btn);
-    btn.classList.add("alt"); btn.style.cssText="background:none;box-shadow:none;padding:4px 0;color:var(--ink);text-decoration:underline;font-size:14px";
-    btn.textContent="Questions first? Message Noa";
-    const tip=btn.nextElementSibling; if(tip&&tip.classList.contains("cl-lock-small")) tip.hidden=true;   /* the "tap the button…" line is about the old button */
+    row.parentNode.insertBefore(wrap,row);
+    const jb=row.querySelector(".cl-join-btn"); if(jb) jb.hidden=true;                    /* the pay buttons replace "I want to join" */
+    const ab=row.querySelector(".cl-ask-btn"); if(ab) ab.textContent="💬 Questions first? Message Noa";
+    const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
   }
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbjoin]"); if(!b) return; e.preventDefault();
@@ -11120,6 +11128,15 @@ window.__csBusy = function(){
   const tick=()=>{ decorateJoin(); if(!loaded&&F().uid&&F().uid()) loadMem(); else if(MEM&&!document.getElementById("hbMem")) drawMem(); };
   new MutationObserver(tick).observe(document.documentElement,{childList:true,subtree:true});
   setTimeout(tick,1500);
+})();
+</script>
+<script>
+/* step137: a real window.toast (before, window.toast was just the #toast element, so these messages never showed) */
+(function(){
+  let t=null;
+  window.toast=function(msg){ const el=document.getElementById("toast"); if(!el) return;
+    el.textContent=String(msg||""); el.classList.add("show"); clearTimeout(t);
+    t=setTimeout(()=>el.classList.remove("show"),Math.min(6500,2400+String(msg||"").length*35)); };
 })();
 </script>
 

@@ -55,17 +55,17 @@ _js = r'''<script>
   /* ---- join buttons on the members-only card ---- */
   function decorateJoin(){
     if(!payOn()) return;
-    const btn=document.querySelector("#v-club .cl-lock .cl-join-btn"); if(!btn||btn.dataset.hbPay) return;
-    btn.dataset.hbPay="1";
+    const row=document.querySelector("#v-club .cl-lock .cl-join-row"); if(!row||row.dataset.hbPay) return;
+    row.dataset.hbPay="1";
     const wrap=document.createElement("div"); wrap.className="hb-pay";
     wrap.innerHTML=`<div class="hb-pay-row">
         <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>${clp(35000)} a month · cancel anytime</small></button>
         <button class="hb-pay-btn alt" data-hbjoin="yearly">Join for a year<small>${clp(210000)} · half price</small></button></div>
       <p class="hb-pay-note">Secure card payment with Flow. You can cancel anytime, right here on Hibi.</p>`;
-    btn.parentNode.insertBefore(wrap,btn);
-    btn.classList.add("alt"); btn.style.cssText="background:none;box-shadow:none;padding:4px 0;color:var(--ink);text-decoration:underline;font-size:14px";
-    btn.textContent="Questions first? Message Noa";
-    const tip=btn.nextElementSibling; if(tip&&tip.classList.contains("cl-lock-small")) tip.hidden=true;   /* the "tap the button…" line is about the old button */
+    row.parentNode.insertBefore(wrap,row);
+    const jb=row.querySelector(".cl-join-btn"); if(jb) jb.hidden=true;                    /* the pay buttons replace "I want to join" */
+    const ab=row.querySelector(".cl-ask-btn"); if(ab) ab.textContent="💬 Questions first? Message Noa";
+    const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
   }
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbjoin]"); if(!b) return; e.preventDefault();
