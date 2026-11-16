@@ -1242,6 +1242,10 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 #hbMem .hb-mem-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
 #hbMem .hb-mem-cta .hb-pay-btn{padding:8px 16px;font-size:14px}
 
+.clb-kdr{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
+.clb-kd-b{font:700 12.5px var(--body);padding:5px 11px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.clb-kd-b:hover{border-color:var(--accent,#2E6FD8)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4640,14 +4644,20 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return `🔔 ${nm}`; }
   let CNSNAP=null;
   const isClubber=()=>{ const fd=window.__clubFeed&&window.__clubFeed(); return !!fd; };
-  function paintBell(){ const b=document.getElementById("clBell"); if(!b) return; const CN=window.__csCoachNews?window.__csCoachNews.list():[], club=isClubber(), seen=+LSG(BSEEN,0)||0, n=(club?NOTES.filter(x=>x.kind!=="dm"&&x.at>seen).length:0)+CN.length;
+  function KDN(){ try{ const h=JSON.parse(localStorage.getItem("ncs-kudos")||"[]"); return Array.isArray(h)?h.filter(m=>m&&m.text):[]; }catch(e){ return []; } }
+  document.addEventListener("click",e=>{ const o=e.target.closest("[data-kdopen],[data-kdreply]"); if(!o) return; const pn=document.getElementById("clBellPanel"); if(pn) pn.hidden=true;
+    if(o.dataset.kdreply){ if(window.__csPreview||(window.__csFire&&window.__csFire.readOnly&&window.__csFire.readOnly())){ if(typeof window.toast==="function") window.toast("In View as nothing is sent."); return; } if(window.__clubDM) window.__clubDM("J8D2tjQmBaaA2QN730tSfSrjfm73","Noa"); return; }
+    const k=document.getElementById("kdLink"); if(k) k.click(); });
+  function paintBell(){ const b=document.getElementById("clBell"); if(!b) return; const CN=window.__csCoachNews?window.__csCoachNews.list():[], club=isClubber(), seen=+LSG(BSEEN,0)||0, n=(club?NOTES.filter(x=>x.kind!=="dm"&&x.at>seen).length:0)+CN.length+KDN().filter(m=>(m.at||0)>seen).length;
     b.classList.toggle("has",!!n); const c=b.querySelector(".clb-n"); c.hidden=!n; c.textContent=n>9?"9+":String(n);
     b.setAttribute("aria-label",L("Notifications","Notificaciones")+(n?` (${n})`:""));
     const pn=document.getElementById("clBellPanel"); if(!pn||pn.hidden) return;
     const cn=CNSNAP||CN, fdt=d=>{ try{ return new Date(d+"T12:00").toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}); }catch(e){ return d; } };
+    const kdl=KDN().slice(0,3), kfmt=t=>{ try{ return new Date(t).toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}); }catch(e){ return ""; } };
+    const kdHTML=kdl.length?`<h4 class="clb-sec">💌 ${L("From Noa","De Noa")}</h4><ul>${kdl.map(m=>`<li><button type="button" class="clb-i${(m.at||0)>(+pn.dataset.seen||0)?" new":""}" data-kdopen="1"><span>${esc(String(m.text||"").slice(0,110))}${String(m.text||"").length>110?"…":""}</span><em>${kfmt(m.at)}</em></button></li>`).join("")}</ul><div class="clb-kdr"><button type="button" class="clb-kd-b" data-kdopen="1">${L("See all","Ver todos")}</button><button type="button" class="clb-kd-b" data-kdreply="1">💬 ${L("Reply to Noa","Responder a Noa")}</button></div>`:"";
     const coachHTML=cn.length?`<h4 class="clb-sec">📚 ${L("Your classes","Tus clases")}</h4><ul>${cn.map(x=>`<li><button type="button" class="clb-i new" data-cngo="${esc(x.tab||"top")}"><span>${x.ico} ${x.t}</span><em>${fdt(x.d)}</em></button></li>`).join("")}</ul>`:"";
-    if(!club){ pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+(coachHTML||`<p class="clb-e">${L("Nothing new right now. When Noa adds a class recap, a recommendation or a progress report, you’ll see it here.","Nada nuevo por ahora. Cuando Noa suba un resumen de clase, una recomendación o un informe de progreso, lo verás aquí.")}</p>`); return; }
-    pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+coachHTML+(coachHTML?`<h4 class="clb-sec">🌼 ${L("Club","Club")}</h4>`:"")+`${NOTES.some(x=>x.kind!=="dm")?`<ul>${NOTES.filter(x=>x.kind!=="dm").map(x=>`<li><button type="button" class="clb-i${x.at>(+pn.dataset.seen||0)?" new":""}" data-bgo="${esc(x.pid||"")}"><span>${noteTxt(x)}${x.text&&!/^react/.test(x.kind)?`<small>“${esc(x.text)}”</small>`:""}</span><em>${ago(x.at)}</em></button></li>`).join("")}</ul>`:`<p class="clb-e">${L("Nothing yet. When someone replies to you, reacts to your posts or mentions you, it shows up here.","Nada aún. Cuando alguien te responda, reaccione a tus posts o te mencione, aparece aquí.")}</p>`}`; }
+    if(!club){ pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+kdHTML+(coachHTML||kdHTML&&" "||`<p class="clb-e">${L("Nothing new right now. When Noa adds a class recap, a recommendation or a progress report, you’ll see it here.","Nada nuevo por ahora. Cuando Noa suba un resumen de clase, una recomendación o un informe de progreso, lo verás aquí.")}</p>`); return; }
+    pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+kdHTML+coachHTML+(coachHTML?`<h4 class="clb-sec">🌼 ${L("Club","Club")}</h4>`:"")+`${NOTES.some(x=>x.kind!=="dm")?`<ul>${NOTES.filter(x=>x.kind!=="dm").map(x=>`<li><button type="button" class="clb-i${x.at>(+pn.dataset.seen||0)?" new":""}" data-bgo="${esc(x.pid||"")}"><span>${noteTxt(x)}${x.text&&!/^react/.test(x.kind)?`<small>“${esc(x.text)}”</small>`:""}</span><em>${ago(x.at)}</em></button></li>`).join("")}</ul>`:`<p class="clb-e">${L("Nothing yet. When someone replies to you, reacts to your posts or mentions you, it shows up here.","Nada aún. Cuando alguien te responda, reaccione a tus posts o te mencione, aparece aquí.")}</p>`}`; }
   function buildBell(){ if(document.getElementById("clBellWrap")) return; const anchor=document.getElementById("tmWrap")||document.getElementById("csWrap"); if(!anchor||!anchor.parentNode) return;
     const w=document.createElement("div"); w.id="clBellWrap"; w.className="cs-wrap clb-wrap"; w.hidden=true;
     w.innerHTML=`<button type="button" id="clBell" class="cs-btn clb-btn" aria-expanded="false" aria-controls="clBellPanel" title="${L("Notifications","Notificaciones")}"><span aria-hidden="true">🔔</span><span class="clb-n" hidden></span></button><div id="clBellPanel" class="cs-panel clb-panel" role="dialog" aria-label="${L("Club notifications","Notificaciones del club")}" hidden></div>`;
@@ -5899,7 +5909,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
     </ul>
   </div>
@@ -10483,6 +10493,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1116-kudosbell", date:"November 16, 2026", title:"Notes from Noa in your notifications", items:[
+    ["💌","Easier to find","Little notes from Noa now also appear in your 🔔 notifications, with a <b>Reply to Noa</b> button that opens your chat with him.",""]
+  ]},
   {id:"2026-1116-studypet", date:"November 16, 2026", title:"Pet your buddy while you study", items:[
     ["🎧","Study room","In the music window, tap your buddy to pet it. Tap anywhere else in the room to play or pause the music.",""]
   ]},
@@ -10780,7 +10793,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116103022"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116105243"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
