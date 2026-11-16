@@ -135,7 +135,7 @@ async function saveBill(env, uid, b) {
   await patch(env, `billing/${uid}`, { ...b, updated: new Date().toISOString() });
   const all = await getBill(env, uid);
   await setJ(env, uid, "membership", {
-    status: all.status || "none", kind: all.kind || null, amount: all.amount || null, currency: "CLP",
+    status: all.status || "none", kind: all.kind || null, amount: all.amount || null, currency: all.currency || "CLP",
     paidThrough: all.paidThrough || null, graceUntil: all.graceUntil || null, card: all.card || null, provider: all.provider || null,
     trialUntil: all.trialUntil || null, trialUsed: !!all.trialUsed, updated: new Date().toISOString(),
   });
@@ -148,10 +148,89 @@ async function priceFor(env, email) {
   return Number(p && (p.clp || p)) || STD_MONTH;
 }
 
+// ---------- PayPal (US dollars, for members outside Chile) ----------
+const STD_MONTH_USD = 35, STD_YEAR_USD = 210;
+const ppBase = (env) => (env.PAYPAL_ENV === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com");
+const ppEnv = (env) => (env.PAYPAL_ENV === "live" ? "live" : "sandbox");
+let ppTok = null;
+async function pp(env, method, path, body) {
+  if (!ppTok || ppTok.exp < Date.now() + 60000) {
+    const r = await fetch(ppBase(env) + "/v1/oauth2/token", { method: "POST", headers: { authorization: "Basic " + btoa(env.PAYPAL_CLIENT_ID + ":" + env.PAYPAL_SECRET), "content-type": "application/x-www-form-urlencoded" }, body: "grant_type=client_credentials" });
+    const d = await r.json().catch(() => ({})); if (!d.access_token) throw new Error("PayPal keys: " + (d.error_description || d.error || r.status));
+    ppTok = { tok: d.access_token, exp: Date.now() + d.expires_in * 1000 };
+  }
+  const r = await fetch(ppBase(env) + path, { method, headers: { authorization: "Bearer " + ppTok.tok, "content-type": "application/json", prefer: "return=representation" }, body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 204) return {};
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error("PayPal " + path.split("?")[0] + ": " + (d.message || d.name || r.status)); e.status = r.status; throw e; }
+  return d;
+}
+async function usdFor(env, email) {
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  const p = (meta.clubPrices || {})[normEmail(email)];
+  return Number(p && p.usd) || STD_MONTH_USD;
+}
+async function ppPlan(env, kind, usd) {           // PayPal makes its own plan ids: remember them in billingConfig/paypal-<env>
+  const cfgPath = `billingConfig/paypal-${ppEnv(env)}`, cfg = plain(await fs(env, "GET", cfgPath)) || {};
+  const key = `plan_${kind}_${String(usd).replace(".", "_")}`;
+  if (cfg[key]) return cfg[key];
+  let product = cfg.product;
+  if (!product) { const pr = await pp(env, "POST", "/v1/catalogs/products", { name: "Noa's English Club", type: "SERVICE", category: "EDUCATIONAL_AND_TEXTBOOKS" }); product = pr.id; await patch(env, cfgPath, { product }); }
+  const plan = await pp(env, "POST", "/v1/billing/plans", { product_id: product, name: `Noa's English Club (${kind === "y" ? "yearly" : "monthly"}, US$${usd})`, status: "ACTIVE",
+    billing_cycles: [{ frequency: { interval_unit: kind === "y" ? "YEAR" : "MONTH", interval_count: 1 }, tenure_type: "REGULAR", sequence: 1, total_cycles: 0, pricing_scheme: { fixed_price: { value: String(usd), currency_code: "USD" } } }],
+    payment_preferences: { auto_bill_outstanding: true, payment_failure_threshold: 2, setup_fee_failure_action: "CANCEL" } });
+  await patch(env, cfgPath, { [key]: plan.id });
+  return plan.id;
+}
+async function ppSubscribe(env, req, url, me, body) {
+  if (!env.PAYPAL_CLIENT_ID) return json({ error: "PayPal isn't set up yet." }, 400, req);
+  const kind = body.plan === "yearly" ? "y" : "m";
+  const usd = body.plan === "test" && TESTERS.includes(me.uid) ? 1 : kind === "y" ? STD_YEAR_USD : await usdFor(env, me.email);
+  const b = await getBill(env, me.uid);
+  if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "paypal" && b.ppEnv === ppEnv(env)) || (b.provider !== "paypal" && b.subscriptionId && sameEnv(env, b)))) return json({ error: "You already have an active membership." }, 400, req);
+  const plan = await ppPlan(env, kind, usd);
+  const sub = await pp(env, "POST", "/v1/billing/subscriptions", { plan_id: plan, custom_id: me.uid,
+    application_context: { brand_name: "Noa's English Club", user_action: "SUBSCRIBE_NOW", shipping_preference: "NO_SHIPPING", return_url: url.origin + "/api/paypal-return", cancel_url: SITE + "?membership=fail#club" } });
+  const link = (sub.links || []).find((l) => l.rel === "approve");
+  await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, ppPending: sub.id, ppPendingKind: kind, ppPendingUsd: usd });
+  return json({ url: link && link.href }, 200, req);
+}
+async function ppReturn(env, req, url) {
+  const id = url.searchParams.get("subscription_id");
+  if (!id) return Response.redirect(SITE + "?membership=fail#club", 303);
+  let sub = await pp(env, "GET", `/v1/billing/subscriptions/${id}`);
+  const uid = sub.custom_id; if (!uid) return Response.redirect(SITE + "?membership=fail#club", 303);
+  for (let i = 0; i < 4 && sub.status === "APPROVED"; i++) { await new Promise((r) => setTimeout(r, 1500)); sub = await pp(env, "GET", `/v1/billing/subscriptions/${id}`); }
+  if (!["ACTIVE", "APPROVED"].includes(sub.status)) return Response.redirect(SITE + "?membership=fail#club", 303);
+  const b = await getBill(env, uid);
+  const kind = b.ppPendingKind || "m", usd = Number(b.ppPendingUsd) || STD_MONTH_USD;
+  const next = sub.billing_info && sub.billing_info.next_billing_time;
+  await saveBill(env, uid, { provider: "paypal", ppSubId: id, ppEnv: ppEnv(env), kind, amount: usd, currency: "USD", card: "PayPal", status: "active",
+    paidThrough: next ? next.slice(0, 10) : addDays(today(), kind === "y" ? 365 : 31), graceUntil: null, since: b.since || today(), ppPending: null });
+  await grantClub(env, uid, b.name || "");
+  if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
+  return Response.redirect(SITE + "?membership=ok#club", 303);
+}
+async function ppNightly(env, uid, b) {
+  if (b.ppEnv !== ppEnv(env)) return null;
+  const sub = await pp(env, "GET", `/v1/billing/subscriptions/${b.ppSubId}`);
+  const bi = sub.billing_info || {}, next = (bi.next_billing_time || "").slice(0, 10);
+  const failed = bi.last_failed_payment && bi.last_failed_payment.time ? bi.last_failed_payment.time.slice(0, 10) : null;
+  const lastPaid = bi.last_payment && bi.last_payment.time ? bi.last_payment.time.slice(0, 10) : null;
+  let status, graceUntil = null, paidThrough = b.paidThrough || null;
+  if (sub.status === "ACTIVE" && !(failed && (!lastPaid || failed > lastPaid))) { status = "active"; paidThrough = next || paidThrough; }
+  else if (sub.status === "CANCELLED" || sub.status === "EXPIRED" || b.status === "canceling") { status = paidThrough && paidThrough >= today() ? "canceling" : "ended"; }
+  else { graceUntil = addDays(failed || today(), GRACE_DAYS); status = today() <= graceUntil ? "grace" : "ended"; }
+  await saveBill(env, uid, { status, graceUntil, paidThrough });
+  if (status === "ended" && b.status !== "ended") { await removeClub(env, uid); if (!["CANCELLED", "EXPIRED"].includes(sub.status)) await pp(env, "POST", `/v1/billing/subscriptions/${b.ppSubId}/cancel`, { reason: "Payment didn't go through" }).catch(() => {}); }
+  return status;
+}
+
 // ---------- routes ----------
 async function subscribe(env, req, url) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const body = await req.json().catch(() => ({}));
+  if (body.provider === "paypal") return await ppSubscribe(env, req, url, me, body);
   const test = body.plan === "test";
   if (test && !TESTERS.includes(me.uid)) return json({ error: "Not available." }, 403, req);
   const kind = body.plan === "yearly" ? "y" : "m";
@@ -187,7 +266,7 @@ async function cardReturn(env, req, url) {
   const plan = await ensurePlan(env, kind, amount, url.origin);
   const sub = await flow(env, "POST", "/subscription/create", { planId: plan, customerId: st.customerId });
   const paidThrough = (sub.period_end || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31);
-  await saveBill(env, uid, { subscriptionId: sub.subscriptionId, planId: plan, kind, amount, card, status: "active", paidThrough, graceUntil: null, since: b.since || today(), pendingKind: null });
+  await saveBill(env, uid, { subscriptionId: sub.subscriptionId, planId: plan, kind, amount, card, status: "active", paidThrough, graceUntil: null, since: b.since || today(), pendingKind: null, provider: "flow", currency: "CLP" });
   await grantClub(env, uid, b.name || cust.name);
   if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
   return back(true);
@@ -261,6 +340,11 @@ async function startTrial(env, req) {
 async function cancel(env, req) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const b = await getBill(env, me.uid);
+  if (b.provider === "paypal" && b.ppSubId && b.ppEnv === ppEnv(env)) {   // PayPal stops future payments; access stays until the paid time ends
+    await pp(env, "POST", `/v1/billing/subscriptions/${b.ppSubId}/cancel`, { reason: "Cancelled on Hibi" });
+    await saveBill(env, me.uid, { status: "canceling" });
+    return json({ ok: true, paidThrough: b.paidThrough }, 200, req);
+  }
   if (!b.subscriptionId || !sameEnv(env, b)) return json({ error: "No active membership found." }, 400, req);
   await flow(env, "POST", "/subscription/cancel", { subscriptionId: b.subscriptionId, at_period_end: 1 });
   await saveBill(env, me.uid, { status: "canceling" });
@@ -288,6 +372,7 @@ async function nightly(env) {
         }
         continue;
       }
+      if (b.provider === "paypal" && b.ppSubId) { const st = await ppNightly(env, uid, b); if (st) out.push({ uid, status: st }); continue; }
       if (!b.subscriptionId || !sameEnv(env, b)) continue;
       const sub = await flow(env, "GET", "/subscription/get", { subscriptionId: b.subscriptionId });
       const end = (sub.period_end || b.paidThrough || "").slice(0, 10);
@@ -311,6 +396,7 @@ async function nightly(env) {
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
   try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
+  if (env.PAYPAL_CLIENT_ID) { r.paypal = ppEnv(env); try { await pp(env, "GET", "/v1/catalogs/products?page_size=1"); r.paypalApi = "ok"; } catch (e) { r.paypalApi = String(e.message).slice(0, 120); r.ok = false; } } else r.paypal = "not set up";
   if (env.NOTION_TOKEN) { try { await notion(env, "GET", `/databases/${TRACKER}`); r.notion = "ok"; } catch (e) { r.notion = String(e.message).slice(0, 120); } } else r.notion = "not set up";
   try { await fs(env, "GET", "roles?pageSize=1"); r.database = "ok"; } catch (e) { r.database = String(e.message).slice(0, 120); r.ok = false; }
   return r;
@@ -329,6 +415,7 @@ export default {
         case "/api/cancel": return await cancel(env, req);
         case "/api/update-card": return await updateCard(env, req, url);
         case "/api/trial": return await startTrial(env, req);
+        case "/api/paypal-return": return await ppReturn(env, req, url);
         case "/api/flow-callback": await nightly(env); return new Response("ok");
         case "/api/nightly": {
           const me = await whoIs(env, req); if (!me || me.uid !== TEACHER) return json({ error: "Only Noa can do this." }, 403, req);

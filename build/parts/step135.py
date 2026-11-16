@@ -12,6 +12,8 @@ _css = r'''
 .hb-pay-btn.alt{background:var(--surface);color:var(--ink);border:1.5px solid color-mix(in srgb,#F0A63A 55%,var(--line));box-shadow:none}
 .hb-pay-btn[disabled]{opacity:.6;cursor:wait}
 .hb-pay-note{font-size:13px;color:var(--muted);margin:0}
+.hb-pp-btn{background:none;border:0;padding:0;font:700 13px var(--body);color:var(--accent,#2E6FD8);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.hb-pp-btn[disabled]{opacity:.5;cursor:wait}
 .hb-trial+.hb-pay::before{content:"or join now";font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 #hbMem{margin:0 0 14px}
 #hbMem .hb-mem{border:1.5px solid color-mix(in srgb,#3FB37F 35%,var(--line));background:color-mix(in srgb,#3FB37F 8%,var(--surface));border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
@@ -62,7 +64,7 @@ _js = r'''<script>
     wrap.innerHTML=`<div class="hb-pay-row">
         <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>${clp(35000)} a month · cancel anytime</small></button>
         <button class="hb-pay-btn alt" data-hbjoin="yearly">Join for a year<small>${clp(210000)} · half price</small></button></div>
-      <p class="hb-pay-note">Secure card payment with Flow. You can cancel anytime, right here on Hibi.</p>`;
+      <p class="hb-pay-note">Secure card payment with Flow. You can cancel anytime, right here on Hibi.</p><p class="hb-pay-note hb-pp">Outside Chile? Pay in US dollars with PayPal: <button class="hb-pp-btn" data-hbjoin="monthly" data-pp="1">US$35 a month</button> · <button class="hb-pp-btn" data-hbjoin="yearly" data-pp="1">US$210 a year</button></p>`;
     row.parentNode.insertBefore(wrap,row);
     const jb=row.querySelector(".cl-join-btn"); if(jb) jb.hidden=true;                    /* the pay buttons replace "I want to join" */
     const ab=row.querySelector(".cl-ask-btn"); if(ab) ab.textContent="💬 Questions first? Message Noa";
@@ -92,7 +94,7 @@ _js = r'''<script>
     const b=e.target.closest("[data-hbjoin]"); if(!b) return; e.preventDefault();
     if(preview()){ say("In View as nothing is paid. Members go to Flow to add their card."); return; }
     const all=document.querySelectorAll("[data-hbjoin]"); all.forEach(x=>x.disabled=true);
-    try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin}); location.href=d.url; }
+    try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin,provider:b.dataset.pp?"paypal":"flow"}); if(!d.url) throw new Error("Something went wrong. Please try again."); location.href=d.url; }
     catch(err){ say(err.message); all.forEach(x=>x.disabled=false); }
   });
 
@@ -110,7 +112,7 @@ _js = r'''<script>
     let el=document.getElementById("hbMem");
     const m=MEM; if(!m||!m.status||m.status==="none"||m.status==="trial-kept"){ if(el) el.remove(); return; }
     if(!el){ el=document.createElement("div"); el.id="hbMem"; main.parentNode.insertBefore(el,main); }
-    const price=m.amount?`${clp(m.amount)} ${m.kind==="y"?"a year":"a month"}`:"";
+    const price=m.amount?`${m.currency==="USD"?"US$"+m.amount:clp(m.amount)} ${m.kind==="y"?"a year":"a month"}${m.provider==="paypal"?" · PayPal":""}`:"";
     let tag="Active", warn=false, line="";
     if(m.status==="active") line=`${price}${m.paidThrough?` · renews on ${day(m.paidThrough)}`:""}`;
     else if(m.status==="canceling"){ tag="Ending"; line=`You cancelled. You keep everything until ${day(m.paidThrough)}.`; }
@@ -120,9 +122,9 @@ _js = r'''<script>
     else if(m.status==="trial-ended"){ tag="Trial ended"; warn=true; line=`Your free trial ended on ${day(m.trialUntil)}. Hope you enjoyed it! You can join anytime below.`; }
     else if(m.status==="ended"){ tag="Ended"; warn=true; line=`Your membership ended${m.paidThrough?` on ${day(m.paidThrough)}`:""}. You can join again anytime below.`; }
     const links=[];
-    if(m.status==="active"||m.status==="grace") links.push(`<button data-hbmem="card">${m.status==="grace"?"Update my card":"Change card"}</button>`);
+    if(m.status==="active"||m.status==="grace") links.push(m.provider==="paypal"?`<a href="https://www.paypal.com/myaccount/autopay/" target="_blank" rel="noopener" style="font:700 13.5px var(--body);color:var(--accent,#2E6FD8)">${m.status==="grace"?"Fix my payment in PayPal ↗":"Manage in PayPal ↗"}</a>`:`<button data-hbmem="card">${m.status==="grace"?"Update my card":"Change card"}</button>`);
     if(m.status==="active") links.push(`<button class="danger" data-hbmem="cancel">Cancel membership</button>`);
-    const cta=m.status==="trial"?(payOn()?`<div class="hb-mem-cta"><button class="hb-pay-btn" data-hbjoin="monthly">💛 Stay in the club<small>${clp(35000)} a month</small></button><button class="hb-pay-btn alt" data-hbjoin="yearly">A year<small>${clp(210000)}</small></button></div>`
+    const cta=m.status==="trial"?(payOn()?`<div class="hb-mem-cta"><button class="hb-pay-btn" data-hbjoin="monthly">💛 Stay in the club<small>${clp(35000)} a month</small></button><button class="hb-pay-btn alt" data-hbjoin="yearly">A year<small>${clp(210000)}</small></button></div><p class="hb-pay-note hb-pp">Outside Chile? Pay in US dollars with PayPal: <button class="hb-pp-btn" data-hbjoin="monthly" data-pp="1">US$35 a month</button> · <button class="hb-pp-btn" data-hbjoin="yearly" data-pp="1">US$210 a year</button></p>`
       :`<div class="hb-mem-cta"><a class="hb-pay-btn" href="#" data-joindm="stay" style="text-decoration:none">💛 I want to stay</a></div>`):"";
     let min=false; try{ min=localStorage.getItem("hibi-mem-min")==="1"; }catch(e){}
     el.innerHTML=`<div class="hb-mem${warn?" warn":""}${min?" min":""}"><div class="hb-mem-h"><b>${String(m.status).startsWith("trial")?"🎁 Your free trial":"💛 Your membership"}</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmem="min" aria-expanded="${!min}" title="${min?"Show details":"Minimize"}">${min?"Show ▾":"Minimize ▴"}</button></div>
