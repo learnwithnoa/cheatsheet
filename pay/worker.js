@@ -528,6 +528,66 @@ async function nightly(env) {
   return out;
 }
 
+// ---------- email notifications (Resend): unread Hibi messages ----------
+// If a message stays unread for 12 hours, the person gets ONE short email (no message text, just who wrote),
+// at most one a day. Not for Noa. Members can turn it off in Settings (users/{uid}/data/ncs-mailnotif = "off").
+// Every email sent is listed for Noa in users/{Noa}/data/t-mailsent (his 🔔 shows it).
+const MAIL_FROM = "Hibi <hola@hibi.cl>", MAIL_AFTER_H = 12;
+const escH = (x) => String(x || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+async function sendMail(env, to, subject, html, text) {
+  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { authorization: "Bearer " + env.RESEND_API_KEY, "content-type": "application/json" },
+    body: JSON.stringify({ from: MAIL_FROM, to: [to], subject, html, text }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error("Resend " + r.status + ": " + String(j.message || j.name || "").slice(0, 120));
+  return j.id || "";
+}
+function unreadMailBody(first, froms) {
+  const who = froms.length === 1 ? froms[0] : froms.slice(0, -1).join(", ") + " and " + froms[froms.length - 1];
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#1f2937;max-width:520px">
+<p>Hi ${escH(first)}! 👋</p>
+<p>You have a new message from <b>${escH(who)}</b> on Hibi.</p>
+<p><a href="${SITE}#chat" style="display:inline-block;background:#3FB37F;color:#fff;text-decoration:none;font-weight:700;padding:10px 18px;border-radius:999px">Open Hibi</a></p>
+<p style="color:#6b7280;font-size:13px">Tap the 🔔 at the top, then 💬 Messages. You get at most one of these emails a day. Don't want them? Turn them off in Hibi: your profile → Settings.</p>
+</div>`;
+  const text = `Hi ${first}!\n\nYou have a new message from ${who} on Hibi.\nOpen it here: ${SITE} (tap the bell at the top, then Messages).\n\nYou get at most one of these emails a day. You can turn them off in Hibi: your profile → Settings.`;
+  return { subject: `💬 New message from ${who} on Hibi`, html, text };
+}
+async function mailLogFor(env) { const st = plain(await fs(env, "GET", "billingConfig/mailnotif")) || {}; let log = {}; try { log = JSON.parse(st.json || "{}") || {}; } catch (e) {} log.sent = log.sent || {}; log.done = log.done || {}; return log; }
+async function unreadMail(env) {
+  if (!env.RESEND_API_KEY) return [];
+  const now = Date.now(), list = await fs(env, "GET", "dms?pageSize=300"), log = await mailLogFor(env), want = {}, out = [];
+  for (const d of (list && list.documents) || []) {
+    const tid = d.name.split("/").pop(), f = d.fields || {}, p = plain(d) || {};
+    let j = {}; try { j = JSON.parse(p.json || "{}") || {}; } catch (e) {}
+    const last = j.last; if (!last || !last.at || !last.from) continue;
+    if (now - last.at < MAIL_AFTER_H * 3600e3 || now - last.at > 4 * 864e5 || (log.done[tid] || 0) >= last.at) continue;
+    const members = ((f.members && f.members.arrayValue && f.members.arrayValue.values) || []).map((v) => v.stringValue);
+    for (const u of members) {
+      if (!u || u === last.from || u === TEACHER || Number(p["r_" + u] || 0) >= last.at) continue;
+      (want[u] = want[u] || []).push({ tid, at: last.at, from: (j.names || {})[last.from] || "someone" });
+    }
+  }
+  const sentList = [];
+  for (const [u, items] of Object.entries(want)) {
+    try {
+      if (now - (log.sent[u] || 0) < 20 * 3600e3) continue;                      // at most one a day: try again later
+      const off = await getJ(env, u, "ncs-mailnotif").catch(() => null);
+      if (off === "off") { items.forEach((x) => (log.done[x.tid] = x.at)); continue; }
+      const ud = plain(await fs(env, "GET", `users/${u}`)) || {}; if (!ud.email) continue;
+      const first = String(ud.name || "").split(/\s+/)[0] || "there", froms = [...new Set(items.map((x) => x.from))];
+      const m = unreadMailBody(first, froms);
+      await sendMail(env, ud.email, m.subject, m.html, m.text);
+      log.sent[u] = now; items.forEach((x) => (log.done[x.tid] = x.at));
+      sentList.push({ uid: u, name: ud.name || "", email: normEmail(ud.email), from: froms.join(", "), at: now, why: "unread message" });
+      out.push({ uid: u, mailed: true });
+    } catch (e) { out.push({ uid: u, error: String(e.message).slice(0, 120) }); }
+  }
+  for (const [k, v] of Object.entries(log.done)) if (now - v > 8 * 864e5) delete log.done[k];
+  await patch(env, "billingConfig/mailnotif", { json: JSON.stringify(log) });
+  if (sentList.length) { const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", sentList.concat(cur).slice(0, 100)); }
+  return out;
+}
+
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
   try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
@@ -535,6 +595,7 @@ async function health(env) {
   if (env.PAYPAL_CLIENT_ID) { r.paypal = ppEnv(env); try { await pp(env, "GET", "/v1/catalogs/products?page_size=1"); r.paypalApi = "ok"; } catch (e) { r.paypalApi = String(e.message).slice(0, 120); r.ok = false; } } else r.paypal = "not set up";
   if (env.NOTION_TOKEN) { try { await notion(env, "GET", `/databases/${TRACKER}`); r.notion = "ok"; } catch (e) { r.notion = String(e.message).slice(0, 120); } } else r.notion = "not set up";
   try { const er = plain(await fs(env, "GET", "billingConfig/errors")); if (er && er.list) r.recentErrors = JSON.parse(er.list); } catch (e) {}
+  r.email = env.RESEND_API_KEY ? "set up" : "not set up";
   try { await fs(env, "GET", "roles?pageSize=1"); r.database = "ok"; } catch (e) { r.database = String(e.message).slice(0, 120); r.ok = false; }
   return r;
 }
@@ -553,6 +614,16 @@ export default {
         case "/api/update-card": return await updateCard(env, req, url);
         case "/api/trial": return await startTrial(env, req);
         case "/api/my-price": return await myPrice(env, req);
+        case "/api/mail-test": {   // one test email, only ever to Noa, at most once an hour (the deploy runs it when the email key is new)
+          if (!env.RESEND_API_KEY) return json({ ok: false, email: "not set up" }, 200, req);
+          const log = await mailLogFor(env); if (Date.now() - (log.test || 0) < 3600e3) return json({ ok: true, skipped: "sent less than an hour ago" }, 200, req);
+          const nd = plain(await fs(env, "GET", `users/${TEACHER}`)) || {}; if (!nd.email) return json({ ok: false, error: "no email" }, 200, req);
+          const m = unreadMailBody("Noa", ["Hibi (this is a test)"]);
+          await sendMail(env, nd.email, "✅ Hibi can send emails now", m.html.replace("You have a new message from", "This is what members get when a message stays unread for 12 hours. Example: a new message from"), m.text);
+          log.test = Date.now(); await patch(env, "billingConfig/mailnotif", { json: JSON.stringify(log) });
+          const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", [{ uid: TEACHER, name: "Noa (test)", from: "Hibi", at: Date.now(), why: "test email" }].concat(cur).slice(0, 100));
+          return json({ ok: true, sent: true }, 200, req);
+        }
         case "/api/paypal-return": return await ppReturn(env, req, url);
         case "/api/mp-return": return await mpReturn(env, req, url);
         case "/api/flow-callback": await nightly(env); return new Response("ok");
@@ -572,5 +643,5 @@ export default {
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(nightly(env)); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env)); },
 };

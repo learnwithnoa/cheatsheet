@@ -10,4 +10,4 @@ PAYPAL_ENV = "live"   # real PayPal payments (since Nov 16 2026); "sandbox" = te
 FIREBASE_API_KEY = "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw"
 
 [triggers]
-crons = ["0 9 * * *"]   # every day at 6:00 Chile time: check payments
+crons = ["0 9 * * *", "23 * * * *"]   # 6:00 Chile time: check payments · every hour: email people about messages unread for 12 h

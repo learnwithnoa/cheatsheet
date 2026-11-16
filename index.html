@@ -1278,6 +1278,7 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 
 #hbMove .hb-mv-warn{display:inline-block;margin-top:6px;font-size:13.5px;color:var(--muted)}
 
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3612,9 +3613,10 @@ html.cs-calm .cs-rxpal button{transition:none}
       let areq=[]; try{ areq=await accessReqs(); }catch(e){}
       let mine=[]; try{ mine=window.__clubSocial&&window.__clubSocial.myNotes?await window.__clubSocial.myNotes():[]; }catch(e){}
       let trials=[]; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-trials"); trials=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"[]")||[]; }catch(e){}
+      let mails=[]; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-mailsent"); mails=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"[]")||[]; }catch(e){}
       let welc={}; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-kudos-sent"); welc=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"{}")||{}; }catch(e){}
       try{ const th=window.__clubSocial&&window.__clubSocial.dms?await window.__clubSocial.dms():[], me=window.__csFire&&window.__csFire.uid(); (th||[]).forEach(t=>(t.members||[]).forEach(u=>{ if(u&&u!==me) welc[u+"-join"]=welc[u+"-join"]||1; })); }catch(e){}
-      data={acc,priv,club,reps,areq,mine,welc,trials}; if(NP) open=true;
+      data={acc,priv,club,reps,areq,mine,welc,trials,mails}; if(NP) open=true;
       try{ if(new URLSearchParams(location.search).get("notif")){ open=true; history.replaceState(null,"",location.pathname+location.hash); } }catch(e){}
       paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
@@ -3649,7 +3651,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     const rowR=h=>{ const k=kOf(h); return rd.includes(k)?h.replace("<li ",'<li class="tn-read" '):h.replace(/<\/li>$/,`<button type="button" class="tn-rd" data-tnrd="${k}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button></li>`); };
     curKeys=keys;
     const trAll=(data.trials||[]).filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>wk), trNew=trAll.filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>since);
-    const cnt=keys.filter(k=>!rd.includes(k)).length+clubNew.length+mineNew.length+trNew.length;
+    const mlAll=(data.mails||[]).filter(m=>m.at>wk), mlNew=mlAll.filter(m=>m.at>since);
+    const cnt=keys.filter(k=>!rd.includes(k)).length+clubNew.length+mineNew.length+trNew.length+mlNew.length;
     try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){} npSay({n:cnt});
     b.hidden=false;
     /* closed: a small button that opens it again */
@@ -3659,6 +3662,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
       return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`${(data.welc||{})[a.uid+"-join"]?`<span class="tn-hint tn-done">✓ Welcomed · open the chat</span>`:`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`}`:""}${old?"":`<button type="button" class="tn-rd" data-tnrd="j:${esc(a.uid)}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button>`}</li>`; };
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
+      ${mlAll.length?`<h4>📧 Emails Hibi sent</h4><ul>${mlAll.slice(0,8).map(m=>`<li${m.at>since?"":' class="tn-read"'}>📧 <b>${esc(m.name||"Someone")}</b> ${m.why==="test email"?"got the test email":`got an email: unread message from ${esc(m.from||"someone")}`} <span class="muted">· ${ago(m.at)}</span>${m.uid&&m.why!=="test email"?` <button type="button" class="tn-go" data-dmto="${esc(m.uid)}" data-dmname="${esc(m.name||"")}">Chat →</button>`:""}</li>`).join("")}</ul>`:""}
       ${trAll.length?`<h4>🎁 Free club trials</h4><ul>${trAll.map(t=>{ const when=Math.max(t.start||0,t.ended||0,t.joined||0), dd=d=>{ try{ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }catch(e){ return d; } };
         const what=t.status==="joined"?"joined the club after the trial 💛":t.status==="trial-ended"?"’s free trial ended (club access removed)":t.status==="trial-kept"?"’s trial ended, kept in the club (you set it)":`started a free 2-week trial · ends ${dd(t.until)}`;
         return `<li${when>since?"":' class="tn-read"'}>🎁 <b>${esc(t.name||t.email||"Someone")}</b> ${what} <span class="muted">· ${ago(when)}</span>${t.status==="trial"||t.status==="trial-ended"?` <button type="button" class="tn-go" data-dmto="${esc(t.uid)}" data-dmname="${esc(t.name||"")}">Message →</button>`:""}</li>`; }).join("")}</ul>`:""}
@@ -5950,7 +5954,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. Paying for the club now happens right here on Hibi, at the top of the Club page. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. If a message waits unread for 12 hours, Hibi sends you one short email (you can turn that off in Settings). Paying for the club now happens right here on Hibi, at the top of the Club page. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
     </ul>
   </div>
@@ -10839,7 +10843,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116130216"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116131954"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11357,6 +11361,29 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]
   document.addEventListener("cs-club",()=>draw());
   document.addEventListener("hb-mem",()=>{ if(!asked&&payOn()&&!preview()) load(); else draw(); });
   new MutationObserver(()=>{ const pj=document.querySelector("#v-club .cl-lock .hb-pay:not([data-mine])"); if(pj&&P) personalJoin(); if(window.__hbMemInfo&&!document.getElementById("hbMove")&&document.getElementById("clubMain")) draw(); }).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<script>
+/* step149: Settings switch for the unread-message emails */
+(function(){
+  const K="ncs-mailnotif";
+  const isOn=()=>{ try{ return JSON.parse(localStorage.getItem(K)||'"on"')!=="off"; }catch(e){ return true; } };
+  function add(){
+    const p=document.getElementById("csPanel"); if(!p||document.getElementById("csMailN")) return;
+    const F=window.__csFire; if(!F||!F.uid||!F.uid()||window.__csGuest) return;
+    const anchor=document.getElementById("csResetAll"); if(!anchor) return;
+    const box=document.createElement("div"); box.className="cs-sec cs-mailn";
+    box.innerHTML=`<h4>Messages</h4><label class="cs-tog"><input type="checkbox" id="csMailN"><span><b>Email me about unread messages</b><small>If a message waits 12 hours, Hibi sends one short email. Never more than one a day.</small></span></label>`;
+    const host=document.getElementById("csInstallSec")||anchor.closest(".cs-sec")||anchor.parentNode; host.parentNode.insertBefore(box,host);
+    const cb=box.querySelector("input"); cb.checked=isOn();
+    cb.addEventListener("change",()=>{
+      if(window.__csPreview||(F.readOnly&&F.readOnly())){ cb.checked=isOn(); if(typeof window.toast==="function") window.toast("In View as nothing changes."); return; }
+      try{ localStorage.setItem(K,JSON.stringify(cb.checked?"on":"off")); }catch(e){}
+      if(typeof window.toast==="function") window.toast(cb.checked?"✓ You'll get an email if a message waits 12 hours.":"Got it: no emails about messages.");
+    });
+  }
+  document.addEventListener("click",e=>{ if(e.target.closest("#csBtn")) setTimeout(add,30); },true);
+  new MutationObserver(()=>{ const p=document.getElementById("csPanel"); if(p&&!p.hidden) add(); }).observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["hidden"]});
 })();
 </script>
 
