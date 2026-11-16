@@ -157,9 +157,9 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 .pend-n .when{flex:none;font-size:11.5px;color:var(--muted,#8a94a8);font-weight:600}
 .pend-e{font-size:12.5px;color:var(--muted,#8a94a8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pend-btns{display:flex;gap:6px}
-.pend-re,.pend-x{width:32px;height:32px;display:grid;place-items:center;padding:0;border-radius:50%;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer;font:700 13px var(--body)}
+.pend-re,.pend-x{width:32px;height:32px;display:grid;place-items:center;padding:0;line-height:1;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer;font:700 13px var(--body)}
 .pend-re:hover{border-color:var(--royal,#3b82f6)}
-.pend-x{color:var(--muted,#8a94a8)}.pend-x:hover{border-color:#e05252;color:#e05252}
+.pend-x{color:var(--muted,#8a94a8)}.pend-x svg{display:block}.pend-x:hover{border-color:#e05252;color:#e05252}
 .pend-hint{margin:6px 0 0;font-size:11.5px;color:var(--muted,#8a94a8)}
 .pend-twin{grid-column:1/-1;margin-top:6px;padding:6px 9px;border-radius:9px;font-size:12px;line-height:1.35;color:#d97706;background:color-mix(in srgb,#d97706 12%,transparent);overflow-wrap:anywhere}
 </style>
@@ -280,7 +280,7 @@ function renderPending() {
   const twin = x => { const e = x.email.toLowerCase(); return (students || []).find(s => s.email && lev(e, s.email.toLowerCase()) <= 2); };
   const open = box.querySelector("details") ? box.querySelector("details").open : ps.length <= 4;
   box.hidden = false;
-  box.innerHTML = `<details${open ? " open" : ""}><summary>⏳ Invited, not signed in yet <span class="mt-n cnt">${ps.length}</span></summary><p class="pend-hint">📧 emails them the sign-in steps again · ✕ removes the invite</p><ul>${ps.map(x => `<li><div class="pend-t"><div class="pend-n"><b>${esc(x.name || x.email.split("@")[0])}</b><span class="when">${x.at ? "invited " + ago(x.at) : ""}</span></div><span class="pend-e" title="${esc(x.email)}">${esc(x.email)}</span></div><div class="pend-btns"><button type="button" class="pend-re" data-pendmail="${esc(x.email)}" data-pendname="${esc(x.name)}" title="Email the sign-in steps again" aria-label="Email again">📧</button><button type="button" class="pend-x" data-pendx="${esc(x.email)}" title="Remove this invite" aria-label="Remove this invite">✕</button></div>${(t => t ? `<span class="pend-twin">⚠️ Already signed in as <b>${esc(t.email)}</b>. Typo in this invite? Tap ✕ to remove it.</span>` : "")(twin(x))}</li>`).join("")}</ul></details>`;
+  box.innerHTML = `<details${open ? " open" : ""}><summary>⏳ Invited, not signed in yet <span class="mt-n cnt">${ps.length}</span></summary><p class="pend-hint">📧 emails them the sign-in steps again · ✕ removes the invite</p><ul>${ps.map(x => `<li><div class="pend-t"><div class="pend-n"><b>${esc(x.name || x.email.split("@")[0])}</b><span class="when">${x.at ? "invited " + ago(x.at) : ""}</span></div><span class="pend-e" title="${esc(x.email)}">${esc(x.email)}</span></div><div class="pend-btns"><button type="button" class="pend-re" data-pendmail="${esc(x.email)}" data-pendname="${esc(x.name)}" title="Email the sign-in steps again" aria-label="Email again">📧</button><button type="button" class="pend-x" data-pendx="${esc(x.email)}" title="Remove this invite" aria-label="Remove this invite"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>${(t => t ? `<span class="pend-twin">⚠️ Already signed in as <b>${esc(t.email)}</b>. Typo in this invite? Tap ✕ to remove it.</span>` : "")(twin(x))}</li>`).join("")}</ul></details>`;
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-pendmail]"); if (!b) return;
   const email = b.dataset.pendmail, first = (b.dataset.pendname || "").split(/\s+/)[0] || "";
