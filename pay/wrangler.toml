@@ -5,7 +5,7 @@ compatibility_date = "2026-10-01"
 workers_dev = true
 
 [vars]
-FLOW_ENV = "sandbox"   # change to "live" when we switch to real payments
+FLOW_ENV = "live"   # "sandbox" = Flow's practice version; "live" = real payments (since Nov 16 2026)
 FIREBASE_API_KEY = "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw"
 
 [triggers]

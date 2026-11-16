@@ -12,6 +12,7 @@ const ORIGINS = ["https://learnwithnoa.github.io", "https://hibi.cl", "https://w
 
 // Plans: standard prices plus each legacy member's monthly price (in CLP).
 const STD_MONTH = 35000, STD_YEAR = 210000;
+const TESTERS = [TEACHER, "Bh1mtEtTgxg6DJagqNddDyqKeiH2"];   // Noa + his test account can buy a hidden $1.000/month test plan
 const planId = (kind, amount) => `hibi-club-${kind}-${amount}`;
 
 // ---------- small helpers ----------
@@ -151,8 +152,10 @@ async function priceFor(env, email) {
 async function subscribe(env, req, url) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const body = await req.json().catch(() => ({}));
+  const test = body.plan === "test";
+  if (test && !TESTERS.includes(me.uid)) return json({ error: "Not available." }, 403, req);
   const kind = body.plan === "yearly" ? "y" : "m";
-  const amount = kind === "y" ? STD_YEAR : await priceFor(env, me.email);
+  const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email);
   const b = await getBill(env, me.uid);
   if (["active", "grace", "canceling"].includes(b.status) && b.subscriptionId && sameEnv(env, b)) return json({ error: "You already have an active membership." }, 400, req);
   let customerId = sameEnv(env, b) ? b.customerId : null;
