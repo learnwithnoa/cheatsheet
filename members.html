@@ -125,6 +125,12 @@ td.act{white-space:nowrap;text-align:right}
 .stoic .st-k{font:700 11px var(--mono,monospace);letter-spacing:.05em;text-transform:uppercase;color:#A07A3C}.stoic .st-t{color:var(--muted);font-size:13px}
 .inv{margin:0 0 12px;padding:10px 14px;border:1.5px dashed var(--line);border-radius:14px;background:var(--surface)}
 .inv summary{cursor:pointer;font-weight:800}
+details.mcol>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+details.mcol>summary::-webkit-details-marker{display:none}
+details.mcol>summary::before{content:"▸";color:var(--muted);transition:transform .15s;display:inline-block}
+details.mcol[open]>summary::before{transform:rotate(90deg)}
+details.mcol>summary h2{display:inline;margin:0}
+details.mcol:not(.parkbox){margin:22px 0 6px}
 .inv-f{display:flex;flex-wrap:wrap;gap:8px}.inv-f input{flex:1 1 180px;min-width:0}
 
 /* dropdowns: our own arrow, a comfortable distance from the edge */
@@ -594,20 +600,23 @@ const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present p
   th: { name: "There is / there are", stages: ["There is / there are", "Negatives: there isn't / aren't", "Questions: Is there…? Are there…?", "Past: there was / there were", "Future: there will be", "Mix it up", "Tell the story"] },
   cou: { name: "Could vs was able to", stages: ["can, could, be able to", "could: ability in general", "was able to: one specific moment", "Negatives: couldn't", "Questions: Could you…? Were you able to…?", "will be able to, have been able to", "Tell the story"] },
   ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
+const COL = { p: false, w: false };   /* Practice and Words start closed; stay as Noa left them while he moves between people */
+document.addEventListener("toggle", e => { const d = e.target; if (d && d.classList && d.classList.contains("mcol")) COL[d.dataset.col] = d.open; }, true);
 function modBlock(s, id) {
   const T = MODT[id], p = s.mods[id] || {}, b = p.b || {}, st = p.s || {}, rec = s.modrec[id] || 0;
   const tot = T.stages.reduce((t, _, i) => t + (st[i + 1] | 0), 0), tOut = p.to && p.to.sc >= 15;
   const star = n => `<span class="pstars">${"★".repeat(n)}<span>${"★".repeat(3 - n)}</span></span>`;
   const open = n => n === 1 || tOut || (b[n - 1] | 0) >= 7;
-  return `<div style="margin-top:8px"><b>${esc(T.name)}</b>${tOut ? ` <span class="chip">🎓 Tested out</span>` : ""} <span class="muted">${tot} / ${T.stages.length * 3} ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
+  return `<div style="margin-top:8px"><b>${esc(T.name)}</b> <button type="button" class="seg" data-psrec="all" data-mod="${id}" aria-pressed="${rec === "all"}" style="padding:2px 10px;font-size:12.5px">${rec === "all" ? "⭐ Whole module recommended" : "⭐ Whole module"}</button>${tOut ? ` <span class="chip">🎓 Tested out</span>` : ""} <span class="muted">${tot} / ${T.stages.length * 3} ★ · ${p.r | 0} ${p.r === 1 ? "round" : "rounds"}${p.last ? " · last " + ago(p.last) : ""}</span>
     <table class="pstbl"><tbody>${T.stages.map((t, i) => { const n = i + 1; return `<tr><td>${n}. ${esc(t)}</td><td>${b[n] != null ? star(st[n] | 0) + ` <span class="muted">best ${b[n]}/10</span>` : `<span class="muted">${tOut ? star(st[n] | 0) + " tested out" : open(n) ? "not tried" : "🔒 locked"}</span>`}</td><td><button type="button" class="seg" data-psrec="${n}" data-mod="${id}" aria-pressed="${rec === n}">${rec === n ? "⭐ Recommended" : "Recommend"}</button></td></tr>`; }).join("")}</tbody></table></div>`;
 }
 function practiceBox(s) {
   const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
   const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
-  return `<div class="parkbox"><b>Practice</b>${modBlock(s, "prs")}${modBlock(s, "th")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "cou")}${modBlock(s, "ed")}
+  const recN = Object.keys(s.modrec || {}).length;
+  return `<details class="parkbox mcol" data-col="p"${COL.p ? " open" : ""}><summary><b>Practice</b> <span class="muted">· recommend a stage or a whole module${recN ? ` · ⭐ ${recN} recommended now` : ""}</span></summary>${modBlock(s, "prs")}${modBlock(s, "th")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "cou")}${modBlock(s, "ed")}
     <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
-    <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. Tap it again to remove it.</p></div>`;
+    <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. "Whole module" puts ⭐ on the module itself. Tap again to remove it.</p></details>`;
 }
 function buddyCard(b) {
   const A = window.csBuddyArt;
@@ -697,20 +706,20 @@ function renderDetail(s) {
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
     ${practiceBox(s)}
     ${(() => { const u = usageSum(s.usage, 7), r = USE_L.filter(([k]) => u[k]).map(([k, l]) => l + ": " + u[k]); return `<div class="parkbox"><b>Last 7 days</b><div class="muted" style="margin-top:4px">${r.length ? r.join(" · ") : "No activity yet (counting started Nov 6, 2026)."}</div></div>`; })()}
-    <h2>Words</h2>
+    <details class="mcol" data-col="w"${COL.w ? " open" : ""}><summary><h2>Words <span class="muted" style="font-size:15px">(${words.length})</span></h2></summary>
     <p class="hint">Changes show up in ${esc(s.name.split(" ")[0])}'s Hibi the next time they open it or come back to the tab.</p>
     <form class="addf" id="addW" autocomplete="off"><input id="aw" placeholder="Add a word for them…" aria-label="English word"><input id="am" placeholder="Spanish" aria-label="Spanish"><input id="ae" placeholder="Example (optional)" aria-label="Example"><input id="an2" placeholder="Notes (optional)" aria-label="Notes"><button class="primary" type="submit">+ Add</button></form>
     ${words.length ? `<div class="row" style="margin-bottom:10px"><button type="button" id="cpW">Copy words (for a sheet)</button></div>
       <div class="tbl"><table><thead><tr>${th("w","Word")}${th("m","Spanish")}${th("e","Example")}${th("n","Notes")}${th("t","Added")}<th></th></tr></thead><tbody>
-      ${words.map(wRow).join("")}</tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}
+      ${words.map(wRow).join("")}</tbody></table></div>` : `<p class="muted">No words saved yet.</p>`}</details>
     <h2>Class notes</h2>
     <div class="addn"><textarea id="an" placeholder="Write a class note for them (it's saved with today's date)…" aria-label="New class note"></textarea><div><button class="primary" id="addN" type="button">+ Add note</button></div></div>
     ${notes.length ? notes.map(nCard).join("") : `<p class="muted">No class notes saved yet.</p>`}
     ${typeof s.draft === "string" && s.draft.trim() ? `<h2>Unsaved draft</h2><div class="note"><div class="txt">${esc(s.draft)}</div></div>` : ""}
     ${s.stars.length ? `<h2>Starred sections</h2><div>${s.stars.map(x => `<span class="chip">★ ${esc(x)}</span>`).join("")}</div>` : ""}`;
   $("detail").querySelectorAll("[data-psrec]").forEach(btn => btn.onclick = async () => {
-    const n = +btn.dataset.psrec, md = btn.dataset.mod || "ps", v = Object.assign({}, s.modrec); if (v[md] === n) delete v[md]; else v[md] = n;
-    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; renderDetail(s); toast(v[md] === n ? "⭐ " + MODT[md].name + " stage " + n + " recommended for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Recommendation removed"); }
+    const n = btn.dataset.psrec === "all" ? "all" : +btn.dataset.psrec, md = btn.dataset.mod || "ps", v = Object.assign({}, s.modrec); if (v[md] === n) delete v[md]; else v[md] = n;
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; renderDetail(s); toast(v[md] === n ? "⭐ " + MODT[md].name + (n === "all" ? " (whole module)" : " stage " + n) + " recommended for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Recommendation removed"); }
     catch (e) { console.warn(e); toast("Couldn't save. Try again."); }
   });
   const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });

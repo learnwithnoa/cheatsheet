@@ -82,6 +82,8 @@ tr:last-child td{border-bottom:0}
 .nx-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;justify-content:space-between}.nx-h h2{margin:0}
 .nx-nav{display:flex;align-items:center;gap:8px}.nx-nav .ib{font-size:18px;width:30px;height:30px;padding:0;display:grid;place-items:center}.nx-nav .ib:disabled{opacity:.3}
 .nextc .linkb{all:unset;cursor:pointer}.nextc .linkb:hover b{text-decoration:underline}
+.nextc li[data-open]{cursor:pointer;transition:background .12s}.nextc li[data-open]:hover{background:color-mix(in srgb,var(--c-sky) 12%,var(--surface-2))}.nextc li[data-open]:hover b{text-decoration:underline}
+.nextc.recent .t{color:var(--c-violet)}.nextc.recent .att{margin-left:6px}
 .nx-note{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
 .club-m{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}.club-m h3{margin:0 0 8px;font-size:16px}
 .club-who{font-size:13.5px;margin-top:8px;display:flex;flex-direction:column;gap:3px}.club-who span[title]{cursor:help}
@@ -263,6 +265,11 @@ tr.arch td{opacity:.85}
 .eng{display:inline-flex;align-items:center;gap:6px;font:800 13px var(--body);padding:4px 10px;border-radius:999px}
 .sortrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
 .nextc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nm-wrap{position:relative;display:inline-block;padding-right:2px}
+.eng-pill{display:inline-block;vertical-align:super;margin-left:4px;font:800 10.5px var(--body);letter-spacing:.02em;padding:2px 7px;border-radius:999px;line-height:1.3;white-space:nowrap;cursor:help;position:relative;top:-6px}
+.eng-pill.k-green{background:color-mix(in srgb,#22C55E 22%,var(--surface));color:color-mix(in srgb,#22C55E 70%,var(--ink))}
+.eng-pill.k-amber{background:color-mix(in srgb,#F59E0B 24%,var(--surface));color:color-mix(in srgb,#F59E0B 60%,var(--ink))}
+.eng-pill.k-red{background:color-mix(in srgb,#EF4444 20%,var(--surface));color:color-mix(in srgb,#EF4444 65%,var(--ink))}
 .nextc li{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:8px 10px;border-radius:10px;background:var(--surface-2)}
 .nextc .t{font:700 12.5px var(--mono);color:var(--c-sky)}
 .prof{white-space:pre-wrap;line-height:1.55}
@@ -301,7 +308,7 @@ html.emb body{background:transparent}
   <section id="vMain" hidden>
     <div class="dh"><h1 class="hubt" style="flex:1;margin:0">Your private students</h1>
       <div class="row"><button type="button" class="primary" id="addStu">＋ New student</button>
-      <button type="button" id="impBtn">⬆ Import file</button><button type="button" id="expBtn">⬇ Backup</button>
+      <button type="button" id="impBtn" hidden>⬆ Import file</button><button type="button" id="expBtn" hidden>⬇ Backup</button><!-- hidden Nov 2026: Noa doesn't use them; remove "hidden" to bring them back -->
       <input type="file" id="impFile" accept=".json,application/json" hidden></div></div>
     <div class="stoic" id="stoicBox" hidden></div>
     <div class="hubbar" id="hubbar">
@@ -313,6 +320,7 @@ html.emb body{background:transparent}
     <p class="lede" id="summary" style="margin-top:6px">Loading…</p>
     <div class="kpis" id="kpis"></div>
     <div class="tint k-sky panel" id="nextBox" hidden></div>
+    <div class="tint k-violet panel" id="recentBox" hidden></div>
     <div class="tint k-teal panel" id="linkBox" hidden></div>
     <div class="tint k-amber panel" id="alertsBox" hidden></div>
     <p class="muted small" style="margin:4px 0 14px">💰 Money in, what's coming in and the club income are in the <a href="#money">Earnings</a> tab.</p>
@@ -670,7 +678,15 @@ function renderStoic() {
   b.hidden = true;
 }
 setInterval(() => { try { if (meta && S) renderNext(); } catch (e) {} }, 60e3);   /* keep "live now" and "in 20 min" current */
-function renderAll() { renderStoic(); renderSummary(); renderKpis(); renderNext(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); route(); }
+function renderRecent() {
+  const box = $("recentBox"); if (!box) return;
+  const all = []; S.forEach(s => (s.classes || []).forEach(c => { if (c.kind !== "note" && c.date && c.date <= today()) all.push({ s, c }); }));
+  all.sort((a, b) => b.c.date.localeCompare(a.c.date) || String(b.c.id || "").localeCompare(String(a.c.id || "")));
+  const top = all.slice(0, 3); box.hidden = !top.length; if (!top.length) return;
+  const dl = d => d === today() ? "Today" : d === addDays(today(), -1) ? "Yesterday" : new Date(d + "T12:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  box.innerHTML = `<div class="nx-h"><h2><span class="kc">🕘</span> Recent classes</h2></div><ul class="nextc recent">${top.map(({ s, c }) => `<li data-open="${esc(s.id)}" title="Open ${esc(s.name)}'s page"><span class="t">${dl(c.date)}</span><span><b>${esc(s.name)}</b>${attB(c.att && c.att !== "Present" ? c.att : "")}${c.topics ? `<span class="nx-note">${esc(c.topics)}${c.homework ? " · homework: " + esc(c.homework) : ""}</span>` : ""}</span></li>`).join("")}</ul>`;
+}
+function renderAll() { renderStoic(); renderSummary(); renderKpis(); renderNext(); renderRecent(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); route(); }
 function renderSummary() {
   const act = S.filter(s => s.status === "active");
   $("summary").textContent = `${act.length} active students · ${S.length} students in total`;
@@ -708,7 +724,7 @@ function renderNext() {
     <ul class="nextc">${up.map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
     const note = u.note ? esc(u.note) : lc ? `last time: ${esc(lc.topics)}${lc.homework ? " · homework: " + esc(lc.homework) : ""}` : "";
     const isLive = live && u === live, st = Date.parse(u.start), extra = isLive ? `<span class="in" style="color:#E5484D">● live</span>` : st > now && st - now < 12 * 3600e3 && nextDay === td ? `<span class="in">${inTxt(st - now)}</span>` : "";
-    return `<li${isLive ? ' class="live"' : ""}><span class="t">${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}${extra}</span><span><button type="button" class="linkb" data-open="${esc(u.student)}"><b>${esc(s ? s.name : u.name || "")}</b></button>${note ? `<span class="nx-note">${note}</span>` : ""}</span></li>`; }).join("")}</ul>`;
+    return `<li${isLive ? ' class="live"' : ""}${u.student ? ` data-open="${esc(u.student)}" title="Open ${esc(s ? s.name : u.name || "")}'s page"` : ""}><span class="t">${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}${extra}</span><span><button type="button" class="linkb" data-open="${esc(u.student)}"><b>${esc(s ? s.name : u.name || "")}</b></button>${note ? `<span class="nx-note">${note}</span>` : ""}</span></li>`; }).join("")}</ul>`;
 }
 const GM = (to, su, body) => "https://mail.google.com/mail/?authuser=" + encodeURIComponent(TEACHER) + "&view=cm&fs=1&to=" + encodeURIComponent(to || "") + "&su=" + encodeURIComponent(su || "") + "&body=" + encodeURIComponent(body || "");
 function reminderFor(s, a) {
@@ -875,7 +891,7 @@ function renderDetail() {
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
   const links = [`<a class="linkb" href="index.html?viewas=${encodeURIComponent(s.id)}#coaching" title="Opens Hibi showing exactly what ${esc(s.name.split(" ")[0])} sees (read-only)">👁 Their My coaching</a>`, s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
-  box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px${avIn(s).st}">${avIn(s).html}</span><h2>${esc(s.name)}${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
+  box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px${avIn(s).st}">${avIn(s).html}</span><h2><span class="nm-wrap">${esc(s.name)}${en ? `<sup class="eng-pill ${en.k}" title="Engagement: ${en.lvl} (${esc(en.parts.join(" · "))})">${en.k === "k-green" ? "🔥" : en.k === "k-amber" ? "🙂" : "💤"} ${en.lvl}</sup>` : ""}</span>${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     ${(() => { const LV = ["A1", "A2", "A2-B1", "B1", "B1-B2", "B2", "B2-C1", "C1", "C2"], fromLevel = String(s.level || "").toUpperCase().replace(/[–—]/g, "-").replace(/\s+/g, ""), cur = s.cefr || (LV.includes(fromLevel) ? fromLevel : "");
       return `<label class="cefr-pick" title="Their English level (tap to change). Hibi grades their practice for it, and it shows in the Buddy park"><span class="cp-k">Level</span><b>${cur || "Set…"}</b><span class="cp-car" aria-hidden="true">▾</span><select data-f="cefr" aria-label="English level">${(cur ? [] : [""]).concat(LV).map(l => `<option value="${l}" ${cur === l ? "selected" : ""}>${l || "Set level…"}</option>`).join("")}</select></label>`; })()}
@@ -888,7 +904,7 @@ function renderDetail() {
       ${p && st ? `<div class="stat tint k-sky"><b>${st.done}</b><span>classes this pack</span></div>` : ""}
       ${p && st && deadline(p, st.first) ? `<div class="stat tint k-pink"><b>${fmtShort(deadline(p, st.first))}</b><span>pack ends</span></div>` : ""}
       <div class="stat tint k-violet"><b>${s.classes.filter(c => c.kind !== "note").length}</b><span>classes in total</span></div>
-      ${en ? `<div class="stat st-eng ${en.k}" title="${esc(en.parts.join(" · "))}"><b>${en.lvl}</b><span>engagement <i class="eng-i" aria-hidden="true">ⓘ</i></span></div>` : ""}
+
     </div>
     <div class="tabs">${tabs.map(([k, l, c]) => `<button type="button" class="seg ${c}" data-tab="${k}" aria-pressed="${tab === k}">${l}${k === "words" ? ` (${new Set(s.words.map(w => nw(w.w)).concat((appWords[s.id] || []).map(w => nw(w && w.w)))).size})` : ""}</button>`).join("")}</div>
     <div id="tabBody">${({ classes: tClasses, packs: tPacks, info: tInfo, words: tWords, other: tOther }[tab] || tClasses)(s)}</div>`;
@@ -1085,11 +1101,11 @@ document.addEventListener("click", e => {
   const t = e.target;
   const cp = t.closest("[data-copy]"); if (cp) { navigator.clipboard && navigator.clipboard.writeText(cp.dataset.copy).then(() => toast("Copied " + cp.dataset.copy)).catch(() => {}); return; }
   const fb = t.closest("button[data-f]"); if (fb) { filt = fb.dataset.f; renderFilters(); renderList(); return; }
-  const sb = t.closest(".stu"); if (sb) { openStu(sb.dataset.s); return; }
-  const op = t.closest("[data-open]"); if (op) { tab = "packs"; openStu(op.dataset.open); return; }
+  const sb = t.closest(".stu"); if (sb) { tab = "classes"; openStu(sb.dataset.s); return; }
+  const op = t.closest("[data-open]"); if (op) { tab = "classes"; openStu(op.dataset.open); return; }
   const nd = t.closest("[data-nday]"); if (nd) { const all = (meta.upcoming || []).filter(u => Date.parse(u.start) > Date.now() - 45 * 60e3).sort((a, b) => Date.parse(a.start) - Date.parse(b.start)); const days = [...new Set(all.map(u => dkey(new Date(u.start))))]; const i = days.indexOf(nextDay) + +nd.dataset.nday; if (days[i]) { nextDay = days[i]; renderNext(); } return; }
   const vw = t.closest("[data-view]"); if (vw) { go(vw.dataset.view); return; }
-  const jr = t.closest("[data-jump]"); if (jr) { $("jumpQ").value = ""; $("jumpRes").hidden = true; openStu(jr.dataset.jump); return; }
+  const jr = t.closest("[data-jump]"); if (jr) { tab = "classes"; $("jumpQ").value = ""; $("jumpRes").hidden = true; openStu(jr.dataset.jump); return; }
   if (!t.closest(".jump")) $("jumpRes").hidden = true;
   if (t.closest("#backBtn")) { go("students"); return; }
   if (t.closest("#histBtn")) { showHist(); return; }

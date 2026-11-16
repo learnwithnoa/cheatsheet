@@ -67,3 +67,11 @@ if '2026-1115-trial' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 16: translator fallback
+s=open(p,encoding="utf-8").read()
+if '2026-1116-translate' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1116-translate", date:"November 16, 2026", title:"The translator always answers", items:[
+    ["🌐","No more “busy”","When the smart translator is busy, the Translator now gives you a quick translation anyway, so you’re never stuck.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

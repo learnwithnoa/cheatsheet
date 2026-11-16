@@ -6171,8 +6171,15 @@ trBtn.addEventListener("click",async()=>{
     if(j.say&&String(j.say).trim()){ document.getElementById("trSayP").textContent=j.say; document.getElementById("trSay").hidden=false; }
   }catch(e){
     if(window.csCheckUpdate) window.csCheckUpdate();
-    if(e&&e.code==="rate_limited"){ trOut.textContent="The translator is busy right now. Try again in a minute, or use Google Translate or DeepL below."; }
-    else if(!(e&&e.name==="AbortError")){ trOut.textContent="That didn't work. Use Google Translate or DeepL below."; }
+    if(!(e&&e.name==="AbortError")){
+      let ok=false;
+      try{ const r2=await fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(t.slice(0,480))+"&langpair="+(dir==="es-en"?"es|en":"en|es"),{signal:ctrl.signal});
+        const j2=await r2.json(); const tx=j2&&j2.responseData&&j2.responseData.translatedText;
+        if(r2.ok&&tx&&!/MYMEMORY WARNING|INVALID|QUERY LENGTH/i.test(tx)){ const clean=String(tx).replace(/&#39;/g,"’").replace(/&quot;/g,'"').replace(/&amp;/g,"&");
+          trOut.innerHTML=esc(clean)+'<span class="tr-also">Quick translation (the smart translator is busy). For more options, try Google Translate or DeepL below.</span>';
+          trOut.dataset.tr=clean; trOut.dataset.en= dir==="es-en"? clean : t; ok=true; } }catch(er){}
+      if(!ok) trOut.textContent=(e&&e.code==="rate_limited")?"The translator is busy right now. Try again in a minute, or use Google Translate or DeepL below.":"That didn't work. Use Google Translate or DeepL below.";
+    }
   }finally{ trBtn.disabled=false; }
 });
 
@@ -10470,6 +10477,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1116-translate", date:"November 16, 2026", title:"The translator always answers", items:[
+    ["🌐","No more “busy”","When the smart translator is busy, the Translator now gives you a quick translation anyway, so you’re never stuck.",""]
+  ]},
   {id:"2026-1115-trial", date:"November 15, 2026", title:"Try the club free for 2 weeks", items:[
     ["🎁","Free 2-week trial","Not in Noa’s English Club yet? Open <b>Club</b> and tap <b>Try it free for 2 weeks</b>. No card needed: you get the classes, recordings, community wall and podcast right away.",""],
     ["💛","Then you decide","Your trial shows how many days are left at the top of the Club page. Want to stay? Tap <b>I want to stay</b> and Noa will help you join.",""]
@@ -10761,7 +10771,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116084904"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116085619"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
