@@ -87,7 +87,7 @@ if '2026-1116-studypet' not in s:
 s=open(p,encoding="utf-8").read()
 if '2026-1116-kudosbell' not in s:
     s=s.replace(a,a+'''  {id:"2026-1116-kudosbell", date:"November 16, 2026", title:"Notes from Noa in your notifications", items:[
-    ["💌","Easier to find","Little notes from Noa now also appear in your 🔔 notifications, with a <b>Reply to Noa</b> button that opens your chat with him.",""]
+    ["💌","Easier to find","Little notes from Noa now also appear in your 🔔 notifications, with a <b>Reply to Noa</b> button that opens your chat with him. Tap ✕ to hide one (you can still find it under <b>See all</b>).",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

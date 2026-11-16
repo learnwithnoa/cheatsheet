@@ -125,7 +125,7 @@ function deepMax(L, C) {   /* counters and totals: the bigger number wins, lists
 const MERGERS = {
   "ncs-lesson-prog": (L, C) => isObj(L) && isObj(C) ? mergeLes(L, C) : L,
   "ncs-mods": (L, C) => isObj(L) && isObj(C) ? Object.assign({}, C, L) : L,          /* each module's own progress; this device's wins for a module done on both */
-  "ncs-fc": deepMax, "ncs-mst": deepMax, "ncs-usage": deepMax, "ncs-ptime": deepMax, "ncs-kudos": deepMax,
+  "ncs-fc": deepMax, "ncs-mst": deepMax, "ncs-usage": deepMax, "ncs-ptime": deepMax, "ncs-kudos": deepMax, "ncs-kudos-hid": deepMax,
   "ncs-wk": (L, C) => isObj(L) && isObj(C) ? (L.w === C.w ? deepMax(L, C) : (String(L.w) > String(C.w) ? L : C)) : L,
   "cs-wall-seen": (L, C) => Math.max(+L || 0, +C || 0),
   "cs-rep-read": deepMax, "ncs-tnotif-read": deepMax

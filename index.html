@@ -1246,6 +1246,13 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .clb-kd-b{font:700 12.5px var(--body);padding:5px 11px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
 .clb-kd-b:hover{border-color:var(--accent,#2E6FD8)}
 
+.clb-kdli{display:flex;align-items:stretch;gap:4px}
+.clb-kdli .clb-i{flex:1;min-width:0}
+.clb-kdx{flex:none;width:30px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:700 13px var(--body);cursor:pointer}
+.clb-kdx:hover{background:var(--surface-2);color:var(--ink)}
+/* the footer link "Messages from Noa" is gone: the notes live in the 🔔 now ("See all" still opens the full list through it) */
+#kdLink{display:none!important}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4644,7 +4651,15 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return `🔔 ${nm}`; }
   let CNSNAP=null;
   const isClubber=()=>{ const fd=window.__clubFeed&&window.__clubFeed(); return !!fd; };
-  function KDN(){ try{ const h=JSON.parse(localStorage.getItem("ncs-kudos")||"[]"); return Array.isArray(h)?h.filter(m=>m&&m.text):[]; }catch(e){ return []; } }
+  function KDH(){ try{ const h=JSON.parse(localStorage.getItem("ncs-kudos-hid")||"[]"); return Array.isArray(h)?h:[]; }catch(e){ return []; } }
+  function KDN(){ try{ const h=JSON.parse(localStorage.getItem("ncs-kudos")||"[]"), hid=KDH(); return Array.isArray(h)?h.filter(m=>m&&m.text&&!hid.includes(m.at||0)):[]; }catch(e){ return []; } }
+  document.addEventListener("click",e=>{ const x=e.target.closest("[data-kdhide]"); if(!x) return; e.preventDefault(); e.stopPropagation();
+    if(window.__csPreview||(window.__csFire&&window.__csFire.readOnly&&window.__csFire.readOnly())){ if(typeof window.toast==="function") window.toast("In View as nothing changes. Members can hide a note here."); return; }
+    const at=+x.dataset.kdhide||0, h=KDH(); if(!h.includes(at)){ h.push(at); try{ localStorage.setItem("ncs-kudos-hid",JSON.stringify(h.slice(-200))); }catch(err){} }
+    const li=x.closest("li"), ul=li&&li.parentElement; if(li) li.remove();
+    if(ul&&!ul.querySelector("li")){ const h4=ul.previousElementSibling, r=ul.nextElementSibling; if(r&&r.classList.contains("clb-kdr")) r.remove(); if(h4&&h4.tagName==="H4") h4.remove(); ul.remove(); }
+    if(typeof window.toast==="function") window.toast("Hidden. You can still find it under See all.");
+    try{ paintBell(); }catch(err){} }, true);
   document.addEventListener("click",e=>{ const o=e.target.closest("[data-kdopen],[data-kdreply]"); if(!o) return; const pn=document.getElementById("clBellPanel"); if(pn) pn.hidden=true;
     if(o.dataset.kdreply){ if(window.__csPreview||(window.__csFire&&window.__csFire.readOnly&&window.__csFire.readOnly())){ if(typeof window.toast==="function") window.toast("In View as nothing is sent."); return; } if(window.__clubDM) window.__clubDM("J8D2tjQmBaaA2QN730tSfSrjfm73","Noa"); return; }
     const k=document.getElementById("kdLink"); if(k) k.click(); });
@@ -4654,7 +4669,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const pn=document.getElementById("clBellPanel"); if(!pn||pn.hidden) return;
     const cn=CNSNAP||CN, fdt=d=>{ try{ return new Date(d+"T12:00").toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}); }catch(e){ return d; } };
     const kdl=KDN().slice(0,3), kfmt=t=>{ try{ return new Date(t).toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}); }catch(e){ return ""; } };
-    const kdHTML=kdl.length?`<h4 class="clb-sec">💌 ${L("From Noa","De Noa")}</h4><ul>${kdl.map(m=>`<li><button type="button" class="clb-i${(m.at||0)>(+pn.dataset.seen||0)?" new":""}" data-kdopen="1"><span>${esc(String(m.text||"").slice(0,110))}${String(m.text||"").length>110?"…":""}</span><em>${kfmt(m.at)}</em></button></li>`).join("")}</ul><div class="clb-kdr"><button type="button" class="clb-kd-b" data-kdopen="1">${L("See all","Ver todos")}</button><button type="button" class="clb-kd-b" data-kdreply="1">💬 ${L("Reply to Noa","Responder a Noa")}</button></div>`:"";
+    const kdHTML=kdl.length?`<h4 class="clb-sec">💌 ${L("From Noa","De Noa")}</h4><ul>${kdl.map(m=>`<li class="clb-kdli"><button type="button" class="clb-i${(m.at||0)>(+pn.dataset.seen||0)?" new":""}" data-kdopen="1"><span>${esc(String(m.text||"").slice(0,110))}${String(m.text||"").length>110?"…":""}</span><em>${kfmt(m.at)}</em></button><button type="button" class="clb-kdx" data-kdhide="${m.at||0}" title="${L("Hide this note","Ocultar esta nota")}" aria-label="${L("Hide this note","Ocultar esta nota")}">✕</button></li>`).join("")}</ul><div class="clb-kdr"><button type="button" class="clb-kd-b" data-kdopen="1">${L("See all","Ver todos")}</button><button type="button" class="clb-kd-b" data-kdreply="1">💬 ${L("Reply to Noa","Responder a Noa")}</button></div>`:"";
     const coachHTML=cn.length?`<h4 class="clb-sec">📚 ${L("Your classes","Tus clases")}</h4><ul>${cn.map(x=>`<li><button type="button" class="clb-i new" data-cngo="${esc(x.tab||"top")}"><span>${x.ico} ${x.t}</span><em>${fdt(x.d)}</em></button></li>`).join("")}</ul>`:"";
     if(!club){ pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+kdHTML+(coachHTML||kdHTML&&" "||`<p class="clb-e">${L("Nothing new right now. When Noa adds a class recap, a recommendation or a progress report, you’ll see it here.","Nada nuevo por ahora. Cuando Noa suba un resumen de clase, una recomendación o un informe de progreso, lo verás aquí.")}</p>`); return; }
     pn.innerHTML=`<div class="clb-h"><b>🔔 ${L("Notifications","Notificaciones")}</b></div>`+kdHTML+coachHTML+(coachHTML?`<h4 class="clb-sec">🌼 ${L("Club","Club")}</h4>`:"")+`${NOTES.some(x=>x.kind!=="dm")?`<ul>${NOTES.filter(x=>x.kind!=="dm").map(x=>`<li><button type="button" class="clb-i${x.at>(+pn.dataset.seen||0)?" new":""}" data-bgo="${esc(x.pid||"")}"><span>${noteTxt(x)}${x.text&&!/^react/.test(x.kind)?`<small>“${esc(x.text)}”</small>`:""}</span><em>${ago(x.at)}</em></button></li>`).join("")}</ul>`:`<p class="clb-e">${L("Nothing yet. When someone replies to you, reacts to your posts or mentions you, it shows up here.","Nada aún. Cuando alguien te responda, reaccione a tus posts o te mencione, aparece aquí.")}</p>`}`; }
@@ -10494,7 +10509,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-1116-kudosbell", date:"November 16, 2026", title:"Notes from Noa in your notifications", items:[
-    ["💌","Easier to find","Little notes from Noa now also appear in your 🔔 notifications, with a <b>Reply to Noa</b> button that opens your chat with him.",""]
+    ["💌","Easier to find","Little notes from Noa now also appear in your 🔔 notifications, with a <b>Reply to Noa</b> button that opens your chat with him. Tap ✕ to hide one (you can still find it under <b>See all</b>).",""]
   ]},
   {id:"2026-1116-studypet", date:"November 16, 2026", title:"Pet your buddy while you study", items:[
     ["🎧","Study room","In the music window, tap your buddy to pet it. Tap anywhere else in the room to play or pause the music.",""]
@@ -10793,7 +10808,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116105243"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116110055"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11386,7 +11401,7 @@ function deepMax(L, C) {   /* counters and totals: the bigger number wins, lists
 const MERGERS = {
   "ncs-lesson-prog": (L, C) => isObj(L) && isObj(C) ? mergeLes(L, C) : L,
   "ncs-mods": (L, C) => isObj(L) && isObj(C) ? Object.assign({}, C, L) : L,          /* each module's own progress; this device's wins for a module done on both */
-  "ncs-fc": deepMax, "ncs-mst": deepMax, "ncs-usage": deepMax, "ncs-ptime": deepMax, "ncs-kudos": deepMax,
+  "ncs-fc": deepMax, "ncs-mst": deepMax, "ncs-usage": deepMax, "ncs-ptime": deepMax, "ncs-kudos": deepMax, "ncs-kudos-hid": deepMax,
   "ncs-wk": (L, C) => isObj(L) && isObj(C) ? (L.w === C.w ? deepMax(L, C) : (String(L.w) > String(C.w) ? L : C)) : L,
   "cs-wall-seen": (L, C) => Math.max(+L || 0, +C || 0),
   "cs-rep-read": deepMax, "ncs-tnotif-read": deepMax
