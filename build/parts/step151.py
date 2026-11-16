@@ -63,6 +63,7 @@ _css = r'''
 #v-club .cl-rmrow{display:flex;gap:8px;margin-top:10px}
 #v-club .cl-rmrow .cl-rmore{margin:0;flex:1}
 .cl-newpoll>summary{display:none}
+#v-club .cl-polls.empty{display:none}   /* no polls yet: the box was left empty once "Start a poll" moved into the post box */
 .cl-newpoll.in-comp{margin:0 0 10px}
 '''
 _i = s.index('</style>'); s = s[:_i] + _css + s[_i:]
