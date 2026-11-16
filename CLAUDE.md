@@ -15,6 +15,7 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
 - `tools/hubsync.py` — Noa's helper for reading/changing Hibi's data (students, classes, club). See "Data" below.
 - `pay/` — the pay helper (Cloudflare Worker for Flow club subscriptions; deployed by `.github/workflows/pay-helper.yml`,
   result in `pay/deploy-log.txt`). Its keys are GitHub Actions secrets, never in files. Payment buttons on Hibi are off until `PAY_LIVE` in `build/parts/step135.py`.
+  It also runs the free 2-week club trial (no card; `/api/trial`, ended by its nightly check; Noa's list in `users/{Noa}/data/t-trials`, `hubsync.py trials`).
 - `pod/` — podcast MP3s; `.github/workflows/podcast-audio.yml` converts episodes queued in `pod/queue.txt`.
 
 ## Build
