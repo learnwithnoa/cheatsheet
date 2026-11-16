@@ -831,7 +831,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   /* ---------- little 8-bit animal sounds (about 1 in 4 taps) ---------- */
   let sac = null;
   /* special requests: one person's pet sounds higher (only theirs: on their own screen and when others tap it in the park) */
-  const SQUEAK = { "V64hBGjHHUTUfWqm7HfHkHg9hJH3": { a: "llama", x: 3 } };   /* Dakito's llama, Nov 2026 */
+  const SQUEAK = { "V64hBGjHHUTUfWqm7HfHkHg9hJH3": { a: "llama", x: 5 } };   /* Dakito's llama, Nov 2026 */
   let PITCH = 1;
   const myUid = () => { try { const P = window.__csPark; return (P && P.uid && P.uid()) || ""; } catch (e) { return ""; } };
   const sndOn = () => S.snd !== false && !document.documentElement.classList.contains("cs-calm");
