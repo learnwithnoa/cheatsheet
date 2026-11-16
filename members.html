@@ -119,7 +119,12 @@ td.act{white-space:nowrap;text-align:right}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 .brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px}.kj{font:700 14px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em}
-.mtabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.mtabs .seg{font-weight:800}.mt-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#E5533D;color:#fff;font:800 11px var(--body);margin-left:4px}
+.mtabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.mtabs .seg{font-weight:800}.mt-n.cnt{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.news-c{font:800 12px var(--body);background:var(--surface-2);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;vertical-align:3px}
+.news-list li.seen{opacity:.72}
+#undoBar{position:fixed;left:50%;bottom:22px;transform:translate(-50%,140%);display:flex;gap:14px;align-items:center;padding:10px 12px 10px 18px;border-radius:999px;background:#1f2937;color:#fff;font:700 14px var(--body);box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:99;transition:transform .2s;max-width:calc(100vw - 32px)}
+#undoBar.on{transform:translate(-50%,0)}#undoBar button{background:#FACC15;color:#1f2937;border:0;border-radius:999px;padding:6px 14px;font:800 13.5px var(--body);cursor:pointer}
+.mt-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#E5533D;color:#fff;font:800 11px var(--body);margin-left:4px}
 .mt-empty{padding:18px 4px}
 .stoic{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:9px 14px;margin:6px 0 10px;border-radius:12px;background:linear-gradient(90deg,color-mix(in srgb,#C9A26B 22%,var(--surface,#fff)),var(--surface,#fff));border:1px solid color-mix(in srgb,#C9A26B 45%,var(--line,#ddd));font-size:14px}
 .stoic .st-k{font:700 11px var(--mono,monospace);letter-spacing:.05em;text-transform:uppercase;color:#A07A3C}.stoic .st-t{color:var(--muted);font-size:13px}
@@ -285,6 +290,13 @@ async function dmWelcomed() {
     if (more) { localStorage.setItem("cs-kudos-sent", JSON.stringify(m)); saveTPref("t-kudos-sent", m); try { renderNews(); } catch (e) {} }
   } catch (e) { console.warn("welcomed", e); }
 }
+function undoBar(msg, undo) {
+  let b = document.getElementById("undoBar"); if (!b) { b = document.createElement("div"); b.id = "undoBar"; document.body.appendChild(b); }
+  b.innerHTML = `<span>${esc(msg)}</span><button type="button">Undo</button>`; b.classList.add("on"); clearTimeout(b._t);
+  b.querySelector("button").onclick = () => { b.classList.remove("on"); undo(); toast("Undone"); };
+  b._t = setTimeout(() => b.classList.remove("on"), 7000);
+}
+const saveMetaNow = () => setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }).catch(e => console.warn(e));
 function saveTPref(id, val) { if (!tUid) return; setDoc(doc(db, "users", tUid, "data", id), { json: JSON.stringify(val), deleted: false, at: serverTimestamp() }).catch(e => console.warn("save pref", e)); }
 async function load() {
   $("summary").textContent = "Loading…"; $("loadErr").hidden = true;
@@ -495,49 +507,58 @@ document.addEventListener("change", async e => { const sl = e.target.closest("[d
 let mTab = null; try { mTab = sessionStorage.getItem("cs-m-tab"); } catch (e) {}
 const cntOf = id => { const b = $(id); if (!b || b.hidden) return 0; const n = b.querySelector(".news-n"); return n ? (parseInt(n.textContent, 10) || 0) : 0; };
 function renderTabs() {
-  const todo = cntOf("news") + cntOf("tips") + cntOf("linkBox"), T = [["todo", "📥 To do", todo], ["students", "👥 Hibi members", students.length], ["club", "🌼 Club members", cntOf("clubBox")], ["ideas", "🧱 Ideas to build", cntOf("ideas")], ["usage", "📊 Usage", 0]];
+  const todo = cntOf("news") + cntOf("tips") + cntOf("linkBox"), T = [["todo", "📥 To do", todo], ["students", "👥 Hibi members", students.length, 1], ["club", "🌼 Club members", cntOf("clubBox"), 1], ["ideas", "🧱 Ideas to build", cntOf("ideas")], ["usage", "📊 Usage", 0]];
   if (!mTab) mTab = todo ? "todo" : "students";
-  $("mTabs").innerHTML = T.map(([k, l, n]) => `<button type="button" class="seg" data-mtab="${k}" aria-pressed="${mTab === k}">${l}${n ? ` <span class="mt-n">${n}</span>` : ""}</button>`).join("");
+  $("mTabs").innerHTML = T.map(([k, l, n, plain]) => `<button type="button" class="seg" data-mtab="${k}" aria-pressed="${mTab === k}">${l}${n ? ` <span class="mt-n${plain ? " cnt" : ""}">${n}</span>` : ""}</button>`).join("");
   document.querySelectorAll("[data-pane]").forEach(p => p.hidden = p.dataset.pane !== mTab);
-  const te = $("todoEmpty"); if (te) te.hidden = !!todo;
+  const te = $("todoEmpty"); if (te) te.hidden = !!todo || ["news", "tips", "linkBox"].some(id => $(id) && !$(id).hidden);
   document.querySelectorAll("[data-pane]").forEach(p => { if (p.dataset.pane === "todo" || p.dataset.pane === "students") return; let e = p.querySelector(".pane-empty"); const empty = ![...p.querySelectorAll(".news")].some(n => !n.hidden && n.textContent.trim()); if (empty && !e) { e = document.createElement("p"); e.className = "muted pane-empty"; e.style.cssText = "padding:18px 4px"; e.textContent = { club: "Nothing new from the club right now.", ideas: "No ideas waiting. The nightly wrap-up adds new ones on weeknights.", usage: "No usage data yet." }[p.dataset.pane] || "Nothing here right now."; p.appendChild(e); } if (e) e.hidden = !empty; });
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-mtab]"); if (!b) return; mTab = b.dataset.mtab; try { sessionStorage.setItem("cs-m-tab", mTab); } catch (er) {} renderTabs(); });
 function renderTips() {
   const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-12).reverse();
   box.hidden = !recs.length; if (!recs.length) return;
-  box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips <span class="news-n" style="background:#7348D8">${recs.length}</span></h2></div>
+  const unseen = recs.filter(r => !r.seen).length;
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips ${unseen ? `<span class="news-n" style="background:#7348D8">${unseen} new</span>` : `<span class="news-c">${recs.length}</span>`}</h2>${unseen ? `<button type="button" class="kd-btn" data-tipseen="1">Mark all as seen</button>` : ""}</div>
     <p class="muted" style="margin:4px 0 8px">From your classes (the nightly wrap-up adds these every night): mistakes that keep coming up, and what could help. <b>⭐ Recommend it</b> shows it to the student under “Noa recommends”.</p>
     <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : r.pack ? `Word pack: ${PACK_T[r.pack] || r.pack}` : (PAGE_T[r.page] || r.title || r.page);
-      return `<li><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
+      return `<li${r.seen ? ' class="seen"' : ""}><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
         ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}" title="Sends them a note on Hibi with a link to it">⭐ Recommend it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
-        <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}">✓ Done</button></div></li>`; }).join("")}</ul>`;
+        <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}" title="Hide it (you can undo)">✕ Dismiss</button></div></li>`; }).join("")}</ul>`;
 }
 /* ideas for NEW grammar modules / word packs, collected by the nightly wrap-up from what keeps coming up in classes */
 function renderIdeas() {
   const box = $("ideas"); const all = ((hubMeta && hubMeta.ideas) || []).filter(x => x.status !== "no" && x.status !== "done");
   box.hidden = !all.length; if (!all.length) return;
   const ls = all.slice().sort((a, b) => (a.status === "yes") - (b.status === "yes") || (b.count || 1) - (a.count || 1) || (b.last || "").localeCompare(a.last || ""));
-  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🧱 Ideas to build <span class="news-n" style="background:#12935C">${all.filter(x => x.status !== "yes").length}</span></h2></div>
+  const seenAt = (hubMeta && hubMeta.ideasSeen) || 0, isNew = x => x.status !== "yes" && (Date.parse(x.last || x.first || "") || Date.now()) > seenAt;
+  const nNew = all.filter(isNew).length;
+  box.innerHTML = `<div class="news-top"><h2 style="margin:0">🧱 Ideas to build ${nNew ? `<span class="news-n" style="background:#12935C">${nNew} new</span>` : `<span class="news-c">${all.filter(x => x.status !== "yes").length}</span>`}</h2>${nNew ? `<button type="button" class="kd-btn" data-ideaseen="1">Mark all as seen</button>` : ""}</div>
     <p class="muted" style="margin:4px 0 8px">Grammar modules and word packs Hibi doesn't have yet, from what keeps coming up in your classes. Tap <b>Build it</b> and ask Claude to make it.</p>
-    <ul class="news-list">${ls.map(x => `<li><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${x.kind === "words" ? "🗂️" : "🧩"}</span>
+    <ul class="news-list">${ls.map(x => `<li${isNew(x) ? "" : ' class="seen"'}><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${x.kind === "words" ? "🗂️" : "🧩"}</span>
       <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${x.kind === "words" ? "word pack" : "grammar module"} · came up ${x.count || 1}×</span>${x.why ? `<br><span style="font-size:13.5px">${esc(x.why)}</span>` : ""}${(x.examples || []).length ? `<br><span class="muted" style="font-size:13px">“${x.examples.slice(-2).map(esc).join("” · “")}”</span>` : ""}${(x.students || []).length ? `<br><span class="muted" style="font-size:12.5px">${x.students.map(esc).join(", ")}</span>` : ""}</span>
       ${x.status === "yes" ? `<span class="kc k-teal" style="color:var(--c-teal)">✓ Asked to build</span><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="new">Undo</button>` : `<button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="yes">🛠 Build it</button><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="no">✕ Not now</button>`}</div></li>`).join("")}</ul>`;
 }
 document.addEventListener("click", async e => { const b = e.target.closest("[data-idea]"); if (!b) return;
   try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
   const x = ((hubMeta && hubMeta.ideas) || []).find(i => i.id === b.dataset.idea); if (!x) return;
-  x.status = b.dataset.st; renderIdeas(); saveTPref("t-hubmeta", hubMeta);
-  toast(x.status === "yes" ? "Noted ✓ Ask Claude to build “" + x.title + "”" : x.status === "no" ? "Hidden. It won't come back." : "Undone"); });
-async function tipDone(id) { const r = hubMeta.recs.find(x => x.id === id); if (r) r.done = Date.now(); renderTips(); try { await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn(e); } }
+  const prev = x.status || "new"; x.status = b.dataset.st; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta);
+  if (x.status === "no") undoBar("Idea dismissed", () => { x.status = prev; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta); });
+  else toast(x.status === "yes" ? "Noted ✓ Ask Claude to build “" + x.title + "”" : "Undone"); });
+document.addEventListener("click", e => { if (!e.target.closest("[data-ideaseen]")) return; const before = hubMeta.ideasSeen || 0; hubMeta.ideasSeen = Date.now(); renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta);
+  undoBar("Ideas marked as seen", () => { hubMeta.ideasSeen = before; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta); }); });
+document.addEventListener("click", e => { if (!e.target.closest("[data-tipseen]")) return; const now = Date.now(); ((hubMeta && hubMeta.recs) || []).forEach(r => { if (!r.done && !r.seen) r.seen = now; }); renderTips(); renderTabs(); saveMetaNow();
+  undoBar("Tips marked as seen", () => { hubMeta.recs.forEach(r => { if (r.seen === now) delete r.seen; }); renderTips(); renderTabs(); saveMetaNow(); }); });
+async function tipDone(id, quiet) { const r = hubMeta.recs.find(x => x.id === id); if (r) r.done = Date.now(); renderTips(); renderTabs();
+  if (!quiet && r) undoBar("Tip dismissed", () => { delete r.done; renderTips(); renderTabs(); saveMetaNow(); }); try { await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn(e); } }
 document.addEventListener("click", async e => {
   const a = e.target.closest("[data-tiprec],[data-tipmsg],[data-tipdone]"); if (!a) return;
   const id = a.dataset.tiprec || a.dataset.tipmsg || a.dataset.tipdone, r = ((hubMeta && hubMeta.recs) || []).find(x => x.id === id); if (!r) return;
   if (a.dataset.tipdone) { tipDone(id); return; }
   const s = tipStudent(r); if (!s) return;
   if (a.dataset.tiprec) { const v = Object.assign({}, s.modrec, { [r.mod]: +r.stage });
-    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; toast("⭐ Recommended to " + s.name.split(" ")[0]); tipDone(id); } catch (err) { toast("Couldn't save. Try again."); } return; }
-  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: ${r.pack ? `the “${PACK_T[r.pack] || r.title}” word pack in Hibi (Practice → Word packs)` : `the “${PAGE_T[r.page] || r.title}” page in Hibi`}. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id); }
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; toast("⭐ Recommended to " + s.name.split(" ")[0]); tipDone(id, true); } catch (err) { toast("Couldn't save. Try again."); } return; }
+  if (a.dataset.tipmsg) { const f = s.name.split(" ")[0]; const ok = await sendMsg(s.uid, `Hi ${f}! 💡 Something to practice this week: ${r.pack ? `the “${PACK_T[r.pack] || r.title}” word pack in Hibi (Practice → Word packs)` : `the “${PAGE_T[r.page] || r.title}” page in Hibi`}. It's exactly what we saw in class. – Noa`, "note"); if (ok) tipDone(id, true); }
 });
 function renderNews() {
   const box = $("news"), ev = newsEvents(), seen = +(localStorage.getItem(NEWS_KEY) || 0), fresh = ev.filter(e => e.t > seen).length;

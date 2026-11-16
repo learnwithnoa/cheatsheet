@@ -3304,7 +3304,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
     </div>`;
     /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
-    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" data-go="${t.mod?"quiz":esc(t.page)}">${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" ${t.mod?`data-gomod="${esc(t.mod)}" data-tipstage="${esc(String(t.stage||""))}"`:`data-go="${esc(t.page)}"`}>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -10773,7 +10773,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116095052"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116100954"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11214,6 +11214,14 @@ window.__csBusy = function(){
   }
   new MutationObserver(add).observe(document.documentElement,{childList:true,subtree:true}); setTimeout(add,2000);
 })();
+</script>
+<script>
+/* step141: tapping a recommended stage saves it as Noa's recommendation, so the module opens it right away */
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]"); if(!b) return;
+  if(window.__csPreview||(window.__csFire&&window.__csFire.readOnly&&window.__csFire.readOnly())) return;   /* View as never changes anything */
+  try{ const k="ncs-modrec", r=JSON.parse(localStorage.getItem(k)||"{}")||{}, st=parseInt(b.dataset.tipstage,10);
+    r[b.dataset.gomod]= st>0 ? st : "all"; localStorage.setItem(k,JSON.stringify(r)); if(window.__csOnSet) window.__csOnSet(k); }catch(er){}
+},true);
 </script>
 
 <script type="module">

@@ -266,6 +266,9 @@ tr.arch td{opacity:.85}
 .eng{display:inline-flex;align-items:center;gap:6px;font:800 13px var(--body);padding:4px 10px;border-radius:999px}
 .sortrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
 .nextc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.al-x{opacity:.6}.al-x:hover{opacity:1}
+#undoBar{position:fixed;left:50%;bottom:22px;transform:translate(-50%,140%);display:flex;gap:14px;align-items:center;padding:10px 12px 10px 18px;border-radius:999px;background:#1f2937;color:#fff;font:700 14px var(--body);box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:99;transition:transform .2s;max-width:calc(100vw - 32px)}
+#undoBar.on{transform:translate(-50%,0)}#undoBar button{background:#FACC15;color:#1f2937;border:0;border-radius:999px;padding:6px 14px;font:800 13.5px var(--body);cursor:pointer}
 .nm-wrap{position:relative;display:inline-block;padding-right:2px}
 .eng-pill{display:inline-block;vertical-align:super;margin-left:4px;font:800 10.5px var(--body);letter-spacing:.02em;padding:2px 7px;border-radius:999px;line-height:1.3;white-space:nowrap;cursor:help;position:relative;top:-6px}
 .eng-pill.k-green{background:color-mix(in srgb,#22C55E 22%,var(--surface));color:color-mix(in srgb,#22C55E 70%,var(--ink))}
@@ -748,11 +751,19 @@ function reminderFor(s, a) {
   else return null;
   return GM(s.email, su, b);
 }
+/* small "Undo" bar at the bottom of the screen */
+function undoBar(msg, undo) {
+  let b = document.getElementById("undoBar"); if (!b) { b = document.createElement("div"); b.id = "undoBar"; document.body.appendChild(b); }
+  b.innerHTML = `<span>${esc(msg)}</span><button type="button">Undo</button>`; b.classList.add("on"); clearTimeout(b._t);
+  b.querySelector("button").onclick = () => { b.classList.remove("on"); undo(); toast("Undone"); };
+  b._t = setTimeout(() => b.classList.remove("on"), 7000);
+}
 function renderAlerts() {
-  const al = S.flatMap(alertsFor).sort((a, b) => ({ bad: 0, warn: 1, info: 2 }[a.lvl] - { bad: 0, warn: 1, info: 2 }[b.lvl]));
+  const dis = (meta && meta.dismissed) || {}, keyOf = a => a.id + "|" + a.t;
+  const al = S.flatMap(alertsFor).filter(a => !dis[keyOf(a)]).sort((a, b) => ({ bad: 0, warn: 1, info: 2 }[a.lvl] - { bad: 0, warn: 1, info: 2 }[b.lvl]));
   const box = $("alertsBox"); box.hidden = !al.length;
   const K = { bad: "var(--c-red)", warn: "var(--c-amber)", info: "var(--c-sky)" };
-  box.innerHTML = `<h2>🔔 Heads-up <span class="news-n">${al.length}</span></h2><ul class="alerts">${al.map(a => `<li style="--k:${K[a.lvl]}"><span class="ai">${a.i}</span><span>${esc(a.t)}</span>${(() => { const s = S.find(x => x.id === a.id), u = s && reminderFor(s, a); return u ? `<a class="ib" style="margin-left:auto" target="_blank" rel="noopener" href="${u}" title="Opens a ready-to-send email in Gmail">✉️ Remind</a>` : ""; })()}<button type="button" class="ib" data-open="${a.id}" ${(() => { const s = S.find(x => x.id === a.id); return s && reminderFor(s, a) ? 'style="margin-left:0"' : ""; })()}>Open</button></li>`).join("")}</ul>`;
+  box.innerHTML = `<h2>🔔 Heads-up <span class="news-n">${al.length}</span></h2><ul class="alerts">${al.map(a => `<li style="--k:${K[a.lvl]}"><span class="ai">${a.i}</span><span>${esc(a.t)}</span>${(() => { const s = S.find(x => x.id === a.id), u = s && reminderFor(s, a); return u ? `<a class="ib" style="margin-left:auto" target="_blank" rel="noopener" href="${u}" title="Opens a ready-to-send email in Gmail">✉️ Remind</a>` : ""; })()}<button type="button" class="ib" data-open="${a.id}" ${(() => { const s = S.find(x => x.id === a.id); return s && reminderFor(s, a) ? 'style="margin-left:0"' : ""; })()}>Open</button><button type="button" class="ib al-x" data-aldis="${esc(keyOf(a))}" title="Dismiss (you can undo)">✕</button></li>`).join("")}</ul>`;
 }
 function renderMoney() {
   const e = earned(); const ms = []; for (let i = 5; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); ms.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0")); }
@@ -1114,6 +1125,10 @@ document.addEventListener("click", e => {
   const cp = t.closest("[data-copy]"); if (cp) { navigator.clipboard && navigator.clipboard.writeText(cp.dataset.copy).then(() => toast("Copied " + cp.dataset.copy)).catch(() => {}); return; }
   const fb = t.closest("button[data-f]"); if (fb) { filt = fb.dataset.f; renderFilters(); renderList(); return; }
   const sb = t.closest(".stu"); if (sb) { tab = "classes"; openStu(sb.dataset.s); return; }
+  const ad = t.closest("[data-aldis]"); if (ad) { const k = ad.dataset.aldis; meta = meta || {}; meta.dismissed = meta.dismissed || {}; meta.dismissed[k] = Date.now();
+    /* forget dismissals older than 60 days so the list doesn't grow forever */
+    Object.keys(meta.dismissed).forEach(x => { if (Date.now() - meta.dismissed[x] > 60 * 864e5) delete meta.dismissed[x]; });
+    saveMeta(); renderAlerts(); undoBar("Heads-up dismissed", () => { delete meta.dismissed[k]; saveMeta(); renderAlerts(); }); return; }
   const nx = t.closest("[data-nxdel]"); if (nx) { e.stopPropagation(); const [st, who] = nx.dataset.nxdel.split("|");
     if (!nx.dataset.sure) { nx.dataset.sure = "1"; nx.textContent = "Remove?"; nx.style.opacity = 1; setTimeout(() => { if (nx.isConnected) { delete nx.dataset.sure; nx.textContent = "✕"; nx.style.opacity = ""; } }, 4000); return; }
     meta.upcoming = (meta.upcoming || []).filter(u => !(u.start === st && (u.student || u.name || "") === who)); saveMeta(); renderNext(); renderRecent(); toast("Removed from Coming up"); return; }
