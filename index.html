@@ -3502,7 +3502,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const pick=e.target.closest("[data-va]"); if(pick){ const k=pick.dataset.va;
       if(k==="club") preview("a club member",null,"club"); else if(k==="private") preview("a private student (example)",SAMPLE,"private"); else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE,"both");
       else if(k.startsWith("hub:")){ const x=vaData.priv.find(x=>x.key===k); if(x){ const lb=x.view.name+(x.both?" (private + club)":" (private)"); if(x.uid) realView(lb,x.view,x.both?"both":"private",x.uid,pick); else preview(lb+" · not on Hibi yet, so no words or notes",x.view,x.both?"both":"private"); } }
-      else { const x=vaData.club.find(x=>x.key===k); if(x) realView(x.name+" (club)",null,"club",x.uid,pick); }
+      else { const x=vaData.club.find(x=>x.key===k); if(x) realView(x.name+(x.inClub===false?" (not in the club yet)":" (club)"),null,"club",x.uid,pick); }
       return; }
     const op=e.target.closest("#vaOpen"); if(op){ const L=document.getElementById("vaList"); L.hidden=!L.hidden; op.setAttribute("aria-expanded",L.hidden?"false":"true"); if(L.hidden) return;
       L.innerHTML=`<input type="search" id="vaQ" placeholder="Search a name…" autocomplete="off"><div class="va-res"><p class="muted">Loading everyone…</p></div>`;
@@ -3630,7 +3630,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   function paint(){
     const b=box(); if(!b||!data) return;
     const seen=getSeen(), wk=Date.now()-14*864e5, since=Math.max(seen,wk);
-    const KIND={private:["private student","tn-p"],both:["private + club","tn-b"],club:["club member","tn-c"],new:["private, not linked yet","tn-n"]};
+    const KIND={private:["private student","tn-p"],both:["private + club","tn-b"],club:["club member","tn-c"],new:["private, not linked yet","tn-n"],hibi:["Hibi only · not in the club","tn-n"]};
     const all=data.acc.filter(a=>a.first&&a.first>Date.now()-7*864e5).sort((a,b)=>b.first-a.first);
     const rdJ=getRead(), isNewJ=a=>a.first>since&&!rdJ.includes("j:"+a.uid);
     const joins=all.filter(isNewJ), older=all.filter(a=>!isNewJ(a));
@@ -3659,7 +3659,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const bell=`<button type="button" class="tn-bell theme-btn${cnt?" has":""}" data-tn="open" aria-expanded="${open}" title="Notifications (only you see this)">🔔<span class="tn-bl">Notifications</span>${cnt?`<span class="tn-num">${cnt}</span>`:""}</button>`;
     if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
     b.className="tn-wrap open";
-    const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
+    const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both"||a.kind==="hibi", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
       return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`${(data.welc||{})[a.uid+"-join"]?`<span class="tn-hint tn-done">✓ Welcomed · open the chat</span>`:`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`}`:""}${old?"":`<button type="button" class="tn-rd" data-tnrd="j:${esc(a.uid)}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button>`}</li>`; };
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
       ${mlAll.length?`<h4>📧 Emails Hibi sent</h4><ul>${mlAll.slice(0,8).map(m=>`<li${m.at>since?"":' class="tn-read"'}>📧 <b>${esc(m.name||"Someone")}</b> ${m.why==="test email"?"got the test email":`got an email: unread message from ${esc(m.from||"someone")}`} <span class="muted">· ${ago(m.at)}</span>${m.uid&&m.why!=="test email"?` <button type="button" class="tn-go" data-dmto="${esc(m.uid)}" data-dmname="${esc(m.name||"")}">Chat →</button>`:""}</li>`).join("")}</ul>`:""}
@@ -10846,7 +10846,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116132032"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116134247"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11895,7 +11895,7 @@ window.__csTeach = {
     const ms = t => t && t.toMillis ? t.toMillis() : 0, out = [];
     (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", email: p.email || "", first: ms(p.firstSeen), last: ms(p.lastSeen),
-        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === false ? "new" : "club") }); });
+        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.club === false ? "new" : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
     return out;
   },
   async send(uid, text, go) { await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: String(text).slice(0, 1000), kind: go ? "rec:" + go : "rec", at: serverTimestamp() }); }
@@ -11920,7 +11920,7 @@ window.__csViewAs = {
     } catch (e) { console.warn("view as: students", e); }
     const club = [];
     try { (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {};
-      if (d.id === user.uid || r.private || r.hub || r.hidden) return; club.push({ key: "uid:" + d.id, uid: d.id, name: p.name || p.email || "(no name)" }); }); } catch (e) {}
+      if (d.id === user.uid || r.private || r.hub || r.hidden) return; club.push({ key: "uid:" + d.id, uid: d.id, name: p.name || p.email || "(no name)", inClub: r.club === true || (meta.clubUids || []).includes(d.id) }); }); } catch (e) {}
     const by = (a, b) => a.localeCompare(b);
     return { priv: priv.sort((a, b) => by(a.view.name, b.view.name)), club: club.sort((a, b) => by(a.name, b.name)) };
   },

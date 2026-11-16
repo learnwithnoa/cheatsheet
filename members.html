@@ -395,7 +395,7 @@ function renderList() {
   shown.sort(srt === "za" ? (a, b) => nm(b, a) : srt === "seen" ? (a, b) => b.lastSeen - a.lastSeen || nm(a, b) : srt === "new" ? (a, b) => b.firstSeen - a.firstSeen || nm(a, b) : srt === "words" ? (a, b) => b.words.length - a.words.length || nm(a, b) : nm);
   $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
       <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
-      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
+      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both", none: "⚪ Not in the club yet" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
     : `<p class="muted">${students.length ? "No match." : "No one has signed in yet."}</p>`;
 }
 $("q").oninput = renderList;
@@ -707,7 +707,7 @@ async function saveRole(s, patch) {
   try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved"); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
-const roleType = r => r.private ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : "club");
+const roleType = r => r.private ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : r.club === true ? "club" : "none");   /* "none": signed up, not in the club yet (pick Club to give access) */
 let hubList = [];
 async function loadHubList() { if (!tUid) return; try { const ds = await getDocs(collection(db, "users", tUid, "data")); hubList = []; ds.forEach(x => { if (!x.id.startsWith("t-hub-")) return; const v = x.data(); if (v.deleted) return; try { const j = JSON.parse(v.json); hubList.push(j); } catch (e) {} }); hubList.sort((a, b) => a.name.localeCompare(b.name)); } catch (e) { console.warn("hub list", e); } }
 const norm = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g, "");

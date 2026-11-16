@@ -502,7 +502,7 @@ window.__csTeach = {
     const ms = t => t && t.toMillis ? t.toMillis() : 0, out = [];
     (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", email: p.email || "", first: ms(p.firstSeen), last: ms(p.lastSeen),
-        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === false ? "new" : "club") }); });
+        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.club === false ? "new" : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
     return out;
   },
   async send(uid, text, go) { await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: String(text).slice(0, 1000), kind: go ? "rec:" + go : "rec", at: serverTimestamp() }); }
@@ -527,7 +527,7 @@ window.__csViewAs = {
     } catch (e) { console.warn("view as: students", e); }
     const club = [];
     try { (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {};
-      if (d.id === user.uid || r.private || r.hub || r.hidden) return; club.push({ key: "uid:" + d.id, uid: d.id, name: p.name || p.email || "(no name)" }); }); } catch (e) {}
+      if (d.id === user.uid || r.private || r.hub || r.hidden) return; club.push({ key: "uid:" + d.id, uid: d.id, name: p.name || p.email || "(no name)", inClub: r.club === true || (meta.clubUids || []).includes(d.id) }); }); } catch (e) {}
     const by = (a, b) => a.localeCompare(b);
     return { priv: priv.sort((a, b) => by(a.view.name, b.view.name)), club: club.sort((a, b) => by(a.name, b.name)) };
   },
