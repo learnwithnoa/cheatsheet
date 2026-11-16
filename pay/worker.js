@@ -142,11 +142,19 @@ async function saveBill(env, uid, b) {
 }
 
 // the member's monthly price: a legacy price Noa set (t-hubmeta.clubPrices, by email) or the standard one
-async function priceFor(env, email) {
+// legacy prices: a price Noa typed on the Members page (t-hubmeta.clubPrices, by email) wins;
+// otherwise their Skool price from the club list (US$24 → $24.000, or US$24 on PayPal); otherwise the standard price
+const nn = (x) => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+async function legacyPrice(env, email, name) {
   const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
-  const p = (meta.clubPrices || {})[normEmail(email)];
-  return Number(p && (p.clp || p)) || STD_MONTH;
+  const o = (meta.clubPrices || {})[normEmail(email)];
+  if (o) return typeof o === "number" ? { clp: o } : o;
+  const ms = (meta.club && meta.club.members) || [];
+  const m = ms.find((x) => x.email && normEmail(x.email) === normEmail(email)) || (nn(name) ? ms.find((x) => nn(x.name) === nn(name)) : null);
+  if (m && Number(m.price) > 0 && m.per !== "year") return { clp: Number(m.price) * 1000, usd: Number(m.price) };
+  return null;
 }
+async function priceFor(env, email, name) { const p = await legacyPrice(env, email, name); return Number(p && p.clp) || STD_MONTH; }
 
 // ---------- PayPal (US dollars, for members outside Chile) ----------
 const STD_MONTH_USD = 35, STD_YEAR_USD = 210;
@@ -165,11 +173,7 @@ async function pp(env, method, path, body) {
   if (!r.ok) { const e = new Error("PayPal " + path.split("?")[0] + ": " + (d.message || d.name || r.status)); e.status = r.status; throw e; }
   return d;
 }
-async function usdFor(env, email) {
-  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
-  const p = (meta.clubPrices || {})[normEmail(email)];
-  return Number(p && p.usd) || STD_MONTH_USD;
-}
+async function usdFor(env, email, name) { const p = await legacyPrice(env, email, name); return Number(p && p.usd) || STD_MONTH_USD; }
 async function ppPlan(env, kind, usd) {           // PayPal makes its own plan ids: remember them in billingConfig/paypal-<env>
   const cfgPath = `billingConfig/paypal-${ppEnv(env)}`, cfg = plain(await fs(env, "GET", cfgPath)) || {};
   const key = `plan_${kind}_${String(usd).replace(".", "_")}`;
@@ -185,7 +189,7 @@ async function ppPlan(env, kind, usd) {           // PayPal makes its own plan i
 async function ppSubscribe(env, req, url, me, body) {
   if (!env.PAYPAL_CLIENT_ID) return json({ error: "PayPal isn't set up yet." }, 400, req);
   const kind = body.plan === "yearly" ? "y" : "m";
-  const usd = body.plan === "test" && TESTERS.includes(me.uid) ? 1 : kind === "y" ? STD_YEAR_USD : await usdFor(env, me.email);
+  const usd = body.plan === "test" && TESTERS.includes(me.uid) ? 1 : kind === "y" ? STD_YEAR_USD : await usdFor(env, me.email, me.name);
   const b = await getBill(env, me.uid);
   if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "paypal" && b.ppEnv === ppEnv(env)) || (b.provider !== "paypal" && b.subscriptionId && sameEnv(env, b)))) return json({ error: "You already have an active membership." }, 400, req);
   const plan = await ppPlan(env, kind, usd);
@@ -238,7 +242,7 @@ async function mpSubscribe(env, req, url, me, body) {
   if (!env.MP_ACCESS_TOKEN) return json({ error: "Payments aren't set up yet." }, 400, req);
   const test = body.plan === "test" && TESTERS.includes(me.uid);
   const kind = body.plan === "yearly" ? "y" : "m";
-  const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email);
+  const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email, me.name);
   const b = await getBill(env, me.uid);
   if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "mp" && b.mpEnv === mpEnv(env)) || (b.provider === "paypal" && b.ppEnv === ppEnv(env)))) return json({ error: "You already have an active membership." }, 400, req);
   const payer = normEmail(body.payerEmail || me.email);
@@ -288,7 +292,7 @@ async function subscribe(env, req, url) {
   const test = body.plan === "test";
   if (test && !TESTERS.includes(me.uid)) return json({ error: "Not available." }, 403, req);
   const kind = body.plan === "yearly" ? "y" : "m";
-  const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email);
+  const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email, me.name);
   const b = await getBill(env, me.uid);
   if (["active", "grace", "canceling"].includes(b.status) && b.subscriptionId && sameEnv(env, b)) return json({ error: "You already have an active membership." }, 400, req);
   let customerId = sameEnv(env, b) ? b.customerId : null;

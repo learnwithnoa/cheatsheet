@@ -119,7 +119,9 @@ td.act{white-space:nowrap;text-align:right}
 .seg[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 16%,var(--surface))}
 .pstbl{border-collapse:collapse;margin-top:8px;width:100%;max-width:560px}.pstbl td{padding:4px 8px 4px 0;font-size:14px;vertical-align:middle}.pstars{color:#F5B301;letter-spacing:1px}.pstars span{color:#ccc}
 .brand-row{font-style:normal;display:flex;align-items:baseline;gap:7px}.kj{font:700 14px "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--muted);letter-spacing:.06em}
-.mtabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.mtabs .seg{font-weight:800}.mt-n.cnt{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.mtabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.mtabs .seg{font-weight:800}.cl-price{width:130px;font:700 13px var(--body);padding:5px 8px;border-radius:9px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink)}
+.cl-price::placeholder{color:var(--muted);font-weight:600}
+.mt-n.cnt{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .news-c{font:800 12px var(--body);background:var(--surface-2);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;vertical-align:3px}
 .news-list li.seen{opacity:.72}
 #undoBar{position:fixed;left:50%;bottom:22px;transform:translate(-50%,140%);display:flex;gap:14px;align-items:center;padding:10px 12px 10px 18px;border-radius:999px;background:#1f2937;color:#fff;font:700 14px var(--body);box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:99;transition:transform .2s;max-width:calc(100vw - 32px)}
@@ -492,10 +494,21 @@ function renderClub() {
     ${clubOpen ? `<div class="cl-filters"><button type="button" class="seg" data-clf="all" aria-pressed="${clubF === "all"}">Everyone</button><button type="button" class="seg" data-clf="hibi" aria-pressed="${clubF === "hibi"}">On Hibi</button>
       <select class="cl-sel" data-clfs aria-label="Filter by status"><option value="">${stF ? "All statuses" : "Status…"}</option>${CST.filter(([k]) => cnt(k)).map(([k, l]) => `<option value="${k}" ${stF === k ? "selected" : ""}>${l} (${cnt(k)})</option>`).join("")}</select>
       <span class="muted small cl-n">${shown.length} shown</span></div>
-    <div style="overflow-x:auto"><table class="club-t"><thead><tr><th>Name</th><th>Plan</th><th>Joined</th><th>Renews</th><th>On Hibi</th><th>Status</th></tr></thead><tbody>${shown.map(m => { const i = C.members.indexOf(m), h = hib(m);
-      return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${esc(m.renew || "")}</td><td class="nw">${h ? `✓ <span class="muted small">${h.lastSeen ? ago(h.lastSeen) : ""}</span>` : `<span class="muted">—</span>`}</td>
+    <div style="overflow-x:auto"><table class="club-t"><thead><tr><th>Name</th><th>Plan</th><th>Joined</th><th>Renews</th><th title="What Hibi charges them each month (Mercado Pago in pesos, or US$ on PayPal). Grey = taken from their Skool price; type to change it.">Hibi price</th><th>On Hibi</th><th>Status</th></tr></thead><tbody>${shown.map(m => { const i = C.members.indexOf(m), h = hib(m);
+      return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${esc(m.renew || "")}</td><td class="nw">${(() => { const em = String(m.email || (h && h.email) || "").toLowerCase(), ov = ((hubMeta && hubMeta.clubPrices) || {})[em];
+        const der = m.price && m.per !== "year" ? "$" + (m.price * 1000).toLocaleString("es-CL") + (m.price ? " · US$" + m.price : "") : "$35.000";
+        const fmt = o => typeof o === "number" ? "$" + o.toLocaleString("es-CL") : o.clp ? "$" + Number(o.clp).toLocaleString("es-CL") + (o.usd ? " · US$" + o.usd : "") : "US$" + o.usd;
+        return em ? `<input class="cl-price" data-clprice="${esc(em)}" value="${ov ? esc(fmt(ov)) : ""}" placeholder="${esc(der)}" aria-label="Hibi price for ${esc(m.name)}">` : `<span class="muted small" title="Needs their email or Hibi account">—</span>`; })()}</td><td class="nw">${h ? `✓ <span class="muted small">${h.lastSeen ? ago(h.lastSeen) : ""}</span>` : `<span class="muted">—</span>`}</td>
         <td><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`; }).join("")}</tbody></table></div>` : ""}`;
 }
+/* Hibi price: "24000" or "$24.000" = pesos (Mercado Pago), "US$21" = dollars (PayPal), both: "$24.000 · US$24"; empty = their Skool price */
+document.addEventListener("change", e => { const inp = e.target.closest("[data-clprice]"); if (!inp) return;
+  const em = inp.dataset.clprice, v = inp.value.trim(); hubMeta.clubPrices = hubMeta.clubPrices || {}; const before = hubMeta.clubPrices[em];
+  if (!v) delete hubMeta.clubPrices[em];
+  else { const usd = (v.match(/us\$?\s*([\d.,]+)/i) || [])[1], clpPart = v.replace(/us\$?\s*[\d.,]+/ig, ""), clp = (clpPart.match(/[\d.]{3,}/) || [])[0];
+    const o = {}; if (clp) o.clp = +clp.replace(/\./g, ""); if (usd) o.usd = +usd.replace(",", ".");
+    if (!o.clp && !o.usd) { toast("Write it like 24000 or US$21"); return; } hubMeta.clubPrices[em] = o; }
+  saveTPref("t-hubmeta", hubMeta); renderClub(); undoBar("Price saved", () => { if (before) hubMeta.clubPrices[em] = before; else delete hubMeta.clubPrices[em]; saveTPref("t-hubmeta", hubMeta); renderClub(); }); });
 document.addEventListener("click", e => { if (e.target.id === "clubTog") { clubOpen = !clubOpen; renderClub(); return; } const f = e.target.closest("[data-clf]"); if (f) { clubF = f.dataset.clf; renderClub(); } });
 document.addEventListener("change", e => { const s = e.target.closest("[data-clfs]"); if (s) { clubF = s.value || "all"; renderClub(); } });
 document.addEventListener("change", async e => { const sl = e.target.closest("[data-clst]"); if (!sl) return;
