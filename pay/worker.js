@@ -189,7 +189,7 @@ const SKOOL_CANCELLED = "2026-11-16";
 const skoolEnd = (m) => (m && m.per !== "year" && m.renew ? parseRenew(m.renew, SKOOL_CANCELLED) : null);
 async function firstCharge(env, me) {
   const r = skoolEnd(await rosterFor(env, me)); if (!r) return null;
-  return r >= addDays(today(), 2) && r <= addDays(today(), 70) ? r : null;   // later than that, or already passed: charged today
+  return r >= addDays(today(), 1) && r <= addDays(today(), 70) ? r : null;   // later than that, or already passed: charged today
 }
 // nightly: Skool members whose Skool month ended more than 5 days ago and who didn't switch lose club access (not Hibi)
 async function skoolMoveCheck(env) {
