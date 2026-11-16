@@ -109,3 +109,13 @@ if '2026-1116-mailnotif' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 16: community count, polls in the post box
+s=open(p,encoding="utf-8").read()
+if '2026-1116-community' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1116-community", date:"November 16, 2026", title:"Community: see what's new", items:[
+    ["🔢","New posts counter","The <b>Community</b> tab shows how many posts and comments you haven't seen. They count as read as you scroll past them, or tap <b>Mark all as read</b>.",""],
+    ["📊","Polls in the post box","To start a poll, tap <b>📊 Poll</b> right in the box where you write a post.",""],
+    ["🎬","Library: Show less","After <b>Show more</b> in the Library, tap <b>Show less</b> to keep the list short.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
