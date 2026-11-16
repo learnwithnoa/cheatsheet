@@ -27,6 +27,8 @@ const addDays = (d, n) => { const x = new Date(d + "T12:00:00Z"); x.setUTCDate(x
 const normEmail = (e) => String(e || "").trim().toLowerCase();
 
 // ---------- Flow ----------
+const curEnv = (env) => (env.FLOW_ENV === "live" ? "live" : "sandbox");   // ids from sandbox Flow mean nothing to live Flow
+const sameEnv = (env, b) => (b.flowEnv || "sandbox") === curEnv(env);
 function flowBase(env) { return env.FLOW_ENV === "live" ? "https://www.flow.cl/api" : "https://sandbox.flow.cl/api"; }
 async function flowSign(env, params) {
   const keys = Object.keys(params).sort();
@@ -152,13 +154,13 @@ async function subscribe(env, req, url) {
   const kind = body.plan === "yearly" ? "y" : "m";
   const amount = kind === "y" ? STD_YEAR : await priceFor(env, me.email);
   const b = await getBill(env, me.uid);
-  if (["active", "grace", "canceling"].includes(b.status) && b.subscriptionId) return json({ error: "You already have an active membership." }, 400, req);
-  let customerId = b.customerId;
+  if (["active", "grace", "canceling"].includes(b.status) && b.subscriptionId && sameEnv(env, b)) return json({ error: "You already have an active membership." }, 400, req);
+  let customerId = sameEnv(env, b) ? b.customerId : null;
   if (!customerId) {
     const c = await flow(env, "POST", "/customer/create", { name: me.name || me.email, email: me.email, externalId: me.uid });
     customerId = c.customerId;
   }
-  await saveBill(env, me.uid, { customerId, email: me.email, name: me.name, pendingKind: kind, pendingAmount: amount, provider: "flow", status: b.status || "none" });
+  await saveBill(env, me.uid, { customerId, flowEnv: curEnv(env), email: me.email, name: me.name, pendingKind: kind, pendingAmount: amount, provider: "flow", status: sameEnv(env, b) ? (b.status || "none") : (b.status && b.status.startsWith("trial") ? b.status : "none") });
   const reg = await flow(env, "POST", "/customer/register", { customerId, url_return: url.origin + "/api/card-return" });
   return json({ url: reg.url + "?token=" + reg.token }, 200, req);
 }
@@ -191,7 +193,7 @@ async function cardReturn(env, req, url) {
 async function updateCard(env, req, url) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const b = await getBill(env, me.uid);
-  if (!b.customerId || !b.subscriptionId) return json({ error: "No membership found." }, 400, req);
+  if (!b.customerId || !b.subscriptionId || !sameEnv(env, b)) return json({ error: "No membership found." }, 400, req);
   await patch(env, `billing/${me.uid}`, { pendingKind: "card" });
   const reg = await flow(env, "POST", "/customer/register", { customerId: b.customerId, url_return: url.origin + "/api/card-return" });
   return json({ url: reg.url + "?token=" + reg.token }, 200, req);
@@ -256,7 +258,7 @@ async function startTrial(env, req) {
 async function cancel(env, req) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const b = await getBill(env, me.uid);
-  if (!b.subscriptionId) return json({ error: "No active membership found." }, 400, req);
+  if (!b.subscriptionId || !sameEnv(env, b)) return json({ error: "No active membership found." }, 400, req);
   await flow(env, "POST", "/subscription/cancel", { subscriptionId: b.subscriptionId, at_period_end: 1 });
   await saveBill(env, me.uid, { status: "canceling" });
   return json({ ok: true, paidThrough: b.paidThrough }, 200, req);
@@ -283,7 +285,7 @@ async function nightly(env) {
         }
         continue;
       }
-      if (!b.subscriptionId) continue;
+      if (!b.subscriptionId || !sameEnv(env, b)) continue;
       const sub = await flow(env, "GET", "/subscription/get", { subscriptionId: b.subscriptionId });
       const end = (sub.period_end || b.paidThrough || "").slice(0, 10);
       const unpaid = (sub.invoices || []).filter((i) => String(i.status) !== "1" && i.due_date && i.due_date.slice(0, 10) <= today());
