@@ -1,4 +1,4 @@
-Deploy 2026-11-16T16:48:16Z
+Deploy 2026-11-16T17:03:44Z
 CLOUDFLARE_API_TOKEN: set
 CLOUDFLARE_ACCOUNT_ID: set
 FLOW_API_KEY: set
@@ -8,12 +8,12 @@ NOTION_TOKEN: set
 PAYPAL_CLIENT_ID: set
 PAYPAL_SECRET: set
 MP_ACCESS_TOKEN: set
-RESEND_API_KEY: MISSING
+RESEND_API_KEY: set
 Firebase key: valid, project learnwithnoa-cheatsheet
 deploy exit: 0
 secrets exit: 0
-Uploaded hibi-pay (2.23 sec)
-Deployed hibi-pay triggers (1.21 sec)
+Uploaded hibi-pay (1.80 sec)
+Deployed hibi-pay triggers (1.26 sec)
   https://hibi-pay.learnwithnoa.workers.dev
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
 ✨ Successfully created secret for key: FLOW_API_KEY
@@ -23,7 +23,8 @@ Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more
 ✨ Successfully created secret for key: PAYPAL_CLIENT_ID
 ✨ Successfully created secret for key: PAYPAL_SECRET
 ✨ Successfully created secret for key: MP_ACCESS_TOKEN
-✨ 7 secrets successfully uploaded
-health: {"ok":true,"flow":"live","flowKeys":true,"firebaseKey":true,"flowApi":"ok","mercadopago":"live","mercadopagoApi":"ok","paypal":"live","paypalApi":"ok","notion":"ok","recentErrors":[{"at":"2026-11-16T12:51:44.411Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:23:39.126Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:19:58.699Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:19:33.207Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"}],"email":"not set up","database":"ok"}
+✨ Successfully created secret for key: RESEND_API_KEY
+✨ 8 secrets successfully uploaded
+health: {"ok":true,"flow":"live","flowKeys":true,"firebaseKey":true,"flowApi":"ok","mercadopago":"live","mercadopagoApi":"ok","paypal":"live","paypalApi":"ok","notion":"ok","recentErrors":[{"at":"2026-11-16T12:51:44.411Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:23:39.126Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:19:58.699Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:19:33.207Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"}],"email":"set up","database":"ok"}
 check: ok
-mail test: {"ok":false,"email":"not set up"}
+mail test: {"ok":true,"sent":true}
