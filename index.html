@@ -1274,6 +1274,8 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 #hbMove .hb-mem-cta .hb-pay-btn{padding:10px 18px}
 #hbMove .hb-mv-steps{margin:2px 0 0;padding-left:20px;font-size:14px;display:flex;flex-direction:column;gap:3px}
 
+.hb-pay .hb-mine{margin:0 0 8px;font-size:14px;color:var(--ink)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -5876,7 +5878,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </div>
 </section>
 
-<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
+<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
 <script src="buddy.js?v=55" defer></script>
   </main>
 </div>
@@ -10529,6 +10531,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1116-clubpay", date:"November 16, 2026", title:"Hibi 2.0: the club lives here now", items:[
+    ["💛","Your membership, on Hibi","Noa's English Club is leaving Skool. Club members keep their same price and switch at the top of the <b>Club</b> page: your first payment waits until the day Skool would have charged you, so you never pay twice.",""],
+    ["💳","Pesos or dollars","Pay with <b>Mercado Pago</b> in pesos or <b>PayPal</b> in US dollars. You can see, change or cancel your membership anytime on Hibi.",""],
+    ["🔖","New address","Hibi lives at <b>hibi.cl</b> now. If you installed the app on your phone, install it again from hibi.cl.",""]
+  ]},
   {id:"2026-1116-kudosbell", date:"November 16, 2026", title:"Notes from Noa in your notifications", items:[
     ["💌","Easier to find","Little notes from Noa now also appear in your 🔔 notifications, with a <b>Reply to Noa</b> button that opens your chat with him. Tap ✕ to hide one (you can still find it under <b>See all</b>).",""]
   ]},
@@ -10829,7 +10836,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116114210"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116125148"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11129,7 +11136,7 @@ window.__csBusy = function(){
 <script>
 /* step135: club payments (Flow) through the Hibi pay helper */
 (function(){
-  const PAY_LIVE=window.__hbPayLive=false;                     /* switch on when Flow is live for everyone */
+  const PAY_LIVE=window.__hbPayLive=true;                     /* switch on when Flow is live for everyone */
   const API="https://hibi-pay.learnwithnoa.workers.dev";
   try{ const q=new URLSearchParams(location.search).get("pay"); if(q==="1") localStorage.setItem("hibi-pay","1"); if(q==="0") localStorage.removeItem("hibi-pay"); }catch(e){}
   const payOn=()=>{ try{ return PAY_LIVE||localStorage.getItem("hibi-pay")==="1"; }catch(e){ return PAY_LIVE; } };
@@ -11308,7 +11315,18 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]
     try{ const r=await fetch(API+"/api/my-price",{method:"POST",headers:{authorization:"Bearer "+tok,"content-type":"application/json"},body:"{}"}); if(r.ok) P=await r.json(); }catch(e){}
     draw();
   }
+  function personalJoin(){
+    if(!P||!P.onList||!P.legacy||P.free||P.annual||window.__csClub||preview()) return;
+    const box=document.querySelector("#v-club .cl-lock .hb-pay"); if(!box||box.dataset.mine) return;
+    box.dataset.mine="1";
+    const mp=box.querySelector('[data-hbjoin="monthly"]:not([data-pp]) small'); if(mp) mp.textContent=clp(P.clp)+" a month · your same price";
+    const pp=box.querySelector('.hb-pp-btn[data-hbjoin="monthly"]'); if(pp) pp.textContent="US$"+P.usd+" a month";
+    const n=document.createElement("p"); n.className="hb-pay-note hb-mine";
+    n.innerHTML=`💛 You keep your Skool price: <b>${clp(P.clp)} a month</b>. `+(P.start?`Nothing is charged today: your first payment is on <b>${day(P.start)}</b>.`:"");
+    box.insertBefore(n,box.firstChild);
+  }
   function draw(){
+    personalJoin();
     const main=document.getElementById("clubMain"); let el=document.getElementById("hbMove");
     const m=window.__hbMemInfo, busy=m&&["active","grace","canceling","trial"].includes(m.status);
     const show=main&&window.__csClub&&payOn()&&(preview()||(P&&P.onList&&!P.free))&&m&&!busy;
@@ -11332,7 +11350,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]
     const on=!b.closest(".hb-mem").classList.contains("min"); try{ localStorage.setItem("hibi-move-min",on?"1":"0"); }catch(err){} draw(); });
   document.addEventListener("cs-club",()=>draw());
   document.addEventListener("hb-mem",()=>{ if(!asked&&payOn()&&!preview()) load(); else draw(); });
-  new MutationObserver(()=>{ if(window.__hbMemInfo&&!document.getElementById("hbMove")&&document.getElementById("clubMain")) draw(); }).observe(document.documentElement,{childList:true,subtree:true});
+  new MutationObserver(()=>{ const pj=document.querySelector("#v-club .cl-lock .hb-pay:not([data-mine])"); if(pj&&P) personalJoin(); if(window.__hbMemInfo&&!document.getElementById("hbMove")&&document.getElementById("clubMain")) draw(); }).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 

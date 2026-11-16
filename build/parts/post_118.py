@@ -91,3 +91,13 @@ if '2026-1116-kudosbell' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 16: club payments on Hibi (v2.0)
+s=open(p,encoding="utf-8").read()
+if '2026-1116-clubpay' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1116-clubpay", date:"November 16, 2026", title:"Hibi 2.0: the club lives here now", items:[
+    ["💛","Your membership, on Hibi","Noa's English Club is leaving Skool. Club members keep their same price and switch at the top of the <b>Club</b> page: your first payment waits until the day Skool would have charged you, so you never pay twice.",""],
+    ["💳","Pesos or dollars","Pay with <b>Mercado Pago</b> in pesos or <b>PayPal</b> in US dollars. You can see, change or cancel your membership anytime on Hibi.",""],
+    ["🔖","New address","Hibi lives at <b>hibi.cl</b> now. If you installed the app on your phone, install it again from hibi.cl.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
