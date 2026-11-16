@@ -153,7 +153,7 @@ capybara:{name:"Don Capi",species:"Capybara",old:"Capybara",sub:"chill level: ma
     "..obbbbb",
     "..obbbbb",
     "..oooooo"],
- colors:[["Classic",{}],["Sandy",{b:"#C99A5E",d:"#A57A44",l:"#DDB37E"}],["Chocolate",{b:"#7E5434",d:"#5E3C22",l:"#9C6E4C"}],["Pink (why not)",{b:"#F2B6C6",d:"#D98FA5",l:"#F8CDD8"}],["Sky blue",{b:"#9CC9F0",d:"#76A9D8",l:"#C2DEF6"}]]},
+ colors:[["Classic",{}],["Sandy",{b:"#C99A5E",d:"#A57A44",l:"#DDB37E"}],["Chocolate",{b:"#7E5434",d:"#5E3C22",l:"#9C6E4C"}],["Pink",{b:"#F2B6C6",d:"#D98FA5",l:"#F8CDD8"}],["Sky blue",{b:"#9CC9F0",d:"#76A9D8",l:"#C2DEF6"}]]},
 axolotl:{name:"Kiki",species:"Axolotl",old:"Axolotl",sub:"always smiling",
  p:{o:"#7A3B57",b:"#F9B8CF",s:"#F59AB8",g:"#E8608F",k:"#1E1712",w:"#FFFFFF",p:"#F57FA6",l:"#FDE0EA"},
  r:["........",

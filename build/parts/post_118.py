@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=53',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=54',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:

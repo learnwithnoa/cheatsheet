@@ -82,6 +82,7 @@ tr:last-child td{border-bottom:0}
 .nx-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;justify-content:space-between}.nx-h h2{margin:0}
 .nx-nav{display:flex;align-items:center;gap:8px}.nx-nav .ib{font-size:18px;width:30px;height:30px;padding:0;display:grid;place-items:center}.nx-nav .ib:disabled{opacity:.3}
 .nextc .linkb{all:unset;cursor:pointer}.nextc .linkb:hover b{text-decoration:underline}
+.nextc li{position:relative}.nx-x{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;padding:4px 6px;border-radius:8px;opacity:.55}.nx-x:hover{opacity:1;background:var(--surface)}
 .nextc li[data-open]{cursor:pointer;transition:background .12s}.nextc li[data-open]:hover{background:color-mix(in srgb,var(--c-sky) 12%,var(--surface-2))}.nextc li[data-open]:hover b{text-decoration:underline}
 .nextc.recent .t{color:var(--c-violet)}.nextc.recent .att{margin-left:6px}
 .nx-note{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
@@ -346,7 +347,7 @@ html.emb body{background:transparent}
 </main>
 <div id="modal" class="modal" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=52"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=54"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -681,15 +682,20 @@ setInterval(() => { try { if (meta && S) renderNext(); } catch (e) {} }, 60e3); 
 function renderRecent() {
   const box = $("recentBox"); if (!box) return;
   const all = []; S.forEach(s => (s.classes || []).forEach(c => { if (c.kind !== "note" && c.date && c.date <= today()) all.push({ s, c }); }));
-  all.sort((a, b) => b.c.date.localeCompare(a.c.date) || String(b.c.id || "").localeCompare(String(a.c.id || "")));
+  const tm = d => new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  (meta && Array.isArray(meta.upcoming) ? meta.upcoming : []).forEach(u => { const st = Date.parse(u.start), s = S.find(x => x.id === u.student);
+    if (!s || !(st < Date.now() - 20 * 60e3 && st > Date.now() - 3 * 864e5)) return; const d = dkey(new Date(st));
+    if ((s.classes || []).some(c => c.kind !== "note" && c.date === d)) return;   // already logged
+    all.push({ s, c: { date: d, t: tm(u.start), cal: true, k: new Date(st).toTimeString().slice(0, 5) } }); });
+  all.sort((a, b) => (b.c.date + (b.c.k || "99")).localeCompare(a.c.date + (a.c.k || "99")) || String(b.c.id || "").localeCompare(String(a.c.id || "")));
   const top = all.slice(0, 3); box.hidden = !top.length; if (!top.length) return;
   const dl = d => d === today() ? "Today" : d === addDays(today(), -1) ? "Yesterday" : new Date(d + "T12:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-  box.innerHTML = `<div class="nx-h"><h2><span class="kc">🕘</span> Recent classes</h2></div><ul class="nextc recent">${top.map(({ s, c }) => `<li data-open="${esc(s.id)}" title="Open ${esc(s.name)}'s page"><span class="t">${dl(c.date)}</span><span><b>${esc(s.name)}</b>${attB(c.att && c.att !== "Present" ? c.att : "")}${c.topics ? `<span class="nx-note">${esc(c.topics)}${c.homework ? " · homework: " + esc(c.homework) : ""}</span>` : ""}</span></li>`).join("")}</ul>`;
+  box.innerHTML = `<div class="nx-h"><h2><span class="kc">🕘</span> Recent classes</h2></div><ul class="nextc recent">${top.map(({ s, c }) => `<li data-open="${esc(s.id)}" title="Open ${esc(s.name)}'s page"><span class="t">${dl(c.date)}${c.t ? " · " + c.t : ""}</span><span><b>${esc(s.name)}</b>${attB(c.att && c.att !== "Present" ? c.att : "")}${c.cal ? `<span class="nx-note">from your calendar · gets logged tonight</span>` : ""}${c.topics ? `<span class="nx-note">${esc(c.topics)}${c.homework ? " · homework: " + esc(c.homework) : ""}</span>` : ""}</span></li>`).join("")}</ul>`;
 }
 function renderAll() { renderStoic(); renderSummary(); renderKpis(); renderNext(); renderRecent(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); route(); }
 function renderSummary() {
-  const act = S.filter(s => s.status === "active");
-  $("summary").textContent = `${act.length} active students · ${S.length} students in total`;
+  const act = S.filter(s => inFilt(s, "active")).length, pa = S.filter(s => s.status === "paused").length, ar = S.filter(archived).length;
+  $("summary").textContent = `${act} active students${pa ? ` · ${pa} paused` : ""} · ${S.length - ar} students in total${ar ? ` (${ar} more archived)` : ""}`;
 }
 function renderKpis() {
   const tw = weekStats(0), lw = weekStats(1), ms = monthStats(), e = earned(), mo = today().slice(0, 7);
@@ -724,7 +730,7 @@ function renderNext() {
     <ul class="nextc">${up.map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
     const note = u.note ? esc(u.note) : lc ? `last time: ${esc(lc.topics)}${lc.homework ? " · homework: " + esc(lc.homework) : ""}` : "";
     const isLive = live && u === live, st = Date.parse(u.start), extra = isLive ? `<span class="in" style="color:#E5484D">● live</span>` : st > now && st - now < 12 * 3600e3 && nextDay === td ? `<span class="in">${inTxt(st - now)}</span>` : "";
-    return `<li${isLive ? ' class="live"' : ""}${u.student ? ` data-open="${esc(u.student)}" title="Open ${esc(s ? s.name : u.name || "")}'s page"` : ""}><span class="t">${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}${extra}</span><span><button type="button" class="linkb" data-open="${esc(u.student)}"><b>${esc(s ? s.name : u.name || "")}</b></button>${note ? `<span class="nx-note">${note}</span>` : ""}</span></li>`; }).join("")}</ul>`;
+    return `<li${isLive ? ' class="live"' : ""}${u.student ? ` data-open="${esc(u.student)}" title="Open ${esc(s ? s.name : u.name || "")}'s page"` : ""}><span class="t">${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}${extra}</span><span><button type="button" class="linkb" data-open="${esc(u.student)}"><b>${esc(s ? s.name : u.name || "")}</b></button>${note ? `<span class="nx-note">${note}</span>` : ""}</span><button type="button" class="nx-x" data-nxdel="${esc(u.start)}|${esc(u.student || u.name || "")}" title="Cancelled? Remove it from Coming up">✕</button></li>`; }).join("")}</ul>`;
 }
 const GM = (to, su, body) => "https://mail.google.com/mail/?authuser=" + encodeURIComponent(TEACHER) + "&view=cm&fs=1&to=" + encodeURIComponent(to || "") + "&su=" + encodeURIComponent(su || "") + "&body=" + encodeURIComponent(body || "");
 function reminderFor(s, a) {
@@ -788,7 +794,7 @@ function renderTrends() {
   const std = ms.map(m => S.reduce((n, s) => n + s.classes.filter(c => held(c) && c.date.startsWith(m) && c.hour === "Standard").length, 0));
   const pri = ms.map(m => S.reduce((n, s) => n + s.classes.filter(c => held(c) && c.date.startsWith(m) && c.hour === "Priority").length, 0));
   const rs = Object.values(rolesByUid), clubOnly = rs.filter(r => r.club !== false && !r.private).length, both = rs.filter(r => r.private && r.club).length;
-  const act = S.filter(s => s.status === "active").length;
+  const act = S.filter(s => inFilt(s, "active")).length;
   const L = (c, n) => `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px"><i style="width:12px;height:4px;border-radius:2px;background:${c};display:inline-block"></i>${n}</span>`;
   $("trendBox").innerHTML = `<h2>📈 Trends <span class="muted small" style="font-weight:600">· last 12 months</span></h2>
     <div class="kpis" style="margin:6px 0 10px">
@@ -801,9 +807,14 @@ function renderTrends() {
     <div><div class="small" style="margin-bottom:4px">${L("var(--c-teal)", "Standard-hour classes")}${L("var(--c-pink)", "Priority-hour classes")}</div>${lineSvg(ms, [{ n: "Standard", v: std, c: "var(--c-teal)" }, { n: "Priority", v: pri, c: "var(--c-pink)" }])}</div></div>
     <p class="muted small" style="margin:8px 0 0">Club members only count people signed in to Hibi; Skool members aren't here yet.</p>`;
 }
+/* Archived = marked "Archived" by hand, or (not paused) no class in 4+ weeks and nothing booked. They come back on their own after a new class. */
+function hasUpcoming(s) { return !!(meta && Array.isArray(meta.upcoming) && meta.upcoming.some(u => u.student === s.id && Date.parse(u.start) > Date.now())); }
+function autoArch(s) { if (s.status !== "active") return false; const lc = lastClass(s); return !!lc && days(lc, today()) > 28 && !hasUpcoming(s); }
+function archived(s) { return s.status === "inactive" || s.status === "past" || autoArch(s); }
+function inFilt(s, k) { return k === "all" ? true : k === "hibi" ? !!s.uid && !archived(s) : k === "inactive" ? archived(s) : k === "active" ? s.status === "active" && !archived(s) : s.status === k; }
 function renderFilters() {
-  const n = k => k === "all" ? S.length : k === "hibi" ? S.filter(s => s.uid && s.status !== "inactive").length : S.filter(s => s.status === k).length;
-  $("filters").innerHTML = [["active", "Active", "k-green"], ["paused", "Paused", "k-amber"], ["inactive", "Past", "k-violet"], ["all", "All", "k-sky"], ["hibi", "✓ On Hibi", "k-sky"]].map(([k, l, c]) => `<button type="button" class="seg ${c}" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
+  const n = k => S.filter(s => inFilt(s, k)).length;
+  $("filters").innerHTML = [["active", "Active", "k-green"], ["paused", "Paused", "k-amber"], ["inactive", "📦 Archived", "k-violet"], ["all", "All", "k-sky"], ["hibi", "✓ On Hibi", "k-sky"]].map(([k, l, c]) => `<button type="button" class="seg ${c}" data-f="${k}" aria-pressed="${filt === k}">${l} ${n(k)}</button>`).join("");
 }
 /* little "synced with Hibi" mark on the avatar for students who have an account */
 function hibiSeen(s) { const u = usage[s.id] || {}; const iso = k => { const m = String(k).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); return m ? m[1] + "-" + m[2].padStart(2, "0") + "-" + m[3].padStart(2, "0") : ""; };
@@ -824,7 +835,7 @@ function avIn(s) { const a = AVS[s.id]; if (!a || !window.csAvatar) return { htm
   return { html: `<i class="av-in">${r.html}</i>`, st: ";background:" + (r.bg || (r.kind === "buddy" ? "color-mix(in srgb,#BFE3FF 55%,var(--surface))" : "var(--surface)")) }; }
 function renderList() {
   const q = $("q").value.trim().toLowerCase();
-  const ls = S.filter(s => (filt === "all" || (filt === "hibi" ? s.uid && s.status !== "inactive" : s.status === filt)) && (!q || (s.name + " " + (s.email || "") + " " + (s.emails || []).join(" ")).toLowerCase().includes(q)));
+  const ls = S.filter(s => inFilt(s, filt) && (!q || (s.name + " " + (s.email || "") + " " + (s.emails || []).join(" ")).toLowerCase().includes(q)));
   const byName = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" });
   const nx = {}; ls.forEach(s => nx[s.id] = nextClassAt(s));
   /* colored line: how long they've been with you (cool = new, hot = longest), 8 steps */
@@ -891,14 +902,15 @@ function renderDetail() {
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
   const links = [`<a class="linkb" href="index.html?viewas=${encodeURIComponent(s.id)}#coaching" title="Opens Hibi showing exactly what ${esc(s.name.split(" ")[0])} sees (read-only)">👁 Their My coaching</a>`, s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
-  box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px${avIn(s).st}">${avIn(s).html}</span><h2><span class="nm-wrap">${esc(s.name)}${en ? `<sup class="eng-pill ${en.k}" title="Engagement: ${en.lvl} (${esc(en.parts.join(" · "))})">${en.k === "k-green" ? "🔥" : en.k === "k-amber" ? "🙂" : "💤"} ${en.lvl}</sup>` : ""}</span>${s.uid ? `<span class="syncpill" title="${esc(syncTip(s))}">✓ On Hibi${hibiSeen(s) ? " · active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>` : `<span class="syncpill off">Not on Hibi yet</span>`}</h2>
+  box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px${avIn(s).st}">${avIn(s).html}</span><h2><span class="nm-wrap">${esc(s.name)}${en ? `<sup class="eng-pill ${en.k}" title="Engagement: ${en.lvl} (${esc(en.parts.join(" · "))})">${en.k === "k-green" ? "🔥" : en.k === "k-amber" ? "🙂" : "💤"} ${en.lvl}</sup>` : ""}</span></h2>
     ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     ${(() => { const LV = ["A1", "A2", "A2-B1", "B1", "B1-B2", "B2", "B2-C1", "C1", "C2"], fromLevel = String(s.level || "").toUpperCase().replace(/[–—]/g, "-").replace(/\s+/g, ""), cur = s.cefr || (LV.includes(fromLevel) ? fromLevel : "");
       return `<label class="cefr-pick" title="Their English level (tap to change). Hibi grades their practice for it, and it shows in the Buddy park"><span class="cp-k">Level</span><b>${cur || "Set…"}</b><span class="cp-car" aria-hidden="true">▾</span><select data-f="cefr" aria-label="English level">${(cur ? [] : [""]).concat(LV).map(l => `<option value="${l}" ${cur === l ? "selected" : ""}>${l || "Set level…"}</option>`).join("")}</select></label>`; })()}
-    ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Past student" }, cur = ST[s.status] ? s.status : "active";
+    ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Archived" }, cur = ST[s.status] ? s.status : "active";
       return `<label class="cefr-pick st-pick st-${cur}" title="Status (tap to change)"><b>${ST[cur]}</b><span class="cp-car" aria-hidden="true">▾</span><select id="stStatus" aria-label="Status">${Object.keys(ST).map(k => `<option value="${k}" ${cur === k ? "selected" : ""}>${ST[k]}</option>`).join("")}</select></label>`; })()}</div>
     <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}${links ? `<span class="dlinks">${links}</span>` : ""}${(s.docs || []).length || resFor(s).length ? `<span class="resrow">` : ""}${(s.docs || []).length ? `<span class="docrow">${s.docs.map(g => `<a class="resb docb" href="${esc(g.url)}" target="_blank" rel="noopener" title="Only you see this">${/notion/.test(g.url) ? "📓" : "📎"} ${esc(g.title)}</a>`).join("")}</span>` : ""}${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}${(s.docs || []).length || resFor(s).length ? `</span>` : ""}</p>
-    <p class="muted small dmeta2">${[since(s), s.prevCourses || "", r ? `👀 Sees this on Hibi (${r.club && r.private ? "private + club" : "private student"})` : "Not linked to a Hibi account yet (links when they sign in with their email)"].filter(Boolean).map(esc).join(" · ")}</p>
+    ${autoArch(s) ? `<p class="muted small" style="margin:6px 0 0">📦 In <b>Archived</b> automatically: no class in over 4 weeks and nothing booked. They come back to Active by themselves after their next class.</p>` : ""}
+    <p class="muted small dmeta2">${[since(s), s.prevCourses || "", r ? `✓ On Hibi (${r.club && r.private ? "private + club" : "private student"})${hibiSeen(s) ? " · last active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}` : "Not linked to a Hibi account yet (links when they sign in with their email)"].filter(Boolean).map(esc).join(" · ")}</p>
     <div class="stats">
       ${p && st && st.size ? `<div class="stat tint k-green"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat tint k-amber"><b>${st.classesLeft}</b><span>${st.classesLeft === 1 ? "class" : "classes"} left (approx.)</span></div>` : ""}
       ${p && st ? `<div class="stat tint k-sky"><b>${st.done}</b><span>classes this pack</span></div>` : ""}
@@ -1102,6 +1114,9 @@ document.addEventListener("click", e => {
   const cp = t.closest("[data-copy]"); if (cp) { navigator.clipboard && navigator.clipboard.writeText(cp.dataset.copy).then(() => toast("Copied " + cp.dataset.copy)).catch(() => {}); return; }
   const fb = t.closest("button[data-f]"); if (fb) { filt = fb.dataset.f; renderFilters(); renderList(); return; }
   const sb = t.closest(".stu"); if (sb) { tab = "classes"; openStu(sb.dataset.s); return; }
+  const nx = t.closest("[data-nxdel]"); if (nx) { e.stopPropagation(); const [st, who] = nx.dataset.nxdel.split("|");
+    if (!nx.dataset.sure) { nx.dataset.sure = "1"; nx.textContent = "Remove?"; nx.style.opacity = 1; setTimeout(() => { if (nx.isConnected) { delete nx.dataset.sure; nx.textContent = "✕"; nx.style.opacity = ""; } }, 4000); return; }
+    meta.upcoming = (meta.upcoming || []).filter(u => !(u.start === st && (u.student || u.name || "") === who)); saveMeta(); renderNext(); renderRecent(); toast("Removed from Coming up"); return; }
   const op = t.closest("[data-open]"); if (op) { tab = "classes"; openStu(op.dataset.open); return; }
   const nd = t.closest("[data-nday]"); if (nd) { const all = (meta.upcoming || []).filter(u => Date.parse(u.start) > Date.now() - 45 * 60e3).sort((a, b) => Date.parse(a.start) - Date.parse(b.start)); const days = [...new Set(all.map(u => dkey(new Date(u.start))))]; const i = days.indexOf(nextDay) + +nd.dataset.nday; if (days[i]) { nextDay = days[i]; renderNext(); } return; }
   const vw = t.closest("[data-view]"); if (vw) { go(vw.dataset.view); return; }
