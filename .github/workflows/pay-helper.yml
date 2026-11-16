@@ -25,18 +25,19 @@ jobs:
           FLOW_API_KEY: ${{ secrets.FLOW_API_KEY }}
           FLOW_SECRET_KEY: ${{ secrets.FLOW_SECRET_KEY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
         run: |
           set +e
           {
             echo "Deploy $(date -u +%FT%TZ)"
-            for v in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID FLOW_API_KEY FLOW_SECRET_KEY FIREBASE_SERVICE_ACCOUNT; do
+            for v in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID FLOW_API_KEY FLOW_SECRET_KEY FIREBASE_SERVICE_ACCOUNT NOTION_TOKEN; do
               if [ -n "${!v}" ]; then echo "$v: set"; else echo "$v: MISSING"; fi
             done
             echo "$FIREBASE_SERVICE_ACCOUNT" | python3 -c "import json,sys; d=json.load(sys.stdin); print('Firebase key: valid, project', d.get('project_id'))" 2>/dev/null || echo "Firebase key: not valid JSON"
           } > /tmp/log.txt
           npx -y wrangler@4 deploy > /tmp/out.txt 2>&1; echo "deploy exit: $?" >> /tmp/log.txt
-          jq -n --arg a "$FLOW_API_KEY" --arg b "$FLOW_SECRET_KEY" --arg c "$FIREBASE_SERVICE_ACCOUNT" \
-            '{FLOW_API_KEY:$a, FLOW_SECRET_KEY:$b, FIREBASE_SERVICE_ACCOUNT:$c}' > /tmp/sec.json
+          jq -n --arg a "$FLOW_API_KEY" --arg b "$FLOW_SECRET_KEY" --arg c "$FIREBASE_SERVICE_ACCOUNT" --arg d "$NOTION_TOKEN" \
+            '{FLOW_API_KEY:$a, FLOW_SECRET_KEY:$b, FIREBASE_SERVICE_ACCOUNT:$c} + (if $d != "" then {NOTION_TOKEN:$d} else {} end)' > /tmp/sec.json
           npx -y wrangler@4 secret bulk /tmp/sec.json >> /tmp/out.txt 2>&1; echo "secrets exit: $?" >> /tmp/log.txt
           rm -f /tmp/sec.json
           # keep only harmless lines (urls, results, errors), never key values

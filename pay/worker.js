@@ -184,7 +184,7 @@ async function cardReturn(env, req, url) {
   const paidThrough = (sub.period_end || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31);
   await saveBill(env, uid, { subscriptionId: sub.subscriptionId, planId: plan, kind, amount, card, status: "active", paidThrough, graceUntil: null, since: b.since || today(), pendingKind: null });
   await grantClub(env, uid, b.name || cust.name);
-  if (b.trialUsed) await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {});
+  if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
   return back(true);
 }
 
@@ -195,6 +195,39 @@ async function updateCard(env, req, url) {
   await patch(env, `billing/${me.uid}`, { pendingKind: "card" });
   const reg = await flow(env, "POST", "/customer/register", { customerId: b.customerId, url_return: url.origin + "/api/card-return" });
   return json({ url: reg.url + "?token=" + reg.token }, 200, req);
+}
+
+// ---------- Notion: Noa's "Free Trial Tracker" (inside "Reto 14 Días — Free Trials") ----------
+const TRACKER = "09ba72fbc0844ec09b6b239f0b4d0d1f";
+const ESTADO = { trial: "En trial", joined: "Se unió 🎉", "trial-ended": "No se unió" };
+async function notion(env, method, path, body) {
+  const r = await fetch("https://api.notion.com/v1" + path, { method, headers: { authorization: "Bearer " + env.NOTION_TOKEN, "notion-version": "2022-06-28", "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error("Notion: " + (d.message || r.status));
+  return d;
+}
+const niceDay = (d) => { try { return new Date(d + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }); } catch { return d; } };
+async function trackerRow(env, t) {        // t: {name,email,start(date),until,status,note?}; never throws (Notion is a nice-to-have)
+  if (!env.NOTION_TOKEN || !t.email) return;
+  try {
+    const q = await notion(env, "POST", `/databases/${TRACKER}/query`, { filter: { property: "Email", email: { equals: t.email } }, page_size: 1 });
+    const row = q.results && q.results[0];
+    const props = {};
+    if (ESTADO[t.status]) props.Estado = { select: { name: ESTADO[t.status] } };
+    if (!row) {
+      if (t.status !== "trial") return;      // only Hibi trials start rows; never touch Noa's manual ones otherwise
+      props.Nombre = { title: [{ text: { content: t.name || t.email } }] };
+      props.Email = { email: t.email };
+      props.Inicio = { date: { start: t.start } };
+      props.Notas = { rich_text: [{ text: { content: `Started on Hibi (free 2-week trial, no card). Ends ${niceDay(t.until)}.` } }] };
+      await notion(env, "POST", "/pages", { parent: { database_id: TRACKER }, properties: props });
+    } else {
+      const notes = ((row.properties.Notas && row.properties.Notas.rich_text) || []).map((x) => x.plain_text).join("");
+      if (!/Started on Hibi/.test(notes)) return;   // a row Noa made by hand: leave it alone
+      if (t.note) props.Notas = { rich_text: [{ text: { content: (notes + " " + t.note).trim().slice(0, 1900) } }] };
+      if (Object.keys(props).length) await notion(env, "PATCH", `/pages/${row.id}`, { properties: props });
+    }
+  } catch (e) { console.log("notion", e.message); }
 }
 
 // ---------- free 2-week club trial (no card) ----------
@@ -216,6 +249,7 @@ async function startTrial(env, req) {
   await saveBill(env, me.uid, { status: "trial", trialUsed: true, trialStart: new Date().toISOString(), trialUntil: until, email: me.email, name: me.name });
   await grantClub(env, me.uid, me.name);
   await trialLog(env, me.uid, { name: me.name, email: me.email, start: Date.now(), until, status: "trial" });
+  await trackerRow(env, { name: me.name, email: me.email, start: today(), until, status: "trial" });
   return json({ ok: true, until }, 200, req);
 }
 
@@ -244,6 +278,7 @@ async function nightly(env) {
           const status = kept ? "trial-kept" : "trial-ended";
           await saveBill(env, uid, { status });
           await trialLog(env, uid, { status, ended: Date.now() });
+          await trackerRow(env, { email: b.email, status, note: kept ? "Kept in the club by Noa." : "" });
           out.push({ uid, status });
         }
         continue;
@@ -271,6 +306,7 @@ async function nightly(env) {
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
   try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
+  if (env.NOTION_TOKEN) { try { await notion(env, "GET", `/databases/${TRACKER}`); r.notion = "ok"; } catch (e) { r.notion = String(e.message).slice(0, 120); } } else r.notion = "not set up";
   try { await fs(env, "GET", "roles?pageSize=1"); r.database = "ok"; } catch (e) { r.database = String(e.message).slice(0, 120); r.ok = false; }
   return r;
 }
