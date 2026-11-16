@@ -21,7 +21,8 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
   the first Hibi charge waits until their Skool month ends (club list date), and the nightly check removes club access 5 days after that if they didn't switch.
   Unread-message emails: hourly, through Resend (secret RESEND_API_KEY, sender hola@hibi.cl): one short email if a Hibi message waits 12 h,
   max one a day, never to Noa; members turn it off in Settings (ncs-mailnotif); every email sent is listed in Noa's 🔔 (t-mailsent).
-  It also runs the free 2-week club trial (no card; `/api/trial`, ended by its nightly check; Noa's list in `users/{Noa}/data/t-trials`, `hubsync.py trials`).
+  It also runs the free 2-week club trial (no card; 14 days counting the first; `/api/trial` also sends Noa's welcome message as a Hibi message,
+  text in pay/worker.js TRIAL_WELCOME or t-hubmeta.trialWelcome with {name}/{end date}; ended by its nightly check; Noa's list in `users/{Noa}/data/t-trials`, `hubsync.py trials`).
 - `pod/` — podcast MP3s; `.github/workflows/podcast-audio.yml` converts episodes queued in `pod/queue.txt`.
 
 ## Build

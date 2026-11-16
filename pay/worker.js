@@ -444,7 +444,40 @@ async function trackerRow(env, t) {        // t: {name,email,start(date),until,s
 }
 
 // ---------- free 2-week club trial (no card) ----------
-const TRIAL_DAYS = 14;
+// the welcome message from Noa, sent as a Hibi message (🔔 → 💬 Messages) the moment a free trial starts.
+// Noa can change the text: t-hubmeta.trialWelcome (placeholders {name} and {end date}); otherwise this one is used.
+const TRIAL_WELCOME = `Hiya {name}, welcome to the club! 🫰🏻
+So glad to have you here. Your 2-week free trial starts today 🔥 That's full access to the club here on Hibi: the live speaking classes, the class recordings, the community, all of it. Your trial runs until {end date}.
+
+Your first mission: join one speaking class this week. Just one. You don't need to prepare anything, and nobody's grading you. Deep Dive Monday, Wildcard Wednesday, Word Up Thursday or Free Talk Friday, all open to every level. The next class and its Zoom link are at the top of the Club page (This week), and the full schedule with every Zoom link is in Club → Calendar.
+(Fair warning: the first class is the scariest one. After that it's just… talking with friends who happen to be in breakout rooms.)
+
+Week two, come back for more. The more classes you try, the easier it'll be to know if the club is your thing.
+And if you decide to stay, the Habla con Seguridad guarantee 🛡️ kicks in: come to 8 classes in your first paid month, and if you don't feel more confident speaking, your second month is on me. So yes, I'm literally betting on you showing up 😉
+
+A few more things:
+📌 Every Monday I post the week's class topics in Club → This week
+🎬 Missed a class? Watch the recording in Club → Library
+📚 Want extra practice? The Practice menu has grammar and vocabulary exercises, with new modules every week
+💬 Join the Instagram group chat to keep practicing during the week: https://www.instagram.com/j/AbYEKteyhp-zyxxc/
+🎁 No card, nothing to cancel: your trial simply ends on {end date}. Want to stay? Tap "Stay in the club" at the top of the Club page.
+
+Any questions, just reply here. See you in class! ✨`;
+const longDate = (d) => { const x = new Date(d + "T12:00:00Z"); return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][x.getUTCDay()] + ", " + ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][x.getUTCMonth()] + " " + x.getUTCDate(); };
+async function trialWelcome(env, me, until) {
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  if (meta.trialWelcomeOff) return;
+  const first = String(me.name || "").split(/\s+/)[0] || "there";
+  const text = String(meta.trialWelcome || TRIAL_WELCOME).replace(/\{name\}/g, first).replace(/\{end ?date\}/gi, longDate(until));
+  const tid = [TEACHER, me.uid].sort().join("_"), now = Date.now();
+  const S = (v) => ({ stringValue: String(v) }), I = (v) => ({ integerValue: String(v) });
+  await fs(env, "PATCH", `dms/${tid}?updateMask.fieldPaths=members&updateMask.fieldPaths=json&updateMask.fieldPaths=at&updateMask.fieldPaths=r_${TEACHER}`, { fields: {
+    members: { arrayValue: { values: [TEACHER, me.uid].sort().map(S) } },
+    json: S(JSON.stringify({ names: { [TEACHER]: "Noa", [me.uid]: me.name || "" }, last: { text: text.slice(0, 120), from: TEACHER, at: now } })),
+    at: I(now), ["r_" + TEACHER]: I(now) } });
+  await fs(env, "POST", `dms/${tid}/msgs?documentId=${now.toString(36)}w${Math.random().toString(36).slice(2, 7)}`, { fields: { from: S(TEACHER), at: I(now), json: S(JSON.stringify({ text })) } });
+}
+const TRIAL_DAYS = 14;   // 14 days counting the first one: started Monday Nov 16 → last day Sunday Nov 29
 async function trialLog(env, uid, entry) {          // Noa's list (users/{Noa}/data/t-trials): his bell + the nightly summary read it
   const list = (await getJ(env, TEACHER, "t-trials")) || [];
   const i = list.findIndex((x) => x.uid === uid);
@@ -458,11 +491,12 @@ async function startTrial(env, req) {
   const role = plain(await fs(env, "GET", `roles/${me.uid}`)) || {};
   const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
   if (role.club === true || (meta.clubUids || []).includes(me.uid)) return json({ error: "You’re already in the club! Refresh the page." }, 400, req);
-  const until = addDays(today(), TRIAL_DAYS);
+  const until = addDays(today(), TRIAL_DAYS - 1);
   await saveBill(env, me.uid, { status: "trial", trialUsed: true, trialStart: new Date().toISOString(), trialUntil: until, email: me.email, name: me.name });
   await grantClub(env, me.uid, me.name);
   await trialLog(env, me.uid, { name: me.name, email: me.email, start: Date.now(), until, status: "trial" });
   await trackerRow(env, { name: me.name, email: me.email, start: today(), until, status: "trial" });
+  try { await trialWelcome(env, me, until); } catch (e) { console.log("welcome message", e.message); }
   return json({ ok: true, until }, 200, req);
 }
 
