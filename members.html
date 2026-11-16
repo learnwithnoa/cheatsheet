@@ -39,6 +39,8 @@ h2{font:700 22px var(--display);margin:22px 0 10px}
 @media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
 .list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 220px);overflow:auto;padding-right:4px}
 @media (max-width:860px){.list{max-height:none}}
+/* the student's details stay in view next to the list while you scroll (computer) */
+@media (min-width:861px){#detail{position:sticky;top:70px;max-height:calc(100vh - 84px);overflow:auto;overscroll-behavior:contain;scroll-margin-top:70px}}
 .stu{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
 .stu:hover{border-color:var(--royal)}
 .stu[aria-current="true"]{border-color:var(--green);background:var(--green-soft)}
@@ -212,7 +214,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
         <div id="pendBox" class="pend" hidden></div>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
         <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
-        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option></select></div>
+        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option><option value="none">⚪ Not assigned yet</option></select></div>
         <div class="row" style="margin-bottom:10px"><button type="button" id="reload">↻ Refresh</button><span class="muted" id="loadedAt" style="font-size:13px"></span></div>
         <div class="list" id="list"></div>
       </div>
@@ -419,14 +421,14 @@ function renderList() {
   shown.sort(srt === "za" ? (a, b) => nm(b, a) : srt === "seen" ? (a, b) => b.lastSeen - a.lastSeen || nm(a, b) : srt === "new" ? (a, b) => b.firstSeen - a.firstSeen || nm(a, b) : srt === "words" ? (a, b) => b.words.length - a.words.length || nm(a, b) : nm);
   $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
       <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
-      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both", none: "⚪ Not in the club yet" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
+      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both", none: "⚪ Not assigned yet: club or private?" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
     : `<p class="muted">${students.length ? "No match." : "No one has signed in yet."}</p>`;
 }
 $("q").oninput = renderList;
 try { $("tSortSel").value = localStorage.getItem("cs-t-sort") || "az"; $("tKind").value = localStorage.getItem("cs-t-kind") || "all"; } catch (e) {}
 $("tSortSel").onchange = () => { try { localStorage.setItem("cs-t-sort", $("tSortSel").value); } catch (e) {} renderList(); };
 $("tKind").onchange = () => { try { localStorage.setItem("cs-t-kind", $("tKind").value); } catch (e) {} renderList(); };
-$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); };
+$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollTop = 0; if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); else { const r = $("detail").getBoundingClientRect(); if (r.top < 0 || r.top > innerHeight - 120) $("detail").scrollIntoView({ block: "start", behavior: "smooth" }); } };
 
 /* ---------- editing (writes go straight to the student's account) ---------- */
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -579,6 +581,8 @@ document.addEventListener("change", async e => { const sl = e.target.closest("[d
   mm.status = v; saveTPref("t-hubmeta", hubMeta); renderClub(); toast(name.split(" ")[0] + ": " + CST.find(([k]) => k === v)[1]); });
 /* sections as tabs, so the page isn't one long scroll */
 let mTab = null; try { mTab = sessionStorage.getItem("cs-m-tab"); } catch (e) {}
+/* from the 🔔 on Home ("Assign them →"): open Hibi members, showing only the ones not assigned yet */
+if (location.hash === "#unassigned") { mTab = "students"; try { $("tKind").value = "none"; localStorage.setItem("cs-t-kind", "none"); history.replaceState(null, "", location.pathname); } catch (e) {} }
 const cntOf = id => { const b = $(id); if (!b || b.hidden) return 0; const n = b.querySelector(".news-n"); return n ? (parseInt(n.textContent, 10) || 0) : 0; };
 function renderTabs() {
   const todo = cntOf("news") + cntOf("tips") + cntOf("linkBox"), T = [["todo", "📥 To do", todo], ["students", "👥 Hibi members", students.length, 1], ["club", "🌼 Club members", cntOf("clubBox"), 1], ["ideas", "🧱 Ideas to build", cntOf("ideas")], ["usage", "📊 Usage", 0]];

@@ -3673,7 +3673,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       const dk="p:"+id+"|"+t.replace(/<[^>]+>/g,"")+"|"+JSON.stringify(du); if(t&&!DIS().includes(dk)) packs.push(`<li data-tnk="${esc("p:"+id+"|"+t.replace(/<[^>]+>/g,""))}">💳 ${t} <a class="tn-go" href="private-students.html#s/${id}">Open →</a><button type="button" class="tn-dis" data-tndis="${esc(dk)}" aria-label="Hide this notification" title="Hide this (it comes back if something changes)">×</button></li>`); });
     const clocks=[]; if(typeof window.__csTzRem==="function"){ const td=new Date(), ti=td.getFullYear()+"-"+String(td.getMonth()+1).padStart(2,"0")+"-"+String(td.getDate()).padStart(2,"0");
       data.priv.filter(p=>p.status==="active"&&p.view&&p.view.tz).forEach(p=>window.__csTzRem({name:p.view.name,tz:p.view.tz,country:p.view.country},ti,21,2).forEach(r=>{ const dk="c:"+p.key+"|"+r.text; if(!DIS().includes(dk)) clocks.push(`<li data-tnk="${esc("c:"+p.key+"|"+r.text)}">🕐 ${esc(r.text)} <a class="tn-go" href="private-students.html#s/${esc(p.key.slice(4))}">Open →</a><button type="button" class="tn-dis" data-tndis="${esc(dk)}" aria-label="Hide this notification" title="Hide this">×</button></li>`); })); }
-    const unl=data.acc.filter(a=>a.kind==="new").length;
+    const unl=data.acc.filter(a=>a.kind==="new").length, unA=data.acc.filter(a=>a.kind==="hibi"), una=unA.length;
     let hid=false; try{ hid=localStorage.getItem(HIDE)===dkey(); }catch(e){}
     const rdK=getRead(), kCl=a=>"cl:"+(a.pid||"")+":"+a.at, kMi=n=>"mi:"+(n.pid||n.kind||"")+":"+n.at, kTr=t=>"tr:"+t.uid+":"+Math.max(t.start||0,t.ended||0,t.joined||0), kMl=m=>"ml:"+(m.uid||"")+":"+m.at;
     const clubNew=(data.club||[]).filter(a=>a.at>since&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73"&&!rdK.includes(kCl(a))), clubAll=(data.club||[]).filter(a=>a.at>wk&&a.uid!=="J8D2tjQmBaaA2QN730tSfSrjfm73");
@@ -3681,7 +3681,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const mineNew=(data.mine||[]).filter(n=>n.at>since&&!rdK.includes(kMi(n))), mineAll=(data.mine||[]).filter(n=>n.at>wk);
     /* things that stay on the list until they're dealt with (packs, requests…) only count until you mark them as read */
     const kOf=h=>(String(h).match(/data-tnk="([^"]*)"/)||[])[1]||h;
-    const rd=getRead(), keys=[...areq.map(r=>"a:"+r.id),...reps.map(r=>"r:"+(r.id||r.pid||r.at)),...packs.map(kOf),...clocks.map(kOf),...joins.map(a=>"j:"+a.uid)].concat(unl?["u:"+unl]:[]);
+    const rd=getRead(), keys=[...areq.map(r=>"a:"+r.id),...reps.map(r=>"r:"+(r.id||r.pid||r.at)),...packs.map(kOf),...clocks.map(kOf),...joins.map(a=>"j:"+a.uid)].concat(unl?["u:"+unl]:[]).concat(una?["ua:"+unA.map(a=>a.uid).sort().join(",")]:[]);
     const rowR=h=>{ const k=kOf(h); return rd.includes(k)?h.replace("<li ",'<li class="tn-read" '):h.replace(/<\/li>$/,`<button type="button" class="tn-rd" data-tnrd="${k}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button></li>`); };
     curKeys=keys;
     const trAll=(data.trials||[]).filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>wk), trNew=trAll.filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>since&&!rdK.includes(kTr(t)));
@@ -3704,8 +3704,9 @@ html.cs-calm .cs-rxpal button{transition:none}
 
       ${reps.length?`<h4>⚑ Reported on the club wall</h4><ul>${reps.map(r=>`<li>⚑ <b>${esc(r.name)}</b> reported ${esc(r.author||"a post")}’s ${String(r.path||"").split("/").length>2?"comment":"post"}${r.text?`: <span class="muted">“${esc(r.text.slice(0,90))}”</span>`:""}${r.why?` · <i>${esc(r.why)}</i>`:""} <span class="muted">· ${ago(r.at)}</span> <a class="tn-go" href="#club" data-bgo="${esc(r.pid||"")}">Open →</a> <button type="button" class="tn-btn" data-tnrep="${esc(r.id)}">Done ✓</button></li>`).join("")}</ul>`:""}
       ${clubAll.length?`<h4>Club community</h4><ul>${clubAll.map(a=>`<li${a.at>since&&!rdK.includes(kCl(a))?"":' class="tn-read"'}>${a.kind==="post"?"📝":a.kind==="challenge"?"✍️":"💬"} <b>${esc(a.name)}</b> ${a.kind==="post"?"posted on the wall":a.kind==="challenge"?"answered the weekly challenge":/^w\d{8}$/.test(a.pid||"")?"commented on the weekly post":"commented on a post"}${a.img?" 📷":""}${a.text?`: <span class="muted">“${esc(a.text)}”</span>`:""} <span class="muted">· ${ago(a.at)}</span> <a class="tn-go" href="#club" data-go="club" data-tnrdgo="${esc(kCl(a))}"${a.pid?` data-bgo="${esc(a.pid)}"`:""}>Open →</a></li>`).join("")}</ul>`:""}
-      ${joins.length||older.length?`<h4 class="tn-h4">New on Hibi${older.length?`<button type="button" class="tn-link tn-tog" data-tn="all">${showAll?"Hide earlier ones":`Show earlier (${older.length})`}</button>`:""}</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!clocks.length&&!clubAll.length&&!mineAll.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
+      ${joins.length||older.length?`<h4 class="tn-h4">New on Hibi${older.length?`<button type="button" class="tn-link tn-tog" data-tn="all">${showAll?"Hide earlier ones":`Show earlier (${older.length})`}</button>`:""}</h4><ul>${joins.map(a=>li(a,false)).join("")}${showAll?older.map(a=>li(a,true)).join(""):""}</ul>`:(!packs.length&&!unl&&!una&&!clocks.length&&!clubAll.length&&!mineAll.length?`<p class="tn-line muted">Nothing new right now.</p>`:"")}
       
+      ${una?`<p class="tn-line">⚪ ${una===1?"1 member isn’t":una+" members aren’t"} club or private yet: <b>${unA.slice(0,6).map(a=>esc(String(a.name||"").split(" ")[0])).join(", ")}${una>6?` +${una-6}`:""}</b>. Everyone needs one. <a class="tn-go" href="members.html#unassigned">Assign them →</a></p>`:""}
       ${unl?`<p class="tn-line">🔗 ${unl} ${unl===1?"account isn’t":"accounts aren’t"} linked to a student or the club yet. <a class="tn-go" href="members.html">Members page →</a></p>`:""}
       ${mineAll.length?`<h4>💛 About you in the club</h4><ul>${mineAll.map(n=>`<li${n.at>since&&!rdK.includes(kMi(n))?"":' class="tn-read"'}>${n.html}${n.text&&!/^react/.test(n.kind)?` <span class="muted">“${esc(n.text)}”</span>`:""} <span class="muted">· ${ago(n.at)}</span> <a class="tn-go" href="#club" data-go="club" data-tnrdgo="${esc(kMi(n))}"${n.pid?` data-bgo="${esc(n.pid)}"`:""}>Open →</a></li>`).join("")}</ul>`:""}
       ${packs.length?`<h4>Packs</h4><ul>${packs.map(rowR).join("")}</ul>`:""}
@@ -10944,7 +10945,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116194437"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116195621"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
