@@ -5983,7 +5983,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. If a message waits unread for 12 hours, Hibi sends you one short email (you can turn that off in Settings). Paying for the club now happens right here on Hibi, at the top of the Club page. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. If a message waits unread for 12 hours, Hibi sends you one short email (you can turn that off in Settings). Paying for the club now happens right here on Hibi, at the top of the Club page. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed (Noa’s private students get a free month).</div></li>
       <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
     </ul>
   </div>
@@ -10880,7 +10880,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116143050"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116144005"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11210,13 +11210,18 @@ window.__csBusy = function(){
     const ab=row.querySelector(".cl-ask-btn"); if(ab) ab.textContent="💬 Questions first? Message Noa";
     const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
   }
+  const PRIVT=()=>{ const v=window.__csHubView; return !!(v&&!v.clubOnly); };
+  const trialTxt=()=>PRIVT()?{btn:"🎁 Try it free for a month",tz:"🎁 Try the club free for a month →",note:"A thank-you for being one of Noa’s private students: one free month in the club. No card needed."}
+    :{btn:"🎁 Try it free for 2 weeks",tz:"🎁 Try the club free for 2 weeks →",note:"No card needed. Come to the classes, then decide if you want to stay."};
+  document.addEventListener("cs-hubview",()=>{ const T=trialTxt(); const b=document.querySelector("#v-club .hb-trial-btn"); if(b&&!b.disabled) b.textContent=T.btn;
+    const n=document.querySelector("#v-club .hb-trial .hb-pay-note"); if(n) n.textContent=T.note; const tz=document.querySelector("#homeClub .hc-join[data-hb-trial]"); if(tz) tz.textContent=T.tz; });
   function decorateTrial(){
     if(!memReady||(MEM&&MEM.trialUsed)) return;
-    const tz=document.querySelector("#homeClub .hc-join"); if(tz&&!tz.dataset.hbTrial){ tz.dataset.hbTrial="1"; tz.textContent="🎁 Try the club free for 2 weeks →"; }
+    const tz=document.querySelector("#homeClub .hc-join"); if(tz&&!tz.dataset.hbTrial){ tz.dataset.hbTrial="1"; tz.textContent=trialTxt().tz; }
     const row=document.querySelector("#v-club .cl-lock .cl-join-row"); if(!row||row.dataset.hbTrial) return;
     row.dataset.hbTrial="1";
     const t=document.createElement("div"); t.className="hb-trial";
-    t.innerHTML=`<button class="hb-trial-btn" data-hbtrial="1">🎁 Try it free for 2 weeks</button><p class="hb-pay-note">No card needed. Come to the classes, then decide if you want to stay.</p>`;
+    t.innerHTML=`<button class="hb-trial-btn" data-hbtrial="1">${trialTxt().btn}</button><p class="hb-pay-note">${trialTxt().note}</p>`;
     const pay=row.parentNode.querySelector(".hb-pay"); row.parentNode.insertBefore(t,pay||row);
     const jb=row.querySelector(".cl-join-btn"); if(jb) jb.hidden=true;
     const ab=row.querySelector(".cl-ask-btn"); if(ab&&!payOn()) ab.textContent="💬 Questions? Message Noa";
@@ -11275,7 +11280,7 @@ window.__csBusy = function(){
     else if(m.status==="canceling"){ tag="Ending"; line=`You cancelled. You keep everything until ${day(m.paidThrough)}.`; }
     else if(m.status==="grace"){ tag="Payment failed"; warn=true; line=`Your last payment didn’t go through. Update your card before ${day(m.graceUntil)} to keep your club access.`; }
     else if(m.status==="trial"){ const left=Math.max(0,Math.round((new Date(m.trialUntil+"T23:59:00")-Date.now())/864e5));
-      tag=left<=1?"Last day":left+" days left"; line=`You’re on your <b>free 2-week trial</b> until ${day(m.trialUntil)}. Enjoy the classes!`; }
+      tag=left<=1?"Last day":left+" days left"; line=`You’re on your <b>${m.trialLen==="month"?"free month in the club":"free 2-week trial"}</b> until ${day(m.trialUntil)}. Enjoy the classes!`; }
     else if(m.status==="trial-ended"){ tag="Trial ended"; warn=true; line=`Your free trial ended on ${day(m.trialUntil)}. Hope you enjoyed it! You can join anytime below.`; }
     else if(m.status==="ended"){ tag="Ended"; warn=true; line=`Your membership ended${m.paidThrough?` on ${day(m.paidThrough)}`:""}. You can join again anytime below.`; }
     const links=[];
