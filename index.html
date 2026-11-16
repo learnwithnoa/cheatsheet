@@ -5831,7 +5831,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v1.0</button></div></footer>
-<script src="buddy.js?v=54" defer></script>
+<script src="buddy.js?v=55" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -10291,7 +10291,7 @@ bkRender();
   btn.addEventListener("click",()=>openP(panel.hidden));
   document.getElementById("musicClose").addEventListener("click",()=>{ openP(false); btn.focus(); });
   panel.addEventListener("keydown",e=>{ if(e.key==="Escape"){ openP(false); btn.focus(); } });
-  document.addEventListener("click",e=>{ if(!panel.hidden && !e.target.closest(".music-wrap")) openP(false); });
+  document.addEventListener("click",e=>{ if(!panel.hidden && e.target.isConnected && !e.target.closest(".music-wrap")) openP(false); });
   paint();
 })();
 
@@ -10483,6 +10483,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1116-studypet", date:"November 16, 2026", title:"Pet your buddy while you study", items:[
+    ["🎧","Study room","In the music window, tap your buddy to pet it. Tap anywhere else in the room to play or pause the music.",""]
+  ]},
   {id:"2026-1116-translate", date:"November 16, 2026", title:"The translator always answers", items:[
     ["🌐","No more “busy”","When the smart translator is busy, the Translator now gives you a quick translation anyway, so you’re never stuck.",""]
   ]},
@@ -10777,7 +10780,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116102111"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116103022"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

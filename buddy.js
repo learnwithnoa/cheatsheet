@@ -571,6 +571,8 @@ html.cs-calm .bd-pv{animation:none}
 .ms-cap{display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;font-weight:800}
 .ms-scene .ms-pet{animation:msBreathe 3.2s steps(1) infinite}
 .ms-scene .ms-blink{opacity:0;animation:msBlink 5s steps(1) infinite}
+.ms-scene .ms-pet{cursor:pointer}.ms-scene .ms-pet.ms-hop{animation:msHop .55s ease-out}
+@keyframes msHop{35%{transform:translateY(-2.5px)}70%{transform:translateY(0)}85%{transform:translateY(-.8px)}}
 .ms-scene .ms-disc2,.ms-scene .ms-note{display:none}
 .ms-scene .ms-arm-on{display:none}
 .ms-on .ms-pet{animation:msNod .5s steps(1) infinite}
@@ -1766,6 +1768,16 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const modes = document.getElementById("musicModes");
     if (modes) new MutationObserver(() => paintMusicScene()).observe(modes, { attributes: true, subtree: true, attributeFilter: ["aria-checked"] });
     const mb = document.getElementById("musicBtn"); if (mb) mb.addEventListener("click", () => setTimeout(paintMusicScene, 0));
+    /* tapping the buddy in the study room pets it (like the buddy in the corner) instead of pausing the music */
+    const mp = document.getElementById("musicPanel");
+    if (mp) mp.addEventListener("click", e => {
+      const g = btn.querySelector(".ms-pet"); if (!g || !btn.contains(e.target) || !e.clientX) return;
+      try { const svg = g.ownerSVGElement, pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+        const p = pt.matrixTransform(svg.getScreenCTM().inverse()), b = g.getBBox();
+        if (p.x < b.x - .5 || p.x > b.x + b.width + .5 || p.y < b.y - .5 || p.y > b.y + b.height + .5) return; } catch (er) { return; }
+      e.preventDefault(); e.stopPropagation(); wake(); petIt();
+      g.classList.remove("ms-hop"); void g.getBoundingClientRect(); g.classList.add("ms-hop");
+    }, true);
     setInterval(() => { const p = document.getElementById("musicPanel"); if (p && !p.hidden) paintMusicScene(); }, 10 * 60000);
   })();
 

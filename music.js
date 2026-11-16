@@ -235,7 +235,7 @@
   btn.addEventListener("click",()=>openP(panel.hidden));
   document.getElementById("musicClose").addEventListener("click",()=>{ openP(false); btn.focus(); });
   panel.addEventListener("keydown",e=>{ if(e.key==="Escape"){ openP(false); btn.focus(); } });
-  document.addEventListener("click",e=>{ if(!panel.hidden && !e.target.closest(".music-wrap")) openP(false); });
+  document.addEventListener("click",e=>{ if(!panel.hidden && e.target.isConnected && !e.target.closest(".music-wrap")) openP(false); });
   paint();
 })();
   /* 🔔 your notifications: the same pop-up as on Home, opened right here */
