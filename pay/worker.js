@@ -118,6 +118,10 @@ async function grantClub(env, uid, name) {
   await patch(env, `clubAccess/${uid}`, { on: true, name: name || "" });
   const role = plain(await fs(env, "GET", `roles/${uid}`)) || {};
   if (!role.hub && meta.clubFeed) await setJ(env, uid, "hub-view", { v: 1, clubOnly: true, club: meta.clubFeed, updated: new Date().toISOString() });
+  else if (role.hub && meta.clubFeed) {   // a private student (My coaching): add the club to the page they already have, right away
+    const hv = await getJ(env, uid, "hub-view");
+    if (hv && !hv.club) { hv.club = meta.clubFeed; hv.updated = Date.now(); await setJ(env, uid, "hub-view", hv); }
+  }
 }
 async function removeClub(env, uid) {
   if (uid === TEACHER) return;
@@ -127,6 +131,7 @@ async function removeClub(env, uid) {
   await fs(env, "DELETE", `clubAccess/${uid}`).catch(() => {});
   const role = plain(await fs(env, "GET", `roles/${uid}`)) || {};
   if (!role.hub) await setJ(env, uid, "hub-view", null);
+  else { const hv = await getJ(env, uid, "hub-view"); if (hv && hv.club) { delete hv.club; hv.updated = Date.now(); await setJ(env, uid, "hub-view", hv); } }   // keep My coaching, remove the club
 }
 
 // billing/{uid} is private (only this helper can read it); users/{uid}/data/membership is what the member sees
