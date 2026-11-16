@@ -45,6 +45,7 @@ jobs:
           # keep only harmless lines (urls, results, errors), never key values
           grep -E "https://|Uploaded|Deployed|Success|✨|✘|ERROR|error|Error|subdomain|workers.dev" /tmp/out.txt | sed -E "s/[0-9a-f]{32}/<account>/g; s/\x1b\[[0-9;]*m//g" | head -40 >> /tmp/log.txt
           sleep 8; echo "health: $(curl -s https://hibi-pay.learnwithnoa.workers.dev/api/health)" >> /tmp/log.txt
+          echo "check: $(curl -s -X POST https://hibi-pay.learnwithnoa.workers.dev/api/flow-callback)" >> /tmp/log.txt   # runs the payment check once
           cp /tmp/log.txt deploy-log.txt
       - name: Save the result
         run: |
