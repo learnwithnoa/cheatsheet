@@ -10773,7 +10773,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116085851"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116092431"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11128,7 +11128,10 @@ window.__csBusy = function(){
     if(preview()){ say("In View as nothing is paid. Members go to Flow to add their card."); return; }
     const all=document.querySelectorAll("[data-hbjoin]"); all.forEach(x=>x.disabled=true);
     try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin,provider:b.dataset.pp?"paypal":"flow"}); if(!d.url) throw new Error("Something went wrong. Please try again."); location.href=d.url; }
-    catch(err){ say(err.message); all.forEach(x=>x.disabled=false); }
+    catch(err){ say(err.message); all.forEach(x=>x.disabled=false);
+      /* also show it right under the button, so it can't be missed */
+      let n=b.parentNode.querySelector(".hb-pay-err"); if(!n){ n=document.createElement("p"); n.className="hb-pay-err"; n.style.cssText="margin:6px 0 0;font:700 13px var(--body);color:#E5484D;flex-basis:100%"; b.parentNode.appendChild(n); }
+      n.textContent="⚠️ "+err.message; }
   });
 
   /* ---- "Your membership" card for members who pay on Hibi ---- */

@@ -95,7 +95,10 @@ _js = r'''<script>
     if(preview()){ say("In View as nothing is paid. Members go to Flow to add their card."); return; }
     const all=document.querySelectorAll("[data-hbjoin]"); all.forEach(x=>x.disabled=true);
     try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin,provider:b.dataset.pp?"paypal":"flow"}); if(!d.url) throw new Error("Something went wrong. Please try again."); location.href=d.url; }
-    catch(err){ say(err.message); all.forEach(x=>x.disabled=false); }
+    catch(err){ say(err.message); all.forEach(x=>x.disabled=false);
+      /* also show it right under the button, so it can't be missed */
+      let n=b.parentNode.querySelector(".hb-pay-err"); if(!n){ n=document.createElement("p"); n.className="hb-pay-err"; n.style.cssText="margin:6px 0 0;font:700 13px var(--body);color:#E5484D;flex-basis:100%"; b.parentNode.appendChild(n); }
+      n.textContent="⚠️ "+err.message; }
   });
 
   /* ---- "Your membership" card for members who pay on Hibi ---- */
