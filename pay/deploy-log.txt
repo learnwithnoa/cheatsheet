@@ -1,19 +1,20 @@
-Deploy 2026-11-16T00:13:30Z
+Deploy 2026-11-16T10:59:53Z
 CLOUDFLARE_API_TOKEN: set
 CLOUDFLARE_ACCOUNT_ID: set
 FLOW_API_KEY: set
 FLOW_SECRET_KEY: set
 FIREBASE_SERVICE_ACCOUNT: set
-NOTION_TOKEN: MISSING
+NOTION_TOKEN: set
 Firebase key: valid, project learnwithnoa-cheatsheet
 deploy exit: 0
 secrets exit: 0
-Uploaded hibi-pay (1.49 sec)
-Deployed hibi-pay triggers (0.93 sec)
+Uploaded hibi-pay (6.55 sec)
+Deployed hibi-pay triggers (2.01 sec)
   https://hibi-pay.learnwithnoa.workers.dev
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
 ✨ Successfully created secret for key: FLOW_API_KEY
 ✨ Successfully created secret for key: FLOW_SECRET_KEY
 ✨ Successfully created secret for key: FIREBASE_SERVICE_ACCOUNT
-✨ 3 secrets successfully uploaded
-health: {"ok":true,"flow":"sandbox","flowKeys":true,"firebaseKey":true,"flowApi":"ok","notion":"not set up","database":"ok"}
+✨ Successfully created secret for key: NOTION_TOKEN
+✨ 4 secrets successfully uploaded
+health: {"ok":true,"flow":"sandbox","flowKeys":true,"firebaseKey":true,"flowApi":"ok","notion":"ok","database":"ok"}
