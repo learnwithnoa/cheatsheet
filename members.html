@@ -151,6 +151,10 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 .pend ul{list-style:none;margin:8px 0 2px;padding:0;display:flex;flex-direction:column;gap:6px}
 .pend li{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px}.pend li>div{display:flex;flex-direction:column;min-width:0}
 .pend li .muted{font-size:12.5px;overflow-wrap:anywhere}
+.pend li>.pend-btns{display:flex;flex-direction:row;gap:6px;flex:none}
+.pend-x{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface-2);color:var(--muted,inherit);cursor:pointer;font:700 13px var(--body)}
+.pend-x:hover{border-color:#e05252;color:#e05252}
+.pend-twin{font-size:12.5px;color:#d97706;margin-top:2px;overflow-wrap:anywhere}
 .pend-re{flex:none;font:700 12.5px var(--body);padding:5px 11px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
 </style>
 <link rel="stylesheet" href="comfort.css?v=20">
@@ -225,7 +229,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 </script>
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
-  getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./fb.js?v=12.19.0d";
+  getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "./fb.js?v=12.19.0d";
 
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
@@ -255,7 +259,7 @@ document.addEventListener("submit", async e => {
 /* invited people who haven't signed in to Hibi yet (an "access" entry with no account for that email) */
 let PENDING = [];
 async function loadPending() {
-  try { const sn = await getDocs(collection(db, "access")); PENDING = sn.docs.map(d => ({ email: d.id, name: (d.data() || {}).name || "", at: (d.data() || {}).at || 0 })); }
+  try { const sn = await getDocs(collection(db, "access")); PENDING = sn.docs.filter(d => !(d.data() || {}).gone).map(d => ({ email: d.id, name: (d.data() || {}).name || "", at: (d.data() || {}).at || 0 })); }
   catch (e) { console.warn("access", e); PENDING = []; }
   renderPending();
 }
@@ -265,14 +269,24 @@ function renderPending() {
   const ps = PENDING.filter(x => x.email && !have.has(x.email.toLowerCase()) && x.email.toLowerCase() !== TEACHER).sort((a, b) => (b.at || 0) - (a.at || 0));
   if (!ps.length) { box.hidden = true; box.innerHTML = ""; return; }
   const ago = t => { if (!t) return ""; const d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? "today" : d === 1 ? "yesterday" : d + " days ago"; };
+  /* typo in the invite? someone already signed in with an almost identical email */
+  const lev = (a, b) => { if (Math.abs(a.length - b.length) > 2) return 9; let p = [...Array(b.length + 1).keys()]; for (let i = 1; i <= a.length; i++) { const c = [i]; for (let j = 1; j <= b.length; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = c; } return p[b.length]; };
+  const twin = x => { const e = x.email.toLowerCase(); return (students || []).find(s => s.email && lev(e, s.email.toLowerCase()) <= 2); };
   const open = box.querySelector("details") ? box.querySelector("details").open : ps.length <= 4;
   box.hidden = false;
-  box.innerHTML = `<details${open ? " open" : ""}><summary>⏳ Invited, not signed in yet <span class="mt-n cnt">${ps.length}</span></summary><ul>${ps.map(x => `<li><div><b>${esc(x.name || x.email)}</b><span class="muted">${x.name ? esc(x.email) + " · " : ""}${x.at ? "invited " + ago(x.at) : "invited"}</span></div><button type="button" class="pend-re" data-pendmail="${esc(x.email)}" data-pendname="${esc(x.name)}">📧 Email again</button></li>`).join("")}</ul></details>`;
+  box.innerHTML = `<details${open ? " open" : ""}><summary>⏳ Invited, not signed in yet <span class="mt-n cnt">${ps.length}</span></summary><ul>${ps.map(x => `<li><div><b>${esc(x.name || x.email)}</b><span class="muted">${x.name ? esc(x.email) + " · " : ""}${x.at ? "invited " + ago(x.at) : "invited"}</span>${(t => t ? `<span class="pend-twin">⚠️ Already signed in as <b>${esc(t.email)}</b>. Typo in the invite? You can remove this one.</span>` : "")(twin(x))}</div><div class="pend-btns"><button type="button" class="pend-re" data-pendmail="${esc(x.email)}" data-pendname="${esc(x.name)}">📧 Email again</button><button type="button" class="pend-x" data-pendx="${esc(x.email)}" title="Remove this invite" aria-label="Remove this invite">✕</button></div></li>`).join("")}</ul></details>`;
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-pendmail]"); if (!b) return;
   const email = b.dataset.pendmail, first = (b.dataset.pendname || "").split(/\s+/)[0] || "";
   const body = `Hi ${first}!\n\nJust a reminder: your Hibi account is ready. 🎉\n\n1. Open https://hibi.cl/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
   window.open("https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(email) + "&su=" + encodeURIComponent("Your Hibi access is ready 🎉") + "&body=" + encodeURIComponent(body), "_blank"); });
+document.addEventListener("click", async e => { const b = e.target.closest("[data-pendx]"); if (!b) return;
+  const email = b.dataset.pendx;
+  const ok = window.csConfirm ? await window.csConfirm("Remove this invite?", `<p><b>${esc(email)}</b> won't be able to sign in to Hibi with this email anymore. You can invite them again anytime.</p>`, "Remove") : confirm("Remove the invite for " + email + "?");
+  if (!ok) return;
+  try { await deleteDoc(doc(db, "access", email)); }
+  catch (er) { try { const x = PENDING.find(p => p.email === email) || {}; await setDoc(doc(db, "access", email), { name: x.name || "", at: x.at || 0, by: "noa", gone: true }); } catch (er2) { toast("Couldn't remove it. Try again."); return; } }
+  PENDING = PENDING.filter(p => p.email !== email); renderPending(); toast("Invite removed"); });
 function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
 
 $("inBtn").onclick = async () => {
