@@ -1276,6 +1276,8 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 
 .hb-pay .hb-mine{margin:0 0 8px;font-size:14px;color:var(--ink)}
 
+#hbMove .hb-mv-warn{display:inline-block;margin-top:6px;font-size:13.5px;color:var(--muted)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -3628,7 +3630,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     const seen=getSeen(), wk=Date.now()-14*864e5, since=Math.max(seen,wk);
     const KIND={private:["private student","tn-p"],both:["private + club","tn-b"],club:["club member","tn-c"],new:["private, not linked yet","tn-n"]};
     const all=data.acc.filter(a=>a.first&&a.first>Date.now()-7*864e5).sort((a,b)=>b.first-a.first);
-    const joins=all.filter(a=>a.first>since), older=all.filter(a=>a.first<=since);
+    const rdJ=getRead(), isNewJ=a=>a.first>since&&!rdJ.includes("j:"+a.uid);
+    const joins=all.filter(isNewJ), older=all.filter(a=>!isNewJ(a));
     const packs=[];
     data.priv.filter(p=>p.status!=="inactive"&&p.status!=="paused").forEach(p=>{ const v=p.view||{}, du=v.due; if(!du) return; const nm=esc(v.name), id=esc(p.key.slice(4));
       let t=""; if(du.pending) t=`<b>${nm}</b>: pack not paid yet`; else if(du.left!=null&&du.left<=0) t=`<b>${nm}</b>: pack used up`; else if(du.classesLeft!=null&&du.classesLeft<=1) t=`<b>${nm}</b>: ${du.classesLeft} class left in the pack`; else if(du.half&&du.instAt&&du.nextNo>=du.instAt) t=`<b>${nm}</b>: 2nd payment due`;
@@ -3642,11 +3645,11 @@ html.cs-calm .cs-rxpal button{transition:none}
     const mineNew=(data.mine||[]).filter(n=>n.at>since), mineAll=(data.mine||[]).filter(n=>n.at>wk);
     /* things that stay on the list until they're dealt with (packs, requests…) only count until you mark them as read */
     const kOf=h=>(String(h).match(/data-tnk="([^"]*)"/)||[])[1]||h;
-    const rd=getRead(), keys=[...areq.map(r=>"a:"+r.id),...reps.map(r=>"r:"+(r.id||r.pid||r.at)),...packs.map(kOf),...clocks.map(kOf)].concat(unl?["u:"+unl]:[]);
+    const rd=getRead(), keys=[...areq.map(r=>"a:"+r.id),...reps.map(r=>"r:"+(r.id||r.pid||r.at)),...packs.map(kOf),...clocks.map(kOf),...joins.map(a=>"j:"+a.uid)].concat(unl?["u:"+unl]:[]);
     const rowR=h=>{ const k=kOf(h); return rd.includes(k)?h.replace("<li ",'<li class="tn-read" '):h.replace(/<\/li>$/,`<button type="button" class="tn-rd" data-tnrd="${k}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button></li>`); };
     curKeys=keys;
     const trAll=(data.trials||[]).filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>wk), trNew=trAll.filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>since);
-    const cnt=keys.filter(k=>!rd.includes(k)).length+joins.length+clubNew.length+mineNew.length+trNew.length;
+    const cnt=keys.filter(k=>!rd.includes(k)).length+clubNew.length+mineNew.length+trNew.length;
     try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){} npSay({n:cnt});
     b.hidden=false;
     /* closed: a small button that opens it again */
@@ -3654,7 +3657,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     if(!open){ b.className="tn-wrap"; b.innerHTML=bell; return; }
     b.className="tn-wrap open";
     const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
-      return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`${(data.welc||{})[a.uid+"-join"]?`<span class="tn-hint tn-done">✓ Welcomed · open the chat</span>`:`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`}`:""}</li>`; };
+      return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`${(data.welc||{})[a.uid+"-join"]?`<span class="tn-hint tn-done">✓ Welcomed · open the chat</span>`:`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`}`:""}${old?"":`<button type="button" class="tn-rd" data-tnrd="j:${esc(a.uid)}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button>`}</li>`; };
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
       ${trAll.length?`<h4>🎁 Free club trials</h4><ul>${trAll.map(t=>{ const when=Math.max(t.start||0,t.ended||0,t.joined||0), dd=d=>{ try{ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }catch(e){ return d; } };
         const what=t.status==="joined"?"joined the club after the trial 💛":t.status==="trial-ended"?"’s free trial ended (club access removed)":t.status==="trial-kept"?"’s trial ended, kept in the club (you set it)":`started a free 2-week trial · ends ${dd(t.until)}`;
@@ -5879,7 +5882,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=55" defer></script>
+<script src="buddy.js?v=56" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -10836,7 +10839,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116125148"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116130216"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11338,9 +11341,12 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]
     if(preview()) body=`${head("Same price")}<p>Members who still pay on Skool see <b>their own price</b> here, with a button to switch. Their first Hibi payment waits until the day Skool would have charged them.</p>`;
     else if(P.annual) body=`${head("Paid")}<p>Your year is <b>already paid</b>${P.renew?` until <b>${/^\d{4}-\d\d-\d\d$/.test(P.renew)?new Date(P.renew+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}):String(P.renew).replace(/[<>&]/g,"")}</b>`:""}. Nothing to do now: you keep the club, and Noa will remind you before it ends.</p>`;
     else { const usdOnly=P.usdOnly, price=usdOnly?`US$${P.usd} a month`:`${clp(P.clp)} a month`;
-      const when=P.start?`Nothing is charged today. Your first payment on Hibi is on <b>${day(P.start)}</b>, the day Skool would have charged you.`:`Your first payment is today, and then once a month.`;
+      const plus5=d=>{ const x=new Date(d+"T12:00:00"); x.setDate(x.getDate()+5); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); };
+      const when=P.start?`Nothing is charged today. Your first payment on Hibi is on <b>${day(P.start)}</b>, when your Skool month ends. Your Skool subscription is already cancelled, so you never pay twice.<br><span class="hb-mv-warn">Switch before then to keep your spot. If you haven’t switched by ${day(plus5(P.start))}, your club access pauses (the rest of Hibi stays).</span>`
+        :P.ended?`Your Skool month ended on <b>${day(P.ended)}</b>. Switch by <b>${day(P.switchBy)}</b> to keep your club access. Your first payment is today, and then once a month.`
+        :`Your first payment is today, and then once a month.`;
       body=`${head("Same price")}<p>You keep your price: <b>${price}</b>. ${when}</p>
-        <ol class="hb-mv-steps"><li>Tap the button and confirm with ${usdOnly?"PayPal":"Mercado Pago"}.</li><li>Noa cancels your Skool membership, so you never pay twice.</li><li>That’s it. You can see, change or cancel it right here on Hibi.</li></ol>
+        <ol class="hb-mv-steps"><li>Tap the button and confirm with ${usdOnly?"PayPal":"Mercado Pago"}.</li><li>That’s it. You can see, change or cancel it right here on Hibi.</li></ol>
         <div class="hb-mem-cta">${usdOnly?`<button class="hb-pay-btn" data-hbjoin="monthly" data-pp="1">💛 Switch with PayPal<small>US$${P.usd} a month</small></button>`:`<button class="hb-pay-btn" data-hbjoin="monthly">💛 Switch to Hibi<small>${price} · Mercado Pago</small></button>`}</div>
         ${usdOnly?"":`<p class="hb-pay-note hb-pp">Outside Chile? Pay in US dollars with PayPal: <button class="hb-pp-btn" data-hbjoin="monthly" data-pp="1">US$${P.usd} a month</button></p>`}
         <p class="hb-pay-note">Questions? <a href="#" data-joindm="ask">Message Noa</a>.</p>`; }

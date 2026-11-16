@@ -157,7 +157,7 @@ async function legacyPrice(env, email, name) {
 // Skool members moving over: their first Hibi payment waits until the day Skool would have charged them (from the club list),
 // so nobody pays twice for the same month. Only dates 2–70 days ahead count; otherwise the first payment is today.
 const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12, ene: 1, abr: 4, ago: 8, dic: 12 };
-function parseRenew(s) {
+function parseRenew(s, from) {
   s = String(s || "").trim().toLowerCase(); if (!s) return null;
   let y, mo, d, x;
   if ((x = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) [y, mo, d] = [+x[1], +x[2], +x[3]];
@@ -166,11 +166,11 @@ function parseRenew(s) {
   else if ((x = s.match(/(\d{1,2})\s*(?:de\s+)?([a-zñ]{3})[a-zñ]*\.?(?:\s*(?:de\s+)?(\d{4}))?/))) [d, mo, y] = [+x[1], MONTHS[x[2]], x[3] ? +x[3] : 0];
   if (!mo || !d || mo > 12 || d > 31) return null;
   if (y && y < 100) y += 2000;
-  const t = today(), ty = +t.slice(0, 4);
+  const t = from || today(), ty = +t.slice(0, 4);
   const iso = (yy) => `${yy}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
   let r = iso(y || ty); if (!y && r < t) r = iso(ty + 1);
   // a date that already passed means Skool already charged that month: the next charge is a month later (same day)
-  for (let i = 0; i < 24 && r < addDays(t, 2); i++) { let [yy, mm] = r.split("-").map(Number); mm += 1; if (mm > 12) { mm = 1; yy += 1; } const last = new Date(Date.UTC(yy, mm, 0)).getUTCDate(); r = `${yy}-${String(mm).padStart(2, "0")}-${String(Math.min(d, last)).padStart(2, "0")}`; }
+  for (let i = 0; i < 24 && r < (from ? t : addDays(t, 2)); i++) { let [yy, mm] = r.split("-").map(Number); mm += 1; if (mm > 12) { mm = 1; yy += 1; } const last = new Date(Date.UTC(yy, mm, 0)).getUTCDate(); r = `${yy}-${String(mm).padStart(2, "0")}-${String(Math.min(d, last)).padStart(2, "0")}`; }
   return r;
 }
 async function rosterFor(env, me) {
@@ -178,10 +178,33 @@ async function rosterFor(env, me) {
   const ms = (meta.club && meta.club.members) || [];
   return ms.find((x) => x.email && normEmail(x.email) === normEmail(me.email)) || (nn(me.name) ? ms.find((x) => nn(x.name) === nn(me.name)) : null);
 }
+// Noa cancelled every Skool renewal on Nov 16, 2026, so each member's Skool access ends on their next Skool date after that day.
+// That's when their first Hibi payment happens. After it (+5 days of grace) club access ends unless they switched.
+const SKOOL_CANCELLED = "2026-11-16";
+const skoolEnd = (m) => (m && m.per !== "year" && m.renew ? parseRenew(m.renew, SKOOL_CANCELLED) : null);
 async function firstCharge(env, me) {
-  const m = await rosterFor(env, me); if (!m || m.per === "year") return null;
-  const r = parseRenew(m.renew); if (!r) return null;
-  return r >= addDays(today(), 2) && r <= addDays(today(), 70) ? r : null;
+  const r = skoolEnd(await rosterFor(env, me)); if (!r) return null;
+  return r >= addDays(today(), 2) && r <= addDays(today(), 70) ? r : null;   // later than that, or already passed: charged today
+}
+// nightly: Skool members whose Skool month ended more than 5 days ago and who didn't switch lose club access (not Hibi)
+async function skoolMoveCheck(env) {
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  const ms = (meta.club && meta.club.members) || [], clubUids = new Set(meta.clubUids || []), prices = meta.clubPrices || {};
+  if (!ms.length || !clubUids.size) return [];
+  const users = await fs(env, "GET", "users?pageSize=300"), byEmail = {};
+  for (const d of (users && users.documents) || []) { const u = plain(d) || {}; if (u.email) byEmail[normEmail(u.email)] = d.name.split("/").pop(); }
+  const out = [];
+  for (const m of ms) {
+    const r = skoolEnd(m); if (!r || today() <= addDays(r, GRACE_DAYS)) continue;
+    const pays = Number(m.price) > 0 || prices[normEmail(m.email)]; if (!pays) continue;   // free members stay
+    const uid = m.email && byEmail[normEmail(m.email)]; if (!uid || !clubUids.has(uid)) continue;
+    const b = await getBill(env, uid);
+    if (["active", "grace", "canceling", "trial"].includes(b.status) || b.moveEnded) continue;
+    await removeClub(env, uid);
+    await saveBill(env, uid, { status: "ended", moveEnded: true, email: normEmail(m.email), paidThrough: r });
+    out.push({ uid, status: "skool month ended, didn't switch" });
+  }
+  return out;
 }
 // what a club member who still pays on Skool will pay on Hibi (for the "Move your membership to Hibi" card)
 async function myPrice(env, req) {
@@ -189,6 +212,7 @@ async function myPrice(env, req) {
   const m = await rosterFor(env, me);
   const p = await legacyPrice(env, me.email, me.name);
   const o = { clp: Number(p && p.clp) || STD_MONTH, usd: Number(p && p.usd) || STD_MONTH_USD, legacy: !!p, onList: !!m, renew: (m && m.renew) || null, start: await firstCharge(env, me) };
+  const end = skoolEnd(m); if (end && !o.start && end <= addDays(today(), 1)) { o.ended = end; o.switchBy = addDays(end, GRACE_DAYS); }
   if (p && p.usd && !p.clp) o.usdOnly = true;
   if (m && m.per === "year") o.annual = true;
   if (m && !(Number(m.price) > 0) && !p) o.free = true;
@@ -500,6 +524,7 @@ async function nightly(env) {
       out.push({ uid, status });
     } catch (e) { out.push({ uid, error: String(e.message).slice(0, 120) }); }
   }
+  try { out.push(...(await skoolMoveCheck(env))); } catch (e) { out.push({ skoolMove: String(e.message).slice(0, 120) }); }
   return out;
 }
 

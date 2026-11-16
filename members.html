@@ -146,6 +146,12 @@ details.mcol:not(.parkbox){margin:22px 0 6px}
 
 /* dropdowns: our own arrow, a comfortable distance from the edge */
 select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 12px center!important;background-size:11px 7px!important;padding-right:32px!important;cursor:pointer}
+.pend{margin:0 0 12px}.pend details{border:1.5px dashed var(--line);border-radius:14px;padding:8px 12px;background:var(--surface)}
+.pend summary{cursor:pointer;font-weight:800;font-size:14px;list-style:none}.pend summary::-webkit-details-marker{display:none}
+.pend ul{list-style:none;margin:8px 0 2px;padding:0;display:flex;flex-direction:column;gap:6px}
+.pend li{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px}.pend li>div{display:flex;flex-direction:column;min-width:0}
+.pend li .muted{font-size:12.5px;overflow-wrap:anywhere}
+.pend-re{flex:none;font:700 12.5px var(--body);padding:5px 11px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
 </style>
 <link rel="stylesheet" href="comfort.css?v=20">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -193,6 +199,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
           <p class="muted small" style="margin:6px 0 8px">They get access right away, and an email to them opens in Gmail, ready to send.</p>
           <form id="invForm" class="inv-f"><input name="name" placeholder="Name" maxlength="80" required><input name="email" type="email" placeholder="Their Google email" maxlength="120" required><button type="submit" class="btn primary">Approve + email them</button></form>
         </details>
+        <div id="pendBox" class="pend" hidden></div>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
         <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
         <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option></select></div>
@@ -207,7 +214,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=55"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=56"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -243,7 +250,29 @@ document.addEventListener("submit", async e => {
   const body = `Hi ${first}!\n\nYou're in! 🎉 Your Hibi account is ready.\n\n1. Open https://hibi.cl/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
   window.open("https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(email) + "&su=" + encodeURIComponent("You're in! Your Hibi access 🎉") + "&body=" + encodeURIComponent(body), "_blank");
   f.reset(); $("invBox").open = false; toast("✓ Approved. Send the email that just opened.");
+  PENDING = PENDING.filter(x => x.email !== email).concat([{ email, name, at: Date.now() }]); renderPending();
 });
+/* invited people who haven't signed in to Hibi yet (an "access" entry with no account for that email) */
+let PENDING = [];
+async function loadPending() {
+  try { const sn = await getDocs(collection(db, "access")); PENDING = sn.docs.map(d => ({ email: d.id, name: (d.data() || {}).name || "", at: (d.data() || {}).at || 0 })); }
+  catch (e) { console.warn("access", e); PENDING = []; }
+  renderPending();
+}
+function renderPending() {
+  const box = $("pendBox"); if (!box) return;
+  const have = new Set((students || []).map(s => (s.email || "").toLowerCase()));
+  const ps = PENDING.filter(x => x.email && !have.has(x.email.toLowerCase()) && x.email.toLowerCase() !== TEACHER).sort((a, b) => (b.at || 0) - (a.at || 0));
+  if (!ps.length) { box.hidden = true; box.innerHTML = ""; return; }
+  const ago = t => { if (!t) return ""; const d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? "today" : d === 1 ? "yesterday" : d + " days ago"; };
+  const open = box.querySelector("details") ? box.querySelector("details").open : ps.length <= 4;
+  box.hidden = false;
+  box.innerHTML = `<details${open ? " open" : ""}><summary>⏳ Invited, not signed in yet <span class="mt-n cnt">${ps.length}</span></summary><ul>${ps.map(x => `<li><div><b>${esc(x.name || x.email)}</b><span class="muted">${x.name ? esc(x.email) + " · " : ""}${x.at ? "invited " + ago(x.at) : "invited"}</span></div><button type="button" class="pend-re" data-pendmail="${esc(x.email)}" data-pendname="${esc(x.name)}">📧 Email again</button></li>`).join("")}</ul></details>`;
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-pendmail]"); if (!b) return;
+  const email = b.dataset.pendmail, first = (b.dataset.pendname || "").split(/\s+/)[0] || "";
+  const body = `Hi ${first}!\n\nJust a reminder: your Hibi account is ready. 🎉\n\n1. Open https://hibi.cl/\n2. Tap "Continue with Google" and use this email (${email}).\n\nOn your phone, you can add it to your home screen so it works like an app.\n\nSee you there!\nNoa`;
+  window.open("https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(email) + "&su=" + encodeURIComponent("Your Hibi access is ready 🎉") + "&body=" + encodeURIComponent(body), "_blank"); });
 function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
 
 $("inBtn").onclick = async () => {
@@ -341,6 +370,7 @@ async function load() {
     }));
     list.sort((a, b) => b.lastSeen - a.lastSeen);
     students = list.filter(s => s.email.toLowerCase() !== TEACHER);
+    loadPending();
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });

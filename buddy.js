@@ -597,6 +597,7 @@ html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-music .ms-dis
 @keyframes msRain{from{transform:translate(0,0)}to{transform:translate(-1px,12px)}}
 @keyframes msSteam{0%{transform:translateY(0);opacity:.2}50%{opacity:.6}100%{transform:translateY(-2px);opacity:0}}
 @keyframes msTw{0%,49%{opacity:1}50%,100%{opacity:.45}}
+.ms-sign{cursor:pointer}.ms-sign:hover rect:nth-child(4){fill:#D4A76E}
 .ms-tip{font-size:12.5px;color:var(--muted,#667);padding:0 12px 8px;line-height:1.35;font-weight:600}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:default;touch-action:none}#bdStgPet{cursor:pointer}
 .bd-stage-wrap{position:relative;max-width:340px;margin:12px auto 10px}.bd-stage-wrap .bd-stage{margin:0}
@@ -1735,8 +1736,21 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   const NOISE = new Set(["brown", "pink", "white"]);
   function musicScene() {
     const has = S.on === true && !!S.a, m = curMode(), rain = RAINY.has(m), kind = NOISE.has(m) ? "noise" : m === "rain" ? "rain" : "music";
-    const pet = has ? `<g class="ms-pet">${rects(drawPet({}), 9, 1)}<g class="ms-blink">${rects(drawPet({ blink: true }), 9, 1)}</g></g>` : "";
+    const pet = has ? `<g class="ms-pet">${rects(drawPet({}), 9, 1)}<g class="ms-blink">${rects(drawPet({ blink: true }), 9, 1)}</g></g>` : adoptSign();
     return `<svg viewBox="-3 0 51 26" shape-rendering="crispEdges" role="img" aria-label="${has ? esc(nameOf()) + " studying with music in a cozy room" : "A cozy study room with a record player"}">${studyRoom(rain, kind)}${pet}</svg>`;
+  }
+  /* no buddy yet: a little wooden sign stands where the buddy would sit (tap it to adopt one) */
+  function adoptSign() {
+    let o = `<g class="ms-sign">`;
+    const P = (x, y, w, h, c) => { o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`; };
+    const F = `font-family="'Space Mono',ui-monospace,monospace" font-weight="700" text-anchor="middle"`;
+    P(6, 19, 1, 6, "#7A4F31"); P(15, 19, 1, 6, "#7A4F31");                     /* posts */
+    P(2.6, 12, 16.8, 7.6, "#6B4226");                                         /* board edge */
+    P(3.2, 12.6, 15.6, 6.4, "#C99A62"); P(3.2, 12.6, 15.6, .5, "#E0B57E"); P(3.2, 18.5, 15.6, .5, "#A97A48");
+    [[3.6, 13.1], [17.9, 13.1], [3.6, 17.9], [17.9, 17.9]].forEach(([x, y]) => P(x, y, .5, .5, "#6B4226"));   /* nails */
+    o += `<text x="11" y="15.4" font-size="2" ${F} fill="#4A2A14">Adopt a</text><text x="11" y="17.8" font-size="2" ${F} fill="#4A2A14">study buddy</text>`;
+    P(19.6, 10.4, 1, 1, "#F2B8C6"); P(21.2, 10.4, 1, 1, "#F2B8C6"); P(20.4, 11.6, 1, .9, "#F2B8C6");   /* tiny paw on the corner */
+    return o + `</g>`;
   }
   function paintMusicScene() {
     const btn = document.getElementById("musicPlay"); if (!btn) return;
@@ -1751,7 +1765,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     }
     sc.innerHTML = musicScene();
     const has = S.on === true && !!S.a, tip = btn.querySelector("#msTip");
-    if (tip) { tip.textContent = has ? "" : "Adopt a study buddy and it'll study here with you 🐾"; tip.hidden = !tip.textContent; }
+    if (tip) { tip.textContent = ""; tip.hidden = true; }   /* the sign in the room says it now */
     setPlayClasses(sc, btn);
   }
   function setPlayClasses(sc, btn) {
@@ -1770,6 +1784,12 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const mb = document.getElementById("musicBtn"); if (mb) mb.addEventListener("click", () => setTimeout(paintMusicScene, 0));
     /* tapping the buddy in the study room pets it (like the buddy in the corner) instead of pausing the music */
     const mp = document.getElementById("musicPanel");
+    /* tapping the "Adopt a study buddy" sign opens the adoption window instead of playing music */
+    if (mp) mp.addEventListener("click", e => {
+      const sg = btn.querySelector(".ms-sign"); if (!sg || !btn.contains(e.target) || !e.clientX) return;
+      const r = sg.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+      e.preventDefault(); e.stopPropagation(); openModal("adopt");
+    }, true);
     if (mp) mp.addEventListener("click", e => {
       const g = btn.querySelector(".ms-pet"); if (!g || !btn.contains(e.target) || !e.clientX) return;
       try { const svg = g.ownerSVGElement, pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;

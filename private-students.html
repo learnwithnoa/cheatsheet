@@ -257,7 +257,11 @@ tr.arch td{opacity:.85}
 .hr{font:700 11.5px var(--mono)}.hr.Priority{color:var(--c-pink)}.hr.Standard{color:var(--c-sky)}
 .alerts{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .alerts li{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:10px;border-left:4px solid var(--k);background:color-mix(in srgb,var(--k) 10%,var(--surface-2))}
-.alerts li button{margin-left:auto}
+.alerts li .al-t{flex:1;min-width:0}
+.alerts li .al-act{flex:none;display:flex;align-items:center;gap:6px;margin-left:auto}
+.alerts .al-b{font:700 12.5px var(--body);padding:5px 11px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--k) 35%,var(--line));background:var(--surface);color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
+.alerts .al-b:hover{border-color:var(--k)}
+@media(max-width:600px){.alerts li{flex-wrap:wrap}.alerts li .al-t{flex-basis:calc(100% - 40px)}.alerts li .al-act{width:100%;justify-content:flex-end}}
 .ai{font-size:17px;width:22px;text-align:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
 .modal .card{width:min(640px,100%);max-height:90vh;overflow:auto}
@@ -354,7 +358,7 @@ html.emb body{background:transparent}
 </main>
 <div id="modal" class="modal" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script>window.__bdRender = 1;</script><script src="buddy.js?v=55"></script>
+<script>window.__bdRender = 1;</script><script src="buddy.js?v=56"></script>
 <script>
 /* your study buddy as the tab icon here too (same as on Hibi) */
 (function(){ try{ const b=JSON.parse(localStorage.getItem("ncs-buddy")||"null"), A=window.csBuddyArt; if(!b||b.on!==true||!b.a||!A||!A.sprites[b.a]) return;
@@ -652,6 +656,15 @@ function weekStats(off) {
   let n = 0; S.forEach(s => s.classes.forEach(c => { if (c.kind !== "note" && c.date >= ws && c.date < we && (c.att || "Present") === "Present") n++; }));
   return n;
 }
+/* classes from your calendar that already happened this week but aren't logged yet (they get logged tonight) */
+function calDoneThisWeek() {
+  const ws = weekStart(today()), seen = new Set(); let n = 0;
+  (meta && Array.isArray(meta.upcoming) ? meta.upcoming : []).forEach(u => { const st = Date.parse(u.start), s = S.find(x => x.id === u.student);
+    if (!s || !(st < Date.now() - 20 * 60e3)) return; const d = dkey(new Date(st)); if (d < ws || d > today()) return;
+    if ((s.classes || []).some(c => c.kind !== "note" && c.date === d) || seen.has(s.id + d)) return;
+    seen.add(s.id + d); n++; });
+  return n;
+}
 function monthStats() {
   const m = today().slice(0, 7); const r = { abs: 0, late: 0, ontime: 0, n: 0 };
   S.forEach(s => s.classes.forEach(c => { if (c.kind === "note" || !(c.date || "").startsWith(m)) return; r.n++; if (c.att === "Absent") r.abs++; else if (c.att === "Late cancellation") r.late++; else if (c.att === "Cancelled on time") r.ontime++; }));
@@ -685,7 +698,7 @@ function renderStoic() {
   try { if (window.top !== window.self) window.parent.postMessage({ stoicHTML: b.innerHTML }, location.origin); } catch (er) {}
   b.hidden = true;
 }
-setInterval(() => { try { if (meta && S) renderNext(); } catch (e) {} }, 60e3);   /* keep "live now" and "in 20 min" current */
+setInterval(() => { try { if (meta && S) { renderNext(); renderKpis(); renderRecent(); } } catch (e) {} }, 60e3);   /* keep "live now", "in 20 min" and classes that just ended current */
 function renderRecent() {
   const box = $("recentBox"); if (!box) return;
   const all = []; S.forEach(s => (s.classes || []).forEach(c => { if (c.kind !== "note" && c.date && c.date <= today()) all.push({ s, c }); }));
@@ -705,11 +718,11 @@ function renderSummary() {
   $("summary").textContent = `${act} active students${pa ? ` · ${pa} paused` : ""} · ${S.length - ar} students in total${ar ? ` (${ar} more archived)` : ""}`;
 }
 function renderKpis() {
-  const tw = weekStats(0), lw = weekStats(1), ms = monthStats(), e = earned(), mo = today().slice(0, 7);
+  const cal = calDoneThisWeek(), tw = weekStats(0) + cal, lw = weekStats(1), ms = monthStats(), e = earned(), mo = today().slice(0, 7);
   const diff = tw - lw, arrow = diff > 0 ? `<span class="up">▲ ${diff}</span>` : diff < 0 ? `<span class="down">▼ ${-diff}</span>` : "same as";
   const exp30 = expected().filter(x => x.d <= addDays(today(), 30)).reduce((n, x) => n + x.v, 0);
   $("kpis").innerHTML = `
-    <div class="kpi tint k-sky"><div class="kl">This week</div><div class="kv">${pl(tw, "class")}</div><div class="ks">≈ ${(tw * 0.75).toFixed(1).replace(".0", "")} h taught · ${arrow} ${diff ? "vs" : ""} last week (${lw})</div></div>
+    <div class="kpi tint k-sky"><div class="kl">This week</div><div class="kv">${pl(tw, "class")}</div><div class="ks">≈ ${(tw * 0.75).toFixed(1).replace(".0", "")} h taught · ${arrow} ${diff ? "vs" : ""} last week (${lw})${cal ? `<br><span title="Classes from your calendar that already happened today or this week. They get logged in the nightly wrap-up.">incl. ${cal} from your calendar, logged tonight</span>` : ""}</div></div>
     <div class="kpi tint k-green"><div class="kl">Paid this month</div><div class="kv">${clp(e.by[mo] || 0)}</div><div class="ks">${e.usd ? "incl. US$" + e.usd + " · " : ""}${clp(Object.entries(e.by).filter(([k]) => k.startsWith(mo.slice(0, 4))).reduce((n, [, v]) => n + v, 0))} this year</div></div>
     <div class="kpi tint k-violet"><div class="kl">Expected · next 30 days</div><div class="kv">${clp(exp30)}</div><div class="ks">installments + likely renewals</div></div>
     <div class="kpi tint k-coral"><div class="kl">This month</div><div class="kv">${pl(ms.n - ms.abs - ms.late - ms.ontime, "class")}</div><div class="ks">${ms.late} late cancel · ${ms.abs} no-show · ${ms.ontime} on-time cancel</div></div>`;
@@ -770,7 +783,7 @@ function renderAlerts() {
   const al = S.flatMap(alertsFor).filter(a => !dis[keyOf(a)]).sort((a, b) => ({ bad: 0, warn: 1, info: 2 }[a.lvl] - { bad: 0, warn: 1, info: 2 }[b.lvl]));
   const box = $("alertsBox"); box.hidden = !al.length;
   const K = { bad: "var(--c-red)", warn: "var(--c-amber)", info: "var(--c-sky)" };
-  box.innerHTML = `<h2>🔔 Heads-up <span class="news-n">${al.length}</span></h2><ul class="alerts">${al.map(a => `<li style="--k:${K[a.lvl]}"><span class="ai">${a.i}</span><span>${esc(a.t)}</span>${(() => { const s = S.find(x => x.id === a.id), u = s && reminderFor(s, a); return u ? `<a class="ib" style="margin-left:auto" target="_blank" rel="noopener" href="${u}" title="Opens a ready-to-send email in Gmail">✉️ Remind</a>` : ""; })()}<button type="button" class="ib" data-open="${a.id}" ${(() => { const s = S.find(x => x.id === a.id); return s && reminderFor(s, a) ? 'style="margin-left:0"' : ""; })()}>Open</button><button type="button" class="ib al-x" data-aldis="${esc(keyOf(a))}" title="Dismiss (you can undo)">✕</button></li>`).join("")}</ul>`;
+  box.innerHTML = `<h2>🔔 Heads-up <span class="news-n">${al.length}</span></h2><ul class="alerts">${al.map(a => `<li style="--k:${K[a.lvl]}"><span class="ai">${a.i}</span><span class="al-t">${esc(a.t)}</span><span class="al-act">${(() => { const s = S.find(x => x.id === a.id), u = s && reminderFor(s, a); return u ? `<a class="al-b" target="_blank" rel="noopener" href="${u}" title="Opens a ready-to-send email in Gmail">✉️ Remind</a>` : ""; })()}<button type="button" class="al-b" data-open="${a.id}">Open →</button><button type="button" class="ib al-x" data-aldis="${esc(keyOf(a))}" title="Dismiss (you can undo)">✕</button></span></li>`).join("")}</ul>`;
 }
 function renderMoney() {
   const e = earned(); const ms = []; for (let i = 5; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); ms.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0")); }
