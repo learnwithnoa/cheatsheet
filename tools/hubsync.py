@@ -53,6 +53,7 @@ Usage:
       next to that class's recording and on This week). Same json as the live board: {"title","subtitle","prompt","countLabel","theme":"light"|"dark","cards":[{"n","emoji","text","meaning",
       "example","english","uk","section","questions":[...],"style":"wrap"}]}. Same date again = replaces it. Refuses before the class has ended.
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
+  HUB_PASSWORD=... python3 hubsync.py trials [days]   free 2-week club trials ("new": started/ended/joined in the last [days], default 2)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
       "notes":"1-2 friendly lines about the class","vocab":[{"w":"word","tr":"Spanish meaning","ex":"example from class"}],"phrases":["useful phrase", ...]}'
@@ -1022,6 +1023,16 @@ def main():
             http("PATCH", f"{BASE}/access/{urllib.parse.quote(em)}", {"fields": {"name": {"stringValue": x.get("name", "")}, "at": {"integerValue": str(int(datetime.datetime.now().timestamp() * 1000))}, "by": {"stringValue": "existing account"}}}, token=tok)
             n += 1
         print(json.dumps({"approved": n})); return
+    if cmd == "trials":
+        # free 2-week club trials (started on Hibi; the pay helper keeps this list): who started, ended or joined in the last [days] (default 2)
+        days = int(a[1]) if len(a) > 1 else 2
+        since = (datetime.datetime.now().timestamp() - days * 86400) * 1000
+        out = []
+        for t in get_doc(tok, tu, "t-trials") or []:
+            when = max(t.get("start") or 0, t.get("ended") or 0, t.get("joined") or 0)
+            out.append({"name": t.get("name"), "email": t.get("email"), "status": t.get("status"), "started": datetime.datetime.fromtimestamp((t.get("start") or 0) / 1000).strftime("%Y-%m-%d"),
+                        "ends": t.get("until"), "new": when >= since})
+        print(json.dumps(out, ensure_ascii=False)); return
     if cmd == "access-requests":
         # people asking to join Hibi (Noa approves them on Hibi: Home → 🔔)
         out = []

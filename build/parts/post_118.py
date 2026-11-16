@@ -58,3 +58,12 @@ if '2026-1115-domain' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 15: free 2-week club trial
+s=open(p,encoding="utf-8").read()
+if '2026-1115-trial' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1115-trial", date:"November 15, 2026", title:"Try the club free for 2 weeks", items:[
+    ["🎁","Free 2-week trial","Not in Noa’s English Club yet? Open <b>Club</b> and tap <b>Try it free for 2 weeks</b>. No card needed: you get the classes, recordings, community wall and podcast right away.",""],
+    ["💛","Then you decide","Your trial shows how many days are left at the top of the Club page. Want to stay? Tap <b>I want to stay</b> and Noa will help you join.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

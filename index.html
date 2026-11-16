@@ -1189,6 +1189,7 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .hb-pay-btn.alt{background:var(--surface);color:var(--ink);border:1.5px solid color-mix(in srgb,#F0A63A 55%,var(--line));box-shadow:none}
 .hb-pay-btn[disabled]{opacity:.6;cursor:wait}
 .hb-pay-note{font-size:13px;color:var(--muted);margin:0}
+.hb-trial+.hb-pay::before{content:"or join now";font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 #hbMem{margin:0 0 14px}
 #hbMem .hb-mem{border:1.5px solid color-mix(in srgb,#3FB37F 35%,var(--line));background:color-mix(in srgb,#3FB37F 8%,var(--surface));border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
 #hbMem .hb-mem.warn{border-color:color-mix(in srgb,#E26A3D 50%,var(--line));background:color-mix(in srgb,#E26A3D 9%,var(--surface))}
@@ -1226,6 +1227,14 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 .cl-ask-btn{font:700 14px var(--body);padding:9px 16px;border-radius:999px;background:var(--surface);color:var(--ink);text-decoration:none;border:1.5px solid color-mix(in srgb,#F0A63A 45%,var(--line))}
 .cl-ask-btn:hover{border-color:#E79A1E}
 .cl-lock .cl-join-note{text-align:center;margin:0}
+
+.hb-trial{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;margin-top:4px}
+.hb-trial-btn{font:800 16px var(--body);padding:12px 22px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(100deg,#7BD88F,#3FB37F 55%,#2E9C8F);color:#06281a;box-shadow:0 4px 14px rgba(63,179,127,.35)}
+.hb-trial-btn[disabled]{opacity:.6;cursor:wait}
+.hb-trial-or{font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+#hbMem .hb-mem.trial{border-color:color-mix(in srgb,#3FB37F 45%,var(--line))}
+#hbMem .hb-mem-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+#hbMem .hb-mem-cta .hb-pay-btn{padding:8px 16px;font-size:14px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -3560,9 +3569,10 @@ html.cs-calm .cs-rxpal button{transition:none}
       let reps=[]; try{ reps=window.__clubSocial&&window.__clubSocial.reports?await window.__clubSocial.reports():[]; }catch(e){}
       let areq=[]; try{ areq=await accessReqs(); }catch(e){}
       let mine=[]; try{ mine=window.__clubSocial&&window.__clubSocial.myNotes?await window.__clubSocial.myNotes():[]; }catch(e){}
+      let trials=[]; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-trials"); trials=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"[]")||[]; }catch(e){}
       let welc={}; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-kudos-sent"); welc=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"{}")||{}; }catch(e){}
       try{ const th=window.__clubSocial&&window.__clubSocial.dms?await window.__clubSocial.dms():[], me=window.__csFire&&window.__csFire.uid(); (th||[]).forEach(t=>(t.members||[]).forEach(u=>{ if(u&&u!==me) welc[u+"-join"]=welc[u+"-join"]||1; })); }catch(e){}
-      data={acc,priv,club,reps,areq,mine,welc}; if(NP) open=true;
+      data={acc,priv,club,reps,areq,mine,welc,trials}; if(NP) open=true;
       try{ if(new URLSearchParams(location.search).get("notif")){ open=true; history.replaceState(null,"",location.pathname+location.hash); } }catch(e){}
       paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
@@ -3595,7 +3605,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     const rd=getRead(), keys=[...areq.map(r=>"a:"+r.id),...reps.map(r=>"r:"+(r.id||r.pid||r.at)),...packs.map(kOf),...clocks.map(kOf)].concat(unl?["u:"+unl]:[]);
     const rowR=h=>{ const k=kOf(h); return rd.includes(k)?h.replace("<li ",'<li class="tn-read" '):h.replace(/<\/li>$/,`<button type="button" class="tn-rd" data-tnrd="${k}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button></li>`); };
     curKeys=keys;
-    const cnt=keys.filter(k=>!rd.includes(k)).length+joins.length+clubNew.length+mineNew.length;
+    const trAll=(data.trials||[]).filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>wk), trNew=trAll.filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>since);
+    const cnt=keys.filter(k=>!rd.includes(k)).length+joins.length+clubNew.length+mineNew.length+trNew.length;
     try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){} npSay({n:cnt});
     b.hidden=false;
     /* closed: a small button that opens it again */
@@ -3605,6 +3616,9 @@ html.cs-calm .cs-rxpal button{transition:none}
     const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
       return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`${(data.welc||{})[a.uid+"-join"]?`<span class="tn-hint tn-done">✓ Welcomed · open the chat</span>`:`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`}`:""}</li>`; };
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
+      ${trAll.length?`<h4>🎁 Free club trials</h4><ul>${trAll.map(t=>{ const when=Math.max(t.start||0,t.ended||0,t.joined||0), dd=d=>{ try{ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }catch(e){ return d; } };
+        const what=t.status==="joined"?"joined the club after the trial 💛":t.status==="trial-ended"?"’s free trial ended (club access removed)":t.status==="trial-kept"?"’s trial ended, kept in the club (you set it)":`started a free 2-week trial · ends ${dd(t.until)}`;
+        return `<li${when>since?"":' class="tn-read"'}>🎁 <b>${esc(t.name||t.email||"Someone")}</b> ${what} <span class="muted">· ${ago(when)}</span>${t.status==="trial"||t.status==="trial-ended"?` <button type="button" class="tn-go" data-dmto="${esc(t.uid)}" data-dmname="${esc(t.name||"")}">Message →</button>`:""}</li>`; }).join("")}</ul>`:""}
       ${areq.length?`<h4>🙋 Asking to join Hibi</h4><ul>${areq.map(r=>`<li><b>${esc(r.name)}</b> · ${esc(r.email)} <span class="muted">· ${esc(({club:"club member",private:"private student",joining:"wants to join",other:"other"})[r.who]||r.who||"")} · ${ago(r.at)}${r.n>1?` · asked ${r.n} times`:""}</span>${r.msg?`<div class="muted">“${esc(r.msg)}”</div>`:""}<div class="tn-acts"><button type="button" class="tn-btn" data-tnok="${esc(r.id)}">✓ Approve + email them</button><button type="button" class="tn-btn" data-tnno="${esc(r.id)}">Decline</button></div></li>`).join("")}</ul>`:""}
 
       ${reps.length?`<h4>⚑ Reported on the club wall</h4><ul>${reps.map(r=>`<li>⚑ <b>${esc(r.name)}</b> reported ${esc(r.author||"a post")}’s ${String(r.path||"").split("/").length>2?"comment":"post"}${r.text?`: <span class="muted">“${esc(r.text.slice(0,90))}”</span>`:""}${r.why?` · <i>${esc(r.why)}</i>`:""} <span class="muted">· ${ago(r.at)}</span> <a class="tn-go" href="#club" data-bgo="${esc(r.pid||"")}">Open →</a> <button type="button" class="tn-btn" data-tnrep="${esc(r.id)}">Done ✓</button></li>`).join("")}</ul>`:""}
@@ -3948,7 +3962,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     if(window.__csGuest){ e.preventDefault(); window.toast("This is a preview: sign in to message Noa."); return; }
     const uid=window.__csFire&&window.__csFire.uid&&window.__csFire.uid(); if(!uid||window.__csGuest||typeof window.__clubDM!=="function") return; e.preventDefault();
     window.__clubDM("J8D2tjQmBaaA2QN730tSfSrjfm73","Noa");   /* Noa's account */
-    if(!ask) setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value="Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
+    if(!ask) setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value=j.dataset.joindm==="stay"?"Hi Noa! 👋 I’m enjoying my free trial and I’d like to stay in the club. How do I join?":"Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
   function locked(){ loadSample(); document.querySelectorAll("#v-club .cl-igtop").forEach(x=>x.hidden=true);
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;
@@ -5879,7 +5893,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>).</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
     </ul>
   </div>
@@ -10456,6 +10470,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1115-trial", date:"November 15, 2026", title:"Try the club free for 2 weeks", items:[
+    ["🎁","Free 2-week trial","Not in Noa’s English Club yet? Open <b>Club</b> and tap <b>Try it free for 2 weeks</b>. No card needed: you get the classes, recordings, community wall and podcast right away.",""],
+    ["💛","Then you decide","Your trial shows how many days are left at the top of the Club page. Want to stay? Tap <b>I want to stay</b> and Noa will help you join.",""]
+  ]},
   {id:"2026-1115-domain", date:"November 15, 2026", title:"Hibi has its own address: hibi.cl", items:[
     ["🏠","hibi.cl","Hibi now lives at <b>hibi.cl</b>. Old links still work and bring you here.",""],
     ["🔑","Sign in once more","Because the address is new, you may need to sign in again. All your notes, words and progress are saved to your account, so everything is still here.",""],
@@ -10743,7 +10761,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261115205047"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261115210443"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11073,6 +11091,26 @@ window.__csBusy = function(){
     const ab=row.querySelector(".cl-ask-btn"); if(ab) ab.textContent="💬 Questions first? Message Noa";
     const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
   }
+  function decorateTrial(){
+    if(!memReady||(MEM&&MEM.trialUsed)) return;
+    const tz=document.querySelector("#homeClub .hc-join"); if(tz&&!tz.dataset.hbTrial){ tz.dataset.hbTrial="1"; tz.textContent="🎁 Try the club free for 2 weeks →"; }
+    const row=document.querySelector("#v-club .cl-lock .cl-join-row"); if(!row||row.dataset.hbTrial) return;
+    row.dataset.hbTrial="1";
+    const t=document.createElement("div"); t.className="hb-trial";
+    t.innerHTML=`<button class="hb-trial-btn" data-hbtrial="1">🎁 Try it free for 2 weeks</button><p class="hb-pay-note">No card needed. Come to the classes, then decide if you want to stay.</p>`;
+    const pay=row.parentNode.querySelector(".hb-pay"); row.parentNode.insertBefore(t,pay||row);
+    const jb=row.querySelector(".cl-join-btn"); if(jb) jb.hidden=true;
+    const ab=row.querySelector(".cl-ask-btn"); if(ab&&!payOn()) ab.textContent="💬 Questions? Message Noa";
+    const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
+  }
+  document.addEventListener("click",async e=>{
+    const b=e.target.closest("[data-hbtrial]"); if(!b) return; e.preventDefault();
+    if(preview()){ say("In View as nothing changes. Students get the club for 2 weeks, free, with one tap."); return; }
+    if(window.__csGuest){ say("This is a preview: sign in to start your free trial."); return; }
+    b.disabled=true;
+    try{ const d=await call("/api/trial"); say("Your 2 free weeks start now! 🎉 Opening the club…"); setTimeout(()=>{ location.hash="#club"; location.reload(); },1800); }
+    catch(err){ say(err.message); b.disabled=false; }
+  });
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbjoin]"); if(!b) return; e.preventDefault();
     if(preview()){ say("In View as nothing is paid. Members go to Flow to add their card."); return; }
@@ -11082,32 +11120,38 @@ window.__csBusy = function(){
   });
 
   /* ---- "Your membership" card for members who pay on Hibi ---- */
-  let MEM=null, loaded=false;
+  let MEM=null, loaded=false, memReady=false;
   async function loadMem(){
     loaded=true; const uid=F().uid&&F().uid(); const tok=F().token&&await F().token(); if(!uid||!tok||!F().base) return;
     try{ const r=await fetch(`${F().base}/users/${uid}/data/membership`,{headers:{authorization:"Bearer "+tok}});
-      if(!r.ok) return; const d=await r.json(); const f=d.fields||{};
+      if(!r.ok){ memReady=r.status===404; if(memReady) decorateTrial(); return; } const d=await r.json(); const f=d.fields||{};
       MEM=f.deleted&&f.deleted.booleanValue?null:JSON.parse((f.json&&f.json.stringValue)||"null"); }catch(e){}
-    drawMem();
+    memReady=true; drawMem(); decorateTrial();
   }
   function drawMem(){
     const main=document.getElementById("clubMain"); if(!main) return;
     let el=document.getElementById("hbMem");
-    const m=MEM; if(!m||!m.status||m.status==="none"){ if(el) el.remove(); return; }
+    const m=MEM; if(!m||!m.status||m.status==="none"||m.status==="trial-kept"){ if(el) el.remove(); return; }
     if(!el){ el=document.createElement("div"); el.id="hbMem"; main.parentNode.insertBefore(el,main); }
     const price=m.amount?`${clp(m.amount)} ${m.kind==="y"?"a year":"a month"}`:"";
     let tag="Active", warn=false, line="";
     if(m.status==="active") line=`${price}${m.paidThrough?` · renews on ${day(m.paidThrough)}`:""}`;
     else if(m.status==="canceling"){ tag="Ending"; line=`You cancelled. You keep everything until ${day(m.paidThrough)}.`; }
     else if(m.status==="grace"){ tag="Payment failed"; warn=true; line=`Your last payment didn’t go through. Update your card before ${day(m.graceUntil)} to keep your club access.`; }
+    else if(m.status==="trial"){ const left=Math.max(0,Math.round((new Date(m.trialUntil+"T23:59:00")-Date.now())/864e5));
+      tag=left<=1?"Last day":left+" days left"; line=`You’re on your <b>free 2-week trial</b> until ${day(m.trialUntil)}. Enjoy the classes!`; }
+    else if(m.status==="trial-ended"){ tag="Trial ended"; warn=true; line=`Your free trial ended on ${day(m.trialUntil)}. Hope you enjoyed it! You can join anytime below.`; }
     else if(m.status==="ended"){ tag="Ended"; warn=true; line=`Your membership ended${m.paidThrough?` on ${day(m.paidThrough)}`:""}. You can join again anytime below.`; }
     const links=[];
     if(m.status==="active"||m.status==="grace") links.push(`<button data-hbmem="card">${m.status==="grace"?"Update my card":"Change card"}</button>`);
     if(m.status==="active") links.push(`<button class="danger" data-hbmem="cancel">Cancel membership</button>`);
+    const cta=m.status==="trial"?(payOn()?`<div class="hb-mem-cta"><button class="hb-pay-btn" data-hbjoin="monthly">💛 Stay in the club<small>${clp(35000)} a month</small></button><button class="hb-pay-btn alt" data-hbjoin="yearly">A year<small>${clp(210000)}</small></button></div>`
+      :`<div class="hb-mem-cta"><a class="hb-pay-btn" href="#" data-joindm="stay" style="text-decoration:none">💛 I want to stay</a></div>`):"";
     let min=false; try{ min=localStorage.getItem("hibi-mem-min")==="1"; }catch(e){}
-    el.innerHTML=`<div class="hb-mem${warn?" warn":""}${min?" min":""}"><div class="hb-mem-h"><b>💛 Your membership</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmem="min" aria-expanded="${!min}" title="${min?"Show details":"Minimize"}">${min?"Show ▾":"Minimize ▴"}</button></div>
+    el.innerHTML=`<div class="hb-mem${warn?" warn":""}${min?" min":""}"><div class="hb-mem-h"><b>${String(m.status).startsWith("trial")?"🎁 Your free trial":"💛 Your membership"}</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmem="min" aria-expanded="${!min}" title="${min?"Show details":"Minimize"}">${min?"Show ▾":"Minimize ▴"}</button></div>
       <p>${line}</p>${m.card&&m.status!=="ended"?`<p class="hb-pay-note">Card: ${String(m.card).replace(/[<>&]/g,"")}</p>`:""}
-      ${links.length?`<div class="hb-mem-links">${links.join("")}</div>`:""}</div>`;
+      ${cta}${links.length?`<div class="hb-mem-links">${links.join("")}</div>`:""}</div>`;
+    if(m.status==="trial") el.firstElementChild.classList.add("trial");
   }
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbmem]"); if(!b) return; e.preventDefault();
@@ -11125,7 +11169,7 @@ window.__csBusy = function(){
     if(st){ setTimeout(()=>say(st==="ok"?"Welcome to Noa’s English Club! 💛 Your membership is active.":st==="card"?"Your card is updated. 💳":"The payment didn’t go through, so nothing was charged. You can try again, or message Noa."),1200);
       q.delete("membership"); q.delete("why"); history.replaceState(null,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); } }catch(e){}
 
-  const tick=()=>{ decorateJoin(); if(!loaded&&F().uid&&F().uid()) loadMem(); else if(MEM&&!document.getElementById("hbMem")) drawMem(); };
+  const tick=()=>{ decorateJoin(); decorateTrial(); if(!loaded&&F().uid&&F().uid()) loadMem(); else if(MEM&&!document.getElementById("hbMem")) drawMem(); };
   new MutationObserver(tick).observe(document.documentElement,{childList:true,subtree:true});
   setTimeout(tick,1500);
 })();

@@ -133,7 +133,8 @@ async function saveBill(env, uid, b) {
   const all = await getBill(env, uid);
   await setJ(env, uid, "membership", {
     status: all.status || "none", kind: all.kind || null, amount: all.amount || null, currency: "CLP",
-    paidThrough: all.paidThrough || null, graceUntil: all.graceUntil || null, card: all.card || null, provider: all.provider || null, updated: new Date().toISOString(),
+    paidThrough: all.paidThrough || null, graceUntil: all.graceUntil || null, card: all.card || null, provider: all.provider || null,
+    trialUntil: all.trialUntil || null, trialUsed: !!all.trialUsed, updated: new Date().toISOString(),
   });
 }
 
@@ -183,6 +184,7 @@ async function cardReturn(env, req, url) {
   const paidThrough = (sub.period_end || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31);
   await saveBill(env, uid, { subscriptionId: sub.subscriptionId, planId: plan, kind, amount, card, status: "active", paidThrough, graceUntil: null, since: b.since || today(), pendingKind: null });
   await grantClub(env, uid, b.name || cust.name);
+  if (b.trialUsed) await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {});
   return back(true);
 }
 
@@ -193,6 +195,28 @@ async function updateCard(env, req, url) {
   await patch(env, `billing/${me.uid}`, { pendingKind: "card" });
   const reg = await flow(env, "POST", "/customer/register", { customerId: b.customerId, url_return: url.origin + "/api/card-return" });
   return json({ url: reg.url + "?token=" + reg.token }, 200, req);
+}
+
+// ---------- free 2-week club trial (no card) ----------
+const TRIAL_DAYS = 14;
+async function trialLog(env, uid, entry) {          // Noa's list (users/{Noa}/data/t-trials): his bell + the nightly summary read it
+  const list = (await getJ(env, TEACHER, "t-trials")) || [];
+  const i = list.findIndex((x) => x.uid === uid);
+  if (i >= 0) list[i] = { ...list[i], ...entry }; else list.unshift({ uid, ...entry });
+  await setJ(env, TEACHER, "t-trials", list.slice(0, 200));
+}
+async function startTrial(env, req) {
+  const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
+  const b = await getBill(env, me.uid);
+  if (b.trialUsed) return json({ error: "You’ve already had your free trial. You can join anytime, or message Noa." }, 400, req);
+  const role = plain(await fs(env, "GET", `roles/${me.uid}`)) || {};
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  if (role.club === true || (meta.clubUids || []).includes(me.uid)) return json({ error: "You’re already in the club! Refresh the page." }, 400, req);
+  const until = addDays(today(), TRIAL_DAYS);
+  await saveBill(env, me.uid, { status: "trial", trialUsed: true, trialStart: new Date().toISOString(), trialUntil: until, email: me.email, name: me.name });
+  await grantClub(env, me.uid, me.name);
+  await trialLog(env, me.uid, { name: me.name, email: me.email, start: Date.now(), until, status: "trial" });
+  return json({ ok: true, until }, 200, req);
 }
 
 async function cancel(env, req) {
@@ -211,6 +235,19 @@ async function nightly(env) {
   for (const d of (list && list.documents) || []) {
     const uid = d.name.split("/").pop(); const b = plain(d);
     try {
+      if (b.status === "trial" && !b.subscriptionId) {
+        if (b.trialUntil && today() > b.trialUntil) {
+          // if Noa changed this person's club setting himself after the trial began (e.g. they paid another way), leave it
+          const role = plain(await fs(env, "GET", `roles/${uid}`)) || {};
+          const kept = role.at && b.trialStart && role.at > b.trialStart && role.club === true;
+          if (!kept) await removeClub(env, uid);
+          const status = kept ? "trial-kept" : "trial-ended";
+          await saveBill(env, uid, { status });
+          await trialLog(env, uid, { status, ended: Date.now() });
+          out.push({ uid, status });
+        }
+        continue;
+      }
       if (!b.subscriptionId) continue;
       const sub = await flow(env, "GET", "/subscription/get", { subscriptionId: b.subscriptionId });
       const end = (sub.period_end || b.paidThrough || "").slice(0, 10);
@@ -250,6 +287,7 @@ export default {
         case "/api/card-return": return await cardReturn(env, req, url);
         case "/api/cancel": return await cancel(env, req);
         case "/api/update-card": return await updateCard(env, req, url);
+        case "/api/trial": return await startTrial(env, req);
         case "/api/flow-callback": await nightly(env); return new Response("ok");
         case "/api/nightly": {
           const me = await whoIs(env, req); if (!me || me.uid !== TEACHER) return json({ error: "Only Noa can do this." }, 403, req);

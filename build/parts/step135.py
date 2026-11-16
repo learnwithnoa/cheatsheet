@@ -12,6 +12,7 @@ _css = r'''
 .hb-pay-btn.alt{background:var(--surface);color:var(--ink);border:1.5px solid color-mix(in srgb,#F0A63A 55%,var(--line));box-shadow:none}
 .hb-pay-btn[disabled]{opacity:.6;cursor:wait}
 .hb-pay-note{font-size:13px;color:var(--muted);margin:0}
+.hb-trial+.hb-pay::before{content:"or join now";font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 #hbMem{margin:0 0 14px}
 #hbMem .hb-mem{border:1.5px solid color-mix(in srgb,#3FB37F 35%,var(--line));background:color-mix(in srgb,#3FB37F 8%,var(--surface));border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
 #hbMem .hb-mem.warn{border-color:color-mix(in srgb,#E26A3D 50%,var(--line));background:color-mix(in srgb,#E26A3D 9%,var(--surface))}
@@ -67,6 +68,26 @@ _js = r'''<script>
     const ab=row.querySelector(".cl-ask-btn"); if(ab) ab.textContent="💬 Questions first? Message Noa";
     const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
   }
+  function decorateTrial(){
+    if(!memReady||(MEM&&MEM.trialUsed)) return;
+    const tz=document.querySelector("#homeClub .hc-join"); if(tz&&!tz.dataset.hbTrial){ tz.dataset.hbTrial="1"; tz.textContent="🎁 Try the club free for 2 weeks →"; }
+    const row=document.querySelector("#v-club .cl-lock .cl-join-row"); if(!row||row.dataset.hbTrial) return;
+    row.dataset.hbTrial="1";
+    const t=document.createElement("div"); t.className="hb-trial";
+    t.innerHTML=`<button class="hb-trial-btn" data-hbtrial="1">🎁 Try it free for 2 weeks</button><p class="hb-pay-note">No card needed. Come to the classes, then decide if you want to stay.</p>`;
+    const pay=row.parentNode.querySelector(".hb-pay"); row.parentNode.insertBefore(t,pay||row);
+    const jb=row.querySelector(".cl-join-btn"); if(jb) jb.hidden=true;
+    const ab=row.querySelector(".cl-ask-btn"); if(ab&&!payOn()) ab.textContent="💬 Questions? Message Noa";
+    const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
+  }
+  document.addEventListener("click",async e=>{
+    const b=e.target.closest("[data-hbtrial]"); if(!b) return; e.preventDefault();
+    if(preview()){ say("In View as nothing changes. Students get the club for 2 weeks, free, with one tap."); return; }
+    if(window.__csGuest){ say("This is a preview: sign in to start your free trial."); return; }
+    b.disabled=true;
+    try{ const d=await call("/api/trial"); say("Your 2 free weeks start now! 🎉 Opening the club…"); setTimeout(()=>{ location.hash="#club"; location.reload(); },1800); }
+    catch(err){ say(err.message); b.disabled=false; }
+  });
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbjoin]"); if(!b) return; e.preventDefault();
     if(preview()){ say("In View as nothing is paid. Members go to Flow to add their card."); return; }
@@ -76,32 +97,38 @@ _js = r'''<script>
   });
 
   /* ---- "Your membership" card for members who pay on Hibi ---- */
-  let MEM=null, loaded=false;
+  let MEM=null, loaded=false, memReady=false;
   async function loadMem(){
     loaded=true; const uid=F().uid&&F().uid(); const tok=F().token&&await F().token(); if(!uid||!tok||!F().base) return;
     try{ const r=await fetch(`${F().base}/users/${uid}/data/membership`,{headers:{authorization:"Bearer "+tok}});
-      if(!r.ok) return; const d=await r.json(); const f=d.fields||{};
+      if(!r.ok){ memReady=r.status===404; if(memReady) decorateTrial(); return; } const d=await r.json(); const f=d.fields||{};
       MEM=f.deleted&&f.deleted.booleanValue?null:JSON.parse((f.json&&f.json.stringValue)||"null"); }catch(e){}
-    drawMem();
+    memReady=true; drawMem(); decorateTrial();
   }
   function drawMem(){
     const main=document.getElementById("clubMain"); if(!main) return;
     let el=document.getElementById("hbMem");
-    const m=MEM; if(!m||!m.status||m.status==="none"){ if(el) el.remove(); return; }
+    const m=MEM; if(!m||!m.status||m.status==="none"||m.status==="trial-kept"){ if(el) el.remove(); return; }
     if(!el){ el=document.createElement("div"); el.id="hbMem"; main.parentNode.insertBefore(el,main); }
     const price=m.amount?`${clp(m.amount)} ${m.kind==="y"?"a year":"a month"}`:"";
     let tag="Active", warn=false, line="";
     if(m.status==="active") line=`${price}${m.paidThrough?` · renews on ${day(m.paidThrough)}`:""}`;
     else if(m.status==="canceling"){ tag="Ending"; line=`You cancelled. You keep everything until ${day(m.paidThrough)}.`; }
     else if(m.status==="grace"){ tag="Payment failed"; warn=true; line=`Your last payment didn’t go through. Update your card before ${day(m.graceUntil)} to keep your club access.`; }
+    else if(m.status==="trial"){ const left=Math.max(0,Math.round((new Date(m.trialUntil+"T23:59:00")-Date.now())/864e5));
+      tag=left<=1?"Last day":left+" days left"; line=`You’re on your <b>free 2-week trial</b> until ${day(m.trialUntil)}. Enjoy the classes!`; }
+    else if(m.status==="trial-ended"){ tag="Trial ended"; warn=true; line=`Your free trial ended on ${day(m.trialUntil)}. Hope you enjoyed it! You can join anytime below.`; }
     else if(m.status==="ended"){ tag="Ended"; warn=true; line=`Your membership ended${m.paidThrough?` on ${day(m.paidThrough)}`:""}. You can join again anytime below.`; }
     const links=[];
     if(m.status==="active"||m.status==="grace") links.push(`<button data-hbmem="card">${m.status==="grace"?"Update my card":"Change card"}</button>`);
     if(m.status==="active") links.push(`<button class="danger" data-hbmem="cancel">Cancel membership</button>`);
+    const cta=m.status==="trial"?(payOn()?`<div class="hb-mem-cta"><button class="hb-pay-btn" data-hbjoin="monthly">💛 Stay in the club<small>${clp(35000)} a month</small></button><button class="hb-pay-btn alt" data-hbjoin="yearly">A year<small>${clp(210000)}</small></button></div>`
+      :`<div class="hb-mem-cta"><a class="hb-pay-btn" href="#" data-joindm="stay" style="text-decoration:none">💛 I want to stay</a></div>`):"";
     let min=false; try{ min=localStorage.getItem("hibi-mem-min")==="1"; }catch(e){}
-    el.innerHTML=`<div class="hb-mem${warn?" warn":""}${min?" min":""}"><div class="hb-mem-h"><b>💛 Your membership</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmem="min" aria-expanded="${!min}" title="${min?"Show details":"Minimize"}">${min?"Show ▾":"Minimize ▴"}</button></div>
+    el.innerHTML=`<div class="hb-mem${warn?" warn":""}${min?" min":""}"><div class="hb-mem-h"><b>${String(m.status).startsWith("trial")?"🎁 Your free trial":"💛 Your membership"}</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmem="min" aria-expanded="${!min}" title="${min?"Show details":"Minimize"}">${min?"Show ▾":"Minimize ▴"}</button></div>
       <p>${line}</p>${m.card&&m.status!=="ended"?`<p class="hb-pay-note">Card: ${String(m.card).replace(/[<>&]/g,"")}</p>`:""}
-      ${links.length?`<div class="hb-mem-links">${links.join("")}</div>`:""}</div>`;
+      ${cta}${links.length?`<div class="hb-mem-links">${links.join("")}</div>`:""}</div>`;
+    if(m.status==="trial") el.firstElementChild.classList.add("trial");
   }
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbmem]"); if(!b) return; e.preventDefault();
@@ -119,7 +146,7 @@ _js = r'''<script>
     if(st){ setTimeout(()=>say(st==="ok"?"Welcome to Noa’s English Club! 💛 Your membership is active.":st==="card"?"Your card is updated. 💳":"The payment didn’t go through, so nothing was charged. You can try again, or message Noa."),1200);
       q.delete("membership"); q.delete("why"); history.replaceState(null,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); } }catch(e){}
 
-  const tick=()=>{ decorateJoin(); if(!loaded&&F().uid&&F().uid()) loadMem(); else if(MEM&&!document.getElementById("hbMem")) drawMem(); };
+  const tick=()=>{ decorateJoin(); decorateTrial(); if(!loaded&&F().uid&&F().uid()) loadMem(); else if(MEM&&!document.getElementById("hbMem")) drawMem(); };
   new MutationObserver(tick).observe(document.documentElement,{childList:true,subtree:true});
   setTimeout(tick,1500);
 })();
