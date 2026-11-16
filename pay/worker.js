@@ -447,13 +447,12 @@ async function trackerRow(env, t) {        // t: {name,email,start(date),until,s
 // the welcome message from Noa, sent as a Hibi message (🔔 → 💬 Messages) the moment a free trial starts.
 // Noa can change the text: t-hubmeta.trialWelcome (placeholders {name} and {end date}); otherwise this one is used.
 const TRIAL_WELCOME = `Hiya {name}, welcome to the club! 🫰🏻
-So glad to have you here. {trial} 🔥 That's full access to the club here on Hibi: the live speaking classes, the class recordings, the community, all of it. Your trial runs until {end date}.
+So glad to have you here. {trial} 🔥 That's full access to the club here on Hibi: the live speaking classes, the class recordings, our weekly podcast, the community, all of it. Your trial runs until {end date}.
 
 Your first mission: join one speaking class this week. Just one. You don't need to prepare anything, and nobody's grading you. Deep Dive Monday, Wildcard Wednesday, Word Up Thursday or Free Talk Friday, all open to every level. The next class and its Zoom link are at the top of the Club page (This week), and the full schedule with every Zoom link is in Club → Calendar.
-(Fair warning: the first class is the scariest one. After that it's just… talking with friends who happen to be in breakout rooms.)
+(Fair warning: the first class is the scariest one. After that it's just… talking with friends, in English.)
 
 Week two, come back for more. The more classes you try, the easier it'll be to know if the club is your thing.
-And if you decide to stay, the Habla con Seguridad guarantee 🛡️ kicks in: come to 8 classes in your first paid month, and if you don't feel more confident speaking, your second month is on me. So yes, I'm literally betting on you showing up 😉
 
 A few more things:
 📌 Every Monday I post the week's class topics in Club → This week
