@@ -830,10 +830,15 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   /* ---------- actions ---------- */
   /* ---------- little 8-bit animal sounds (about 1 in 4 taps) ---------- */
   let sac = null;
+  /* special requests: one person's pet sounds higher (only theirs: on their own screen and when others tap it in the park) */
+  const SQUEAK = { "V64hBGjHHUTUfWqm7HfHkHg9hJH3": { a: "llama", x: 3 } };   /* Dakito's llama, Nov 2026 */
+  let PITCH = 1;
+  const myUid = () => { try { const P = window.__csPark; return (P && P.uid && P.uid()) || ""; } catch (e) { return ""; } };
   const sndOn = () => S.snd !== false && !document.documentElement.classList.contains("cs-calm");
   function tone(type, f0, f1, t0, dur, vol, opts) {
     opts = opts || {};
     const o = sac.createOscillator(), g = sac.createGain(); o.type = type;
+    f0 *= PITCH; f1 *= PITCH; if (opts.mid) opts.mid *= PITCH; if (PITCH !== 1) opts.lp = (opts.lp || 3000) * PITCH;
     o.frequency.setValueAtTime(f0, t0); if (opts.mid) o.frequency.linearRampToValueAtTime(opts.mid, t0 + dur * .45); o.frequency.exponentialRampToValueAtTime(Math.max(30, f1), t0 + dur);
     if (opts.vib) { const l = sac.createOscillator(), lg = sac.createGain(); l.frequency.value = opts.vib; lg.gain.value = opts.vd || 20; l.connect(lg).connect(o.frequency); l.start(t0); l.stop(t0 + dur + .05); }
     g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + .015); g.gain.setValueAtTime(vol, t0 + dur * .6); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
@@ -842,8 +847,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const lp = sac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = opts.lp || 3000;
     o.connect(g); out.connect(lp).connect(sac.destination); o.start(t0); o.stop(t0 + dur + .05);
   }
-  function animalSound(a, force) {
+  function animalSound(a, force, owner) {
     if (!sndOn() || (!force && Math.random() > .25)) return;
+    const sq = SQUEAK[owner === undefined ? myUid() : owner]; PITCH = sq && sq.a === a ? sq.x : 1;
     try {
       if (!sac) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; sac = new AC(); }
       if (sac.state === "suspended") sac.resume();
@@ -1331,7 +1337,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (fedToday(uid)) { parkToast(pb, "You already fed " + bn + " today 🍪"); return; }
     if ((S.t | 0) < 1) { parkToast(pb, "You don't have any treats. Study a little to earn some 🍪"); return; }
     const P = window.__csPark; if (!P || !P.feed) return;
-    try { await P.feed(uid, pb.dataset.a); S.t = (S.t | 0) - 1; save(); markFed(uid); animalSound(pb.dataset.a, true); parkToast(pb, "🍪 You fed " + bn + "! (+3 friendship for them)"); const b = pb.querySelector(".pb-feed"); if (b) b.remove(); }
+    try { await P.feed(uid, pb.dataset.a); S.t = (S.t | 0) - 1; save(); markFed(uid); animalSound(pb.dataset.a, true, uid); parkToast(pb, "🍪 You fed " + bn + "! (+3 friendship for them)"); const b = pb.querySelector(".pb-feed"); if (b) b.remove(); }
     catch (e) { if (/permission/i.test(String(e && (e.code || e.message)))) { markFed(uid); parkToast(pb, "You already fed " + bn + " today 🍪"); } else parkToast(pb, "Couldn't feed them. Try again."); }
   }
   async function claimLove() {
@@ -1508,7 +1514,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const dm = e.target.closest("[data-pdm]"); if (dm) { e.preventDefault(); e.stopPropagation(); if (window.__clubDM) window.__clubDM(dm.dataset.pdm, dm.dataset.first); return; }
     const dz = e.target.closest("[data-duel]"); if (dz) { e.preventDefault(); e.stopPropagation(); duelDialog(dz.dataset.duel, dz.dataset.first); return; }
     if (pb && e.target.closest("[data-feed]")) { e.preventDefault(); e.stopPropagation(); clearTimeout(pb._it); pb._it = setTimeout(() => pb.classList.remove("show-info"), 4000); feedOther(pb); ["🍪", "💛", "🍪"].forEach((ch, i) => setTimeout(() => parkFx(pb, ch), i * 130)); return; }
-    if (pb && pb.dataset.a) animalSound(pb.dataset.a, true);
+    if (pb && pb.dataset.a) animalSound(pb.dataset.a, true, pb.classList.contains("me") ? myUid() : (pb.dataset.uid || ""));
     if (pb && !pb.classList.contains("me") && pb.dataset.uid) sendLove(pb);
     if (pb) {
       document.querySelectorAll(".park-b.show-info").forEach(x => { if (x !== pb) x.classList.remove("show-info"); });
