@@ -335,6 +335,10 @@ async function loadTPrefs() {
   } catch (e) { console.warn("teacher prefs", e); }
 }
 /* a welcome counts as sent when Noa already has a Hibi chat with that person (e.g. a welcome sent from the 🔔 on Home) */
+/* stay in sync with welcomes sent from elsewhere (the 🔔 on Home, a chat): another tab, or coming back to this one */
+addEventListener("storage", e => { if (e.key === "cs-kudos-sent") { try { renderNews(); } catch (er) {} } });
+let dmwAt = Date.now();
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && Date.now() - dmwAt > 30000) { dmwAt = Date.now(); dmWelcomed(); try { renderNews(); } catch (er) {} } });
 async function dmWelcomed() {
   try {
     const u = auth.currentUser; if (!u) return; const tok = await u.getIdToken();
@@ -638,7 +642,7 @@ function renderNews() {
   const shown = newsOpen ? ev : ev.slice(0, 6);
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔔 Student news${fresh ? ` <span class="news-n">${fresh} new</span>` : ""}</h2>${fresh ? `<button type="button" id="newsSeen">Mark all as seen</button>` : ""}</div>
     <p class="muted" style="margin:4px 0 8px">New students, milestones and ✨ love from the last 45 days. Great things to celebrate in class 🎉</p>
-    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><div class="news-row"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button>${!e.kind ? "" : kdSent()[e.eid] ? `<span class="kd-done">✓ Sent</span>` : `<button type="button" class="kd-btn" data-kd="${esc(e.eid)}">${e.kind === "welcome" ? "👋 Send welcome" : "🎉 Send kudos"}</button>`}</div>${kdOpen === e.eid ? composer(e.eid, kdText(e)) : ""}</li>`).join("")}</ul>
+    <ul class="news-list">${shown.map(e => `<li class="${e.t > seen ? "fresh" : ""}${e.big ? " big" : ""}"><div class="news-row"><button type="button" class="news-i" data-news="${esc(e.s.uid)}"><span class="ni">${e.ico}</span><span>${e.txt}</span><span class="nd">${ago(e.t)}</span></button>${!e.kind ? "" : kdSent()[e.eid] ? `<span class="kd-done">${e.kind === "welcome" ? "✓ Already welcomed" : "✓ Sent"}</span>` : `<button type="button" class="kd-btn" data-kd="${esc(e.eid)}">${e.kind === "welcome" ? "👋 Send welcome" : "🎉 Send kudos"}</button>`}</div>${kdOpen === e.eid ? composer(e.eid, kdText(e)) : ""}</li>`).join("")}</ul>
     ${ev.length > 6 ? `<button type="button" id="newsMore" class="foot-link">${newsOpen ? "Show less" : "Show all " + ev.length}</button>` : ""}`;
 }
 /* ---------- kudos & messages: they pop up in the student's Hibi ---------- */

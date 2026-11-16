@@ -5143,6 +5143,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     await api("PATCH",`/dms/${tid}?updateMask.fieldPaths=members&updateMask.fieldPaths=json&updateMask.fieldPaths=at&updateMask.fieldPaths=r_${me()}`,{fields:{members:{arrayValue:{values:[me(),u].sort().map(S)}},json:S(JSON.stringify({names,last:{text:text.slice(0,120)||(gif?"GIF":"📷"),from:me(),at:now}})),at:I(now),["r_"+me()]:I(now)}});
     const data={text}; if(ids.length) data.imgs=ids; if(gif) data.gifs=[gif];
     await api("POST",`/dms/${tid}/msgs?documentId=${rid()}`,{fields:{from:S(me()),at:I(now),json:S(JSON.stringify(data))}});
+    if(window.__csTeacher===true){ try{ const K="cs-kudos-sent", m=JSON.parse(localStorage.getItem(K)||"{}")||{}; if(!m[u+"-join"]){ m[u+"-join"]=now; localStorage.setItem(K,JSON.stringify(m)); } }catch(er){} }
     const t=(THREADS||[]).find(x=>x.id===tid); if(!t||!t.at||now-t.at>30*60000) note(u,"dm","dm:"+me(),text||"📷"); if(t){ t.at=now; t.last={text,from:me(),at:now}; } }
   async function setRx(mid,emo){ if(!DMOPEN) return; const my=G()?"me":me(); DMOPEN.rx=DMOPEN.rx||{}; const mine=Object.assign({},DMOPEN.rx[my]||{});
     if(!emo||mine[mid]===emo) delete mine[mid]; else mine[mid]=emo;
@@ -10943,7 +10944,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116193653"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116194437"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
