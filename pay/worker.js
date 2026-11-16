@@ -402,6 +402,7 @@ async function health(env) {
   try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
   if (env.PAYPAL_CLIENT_ID) { r.paypal = ppEnv(env); try { await pp(env, "GET", "/v1/catalogs/products?page_size=1"); r.paypalApi = "ok"; } catch (e) { r.paypalApi = String(e.message).slice(0, 120); r.ok = false; } } else r.paypal = "not set up";
   if (env.NOTION_TOKEN) { try { await notion(env, "GET", `/databases/${TRACKER}`); r.notion = "ok"; } catch (e) { r.notion = String(e.message).slice(0, 120); } } else r.notion = "not set up";
+  try { const er = plain(await fs(env, "GET", "billingConfig/errors")); if (er && er.list) r.recentErrors = JSON.parse(er.list); } catch (e) {}
   try { await fs(env, "GET", "roles?pageSize=1"); r.database = "ok"; } catch (e) { r.database = String(e.message).slice(0, 120); r.ok = false; }
   return r;
 }
@@ -429,6 +430,10 @@ export default {
       }
     } catch (e) {
       console.log("error", url.pathname, e.message);
+      // keep the last few errors (no personal data: just where and Flow/PayPal's message) so Claude can read them in /api/health
+      try { const cur = plain(await fs(env, "GET", "billingConfig/errors")) || {}; const list = JSON.parse(cur.list || "[]");
+        list.unshift({ at: new Date().toISOString(), where: url.pathname, msg: String(e.message).replace(/[\w.+-]+@[\w.-]+/g, "<email>").slice(0, 160) });
+        await patch(env, "billingConfig/errors", { list: JSON.stringify(list.slice(0, 5)) }); } catch (er) {}
       if (url.pathname === "/api/card-return") return Response.redirect(SITE + "?membership=fail#club", 303);
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
