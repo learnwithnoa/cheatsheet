@@ -226,11 +226,65 @@ async function ppNightly(env, uid, b) {
   return status;
 }
 
+// ---------- Mercado Pago (pesos, automatic monthly/yearly card charge; works for a persona natural) ----------
+async function mp(env, method, path, body) {
+  const r = await fetch("https://api.mercadopago.com" + path, { method, headers: { authorization: "Bearer " + env.MP_ACCESS_TOKEN, "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error("Mercado Pago " + path.split("?")[0].replace(/\/[\w-]{12,}/, "/…") + ": " + (d.message || d.error || r.status)); e.status = r.status; throw e; }
+  return d;
+}
+const mpEnv = (env) => (String(env.MP_ACCESS_TOKEN || "").startsWith("TEST-") ? "test" : "live");
+async function mpSubscribe(env, req, url, me, body) {
+  if (!env.MP_ACCESS_TOKEN) return json({ error: "Payments aren't set up yet." }, 400, req);
+  const test = body.plan === "test" && TESTERS.includes(me.uid);
+  const kind = body.plan === "yearly" ? "y" : "m";
+  const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email);
+  const b = await getBill(env, me.uid);
+  if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "mp" && b.mpEnv === mpEnv(env)) || (b.provider === "paypal" && b.ppEnv === ppEnv(env)))) return json({ error: "You already have an active membership." }, 400, req);
+  const payer = normEmail(body.payerEmail || me.email);
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payer)) return json({ error: "Please check the email of your Mercado Pago account." }, 400, req);
+  const sub = await mp(env, "POST", "/preapproval", { reason: kind === "y" ? "Noa's English Club (yearly)" : "Noa's English Club (monthly)", external_reference: me.uid, payer_email: payer,
+    auto_recurring: { frequency: kind === "y" ? 12 : 1, frequency_type: "months", transaction_amount: amount, currency_id: "CLP" }, back_url: url.origin + "/api/mp-return", status: "pending" });
+  await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, mpPending: sub.id, mpPendingKind: kind, mpPendingAmount: amount });
+  return json({ url: sub.init_point }, 200, req);
+}
+async function mpReturn(env, req, url) {
+  const id = url.searchParams.get("preapproval_id");
+  if (!id) return Response.redirect(SITE + "?membership=fail#club", 303);
+  let sub = await mp(env, "GET", `/preapproval/${id}`);
+  for (let i = 0; i < 4 && sub.status === "pending"; i++) { await new Promise((r) => setTimeout(r, 1500)); sub = await mp(env, "GET", `/preapproval/${id}`); }
+  const uid = sub.external_reference;
+  if (!uid || sub.status !== "authorized") return Response.redirect(SITE + "?membership=fail#club", 303);
+  const b = await getBill(env, uid);
+  const kind = b.mpPendingKind || "m", amount = Number(b.mpPendingAmount) || (sub.auto_recurring && sub.auto_recurring.transaction_amount) || STD_MONTH;
+  await saveBill(env, uid, { provider: "mp", mpId: id, mpEnv: mpEnv(env), kind, amount, currency: "CLP", card: "Mercado Pago", status: "active",
+    paidThrough: (sub.next_payment_date || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31), graceUntil: null, since: b.since || today(), mpPending: null });
+  await grantClub(env, uid, b.name || "");
+  if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
+  return Response.redirect(SITE + "?membership=ok#club", 303);
+}
+async function mpNightly(env, uid, b) {
+  if (b.mpEnv !== mpEnv(env)) return null;
+  const sub = await mp(env, "GET", `/preapproval/${b.mpId}`);
+  const next = (sub.next_payment_date || "").slice(0, 10);
+  let pays = [];
+  try { const r = await mp(env, "GET", `/authorized_payments/search?preapproval_id=${b.mpId}&sort=date_created&criteria=desc&limit=5`); pays = r.results || []; } catch (e) {}
+  const last = pays[0], lastBad = last && /rejected|recycling|cancelled/.test(String((last.payment && last.payment.status) || last.status || "")) ? (last.date_created || last.debit_date || "").slice(0, 10) : null;
+  let status, graceUntil = null, paidThrough = b.paidThrough || null;
+  if (sub.status === "authorized" && !lastBad) { status = "active"; paidThrough = next || paidThrough; }
+  else if (sub.status === "cancelled" || b.status === "canceling") { status = paidThrough && paidThrough >= today() ? "canceling" : "ended"; }
+  else { graceUntil = addDays(lastBad || today(), GRACE_DAYS); status = today() <= graceUntil ? "grace" : "ended"; }
+  await saveBill(env, uid, { status, graceUntil, paidThrough });
+  if (status === "ended" && b.status !== "ended") { await removeClub(env, uid); if (sub.status !== "cancelled") await mp(env, "PUT", `/preapproval/${b.mpId}`, { status: "cancelled" }).catch(() => {}); }
+  return status;
+}
+
 // ---------- routes ----------
 async function subscribe(env, req, url) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const body = await req.json().catch(() => ({}));
   if (body.provider === "paypal") return await ppSubscribe(env, req, url, me, body);
+  if (body.provider === "mp") return await mpSubscribe(env, req, url, me, body);
   const test = body.plan === "test";
   if (test && !TESTERS.includes(me.uid)) return json({ error: "Not available." }, 403, req);
   const kind = body.plan === "yearly" ? "y" : "m";
@@ -340,6 +394,11 @@ async function startTrial(env, req) {
 async function cancel(env, req) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const b = await getBill(env, me.uid);
+  if (b.provider === "mp" && b.mpId && b.mpEnv === mpEnv(env)) {   // stops future charges; access stays until the paid time ends
+    await mp(env, "PUT", `/preapproval/${b.mpId}`, { status: "cancelled" });
+    await saveBill(env, me.uid, { status: "canceling" });
+    return json({ ok: true, paidThrough: b.paidThrough }, 200, req);
+  }
   if (b.provider === "paypal" && b.ppSubId && b.ppEnv === ppEnv(env)) {   // PayPal stops future payments; access stays until the paid time ends
     await pp(env, "POST", `/v1/billing/subscriptions/${b.ppSubId}/cancel`, { reason: "Cancelled on Hibi" });
     await saveBill(env, me.uid, { status: "canceling" });
@@ -376,6 +435,7 @@ async function nightly(env) {
         if (b.status !== "none") { await saveBill(env, uid, { status: "none", subscriptionId: null, card: null, paidThrough: null }); out.push({ uid, status: "test cleared" }); }
         continue;
       }
+      if (b.provider === "mp" && b.mpId) { const st = await mpNightly(env, uid, b); if (st) out.push({ uid, status: st }); continue; }
       if (b.provider === "paypal" && b.ppSubId) { const st = await ppNightly(env, uid, b); if (st) out.push({ uid, status: st }); continue; }
       if (!b.subscriptionId || !sameEnv(env, b)) continue;
       const sub = await flow(env, "GET", "/subscription/get", { subscriptionId: b.subscriptionId });
@@ -400,6 +460,7 @@ async function nightly(env) {
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
   try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
+  if (env.MP_ACCESS_TOKEN) { r.mercadopago = mpEnv(env); try { await mp(env, "GET", "/users/me"); r.mercadopagoApi = "ok"; } catch (e) { r.mercadopagoApi = String(e.message).slice(0, 120); r.ok = false; } } else r.mercadopago = "not set up";
   if (env.PAYPAL_CLIENT_ID) { r.paypal = ppEnv(env); try { await pp(env, "GET", "/v1/catalogs/products?page_size=1"); r.paypalApi = "ok"; } catch (e) { r.paypalApi = String(e.message).slice(0, 120); r.ok = false; } } else r.paypal = "not set up";
   if (env.NOTION_TOKEN) { try { await notion(env, "GET", `/databases/${TRACKER}`); r.notion = "ok"; } catch (e) { r.notion = String(e.message).slice(0, 120); } } else r.notion = "not set up";
   try { const er = plain(await fs(env, "GET", "billingConfig/errors")); if (er && er.list) r.recentErrors = JSON.parse(er.list); } catch (e) {}
@@ -421,6 +482,7 @@ export default {
         case "/api/update-card": return await updateCard(env, req, url);
         case "/api/trial": return await startTrial(env, req);
         case "/api/paypal-return": return await ppReturn(env, req, url);
+        case "/api/mp-return": return await mpReturn(env, req, url);
         case "/api/flow-callback": await nightly(env); return new Response("ok");
         case "/api/nightly": {
           const me = await whoIs(env, req); if (!me || me.uid !== TEACHER) return json({ error: "Only Noa can do this." }, 403, req);

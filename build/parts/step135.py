@@ -12,6 +12,10 @@ _css = r'''
 .hb-pay-btn.alt{background:var(--surface);color:var(--ink);border:1.5px solid color-mix(in srgb,#F0A63A 55%,var(--line));box-shadow:none}
 .hb-pay-btn[disabled]{opacity:.6;cursor:wait}
 .hb-pay-note{font-size:13px;color:var(--muted);margin:0}
+.hb-mpbox{margin:10px auto 0;max-width:420px;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.hb-mpbox label{display:flex;flex-direction:column;gap:6px;font:700 14px var(--body)}
+.hb-mpbox input{font:600 15px var(--body);padding:9px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink)}
+.hb-mp-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .hb-pp-btn{background:none;border:0;padding:0;font:700 13px var(--body);color:var(--accent,#2E6FD8);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .hb-pp-btn[disabled]{opacity:.5;cursor:wait}
 .hb-trial+.hb-pay::before{content:"or join now";font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -64,7 +68,7 @@ _js = r'''<script>
     wrap.innerHTML=`<div class="hb-pay-row">
         <button class="hb-pay-btn" data-hbjoin="monthly">💛 Join now<small>${clp(35000)} a month · cancel anytime</small></button>
         <button class="hb-pay-btn alt" data-hbjoin="yearly">Join for a year<small>${clp(210000)} · half price</small></button></div>
-      <p class="hb-pay-note">Secure card payment with Flow. You can cancel anytime, right here on Hibi.</p><p class="hb-pay-note hb-pp">Outside Chile? Pay in US dollars with PayPal: <button class="hb-pp-btn" data-hbjoin="monthly" data-pp="1">US$35 a month</button> · <button class="hb-pp-btn" data-hbjoin="yearly" data-pp="1">US$210 a year</button></p>`;
+      <p class="hb-pay-note">Secure card payment with Mercado Pago. You can cancel anytime, right here on Hibi.</p><p class="hb-pay-note hb-pp">Outside Chile? Pay in US dollars with PayPal: <button class="hb-pp-btn" data-hbjoin="monthly" data-pp="1">US$35 a month</button> · <button class="hb-pp-btn" data-hbjoin="yearly" data-pp="1">US$210 a year</button></p>`;
     row.parentNode.insertBefore(wrap,row);
     const jb=row.querySelector(".cl-join-btn"); if(jb) jb.hidden=true;                    /* the pay buttons replace "I want to join" */
     const ab=row.querySelector(".cl-ask-btn"); if(ab) ab.textContent="💬 Questions first? Message Noa";
@@ -82,6 +86,18 @@ _js = r'''<script>
     const ab=row.querySelector(".cl-ask-btn"); if(ab&&!payOn()) ab.textContent="💬 Questions? Message Noa";
     const note=row.nextElementSibling; if(note&&note.classList.contains("cl-join-note")) note.hidden=true;
   }
+  function askMp(b){
+    document.querySelectorAll(".hb-mpbox").forEach(x=>x.remove());
+    const box=document.createElement("div"); box.className="hb-mpbox";
+    const em=(F().email&&F().email())||"";
+    box.innerHTML=`<label><span>Your <b>Mercado Pago</b> email</span><input type="email" value="${em.replace(/"/g,"")}" autocomplete="email" placeholder="you@example.com"></label><p class="hb-pay-note">Use the email of your Mercado Pago account (often the same as Hibi). You'll confirm the payment there.</p><div class="hb-mp-row"><button type="button" class="hb-pay-btn hb-mp-go">Continue to Mercado Pago →</button><button type="button" class="hb-pp-btn hb-mp-no">Cancel</button></div>`;
+    const host=b.closest(".hb-mem-cta,.hb-pay-row,#hbTestPay")||b.parentNode; host.insertAdjacentElement("afterend",box);
+    const inp=box.querySelector("input"); inp.focus(); inp.select();
+    box.querySelector(".hb-mp-no").onclick=()=>box.remove();
+    const go=()=>{ const v=inp.value.trim(); if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ inp.focus(); say("Please check that email."); return; }
+      const c=b.cloneNode(true); c.dataset.mpgo="1"; c.dataset.mpemail=v; c.hidden=true; box.appendChild(c); box.querySelector(".hb-mp-go").disabled=true; c.click(); };
+    box.querySelector(".hb-mp-go").onclick=go; inp.addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); go(); } });
+  }
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbtrial]"); if(!b) return; e.preventDefault();
     if(preview()){ say("In View as nothing changes. Students get the club for 2 weeks, free, with one tap."); return; }
@@ -92,9 +108,11 @@ _js = r'''<script>
   });
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbjoin]"); if(!b) return; e.preventDefault();
+    /* pesos go through Mercado Pago: first ask which email their Mercado Pago account uses */
+    if(!b.dataset.pp&&!b.dataset.mpgo&&!preview()&&!window.__csGuest){ askMp(b); return; }
     if(preview()){ say("In View as nothing is paid. Members go to Flow to add their card."); return; }
     const all=document.querySelectorAll("[data-hbjoin]"); all.forEach(x=>x.disabled=true);
-    try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin,provider:b.dataset.pp?"paypal":"flow"}); if(!d.url) throw new Error("Something went wrong. Please try again."); location.href=d.url; }
+    try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin,provider:b.dataset.pp?"paypal":"mp",payerEmail:b.dataset.mpemail||""}); if(!d.url) throw new Error("Something went wrong. Please try again."); location.href=d.url; }
     catch(err){ say(err.message); all.forEach(x=>x.disabled=false);
       /* also show it right under the button, so it can't be missed */
       let n=b.parentNode.querySelector(".hb-pay-err"); if(!n){ n=document.createElement("p"); n.className="hb-pay-err"; n.style.cssText="margin:6px 0 0;font:700 13px var(--body);color:#E5484D;flex-basis:100%"; b.parentNode.appendChild(n); }

@@ -11,7 +11,7 @@ _js = r'''<script>
     const host=main||lock; if(!host||document.getElementById("hbTestPay")) return;
     const d=document.createElement("div"); d.id="hbTestPay";
     d.style.cssText="margin:0 0 12px;padding:10px 14px;border:1.5px dashed var(--line);border-radius:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px";
-    d.innerHTML='<span>🧪 Only you see this: try a <b>real</b> payment (PayPal is still in test mode, fake money).</span><button class="hb-pay-btn alt" data-hbjoin="test" style="padding:7px 14px;font-size:13.5px">Test payment · $1.000/month</button><button class="hb-pay-btn alt" data-hbjoin="test" data-pp="1" style="padding:7px 14px;font-size:13.5px">PayPal test · US$1/month</button><span class="muted">Cancel it afterwards from the membership card.</span>';
+    d.innerHTML='<span>🧪 Only you see this: try a <b>real</b> Mercado Pago payment (PayPal is still in test mode, fake money).</span><button class="hb-pay-btn alt" data-hbjoin="test" style="padding:7px 14px;font-size:13.5px">Test payment · $1.000/month</button><button class="hb-pay-btn alt" data-hbjoin="test" data-pp="1" style="padding:7px 14px;font-size:13.5px">PayPal test · US$1/month</button><span class="muted">Cancel it afterwards from the membership card.</span>';
     host.parentNode.insertBefore(d,host);
   }
   new MutationObserver(add).observe(document.documentElement,{childList:true,subtree:true}); setTimeout(add,2000);
