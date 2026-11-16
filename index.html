@@ -1253,6 +1253,27 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 /* the footer link "Messages from Noa" is gone: the notes live in the 🔔 now ("See all" still opens the full list through it) */
 #kdLink{display:none!important}
 
+#hbMove{margin:0 0 14px}
+#hbMove .hb-mem{border:1.5px solid color-mix(in srgb,#3FB37F 35%,var(--line));background:color-mix(in srgb,#3FB37F 8%,var(--surface));border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+#hbMove .hb-mem.warn{border-color:color-mix(in srgb,#E26A3D 50%,var(--line));background:color-mix(in srgb,#E26A3D 9%,var(--surface))}
+#hbMove .hb-mem-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#hbMove .hb-mem-h b{font:800 15px var(--body)}
+#hbMove .hb-tag{font:700 11.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,#3FB37F 22%,var(--surface))}
+#hbMove .warn .hb-tag{background:color-mix(in srgb,#E26A3D 25%,var(--surface))}
+#hbMove p{margin:0;font-size:14px}
+#hbMove .hb-mem-links{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
+#hbMove .hb-mem-links button{background:none;border:0;padding:0;font:700 13.5px var(--body);color:var(--accent,#2E6FD8);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#hbMove .hb-mem-links button.danger{color:var(--muted)}
+#hbMove .hb-mem-min{margin-left:auto;background:none;border:1.5px solid var(--line);border-radius:999px;padding:4px 11px;font:700 12.5px var(--body);color:var(--muted);cursor:pointer}
+#hbMove .hb-mem-min:hover{color:var(--ink)}
+#hbMove .hb-mem.min{padding:10px 16px}
+#hbMove .hb-mem.min>:not(.hb-mem-h){display:none}
+#hbMove .hb-mem{border-color:color-mix(in srgb,#F0A63A 50%,var(--line));background:color-mix(in srgb,#F0A63A 9%,var(--surface))}
+#hbMove .hb-tag{background:color-mix(in srgb,#F0A63A 28%,var(--surface))}
+#hbMove .hb-mem-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+#hbMove .hb-mem-cta .hb-pay-btn{padding:10px 18px}
+#hbMove .hb-mv-steps{margin:2px 0 0;padding-left:20px;font-size:14px;display:flex;flex-direction:column;gap:3px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -5924,7 +5945,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
     <ul class="wl-list">
       <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. Paying for the club now happens right here on Hibi, at the top of the Club page. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
     </ul>
   </div>
@@ -10808,7 +10829,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116110055"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116113216"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11108,7 +11129,7 @@ window.__csBusy = function(){
 <script>
 /* step135: club payments (Flow) through the Hibi pay helper */
 (function(){
-  const PAY_LIVE=false;                     /* switch on when Flow is live for everyone */
+  const PAY_LIVE=window.__hbPayLive=false;                     /* switch on when Flow is live for everyone */
   const API="https://hibi-pay.learnwithnoa.workers.dev";
   try{ const q=new URLSearchParams(location.search).get("pay"); if(q==="1") localStorage.setItem("hibi-pay","1"); if(q==="0") localStorage.removeItem("hibi-pay"); }catch(e){}
   const payOn=()=>{ try{ return PAY_LIVE||localStorage.getItem("hibi-pay")==="1"; }catch(e){ return PAY_LIVE; } };
@@ -11188,9 +11209,9 @@ window.__csBusy = function(){
   async function loadMem(){
     loaded=true; const uid=F().uid&&F().uid(); const tok=F().token&&await F().token(); if(!uid||!tok||!F().base) return;
     try{ const r=await fetch(`${F().base}/users/${uid}/data/membership`,{headers:{authorization:"Bearer "+tok}});
-      if(!r.ok){ memReady=r.status===404; if(memReady) decorateTrial(); return; } const d=await r.json(); const f=d.fields||{};
+      if(!r.ok){ memReady=r.status===404; if(memReady){ decorateTrial(); window.__hbMemInfo={}; document.dispatchEvent(new Event("hb-mem")); } return; } const d=await r.json(); const f=d.fields||{};
       MEM=f.deleted&&f.deleted.booleanValue?null:JSON.parse((f.json&&f.json.stringValue)||"null"); }catch(e){}
-    memReady=true; drawMem(); decorateTrial();
+    memReady=true; drawMem(); decorateTrial(); window.__hbMemInfo=MEM||{}; document.dispatchEvent(new Event("hb-mem"));
   }
   function drawMem(){
     const main=document.getElementById("clubMain"); if(!main) return;
@@ -11271,6 +11292,48 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]
   try{ const k="ncs-modrec", r=JSON.parse(localStorage.getItem(k)||"{}")||{}, st=parseInt(b.dataset.tipstage,10);
     r[b.dataset.gomod]= st>0 ? st : "all"; localStorage.setItem(k,JSON.stringify(r)); if(window.__csOnSet) window.__csOnSet(k); }catch(er){}
 },true);
+</script>
+<script>
+/* step145: club members still paying on Skool move their membership to Hibi, at their same price */
+(function(){
+  const API="https://hibi-pay.learnwithnoa.workers.dev";
+  const F=()=>window.__csFire||{};
+  const payOn=()=>{ try{ return window.__hbPayLive||localStorage.getItem("hibi-pay")==="1"; }catch(e){ return !!window.__hbPayLive; } };
+  const preview=()=>!!(window.__csPreview||(F().readOnly&&F().readOnly()));
+  const clp=n=>"$"+Number(n||0).toLocaleString("es-CL");
+  const day=d=>{ try{ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}); }catch(e){ return d; } };
+  let P=null, asked=false;
+  async function load(){
+    asked=true; const tok=F().token&&await F().token(); if(!tok) { asked=false; return; }
+    try{ const r=await fetch(API+"/api/my-price",{method:"POST",headers:{authorization:"Bearer "+tok,"content-type":"application/json"},body:"{}"}); if(r.ok) P=await r.json(); }catch(e){}
+    draw();
+  }
+  function draw(){
+    const main=document.getElementById("clubMain"); let el=document.getElementById("hbMove");
+    const m=window.__hbMemInfo, busy=m&&["active","grace","canceling","trial"].includes(m.status);
+    const show=main&&window.__csClub&&payOn()&&(preview()||(P&&P.onList&&!P.free))&&m&&!busy;
+    if(!show){ if(el) el.remove(); return; }
+    if(!el){ el=document.createElement("div"); el.id="hbMove"; main.parentNode.insertBefore(el,main); }
+    let min=false; try{ min=localStorage.getItem("hibi-move-min")==="1"; }catch(e){}
+    const head=(tag)=>`<div class="hb-mem-h"><b>💛 Your membership is moving to Hibi</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmove="min" aria-expanded="${!min}">${min?"Show ▾":"Minimize ▴"}</button></div>`;
+    let body;
+    if(preview()) body=`${head("Same price")}<p>Members who still pay on Skool see <b>their own price</b> here, with a button to switch. Their first Hibi payment waits until the day Skool would have charged them.</p>`;
+    else if(P.annual) body=`${head("Paid")}<p>Your year is <b>already paid</b>${P.renew?` (until ${String(P.renew).replace(/[<>&]/g,"")})`:""}. Nothing to do now: you keep the club, and Noa will remind you before it ends.</p>`;
+    else { const usdOnly=P.usdOnly, price=usdOnly?`US$${P.usd} a month`:`${clp(P.clp)} a month`;
+      const when=P.start?`Nothing is charged today. Your first payment on Hibi is on <b>${day(P.start)}</b>, the day Skool would have charged you.`:`Your first payment is today, and then once a month.`;
+      body=`${head("Same price")}<p>You keep your price: <b>${price}</b>. ${when}</p>
+        <ol class="hb-mv-steps"><li>Tap the button and confirm with ${usdOnly?"PayPal":"Mercado Pago"}.</li><li>Noa cancels your Skool membership, so you never pay twice.</li><li>That’s it. You can see, change or cancel it right here on Hibi.</li></ol>
+        <div class="hb-mem-cta">${usdOnly?`<button class="hb-pay-btn" data-hbjoin="monthly" data-pp="1">💛 Switch with PayPal<small>US$${P.usd} a month</small></button>`:`<button class="hb-pay-btn" data-hbjoin="monthly">💛 Switch to Hibi<small>${price} · Mercado Pago</small></button>`}</div>
+        ${usdOnly?"":`<p class="hb-pay-note hb-pp">Outside Chile? Pay in US dollars with PayPal: <button class="hb-pp-btn" data-hbjoin="monthly" data-pp="1">US$${P.usd} a month</button></p>`}
+        <p class="hb-pay-note">Questions? <a href="#" data-joindm="ask">Message Noa</a>.</p>`; }
+    el.innerHTML=`<div class="hb-mem${min?" min":""}">${body}</div>`;
+  }
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-hbmove]"); if(!b) return; e.preventDefault();
+    const on=!b.closest(".hb-mem").classList.contains("min"); try{ localStorage.setItem("hibi-move-min",on?"1":"0"); }catch(err){} draw(); });
+  document.addEventListener("cs-club",()=>draw());
+  document.addEventListener("hb-mem",()=>{ if(!asked&&payOn()&&!preview()) load(); else draw(); });
+  new MutationObserver(()=>{ if(window.__hbMemInfo&&!document.getElementById("hbMove")&&document.getElementById("clubMain")) draw(); }).observe(document.documentElement,{childList:true,subtree:true});
+})();
 </script>
 
 <script type="module">

@@ -154,6 +154,44 @@ async function legacyPrice(env, email, name) {
   if (m && Number(m.price) > 0 && m.per !== "year") return { clp: Number(m.price) * 1000, usd: Number(m.price) };
   return null;
 }
+// Skool members moving over: their first Hibi payment waits until the day Skool would have charged them (from the club list),
+// so nobody pays twice for the same month. Only dates 2–70 days ahead count; otherwise the first payment is today.
+const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12, ene: 1, abr: 4, ago: 8, dic: 12 };
+function parseRenew(s) {
+  s = String(s || "").trim().toLowerCase(); if (!s) return null;
+  let y, mo, d, x;
+  if ((x = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) [y, mo, d] = [+x[1], +x[2], +x[3]];
+  else if ((x = s.match(/^(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?$/))) [d, mo, y] = [+x[1], +x[2], x[3] ? +x[3] : 0];
+  else if ((x = s.match(/([a-zñ]{3})[a-zñ]*\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(\d{4})?/))) [mo, d, y] = [MONTHS[x[1]], +x[2], x[3] ? +x[3] : 0];
+  else if ((x = s.match(/(\d{1,2})\s*(?:de\s+)?([a-zñ]{3})[a-zñ]*\.?(?:\s*(?:de\s+)?(\d{4}))?/))) [d, mo, y] = [+x[1], MONTHS[x[2]], x[3] ? +x[3] : 0];
+  if (!mo || !d || mo > 12 || d > 31) return null;
+  if (y && y < 100) y += 2000;
+  const t = today(), ty = +t.slice(0, 4);
+  const iso = (yy) => `${yy}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  let r = iso(y || ty); if (!y && r < t) r = iso(ty + 1);
+  return r;
+}
+async function rosterFor(env, me) {
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  const ms = (meta.club && meta.club.members) || [];
+  return ms.find((x) => x.email && normEmail(x.email) === normEmail(me.email)) || (nn(me.name) ? ms.find((x) => nn(x.name) === nn(me.name)) : null);
+}
+async function firstCharge(env, me) {
+  const m = await rosterFor(env, me); if (!m || m.per === "year") return null;
+  const r = parseRenew(m.renew); if (!r) return null;
+  return r >= addDays(today(), 2) && r <= addDays(today(), 70) ? r : null;
+}
+// what a club member who still pays on Skool will pay on Hibi (for the "Move your membership to Hibi" card)
+async function myPrice(env, req) {
+  const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
+  const m = await rosterFor(env, me);
+  const p = await legacyPrice(env, me.email, me.name);
+  const o = { clp: Number(p && p.clp) || STD_MONTH, usd: Number(p && p.usd) || STD_MONTH_USD, legacy: !!p, onList: !!m, renew: (m && m.renew) || null, start: await firstCharge(env, me) };
+  if (p && p.usd && !p.clp) o.usdOnly = true;
+  if (m && m.per === "year") o.annual = true;
+  if (m && !(Number(m.price) > 0) && !p) o.free = true;
+  return json(o, 200, req);
+}
 async function priceFor(env, email, name) { const p = await legacyPrice(env, email, name); return Number(p && p.clp) || STD_MONTH; }
 
 // ---------- PayPal (US dollars, for members outside Chile) ----------
@@ -193,8 +231,9 @@ async function ppSubscribe(env, req, url, me, body) {
   const b = await getBill(env, me.uid);
   if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "paypal" && b.ppEnv === ppEnv(env)) || (b.provider !== "paypal" && b.subscriptionId && sameEnv(env, b)))) return json({ error: "You already have an active membership." }, 400, req);
   const plan = await ppPlan(env, kind, usd);
-  const sub = await pp(env, "POST", "/v1/billing/subscriptions", { plan_id: plan, custom_id: me.uid,
-    application_context: { brand_name: "Noa's English Club", user_action: "SUBSCRIBE_NOW", shipping_preference: "NO_SHIPPING", return_url: url.origin + "/api/paypal-return", cancel_url: SITE + "?membership=fail#club" } });
+  const start = kind === "m" && usd > 1 ? await firstCharge(env, me) : null;
+  const sub = await pp(env, "POST", "/v1/billing/subscriptions", Object.assign(start ? { start_time: start + "T15:00:00Z" } : {}, { plan_id: plan, custom_id: me.uid,
+    application_context: { brand_name: "Noa's English Club", user_action: "SUBSCRIBE_NOW", shipping_preference: "NO_SHIPPING", return_url: url.origin + "/api/paypal-return", cancel_url: SITE + "?membership=fail#club" } }));
   const link = (sub.links || []).find((l) => l.rel === "approve");
   await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, ppPending: sub.id, ppPendingKind: kind, ppPendingUsd: usd });
   return json({ url: link && link.href }, 200, req);
@@ -245,10 +284,11 @@ async function mpSubscribe(env, req, url, me, body) {
   const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email, me.name);
   const b = await getBill(env, me.uid);
   if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "mp" && b.mpEnv === mpEnv(env)) || (b.provider === "paypal" && b.ppEnv === ppEnv(env)))) return json({ error: "You already have an active membership." }, 400, req);
+  const start = !test && kind === "m" ? await firstCharge(env, me) : null;   // moving from Skool: first payment on their Skool date
   const payer = normEmail(body.payerEmail || me.email);
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payer)) return json({ error: "Please check the email of your Mercado Pago account." }, 400, req);
   const sub = await mp(env, "POST", "/preapproval", { reason: kind === "y" ? "Noa's English Club (yearly)" : "Noa's English Club (monthly)", external_reference: me.uid, payer_email: payer,
-    auto_recurring: { frequency: kind === "y" ? 12 : 1, frequency_type: "months", transaction_amount: amount, currency_id: "CLP" }, back_url: url.origin + "/api/mp-return", status: "pending" });
+    auto_recurring: Object.assign({ frequency: kind === "y" ? 12 : 1, frequency_type: "months", transaction_amount: amount, currency_id: "CLP" }, start ? { start_date: start + "T12:00:00.000-03:00" } : {}), back_url: url.origin + "/api/mp-return", status: "pending" });
   await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, mpPending: sub.id, mpPendingKind: kind, mpPendingAmount: amount });
   return json({ url: sub.init_point }, 200, req);
 }
@@ -485,6 +525,7 @@ export default {
         case "/api/cancel": return await cancel(env, req);
         case "/api/update-card": return await updateCard(env, req, url);
         case "/api/trial": return await startTrial(env, req);
+        case "/api/my-price": return await myPrice(env, req);
         case "/api/paypal-return": return await ppReturn(env, req, url);
         case "/api/mp-return": return await mpReturn(env, req, url);
         case "/api/flow-callback": await nightly(env); return new Response("ok");
