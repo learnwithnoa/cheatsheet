@@ -1,4 +1,4 @@
-Deploy 2026-11-16T17:42:44Z
+Deploy 2026-11-16T17:49:20Z
 CLOUDFLARE_API_TOKEN: set
 CLOUDFLARE_ACCOUNT_ID: set
 FLOW_API_KEY: set
@@ -12,8 +12,8 @@ RESEND_API_KEY: set
 Firebase key: valid, project learnwithnoa-cheatsheet
 deploy exit: 0
 secrets exit: 0
-Uploaded hibi-pay (2.92 sec)
-Deployed hibi-pay triggers (0.92 sec)
+Uploaded hibi-pay (3.02 sec)
+Deployed hibi-pay triggers (0.81 sec)
   https://hibi-pay.learnwithnoa.workers.dev
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
 ✨ Successfully created secret for key: FLOW_API_KEY
