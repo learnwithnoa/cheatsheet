@@ -1,4 +1,4 @@
-# Hibi pay helper → https://hibi-pay.learnwithnoa.workers.dev
+# Hibi pay helper → https://hibi-pay.learnwithnoa.workers.dev (Mercado Pago, PayPal, free trials)
 name = "hibi-pay"
 main = "worker.js"
 compatibility_date = "2026-10-01"
