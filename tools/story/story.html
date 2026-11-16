@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Weekly club Instagram story (light design, 1080×1920). Filled in by render.py from a JSON file. -->
+<style>
+@font-face{font-family:Lexend;font-weight:500;src:url(fonts/lexend-latin-500-normal.woff2)}
+@font-face{font-family:Lexend;font-weight:600;src:url(fonts/lexend-latin-600-normal.woff2)}
+@font-face{font-family:Lexend;font-weight:700;src:url(fonts/lexend-latin-700-normal.woff2)}
+@font-face{font-family:Lexend;font-weight:800;src:url(fonts/lexend-latin-800-normal.woff2)}
+@font-face{font-family:Mono;font-weight:700;src:url(fonts/space-mono-latin-700-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{font-family:Lexend,"Noto Color Emoji",sans-serif;position:relative;color:#0f1d3a;
+  --ink:#0f1d3a;--sub:#4a5675;--label:#2563eb;--card:#fff;--cardb:#dbe4f5;--chip:#eef3ff;--chipt:#1d4ed8;
+  background:radial-gradient(900px 700px at 100% 100%,rgba(134,239,172,.20),transparent 60%),
+             radial-gradient(800px 600px at 0% 100%,rgba(96,165,250,.16),transparent 60%),#fff}
+.dots{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(15,29,58,.15) 1.6px,transparent 1.8px) 0 0/28px 28px;
+  -webkit-mask-image:radial-gradient(ellipse 560px 420px at 50% 330px,transparent 0%,transparent 50%,#000 100%)}
+.wrap{position:relative;padding:92px 60px 0;display:flex;flex-direction:column;align-items:center;height:100%}
+.handle{font-family:Mono;font-weight:700;letter-spacing:.28em;font-size:27px;color:var(--label)}
+.logo{width:330px;margin:8px 0 -4px}
+.weekpill{margin-top:14px;display:flex;align-items:center;gap:16px;background:var(--card);border:2px solid var(--cardb);border-radius:999px;padding:12px 34px 12px 14px;box-shadow:0 8px 24px rgba(30,60,140,.08)}
+.weekpill .ic{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#5eead4);display:grid;place-items:center;font-size:30px}
+.weekpill b{display:block;font-size:30px;font-weight:700}
+.weekpill span{font-size:26px;color:var(--sub);font-weight:500}
+h1{margin-top:34px;font-size:72px;font-weight:800;letter-spacing:-.015em;text-align:center;line-height:1.05}
+h1 .ul{position:relative;display:inline-block}
+h1 .ul::after{content:"";position:absolute;left:2px;right:2px;bottom:-6px;height:9px;border-radius:9px;background:linear-gradient(90deg,#3b82f6,#5eead4)}
+.lead{margin-top:18px;font-size:29px;color:var(--sub);font-weight:500;text-align:center}
+.label{margin-top:34px;font-family:Mono;font-weight:700;letter-spacing:.26em;font-size:28px;color:var(--label)}
+.cards{margin-top:18px;width:100%;display:flex;flex-direction:column;gap:16px}
+.card{position:relative;background:var(--card);border:2px solid var(--cardb);border-radius:30px;padding:20px 28px;display:flex;gap:24px;align-items:center;box-shadow:0 10px 30px rgba(30,60,140,.07)}
+.card.off{opacity:.55}
+.day{flex:0 0 110px;height:110px;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;background:linear-gradient(160deg,var(--c1),var(--c2))}
+.day .d{font-family:Mono;font-weight:700;font-size:24px;letter-spacing:.14em;opacity:.95}
+.day .n{font-size:54px;font-weight:800;line-height:1}
+.body{flex:1;min-width:0}
+.top{display:flex;align-items:center;gap:12px;font-size:25px;font-weight:600;color:var(--sub)}
+.top .cls{color:var(--c3);font-weight:700}
+.top .time{margin-left:auto;background:var(--chip);color:var(--chipt);border-radius:999px;padding:5px 16px;font-weight:700;font-size:24px}
+.topic{font-size:40px;font-weight:800;margin-top:6px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desc{font-size:25px;color:var(--sub);margin-top:6px;line-height:1.3;font-weight:500}
+.mon{--c1:#8b5cf6;--c2:#ec4899;--c3:#a855f7}
+.wed{--c1:#f59e0b;--c2:#f97316;--c3:#ea7a0c}
+.thu{--c1:#3b82f6;--c2:#06b6d4;--c3:#2563eb}
+.fri{--c1:#22c55e;--c2:#14b8a6;--c3:#0d9488}
+.card.hl{border-color:transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(90deg,var(--c1),var(--c2)) border-box}
+.foot{margin-top:22px;font-size:27px;color:var(--sub);font-weight:500;text-align:center}
+.foot b{color:var(--ink);font-weight:700}
+.miki{position:absolute;width:140px;image-rendering:pixelated;right:150px;top:262px}
+.cta{position:absolute;left:60px;right:60px;bottom:118px;border-radius:999px;padding:28px 40px;text-align:center;color:#fff;
+  background:linear-gradient(90deg,#3b82f6 0%,#8b5cf6 55%,#ec4899 100%);box-shadow:0 18px 40px rgba(139,92,246,.35)}
+.cta b{display:block;font-size:44px;font-weight:800}
+.cta span{display:block;font-size:27px;font-weight:600;opacity:.95;margin-top:2px}
+</style></head>
+<body>
+<div class="dots"></div>
+<div class="wrap">
+  <div class="handle">@LEARNWITHNOA</div>
+  <img class="logo" src="logo.png" alt="">
+  <div class="weekpill"><div class="ic">🗓️</div><div><b>{{WEEKPILL}}</b><span>{{WEEK}} · live on Zoom</span></div></div>
+  <h1>{{TITLE}}</h1>
+  <div class="lead">{{LEAD}}</div>
+  <div class="label">{{LABEL}}</div>
+  <div class="cards">{{CARDS}}</div>
+  <div class="foot">{{FOOT}}</div>
+</div>
+<img class="miki" src="miki.png" alt="">
+<div class="cta"><b>{{CTA}}</b><span>{{CTA_SUB}}</span></div>
+</body></html>
