@@ -372,6 +372,10 @@ async function nightly(env) {
         }
         continue;
       }
+      if (b.provider !== "paypal" && b.subscriptionId && !sameEnv(env, b)) {   // a Flow sandbox test from before going live: clear it so no fake membership shows
+        if (b.status !== "none") { await saveBill(env, uid, { status: "none", subscriptionId: null, card: null, paidThrough: null }); out.push({ uid, status: "test cleared" }); }
+        continue;
+      }
       if (b.provider === "paypal" && b.ppSubId) { const st = await ppNightly(env, uid, b); if (st) out.push({ uid, status: st }); continue; }
       if (!b.subscriptionId || !sameEnv(env, b)) continue;
       const sub = await flow(env, "GET", "/subscription/get", { subscriptionId: b.subscriptionId });
