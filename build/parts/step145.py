@@ -56,7 +56,7 @@ _js = r'''<script>
     const head=(tag)=>`<div class="hb-mem-h"><b>💛 Your membership is moving to Hibi</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmove="min" aria-expanded="${!min}">${min?"Show ▾":"Minimize ▴"}</button></div>`;
     let body;
     if(preview()) body=`${head("Same price")}<p>Members who still pay on Skool see <b>their own price</b> here, with a button to switch. Their first Hibi payment waits until the day Skool would have charged them.</p>`;
-    else if(P.annual) body=`${head("Paid")}<p>Your year is <b>already paid</b>${P.renew?` (until ${String(P.renew).replace(/[<>&]/g,"")})`:""}. Nothing to do now: you keep the club, and Noa will remind you before it ends.</p>`;
+    else if(P.annual) body=`${head("Paid")}<p>Your year is <b>already paid</b>${P.renew?` until <b>${/^\d{4}-\d\d-\d\d$/.test(P.renew)?new Date(P.renew+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}):String(P.renew).replace(/[<>&]/g,"")}</b>`:""}. Nothing to do now: you keep the club, and Noa will remind you before it ends.</p>`;
     else { const usdOnly=P.usdOnly, price=usdOnly?`US$${P.usd} a month`:`${clp(P.clp)} a month`;
       const when=P.start?`Nothing is charged today. Your first payment on Hibi is on <b>${day(P.start)}</b>, the day Skool would have charged you.`:`Your first payment is today, and then once a month.`;
       body=`${head("Same price")}<p>You keep your price: <b>${price}</b>. ${when}</p>

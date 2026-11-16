@@ -169,6 +169,8 @@ function parseRenew(s) {
   const t = today(), ty = +t.slice(0, 4);
   const iso = (yy) => `${yy}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
   let r = iso(y || ty); if (!y && r < t) r = iso(ty + 1);
+  // a date that already passed means Skool already charged that month: the next charge is a month later (same day)
+  for (let i = 0; i < 24 && r < addDays(t, 2); i++) { let [yy, mm] = r.split("-").map(Number); mm += 1; if (mm > 12) { mm = 1; yy += 1; } const last = new Date(Date.UTC(yy, mm, 0)).getUTCDate(); r = `${yy}-${String(mm).padStart(2, "0")}-${String(Math.min(d, last)).padStart(2, "0")}`; }
   return r;
 }
 async function rosterFor(env, me) {
