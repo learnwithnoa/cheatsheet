@@ -127,3 +127,11 @@ if '2026-1116-stoic' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 16: react to messages
+s=open(p,encoding="utf-8").read()
+if '2026-1116-dmreact' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1116-dmreact", date:"November 16, 2026", title:"React to messages", items:[
+    ["❤️","Reactions in Messages","When someone sends you a message, tap the little <b>☺</b> next to it and pick an emoji, or <b>double-tap</b> the message for a ❤️. Tap your reaction again to remove it.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
