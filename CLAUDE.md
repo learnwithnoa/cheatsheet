@@ -76,7 +76,8 @@ Pages updates about a minute after the push. End commit messages with the attrib
 ## Noa's standing rules
 
 - Student emails: Gmail **drafts only**, never sent. The only email ever sent is a summary to Noa himself.
-- Never delete Noa's Notion pages or Google Sheets. Scheduled tasks never edit Notion.
+- Never delete Noa's Notion pages or Google Sheets. Scheduled tasks edit Notion only where their instructions say so
+  (club lesson plans, Laura's Conversation Sparks, Daily Stoic, the Free Trial Tracker rows). Noa wants as much automated as possible.
 - Never use app.culips.com. Don't call Gustavo Carrasquero "Goose".
 - Scheduled tasks' instructions live in Google Docs ("Nightly wrap-up instructions (for Claude)", "Progress report instructions
   (for Claude)", "Weekly club prep instructions (for Claude)"). When a feature changes how a task should work, update the doc too.
