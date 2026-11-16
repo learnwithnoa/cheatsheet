@@ -449,17 +449,16 @@ async function trackerRow(env, t) {        // t: {name,email,start(date),until,s
 const TRIAL_WELCOME = `Hiya {name}, welcome to the club! 🫰🏻
 So glad to have you here. {trial} 🔥 That's full access to the club here on Hibi: the live speaking classes, the class recordings, our weekly podcast, the community, all of it. Your trial runs until {end date}.
 
-Your first mission: join one speaking class this week. Just one. You don't need to prepare anything, and nobody's grading you. Deep Dive Monday, Wildcard Wednesday, Word Up Thursday or Free Talk Friday, all open to every level. The next class and its Zoom link are at the top of the Club page (This week), and the full schedule with every Zoom link is in Club → Calendar.
+Your first mission: join one speaking class this week. Just one. No prep needed, and nobody's grading you. The next class and its Zoom link are at the top of the Club page (This week), and the full schedule is in Club → Calendar.
 (Fair warning: the first class is the scariest one. After that it's just… talking with friends, in English.)
 
 Week two, come back for more. The more classes you try, the easier it'll be to know if the club is your thing.
 
 A few more things:
 📌 Every Monday I post the week's class topics in Club → This week
-🎬 Missed a class? Watch the recording in Club → Library
 📚 Want extra practice? The Practice menu has grammar and vocabulary exercises, with new modules every week
 💬 Join the Instagram group chat to keep practicing during the week: https://www.instagram.com/j/AbYEKteyhp-zyxxc/
-🎁 No card, nothing to cancel: your trial simply ends on {end date}. Want to stay? Tap "Stay in the club" at the top of the Club page.
+🎁 Your trial ends on its own on {end date}, nothing to cancel. Loving it? Tap "Stay in the club" at the top of the Club page to keep going.
 
 Any questions, just reply here. See you in class! ✨`;
 const longDate = (d) => { const x = new Date(d + "T12:00:00Z"); return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][x.getUTCDay()] + ", " + ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][x.getUTCMonth()] + " " + x.getUTCDate(); };
