@@ -18,7 +18,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py club-sample '{"title":..,"url":<YouTube/Drive link>,"note":..,"wd":3}'   sample class for non-members
   HUB_PASSWORD=... python3 hubsync.py levels                each Hibi member's level (set by Noa) vs their own choice, level check and module results
   HUB_PASSWORD=... python3 hubsync.py set-zrecs <id> '[{"date","url":<Zoom share_url>,"until":<auto_delete_date>,"min":<duration>}]'   their class recordings on My coaching
-  HUB_PASSWORD=... python3 hubsync.py stoic-add '{"d":"YYYY-MM-DD","title":..,"idea":..,"todo":..}'   Daily Stoic line on the teacher pages
+  HUB_PASSWORD=... python3 hubsync.py stoic-add '{"d":"YYYY-MM-DD","title":..,"idea":..,"todo":..}'   Daily Stoic line on Noa's Home (and members' Home if they turn it on in Settings)
   HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..,"zoom":"https://us06web.zoom.us/j/…"}]}
   HUB_PASSWORD=... python3 hubsync.py add-words <student-id> '[{"w":"word","tr":"meaning","ex":"example"}, ...]'   (skips words already there)
   HUB_PASSWORD=... python3 hubsync.py club <student-id> on|off   (on = private + club member, sits in the middle of the park)
@@ -1291,7 +1291,10 @@ def main():
         e = json.loads(a[1]); m = get_doc(tok, tu, "t-hubmeta") or {}
         L = [x for x in (m.get("stoic") or []) if x.get("d") != e["d"]] + [e]
         m["stoic"] = sorted(L, key=lambda x: x["d"])[-60:]
-        set_doc(tok, tu, "t-hubmeta", m); print("ok", len(m["stoic"])); return
+        set_doc(tok, tu, "t-hubmeta", m)
+        # members who turned on "Daily Stoic" in Settings read this copy (Home, at the top)
+        http("PATCH", f"{BASE}/clubPublic/stoic", {"fields": {"json": {"stringValue": json.dumps({"list": m["stoic"][-14:]}, ensure_ascii=False)}}}, token=tok)
+        print("ok", len(m["stoic"])); return
     if cmd == "set-meta":
         m = get_doc(tok, tu, "t-hubmeta") or {}
         upd = json.loads(a[1]); m.update(upd); m["at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()

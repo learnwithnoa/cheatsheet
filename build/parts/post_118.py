@@ -119,3 +119,11 @@ if '2026-1116-community' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 16: Daily Stoic for members (optional)
+s=open(p,encoding="utf-8").read()
+if '2026-1116-stoic' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1116-stoic", date:"November 16, 2026", title:"A little Stoic idea each day", items:[
+    ["🏛️","Daily Stoic (optional)","Want one short idea a day from the Stoics, with a small thing to try? Turn on <b>🏛️ Daily Stoic on Home</b> in <b>Settings</b>, and it shows up at the top of Home. It's off unless you turn it on.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
