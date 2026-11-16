@@ -19,6 +19,8 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
   Legacy prices: Members page → Club members → "Hibi price" (t-hubmeta.clubPrices by email); empty = their Skool price ×1000 CLP / same US$.
   Skool move: Noa cancelled every Skool renewal on Nov 16, 2026. Members switch on Hibi ("Move your membership" card, step145);
   the first Hibi charge waits until their Skool month ends (club list date), and the nightly check removes club access 5 days after that if they didn't switch.
+  Unread-message emails: hourly, through Resend (secret RESEND_API_KEY, sender hola@hibi.cl): one short email if a Hibi message waits 12 h,
+  max one a day, never to Noa; members turn it off in Settings (ncs-mailnotif); every email sent is listed in Noa's 🔔 (t-mailsent).
   It also runs the free 2-week club trial (no card; `/api/trial`, ended by its nightly check; Noa's list in `users/{Noa}/data/t-trials`, `hubsync.py trials`).
 - `pod/` — podcast MP3s; `.github/workflows/podcast-audio.yml` converts episodes queued in `pod/queue.txt`.
 

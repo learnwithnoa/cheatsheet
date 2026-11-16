@@ -101,3 +101,11 @@ if '2026-1116-clubpay' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 16: unread message emails
+s=open(p,encoding="utf-8").read()
+if '2026-1116-mailnotif' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1116-mailnotif", date:"November 16, 2026", title:"Never miss a message", items:[
+    ["📧","A little email if a message waits","If someone sends you a message on Hibi and it waits unread for 12 hours, Hibi sends you one short email so you don't miss it. Never more than one a day. You can turn it off in Settings.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
