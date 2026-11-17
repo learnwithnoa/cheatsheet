@@ -350,4 +350,71 @@ ed: {
       ex: [["I worked all day.", "Trabajé todo el día."], ["I watched TV last night.", "Anoche vi tele."]] }
   ]
 }
+,
+iq: {
+  name: { en: "Indirect questions", es: "Preguntas indirectas" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "An <b>indirect question</b> is a question inside another sentence: <i>Do you know…? Can you tell me…? I wonder…</i> It sounds more polite and professional. The trick: the question inside goes back to <b>normal order</b> (subject + verb).",
+           es: "Una <b>pregunta indirecta</b> es una pregunta dentro de otra oración: <i>Do you know…? Can you tell me…? I wonder…</i> Suena más educada y profesional. El truco: la pregunta de adentro vuelve al <b>orden normal</b> (sujeto + verbo)." } },
+    { h: { en: "1. Back to normal order", es: "1. Vuelve al orden normal" }, stage: 1, key: true,
+      p: { en: "With <b>be, can, will, have</b>: just put the subject first.", es: "Con <b>be, can, will, have</b>: solo pon el sujeto primero." },
+      table: [
+        ["be", "Where <b>is the station</b>?", "Do you know where <b>the station is</b>?"],
+        ["be", "What time <b>is it</b>?", "Can you tell me what time <b>it is</b>?"],
+        ["can", "Where <b>can I</b> park?", "Could you tell me where <b>I can</b> park?"],
+        ["have", "What <b>has he</b> done?", "Do you know what <b>he has</b> done?"]
+      ] },
+    { h: { en: "2. do / does / did disappear", es: "2. do / does / did desaparecen" }, stage: 2, key: true,
+      p: { en: "Take out <b>do, does, did</b>. The tense moves onto the verb: <i>lives, starts, went</i>.", es: "Saca <b>do, does, did</b>. El tiempo pasa al verbo: <i>lives, starts, went</i>." },
+      ex: [["Where does she live? → Do you know where she lives?", "¿Dónde vive? → ¿Sabes dónde vive?"], ["Where did he go? → I don’t know where he went.", "¿Adónde fue? → No sé adónde fue."]] },
+    { h: { en: "3. Yes/no questions: if or whether", es: "3. Preguntas de sí o no: if o whether" }, stage: 3,
+      p: { en: "No question word? Add <b>if</b> (or <b>whether</b>) and use normal order.", es: "¿No hay palabra interrogativa? Agrega <b>if</b> (o <b>whether</b>) y usa orden normal." },
+      ex: [["Is it open? → Do you know if it’s open?", "¿Está abierto? → ¿Sabes si está abierto?"], ["Did she call? → I wonder whether she called.", "¿Llamó? → Me pregunto si llamó."]] },
+    { h: { en: "4. Polite openers", es: "4. Frases para empezar" }, stage: 4,
+      p: { en: "<i>Do you know… · Can / Could you tell me… · Would you mind telling me… · Do you have any idea… · I wonder… · I’d like to know… · I’m not sure… · I can’t remember…</i> If the opener is a statement (<i>I wonder…</i>), end with a <b>period</b>, not a question mark.",
+           es: "<i>Do you know… · Can / Could you tell me… · Would you mind telling me… · Do you have any idea… · I wonder… · I’d like to know… · I’m not sure… · I can’t remember…</i> Si la frase es una afirmación (<i>I wonder…</i>), termina con <b>punto</b>, no con signo de pregunta." },
+      ex: [["I wonder where he is.", "Me pregunto dónde está."], ["Would you mind telling me how old you are?", "¿Te molestaría decirme cuántos años tienes?"]] },
+    { h: { en: "5. The who / what trap", es: "5. La trampa de who / what" }, stage: 5, key: true,
+      p: { en: "When <b>who</b> or <b>what</b> is the subject (the one doing the action), the order is already normal, so <b>nothing changes</b>.",
+           es: "Cuando <b>who</b> o <b>what</b> es el sujeto (el que hace la acción), el orden ya es normal, así que <b>nada cambia</b>." },
+      table: [
+        [{ en: "subject", es: "sujeto" }, "Who called?", "Do you know <b>who called</b>?"],
+        [{ en: "object", es: "objeto" }, "Who did you call?", "Do you know <b>who you called</b>?"],
+        [{ en: "subject", es: "sujeto" }, "What happened?", "Tell me <b>what happened</b>."],
+        [{ en: "object", es: "objeto" }, "What did she buy?", "Tell me <b>what she bought</b>."]
+      ] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["Do you know when are you leaving?", "Do you know when you are leaving?", { en: "Normal order inside: you are.", es: "Adentro, orden normal: you are." }],
+        ["Can you tell me what time is it?", "Can you tell me what time it is?", { en: "Normal order: it is.", es: "Orden normal: it is." }],
+        ["Do you know where does she live?", "Do you know where she lives?", { en: "No does, and the -s goes on the verb.", es: "Sin does, y la -s va en el verbo." }],
+        ["I don’t know where did he go.", "I don’t know where he went.", { en: "No did: the verb goes to the past.", es: "Sin did: el verbo pasa a pasado." }],
+        ["Do you know is it open?", "Do you know if it’s open?", { en: "Yes/no question → if.", es: "Pregunta de sí o no → if." }],
+        ["I wonder where is he?", "I wonder where he is.", { en: "Normal order, and a period after I wonder.", es: "Orden normal, y punto después de I wonder." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["Do you know when ___ leaving? (you / be)", "you are", { en: "Normal order: you are.", es: "Orden normal: you are." }],
+        ["Can you tell me where ___? (he / work)", "he works", { en: "No does: he works.", es: "Sin does: he works." }],
+        ["I’m not sure ___ she’s coming.", "if / whether", { en: "Yes/no question → if or whether.", es: "Pregunta de sí o no → if o whether." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Reported questions", es: "Preguntas reportadas" },
+      p: { en: "When you report a question later, use normal order and move the tense back: <b>is → was, will → would, can → could, did / have done → had done</b>.",
+           es: "Cuando cuentas una pregunta después, usa orden normal y retrocede el tiempo: <b>is → was, will → would, can → could, did / have done → had done</b>." },
+      ex: [["“Where are you going?” → She asked me where I was going.", "“¿Adónde vas?” → Me preguntó adónde iba."], ["“Can you help me?” → He asked if I could help him.", "“¿Me puedes ayudar?” → Me preguntó si lo podía ayudar."]] },
+    { h: { en: "Question word + to", es: "Palabra interrogativa + to" },
+      p: { en: "When the subject is obvious, use <b>question word + to + verb</b>.", es: "Cuando el sujeto es obvio, usa <b>palabra interrogativa + to + verbo</b>." },
+      ex: [["I don’t know what to say.", "No sé qué decir."], ["Can you show me how to use this?", "¿Me puedes mostrar cómo usar esto?"]] },
+    { h: { en: "whether, not if", es: "whether, no if" },
+      p: { en: "Use <b>whether</b> (not if) before <b>to + verb</b>, right after a preposition, with <b>or not</b> right after it, and at the start of a sentence.",
+           es: "Usa <b>whether</b> (no if) antes de <b>to + verbo</b>, justo después de una preposición, con <b>or not</b> justo después, y al comienzo de una oración." },
+      ex: [["I can’t decide whether to go.", "No puedo decidir si ir."], ["Whether he comes or not doesn’t matter.", "Si viene o no, da lo mismo."]] },
+    { h: { en: "What… is why…", es: "What… is why…" },
+      p: { en: "A strong way to focus on something: <b>What I don’t understand is why…</b> The second part also uses normal order.",
+           es: "Una forma fuerte de destacar algo: <b>What I don’t understand is why…</b> La segunda parte también usa orden normal." },
+      ex: [["What I don’t understand is why she left.", "Lo que no entiendo es por qué se fue."], ["The question is whether we have enough time.", "La pregunta es si tenemos suficiente tiempo."]] }
+  ]
+}
 });

@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=59',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=60',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -166,6 +166,15 @@ s=open(p,encoding="utf-8").read()
 if '2026-1117-focusmenu' not in s:
     s=s.replace(a,a+'''  {id:"2026-1117-focusmenu", date:"November 17, 2026", title:"Focus mode: a menu button", items:[
     ["☰","Change pages in focus mode","In focus mode there's now a <b>☰ Menu</b> button at the top left. It opens the menu on the side, so you can jump to another page without leaving focus mode.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+# Nov 17: indirect questions module
+s=open(p,encoding="utf-8").read()
+if '2026-1117-iq' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-iq", date:"November 17, 2026", title:"New grammar module: Indirect questions", items:[
+    ["❓","Do you know where it is?","A new module in <b>Practice → Grammar</b> (B1+ and up) for polite questions like <i>Do you know where the station is?</i> (not <i>where is the station</i>). A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
+    ["🧭","Two new toys","Finish it for a 🧭 <b>compass</b> for your study buddy, and pass its Advanced stage for a 🔍 <b>detective's magnifying glass</b>.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

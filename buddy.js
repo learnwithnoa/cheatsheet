@@ -264,6 +264,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "house", name: "Little house", ico: "🏠", slot: "toy", m: "th", mt: "There is / there are" },
     { id: "gkey", name: "Golden key", ico: "🔑", slot: "toy", m: "cou", mt: "Could vs was able to" },
     { id: "bell", name: "Little bell", ico: "🔔", slot: "toy", m: "ed", mt: "-ed endings" },
+    { id: "compass", name: "Compass", ico: "🧭", slot: "toy", m: "iq", mt: "Indirect questions" },
     /* grammar modules: pass the ⭐ Advanced stage (every new module with an Advanced stage gets one: id, pixel art in T below) */
     { id: "clock", name: "Alarm clock", ico: "⏰", slot: "toy", ma: "prs", mt: "Present simple" },
     { id: "camera", name: "Old camera", ico: "📷", slot: "toy", ma: "ps", mt: "Past simple" },
@@ -272,6 +273,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "medal", name: "Gold medal", ico: "🥇", slot: "toy", ma: "cou", mt: "Could vs was able to" },
     { id: "phones", name: "Headphones", ico: "🎧", slot: "toy", ma: "ing", mt: "Verb + -ing" },
     { id: "scope", name: "Telescope", ico: "🔭", slot: "toy", ma: "ed", mt: "-ed endings" },
+    { id: "magnifier", name: "Detective's magnifying glass", ico: "🔍", slot: "toy", ma: "iq", mt: "Indirect questions" },
     /* duels (club members): fighting gear */
     { id: "dbanner", name: "Duel banner", ico: "🚩", slot: "toy", dp: 1 },
     { id: "sword", name: "Wooden sword", ico: "🗡️", slot: "toy", dw: 1 },
@@ -315,7 +317,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   /* Noa (the teacher account) has everything unlocked and a best-friends buddy */
   const TCH = () => window.__csTeacher === true && !window.__csPreview;  // in "View as", the buddy unlocks only what that member unlocked
   const musicDays = () => Array.isArray(S.mud) ? S.mud.length : 0;
-  const modDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
+  const modDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; const k = ((window.__csModInfo && window.__csModInfo().find(x => x[0] === m)) || [m, 7])[1] || 7; return (p.to && p.to.sc >= 15) || Array.from({ length: k }, (_, i) => i + 1).every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
   const advDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; const n = (window.__csModAdv && window.__csModAdv()[m]) || 8; return ((p.b || {})[n] | 0) >= 7; } catch (e) { return false; } };
   window.__bdAdvToy = m => { const it = ITEMS.find(i => i.ma === m); return it ? { ico: it.ico, name: it.name } : null; };
   const isOpen = it => { if (TCH()) return true; if (it.ma) return advDone(it.ma); if (it.m) return modDone(it.m); if (it.md != null) return musicDays() >= it.md; if (it.dw != null) return (S.dw | 0) >= it.dw; if (it.ds != null) return (S.dbs | 0) >= it.ds; if (it.dp != null) return (S.dplay | 0) >= it.dp; const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
@@ -427,6 +429,8 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       plane: [19, 0, ["ww.....", ".wwww..", "..wwwww", ".ggw...", "gg....."], { w: "#FFFFFF", g: "#C9D3E0" }],
       medal: [25, 0, ["b...b", ".b.b.", ".yyy.", "yyoyy", ".yyy."], { b: "#3B6FD9", y: "#F5C842", o: "#E8B931" }],
       scope: [36, 20, ["..by", ".bb.", "bb..", ".k..", "k.k."], { b: "#3B6FD9", y: "#F5C842", k: "#5A4632" }],
+      compass: [0, 0, [".yy.", "yrwy", "ywby", ".yy."], { y: "#E8B931", r: "#E5533D", w: "#FFFFFF", b: "#3B6FD9" }],
+      magnifier: [12, 21, [".gg...", "gccgkk", ".gg..."], { g: "#C9A26B", c: "#CDEFFF", k: "#5A4632" }],
       armour: [-6, 12, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
     toys.forEach(t => { const d = T[t]; if (!d) return; const at = (S.tp && S.tp[t]) || [d[0], d[1]]; r += `<g class="bd-toy" data-toyg="${t}"><rect x="${at[0] - .5}" y="${at[1] - .5}" width="${d[2][0].length + 1}" height="${d[2].length + 1}" fill="transparent"/>`; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(at[0] + dx, at[1] + dy, 1, 1, d[3][ch]); })); r += `</g>`; });
     return r;

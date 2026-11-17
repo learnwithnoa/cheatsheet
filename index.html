@@ -3301,7 +3301,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   const MAP_P="cs-open-map";
   try{ const sp=new URLSearchParams(location.search); if(sp.has("map")){ sessionStorage.setItem(MAP_P,"1"); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
   const LV=["A1","A2","B1","B2","C1","C2"];
-  const MODNM={prs:"Present simple",th:"There is / there are",ps:"Past simple",pp:"Present perfect",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"};
+  const MODNM={prs:"Present simple",th:"There is / there are",ps:"Past simple",pp:"Present perfect",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",ed:"-ed endings"};
   function mapHTML(v){ const m=v.map||{}, lv=String(m.level||v.level||"").toUpperCase().match(/[ABC][12]/), cur=lv?lv[0]:"", first=(v.name||"").split(" ")[0];
     const nextRev=(m.reviews||[]).filter(d=>!(m.reviewed||[]).includes(d)).sort()[0];
     const route=(m.route||[]).slice(0,4);
@@ -3406,7 +3406,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     lesOf(v).forEach(x=>{ if(x.date&&x.date>since) out.push({d:x.date,ico:x.kind==="guide"?"📄":"📼",t:`${x.kind==="guide"?"New study guide":"Your class recap"}: <b>${esc(x.title)}</b> (with exercises)`,tab:x.kind==="guide"?"guides":"recaps"}); });
     (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
-    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
+    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
@@ -3461,7 +3461,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
     </div>`;
     /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
-    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" ${t.mod?`data-gomod="${esc(t.mod)}" data-tipstage="${esc(String(t.stage||""))}"`:`data-go="${esc(t.page)}"`}>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" ${t.mod?`data-gomod="${esc(t.mod)}" data-tipstage="${esc(String(t.stage||""))}"`:`data-go="${esc(t.page)}"`}>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -5997,11 +5997,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prThTile" data-modtile="th"><span class="pr-ico" aria-hidden="true">🏠</span><b>There is / there are</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prCouTile" data-modtile="cou"><span class="pr-ico" aria-hidden="true">💪</span><b>Could vs was able to</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prThTile" data-modtile="th"><span class="pr-ico" aria-hidden="true">🏠</span><b>There is / there are</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prCouTile" data-modtile="cou"><span class="pr-ico" aria-hidden="true">💪</span><b>Could vs was able to</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIqTile" data-modtile="iq"><span class="pr-ico" aria-hidden="true">❓</span><b>Indirect questions</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My words</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
-<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="psTitle"><em>Past simple</em></h1><p class="lede">Seven stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Siete etapas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
+<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="psTitle"><em>Past simple</em></h1><p class="lede">Short stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Etapas cortas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
 <div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
 <div class="pr-panel" data-pp="flash" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Flashcards</em></h1><p class="lede">Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p><div class="card flash-wrap" style="max-width:560px">
     <div id="fcEmpty" hidden><p style="margin:0 0 10px">You don't have any words yet. Save a few on your <b>Home</b> page and they'll show up here as flashcards.</p><button class="pill-btn pill-green" type="button" data-go="notes">Go to Home</button></div>
@@ -6062,7 +6062,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=59" defer></script>
+<script src="buddy.js?v=60" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -6117,7 +6117,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Time to <em>practice</em> 🎯</h2>
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find four parts:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b> and <b>could vs was able to</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect), in stages from easy to harder. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect), in stages from easy to harder. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My words</b> to practice just those.</div></li>
@@ -8946,6 +8946,148 @@ Have you ___ talk to her? (present perfect)|been able to|Have you been able to�
 My sister ___ speak Japanese now. (now)|can/is able to|Now → can (no -s).
 `.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"cout-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
 
+/* ---------- Indirect questions question bank (B1+ to B2, Spanish help on every question) ----------
+   same format as the other banks: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint
+   6 core stages + the ⭐ Advanced one (a module can have any number of stages) */
+const IQ_STAGES=[
+ {n:1, t:"Back to normal order", sub:"Do you know where the station is? · what he has done", why:"Inside a polite question, the question goes back to normal order: subject + verb.", es:"Dentro de una pregunta educada, la pregunta vuelve al orden normal: sujeto + verbo.", q:`
+Do you know where ___? (the station / be)|the station is|is the station,the station be,does the station is|After "Do you know", normal order: the station is.|Después de "Do you know", orden normal: the station is.
+Can you tell me what time ___? (it / be)|it is/it's|is it,it be,does it be|Normal order: what time it is (not "what time is it").|Orden normal: what time it is (no "what time is it").
+I don't know who ___. (that man / be)|that man is|is that man,that man does,does that man be|Normal order: who that man is.|Orden normal: who that man is.
+Do you know when ___ open? (the bank / will)|the bank will|will the bank,the bank wills,does the bank will|Subject first, then will.|Primero el sujeto, después will.
+Could you tell me where ___ park? (I / can)|I can|can I,I could to,do I can|Subject first, then can: where I can park.|Primero el sujeto, después can: where I can park.
+Do you know what ___ done? (he / have)|he has/he's|has he,he have,did he has|Subject first, then has: what he has done.|Primero el sujeto, después has: what he has done.
+I'm not sure how old ___. (she / be)|she is/she's|is she,she be,does she is|Normal order: how old she is.|Orden normal: how old she is.
+Can you tell me how much ___? (this jacket / be)|this jacket is|is this jacket,this jacket does,does this jacket is|Normal order: how much this jacket is.|Orden normal: how much this jacket is.
+I wonder what ___ doing right now. (they / be)|they are/they're|are they,they be,do they are|Normal order: what they are doing.|Orden normal: what they are doing.
+Do you know when ___ be back? (she / will)|she will/she'll|will she,she wills,does she will|Subject first, then will: when she will be back.|Primero el sujeto, después will: when she will be back.
+Can you tell me where ___ been? (you / have)|you have/you've|have you,you has,did you have|Subject first, then have: where you have been.|Primero el sujeto, después have: where you have been.
+I have no idea why ___ so angry. (he / be)|he is/he's/~he was|is he,he be,does he is|Normal order: why he is so angry.|Orden normal: why he is so angry.
+Do you know how long ___ stay? (we / can)|we can|can we,we could to,do we can|Subject first, then can: how long we can stay.|Primero el sujeto, después can: how long we can stay.
+`},
+ {n:2, t:"do, does, did disappear", sub:"where she lives · what time it starts · where he went", why:"In an indirect question, do / does / did disappear. The tense moves onto the verb: lives, starts, went.", es:"En una pregunta indirecta, do / does / did desaparecen. El tiempo pasa al verbo: lives, starts, went.", q:`
+Do you know where ___? (she / live)|she lives|does she live,she live,she living|No does: the -s goes on the verb. Where she lives.|Sin does: la -s va en el verbo. Where she lives.
+Can you tell me what time ___? (the movie / start)|the movie starts|does the movie start,the movie start,did the movie starts|No does: what time the movie starts.|Sin does: what time the movie starts.
+I don't know where ___ last night. (he / go)|he went|did he go,he go,he did went|No did: the verb goes to the past. Where he went.|Sin did: el verbo pasa a pasado. Where he went.
+Do you know how much ___? (it / cost, now)|it costs|does it cost,it cost,it does costs|No does: how much it costs.|Sin does: how much it costs.
+Could you tell me when ___? (the last bus / leave)|the last bus leaves|does the last bus leave,the last bus leave,did the last bus leaves|No does: when the last bus leaves.|Sin does: when the last bus leaves.
+Do you remember what ___ for dinner? (we / eat, past)|we ate|did we eat,we eated,we did ate|No did: what we ate.|Sin did: what we ate.
+I'm not sure why ___ early. (she / leave, past)|she left|did she leave,she leaved,she did left|No did: why she left.|Sin did: why she left.
+Do you know what ___ for a living? (your brother / do)|your brother does|does your brother do,your brother do,your brother doing|"Do" is the main verb here, so it stays: what your brother does.|Aquí "do" es el verbo principal, así que se queda: what your brother does.
+Can you tell me where ___ these shoes? (you / buy, past)|you bought|did you buy,you buyed,you did bought|No did: where you bought them.|Sin did: where you bought them.
+Do you know what ___? (this word / mean)|this word means|does this word mean,this word mean,this word meaning|No does: what this word means.|Sin does: what this word means.
+I have no idea what ___ yesterday. (she / say)|she said|did she say,she sayed,she did said|No did: what she said.|Sin did: what she said.
+Do you know how often ___? (the bus / come)|the bus comes|does the bus come,the bus come,the bus coming|No does: how often the bus comes.|Sin does: how often the bus comes.
+I wonder how ___ so fast. (they / learn, past)|they learned/they learnt|did they learn,they learn,they did learned|No did: how they learned.|Sin did: how they learned.
+`},
+ {n:3, t:"Yes/no questions: if or whether", sub:"Do you know if it's open? · I wonder whether they'll remember", why:"A yes/no question has no question word, so you add if (or whether) and use normal order.", es:"Una pregunta de sí o no no tiene palabra interrogativa, así que agregas if (o whether) y usas orden normal.", q:`
+Do you know ___ open on Sundays? (Is the museum open…?)|if the museum is/whether the museum is|is the museum,if is the museum,does the museum be|Yes/no question → if + normal order.|Pregunta de sí o no → if + orden normal.
+Can you tell me ___ a bathroom here? (Is there…?)|if there is/whether there is/if there's/whether there's|is there,if is there,there is if|Yes/no question → if there is.|Pregunta de sí o no → if there is.
+I'm not sure ___ coming. (Is he coming?)|if he is/whether he is/if he's/whether he's|is he,if is he,he if is|If + normal order: if he is coming.|If + orden normal: if he is coming.
+Do you know ___ the meeting? (Did she go to…?)|if she went to/whether she went to|did she go to,if did she go to,if she go to|No did: if she went.|Sin did: if she went.
+I wonder ___ remember me. (Will they remember me?)|if they will/whether they will/if they'll/whether they'll|will they,if will they,they will if|If + normal order: if they will remember me.|If + orden normal: if they will remember me.
+Could you tell me ___ breakfast? (Does the room include…?)|if the room includes/whether the room includes|does the room include,if does the room include,if the room include|No does: if the room includes.|Sin does: if the room includes.
+Do you know ___ any brothers? (Does Laura have…?)|if Laura has/whether Laura has|does Laura have,if does Laura have,if Laura have|No does: if Laura has.|Sin does: if Laura has.
+Can you check ___ the door? (Did I lock…?)|if I locked/whether I locked|did I lock,if did I lock,if I locking|No did: if I locked the door.|Sin did: if I locked the door.
+Do you know ___? (Has the class started?)|if the class has started/whether the class has started|has the class started,if has the class started,if the class have started|If + normal order: if the class has started.|If + orden normal: if the class has started.
+Do you know ___ speak English? (Can she…?)|if she can/whether she can|can she,if can she,she can if|If + normal order: if she can speak.|If + orden normal: if she can speak.
+Let me know ___ come to the party. (Can you…?)|if you can/whether you can|can you,if can you,you can if|If + normal order: if you can come.|If + orden normal: if you can come.
+I'm not sure ___ right. (Am I right?)|if I am/whether I am/if I'm/whether I'm|am I,if am I,I am if|If + normal order: if I am right.|If + orden normal: if I am right.
+I don't know ___ she likes coffee. (yes/no)|if/whether|does,what,is|Yes/no question → if or whether.|Pregunta de sí o no → if o whether.
+`},
+ {n:4, t:"Polite openers", sub:"I wonder… · Would you mind telling me… · I have no idea…", why:"Many openers work the same way: I wonder, I'd like to know, I can't remember, Would you mind telling me. After all of them: normal order.", es:"Muchas frases funcionan igual: I wonder, I'd like to know, I can't remember, Would you mind telling me. Después de todas: orden normal.", q:`
+I wonder where ___. (Where is he?)|he is/he's|is he,he does be,does he is|I wonder + normal order. It's a statement, so it ends with a period.|I wonder + orden normal. Es una afirmación, así que termina con punto.
+Would you mind telling me how old ___? (How old are you?)|you are/you're|are you,you be,do you are|Normal order: how old you are.|Orden normal: how old you are.
+I'd like to know why ___ late. (Why was the train late?)|the train was|was the train,did the train be,the train did be|Normal order: why the train was late.|Orden normal: why the train was late.
+I can't remember what ___. (What's her name?)|her name is|is her name,her name does,does her name is|Normal order: what her name is.|Orden normal: what her name is.
+Do you have any idea how ___ there? (How do I get there?)|I get/I can get|do I get,I getting,did I get|No do: how I get there.|Sin do: how I get there.
+I'm not sure what ___. (What does he want?)|he wants|does he want,he want,he does wants|No does: what he wants.|Sin does: what he wants.
+Who knows when ___? (When will it end?)|it will end/it'll end|will it end,it wills end,does it will end|Normal order: when it will end.|Orden normal: when it will end.
+Nobody told me where ___. (Where did they go?)|they went|did they go,they go,they did went|No did: where they went.|Sin did: where they went.
+Could you explain how ___? (How does this machine work?)|this machine works|does this machine work,this machine work,this machine working|No does: how this machine works.|Sin does: how this machine works.
+I'd love to know what ___ about me. (What did she say?)|she said|did she say,she say,she did said|No did: what she said.|Sin did: what she said.
+Tell me what ___. (What do you need?)|you need|do you need,you needing,you does need|No do: what you need.|Sin do: what you need.
+I have no idea where ___. (Where are my glasses?)|my glasses are|are my glasses,my glasses is,do my glasses are|Normal order: where my glasses are.|Orden normal: where my glasses are.
+I wonder ___. (Is it going to rain?)|if it is going to rain/whether it is going to rain/if it's going to rain/whether it's going to rain|is it going to rain,if is it going to rain,it is going to rain if|Yes/no question → if + normal order.|Pregunta de sí o no → if + orden normal.
+`},
+ {n:5, t:"The who / what trap", sub:"Do you know who called? · what happened?", why:"When who or what is the subject of the question, the order is already normal. Nothing moves: Who called? → Do you know who called?", es:"Cuando who o what es el sujeto de la pregunta, el orden ya es normal. Nada se mueve: Who called? → Do you know who called?", q:`
+Do you know who ___? (Who called?)|called|call,did called,calling|Who is the subject, so nothing changes: who called.|Who es el sujeto, así que nada cambia: who called.
+Do you know who ___? (Who did you call?)|you called|did you call,you did call,you did called|Here who is the object, so did disappears: who you called.|Aquí who es el objeto, así que did desaparece: who you called.
+Can you tell me what ___? (What happened?)|happened|happen,was happened,happening|What is the subject, so nothing changes: what happened.|What es el sujeto, así que nada cambia: what happened.
+I wonder who ___ the cake. (Who made the cake?)|made|make,maked,did made|Who is the subject: who made the cake.|Who es el sujeto: who made the cake.
+I don't know what ___ yesterday. (What did she buy?)|she bought|did she buy,she buyed,bought she|What is the object, so did disappears: what she bought.|What es el objeto, así que did desaparece: what she bought.
+Do you know who ___ the party? (Who is organizing the party?)|is organizing/is organising|organizing,organize,does organize|Who is the subject: who is organizing (same order as the question).|Who es el sujeto: who is organizing (mismo orden que la pregunta).
+Can you tell me who ___ to? (Who should I talk to?)|I should talk|should I talk,I should to talk,should talk I|Who is the object: who I should talk to.|Who es el objeto: who I should talk to.
+Do you know what ___ in the box? (What is in the box?)|is|does,are being,be|What is the subject: what is in the box.|What es el sujeto: what is in the box.
+Do you know whose bag ___? (Whose bag is this?)|this is|is this,this does,does this be|Normal order: whose bag this is.|Orden normal: whose bag this is.
+I wonder what ___ to her. (What happened to her?)|happened|happen,was happen,happens did|What is the subject: what happened to her.|What es el sujeto: what happened to her.
+Do you know who ___ the most? (Who earns the most?)|earns|earn,earning,is earn|Who is the subject: who earns the most.|Who es el sujeto: who earns the most.
+Do you know who ___? (Who did they invite?)|they invited|did they invite,invited they,they did invited|Who is the object: who they invited.|Who es el objeto: who they invited.
+Tell me which team ___. (Which team won?)|won|win,winned,did won|Which team is the subject: which team won.|Which team es el sujeto: which team won.
+`},
+ {n:6, t:"Real life mix", sub:"at a hotel, in an interview, in an email", why:"Indirect questions sound polite and professional. Mix everything: normal order, no do/does/did, if for yes/no.", es:"Las preguntas indirectas suenan educadas y profesionales. Mezcla todo: orden normal, sin do/does/did, if para sí o no.", q:`
+(At a hotel) Could you tell me what time ___? (What time is breakfast served?)|breakfast is served|is breakfast served,breakfast does served,does breakfast is served|Normal order: what time breakfast is served.|Orden normal: what time breakfast is served.
+(Job interview) Can I ask why ___ this position? (Why did you apply for…?)|you applied for|did you apply for,you did applied for,did you applied for|No did: why you applied for.|Sin did: why you applied for.
+(Email) Could you let me know when ___ the report? (When will you send…?)|you will send/you'll send|will you send,you will sending,do you will send|Normal order: when you will send.|Orden normal: when you will send.
+(On the street) Excuse me, do you know where ___? (Where is the nearest pharmacy?)|the nearest pharmacy is|is the nearest pharmacy,the nearest pharmacy does be,does the nearest pharmacy is|Normal order: where the nearest pharmacy is.|Orden normal: where the nearest pharmacy is.
+(On the phone) Do you know ___ the shop is still open?|if/whether|is,does,what|Yes/no question → if or whether.|Pregunta de sí o no → if o whether.
+(Job interview) Would you mind telling me how many people ___ the team? (How many people are on…?)|are on|is on,do are on,on are|"How many people" is the subject: how many people are on the team.|"How many people" es el sujeto: how many people are on the team.
+(Restaurant) Could you tell me what ___ in this dish? (What is in this dish?)|is|does,are being,be|What is the subject: what is in this dish.|What es el sujeto: what is in this dish.
+(Email) I was wondering if ___ help me with this. (Could you…?)|you could/~you can|could you,you can to,do you could|If + normal order: if you could help me.|If + orden normal: if you could help me.
+(Airport) Do you know which gate ___ from? (Which gate does the flight leave from?)|the flight leaves|does the flight leave,the flight leave,did the flight leaves|No does: which gate the flight leaves from.|Sin does: which gate the flight leaves from.
+(With a friend) I can't remember where ___ my phone. (Where did I leave…?)|I left|did I leave,I leaved,I did left|No did: where I left my phone.|Sin did: where I left my phone.
+(At work) Do you happen to know who ___ charge of this? (Who is in charge?)|is in|in is,does in,are in|Who is the subject: who is in charge.|Who es el sujeto: who is in charge.
+(At the doctor's) Can you tell me how long ___ taking this? (How long should I keep…?)|I should keep|should I keep,I should to keep,should keep I|Normal order: how long I should keep taking it.|Orden normal: how long I should keep taking it.
+(In a shop) Do you know how much ___? (How much do these cost?)|these cost|do these cost,these costs,these does cost|No do: how much these cost.|Sin do: how much these cost.
+`},
+ {n:7, adv:true, t:"Advanced: reported questions & whether", sub:"She asked where I was going · I don't know what to say", why:"Indirect questions at B2–C1: reported questions, whether (or not), question word + to, and what… is why….", es:"Preguntas indirectas nivel B2–C1: preguntas reportadas, whether (or not), palabra interrogativa + to, y what… is why….", q:`
+She asked me where ___. (Where are you going?)|I was going|was I going,I going,did I go|Reported question: normal order, and the tense moves back: where I was going.|Pregunta reportada: orden normal y el tiempo retrocede: where I was going.
+He asked if ___ help him. (Can you help me?)|I could/~I can|could I,can I,I could to|Reported: if + normal order, can → could.|Reportada: if + orden normal, can → could.
+They wanted to know when ___ ready. (When will the results be ready?)|the results would be/~the results will be|would the results be,the results will ready,did the results be|Reported: will → would, normal order.|Reportada: will → would, orden normal.
+I don't know what ___. (What should I say?)|to say|to saying,saying,should say|Question word + to + verb: what to say.|Palabra interrogativa + to + verbo: what to say.
+Can you show me how ___ this? (How do I use it?)|to use|to using,using,use to|Question word + to + verb: how to use it.|Palabra interrogativa + to + verbo: how to use it.
+I can't decide ___ to go or not.|whether|if,what,that|Before to + verb, only whether (not if): whether to go.|Antes de to + verbo, solo whether (no if): whether to go.
+___ he'll come or not doesn't matter.|Whether|If,What,That|At the start of a sentence, use whether (not if).|Al comienzo de la oración, usa whether (no if).
+What I don't understand is why ___. (Why did she leave?)|she left|did she leave,she leaved,left she|What… is why + normal order: why she left.|What… is why + orden normal: why she left.
+The question is whether ___ enough time. (Do we have…?)|we have|do we have,we has,have we|Whether + normal order: whether we have.|Whether + orden normal: whether we have.
+I asked her how long ___ there. (How long have you lived there?)|she had lived/she'd lived/~she has lived|had she lived,has she lived,she have lived|Reported: have lived → had lived, normal order.|Reportada: have lived → had lived, orden normal.
+Nobody knows how ___. (How did it happen?)|it happened|did it happen,it happen,happened it|No did: how it happened.|Sin did: how it happened.
+He wondered whether or not ___ her the truth. (Should he tell…?)|he should tell|should he tell,he should to tell,should tell he|Whether or not + normal order: whether he should tell.|Whether or not + orden normal: whether he should tell.
+The teacher asked us what ___ during the holidays. (What did you do?)|we had done/we'd done/~we did|had we done,did we do,we have did|Reported: did → had done, normal order.|Reportada: did → had done, orden normal.
+`}
+];
+IQ_STAGES.forEach(st=>{
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"iq"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+const IQ_TEST=`
+Do you know where ___? (the bank / be)|the bank is|Normal order: where the bank is.
+Can you tell me what time ___? (it / be)|it is/it's|Normal order: what time it is.
+I don't know where ___. (he / live)|he lives|No does: where he lives.
+Do you know when ___? (the train / leave)|the train leaves|No does: when the train leaves.
+I can't remember what ___. (she / say, past)|she said|No did: what she said.
+Do you know ___ open today? (Is the pharmacy open?)|if the pharmacy is/whether the pharmacy is|Yes/no → if + normal order.
+Could you tell me where ___ park? (I / can)|I can|Normal order: where I can park.
+Do you know who ___? (Who called?)|called|Who is the subject: nothing changes.
+Do you know who ___? (Who did you see?)|you saw|Who is the object: no did.
+I wonder ___ remember me. (Will they…?)|if they will/whether they will/if they'll/whether they'll|If + normal order.
+Can you tell me how much ___? (How much does it cost?)|it costs|No does: how much it costs.
+I'd like to know why ___ late. (Why were you late?)|you were|Normal order: why you were late.
+Do you know what ___? (What happened?)|happened|What is the subject: nothing changes.
+I have no idea where ___. (Where are my keys?)|my keys are|Normal order: where my keys are.
+Do you know what ___ done? (he / have)|he has/he's|Normal order: what he has done.
+Would you mind telling me how old ___? (How old are you?)|you are/you're|Normal order: how old you are.
+Do you know ___ speak Spanish? (Can he…?)|if he can/whether he can|If + normal order.
+I'm not sure what ___. (What does it mean?)|it means|No does: what it means.
+Could you let me know when ___ arrive? (When will you…?)|you will/you'll|Normal order: when you will arrive.
+I wonder what ___ doing now. (they / be)|they are/they're|Normal order: what they are doing.
+Do you know where ___ my phone? (Where did I put…?)|I put|No did: where I put my phone.
+Do you know which bus ___ to the airport? (Which bus goes…?)|goes|Which bus is the subject: which bus goes.
+Can you check ___ the email? (Did she send…?)|if she sent/whether she sent|No did: if she sent.
+Tell me what ___. (What do you want?)|you want|No do: what you want.
+I wonder how long ___ here. (How long has she worked here?)|she has worked/she's worked|Normal order: how long she has worked.
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"iqt-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
+
 /* ---------- There is / there are question bank (A1-A2 friendly, Spanish help on every question) ----------
    same format as the other banks: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint */
 const TH_STAGES=[
@@ -9131,6 +9273,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     ing:{id:"ing",name:"Verb + -ing",lname:"verb + -ing",stages:ING_STAGES,test:ING_TEST,toy:"🛹 Skateboard",toyName:"Skateboard",ico:"🏃"},
     th:{id:"th",name:"There is / there are",lname:"“there is / there are”",the:"",stages:TH_STAGES,test:TH_TEST,toy:"🏠 Little house",toyName:"Little house",ico:"🏠"},
     cou:{id:"cou",name:"Could vs was able to",lname:"“could vs was able to”",the:"",stages:COU_STAGES,test:COU_TEST,toy:"🔑 Golden key",toyName:"Golden key",ico:"💪"},
+    iq:{id:"iq",name:"Indirect questions",lname:"indirect questions",the:"",stages:IQ_STAGES,test:IQ_TEST,toy:"🧭 Compass",toyName:"Compass",ico:"❓"},
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
@@ -10820,6 +10963,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-iq", date:"November 17, 2026", title:"New grammar module: Indirect questions", items:[
+    ["❓","Do you know where it is?","A new module in <b>Practice → Grammar</b> (B1+ and up) for polite questions like <i>Do you know where the station is?</i> (not <i>where is the station</i>). A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
+    ["🧭","Two new toys","Finish it for a 🧭 <b>compass</b> for your study buddy, and pass its Advanced stage for a 🔍 <b>detective's magnifying glass</b>.",""]
+  ]},
   {id:"2026-1117-focusmenu", date:"November 17, 2026", title:"Focus mode: a menu button", items:[
     ["☰","Change pages in focus mode","In focus mode there's now a <b>☰ Menu</b> button at the top left. It opens the menu on the side, so you can jump to another page without leaving focus mode.",""]
   ]},
@@ -11153,7 +11300,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117092213"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117102252"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11427,7 +11574,7 @@ window.__csBusy = function(){
 /* step131: group the grammar tiles */
 (function(){
   function go(){ const pan=document.querySelector('.pr-panel[data-pp="gram"]'); if(!pan) return; const grid=pan.querySelector(".pr-tiles"); if(!grid||grid.dataset.grouped) return;
-    const ORDER=["prs","th","ps","cou","pp","ing"];   /* easiest first */
+    const ORDER=["prs","th","ps","cou","pp","ing","iq"];   /* easiest first */
     ORDER.forEach(k=>{ const t=grid.querySelector('[data-modtile="'+k+'"]'); if(t) grid.appendChild(t); });
     const tools=[grid.querySelector('[data-pr="irr"]'),grid.querySelector('[data-pr="mis"]')].filter(Boolean); if(!tools.length) return;
     const h1=document.createElement("div"); h1.className="pr-grp"; h1.textContent="Topics"; grid.before(h1);
@@ -12256,6 +12403,73 @@ ed: {
       p: { en: "Before a vowel, the -ed links to the next word (“worked a lot” → “work-ta-lot”). Before a consonant, it’s often very soft, almost silent, but keep a tiny stop.",
            es: "Antes de una vocal, la -ed se une a la palabra siguiente (“worked a lot” → “work-ta-lot”). Antes de una consonante, suele ser muy suave, casi muda, pero mantén una pequeña pausa." },
       ex: [["I worked all day.", "Trabajé todo el día."], ["I watched TV last night.", "Anoche vi tele."]] }
+  ]
+}
+,
+iq: {
+  name: { en: "Indirect questions", es: "Preguntas indirectas" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "An <b>indirect question</b> is a question inside another sentence: <i>Do you know…? Can you tell me…? I wonder…</i> It sounds more polite and professional. The trick: the question inside goes back to <b>normal order</b> (subject + verb).",
+           es: "Una <b>pregunta indirecta</b> es una pregunta dentro de otra oración: <i>Do you know…? Can you tell me…? I wonder…</i> Suena más educada y profesional. El truco: la pregunta de adentro vuelve al <b>orden normal</b> (sujeto + verbo)." } },
+    { h: { en: "1. Back to normal order", es: "1. Vuelve al orden normal" }, stage: 1, key: true,
+      p: { en: "With <b>be, can, will, have</b>: just put the subject first.", es: "Con <b>be, can, will, have</b>: solo pon el sujeto primero." },
+      table: [
+        ["be", "Where <b>is the station</b>?", "Do you know where <b>the station is</b>?"],
+        ["be", "What time <b>is it</b>?", "Can you tell me what time <b>it is</b>?"],
+        ["can", "Where <b>can I</b> park?", "Could you tell me where <b>I can</b> park?"],
+        ["have", "What <b>has he</b> done?", "Do you know what <b>he has</b> done?"]
+      ] },
+    { h: { en: "2. do / does / did disappear", es: "2. do / does / did desaparecen" }, stage: 2, key: true,
+      p: { en: "Take out <b>do, does, did</b>. The tense moves onto the verb: <i>lives, starts, went</i>.", es: "Saca <b>do, does, did</b>. El tiempo pasa al verbo: <i>lives, starts, went</i>." },
+      ex: [["Where does she live? → Do you know where she lives?", "¿Dónde vive? → ¿Sabes dónde vive?"], ["Where did he go? → I don’t know where he went.", "¿Adónde fue? → No sé adónde fue."]] },
+    { h: { en: "3. Yes/no questions: if or whether", es: "3. Preguntas de sí o no: if o whether" }, stage: 3,
+      p: { en: "No question word? Add <b>if</b> (or <b>whether</b>) and use normal order.", es: "¿No hay palabra interrogativa? Agrega <b>if</b> (o <b>whether</b>) y usa orden normal." },
+      ex: [["Is it open? → Do you know if it’s open?", "¿Está abierto? → ¿Sabes si está abierto?"], ["Did she call? → I wonder whether she called.", "¿Llamó? → Me pregunto si llamó."]] },
+    { h: { en: "4. Polite openers", es: "4. Frases para empezar" }, stage: 4,
+      p: { en: "<i>Do you know… · Can / Could you tell me… · Would you mind telling me… · Do you have any idea… · I wonder… · I’d like to know… · I’m not sure… · I can’t remember…</i> If the opener is a statement (<i>I wonder…</i>), end with a <b>period</b>, not a question mark.",
+           es: "<i>Do you know… · Can / Could you tell me… · Would you mind telling me… · Do you have any idea… · I wonder… · I’d like to know… · I’m not sure… · I can’t remember…</i> Si la frase es una afirmación (<i>I wonder…</i>), termina con <b>punto</b>, no con signo de pregunta." },
+      ex: [["I wonder where he is.", "Me pregunto dónde está."], ["Would you mind telling me how old you are?", "¿Te molestaría decirme cuántos años tienes?"]] },
+    { h: { en: "5. The who / what trap", es: "5. La trampa de who / what" }, stage: 5, key: true,
+      p: { en: "When <b>who</b> or <b>what</b> is the subject (the one doing the action), the order is already normal, so <b>nothing changes</b>.",
+           es: "Cuando <b>who</b> o <b>what</b> es el sujeto (el que hace la acción), el orden ya es normal, así que <b>nada cambia</b>." },
+      table: [
+        [{ en: "subject", es: "sujeto" }, "Who called?", "Do you know <b>who called</b>?"],
+        [{ en: "object", es: "objeto" }, "Who did you call?", "Do you know <b>who you called</b>?"],
+        [{ en: "subject", es: "sujeto" }, "What happened?", "Tell me <b>what happened</b>."],
+        [{ en: "object", es: "objeto" }, "What did she buy?", "Tell me <b>what she bought</b>."]
+      ] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["Do you know when are you leaving?", "Do you know when you are leaving?", { en: "Normal order inside: you are.", es: "Adentro, orden normal: you are." }],
+        ["Can you tell me what time is it?", "Can you tell me what time it is?", { en: "Normal order: it is.", es: "Orden normal: it is." }],
+        ["Do you know where does she live?", "Do you know where she lives?", { en: "No does, and the -s goes on the verb.", es: "Sin does, y la -s va en el verbo." }],
+        ["I don’t know where did he go.", "I don’t know where he went.", { en: "No did: the verb goes to the past.", es: "Sin did: el verbo pasa a pasado." }],
+        ["Do you know is it open?", "Do you know if it’s open?", { en: "Yes/no question → if.", es: "Pregunta de sí o no → if." }],
+        ["I wonder where is he?", "I wonder where he is.", { en: "Normal order, and a period after I wonder.", es: "Orden normal, y punto después de I wonder." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["Do you know when ___ leaving? (you / be)", "you are", { en: "Normal order: you are.", es: "Orden normal: you are." }],
+        ["Can you tell me where ___? (he / work)", "he works", { en: "No does: he works.", es: "Sin does: he works." }],
+        ["I’m not sure ___ she’s coming.", "if / whether", { en: "Yes/no question → if or whether.", es: "Pregunta de sí o no → if o whether." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Reported questions", es: "Preguntas reportadas" },
+      p: { en: "When you report a question later, use normal order and move the tense back: <b>is → was, will → would, can → could, did / have done → had done</b>.",
+           es: "Cuando cuentas una pregunta después, usa orden normal y retrocede el tiempo: <b>is → was, will → would, can → could, did / have done → had done</b>." },
+      ex: [["“Where are you going?” → She asked me where I was going.", "“¿Adónde vas?” → Me preguntó adónde iba."], ["“Can you help me?” → He asked if I could help him.", "“¿Me puedes ayudar?” → Me preguntó si lo podía ayudar."]] },
+    { h: { en: "Question word + to", es: "Palabra interrogativa + to" },
+      p: { en: "When the subject is obvious, use <b>question word + to + verb</b>.", es: "Cuando el sujeto es obvio, usa <b>palabra interrogativa + to + verbo</b>." },
+      ex: [["I don’t know what to say.", "No sé qué decir."], ["Can you show me how to use this?", "¿Me puedes mostrar cómo usar esto?"]] },
+    { h: { en: "whether, not if", es: "whether, no if" },
+      p: { en: "Use <b>whether</b> (not if) before <b>to + verb</b>, right after a preposition, with <b>or not</b> right after it, and at the start of a sentence.",
+           es: "Usa <b>whether</b> (no if) antes de <b>to + verbo</b>, justo después de una preposición, con <b>or not</b> justo después, y al comienzo de una oración." },
+      ex: [["I can’t decide whether to go.", "No puedo decidir si ir."], ["Whether he comes or not doesn’t matter.", "Si viene o no, da lo mismo."]] },
+    { h: { en: "What… is why…", es: "What… is why…" },
+      p: { en: "A strong way to focus on something: <b>What I don’t understand is why…</b> The second part also uses normal order.",
+           es: "Una forma fuerte de destacar algo: <b>What I don’t understand is why…</b> La segunda parte también usa orden normal." },
+      ex: [["What I don’t understand is why she left.", "Lo que no entiendo es por qué se fue."], ["The question is whether we have enough time.", "La pregunta es si tenemos suficiente tiempo."]] }
   ]
 }
 });
