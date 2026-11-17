@@ -9331,9 +9331,19 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab"};
   const par=c=>c==="ps"&&M==="ed"?"pron":PARENT[c];
   const PNAME={gram:"Grammar",words:"My words",vocab:"Word packs",pron:"Pronunciation"};
+  const PSLUG={gram:"grammar",words:"my-words",vocab:"word-packs",pron:"pronunciation",mis:"my-mistakes",irr:"irregular-verbs",flash:"flashcards",sent:"sentences",say:"say-it",level:"level-check"};
+  const mslug=id=>String(MODS[id].name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+  function hashFor(c){ if(!c) return "#quiz"; if(c==="vset") c="vocab"; const p=par(c), me=c==="ps"?mslug(M):PSLUG[c]; return "#quiz/"+(p&&PSLUG[p]?PSLUG[p]+"/":"")+(me||""); }
+  window.__prHash=()=>hashFor(cur);
+  function syncUrl(){ try{ if(view.hidden) return; const h=hashFor(cur); if(location.hash!==h) history.replaceState(Object.assign({},history.state||{cs:1,v:"quiz"},{pp:cur,m:M}),"",h); }catch(e){} }
+  window.__prOpenPath=parts=>{ parts=(parts||[]).filter(Boolean); if(!parts.length){ round=null; show(null,true); syncUrl(); return; }
+    const inv={}; Object.keys(PSLUG).forEach(k=>inv[PSLUG[k]]=k);
+    const last=parts[parts.length-1], mod=Object.keys(MODS).find(id=>mslug(id)===last);
+    round=null; if(mod){ setMod(mod); show("ps",true); } else if(inv[last]) show(inv[last],true); else if(inv[parts[0]]) show(inv[parts[0]],true); else show(null,true);
+    syncUrl(); };
   function show(p,fromPop){
     cur=p||null;
-    if(!fromPop&&!view.hidden){ try{ const st=history.state||{}; if(st.cs&&st.v==="quiz"&&(st.pp||null)!==cur) history.pushState({cs:1,v:"quiz",pp:cur,n:(st.n|0)+1},"","#quiz"); }catch(e){} }
+    if(!fromPop&&!view.hidden){ try{ const st=history.state||{}; if(st.cs&&st.v==="quiz"&&(st.pp||null)!==cur) history.pushState({cs:1,v:"quiz",pp:cur,m:M,n:(st.n|0)+1},"",hashFor(cur)); }catch(e){} }
     view.querySelectorAll(".pr-back-t").forEach(t=>t.textContent=PNAME[par(cur)]||"All practice");
     hub.hidden=!!cur; panels.forEach(x=>x.hidden=x.dataset.pp!==cur);
     if(cur==="ps"&&!round) renderStages();
@@ -9342,6 +9352,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     if(cur==="vset"&&!round) renderSet();
     if(!cur) renderHub();
     window.scrollTo({top:0});
+    syncUrl();
   }
   view.addEventListener("click",e=>{
     const t=e.target.closest("[data-pr]"); if(t){ round=null; if(t.dataset.modtile) setMod(t.dataset.modtile); show(t.dataset.pr); return; }
@@ -9531,7 +9542,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   }
 
   /* ---- open from elsewhere (notebook "Practice this") ---- */
-  window.__prShow=(p,fromPop)=>{ round=null; show(p,fromPop); };
+  window.__prShow=(p,fromPop,m)=>{ round=null; if(m&&MODS[m]) setMod(m); show(p,fromPop); };
   window.csVocSet=function(id){ if(!VSET[id]) return; go("quiz",true); round=null; vsCur=id; vsMode="list"; show("vset"); window.scrollTo({top:0}); };
   window.csPractice=function(p,stage,mod){ go("quiz",true); round=null; if(mod) setMod(mod); if(p==="ps"&&stage){ start("ps",stage); } else show(p); };
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-psgo]"); if(!b) return; e.preventDefault(); window.csPractice("ps",+b.dataset.psgo||0,b.dataset.psmod||"ps"); });
@@ -10459,12 +10470,12 @@ let histN=0, fromPop=false;
 window.addEventListener("popstate",e=>{
   const st=e.state||{}, id=st.v||location.hash.slice(1)||"notes";
   histN=st.n|0;
-  if(id===curView){ if(id==="quiz"&&window.__prShow) window.__prShow(st.pp||null,true); return; }
+  if(id===curView){ if(id==="quiz"&&window.__prShow) window.__prShow(st.pp||null,true,st.m); return; }
   const top=backStack[backStack.length-1];
   fromPop=true; goingBack=true;
   if(top&&top.id===id){ backStack.pop(); go(id); setTimeout(()=>window.scrollTo({top:top.y}),20); } else go(id);
   goingBack=false; fromPop=false;
-  if(id==="quiz"&&window.__prShow) window.__prShow(st.pp||null,true);
+  if(id==="quiz"&&window.__prShow) window.__prShow(st.pp||null,true,st.m);
   renderBack();
 });
 function go(id,push){
@@ -10482,16 +10493,18 @@ function go(id,push){
   document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", (b.dataset.go===id||(id==="notebook"&&b.dataset.go==="classnotes"))?"true":"false"));
   const cur=document.querySelector('.navbtn[aria-current="true"]'); if(cur&&cur.scrollIntoView&&window.innerWidth<=900) cur.scrollIntoView({block:"nearest",inline:"center"});
   try{localStorage.setItem("eep-view",id);}catch(e){}
-  if(push&&!fromPop){ const U=id==="notes"?location.pathname+location.search:"#"+id; try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"",U); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"",U); else history.pushState({cs:1,v:id,n:++histN},"",U);}catch(e){} }
+  if(push&&!fromPop){ const U=id==="notes"?location.pathname+location.search:(id==="quiz"&&window.__prHash?window.__prHash():"#"+id); try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"",U); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"",U); else history.pushState({cs:1,v:id,n:++histN},"",U);}catch(e){} }
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]"); if(!b)return; e.preventDefault(); go(b.dataset.go,true); if(b.closest("nav.side,header.top")){ backStack.length=0; renderBack(); } window.scrollTo({top:0}); if(b.dataset.go==="translate") setTimeout(()=>trIn.focus(),50);});
-window.addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h&&h!==curView&&ids.includes(h)) go(h); });
+window.addEventListener("hashchange",()=>{ const hp=location.hash.slice(1).split("/"), h=hp[0]; if(h&&h!==curView&&ids.includes(h)) go(h); if(h==="quiz"&&hp.length>1&&window.__prOpenPath&&window.__prHash&&window.__prHash()!==location.hash) window.__prOpenPath(hp.slice(1)); });
 document.getElementById("backLink").addEventListener("click",goBack);
 document.getElementById("backFab").addEventListener("click",goBack);
-let start=location.hash.slice(1);
+const deepStart=location.hash.slice(1).split("/").slice(1);
+let start=location.hash.slice(1).split("/")[0];
 if(!ids.includes(start)){ try{ start=localStorage.getItem("eep-view")||"notes"; }catch(e){ start="notes"; } }
 go(start);
 try{ history.replaceState({cs:1,v:curView,n:0},"",curView==="notes"?location.pathname+location.search:"#"+curView); }catch(e){}
+if(curView==="quiz"&&deepStart.length&&window.__prOpenPath) window.__prOpenPath(deepStart);
 
 /* ---------------- starred sections ---------------- */
 let stars=LS.get("ncs-stars",[]);
@@ -10963,6 +10976,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-links", date:"November 17, 2026", title:"Links that take you to the right place", items:[
+    ["🔗","The address follows you in Practice","When you open a grammar module or a practice page, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b>). Refresh, bookmark it or share it, and it opens right there.",""]
+  ]},
   {id:"2026-1117-iq", date:"November 17, 2026", title:"New grammar module: Indirect questions", items:[
     ["❓","Do you know where it is?","A new module in <b>Practice → Grammar</b> (B1+ and up) for polite questions like <i>Do you know where the station is?</i> (not <i>where is the station</i>). A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
     ["🧭","Two new toys","Finish it for a 🧭 <b>compass</b> for your study buddy, and pass its Advanced stage for a 🔍 <b>detective's magnifying glass</b>.",""]
@@ -11300,7 +11316,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117102252"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117103641"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

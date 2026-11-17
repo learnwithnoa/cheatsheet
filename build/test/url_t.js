@@ -1,0 +1,26 @@
+// Address bar follows Practice: deep links open the right place; back/forward work
+const {chromium, devices} = require('playwright'); const fs = require('fs');
+const stub = fs.readFileSync(__dirname+'/fbstub3.js','utf8');
+(async () => { const b = await chromium.launch(); const errs = [];
+  const ctx = await b.newContext({viewport:{width:1280,height:900}});
+  await ctx.route(/fb\.js/, r => r.fulfill({body: stub, contentType: 'text/javascript'}));
+  await ctx.route(/googleapis|gstatic|firebaseapp|google\.com|ytimg|exchangerate|open\.er-api/, r => r.abort());
+  const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message));
+  await p.addInitScript(() => { localStorage.setItem('ncs-welcomed','1'); localStorage.setItem('ncs-seen-version','9999'); });
+  const st = async l => console.log(l.padEnd(28), await p.evaluate(() => { const v=[...document.querySelectorAll('#v-quiz .pr-panel')].find(x=>!x.hidden); return location.hash+'  | view:'+(document.querySelector('#v-quiz').hidden?'hidden':'quiz')+' panel:'+(v?v.dataset.pp:'hub')+' title:'+((document.getElementById('psTitle')||{}).textContent||''); }));
+  await p.goto('http://localhost:8768/index.html#quiz/grammar/past-simple'); await p.waitForTimeout(2200); await st('deep link past simple');
+  await p.goto('http://localhost:8768/index.html#quiz/pronunciation/ed-endings'); await p.waitForTimeout(2000); await st('deep link ed');
+  await p.goto('http://localhost:8768/index.html#quiz/my-words/flashcards'); await p.waitForTimeout(2000); await st('deep link flashcards');
+  await p.goto('http://localhost:8768/index.html#notes'); await p.waitForTimeout(2000);
+  await p.evaluate(() => { [...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Got it').forEach(b=>b.click()); });
+  await p.click('nav.side [data-go="quiz"]'); await p.waitForTimeout(400); await st('nav practice');
+  await p.evaluate(() => document.querySelector('[data-pr="gram"]').click()); await p.waitForTimeout(300); await st('grammar');
+  await p.evaluate(() => document.querySelector('[data-modtile="iq"]').click()); await p.waitForTimeout(400); await st('indirect q');
+  await p.goBack(); await p.waitForTimeout(400); await st('back');
+  await p.evaluate(() => document.querySelector('[data-modtile="pp"]').click()); await p.waitForTimeout(400); await st('present perfect');
+  await p.goBack(); await p.waitForTimeout(400); await st('back');
+  await p.goForward(); await p.waitForTimeout(400); await st('forward');
+  await p.reload(); await p.waitForTimeout(2200); await st('reload');
+  await p.evaluate(() => { document.querySelectorAll('.qa-backdrop,.wl-backdrop').forEach(e=>e.remove()); document.querySelector('nav.side [data-go="words"]').click(); }); await p.waitForTimeout(400); await st('my words');
+  await p.goBack(); await p.waitForTimeout(500); await st('back to practice');
+  console.log(errs.length ? errs : 'no errors'); await b.close(); })();
