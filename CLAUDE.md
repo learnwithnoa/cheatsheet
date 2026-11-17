@@ -23,6 +23,7 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
   max one a day, never to Noa; members turn it off in Settings (ncs-mailnotif); every email sent is listed in Noa's 🔔 (t-mailsent).
   It also runs the free 2-week club trial (no card; 14 days counting the first, 30 for Noa's private students; `/api/trial` also sends Noa's welcome message as a Hibi message,
   text in pay/worker.js TRIAL_WELCOME or t-hubmeta.trialWelcome with {name}/{end date}; ended by its nightly check; Noa's list in `users/{Noa}/data/t-trials`, `hubsync.py trials`).
+  Trials Noa gives by hand: add them to t-hubmeta.manualTrials (`hubsync.py set-meta '{"manualTrials":[{"email","until":"YYYY-MM-DD" last day,"start","len":"2wk"|"month"}]}'`, keep the old entries); the pay helper turns them into real trials within the hour.
 - `pod/` — podcast MP3s; `.github/workflows/podcast-audio.yml` converts episodes queued in `pod/queue.txt`.
 
 ## Build
