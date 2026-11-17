@@ -400,6 +400,7 @@ const showView = v => views.forEach(id => $(id).hidden = id !== v);
 function toast(t, undo) { const el = $("toast"); el.textContent = t; if (undo) { const b = document.createElement("button"); b.type = "button"; b.textContent = "Undo"; b.onclick = () => { el.classList.remove("show"); undo(); }; el.appendChild(b); } el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), undo ? 7000 : 2400); }
 $("inBtn").onclick = async () => {
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithRedirect(auth, p); return; } catch (e) {}   /* full-page sign-in (login.hibi.cl); the pop-up is the fallback */
   try { await signInWithPopup(auth, p); }
   catch (e) { if (e && e.code === "auth/popup-blocked") await signInWithRedirect(auth, p); else if (e && e.code !== "auth/popup-closed-by-user") { $("signErr").hidden = false; $("signErr").textContent = "Sign-in didn't work. Try again."; } }
 };

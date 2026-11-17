@@ -284,6 +284,9 @@ let popupTries = 0;
 async function signIn() {
   if (IN_APP) { alertMsg(IS_IOS ? "Google sign-in doesn't work inside this app's browser. Tap ··· or the share icon and choose \"Open in Safari\" (or copy the link into Safari), then sign in there." : "Google sign-in doesn't work inside this app's browser. Tap ⋮ and choose \"Open in Chrome\" (or copy the link into Chrome), then sign in there."); return; }
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  /* Nov 2026: sign-in runs on login.hibi.cl (same site as hibi.cl), so the full-page Google sign-in works everywhere,
+     iPhone included, and it never leaves a stuck white pop-up behind. The pop-up stays as the fallback. */
+  try { await signInWithRedirect(auth, p); return; } catch (e) { console.warn(e); }
   try { await signInWithPopup(auth, p); popupTries = 0; }
   catch (e) {
     const blocked = e && e.code === "auth/popup-blocked", unsupported = e && e.code === "auth/operation-not-supported-in-this-environment";
@@ -314,7 +317,7 @@ async function doSignOut() {
   await signOut(auth);
   location.reload();
 }
-getRedirectResult(auth).catch(() => {});
+getRedirectResult(auth).catch(e => { if (e && e.code && !/cancelled|closed-by-user|no-auth-event|redirect-cancelled/.test(e.code)) { console.warn(e); setTimeout(() => alertMsg("Sign-in didn't finish. Tap \"Continue with Google\" once more."), 400); } });
 
 /* ---------- UI ---------- */
 function alertMsg(t) { const el = $("authStatus"); if (el) el.textContent = t; const ag = document.getElementById("agMsg"); if (ag) { ag.textContent = t; ag.hidden = false; } try { const tst = document.getElementById("toast"); tst.textContent = t; tst.classList.add("show"); setTimeout(() => tst.classList.remove("show"), 3000); } catch (e) {} }

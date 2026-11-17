@@ -299,6 +299,7 @@ function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add(
 
 $("inBtn").onclick = async () => {
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithRedirect(auth, p); return; } catch (e) {}   /* full-page sign-in (login.hibi.cl); the pop-up is the fallback */
   try { await signInWithPopup(auth, p); }
   catch (e) { if (e && e.code === "auth/popup-blocked") await signInWithRedirect(auth, p); else if (e && e.code !== "auth/popup-closed-by-user") { $("signErr").hidden = false; $("signErr").textContent = "Sign-in didn't work. Try again."; } }
 };
