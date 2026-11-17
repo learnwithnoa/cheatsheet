@@ -135,3 +135,11 @@ if '2026-1116-dmreact' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 17: grammar lessons (pilot)
+s=open(p,encoding="utf-8").read()
+if '2026-1117-lesson' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-lesson", date:"November 17, 2026", title:"Learn it first: grammar lessons", items:[
+    ["📖","Present perfect lesson","Open <b>Practice → Present perfect</b> and you'll find a short lesson before the stages: <b>Basics</b> (how to make it and when to use it, with examples and common mistakes) and <b>Advanced</b> for B2–C1. Switch it to <b>Español</b> anytime. More topics coming soon.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

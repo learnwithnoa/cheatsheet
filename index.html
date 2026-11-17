@@ -1325,6 +1325,43 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 @keyframes clRxIn{from{opacity:0;transform:translateY(4px) scale(.96)}to{opacity:1;transform:none}}
 html.cs-calm .cl-rxpick{animation:none}
 
+/* step160: grammar lessons */
+.ps-lesson{padding:0;overflow:hidden}
+.ps-lesson>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px}
+.ps-lesson>summary::-webkit-details-marker{display:none}
+.ps-lesson>summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .2s}
+.ps-lesson[open]>summary::after{transform:rotate(180deg)}
+.pl-ico{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;font-size:20px;background:color-mix(in srgb,var(--royal) 14%,transparent)}
+.pl-sum{display:flex;flex-direction:column;gap:2px}.pl-sum small{color:var(--muted);font-size:12.5px;font-weight:600}
+.pl-in{padding:0 16px 16px;border-top:1px solid var(--line)}
+.pl-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:14px 0 6px}
+.pl-tabs,.pl-lang{display:inline-flex;padding:3px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
+.pl-tabs button,.pl-lang button{all:unset;cursor:pointer;padding:7px 14px;border-radius:999px;font:700 13.5px var(--body);color:var(--muted)}
+.pl-tabs button small{font-weight:600;opacity:.8;margin-left:3px;font-size:11.5px}
+.pl-tabs button.on,.pl-lang button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.pl-lang button{padding:7px 12px;font-size:12.5px}
+.pl-hint{margin:6px 0 4px;color:var(--muted);font-size:13.5px}
+.pl-b{padding:12px 0;border-top:1px dashed var(--line)}.pl-b:first-of-type{border-top:0}
+.pl-b.key{margin:6px -8px;padding:12px 8px;border:0;border-radius:12px;background:color-mix(in srgb,#f59e0b 12%,transparent)}
+.pl-b h4{margin:0 0 6px;font-size:15.5px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pl-st{font:700 11.5px var(--body);color:var(--royal);background:color-mix(in srgb,var(--royal) 12%,transparent);padding:3px 9px;border-radius:999px}
+.pl-b p{margin:0 0 8px;line-height:1.5}
+.pl-note{font-size:14px;color:var(--muted)}
+.pl-tbl{display:grid;gap:6px;margin:8px 0}
+.pl-tr{display:grid;grid-template-columns:28px 1fr 1fr;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--surface-2);font-size:14px}
+.pl-sign{font-weight:900;font-size:16px;text-align:center;color:var(--royal)}
+@media (max-width:560px){.pl-tr{grid-template-columns:24px 1fr}.pl-tr>span:last-child{grid-column:2}}
+.pl-ex,.pl-mis,.pl-quiz{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.pl-ex li{display:flex;gap:10px;align-items:flex-start}
+.pl-ex li>span{display:flex;flex-direction:column;gap:1px;padding-top:4px}.pl-ex small{color:var(--muted);font-size:13px}
+.pl-say{all:unset;cursor:pointer;flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);font-size:14px}
+.pl-say:hover{border-color:var(--royal)}
+.pl-mis li{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:10px;background:var(--surface-2);font-size:14px}
+.pl-x{color:#dc2626}.pl-x s{text-decoration-thickness:1.5px}.pl-ok{color:#16a34a}.pl-mis small{color:var(--muted)}
+.pl-quiz{list-style:decimal inside;gap:8px}.pl-quiz li{font-size:14.5px}
+.pl-show{all:unset;cursor:pointer;margin-left:8px;font:700 12.5px var(--body);color:var(--royal);padding:3px 10px;border-radius:999px;border:1.5px solid var(--line)}
+.pl-ans{display:block;margin-top:4px;color:#16a34a;font-size:13.5px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -6047,7 +6084,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Time to <em>practice</em> 🎯</h2>
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find four parts:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>present simple</b>, <b>past simple</b> and <b>present perfect</b>, in stages from easy to harder. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>present simple</b>, <b>past simple</b> and <b>present perfect</b>, in stages from easy to harder. Some start with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish). Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My words</b> to practice just those.</div></li>
@@ -9045,7 +9082,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of '+(md.the!=null?md.the:"the ")+esc(md.lname)+'</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
       :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at '+(md.the!=null?md.the:"the ")+esc(md.lname)+'?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span></div>'+
         (triedToday?'<button class="pill-btn" type="button" disabled>Try again tomorrow</button>':'<button class="pill-btn pill-green" type="button" data-tostart>Take the test</button>')+'</div>';
-    box.innerHTML=toCard+'<div class="ps-list">'+md.stages.map(st=>{
+    box.innerHTML=(window.__psLesson?window.__psLesson(M):"")+toCard+'<div class="ps-list">'+md.stages.map(st=>{
       const open=unlocked(st.n), best=p.b[st.n];
       return '<div class="card ps-stage'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?st.n:"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
         (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":testedOut()?"🎓 tested out":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
@@ -10644,6 +10681,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-lesson", date:"November 17, 2026", title:"Learn it first: grammar lessons", items:[
+    ["📖","Present perfect lesson","Open <b>Practice → Present perfect</b> and you'll find a short lesson before the stages: <b>Basics</b> (how to make it and when to use it, with examples and common mistakes) and <b>Advanced</b> for B2–C1. Switch it to <b>Español</b> anytime. More topics coming soon.",""]
+  ]},
   {id:"2026-1116-dmreact", date:"November 16, 2026", title:"React to messages", items:[
     ["❤️","Reactions in Messages","When someone sends you a message, tap the little <b>☺</b> next to it and pick an emoji, or <b>double-tap</b> the message for a ❤️. Tap your reaction again to remove it.",""]
   ]},
@@ -10963,7 +11003,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117001014"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117003115"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11569,6 +11609,151 @@ document.addEventListener("click",e=>{
   document.addEventListener("click",e=>{ if(e.target.closest("#csBtn")) setTimeout(add,40); },true);
   new MutationObserver(()=>{ const p=document.getElementById("csPanel"); if(p&&!p.hidden) add(); }).observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["hidden"]});
 })();
+</script>
+<script>
+/* ---------- "📖 Learn it" lessons for Practice → Grammar (pilot: present perfect, Nov 2026) ----------
+   Each topic can have a short lesson above its stages, with two tabs (Basics A1–B1 / Advanced B2–C1)
+   and a full Spanish version you can switch to. English examples always stay in English (with 🔊 and a translation). */
+window.PS_LESSONS = {
+pp: {
+  name: { en: "Present perfect", es: "Present perfect" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "The present perfect connects the past with <b>now</b>. Something happened before now, and it still matters now. We don’t say exactly when it happened.",
+           es: "El present perfect conecta el pasado con el <b>ahora</b>. Algo pasó antes de ahora y todavía importa ahora. No decimos exactamente cuándo pasó." } },
+    { h: { en: "How to make it", es: "Cómo se forma" }, stage: 1,
+      p: { en: "<b>have / has</b> + the past participle (the verb’s 3rd form). Use <b>has</b> with he, she and it.",
+           es: "<b>have / has</b> + el participio pasado (la 3ª forma del verbo). Con he, she e it se usa <b>has</b>." },
+      table: [
+        ["+", "I / you / we / they <b>have</b> (’ve) worked", "He / she / it <b>has</b> (’s) worked"],
+        ["−", "I <b>haven’t</b> seen it.", "She <b>hasn’t</b> called."],
+        ["?", "<b>Have</b> you seen it? Yes, I have.", "<b>Has</b> she called? No, she hasn’t."]
+      ],
+      note: { en: "Regular verbs end in <b>-ed</b> (worked, played). Many common verbs are irregular: go → <b>gone</b>, see → <b>seen</b>, eat → <b>eaten</b>, be → <b>been</b>, do → <b>done</b>, write → <b>written</b>. Stage 2 practices these.",
+              es: "Los verbos regulares terminan en <b>-ed</b> (worked, played). Muchos verbos comunes son irregulares: go → <b>gone</b>, see → <b>seen</b>, eat → <b>eaten</b>, be → <b>been</b>, do → <b>done</b>, write → <b>written</b>. La etapa 2 practica estos." } },
+    { h: { en: "1. Life experiences", es: "1. Experiencias de vida" }, stage: 4,
+      p: { en: "Things you have (or haven’t) done in your life, at some time. When doesn’t matter. Often with <b>ever</b> and <b>never</b>.",
+           es: "Cosas que has hecho (o no) en tu vida, en algún momento. No importa cuándo. Se usa mucho con <b>ever</b> y <b>never</b>." },
+      ex: [["I’ve been to Mexico twice.", "He ido a México dos veces."], ["Have you ever tried sushi?", "¿Alguna vez has probado el sushi?"], ["She’s never seen snow.", "Ella nunca ha visto la nieve."]] },
+    { h: { en: "2. Started in the past, still true now", es: "2. Empezó en el pasado y sigue ahora" }, stage: 5,
+      p: { en: "With <b>for</b> (a length of time) and <b>since</b> (the starting point). Spanish uses the present here, English doesn’t.",
+           es: "Con <b>for</b> (cuánto tiempo) y <b>since</b> (desde cuándo). En español aquí usamos el presente; en inglés, no." },
+      ex: [["I’ve lived in Santiago for five years.", "Vivo en Santiago hace cinco años."], ["She’s worked here since 2020.", "Ella trabaja aquí desde 2020."], ["How long have you known him?", "¿Hace cuánto lo conoces?"]] },
+    { h: { en: "3. Recent news and results", es: "3. Noticias recientes y resultados" }, stage: 4,
+      p: { en: "Something just happened and you can see the result now. Often with <b>just</b>, <b>already</b> and <b>yet</b>.",
+           es: "Algo acaba de pasar y el resultado se ve ahora. Se usa mucho con <b>just</b>, <b>already</b> y <b>yet</b>." },
+      ex: [["I’ve lost my keys! (I can’t find them now)", "¡Perdí mis llaves! (no las encuentro)"], ["He’s just arrived.", "Acaba de llegar."], ["Have you finished yet? I’ve already eaten.", "¿Ya terminaste? Yo ya comí."]] },
+    { h: { en: "4. A time that isn’t over yet", es: "4. Un período que todavía no termina" },
+      p: { en: "With <b>today</b>, <b>this week</b>, <b>this year</b>… while that time is still going.",
+           es: "Con <b>today</b>, <b>this week</b>, <b>this year</b>… mientras ese período sigue." },
+      ex: [["I’ve had three coffees today.", "Hoy me he tomado tres cafés."], ["We haven’t seen him this week.", "No lo hemos visto esta semana."]] },
+    { h: { en: "Present perfect or past simple?", es: "¿Present perfect o past simple?" }, stage: 6, key: true,
+      p: { en: "If you say <b>when</b> (yesterday, last week, in 2019, two days ago, when I was a kid), use the <b>past simple</b>. If there’s no finished time, or it connects to now, use the <b>present perfect</b>.",
+           es: "Si dices <b>cuándo</b> (yesterday, last week, in 2019, two days ago, when I was a kid), usa el <b>past simple</b>. Si no hay un momento terminado, o se conecta con el ahora, usa el <b>present perfect</b>." },
+      ex: [["I’ve seen that movie. (some time in my life)", "He visto esa película. (alguna vez)"], ["I saw that movie last Friday. (finished time)", "Vi esa película el viernes pasado. (momento terminado)"]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["I have seen him yesterday.", "I saw him yesterday.", { en: "‘Yesterday’ is a finished time → past simple.", es: "‘Yesterday’ es un momento terminado → past simple." }],
+        ["I live here since 2020.", "I’ve lived here since 2020.", { en: "Since/for + still true now → present perfect.", es: "Since/for + sigue siendo verdad → present perfect." }],
+        ["She have finished.", "She has finished.", { en: "he / she / it → has.", es: "he / she / it → has." }],
+        ["I’ve went there.", "I’ve gone there. / I’ve been there.", { en: "Use the 3rd form (gone), not the past (went).", es: "Usa la 3ª forma (gone), no el pasado (went)." }],
+        ["How long are you here?", "How long have you been here?", { en: "‘How long…’ about until now → present perfect.", es: "‘How long…’ hasta ahora → present perfect." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["I ___ (see) that movie three times.", "’ve seen", { en: "No finished time → present perfect.", es: "Sin momento terminado → present perfect." }],
+        ["She ___ (work) here since March.", "’s worked / has worked", { en: "Since + still true now.", es: "Since + sigue siendo verdad." }],
+        ["We ___ (go) to the beach last weekend.", "went", { en: "‘Last weekend’ is finished → past simple.", es: "‘Last weekend’ terminó → past simple." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "been to vs gone to", es: "been to vs gone to" },
+      p: { en: "<b>been to</b> = went and came back. <b>gone to</b> = went and is still there.",
+           es: "<b>been to</b> = fue y volvió. <b>gone to</b> = fue y todavía está allá." },
+      ex: [["She’s been to Paris. (she’s back now)", "Ha estado en París. (ya volvió)"], ["She’s gone to Paris. (she’s there now)", "Se fue a París. (está allá ahora)"]] },
+    { h: { en: "Present perfect continuous", es: "Present perfect continuous" },
+      p: { en: "<b>have / has been + -ing</b>. It’s about the activity and how long it’s been going on, often with a result you can see. The simple form is about what’s finished or how many.",
+           es: "<b>have / has been + -ing</b>. Habla de la actividad y de cuánto tiempo lleva, muchas veces con un resultado que se nota. La forma simple habla de lo terminado o de cuántos." },
+      ex: [["I’ve been studying all day. (I’m tired)", "Llevo todo el día estudiando. (estoy cansado)"], ["I’ve studied three chapters. (finished, how many)", "He estudiado tres capítulos. (terminado, cuántos)"], ["It’s been raining. The streets are wet.", "Ha estado lloviendo. Las calles están mojadas."]] },
+    { h: { en: "Verbs that don’t take -ing", es: "Verbos que no van con -ing" },
+      p: { en: "State verbs (know, love, like, believe, own, understand, belong) use the simple form, even for ‘how long’.",
+           es: "Los verbos de estado (know, love, like, believe, own, understand, belong) usan la forma simple, incluso para ‘cuánto tiempo’." },
+      ex: [["I’ve known her for ten years. (not ‘I’ve been knowing’)", "La conozco hace diez años."], ["They’ve owned that car since 2015.", "Tienen ese auto desde 2015."]] },
+    { h: { en: "It’s the first time… / the best… ever", es: "Es la primera vez… / lo mejor… que he…" },
+      p: { en: "After <b>It’s the first (second…) time</b> and <b>the best / worst … ever</b>, English uses the present perfect. Spanish often uses the present.",
+           es: "Después de <b>It’s the first (second…) time</b> y <b>the best / worst … ever</b>, el inglés usa present perfect. En español muchas veces usamos el presente." },
+      ex: [["It’s the first time I’ve eaten octopus.", "Es la primera vez que como pulpo."], ["That’s the best movie I’ve ever seen.", "Es la mejor película que he visto."]] },
+    { h: { en: "Since + a past moment or a sentence", es: "Since + un momento o una oración en pasado" },
+      p: { en: "After since you can put a past simple sentence. And <b>It’s been … since</b> is a natural way to talk about time passing.",
+           es: "Después de since puedes poner una oración en past simple. Y <b>It’s been … since</b> es una forma natural de hablar del tiempo que ha pasado." },
+      ex: [["I’ve lived here since I was a kid.", "Vivo aquí desde que era niño."], ["It’s been two years since we met.", "Han pasado dos años desde que nos conocimos."]] },
+    { h: { en: "News: present perfect first, then past simple", es: "Noticias: primero present perfect, después past simple" },
+      p: { en: "We announce news with the present perfect, then give the details (when, where, how) in the past simple.",
+           es: "Anunciamos la noticia con present perfect y después damos los detalles (cuándo, dónde, cómo) en past simple." },
+      ex: [["Guess what? I’ve got a new job! I signed the contract on Monday.", "¿Adivina qué? ¡Tengo trabajo nuevo! Firmé el contrato el lunes."]] },
+    { h: { en: "After when, after, as soon as", es: "Después de when, after, as soon as" },
+      p: { en: "To talk about the future, the present perfect can show something will be finished first.",
+           es: "Para hablar del futuro, el present perfect muestra que algo va a estar terminado antes." },
+      ex: [["Call me when you’ve finished.", "Llámame cuando hayas terminado."], ["I’ll send it as soon as I’ve checked it.", "Lo envío apenas lo haya revisado."]] },
+    { h: { en: "US vs UK", es: "Estados Unidos vs Reino Unido" },
+      p: { en: "In everyday American English, people often use the past simple with <b>just</b>, <b>already</b> and <b>yet</b>. Both are correct; British English prefers the present perfect.",
+           es: "En el inglés de Estados Unidos, en lo cotidiano, muchas veces se usa el past simple con <b>just</b>, <b>already</b> y <b>yet</b>. Las dos formas son correctas; el inglés británico prefiere el present perfect." },
+      ex: [["Did you eat yet? (US, everyday)", "¿Ya comiste? (EE. UU., informal)"], ["Have you eaten yet? (UK and US)", "¿Ya comiste? (Reino Unido y EE. UU.)"]] }
+  ]
+}
+};
+
+(function(){
+  const LK = "cs-lesson-lang", esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const get = (k, d) => { try { return localStorage.getItem(k) || d; } catch (e) { return d; } };
+  const set = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const lang = () => get(LK, "en") === "es" ? "es" : "en";
+  const T = o => o == null ? "" : typeof o === "string" ? o : (o[lang()] || o.en || "");
+  const strip = h => String(h).replace(/<[^>]+>/g, "").replace(/\s*\([^)]*\)\s*$/, "");
+  const UI = {
+    learn: { en: "Learn it first", es: "Apréndelo primero" },
+    basics: { en: "Basics", es: "Lo básico" }, adv: { en: "Advanced", es: "Avanzado" },
+    hint: { en: "Read this first, then practice the stages below.", es: "Lee esto primero y después practica las etapas de abajo." },
+    stage: { en: "Practice: Stage", es: "Practica: etapa" },
+    wrong: { en: "Not", es: "No" }, right: { en: "Say", es: "Mejor" },
+    show: { en: "Show answer", es: "Ver respuesta" },
+    advNote: { en: "For B2–C1. You don’t need this for most of the stages, but it helps you sound natural.", es: "Para nivel B2–C1. No lo necesitas para la mayoría de las etapas, pero te ayuda a sonar natural." },
+    listen: { en: "Listen", es: "Escuchar" }
+  };
+  function block(b) {
+    let h = `<div class="pl-b${b.key ? " key" : ""}"><h4>${T(b.h)}${b.stage ? `<span class="pl-st">${T(UI.stage)} ${b.stage}</span>` : ""}</h4>`;
+    if (b.p) h += `<p>${T(b.p)}</p>`;
+    if (b.table) h += `<div class="pl-tbl">${b.table.map(r => `<div class="pl-tr"><span class="pl-sign">${r[0]}</span><span>${r[1]}</span><span>${r[2]}</span></div>`).join("")}</div>`;
+    if (b.note) h += `<p class="pl-note">💡 ${T(b.note)}</p>`;
+    if (b.ex) h += `<ul class="pl-ex">${b.ex.map(e => `<li><button type="button" class="pl-say" data-plsay="${esc(strip(e[0]))}" aria-label="${T(UI.listen)}" title="${T(UI.listen)}">🔊</button><span><b>${esc(e[0])}</b>${lang() === "es" ? `<small>${esc(e[1])}</small>` : ""}</span></li>`).join("")}</ul>`;
+    if (b.mis) h += `<ul class="pl-mis">${b.mis.map(m => `<li><span class="pl-x">✗ <s>${esc(m[0])}</s></span><span class="pl-ok">✓ <b>${esc(m[1])}</b></span><small>${esc(T(m[2]))}</small></li>`).join("")}</ul>`;
+    if (b.quiz) h += `<ol class="pl-quiz">${b.quiz.map((q, i) => `<li><span>${esc(q[0])}</span><button type="button" class="pl-show" data-plshow="${i}">${T(UI.show)}</button><span class="pl-ans" hidden>✓ <b>${esc(q[1])}</b> · ${esc(T(q[2]))}</span></li>`).join("")}</ol>`;
+    return h + "</div>";
+  }
+  function inner(id) {
+    const L = window.PS_LESSONS[id], tab = get("cs-lesson-tab-" + id, "basics") === "adv" ? "adv" : "basics";
+    return `<div class="pl-bar"><div class="pl-tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="${tab === "basics"}" class="${tab === "basics" ? "on" : ""}" data-pltab="basics">${T(UI.basics)} <small>A1–B1</small></button>
+        <button type="button" role="tab" aria-selected="${tab === "adv"}" class="${tab === "adv" ? "on" : ""}" data-pltab="adv">${T(UI.adv)} <small>B2–C1</small></button></div>
+      <div class="pl-lang" role="group" aria-label="Language"><button type="button" class="${lang() === "en" ? "on" : ""}" data-pllang="en">English</button><button type="button" class="${lang() === "es" ? "on" : ""}" data-pllang="es">Español</button></div></div>
+      <p class="pl-hint">${tab === "adv" ? T(UI.advNote) : T(UI.hint)}</p>${L[tab].map(block).join("")}`;
+  }
+  const sum = id => `<b>${T(UI.learn)}: ${esc(T(window.PS_LESSONS[id].name))}</b><small>${T(UI.basics)} · ${T(UI.adv)}</small>`;
+  window.__psLesson = function (id) {
+    const L = window.PS_LESSONS && window.PS_LESSONS[id]; if (!L) return "";
+    const seen = get("cs-lesson-seen-" + id, ""); if (!seen) set("cs-lesson-seen-" + id, "1");
+    return `<details class="card ps-lesson" data-plid="${esc(id)}"${seen ? "" : " open"}><summary><span class="pl-ico" aria-hidden="true">📖</span><span class="pl-sum">${sum(id)}</span></summary><div class="pl-in">${inner(id)}</div></details>`;
+  };
+  const repaint = el => { const d = el.closest(".ps-lesson"); if (!d) return; d.querySelector(".pl-in").innerHTML = inner(d.dataset.plid); d.querySelector(".pl-sum").innerHTML = sum(d.dataset.plid); };
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-pltab],[data-pllang],[data-plsay],[data-plshow]"); if (!t || !t.closest(".ps-lesson")) return;
+    const id = t.closest(".ps-lesson").dataset.plid;
+    if (t.dataset.pltab) { set("cs-lesson-tab-" + id, t.dataset.pltab); repaint(t); }
+    else if (t.dataset.pllang) { set(LK, t.dataset.pllang); repaint(t); }
+    else if (t.dataset.plsay) { if (window.csSpeak) window.csSpeak(t.dataset.plsay, { lang: "en-US" }); }
+    else if (t.dataset.plshow != null) { const a = t.nextElementSibling; if (a) a.hidden = false; t.hidden = true; }
+  });
+})();
+
 </script>
 
 <script type="module">
