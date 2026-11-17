@@ -10035,9 +10035,10 @@ async function aiImport(){
     "- Skip greetings, chit-chat and headings. Don't add items that aren't in the text.\n"+
     "Reply with ONLY a JSON array like [{\"w\":\"...\",\"m\":\"...\",\"e\":\"...\"}].\n\nTEXT:\n"+txt.slice(0,8000);
   let arr=null;
-  try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); }
+  let aiErr=null;
+  try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); aiErr=e; }
   b.disabled=false; b.textContent="✨ Find my words";
-  if(!Array.isArray(arr)){ impPrev.innerHTML="Couldn't read that right now. Try again, or use <b>Import exactly as pasted</b> below."; return; }
+  if(!Array.isArray(arr)){ impPrev.innerHTML=window.__csAiWhy(aiErr)+" For now, you can use <b>Import exactly as pasted</b> below."; return; }
   const have=new Set(words.map(x=>norm(x.w))), seen=new Set();
   impFound=arr.filter(x=>x&&x.w&&String(x.w).trim()).map(x=>{ const w=String(x.w).trim().slice(0,120), k=norm(w); const dup=have.has(k)||seen.has(k); seen.add(k); return {w,m:String(x.m||"").trim().slice(0,140),e:String(x.e||"").trim().slice(0,220),dup}; });
   if(!impFound.length){ impPrev.textContent="I couldn't find any English words in that. Check what you pasted."; return; }
@@ -10075,8 +10076,9 @@ window.csSuggestWords=async function(text,box,manual){
     "mn (the meaning or translation the STUDENT wrote for it in the notes, copied exactly, or \"\"), en (the example sentence the STUDENT wrote with it in the notes, copied exactly, or \"\"), bad (true only if the student's own meaning or example has a real mistake: wrong meaning or a clear grammar error; then m and e must be the corrected versions)\n"+
     "Reply with ONLY a JSON array. If there's nothing worth saving, reply [].\n\nNOTES:\n"+text.slice(0,6000);
   let arr=null;
-  try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); }
-  if(!Array.isArray(arr)){ if(manual){ box.innerHTML='<p class="muted" style="margin:0">Couldn\'t check this note right now. Try again in a minute.</p>'; } else box.hidden=true; return; }
+  let aiErr=null;
+  try{ const r=await window.__csSample(p); arr=aiJSON(r&&r.text); }catch(e){ console.warn(e); aiErr=e; }
+  if(!Array.isArray(arr)){ if(manual){ box.innerHTML='<p class="muted" style="margin:0">'+window.__csAiWhy(aiErr)+'</p>'; } else box.hidden=true; return; }
   const have=new Set(words.map(x=>norm(x.w)));
   const list=arr.filter(x=>x&&x.w&&!have.has(norm(x.w))).slice(0,12);
   if(!list.length){ if(manual){ box.innerHTML='<div class="cn-sug-top"><span>✓ No new words in this note. You already have them all!</span><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'; } else box.hidden=true; return; }
@@ -10390,7 +10392,7 @@ function renderCN(){
 }
 const noteToText=x=>fmtLong(x.t)+"\n"+x.text;
 cnList.addEventListener("click",async e=>{
-  const fw=e.target.closest("[data-cnwords]"); if(fw){ const x=cnotes.find(y=>y.id===fw.dataset.cnwords); const card=fw.closest(".cn-card"); if(!x||!card) return; let box=card.querySelector(".cn-sug"); if(!box){ box=document.createElement("div"); box.className="cn-sug"; box.setAttribute("aria-live","polite"); card.appendChild(box); } if(window.csSuggestWords) window.csSuggestWords(x.text,box,true); return; }
+  const fw=e.target.closest("[data-cnwords]"); if(fw){ const x=cnotes.find(y=>y.id===fw.dataset.cnwords); const card=fw.closest(".cn-card"); if(!x||!card) return; let box=card.querySelector(".cn-sug"); if(!box){ box=document.createElement("div"); box.className="cn-sug"; box.setAttribute("aria-live","polite"); const hd=card.querySelector(".cn-head"); if(hd) hd.after(box); else card.appendChild(box); } if(window.csSuggestWords) window.csSuggestWords(x.text,box,true); return; }
   const c=e.target.closest("[data-cncopy]"); if(c){ const x=cnotes.find(y=>y.id===c.dataset.cncopy); if(x) toast(await copyText(noteToText(x))?"Note copied":"Your browser blocked copying"); return; }
   const ed=e.target.closest("[data-cnedit]"); if(ed){ cnEditing=ed.dataset.cnedit; renderCN(); const t=document.getElementById("cnEdit"); if(t) t.focus(); return; }
   if(e.target.closest("[data-cncancel]")){ cnEditing=null; renderCN(); return; }
@@ -11336,7 +11338,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117110651"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117112632"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -12561,6 +12563,13 @@ iq: {
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>setTimeout(go,50)); else setTimeout(go,50); setTimeout(go,1600);
 })();
 </script>
+<script>
+/* step171: why the AI didn't answer, in plain words */
+window.__csAiWhy=function(e){ const c=e&&(e.code||e.message)||"";
+  if(/rate_limited|429|quota/i.test(c)) return "😴 The AI helper has used up its free limit for today. It resets overnight, so please try again tomorrow.";
+  if(/timeout/i.test(c)) return "⏳ The AI took too long to answer. Try again, or try with a shorter piece of text.";
+  return "The AI didn't answer this time. Try again in a minute."; };
+</script>
 
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
@@ -13195,6 +13204,7 @@ async function geminiSample(prompt, opts = {}) {
       if (e && e.name === "AbortError") throw e;
       lastErr = e;
       const msg = String((e && (e.message || e.code)) || "");
+      if (paid) { const k = "aip:" + msg.replace(/[^a-z0-9 ]/gi, " ").replace(/\s+/g, " ").trim().slice(0, 60); aiCount(k); try { localStorage.setItem("cs-ai-paiderr", msg.slice(0, 300)); } catch (er) {} }
       /* the paid service isn't switched on yet (or not allowed): use the free one for the rest of this visit */
       if (paid && /403|permission|disabled|not been used|not enabled|billing|PERMISSION_DENIED|api-not-enabled/i.test(msg)) { window.__csNoPaidAI = true; continue; }
       if (paid) continue;   /* any other trouble with the paid service: try the next option */

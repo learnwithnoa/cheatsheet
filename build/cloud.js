@@ -630,6 +630,7 @@ async function geminiSample(prompt, opts = {}) {
       if (e && e.name === "AbortError") throw e;
       lastErr = e;
       const msg = String((e && (e.message || e.code)) || "");
+      if (paid) { const k = "aip:" + msg.replace(/[^a-z0-9 ]/gi, " ").replace(/\s+/g, " ").trim().slice(0, 60); aiCount(k); try { localStorage.setItem("cs-ai-paiderr", msg.slice(0, 300)); } catch (er) {} }
       /* the paid service isn't switched on yet (or not allowed): use the free one for the rest of this visit */
       if (paid && /403|permission|disabled|not been used|not enabled|billing|PERMISSION_DENIED|api-not-enabled/i.test(msg)) { window.__csNoPaidAI = true; continue; }
       if (paid) continue;   /* any other trouble with the paid service: try the next option */
