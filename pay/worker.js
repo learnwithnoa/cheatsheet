@@ -203,7 +203,8 @@ async function skoolMoveCheck(env) {
     const r = skoolEnd(m); if (!r || today() <= addDays(r, GRACE_DAYS)) continue;
     const pays = Number(m.price) > 0 || prices[normEmail(m.email)]; if (!pays) continue;   // free members stay
     const uid = m.email && byEmail[normEmail(m.email)]; if (!uid || !clubUids.has(uid)) continue;
-    const b = await getBill(env, uid);
+    let b = await getBill(env, uid);
+    if (await pendingSync(env, uid, b)) b = await getBill(env, uid);
     if (["active", "grace", "canceling", "trial"].includes(b.status) || b.moveEnded) continue;
     await removeClub(env, uid);
     await saveBill(env, uid, { status: "ended", moveEnded: true, email: normEmail(m.email), paidThrough: r });
@@ -214,6 +215,7 @@ async function skoolMoveCheck(env) {
 // what a club member who still pays on Skool will pay on Hibi (for the "Move your membership to Hibi" card)
 async function myPrice(env, req) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
+  try { const b0 = await getBill(env, me.uid); if (b0.mpPending || b0.ppPending) await pendingSync(env, me.uid, b0); } catch (e) {}   // they paid but never came back to Hibi
   const m = await rosterFor(env, me);
   const p = await legacyPrice(env, me.email, me.name);
   const o = { clp: Number(p && p.clp) || STD_MONTH, usd: Number(p && p.usd) || STD_MONTH_USD, legacy: !!p, onList: !!m, renew: (m && m.renew) || null, start: await firstCharge(env, me) };
@@ -276,14 +278,20 @@ async function ppReturn(env, req, url) {
   const uid = sub.custom_id; if (!uid) return Response.redirect(SITE + "?membership=fail#club", 303);
   for (let i = 0; i < 4 && sub.status === "APPROVED"; i++) { await new Promise((r) => setTimeout(r, 1500)); sub = await pp(env, "GET", `/v1/billing/subscriptions/${id}`); }
   if (!["ACTIVE", "APPROVED"].includes(sub.status)) return Response.redirect(SITE + "?membership=fail#club", 303);
+  await ppFinalize(env, id, sub);
+  return Response.redirect(SITE + "?membership=ok#club", 303);
+}
+async function ppFinalize(env, id, sub) {
+  const uid = sub.custom_id; if (!uid) return null;
   const b = await getBill(env, uid);
+  if (b.provider === "paypal" && b.ppSubId === id && b.status === "active") return uid;
   const kind = b.ppPendingKind || "m", usd = Number(b.ppPendingUsd) || STD_MONTH_USD;
   const next = sub.billing_info && sub.billing_info.next_billing_time;
   await saveBill(env, uid, { provider: "paypal", ppSubId: id, ppEnv: ppEnv(env), kind, amount: usd, currency: "USD", card: "PayPal", status: "active",
     paidThrough: next ? next.slice(0, 10) : addDays(today(), kind === "y" ? 365 : 31), graceUntil: null, since: b.since || today(), ppPending: null });
   await grantClub(env, uid, b.name || "");
   if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
-  return Response.redirect(SITE + "?membership=ok#club", 303);
+  return uid;
 }
 async function ppNightly(env, uid, b) {
   if (b.ppEnv !== ppEnv(env)) return null;
@@ -328,15 +336,31 @@ async function mpReturn(env, req, url) {
   if (!id) return Response.redirect(SITE + "?membership=fail#club", 303);
   let sub = await mp(env, "GET", `/preapproval/${id}`);
   for (let i = 0; i < 4 && sub.status === "pending"; i++) { await new Promise((r) => setTimeout(r, 1500)); sub = await mp(env, "GET", `/preapproval/${id}`); }
-  const uid = sub.external_reference;
-  if (!uid || sub.status !== "authorized") return Response.redirect(SITE + "?membership=fail#club", 303);
+  const uid = await mpFinalize(env, id, sub);
+  return Response.redirect(SITE + (uid ? "?membership=ok#club" : "?membership=fail#club"), 303);
+}
+// saves an authorized Mercado Pago subscription (from the return page, or later if the member never came back to Hibi)
+async function mpFinalize(env, id, sub) {
+  sub = sub || await mp(env, "GET", `/preapproval/${id}`);
+  const uid = sub && sub.external_reference;
+  if (!uid || sub.status !== "authorized") return null;
   const b = await getBill(env, uid);
+  if (b.provider === "mp" && b.mpId === id && b.status === "active") return uid;   // already saved
   const kind = b.mpPendingKind || "m", amount = Number(b.mpPendingAmount) || (sub.auto_recurring && sub.auto_recurring.transaction_amount) || STD_MONTH;
   await saveBill(env, uid, { provider: "mp", mpId: id, mpEnv: mpEnv(env), kind, amount, currency: "CLP", card: "Mercado Pago", status: "active",
     paidThrough: (sub.next_payment_date || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31), graceUntil: null, since: b.since || today(), mpPending: null });
   await grantClub(env, uid, b.name || "");
   if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
-  return Response.redirect(SITE + "?membership=ok#club", 303);
+  return uid;
+}
+// a sign-up that was approved at Mercado Pago / PayPal but whose return page never reached Hibi (tab closed, phone app…)
+async function pendingSync(env, uid, b) {
+  if (["active", "grace", "canceling"].includes(b.status) && (b.mpId || b.ppSubId || b.subscriptionId)) return null;
+  try {
+    if (b.mpPending) { const sub = await mp(env, "GET", `/preapproval/${b.mpPending}`); if (sub && sub.status === "authorized" && await mpFinalize(env, b.mpPending, sub)) return "mp sign-up saved"; }
+    if (b.ppPending) { const sub = await pp(env, "GET", `/v1/billing/subscriptions/${b.ppPending}`); if (sub && ["ACTIVE", "APPROVED"].includes(sub.status) && await ppFinalize(env, b.ppPending, sub)) return "paypal sign-up saved"; }
+  } catch (e) {}
+  return null;
 }
 async function mpNightly(env, uid, b) {
   if (b.mpEnv !== mpEnv(env)) return null;
@@ -525,8 +549,9 @@ async function nightly(env) {
   const list = await fs(env, "GET", "billing?pageSize=300");
   const out = [];
   for (const d of (list && list.documents) || []) {
-    const uid = d.name.split("/").pop(); const b = plain(d);
+    const uid = d.name.split("/").pop(); let b = plain(d);
     try {
+      { const done = await pendingSync(env, uid, b); if (done) { out.push({ uid, status: done }); b = await getBill(env, uid); } }
       if (b.status === "trial" && !b.subscriptionId) {
         if (b.trialUntil && today() > b.trialUntil) {
           // if Noa changed this person's club setting himself after the trial began (e.g. they paid another way), leave it
