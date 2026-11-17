@@ -55,6 +55,8 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
   P.getItem=function(k){ return this===ls&&theirs(k)?(Object.prototype.hasOwnProperty.call(ov,k)?ov[k]:null):g.call(this,k); };
   P.setItem=function(k,v){ if(this===ls&&theirs(k)){ ov[k]=String(v); return; } return s.call(this,k,v); };
   P.removeItem=function(k){ if(this===ls&&theirs(k)){ delete ov[k]; return; } return r.call(this,k); };
+  /* nothing leaves the page either: no payments, trials or cancellations from the pay helper while viewing as someone */
+  const f0=window.fetch; window.fetch=function(u,o){ const url=String(u&&u.url||u||""); if(/workers\.dev\/api\//.test(url)&&!/\/api\/my-price/.test(url)){ try{ window.__csVaNo&&window.__csVaNo(); }catch(e){} return Promise.reject(new Error("View as: nothing is saved")); } return f0.apply(this,arguments); };
 }catch(e){} })();
 </script>
 <script src="ios-sound.js?v=2"></script>
@@ -3644,7 +3646,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       if(x.uid) realView(lb,x.view,x.both?"both":"private",x.uid,null); else { preview(lb+" · not on Hibi yet, so no words or notes",x.view,x.both?"both":"private"); location.hash="#coaching"; } };
     go(); })();
   if(window.__csViewAsMode){ const va=window.__csViewAsMode; window.__csPreview={label:va.label,kind:va.kind||(va.view?"private":"club"),real:true}; window.__csHubView=va.view||null;
-    const show=()=>{ banner(va.label+" · their own words, notes and buddy (read-only)"); nav(); document.dispatchEvent(new CustomEvent("cs-preview")); };
+    const show=()=>{ banner(va.label+" · exactly what they see · nothing you do here is saved"); nav(); document.dispatchEvent(new CustomEvent("cs-preview")); };
     if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",show); else show(); }
   document.addEventListener("input",e=>{ if(e.target.id==="vaQ") vaRender(e.target.value); });
   document.addEventListener("click",async e=>{
@@ -11393,7 +11395,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117124520"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117125234"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -12721,10 +12723,16 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-wkgoal]")
    First sign-in on a device: local + cloud are merged (nothing lost).
    After that: the cloud is the source of truth, local edits are pushed right away. */
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
-  getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
+  getFirestore, collection, getDocs, getDoc, doc, setDoc as _setDoc, deleteDoc as _deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, AgentPlatformBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
 import { makeView, tzReminders } from "./hubview.js?v=17";
 window.__csTzRem = tzReminders;
+/* Noa's "View as": nothing is ever written anywhere (not to the student's account, not to Noa's) */
+let vaToastAt = 0;
+const vaNo = () => { const t = Date.now(); if (t - vaToastAt > 15000) { vaToastAt = t; try { window.toast && window.toast("👁 View as: this isn't saved anywhere"); } catch (e) {} } return Promise.resolve(); };
+const setDoc = (...a) => window.__csViewAsMode ? vaNo() : _setDoc(...a);
+const deleteDoc = (...a) => window.__csViewAsMode ? vaNo() : _deleteDoc(...a);
+window.__csVaNo = vaNo;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -13231,6 +13239,8 @@ window.__csTeach = {
     const r = doc(db, "users", uid, "data", "ncs-modrec"); let v = {};
     try { const d = await getDoc(r); if (d.exists() && !d.data().deleted) v = JSON.parse(d.data().json || "{}") || {}; } catch (e) {}
     v[mod] = n; await setDoc(r, { json: JSON.stringify(v), deleted: false, at: serverTimestamp() });
+    try { const tr = doc(db, "users", user.uid, "data", "t-recs"); const d = await getDoc(tr); const m = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {};
+      m[uid] = Object.assign({}, m[uid], { [mod]: { at: Date.now(), n } }); await setDoc(tr, { json: JSON.stringify(m), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn("t-recs", e); }
   },
   async send(uid, text, go) { await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: String(text).slice(0, 1000), kind: go ? "rec:" + go : "rec", at: serverTimestamp() }); }
 };

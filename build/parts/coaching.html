@@ -337,7 +337,7 @@
       if(x.uid) realView(lb,x.view,x.both?"both":"private",x.uid,null); else { preview(lb+" · not on Hibi yet, so no words or notes",x.view,x.both?"both":"private"); location.hash="#coaching"; } };
     go(); })();
   if(window.__csViewAsMode){ const va=window.__csViewAsMode; window.__csPreview={label:va.label,kind:va.kind||(va.view?"private":"club"),real:true}; window.__csHubView=va.view||null;
-    const show=()=>{ banner(va.label+" · their own words, notes and buddy (read-only)"); nav(); document.dispatchEvent(new CustomEvent("cs-preview")); };
+    const show=()=>{ banner(va.label+" · exactly what they see · nothing you do here is saved"); nav(); document.dispatchEvent(new CustomEvent("cs-preview")); };
     if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",show); else show(); }
   document.addEventListener("input",e=>{ if(e.target.id==="vaQ") vaRender(e.target.value); });
   document.addEventListener("click",async e=>{

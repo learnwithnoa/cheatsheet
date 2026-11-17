@@ -3,10 +3,16 @@
    First sign-in on a device: local + cloud are merged (nothing lost).
    After that: the cloud is the source of truth, local edits are pushed right away. */
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
-  getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp,
+  getFirestore, collection, getDocs, getDoc, doc, setDoc as _setDoc, deleteDoc as _deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, AgentPlatformBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
 import { makeView, tzReminders } from "./hubview.js?v=17";
 window.__csTzRem = tzReminders;
+/* Noa's "View as": nothing is ever written anywhere (not to the student's account, not to Noa's) */
+let vaToastAt = 0;
+const vaNo = () => { const t = Date.now(); if (t - vaToastAt > 15000) { vaToastAt = t; try { window.toast && window.toast("👁 View as: this isn't saved anywhere"); } catch (e) {} } return Promise.resolve(); };
+const setDoc = (...a) => window.__csViewAsMode ? vaNo() : _setDoc(...a);
+const deleteDoc = (...a) => window.__csViewAsMode ? vaNo() : _deleteDoc(...a);
+window.__csVaNo = vaNo;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -513,6 +519,8 @@ window.__csTeach = {
     const r = doc(db, "users", uid, "data", "ncs-modrec"); let v = {};
     try { const d = await getDoc(r); if (d.exists() && !d.data().deleted) v = JSON.parse(d.data().json || "{}") || {}; } catch (e) {}
     v[mod] = n; await setDoc(r, { json: JSON.stringify(v), deleted: false, at: serverTimestamp() });
+    try { const tr = doc(db, "users", user.uid, "data", "t-recs"); const d = await getDoc(tr); const m = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {};
+      m[uid] = Object.assign({}, m[uid], { [mod]: { at: Date.now(), n } }); await setDoc(tr, { json: JSON.stringify(m), deleted: false, at: serverTimestamp() }); } catch (e) { console.warn("t-recs", e); }
   },
   async send(uid, text, go) { await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: String(text).slice(0, 1000), kind: go ? "rec:" + go : "rec", at: serverTimestamp() }); }
 };
