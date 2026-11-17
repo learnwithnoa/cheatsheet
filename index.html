@@ -1485,6 +1485,8 @@ button.cl-gwho:focus-visible,.cs-rxwho:focus-visible{outline:3px solid var(--bri
 
 /* step179: Simple mode */
 #smDoors{display:none}
+.navbtn.sm-only,html:not(.cs-simple) nav.side .navbtn.sm-only,html.cs-simple.cs-smore nav.side .navgroup .navbtn.sm-only{display:none!important}
+html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-only{display:flex!important}
 html.cs-simple:not(.cs-smore) nav.side .navbtn:not(.sm-keep):not(.t-mnav):not(.t-tab),
 html.cs-simple:not(.cs-smore) nav.side .navbtn.locked,
 html.cs-simple:not(.cs-smore) nav.side .navgroup:not(.mine){display:none!important}
@@ -1527,6 +1529,17 @@ html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-keep{min-height:54px;font-size
 .sm-ask .csc-b .es{color:var(--muted);font-size:14px}
 .sm-beg{display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:14.5px;line-height:1.35;cursor:pointer}.sm-beg input{margin-top:3px;width:18px;height:18px;flex:none}.sm-beg .es{color:var(--muted);font-size:13px}
 @media (max-width:900px){.sm-door{padding:12px 14px;min-height:68px;gap:12px}.sm-door .sm-ic{width:40px;height:40px;font-size:21px}.sm-door b{font-size:17px}.sm-door small{font-size:14px}.sm-doors .sm-sub{display:none}.sm-doors h2{margin-bottom:10px}}
+
+/* step180: What's new: see fewer */
+.wn-less{all:unset;cursor:pointer;display:block;margin:12px auto 0;font:600 13.5px var(--body);color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.wn-less:focus-visible{outline:3px solid var(--bright);border-radius:6px}
+.wn-wk-h{margin:14px 0 4px;font-size:16px}.wn-wk-h small{font-weight:600;color:var(--muted);font-size:12.5px;margin-left:6px}
+#whatsnew #wnBody{max-height:min(60vh,520px);overflow:auto}
+.cs-wnp{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 2px}
+.cs-wnp button{all:unset;cursor:pointer;font:700 13px var(--body);padding:6px 11px;border-radius:999px;border:1.5px solid var(--line)}
+.cs-wnp button[aria-pressed="true"]{border-color:var(--royal);background:color-mix(in srgb,var(--royal) 18%,var(--surface))}
+.cs-wnp button:focus-visible{outline:3px solid var(--bright)}
+.cs-wnp-box{padding:4px 0 6px}.cs-wnp-box b{display:block;font-weight:800}.cs-wnp-box small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -6218,6 +6231,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <h2 id="wnTitle">What's <em>new</em></h2>
   <div id="wnBody"></div>
   <div class="note-actions"><button class="pill-btn" type="button" id="wnOk">Got it</button><button class="swap" type="button" data-go="changelog" id="wnAll">See all updates</button></div>
+  <button type="button" class="wn-less" id="wnLess" data-to="week">See fewer of these</button>
 </section>
 <div class="qa-backdrop wl-backdrop" id="wlBackdrop" hidden></div>
 <section class="welcome card" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlTitle" hidden>
@@ -11145,6 +11159,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-fewer", date:"November 17, 2026", title:"Fewer pop-ups, tidier Settings", items:[
+    ["🔕","Fewer of these pop-ups","Use Hibi a lot? Tap <b>See fewer of these</b> under this window to get one summary a week instead, or choose <b>Never</b> in Settings → Home &amp; notifications. Everything new is always listed in What's new.",""],
+    ["⚙️","Tidier Settings","Settings now has clearer groups: Make Hibi easier, Look &amp; feel, Text &amp; reading, Focus &amp; comfort, and Home &amp; notifications.",""],
+    ["⇄","Translator in Simple mode","Simple mode now has the <b>Translator</b> as one of its main buttons.","translate"]
+  ]},
   {id:"2026-1117-simple", date:"November 17, 2026", title:"Simple mode 🧩", items:[
     ["🧩","Less on the screen","Too much on Hibi? Turn on <b>Simple mode</b> in <b>Settings</b>: the menu shows only Home, My coaching, Club, My notebook and Practice, with bigger buttons, and Home starts with big buttons to get where you want to go.",""],
     ["☰","Everything is still there","Tap <b>☰ More</b> in the menu to see every page, and <b>Simple menu</b> to go back. Noa can turn it on for you, and you can always turn it off.",""]
@@ -11495,24 +11514,30 @@ document.getElementById("clList").innerHTML=CHANGELOG.map((e,i)=>(i>0&&CL_T(e)&&
 (function(){ const b=document.getElementById("clOlder"); if(!document.querySelector("#clList .cl-old")){ b.remove(); return; } b.addEventListener("click",()=>{ document.querySelectorAll("#clList .cl-old").forEach(x=>x.hidden=false); b.remove(); }); })();
 const wn=document.getElementById("whatsnew"), wnBd=document.getElementById("wnBackdrop");
 document.getElementById("wnBody").innerHTML='<p class="cl-date" style="margin:0 0 6px">'+CL_POP.date+' · '+CL_POP.title+'</p>'+clItems(CL_POP);
-function openWN(){ wn.hidden=false; wnBd.hidden=false; setTimeout(()=>document.getElementById("wnOk").focus(),30); }
+function wnWeekly(){ const seen=String(LS.get("ncs-seen-version","")); const out=[]; for(const e of CHANGELOG){ if(e.id===seen) break; if(!e.quiet) out.push(e); if(out.length>=8) break; }
+  if(out.length>1) document.getElementById("wnBody").innerHTML='<p class="cl-date" style="margin:0 0 8px">Your weekly summary · '+out.length+' updates</p>'+out.map(e=>'<h3 class="wn-wk-h">'+e.title+' <small>'+e.date+'</small></h3>'+clItems(e)).join(""); }
+function openWN(){ LS.set("ncs-wnlast",Date.now()); const l=document.getElementById("wnLess"); if(l){ const p=String(LS.get("ncs-wnpref","all")); l.textContent=p==="week"?"Turn these pop-ups off":"See fewer of these"; l.dataset.to=p==="week"?"none":"week"; } wn.hidden=false; wnBd.hidden=false; setTimeout(()=>document.getElementById("wnOk").focus(),30); }
 function closeWN(){ wn.hidden=true; wnBd.hidden=true; LS.set("ncs-seen-version",CL_LATEST); }
 document.getElementById("wnOk").addEventListener("click",closeWN);
+document.getElementById("wnLess").addEventListener("click",e=>{ const to=e.currentTarget.dataset.to||"week"; LS.set("ncs-wnpref",to); LS.set("ncs-wnlast",Date.now()); closeWN();
+  const t=to==="week"?"OK! You'll get one summary a week instead. Change it anytime in Settings → Home & notifications.":"OK, no more pop-ups. New things show as a dot on “What's new”. Change it in Settings → Home & notifications.";
+  if(typeof window.toast==="function") window.toast(t); });
 wnBd.addEventListener("click",closeWN);
 wn.addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.preventDefault(); closeWN(); } });
 wn.addEventListener("click",e=>{ if(e.target.closest("[data-go],[data-openmusic]")) closeWN(); });
 document.addEventListener("click",e=>{ if(e.target.closest("[data-openmusic]")){ const b=document.getElementById("musicBtn"); if(document.getElementById("musicPanel").hidden) setTimeout(()=>b.click(),0); } });
 if(!LS.get("ncs-welcomed",0)) LS.set("ncs-seen-version",CL_LATEST);
 else if(LS.get("ncs-seen-version","")!==CL_LATEST){
-  if(document.documentElement.classList.contains("cs-calm")){ const f=document.querySelector('footer [data-go="changelog"]'); if(f) f.classList.add("cs-new"); }
-  else setTimeout(openWN,500);
+  const wnPref=String(LS.get("ncs-wnpref","all")), wnLast=+LS.get("ncs-wnlast",0)||0;
+  if(document.documentElement.classList.contains("cs-calm")||wnPref==="none"||(wnPref==="week"&&Date.now()-wnLast<7*864e5)){ const f=document.querySelector('footer [data-go="changelog"]'); if(f) f.classList.add("cs-new"); }
+  else { if(wnPref==="week") wnWeekly(); setTimeout(openWN,500); }
 }
 document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"]')){ LS.set("ncs-seen-version",CL_LATEST); document.querySelectorAll(".cs-new").forEach(x=>x.classList.remove("cs-new")); } });
 })();
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117185623"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117192008"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11520,7 +11545,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
     b.querySelector(".cs-upd-go").onclick=()=>location.reload(); b.querySelector(".cs-upd-x").onclick=()=>b.remove(); document.body.appendChild(b); }
   async function check(back){ const v=await latest(); if(!v||v<=BUILD) return; if(back&&!busy()) { location.reload(); return; } offer(); }
   window.csCheckUpdate=()=>check(false);
-  document.addEventListener("visibilitychange",()=>{ if(document.hidden){ hiddenAt=Date.now(); return; } const away=hiddenAt?Date.now()-hiddenAt:0; check(away>20*60*1000); });
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden){ hiddenAt=Date.now(); return; } const away=hiddenAt?Date.now()-hiddenAt:0; check(away>8*60*60*1000); });
   setInterval(()=>{ if(!document.hidden) check(false); },30*60*1000);
   setTimeout(()=>check(false),60*1000);
 })();
@@ -12961,6 +12986,12 @@ document.addEventListener("click",async e=>{
   function setupNav(){
     const nav=document.querySelector("nav.side"), mine=nav&&nav.querySelector(".navgroup.mine"); if(!mine) return;
     mine.querySelectorAll(".navbtn[data-go]").forEach(b=>b.classList.toggle("sm-keep",KEEP.includes(b.dataset.go)));
+    /* the Translator is one of the main buttons too (a copy that only shows in Simple mode) */
+    if(!document.getElementById("smTr")&&document.querySelector('nav.side .navbtn[data-go="translate"]')){
+      const t=document.createElement("button"); t.type="button"; t.id="smTr"; t.className="navbtn cn-nav sm-keep sm-only"; t.dataset.smgo="translate"; t.onclick=()=>{ if(window.csGo) window.csGo("translate"); else location.hash="#translate"; };
+      t.innerHTML='<span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span>';
+      const q=mine.querySelector('.navbtn[data-go="quiz"]'); if(q) q.after(t); else mine.appendChild(t);
+    }
     if(!document.getElementById("smMore")){
       const m=document.createElement("button"); m.type="button"; m.id="smMore"; m.innerHTML=ICO_MORE+"<span>More</span>"; m.setAttribute("aria-label","More pages: show the whole menu");
       m.onclick=()=>{ setMore(true); const l=document.getElementById("smLess"); l&&l.focus(); };
@@ -12980,6 +13011,7 @@ document.addEventListener("click",async e=>{
     if(vis("navClub")) D.push(["club","💬","Club","This week's classes, Zoom links and recordings","#F5B83D"]);
     D.push(["words","📒","My notebook","Your words and class notes","#2DD4BF"]);
     D.push(["quiz","🎯","Practice","Short exercises and flashcards with your words","#FF7A45"]);
+    if(document.getElementById("v-translate")) D.push(["translate","⇄","Translator","Spanish ↔ English, with examples you can save","#A78BFA"]);
     const html='<h2 id="smDoorsT">Where do you want to go? 👋</h2><p class="sm-sub">Tap one to start.</p><div class="sm-grid">'+D.map(([go,ic,t,sub,c])=>'<button type="button" class="sm-door" data-go="'+go+'" style="--dc:'+c+'"><span class="sm-ic" aria-hidden="true">'+ic+'</span><span><b>'+esc(t)+'</b><small>'+esc(sub)+'</small></span><span class="sm-go" aria-hidden="true">›</span></button>').join("")+'</div><button type="button" class="sm-off" id="smOff">Show me everything (turn off Simple mode)</button>';
     if(box.dataset.h!==html){ box.innerHTML=html; box.dataset.h=html; const o=document.getElementById("smOff"); if(o) o.onclick=()=>{ set(false); toast("Simple mode off. You can turn it back on in Settings."); }; }
   }
@@ -13011,7 +13043,49 @@ document.addEventListener("click",async e=>{
   addEventListener("cs-synced",()=>{ apply(); try{ window.csComfort&&window.csComfort.apply&&window.csComfort.apply(); }catch(e){} ask(0); });
   setTimeout(()=>ask(0),3000);
 })();
+</script><script>
+/* step180: Settings in a clearer order, plus "What's new pop-ups" */
+(function(){
+  const $=id=>document.getElementById(id);
+  const lab=id=>{ const x=$(id); return x?(x.closest(".cs-tog")||x.closest("label")||x):null; };
+  const secOf=t=>[...document.querySelectorAll("#csPanel > .cs-sec")].find(s=>{ const h=s.querySelector(":scope > h4"); return h&&h.textContent.trim()===t; });
+  const mk=(key,title)=>{ let s=document.querySelector('#csPanel > .cs-sec[data-sx="'+key+'"]'); if(!s){ s=document.createElement("div"); s.className="cs-sec"; s.dataset.sx=key; s.innerHTML="<h4></h4>"; } s.querySelector(":scope > h4").textContent=title; return s; };
+  const getP=()=>{ try{ const v=JSON.parse(localStorage.getItem("ncs-wnpref")||'"all"'); return ["all","week","none"].includes(v)?v:"all"; }catch(e){ return "all"; } };
+  const setP=v=>{ try{ localStorage.setItem("ncs-wnpref",JSON.stringify(v)); if(v!=="all") localStorage.setItem("ncs-wnlast",JSON.stringify(Date.now())); }catch(e){} try{ window.__csOnSet&&window.__csOnSet("ncs-wnpref"); }catch(e){} };
+  function wnBox(){ let b=$("csWnPref"); if(b) return b; b=document.createElement("div"); b.className="cs-wnp-box"; b.id="csWnPref";
+    b.innerHTML='<b>What\'s new pop-ups</b><small>When Hibi gets something new. Every update is always listed in “What\'s new”.</small><div class="cs-wnp" role="group" aria-label="What\'s new pop-ups">'+[["all","Every update"],["week","Once a week"],["none","Never (just a dot)"]].map(([v,l])=>'<button type="button" data-wnp="'+v+'">'+l+'</button>').join("")+'</div>';
+    b.addEventListener("click",e=>{ const x=e.target.closest("[data-wnp]"); if(!x) return; setP(x.dataset.wnp); paint(); });
+    return b; }
+  function paint(){ const p=getP(); document.querySelectorAll("[data-wnp]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.wnp===p))); }
+  function arrange(){
+    const P=$("csPanel"); if(!P||!$("csSimple")) return;   /* only on Hibi's main page */
+    const head=P.querySelector(".cs-head"), reset=$("csResetAll")&&$("csResetAll").closest(".cs-sec");
+    const lv=$("csLevelSec"); if(lv){ lv.dataset.sx="easy"; const h=lv.querySelector(":scope > h4"); if(h) h.textContent="Make Hibi easier"; }
+    const easy=lv||mk("easy","Make Hibi easier"), look=secOf("Look & feel")||mk("look","Look & feel"), text=secOf("Text & reading")||mk("text","Text & reading"),
+      focus=mk("focus","Focus & comfort"), home=mk("home","Home & notifications"), app=$("csInstallSec")||mk("app","App");
+    const put=(sec,id)=>{ const l=lab(id); if(l&&l.parentNode!==sec) sec.appendChild(l); };
+    /* Make Hibi easier: Beginner mode (with its note) + Simple mode */
+    put(easy,"csSimple");
+    ["csRead","csInshort"].forEach(id=>put(text,id));
+    ["csFocus","csCalm","csContrast"].forEach(id=>put(focus,id));
+    const want=[lab("csBuddyT"),lab("csStoicT"),wnBox(),lab("csMailN")].filter(Boolean), cur=[...home.children].filter(c=>c.tagName!=="H4");
+    if(want.length!==cur.length||want.some((w,i)=>cur[i]!==w)) want.forEach(w=>home.appendChild(w));
+    if(app.querySelector(":scope > h4")) app.querySelector(":scope > h4").textContent="App";
+    /* order */
+    const hasEasy=!!easy.querySelector(".cs-tog");
+    let after=head; [hasEasy?easy:null,look,text,focus,home,app,reset].forEach(s=>{ if(!s) return; if(after.nextElementSibling!==s) after.after(s); after=s; });
+    /* old sections that are now empty */
+    [...P.querySelectorAll(":scope > .cs-sec")].forEach(s=>{ if(s.dataset.sx||s===look||s===text||s===app||s===reset) return; if(![...s.children].some(c=>c.tagName!=="H4")) s.remove(); });
+    if(!hasEasy&&easy.parentNode) easy.remove();
+    paint();
+  }
+  window.__csArrangeSettings=arrange;
+  /* the panel fills in over a few seconds (buddy, Daily Stoic, emails…): tidy it whenever it opens or changes */
+  function hook(){ const P=$("csPanel"); if(!P){ setTimeout(hook,800); return; } let t=0; new MutationObserver(()=>{ clearTimeout(t); t=setTimeout(arrange,30); }).observe(P,{childList:true,attributes:true,attributeFilter:["hidden"]}); arrange(); }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",hook); else hook();
+})();
 </script>
+
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
    Every "ncs-*" key in localStorage is mirrored to users/{uid}/data/{key}.
@@ -13202,7 +13276,7 @@ async function pushKey(k) {
 /* the page keeps lists in memory: after a merge brought in something from another device, reload it (not while typing) */
 let reloadWanted = false;
 /* counters, "seen" markers and progress the page re-reads anyway: never worth reloading the page for (usage minutes went back and forth between devices and reloaded the page every few seconds) */
-const QUIET = new Set(["ncs-lesson-prog", "ncs-usage", "ncs-ptime", "ncs-tnotif-read", "ncs-seen-version", "ncs-mst", "ncs-fc", "ncs-wk", "ncs-buddy",
+const QUIET = new Set(["ncs-wnlast", "ncs-lesson-prog", "ncs-usage", "ncs-ptime", "ncs-tnotif-read", "ncs-seen-version", "ncs-mst", "ncs-fc", "ncs-wk", "ncs-buddy",
   /* small settings and markers (music volume, last copied, dismissed tips, filters…): never worth a reload either */
   "ncs-music-vol", "ncs-music-mode", "ncs-music-bal", "ncs-lastcopy", "ncs-hidden-tips", "ncs-nudge-snooze", "ncs-tnotif-seen", "ncs-tnotif-dis",
   "ncs-ttlove", "ncs-ttlove-log", "ncs-recap-bg", "ncs-welcomed", "ncs-joined", "ncs-modrec", "ncs-fcpick", "ncs-photo", "ncs-kudos", "ncs-feedback",
@@ -13275,6 +13349,7 @@ async function syncDown(fromReturn) {
     try { window.dispatchEvent(new CustomEvent("cs-synced", { detail: { changed } })); } catch (e) {}
     checkInbox();
     if (changed && fromReturn && changedOther) { if (window.__csListsReload) { try { window.__csListsReload(); } catch (e) {} } offerSyncRefresh(); }
+    else if (changed && fromReturn) { let ok = false; if (window.__csListsReload) { try { ok = !!window.__csListsReload(); } catch (e) {} } if (!ok) offerSyncRefresh(); }   /* coming back to the tab never reloads the page by itself */
     else if (changed) mergedNeedsReload(!changedOther);   /* show what came from another device (waits while they're typing or doing a recap) */
   } catch (e) {
     console.warn("Hibi sync failed", e);

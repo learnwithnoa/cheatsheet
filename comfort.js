@@ -445,7 +445,7 @@
           ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click a word, or select a few words," : "Press and hold a word") + " to see what it means and save it to My notebook.") : ""}
         </div>
         <div class="cs-sec"><h4>Page tools</h4>
-          ${isMain ? tog("csSimple", "🧩 Simple mode", "Only the main pages (Home, My coaching or Club, My notebook and Practice) with bigger buttons. Everything else is under ☰ More.") : ""}
+          ${isMain ? tog("csSimple", "🧩 Simple mode", "Only the main pages (Home, My coaching or Club, My notebook, Practice and Translator) with bigger buttons. Everything else is under ☰ More.") : ""}
           ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on. Tap ☰ Menu at the top left to change pages." : "Hides the student list so you only see one student.")}
           ${isMain ? tog("csInshort", "“In short” boxes", "A one-line summary at the top of each grammar page.") : ""}
           ${isMain && canSpeak ? tog("csRead", "Listen buttons", "A 🔊 Listen button on each page reads it aloud. Select text first to hear just that part.") : ""}

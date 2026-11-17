@@ -5,6 +5,8 @@
 _css = r'''
 /* step179: Simple mode */
 #smDoors{display:none}
+.navbtn.sm-only,html:not(.cs-simple) nav.side .navbtn.sm-only,html.cs-simple.cs-smore nav.side .navgroup .navbtn.sm-only{display:none!important}
+html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-only{display:flex!important}
 html.cs-simple:not(.cs-smore) nav.side .navbtn:not(.sm-keep):not(.t-mnav):not(.t-tab),
 html.cs-simple:not(.cs-smore) nav.side .navbtn.locked,
 html.cs-simple:not(.cs-smore) nav.side .navgroup:not(.mine){display:none!important}
@@ -66,6 +68,12 @@ _js = r'''<script>
   function setupNav(){
     const nav=document.querySelector("nav.side"), mine=nav&&nav.querySelector(".navgroup.mine"); if(!mine) return;
     mine.querySelectorAll(".navbtn[data-go]").forEach(b=>b.classList.toggle("sm-keep",KEEP.includes(b.dataset.go)));
+    /* the Translator is one of the main buttons too (a copy that only shows in Simple mode) */
+    if(!document.getElementById("smTr")&&document.querySelector('nav.side .navbtn[data-go="translate"]')){
+      const t=document.createElement("button"); t.type="button"; t.id="smTr"; t.className="navbtn cn-nav sm-keep sm-only"; t.dataset.smgo="translate"; t.onclick=()=>{ if(window.csGo) window.csGo("translate"); else location.hash="#translate"; };
+      t.innerHTML='<span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span>';
+      const q=mine.querySelector('.navbtn[data-go="quiz"]'); if(q) q.after(t); else mine.appendChild(t);
+    }
     if(!document.getElementById("smMore")){
       const m=document.createElement("button"); m.type="button"; m.id="smMore"; m.innerHTML=ICO_MORE+"<span>More</span>"; m.setAttribute("aria-label","More pages: show the whole menu");
       m.onclick=()=>{ setMore(true); const l=document.getElementById("smLess"); l&&l.focus(); };
@@ -85,6 +93,7 @@ _js = r'''<script>
     if(vis("navClub")) D.push(["club","💬","Club","This week's classes, Zoom links and recordings","#F5B83D"]);
     D.push(["words","📒","My notebook","Your words and class notes","#2DD4BF"]);
     D.push(["quiz","🎯","Practice","Short exercises and flashcards with your words","#FF7A45"]);
+    if(document.getElementById("v-translate")) D.push(["translate","⇄","Translator","Spanish ↔ English, with examples you can save","#A78BFA"]);
     const html='<h2 id="smDoorsT">Where do you want to go? 👋</h2><p class="sm-sub">Tap one to start.</p><div class="sm-grid">'+D.map(([go,ic,t,sub,c])=>'<button type="button" class="sm-door" data-go="'+go+'" style="--dc:'+c+'"><span class="sm-ic" aria-hidden="true">'+ic+'</span><span><b>'+esc(t)+'</b><small>'+esc(sub)+'</small></span><span class="sm-go" aria-hidden="true">›</span></button>').join("")+'</div><button type="button" class="sm-off" id="smOff">Show me everything (turn off Simple mode)</button>';
     if(box.dataset.h!==html){ box.innerHTML=html; box.dataset.h=html; const o=document.getElementById("smOff"); if(o) o.onclick=()=>{ set(false); toast("Simple mode off. You can turn it back on in Settings."); }; }
   }

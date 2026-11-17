@@ -237,3 +237,11 @@ if '2026-1117-simple' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+if '2026-1117-fewer' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-fewer", date:"November 17, 2026", title:"Fewer pop-ups, tidier Settings", items:[
+    ["🔕","Fewer of these pop-ups","Use Hibi a lot? Tap <b>See fewer of these</b> under this window to get one summary a week instead, or choose <b>Never</b> in Settings → Home &amp; notifications. Everything new is always listed in What's new.",""],
+    ["⚙️","Tidier Settings","Settings now has clearer groups: Make Hibi easier, Look &amp; feel, Text &amp; reading, Focus &amp; comfort, and Home &amp; notifications.",""],
+    ["⇄","Translator in Simple mode","Simple mode now has the <b>Translator</b> as one of its main buttons.","translate"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
