@@ -22,7 +22,8 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py set-meta '<json>'                e.g. {"upcoming":[{"start":ISO,"student":id,"name":..,"zoom":"https://us06web.zoom.us/j/…"}]}
   HUB_PASSWORD=... python3 hubsync.py add-words <student-id> '[{"w":"word","tr":"meaning","ex":"example"}, ...]'   (skips words already there)
   HUB_PASSWORD=... python3 hubsync.py club <student-id> on|off   (on = private + club member, sits in the middle of the park)
-  HUB_PASSWORD=... python3 hubsync.py recommend '{"hub":"laura","name":"Laura Porcile","mod":"pp","stage":6,"title":"Present perfect or past simple?","why":"said 'I have seen it yesterday' twice","from":"private class Nov 9"}'
+  HUB_PASSWORD=... python3 hubsync.py recommend '{"hub":"laura","name":"Laura Porcile","mod":"pp","stage":6,"title":"Present perfect or past simple?","why":"said 'I have seen it yesterday' twice","from":"private class Nov 9","imp":2}'
+      imp = how much it gets in the way (1 small slip, 2 common mistake, 3 blocks understanding). The same tip again (same student + module/page/pack) adds +1 to its count instead of a new tip.
       mod: "ps" (Past simple: 1 Regular verbs, 2 Irregular verbs, 3 Was/were, 4 Negatives, 5 Questions, 6 Mix it up, 7 Tell the story)
            "pp" (Present perfect: 1 Have/has + verb, 2 Irregular participles, 3 Negatives & questions, 4 Ever/never/already/yet/just, 5 For & since, 6 PP or past simple?, 7 Tell the story)
            "prs" (Present simple, A1-A2: 1 I/you/we/they, 2 He/she/it + -s, 3 Spelling: -es/-ies/has, 4 Negatives: don't/doesn't, 5 Questions: do/does, 6 Mix it up, 7 Tell the story)
@@ -809,9 +810,14 @@ def main():
         cutoff = (datetime.date.today() - datetime.timedelta(days=14)).isoformat()
         if r.get("pack") and r["pack"] not in PACKS:
             print("unknown word pack; use one of", PACKS); return
-        dup = any(x.get("hub") == r.get("hub") and x.get("mod") == r.get("mod") and x.get("page") == r.get("page") and x.get("pack") == r.get("pack") and x.get("date", "") >= cutoff for x in recs)
-        if dup:
-            print("skip: same tip given in the last 14 days"); return
+        same = [x for x in recs if x.get("hub") == r.get("hub") and x.get("mod") == r.get("mod") and x.get("page") == r.get("page") and x.get("pack") == r.get("pack") and (x.get("date", "") >= cutoff or not x.get("done"))]
+        if same:
+            # the same mistake came up again: count it on the open tip (Noa sees the most frequent / important first)
+            x = same[-1]; x["count"] = int(x.get("count", 1)) + 1; x["last"] = today_s
+            if r.get("imp"): x["imp"] = max(int(x.get("imp", 1)), int(r["imp"]))
+            if r.get("why") and r["why"] != x.get("why"): x["why2"] = r["why"]
+            m["recs"] = recs[-120:]; set_doc(tok, tu, "t-hubmeta", m)
+            print("counted: came up %d times" % x["count"]); return
         r.update({"id": rid(), "date": today_s}); recs.append(r); m["recs"] = recs[-120:]
         set_doc(tok, tu, "t-hubmeta", m)
         if r.get("hub"):

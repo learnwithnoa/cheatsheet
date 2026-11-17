@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=60',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=61',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -182,7 +182,7 @@ if '2026-1117-iq' not in s:
 s=open(p,encoding="utf-8").read()
 if '2026-1117-links' not in s:
     s=s.replace(a,a+'''  {id:"2026-1117-links", date:"November 17, 2026", title:"Links that take you to the right place", items:[
-    ["🔗","The address follows you","When you open a grammar module, a Club tab or a page of My coaching, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b> or <b>hibi.cl/#club/recordings</b>). Refresh, bookmark it or share it, and it opens right there.",""]
+    ["🔗","The address follows you","When you open a grammar module, a Club tab or a page of My coaching, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b> or <b>hibi.cl/#club/library</b>). Refresh, bookmark it or share it, and it opens right there.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
@@ -191,6 +191,17 @@ s=open(p,encoding="utf-8").read()
 if '2026-1117-yearly' not in s:
     s=s.replace(a,a+'''  {id:"2026-1117-yearly", date:"November 17, 2026", title:"Switch to the yearly plan", items:[
     ["📅","Monthly member? You can switch to yearly","In <b>Club → Your membership</b>, tap <b>Switch to yearly</b>. The yearly plan costs half of 12 monthly payments. Your paid month stays as it is: the yearly payment starts the day it ends, and the monthly payments stop.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+# Nov 17: weekly goal 2.0 + translator starred
+s=open(p,encoding="utf-8").read()
+if '2026-1117-goal2' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-goal2", date:"November 17, 2026", title:"A weekly goal that fits you", items:[
+    ["🎯","Choose your goal","In <b>Practice</b>, pick <b>Easy</b> (3 rounds), <b>Steady</b> (5) or <b>Strong</b> (8) a week. Bigger goal, bigger reward: up to +12 🍪 and +12 friendship.",""],
+    ["📖","More things count","Reading a <b>Learn it first</b> lesson and saying phrases out loud now count toward your goal too, not only practice rounds.",""],
+    ["🔥","Keep the streak","Do your goal 4 weeks in a row and your study buddy gets a <b>campfire</b>.",""],
+    ["⭐","Translator, one click away","The Translator is now in your ★ Starred list in the menu. Don't need it there? Un-star it on its page.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

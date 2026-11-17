@@ -40,7 +40,7 @@ h2{font:700 22px var(--display);margin:22px 0 10px}
 .list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 220px);overflow:auto;padding-right:4px}
 @media (max-width:860px){.list{max-height:none}}
 /* the student's details stay in view next to the list while you scroll (computer) */
-@media (min-width:861px){#detail{position:sticky;top:70px;max-height:calc(100vh - 84px);overflow:auto;overscroll-behavior:contain;scroll-margin-top:70px}}
+@media (min-width:861px){#detail{align-self:start}}
 .stu{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
 .stu:hover{border-color:var(--royal)}
 .stu[aria-current="true"]{border-color:var(--green);background:var(--green-soft)}
@@ -97,6 +97,8 @@ td.act{white-space:nowrap;text-align:right}
 .cl-sel{font:700 13.5px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
 .cl-n{margin-left:auto}
 .club-t{width:100%;border-collapse:collapse;font-size:14px}.club-t th{text-align:left;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--line)}
+.tip-n{display:inline-block;margin-left:4px;padding:1px 8px;border-radius:999px;font:700 11.5px var(--body);background:color-mix(in srgb,#7348D8 16%,var(--surface));color:var(--ink)}.tip-n.hi{background:color-mix(in srgb,#E5533D 18%,var(--surface))}
+.cl-stcell{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.cl-arch{background:none;border:1.5px solid var(--line);border-radius:999px;padding:3px 9px;font:700 12px var(--body);color:var(--muted);cursor:pointer}.cl-arch:hover{color:var(--ink);border-color:var(--ink)}.cl-archd{margin-top:8px}.cl-archd summary{cursor:pointer}
 .club-t td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}.club-t .nw{white-space:nowrap}
 .club-t select{font:600 13px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:8px;padding:4px 6px}
 .news-row{display:flex;align-items:center;gap:8px}
@@ -214,7 +216,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
         <div id="pendBox" class="pend" hidden></div>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
         <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
-        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option><option value="none">⚪ Not assigned yet</option></select></div>
+        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option><option value="hibi">📘 Hibi only</option><option value="none">⚪ Not assigned yet</option></select></div>
         <div class="row" style="margin-bottom:10px"><button type="button" id="reload">↻ Refresh</button><span class="muted" id="loadedAt" style="font-size:13px"></span></div>
         <div class="list" id="list"></div>
       </div>
@@ -429,7 +431,10 @@ $("q").oninput = renderList;
 try { $("tSortSel").value = localStorage.getItem("cs-t-sort") || "az"; $("tKind").value = localStorage.getItem("cs-t-kind") || "all"; } catch (e) {}
 $("tSortSel").onchange = () => { try { localStorage.setItem("cs-t-sort", $("tSortSel").value); } catch (e) {} renderList(); };
 $("tKind").onchange = () => { try { localStorage.setItem("cs-t-kind", $("tKind").value); } catch (e) {} renderList(); };
-$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollTop = 0; if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); else { const r = $("detail").getBoundingClientRect(); if (r.top < 0 || r.top > innerHeight - 120) $("detail").scrollIntoView({ block: "start", behavior: "smooth" }); } };
+$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollTop = 0; if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); else alignDetail(); };
+/* desktop: the details open right next to the name you clicked (top aligned with it), not at the top of the page */
+function alignDetail() { const d = $("detail"), row = $("list").querySelector(`[data-uid="${current}"]`); if (!d || !row || innerWidth < 861) { if (d) d.style.marginTop = ""; return; }
+  d.style.marginTop = "0px"; const off = Math.round(row.getBoundingClientRect().top - d.getBoundingClientRect().top); d.style.marginTop = Math.max(0, off) + "px"; }
 
 /* ---------- editing (writes go straight to the student's account) ---------- */
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -521,15 +526,17 @@ function renderLinks() {
   const first = x => norm(x).split(" ")[0];
   const sug = s => { const g = guessHub(s); if (g && !taken.has(g)) return g; const f = free.filter(h => first(h.name) && first(h.name) === first(s.name)); return f.length === 1 ? f[0].id : ""; };
   const NOT_LINK = ["Bh1mtEtTgxg6DJagqNddDyqKeiH2"];   /* Noa's own test account: never in "Accounts to link" */
-  const loose = students.filter(s => !NOT_LINK.includes(s.uid) && !s.role.hub && !dism.has(s.uid) && !(s.role.club === true && !s.role.private) && (s.role.club === false || s.role.private || free.some(h => first(h.name) && first(h.name) === first(s.name)) || sug(s)));
+  const loose = students.filter(s => !NOT_LINK.includes(s.uid) && !s.role.hub && !s.role.hibiOnly && !dism.has(s.uid) &&!(s.role.club === true && !s.role.private) && (s.role.club === false || s.role.private || free.some(h => first(h.name) && first(h.name) === first(s.name)) || sug(s)));
   box.hidden = !loose.length; if (!loose.length) { box.innerHTML = ""; return; }
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🔗 Accounts to link <span class="news-n" style="background:#0E9F96">${loose.length}</span></h2></div>
-    <p class="muted" style="margin:4px 0 8px">These Hibi accounts might be private students. Pick who they are so they get their “My coaching” page, or mark them as club only.</p>
+    <p class="muted" style="margin:4px 0 8px">These Hibi accounts might be private students. Pick who they are so they get their “My coaching” page, or mark them as club only, or 📘 Hibi only (past students who keep their words and notes).</p>
     <ul class="news-list">${loose.map(s => { const g = sug(s); return `<li><div class="news-row" style="flex-wrap:wrap;gap:8px"><span style="flex:1;min-width:180px"><b>${esc(s.name)}</b> <span class="muted small">${esc(s.email)}</span></span>
       <select data-lkfor="${esc(s.uid)}" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px"><option value="">Who is this?</option>${free.map(h => `<option value="${esc(h.id)}" ${g === h.id ? "selected" : ""}>${esc(h.name)}${g === h.id ? " (suggested)" : ""}</option>`).join("")}</select>
-      <button type="button" class="seg" data-lkgo="${esc(s.uid)}">Link</button><button type="button" class="seg" data-lkclub="${esc(s.uid)}">Club only</button></div></li>`; }).join("")}</ul>`;
+      <button type="button" class="seg" data-lkgo="${esc(s.uid)}">Link</button><button type="button" class="seg" data-lkclub="${esc(s.uid)}">Club only</button><button type="button" class="seg" data-lkhibi="${esc(s.uid)}" title="Not in the club, no private classes: they just keep using Hibi (words, notes, practice)">📘 Hibi only</button></div></li>`; }).join("")}</ul>`;
 }
 document.addEventListener("click", async e => {
+  const hb = e.target.closest("[data-lkhibi]");
+  if (hb) { const st = students.find(x => x.uid === hb.dataset.lkhibi); if (!st) return; const old = st.role.hub; await saveRole(st, { club: false, private: false, hub: "", hibiOnly: true }); if (old) await linkHub(st, "", old); renderLinks(); toast("Okay, " + st.name.split(" ")[0] + " is on Hibi only"); return; }
   const go = e.target.closest("[data-lkgo]"), cl = e.target.closest("[data-lkclub]"); if (!go && !cl) return;
   const uid = (go || cl).dataset.lkgo || (go || cl).dataset.lkclub; const st = students.find(x => x.uid === uid); if (!st) return;
   if (cl) { try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
@@ -563,7 +570,7 @@ function renderClub() {
         const der = m.price && m.per !== "year" ? "$" + (m.price * 1000).toLocaleString("es-CL") + (m.price ? " · US$" + m.price : "") : "$35.000";
         const fmt = o => typeof o === "number" ? "$" + o.toLocaleString("es-CL") : o.clp ? "$" + Number(o.clp).toLocaleString("es-CL") + (o.usd ? " · US$" + o.usd : "") : "US$" + o.usd;
         return em ? `<input class="cl-price" data-clprice="${esc(em)}" value="${ov ? esc(fmt(ov)) : ""}" placeholder="${esc(der)}" aria-label="Hibi price for ${esc(m.name)}">` : `<span class="muted small" title="Needs their email or Hibi account">—</span>`; })()}</td><td class="nw">${h ? `✓ <span class="muted small">${h.lastSeen ? ago(h.lastSeen) : ""}</span>` : `<span class="muted">—</span>`}</td>
-        <td><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`; }).join("")}</tbody></table></div>` : ""}`;
+        <td><div class="cl-stcell"><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select>${m.status === "leaving" ? `<button type="button" class="cl-arch" data-clarch="${i}" title="Take them off this list and out of the club. They keep their Hibi account, words and notes.">📦 Archive</button>` : ""}</div></td></tr>`; }).join("")}</tbody></table></div>${(C.archived || []).length ? `<details class="cl-archd"><summary class="muted small">📦 Archived (${C.archived.length})</summary><ul class="muted small">${C.archived.map(a => `<li>${esc(a.name)}${a.at ? " · " + esc(a.at) : ""}</li>`).join("")}</ul></details>` : ""}` : ""}`;
 }
 /* Hibi price: "24000" or "$24.000" = pesos (Mercado Pago), "US$21" = dollars (PayPal), both: "$24.000 · US$24"; empty = their Skool price */
 document.addEventListener("change", e => { const inp = e.target.closest("[data-clprice]"); if (!inp) return;
@@ -580,6 +587,17 @@ document.addEventListener("change", async e => { const sl = e.target.closest("[d
   try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
   const mm = ((hubMeta.club || {}).members || []).find(x => x.name === name); if (!mm) { toast("Couldn't find them. Refresh and try again."); return; }
   mm.status = v; saveTPref("t-hubmeta", hubMeta); renderClub(); toast(name.split(" ")[0] + ": " + CST.find(([k]) => k === v)[1]); });
+/* 📦 Archive someone who isn't moving over: off the club list (kept under "Archived") and out of the club; their Hibi account stays */
+document.addEventListener("click", async e => { const b = e.target.closest("[data-clarch]"); if (!b) return;
+  if (!b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "Tap again"; setTimeout(() => { if (b.isConnected) { delete b.dataset.sure; b.textContent = "📦 Archive"; } }, 4000); return; }
+  b.disabled = true; const i = +b.dataset.clarch, name = hubMeta.club.members[i].name;
+  try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
+  const C = hubMeta.club || {}, k = (C.members || []).findIndex(x => x.name === name); if (k < 0) { toast("Couldn't find them. Refresh and try again."); return; }
+  const mm = C.members.splice(k, 1)[0]; C.archived = (C.archived || []).concat({ name: mm.name, email: mm.email || "", at: new Date().toISOString().slice(0, 10) });
+  try { await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(hubMeta), deleted: false, at: serverTimestamp() }); } catch (er) { toast("Couldn't save. Try again."); return; }
+  const em = String(mm.email || "").toLowerCase(), st = (em && students.find(x => (x.email || "").toLowerCase() === em)) || students.find(x => norm(x.name) === norm(mm.name));
+  if (st && st.role.club !== false) { const priv = !!(st.role.private || st.role.hub); await saveRole(st, priv ? { club: false } : { club: false, private: false, hibiOnly: true }); await clubOff(st); }
+  renderClub(); toast("📦 " + name.split(" ")[0] + " archived" + (st ? ". They keep Hibi, but not the club." : ".")); });
 /* sections as tabs, so the page isn't one long scroll */
 let mTab = null; try { mTab = sessionStorage.getItem("cs-m-tab"); } catch (e) {}
 /* from the 🔔 on Home ("Assign them →"): open Hibi members, showing only the ones not assigned yet */
@@ -595,13 +613,15 @@ function renderTabs() {
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-mtab]"); if (!b) return; mTab = b.dataset.mtab; try { sessionStorage.setItem("cs-m-tab", mTab); } catch (er) {} renderTabs(); });
 function renderTips() {
-  const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-12).reverse();
+  /* most useful first: how many times it came up × how much it gets in the way (imp 1–3), then the newest */
+  const score = r => (r.count || 1) * (r.imp || 2);
+  const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-40).sort((a, b) => score(b) - score(a) || (b.last || b.date || "").localeCompare(a.last || a.date || "")).slice(0, 12);
   box.hidden = !recs.length; if (!recs.length) return;
   const unseen = recs.filter(r => !r.seen).length;
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips ${unseen ? `<span class="news-n" style="background:#7348D8">${unseen} new</span>` : `<span class="news-c">${recs.length}</span>`}</h2>${unseen ? `<button type="button" class="kd-btn" data-tipseen="1">Mark all as seen</button>` : ""}</div>
-    <p class="muted" style="margin:4px 0 8px">From your classes (the nightly wrap-up adds these every night): mistakes that keep coming up, and what could help. <b>⭐ Recommend it</b> shows it to the student under “Noa recommends”.</p>
+    <p class="muted" style="margin:4px 0 8px">From your classes (the nightly wrap-up adds these every night): mistakes that keep coming up, and what could help. The ones that come up most and matter most are at the top, so you can pick just one or two per student. <b>⭐ Recommend it</b> shows it to the student under “Noa recommends”.</p>
     <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : r.pack ? `Word pack: ${PACK_T[r.pack] || r.pack}` : (PAGE_T[r.page] || r.title || r.page);
-      return `<li${r.seen ? ' class="seen"' : ""}><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
+      return `<li${r.seen ? ' class="seen"' : ""}><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)} ${(r.count || 1) > 1 ? `<span class="tip-n" title="Came up in ${r.count} classes">came up ${r.count}×</span>` : ""}${r.imp === 3 ? `<span class="tip-n hi" title="Gets in the way of being understood">important</span>` : ""}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
         ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}" title="Sends them a note on Hibi with a link to it">⭐ Recommend it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
         <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}" title="Hide it (you can undo)">✕ Dismiss</button></div></li>`; }).join("")}</ul>`;
 }
@@ -690,7 +710,7 @@ $("news").addEventListener("click", e => {
   if (e.target.closest("#newsSeen")) { const now = Date.now(); localStorage.setItem(NEWS_KEY, String(now)); saveTPref("t-news-seen", now); renderNews(); return; }
   if (e.target.closest("#newsMore")) { newsOpen = !newsOpen; renderNews(); return; }
   const b = e.target.closest("[data-news]"); if (!b) return;
-  current = b.dataset.news; mTab = "students"; renderTabs(); renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
+  current = b.dataset.news; mTab = "students"; renderTabs(); renderList(); renderDetail(students.find(s => s.uid === current)); alignDetail(); $("detail").scrollIntoView({ behavior: "smooth" });
 });
 const PS_T = ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story", "⭐ Advanced (bonus, B2–C1)"];
 function weekKeyT() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
@@ -737,7 +757,7 @@ async function saveRole(s, patch) {
   try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved"); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
-const roleType = r => (r.private || r.hub) ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : r.club === true ? "club" : "none");   /* linked to a private student (hub) = private, + club = both */   /* "none": signed up, not in the club yet (pick Club to give access) */
+const roleType = r => r.hibiOnly && !r.hub && r.club !== true ? "hibi" : (r.private || r.hub) ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : r.club === true ? "club" : "none");   /* linked to a private student (hub) = private, + club = both */   /* "none": signed up, not in the club yet (pick Club to give access) */
 let hubList = [];
 async function loadHubList() { if (!tUid) return; try { const ds = await getDocs(collection(db, "users", tUid, "data")); hubList = []; ds.forEach(x => { if (!x.id.startsWith("t-hub-")) return; const v = x.data(); if (v.deleted) return; try { const j = JSON.parse(v.json); hubList.push(j); } catch (e) {} }); hubList.sort((a, b) => a.name.localeCompare(b.name)); } catch (e) { console.warn("hub list", e); } }
 const norm = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g, "");
@@ -752,6 +772,15 @@ async function clubOn(s) {
     hubMeta = fm;
     try { await setDoc(doc(db, "clubAccess", s.uid), { on: true, name: s.name || "" }, { merge: true }); } catch (e) { console.warn("clubAccess", e); }
   } catch (e) { console.warn("clubOn", e); }
+}
+/* take someone out of the club right away (they keep their Hibi account, words and notes) */
+async function clubOff(s) {
+  try {
+    const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); const fm = m.exists() ? JSON.parse(m.data().json || "{}") || {} : {};
+    if ((fm.clubUids || []).includes(s.uid)) { fm.clubUids = fm.clubUids.filter(u => u !== s.uid); await setDoc(doc(db, "users", tUid, "data", "t-hubmeta"), { json: JSON.stringify(fm), deleted: false, at: serverTimestamp() }); hubMeta = fm; }
+    try { await setDoc(doc(db, "clubAccess", s.uid), { on: false }, { merge: true }); } catch (e) { console.warn("clubAccess", e); }
+    if (!s.role.hub) await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() });
+  } catch (e) { console.warn("clubOff", e); }
 }
 async function linkHub(s, hubId, oldId) {
   try {
@@ -801,7 +830,7 @@ function renderDetail(s) {
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
     ${s.sheet ? `<p><a class="btn" href="${esc(s.sheet)}" target="_blank" rel="noopener">Their vocabulary sheet ↗</a></p>` : ""}
     <div class="parkbox"><b>Buddy park</b>${buddyCard(s.buddy)}
-      <div class="row" style="margin-top:8px">${(() => { const ty = roleType(s.role); return [["club", "🌼 Club member"], ["private", "🌳 Private student"], ["both", "🌼🌳 Both"]].map(([k, l]) => `<button type="button" class="seg" data-role="${k}" aria-pressed="${ty === k}">${l}</button>`).join(""); })()}</div>
+      <div class="row" style="margin-top:8px">${(() => { const ty = roleType(s.role); return [["club", "🌼 Club member"], ["private", "🌳 Private student"], ["both", "🌼🌳 Both"], ["hibi", "📘 Hibi only"]].map(([k, l]) => `<button type="button" class="seg" data-role="${k}" aria-pressed="${ty === k}" ${k === "hibi" ? 'title="Not in the club and no private classes (for example a past student): they keep Hibi, their words and their notes"' : ""}>${l}</button>`).join(""); })()}</div>
       <div class="muted small" style="margin-top:6px">Club members sit in the middle of the park, private students at the edges.</div>
       ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their Coaching page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Hibi menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Hibi.`}</div></div>` : ""}
       <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
@@ -871,7 +900,8 @@ $("detail").addEventListener("click", e => {
   else if ("wcancel" in d) { editW = null; renderDetail(s); }
   else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(), nn = $("enn").value.trim(); if (!w) return; editW = null;
     guarded(s, "ncs-words", list => list.map(x => { if (!(x && x.id === id)) return x; const y = { ...x, w, m, e: ex }; if (nn) y.n = nn; else delete y.n; return y; }), "Word updated"); }
-  else if (d.role) { const ty = d.role; const patch = { club: ty !== "private", private: ty !== "club" }; if (ty === "club") patch.hub = ""; else if (!s.role.hub) { const g = guessHub(s); if (g) patch.hub = g; } saveRole(s, patch).then(() => linkHub(s, patch.hub === undefined ? s.role.hub : patch.hub, ty === "club" ? s.role.hub : "")); }
+  else if (d.role === "hibi") { const old = s.role.hub; saveRole(s, { club: false, private: false, hub: "", hibiOnly: true }).then(() => old ? linkHub(s, "", old) : null).then(() => clubOff(s)); }
+  else if (d.role) { const ty = d.role; const patch = { club: ty !== "private", private: ty !== "club", hibiOnly: false }; if (ty === "club") patch.hub = ""; else if (!s.role.hub) { const g = guessHub(s); if (g) patch.hub = g; } saveRole(s, patch).then(() => linkHub(s, patch.hub === undefined ? s.role.hub : patch.hub, ty === "club" ? s.role.hub : "")); }
   else if (d.wdel) confirmTwice(t, () => guarded(s, "ncs-words", list => list.filter(x => !(x && x.id === d.wdel)), "Word deleted"));
   else if (d.nedit) { editN = d.nedit; renderDetail(s); const i = $("en"); if (i) i.focus(); }
   else if ("ncancel" in d) { editN = null; renderDetail(s); }

@@ -491,7 +491,7 @@ window.__csTeach = {
     if (!window.__csTeacher || !user) return [];
     const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
     const out = []; (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
-      out.push({ uid: d.id, name: p.name || p.email || "(no name)", kind: r.private ? (r.club === false ? "private" : "both") : "club" }); });
+      out.push({ uid: d.id, name: p.name || p.email || "(no name)", kind: r.private ? (r.club === false ? "private" : "both") : r.hibiOnly && r.club !== true ? "hibi" : "club" }); });
     return out.sort((a, b) => a.name.localeCompare(b.name));
   },
   /* Home notifications: every account with when it joined / was last here, plus its role */
@@ -505,8 +505,14 @@ window.__csTeach = {
     const ms = t => t && t.toMillis ? t.toMillis() : 0, out = [];
     (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", email: p.email || "", first: ms(p.firstSeen), last: ms(p.lastSeen),
-        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.club === false ? "new" : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
+        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.hibiOnly ? "hibionly" : r.club === false ? "new" : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
     return out;
+  },
+  /* Recommend a grammar module (n = "all") or one stage to a student: same place the Members page writes it */
+  async modrec(uid, mod, n) {
+    const r = doc(db, "users", uid, "data", "ncs-modrec"); let v = {};
+    try { const d = await getDoc(r); if (d.exists() && !d.data().deleted) v = JSON.parse(d.data().json || "{}") || {}; } catch (e) {}
+    v[mod] = n; await setDoc(r, { json: JSON.stringify(v), deleted: false, at: serverTimestamp() });
   },
   async send(uid, text, go) { await setDoc(doc(collection(db, "inbox", uid, "msgs")), { text: String(text).slice(0, 1000), kind: go ? "rec:" + go : "rec", at: serverTimestamp() }); }
 };

@@ -3,7 +3,8 @@
 # ---- Club ----
 R('''  let tab=(()=>{ try{ return sessionStorage.getItem("cs-club-tab")||"week"; }catch(e){ return "week"; } })();''',
   '''  let tab=(()=>{ try{ return sessionStorage.getItem("cs-club-tab")||"week"; }catch(e){ return "week"; } })();
-  window.__csDeep=window.__csDeep||{}; window.__csDeep.club={hash:()=>"#club"+(tab&&tab!=="week"?"/"+tab:""),open:p=>{ if(p[0]){ tab=p[0]; try{ sessionStorage.setItem("cs-club-tab",tab); }catch(e){} } setTimeout(()=>{ render(); },0); }};''')
+  window.__csDeep=window.__csDeep||{}; const CLS={wall:"community",recordings:"library"}, CLI={community:"wall",library:"recordings"};
+  window.__csDeep.club={hash:()=>"#club"+(tab&&tab!=="week"?"/"+(CLS[tab]||tab):""),open:p=>{ if(p[0]){ tab=CLI[p[0]]||p[0]; try{ sessionStorage.setItem("cs-club-tab",tab); }catch(e){} } setTimeout(()=>{ render(); },0); }};''')
 R('''    if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }''',
   '''    if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
     if(window.__csSyncUrl) window.__csSyncUrl("club");''')
@@ -12,7 +13,8 @@ R('''  window.addEventListener("hashchange",()=>{ if(location.hash==="#club") se
 # ---- My coaching ----
 R('''  let tab="classes", cSort=-1, wSort="new", openRep=null;''',
   '''  let tab="classes", cSort=-1, wSort="new", openRep=null;
-  window.__csDeep=window.__csDeep||{}; window.__csDeep.coaching={hash:()=>"#coaching"+(tab&&tab!=="classes"?"/"+tab:""),open:p=>{ if(p[0]) tab=p[0]; setTimeout(()=>{ try{ render(); }catch(e){} },0); }};''')
+  window.__csDeep=window.__csDeep||{}; const COS={reports:"progress-reports",pack:"pack-and-payments",goals:"my-goals",guides:"study-guides",recaps:"class-recaps"}, COI={}; Object.keys(COS).forEach(k=>COI[COS[k]]=k);
+  window.__csDeep.coaching={hash:()=>"#coaching"+(tab&&tab!=="classes"?"/"+(COS[tab]||tab):""),open:p=>{ if(p[0]) tab=COI[p[0]]||p[0]; setTimeout(()=>{ try{ render(); }catch(e){} },0); }};''')
 R('''if(t.dataset.ws) wSort=t.dataset.ws; render(); });''', '''if(t.dataset.ws) wSort=t.dataset.ws; render(); if(window.__csSyncUrl) window.__csSyncUrl("coaching"); });''')
 # ---- Noa's teacher pages: the page inside keeps its own address (#overview, #<student>…); Home shows it as #students/… ----
 R('''  function openTab(k,hash){''', '''  const PEND={}; window.__csDeep=window.__csDeep||{};
