@@ -11459,7 +11459,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117141910"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117142520"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -13184,17 +13184,36 @@ const UA = navigator.userAgent || "";
 const IS_IOS = /iPhone|iPad|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const IN_APP = /Instagram|FBAN|FBAV|FB_IAB|Line\/|WhatsApp|LinkedInApp|MicroMessenger|Twitter|Snapchat|TikTok|musical_ly|; wv\)/i.test(UA);
 let popupTries = 0;
+const IS_MAC_SAFARI = !IS_IOS && /Macintosh/.test(UA) && /Safari\//.test(UA) && !/Chrome|Chromium|CriOS|Edg\/|Firefox|FxiOS|OPR\//.test(UA);
+/* open the Google window synchronously (on the tap) and hand it to Firebase when it asks for a window */
+function preOpen() {
+  let w = null;
+  try { const W = 500, H = 620, L = Math.max(0, (screen.width - W) / 2), T = Math.max(0, (screen.height - H) / 2);
+    w = window.open("", "hibi-signin", `popup=yes,width=${W},height=${H},left=${L},top=${T}`); } catch (e) { w = null; }
+  if (!w) return null;
+  try { w.document.title = "Signing in…"; w.document.body.style.cssText = "font:16px system-ui,sans-serif;display:grid;place-items:center;height:100vh;margin:0;color:#555"; w.document.body.textContent = "Opening Google…"; } catch (e) {}
+  const orig = window.open; let done = false;
+  window.open = function (url, name, features) { if (!done && url && w && !w.closed) { done = true; window.open = orig; try { w.location.href = url; } catch (e) { return orig.apply(window, arguments); } return w; } return orig.apply(window, arguments); };
+  setTimeout(() => { if (!done) { window.open = orig; try { if (w && !w.closed && w.location.href === "about:blank") w.close(); } catch (e) {} } }, 20000);
+  return w;
+}
 async function signIn() {
   if (IN_APP) { alertMsg(IS_IOS ? "Google sign-in doesn't work inside this app's browser. Tap ··· or the share icon and choose \"Open in Safari\" (or copy the link into Safari), then sign in there." : "Google sign-in doesn't work inside this app's browser. Tap ⋮ and choose \"Open in Chrome\" (or copy the link into Chrome), then sign in there."); return; }
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
   /* Nov 2026: sign-in runs on login.hibi.cl (same site as hibi.cl), so the full-page Google sign-in works everywhere,
      iPhone included, and it never leaves a stuck white pop-up behind. The pop-up stays as the fallback. */
   /* if the full-page sign-in came back empty in this browser before (some phones/browsers block it), use the Google window instead */
-  let usePopup = false; try { usePopup = localStorage.getItem("cs-auth-popup") === "1"; } catch (e) {}
+  let usePopup = IS_MAC_SAFARI; try { usePopup = usePopup || localStorage.getItem("cs-auth-popup") === "1"; } catch (e) {}
   if (!usePopup) { try { sessionStorage.setItem("cs-redir-at", String(Date.now())); await signInWithRedirect(auth, p); return; } catch (e) { console.warn(e); } }
+  /* Safari blocks a window opened even a moment after the tap (Google's sign-in first fetches a security token).
+     So the Google window is opened right now, on the tap, and Google's sign-in page loads inside it. */
+  const pre = preOpen();
+  if (!pre && IS_MAC_SAFARI) { alertMsg("Safari blocked the Google window. In the menu bar, click Safari → Settings for hibi.cl… → Pop-up Windows → Allow. Then click \"Continue with Google\" again."); return; }
   try { await signInWithPopup(auth, p); popupTries = 0; }
   catch (e) {
+    try { if (pre && !pre.closed && /auth\/(popup-blocked|operation-not-supported|internal|network)/.test(e && e.code || "")) pre.close(); } catch (er) {}
     const blocked = e && e.code === "auth/popup-blocked", unsupported = e && e.code === "auth/operation-not-supported-in-this-environment";
+    if (blocked && IS_MAC_SAFARI) { alertMsg("Safari blocked the Google window. In the menu bar, click Safari → Settings for hibi.cl… → Pop-up Windows → Allow. Then click \"Continue with Google\" again."); return; }
     if (blocked && ++popupTries < 3) { alertMsg("Your browser stopped the Google window. Tap \"Continue with Google\" once more."); }
     else if ((blocked || unsupported) && !IS_IOS) { await signInWithRedirect(auth, p); }
     else if (blocked || unsupported) { alertMsg("Your browser blocked the Google window. Allow pop-ups for this site (Settings → Safari → turn off Block Pop-ups), or open Hibi in Safari, then try again."); }
