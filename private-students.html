@@ -164,7 +164,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
 <script src="emb.js?v=3"></script>
-<script src="comfort.js?v=30" defer></script>
+<script src="comfort.js?v=31" defer></script>
 <script src="tbar.js?v=2" defer></script>
 </head>
 <body>
@@ -1166,7 +1166,7 @@ document.addEventListener("click", e => {
   if (t.closest("[data-wcancel]")) { wEdit = null; renderDetail(); return; }
   const ws = t.closest("[data-wsave]"); if (ws) { const v = {}; document.querySelectorAll("tr.editing [data-we]").forEach(x => v[x.dataset.we] = x.value.trim()); if (!v.w) { toast("The word can't be empty"); return; } wordAct(S_(), ws.dataset.wsave, "edit", v); return; }
   const wd = t.closest("[data-wdel]"); if (wd) { const s0 = S_(), row = wordRows(s0).find(x => x.key === wd.dataset.wdel); if (!row) return;
-    if (window.csConfirm) window.csConfirm("Remove “" + esc(row.w) + "”?", row.src === "app" ? "<p>It disappears from their Hibi “My words”. You can undo it right after.</p>" : "<p>It's removed here (not from the Google Sheet).</p>", "Remove").then(ok => { if (ok) wordAct(s0, wd.dataset.wdel, "del"); }); else wordAct(s0, wd.dataset.wdel, "del"); return; }
+    if (window.csConfirm) window.csConfirm("Remove “" + esc(row.w) + "”?", row.src === "app" ? "<p>It disappears from their Hibi “My notebook”. You can undo it right after.</p>" : "<p>It's removed here (not from the Google Sheet).</p>", "Remove").then(ok => { if (ok) wordAct(s0, wd.dataset.wdel, "del"); }); else wordAct(s0, wd.dataset.wdel, "del"); return; }
   const un = t.closest("[data-undo]"); if (un) { const h = histGet(), e = h.find(x => x.k === un.dataset.undo); if (e) { e.undone = 1; histPut(h); $("modal").hidden = true; restore(e); } return; }
   const tb = t.closest("[data-tab]"); if (tb) { tab = tb.dataset.tab; editRow = null; renderDetail(); return; }
   const cs = t.closest("[data-csort]"); if (cs) { clsSort = +cs.dataset.csort; renderDetail(); return; }

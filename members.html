@@ -172,7 +172,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
 <script src="emb.js?v=3"></script>
-<script src="comfort.js?v=30" defer></script>
+<script src="comfort.js?v=31" defer></script>
 <script src="tbar.js?v=2" defer></script>
 </head>
 <body>
@@ -392,7 +392,7 @@ async function load() {
         buddy: parse(data["ncs-buddy"], null),
         loveLog: parse(data["ncs-ttlove-log"], []),
         level: parse(data["ncs-level"], "normal"),
-        mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), modrec: parse(data["ncs-modrec"], {}) || {},
+        mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), wkgoal: parse(data["ncs-wkgoal"], 3), modrec: parse(data["ncs-modrec"], {}) || {},
         loveLast: parse(data["ncs-ttlove"], ""), mylevel: parse(data["ncs-mylevel"], null),
         role: roles[d.id] || {}
       });
@@ -736,7 +736,7 @@ function practiceBox(s) {
   const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
   const recN = Object.keys(s.modrec || {}).length;
   return `<details class="parkbox mcol" data-col="p"${COL.p ? " open" : ""}><summary><b>Practice</b> <span class="muted">· recommend a stage or a whole module${recN ? ` · ⭐ ${recN} recommended now` : ""}</span></summary>${modBlock(s, "prs")}${modBlock(s, "th")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "cou")}${modBlock(s, "iq")}${modBlock(s, "ed")}
-    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, 3)} / 3 rounds${wk.got ? " ✓" : ""}</div>
+    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, [3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3)} / ${[3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3} rounds${wk.got ? " ✓" : ""}</div>
     <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. "Whole module" puts ⭐ on the module itself. Tap again to remove it.</p></details>`;
 }
 function buddyCard(b) {

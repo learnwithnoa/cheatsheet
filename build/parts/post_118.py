@@ -205,3 +205,10 @@ if '2026-1117-goal2' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+if '2026-1117-notebook' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-notebook", date:"November 17, 2026", title:"Meet My notebook", items:[
+    ["📒","Words + class notes, together","<b>My words</b> and <b>My class notes</b> are now one place in the menu: <b>My notebook</b>. Nothing was lost.","words"],
+    ["🗂️","Three tabs","<b>Aa Words</b> (everything you save), <b>✏️ Class notes</b> (write during class, ✨ Hibi finds the new words) and <b>📓 Summaries</b> (each week, summed up).","classnotes"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

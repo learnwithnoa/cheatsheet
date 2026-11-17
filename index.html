@@ -60,7 +60,7 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=21">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=30" defer></script>
+<script src="comfort.js?v=31" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -1414,6 +1414,18 @@ html.cs-calm .cl-rxpick{animation:none}
 .pr-gs{all:unset;cursor:pointer;font:700 12.5px var(--body);padding:4px 11px;border-radius:999px;border:1.5px solid var(--line)}
 .pr-gs[aria-pressed="true"]{background:color-mix(in srgb,var(--royal) 18%,var(--surface));border-color:var(--royal)}
 .pr-streak{font-size:13.5px;margin:6px 0 0;color:var(--muted)}
+
+/* step175: My notebook */
+nav.side .navbtn.nb-merged{display:none!important}
+.nb-tabs{margin-top:2px}
+.nb-intro h3{margin:0 0 6px}
+.nb-intro ul{margin:8px 0 10px;padding-left:0;list-style:none;display:grid;gap:6px}
+.nb-intro li{display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+.cn-tabs.nb-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.cn-tabs.nb-tabs button{white-space:nowrap}
+@media (max-width:600px){.cn-tabs.nb-tabs button{font-size:14px;padding:8px 10px}}
+.nb-intro ul{margin:0 0 10px}
+.nb-intro li{display:block;padding-left:4px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -2922,7 +2934,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
     <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Hibi members" aria-label="Hibi members" hidden>👥</a>
     <a class="theme-btn t-ico" id="navHub" href="private-students.html" title="Private students" aria-label="Private students" hidden>🎓</a>
-    <button class="theme-btn" id="hdrWord" type="button" title="Add a word to My words" aria-label="Add a word" aria-haspopup="dialog" aria-controls="qa"><span aria-hidden="true" style="font-size:17px;line-height:1">＋</span><span class="theme-txt">Word</span></button>
+    <button class="theme-btn" id="hdrWord" type="button" title="Add a word to My notebook" aria-label="Add a word" aria-haspopup="dialog" aria-controls="qa"><span aria-hidden="true" style="font-size:17px;line-height:1">＋</span><span class="theme-txt">Word</span></button>
     <div class="music-wrap">
       <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="mu-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></svg></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only">Study music</span></button>
       <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
@@ -2980,8 +2992,8 @@ html.cs-calm .cs-rxpal button{transition:none}
       <button class="navbtn cn-nav t-tab" data-go="members" id="navMembers" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2"/><circle cx="16.8" cy="9.5" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.4 1.4 5 4.6"/></svg><span>Hibi members</span></button>
       <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>My coaching</span></button>
       <button class="navbtn cn-nav club-nav" data-go="club" id="navClub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.2V15.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M17 9.5h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v2.7l-3.4-2.7H12"/></svg><span>Club</span></button><script>try{var _w=localStorage.getItem("cs-club-nav");if(_w){var _b=document.getElementById("navClub");_b.hidden=false;if(_w==="2")_b.classList.add("locked");}}catch(e){}</script>
-      <button class="navbtn cn-nav" data-go="classnotes"><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
-      <button class="navbtn cn-nav" data-go="words"><span class="w-ico" aria-hidden="true">Aa</span><span>My words</span><span class="cn-count" id="wNavCount"></span></button>
+      <button class="navbtn cn-nav nb-merged" data-go="classnotes" hidden><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
+      <button class="navbtn cn-nav" data-go="words"><span class="nb-ico" aria-hidden="true"></span><span>My notebook</span><span class="cn-count" id="wNavCount"></span></button>
       <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
       <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
       <button class="navbtn cn-nav" data-go="park"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5c-3.3 0-5.6 2.4-5.6 5.3 0 .6.1 1.2.3 1.7-1.4.8-2.2 2.1-2.2 3.6 0 2.4 2.1 4.2 4.6 4.2h5.8c2.5 0 4.6-1.8 4.6-4.2 0-1.5-.8-2.8-2.2-3.6.2-.5.3-1.1.3-1.7 0-2.9-2.3-5.3-5.6-5.3z"/><path d="M12 11v9.5"/></svg><span>Buddy park</span></button>
@@ -3090,7 +3102,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       <div class="tw-m" id="twMean"></div>
       <div class="tw-ex" id="twEx"></div>
       <div class="tw-watch" id="twWatch" hidden></div>
-      <div class="note-actions"><button class="pill-btn pill-green" type="button" id="twSave">+ Save to My words</button></div>
+      <div class="note-actions"><button class="pill-btn pill-green" type="button" id="twSave">+ Save to My notebook</button></div>
     </div>
     <div class="card today-thought">
       <span class="tag td-tag2">Thought for today</span>
@@ -3116,8 +3128,8 @@ html.cs-calm .cs-rxpal button{transition:none}
   <div class="card cn-editor">
     <div class="cn-top"><label for="freeNotes" class="cn-date" id="cnToday">Today</label><span class="count" id="freeSaved">Your draft is saved as you type</span></div>
     <textarea id="freeNotes" placeholder="Write your notes for today's class: corrections, things to practice, questions for next class…"></textarea>
-    <div class="note-actions"><button class="swap" type="button" id="cnDraft" title="Keep what you've written here, so you can keep adding to it during class">💾 Save draft</button><button class="pill-btn pill-green" type="button" id="cnSave" title="Add this note to My class notes, find its new words for you, and start a fresh one">📥 Move to my notes + ✨ find words</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
-    <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here (and in your account if you're signed in). When the class is over, press <b>Move to my notes</b>: Hibi files it and finds the new words and expressions in it, ready to add to My words.</p>
+    <div class="note-actions"><button class="swap" type="button" id="cnDraft" title="Keep what you've written here, so you can keep adding to it during class">💾 Save draft</button><button class="pill-btn pill-green" type="button" id="cnSave" title="Add this note to your class notes in My notebook, find its new words for you, and start a fresh one">📥 Move to my notes + ✨ find words</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
+    <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here (and in your account if you're signed in). When the class is over, press <b>Move to my notes</b>: Hibi files it and finds the new words and expressions in it, ready to add to My notebook.</p>
     <div id="cnSuggest" class="cn-sug" hidden aria-live="polite"></div>
   </div>
   </div></div>
@@ -3170,8 +3182,9 @@ html.cs-calm .cs-rxpal button{transition:none}
 
 <!-- ============ MY WORDS ============ -->
 <section class="view" id="v-words" hidden>
-  <h1>My <em>words</em></h1>
-  <p class="lede">Every word you save, newest first. Practice them with flashcards or import a list you already have.</p>
+  <h1>My <em>notebook</em></h1>
+  <div class="cn-tabs nb-tabs" role="tablist" aria-label="My notebook"><button type="button" role="tab" data-go="words" aria-selected="true">Aa Words</button><button type="button" role="tab" data-go="classnotes" aria-selected="false">✏️ Class notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Summaries</button></div>
+  <p class="lede">Every word you save, newest first. Practice them with flashcards, or paste a list (or your notes from class) and ✨ Hibi finds the words.</p>
   <div id="slotAwPage" class="page-slot"></div>
   <p class="ai-status" id="aiStatus" hidden aria-live="polite"></p>
   <div class="note-actions" style="margin:4px 0 14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiClean" title="Step 1: fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" id="aiFill" title="Step 2: fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap w-goflash" type="button" id="wGoFlash">Practice with flashcards →</button></div>
@@ -3216,7 +3229,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     </div>
   </div>
   <div class="list-head">
-    <h2 style="margin:0">My words <span class="count" id="wCount"></span></h2>
+    <h2 style="margin:0">Your words <span class="count" id="wCount"></span></h2>
     <div class="list-tools">
       <input id="wSearch" type="search" placeholder="Search my words…" aria-label="Search my words" autocomplete="off">
       <select id="wSort" class="w-sort" aria-label="Sort my words"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">A → Z</option><option value="za">Z → A</option></select>
@@ -3236,8 +3249,8 @@ html.cs-calm .cs-rxpal button{transition:none}
 
 <!-- ============ CLASS NOTES ============ -->
 <section class="view" id="v-classnotes" hidden>
-  <h1>My class <em>notes</em></h1>
-  <div class="cn-tabs" role="tablist" aria-label="Class notes"><button type="button" role="tab" data-go="classnotes" aria-selected="true">✏️ My notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Weekly summaries</button></div>
+  <h1>My <em>notebook</em></h1>
+  <div class="cn-tabs nb-tabs" role="tablist" aria-label="My notebook"><button type="button" role="tab" data-go="words" aria-selected="false">Aa Words</button><button type="button" role="tab" data-go="classnotes" aria-selected="true">✏️ Class notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Summaries</button></div>
   <p class="lede">Write today's notes here or on your Home page. Every note you save shows up below, newest first.</p>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
   <div id="slotCnPage" class="page-slot"></div>
@@ -3253,9 +3266,9 @@ html.cs-calm .cs-rxpal button{transition:none}
 
 <!-- ============ TRANSLATOR ============ -->
 <section class="view" id="v-notebook" hidden>
-  <h1>My class <em>notes</em></h1>
-  <div class="cn-tabs" role="tablist" aria-label="Class notes"><button type="button" role="tab" data-go="classnotes" aria-selected="false">✏️ My notes</button><button type="button" role="tab" data-go="notebook" aria-selected="true">📓 Weekly summaries</button></div>
-  <p class="lede">The same notes, grouped by week, with a short summary of each week: the main topics, corrections to remember and new expressions. Tap <b>+ Save</b> to add an expression to your words. To write a new note, go to <b>✏️ My notes</b>.</p>
+  <h1>My <em>notebook</em></h1>
+  <div class="cn-tabs nb-tabs" role="tablist" aria-label="My notebook"><button type="button" role="tab" data-go="words" aria-selected="false">Aa Words</button><button type="button" role="tab" data-go="classnotes" aria-selected="false">✏️ Class notes</button><button type="button" role="tab" data-go="notebook" aria-selected="true">📓 Summaries</button></div>
+  <p class="lede">The same notes, grouped by week, with a short summary of each week: the main topics, corrections to remember and new expressions. Tap <b>+ Save</b> to add an expression to your words. To write a new note, go to <b>✏️ Class notes</b>.</p>
   <div class="note-actions" style="margin-bottom:12px"><button class="pill-btn" type="button" id="nbMonthBtn" hidden>✨ Summarize this month</button></div>
   <p class="muted" id="nbAiMsg" hidden style="font-size:14px">The summaries use AI, which is still loading or isn't available right now. Your notes are below.</p>
   <div id="nbMonth"></div>
@@ -3368,7 +3381,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const sec=s=>{ if(s.type==="list") return `<section class="lx-sec"><h3>${esc(s.h)}</h3><ul>${s.items.map(t=>`<li>${md(t)}</li>`).join("")}</ul></section>`;
       if(s.type==="fixes") return `<section class="lx-sec"><h3>${esc(s.h)}</h3><div class="lx-fixes">${s.rows.map(r=>`<div class="lx-fix"><div class="said"><small>You said</small><s>${md(r.said)}</s></div><div class="try"><small>Try instead</small><span>${md(r.try)}</span></div>${r.why?`<div class="why">${md(r.why)}</div>`:""}</div>`).join("")}</div>${s.bonus?`<p class="lx-bonus"><b>Bonus:</b> ${md(s.bonus)}</p>`:""}</section>`;
       if(s.type==="vocab"){ const un=s.items.filter(v=>!have.has(v.w.toLowerCase().trim())).length;
-        return `<section class="lx-sec"><div class="lx-sech"><h3>${esc(s.h)}</h3>${un?`<button type="button" class="ch-go" data-lxsaveall="1">＋ Save all ${un} to My words</button>`:""}</div><div class="lx-voc">${s.items.map((v,n)=>{ const okw=have.has(v.w.toLowerCase().trim()); return `<div class="lx-w"><div><b>${esc(v.w)}</b>${v.pos?` <span class="lx-pos">${esc(v.pos)}</span>`:""}${v.tr?`<span class="lx-tr">${esc(v.tr)}</span>`:""}${v.ex?`<small>“${esc(v.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-lxw='${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}' ${okw?"disabled":""}>${okw?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></section>`; }
+        return `<section class="lx-sec"><div class="lx-sech"><h3>${esc(s.h)}</h3>${un?`<button type="button" class="ch-go" data-lxsaveall="1">＋ Save all ${un} to My notebook</button>`:""}</div><div class="lx-voc">${s.items.map((v,n)=>{ const okw=have.has(v.w.toLowerCase().trim()); return `<div class="lx-w"><div><b>${esc(v.w)}</b>${v.pos?` <span class="lx-pos">${esc(v.pos)}</span>`:""}${v.tr?`<span class="lx-tr">${esc(v.tr)}</span>`:""}${v.ex?`<small>“${esc(v.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-lxw='${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}' ${okw?"disabled":""}>${okw?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></section>`; }
       return `<section class="lx-sec"><h3>${esc(s.h)}</h3>${String(s.body||"").split(/\n{2,}/).map(par=>{ const ls=par.split("\n"); return ls.every(x=>/^\s*[-•]/.test(x))?`<ul>${ls.map(x=>`<li>${md(x.replace(/^\s*[-•]\s*/,""))}</li>`).join("")}</ul>`:`<p>${ls.map(md).join("<br>")}</p>`; }).join("")}</section>`; };
     return `<div class="lx" data-lesson-id="${esc(L.id)}"><button type="button" class="ch-tab lx-back" data-lxback="1">← Back to My coaching</button>
       <header class="lx-head ch-tint ${L.kind==="guide"?"ch-a":"ch-s"}"><div class="ch-k">${L.kind==="guide"?"📄 Study guide":"📼 Class recap"} · ${fd(L.date)}</div><h2>${esc(L.title)}</h2>${L.topic?`<p class="lx-topic"><b>Topic:</b> ${md(L.topic)}</p>`:""}${L.nutshell?`<p class="lx-nut">${md(L.nutshell)}</p>`:""}
@@ -3396,8 +3409,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     const o=t.closest("[data-lxopt]"); if(o){ const li=o.closest("[data-k]"), k=li.dataset.k, [i,j]=k.split("-").map(Number), it=L.exercises[i].items[j], n=+o.dataset.lxopt, p=lprog()[L.id]||{}; p.ans=p.ans||{}; p.ok=p.ok||{}; if(p.ok[k]===true) return; p.ans[k]=n; p.ok[k]=n===it.a; lesFinish(L,p); return; }
     const c=t.closest("[data-lxcheck]"); if(c){ lesCheck(L,+c.dataset.lxcheck); return; }
     const sh=t.closest("[data-lxshow]"); if(sh){ const k=sh.closest("[data-k]").dataset.k, p=lprog()[L.id]||{}; p.show=p.show||{}; p.show[k]=true; lsave(L.id,p); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
-    const w=t.closest("[data-lxw]"); if(w){ let x={}; try{ x=JSON.parse(w.dataset.lxw); }catch(er){} if(window.csAddWord&&window.csAddWord(x.w,x.tr,x.ex)&&window.toast) window.toast("Saved to My words ✓"); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
-    if(t.closest("[data-lxsaveall]")){ let n=0; (L.sections||[]).filter(s=>s.type==="vocab").forEach(s=>s.items.forEach(x=>{ if(window.csAddWord&&window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; })); if(n&&window.toast) window.toast(`Saved ${n} words to My words ✓`); const y=window.scrollY; render(); window.scrollTo(0,y); return; } });
+    const w=t.closest("[data-lxw]"); if(w){ let x={}; try{ x=JSON.parse(w.dataset.lxw); }catch(er){} if(window.csAddWord&&window.csAddWord(x.w,x.tr,x.ex)&&window.toast) window.toast("Saved to My notebook ✓"); const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+    if(t.closest("[data-lxsaveall]")){ let n=0; (L.sections||[]).filter(s=>s.type==="vocab").forEach(s=>s.items.forEach(x=>{ if(window.csAddWord&&window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; })); if(n&&window.toast) window.toast(`Saved ${n} words to My notebook ✓`); const y=window.scrollY; render(); window.scrollTo(0,y); return; } });
   /* if the page reloads (an update, a sync) while a recap is open, open it again where they were */
   addEventListener("pagehide",()=>{ if(openLes&&location.hash==="#coaching"&&!window.__csViewAsMode) try{ sessionStorage.setItem(LES_P,openLes); sessionStorage.setItem("cs-les-y",String(Math.round(scrollY))); }catch(e){} });
   /* typing keeps the answer even before "Check" (so a re-render never loses it) */
@@ -3496,7 +3509,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 
         ${(rc.heads||[]).length?`<div class="ch-rc-heads"><h4>📌 Don’t forget</h4><ul>${rc.heads.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
         </div>
-        ${voc.length?`<div class="ch-rc-wbox"><h4>✨ New words <span class="muted">(${voc.length})</span>${unsaved?`<button type="button" class="ch-go ch-rc-all" data-rcall="1">＋ Save all ${unsaved} to My words</button>`:""}${voc.length>2?'<span class="ch-rc-hint">scroll →</span>':""}</h4><div class="ch-rc-words" role="list">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w" role="listitem"><div><b>${esc(x.w)}</b>${x.tr?`<span class="muted">${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
+        ${voc.length?`<div class="ch-rc-wbox"><h4>✨ New words <span class="muted">(${voc.length})</span>${unsaved?`<button type="button" class="ch-go ch-rc-all" data-rcall="1">＋ Save all ${unsaved} to My notebook</button>`:""}${voc.length>2?'<span class="ch-rc-hint">scroll →</span>':""}</h4><div class="ch-rc-words" role="list">${voc.map((x,i)=>{ const ok=have.has(x.w.toLowerCase().trim()); return `<div class="ch-rc-w" role="listitem"><div><b>${esc(x.w)}</b>${x.tr?`<span class="muted">${esc(x.tr)}</span>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}</div><button type="button" class="ch-rc-save" data-rcw="${i}" ${ok?"disabled":""}>${ok?"✓ Saved":"＋ Save"}</button></div>`; }).join("")}</div></div>`:""}
         </div>`;
     }
     const lpAll=lprog(), lBadge=g=>{ const L=lesOf(v).find(x=>x.id===g.lesson); if(!L) return ""; const tot=lesTotal(L), p=lpAll[L.id]||{}, sc=lesScore(L,p); return tot?(p.done?' <span class="ch-lbadge done">✅ done</span>':sc?` <span class="ch-lbadge">${sc}/${tot}</span>`:` <span class="ch-lbadge new">✏️ ${tot} exercises</span>`):""; };
@@ -3536,7 +3549,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       body=`<p class="muted" style="font-size:14px">${rc2?"Recaps and notes from your classes.":"Grammar and study guides Noa made for you, with exercises."}</p><div class="ch-guides">${(rc2?gRecap:gStudy).map(g=>gItem(g,rc2?"📼":"📄",`ch-tint ${rc2?"ch-s":"ch-a"} ch-guide`)).join("")}</div>`;
     } else {
       let w=(v.words||[]).slice(); if(wSort==="new") w.reverse(); else if(wSort==="az") w.sort((a,b)=>a.w.localeCompare(b.w,"en",{sensitivity:"base"})); else if(wSort==="za") w.sort((a,b)=>b.w.localeCompare(a.w,"en",{sensitivity:"base"}));
-      body=w.length?`<p class="muted" style="font-size:14px">Words from your English Journey sheet. Your own saved words are in <b>My words</b>.</p><div class="ch-sort">Order: ${[["new","Newest added"],["old","Oldest added"],["az","A → Z"],["za","Z → A"]].map(([k,l])=>`<button type="button" class="ch-tab ch-a" data-ws="${k}" aria-pressed="${wSort===k}">${l}</button>`).join("")}</div><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${w.map(x=>`<tr><td><b>${esc(x.w)}</b></td><td>${esc(x.tr)}</td><td>${esc(x.ex)}</td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No words here yet. Your saved words are in <b>My words</b>.</p>';
+      body=w.length?`<p class="muted" style="font-size:14px">Words from your English Journey sheet. Your own saved words are in <b>My notebook</b>.</p><div class="ch-sort">Order: ${[["new","Newest added"],["old","Oldest added"],["az","A → Z"],["za","Z → A"]].map(([k,l])=>`<button type="button" class="ch-tab ch-a" data-ws="${k}" aria-pressed="${wSort===k}">${l}</button>`).join("")}</div><div class="ch-scroll"><table class="ch-tbl"><thead><tr><th>Word</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${w.map(x=>`<tr><td><b>${esc(x.w)}</b></td><td>${esc(x.tr)}</td><td>${esc(x.ex)}</td></tr>`).join("")}</tbody></table></div>`:'<p class="muted">No words here yet. Your saved words are in <b>My notebook</b>.</p>';
     }
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
@@ -3550,7 +3563,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(er){}
     const list=(one?[voc[+one.dataset.rcw]]:voc).filter(x=>x&&!have.has(x.w.toLowerCase().trim())); let n=0;
     list.forEach(x=>{ if(window.csAddWord(x.w,x.tr||"",x.ex||"")) n++; });
-    if(n>1&&typeof window.toast==="function") window.toast(`Saved ${n} words to My words ✓`);
+    if(n>1&&typeof window.toast==="function") window.toast(`Saved ${n} words to My notebook ✓`);
     render(); });
   box.addEventListener("click",e=>{ const v=window.__csHubView; const pr=e.target.closest("[data-repprint]"); if(pr&&v){ const r=repsOf(v).find(x=>x.id===pr.dataset.repprint); if(r) printRep(r); return; }
     const b=e.target.closest("[data-rep]"); if(!b||!v) return; const id=b.dataset.rep;
@@ -4095,7 +4108,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=r.vocab||[], ph=r.phrases||[]; if(!recs.length&&!voc.length&&!ph.length&&!r.notes) return "";
     return `<div class="cl-recap"><h3>🎬 ${L("After class","Después de clase")}</h3>${recs.length?`<div class="cl-recs">${recs.map(x=>`<a class="cl-rec" href="${esc(x.url)}" target="_blank" rel="noopener"><span>▶</span><b>${esc(x.title||L("Recording","Grabación"))}</b>${x.wd!=null?`<small>${WD[x.wd]}</small>`:""}</a>`).join("")}</div>`:""}
       ${r.notes?`<p class="cl-rnote">${esc(r.notes)}</p>`:""}
-      ${voc.length?`<h4>📚 ${L("Words from class","Palabras de la clase")}</h4><ul class="cl-voc">${voc.map((v,i)=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
+      ${voc.length?`<h4>📚 ${L("Words from class","Palabras de la clase")}</h4><ul class="cl-voc">${voc.map((v,i)=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></li>`).join("")}</ul>`:""}
       ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}</div>`; }
   /* weekly challenge: Noa's prompt + members' answers (filled by the community script) */
   function chalHTML(p,cur){ const c=p.challenge; if(!c||!(c.title||c.prompt)) return "";
@@ -4197,7 +4210,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}" data-cls="${esc(c.name||"")}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${voc.length?` · 📚 ${voc.length} ${L("words","palabras")}`:""}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
       <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span>${ytId(x.url)?"":`<a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">${L("Open the recording","Abrir la grabación")}<span class="cl-ext" aria-hidden="true">↗</span></a>`}${planBtn(it.date,x.wd)}<button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
         ${diffHTML(x)}${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:`<p class="cl-planintro" data-pintro="${esc(it.date)}"></p>`}
-        ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></li>`).join("")}</ul>`:""}
+        ${voc.length?`<h4>📚 ${L("Words from that week","Palabras de esa semana")}</h4><ul class="cl-voc">${voc.map(v=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></li>`).join("")}</ul>`:""}
         ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
   let RFOCUS=null;
   /* ---------- 🎧 the weekly club podcast (episodes stored in clubStats/_podcast: Noa adds, members listen) ---------- */
@@ -4218,7 +4231,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       ${older.length?`<details class="cl-podold"><summary>${L("Earlier episodes","Episodios anteriores")} (${older.length})</summary>${older.map(x=>`<details class="cl-rcard"><summary><span class="cl-rico" aria-hidden="true">🎧</span><span class="cl-rt"><b>${esc(x.title||L("Club podcast","Podcast del club"))}</b><small>${L("Week of","Semana del")} ${esc(fd(x.date))}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span></summary><div class="cl-rbody">${diffHTML(x)}${podPlayer(x.url)}<div class="cl-stars" data-stars="pr_${esc(x.id)}"></div>${podNotes(x)}${noa?`<button type="button" class="cs-act" data-poddel="${esc(x.id)}">✕ Remove</button>`:""}</div></details>`).join("")}</details>`:""}${add}</div>`; }
   function podNotes(e){ return e.notes||(e.vocab||[]).length?`<details class="cl-podn"><summary>📝 ${L("Show notes","Notas del episodio")}${(e.vocab||[]).length?` <span class="muted">· ${e.vocab.length} ${L("words","palabras")}</span>`:""}</summary>${e.notes?`<p>${esc(e.notes).replace(/\n/g,"<br>")}</p>`:""}${podVocab(e)}</details>`:""; }
   function podVocab(e){ const v=(e.vocab||[]).filter(x=>x&&x.w); if(!v.length) return "";
-    return `<div class="cl-pvh"><b>📚 ${L("Words from this episode","Palabras de este episodio")}</b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Save all to My words","Guardar todas en Mis palabras")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`).join("")}</div>`; }
+    return `<div class="cl-pvh"><b>📚 ${L("Words from this episode","Palabras de este episodio")}</b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></div>`).join("")}</div>`; }
   function weekOf(t){ const d=new Date(t); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function podNewHTML(){ const e=pods()[0]; if(!e||Date.now()-new Date(e.date+"T12:00:00").getTime()>10*864e5) return "";
     return `<button type="button" class="cl-catch cl-podnew" data-clt="recordings"><span aria-hidden="true">🎧</span><span><b>${L("New podcast episode:","Nuevo episodio del podcast:")}</b> ${esc(e.title||L("this week in the club","esta semana en el club"))}</span><span class="cl-mego">→</span></button>`; }
@@ -5041,7 +5054,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       const main=`<div><div class="lb-top">${c.emoji?`<span class="lb-emo" aria-hidden="true">${esc(c.emoji)}</span>`:""}<div class="lb-id">${esc(c.text||"")}</div></div>
         ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
         ${c.english?`<span class="lb-eq">🇺🇸 ${esc(c.english)}</span>`:""}${c.uk?`<span class="lb-eq uk">🇬🇧 ${esc(c.uk)}</span>`:""}
-        ${save?`<div><button type="button" class="cl-addw lb-save" data-clw="${esc(JSON.stringify({w:c.text,tr:c.english||c.meaning||"",ex:c.example||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`:""}</div>`;
+        ${save?`<div><button type="button" class="cl-addw lb-save" data-clw="${esc(JSON.stringify({w:c.text,tr:c.english||c.meaning||"",ex:c.example||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></div>`:""}</div>`;
       return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}${c.style==="chip"?" chip":""}">${main}${qs?`<div class="lb-qs"><div class="lb-ql">${L("Let's use it!","¡Usémoslo!")}</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>`:""}</div>`; };
     return `<div class="lb-head"><div><div class="lb-lbl">Noa's English Club${b.date?` · ${esc(new Date(b.date+"T12:00:00").toLocaleDateString(L("en-US","es-CL"),{weekday:"long",month:"long",day:"numeric"}))}`:""}</div>
         <h2 class="lb-h">${esc(t.join(" "))} <span class="lb-ul">${esc(last)}</span></h2>${b.subtitle?`<div class="lb-sub">${esc(b.subtitle)}</div>`:""}</div>
@@ -5055,7 +5068,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{ if(!BOARDDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BOARDDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
       const bd=(BOARDDOC[wk].boards||{})[wd]; if(!bd){ toast(L("Couldn’t find it.","No la encontré.")); return; }
       closeBoard(); document.documentElement.classList.add("lb-lock");
-      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${b.dataset.hasplan?`<button type="button" class="lb-mat" data-lbplan="${esc(b.dataset.board)}">📄 <span class="lb-long">${L("Full class material","Material completo de la clase")}</span><span class="lb-short">${L("Material","Material")}</span></button>`:""}${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My words","Guardar todas en Mis palabras")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
+      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${b.dataset.hasplan?`<button type="button" class="lb-mat" data-lbplan="${esc(b.dataset.board)}">📄 <span class="lb-long">${L("Full class material","Material completo de la clase")}</span><span class="lb-short">${L("Material","Material")}</span></button>`:""}${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
       const x=document.querySelector(".lb-x"); if(x) x.focus();
       window.__lbFrom=b;
     }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
@@ -5077,11 +5090,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   document.addEventListener("click",e=>{ const ov=e.target.closest(".lb-ov"); if(!ov) return;
     const one=e.target.closest(".lb-save[data-clw]"); if(one){ e.stopPropagation(); if(one.disabled) return; let x={}; try{ x=JSON.parse(one.dataset.clw); }catch(er){}
       const ok=lbAdd(x); one.disabled=true; one.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
-      lbPop(one,ok?L("Saved to My words ✓","Guardada en Mis palabras ✓"):L("Already in My words","Ya está en Mis palabras")); return; }
+      lbPop(one,ok?L("Saved to My notebook ✓","Guardada en Mi cuaderno ✓"):L("Already in My notebook","Ya está en Mi cuaderno")); return; }
     const all=e.target.closest("[data-lball]"); if(all){ e.stopPropagation(); if(all.disabled) return; let n=0;
       ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); });
       all.disabled=true; all.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ All in your words","✓ Ya están todas");
-      lbPop(all,n?L(`${n} ${n===1?"word":"words"} added to My words ✓`,`${n} ${n===1?"palabra agregada":"palabras agregadas"} a Mis palabras ✓`):L("They're all in My words already","Ya estaban todas en Mis palabras")); return; } },true);
+      lbPop(all,n?L(`${n} ${n===1?"word":"words"} added to My notebook ✓`,`${n} ${n===1?"palabra agregada":"palabras agregadas"} a Mi cuaderno ✓`):L("They're all in My notebook already","Ya estaban todas en Mi cuaderno")); return; } },true);
   /* the first lines of a class's plan intro (for recordings that have no summary yet) */
   async function planIntro(date){ if(G()||!date) return ""; const wk=weekOf(new Date(date+"T12:00:00")), wd=new Date(date+"T12:00:00").getDay();
     if(!PLANDOC[wk]){ const r=await api("GET","/clubStats/_plans_"+wk.replace(/-/g,"")); PLANDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
@@ -5316,7 +5329,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <div class="out placeholder" id="trOut" aria-live="polite">Your translation shows up here.</div>
       <p class="tr-note" id="trNote" hidden></p>
       <div class="tr-say" id="trSay" hidden><span class="tr-say-l">How to say it</span><span class="tr-say-p" id="trSayP"></span><button class="say" type="button" id="trSayBtn" aria-label="Listen">🔊</button></div>
-      <div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" id="trSave" type="button">+ Save to My words</button></div>
+      <div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" id="trSave" type="button">+ Save to My notebook</button></div>
     </div>
   </div>
   <div class="note dismissible">Tip: translate whole ideas, not word by word. And try saying it in English <i>first</i>, then check. That's how you actually get faster.</div>
@@ -6020,12 +6033,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
-  <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>My words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
+  <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
 <div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prThTile" data-modtile="th"><span class="pr-ico" aria-hidden="true">🏠</span><b>There is / there are</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prCouTile" data-modtile="cou"><span class="pr-ico" aria-hidden="true">💪</span><b>Could vs was able to</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIqTile" data-modtile="iq"><span class="pr-ico" aria-hidden="true">❓</span><b>Indirect questions</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
-<div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My <em>words</em></h1><p class="lede">Practice the words you saved in <b>My words</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
-<div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My words</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
+<div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My notebook</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
+<div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My notebook</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
 <div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="psTitle"><em>Past simple</em></h1><p class="lede">Short stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Etapas cortas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
 <div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
@@ -6117,7 +6130,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     </ul>
     <p class="esb">Tu compañero de inglés: referencia rápida, cuaderno personal y práctica.</p>
     <div class="wl-hibi"><b lang="ja">日々</b><div><b>Why “Hibi”?</b> <i>Hibi</i> (日々) is Japanese for <b>“day by day”</b>. That's how a language grows: a few new words, one class note, one short practice round, every day. Small steps, done daily, add up.</div></div>
-    <p class="wl-tip">🔎 <b>Tip:</b> <b>double-click</b> any word on Hibi (on your phone, <b>press and hold</b>) to see what it means and save it to <b>My words</b>. Select a few words to look up a phrase.</p>
+    <p class="wl-tip">🔎 <b>Tip:</b> <b>double-click</b> any word on Hibi (on your phone, <b>press and hold</b>) to see what it means and save it to <b>My notebook</b>. Select a few words to look up a phrase.</p>
   </div>
 
   <div class="wl-step" data-step="1" hidden>
@@ -6130,11 +6143,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   </div>
 
   <div class="wl-step" data-step="2" hidden>
-    <h2><em>My words</em>: the heart of it 💛</h2>
+    <h2><em>My notebook</em>: the heart of it 💛</h2>
     <p class="wl-lede">The words you save are the most important part of Hibi. Everything else builds on them.</p>
     <ul class="wl-list">
       <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My words</b> and it's organized for you, with meanings and examples.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too: write them during class, ✨ Hibi finds the new words for you, and <b>📓 Summaries</b> sum up each week.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice them with flashcards.</b> The ones you miss come back sooner, so you spend your time on the hard ones.</div></li>
     </ul>
   </div>
@@ -6146,7 +6160,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect), in stages from easy to harder. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
-      <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My words</b> to practice just those.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My notebook</b> to practice just those.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> pick 3, 5 or 8 rounds a week (bigger goal, bigger reward for your buddy). Lessons and saying phrases out loud count too, and 4 weeks in a row unlock a 🔥 campfire. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
     </ul>
   </div>
@@ -6988,7 +7002,7 @@ function fcList(){
 function fcSetMode(m){ fcSet=m; try{ localStorage.setItem("cs-fcset",m); }catch(e){} fcOrder=[]; fcShuffle(); renderFlash(); }
 const FC_EMPTY={new20:"",week:"You haven't saved any words in the last 7 days. Add a few on your <b>Home</b> page, or practice a different set.",
   hard:"No hard words yet. Words you mark <b>✗ Didn't know</b> show up here, so you can practice just those.",
-  pick:"You haven't picked any words yet. Go to <b>My words</b>, tap <b>Choose words</b>, tick the ones you want and press <b>Practice these</b>."};
+  pick:"You haven't picked any words yet. Go to <b>My notebook</b>, tap <b>Choose words</b>, tick the ones you want and press <b>Practice these</b>."};
 function fcShuffle(){ const l=fcList(); fcOrder=l.map(x=>x.id).sort(()=>Math.random()-.5).sort((a,b)=>fcBoxOf(a)-fcBoxOf(b)); fcIdx=0; fcFlipped=false; }
 /* tap words on the back of a flashcard to save them (tap neighbours to make a phrase) */
 let fcSel=[];
@@ -6999,7 +7013,7 @@ function fcPaintSel(){
   const bar=document.getElementById("fcPickBar"); if(!bar) return;
   if(!fcSel.length){ bar.hidden=true; return; }
   const phrase=fcSel.slice().sort((a,b)=>a-b).map(i=>toks[i].textContent).join(" ");
-  bar.hidden=false; bar.innerHTML='<span class="fc-pick-w">“'+esc(fcClean(phrase))+'”</span><span role="button" tabindex="0" class="fc-pick-add" data-fcadd>+ Save to My words</span><span role="button" tabindex="0" class="fc-pick-x" data-fcclear aria-label="Clear">×</span>';
+  bar.hidden=false; bar.innerHTML='<span class="fc-pick-w">“'+esc(fcClean(phrase))+'”</span><span role="button" tabindex="0" class="fc-pick-add" data-fcadd>+ Save to My notebook</span><span role="button" tabindex="0" class="fc-pick-x" data-fcclear aria-label="Clear">×</span>';
 }
 fcBack.addEventListener("click",e=>{
   const tok=e.target.closest("[data-tok]"), add=e.target.closest("[data-fcadd]"), clr=e.target.closest("[data-fcclear]");
@@ -9374,7 +9388,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   try{ const sm=sessionStorage.getItem("cs-mod"); if(MODS[sm]) M=sm; }catch(e){}
   const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab"};
   const par=c=>c==="ps"&&M==="ed"?"pron":PARENT[c];
-  const PNAME={gram:"Grammar",words:"My words",vocab:"Word packs",pron:"Pronunciation"};
+  const PNAME={gram:"Grammar",words:"Your words",vocab:"Word packs",pron:"Pronunciation"};
   const PSLUG={gram:"grammar",words:"my-words",vocab:"word-packs",pron:"pronunciation",mis:"my-mistakes",irr:"irregular-verbs",flash:"flashcards",sent:"sentences",say:"say-it",level:"level-check"};
   const mslug=id=>String(MODS[id].name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   function hashFor(c){ if(!c) return "#quiz"; if(c==="vset") c="vocab"; const p=par(c), me=c==="ps"?mslug(M):PSLUG[c]; return "#quiz/"+(p&&PSLUG[p]?PSLUG[p]+"/":"")+(me||""); }
@@ -9567,7 +9581,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   function renderSet(){
     const box=$("vsetArea"), v=VSET[vsCur]; if(!box||!v) return; const o=vprog()[v.id]||{}, have=haveW();
     const ttl=$("vsetTitle"); if(ttl) ttl.innerHTML=v.ico+" <em>"+esc(v.t)+"</em>";
-    const saveBtn=i=>{ const it=v.items[i], on=have.has(it.w.toLowerCase()); return '<button class="swap" type="button" data-vsave="'+i+'"'+(on?" disabled":"")+'>'+(on?"✓ In My words":"+ Save to My words")+'</button>'; };
+    const saveBtn=i=>{ const it=v.items[i], on=have.has(it.w.toLowerCase()); return '<button class="swap" type="button" data-vsave="'+i+'"'+(on?" disabled":"")+'>'+(on?"✓ In My notebook":"+ Save to My notebook")+'</button>'; };
     const top='<div class="card vs-top"><div><b>'+v.items.length+' words</b> · '+stars(o.s|0)+(o.b!=null?' <span class="muted">best '+o.b+'/10</span>':"")+'</div><div class="note-actions"><button class="pill-btn pill-green" type="button" data-vqstart="'+v.id+'">✏️ Quiz · 10 questions</button>'+(vsMode==="cards"?'<button class="swap" type="button" data-vlist>☰ See the list</button>':'<button class="swap" type="button" data-vlearn="'+v.id+'">🃏 Flashcards</button>')+'</div></div>';
     if(vsMode==="cards"){
       const it=v.items[vsI];
@@ -9809,7 +9823,7 @@ window.addEventListener("offline",()=>toast("You're offline. Your saved words an
       (d.loading?'<p class="muted lk-p">Looking it up…</p>':
        d.err?'<p class="muted lk-p">'+esc(d.err)+'</p>':
        (d.meaning?'<p class="lk-p">'+esc(d.meaning)+'</p>':"")+(d.es?'<p class="lk-es">🇪🇸 '+esc(d.es)+'</p>':"")+(d.ex?'<p class="lk-ex">“'+esc(d.ex)+'”</p>':""))+
-      '<div class="lk-acts">'+(have?'<span class="lk-have">✓ In My words</span>':'<button class="pill-btn pill-green" type="button" data-lksave>+ Save to My words</button>')+
+      '<div class="lk-acts">'+(have?'<span class="lk-have">✓ In My notebook</span>':'<button class="pill-btn pill-green" type="button" data-lksave>+ Save to My notebook</button>')+
       (window.csSpeak?'<button class="swap" type="button" data-lksay aria-label="Listen">🔊</button>':"")+
       '<a class="swap" href="https://www.wordreference.com/es/translation.asp?tranword='+encodeURIComponent(d.w||cur)+'" target="_blank" rel="noopener">WordReference ↗</a></div>';
     box._d=d;
@@ -10118,7 +10132,7 @@ window.csSuggestWords=async function(text,box,manual){
   box.innerHTML='<div class="cn-sug-top"><b>✨ I found '+list.length+' new '+(list.length===1?"word":"words")+' in your note</b><button class="tip-x" type="button" data-sug="x" aria-label="Close">×</button></div>'+
     (own?'<label class="cs-chk" style="margin:6px 0 8px"><input type="checkbox" data-sugown checked> <span><b>Keep what I wrote in my notes</b><small>Your own meanings and examples stay as you wrote them ('+own+(own===1?' word':' words')+'). If one has a mistake, you get the corrected version instead.</small></span></label>':'')+
     '<div class="imp-list">'+list.map((x,i)=>{ const mine=(x.mn&&String(x.mn).trim())||(x.en&&String(x.en).trim()), shownM=(!x.bad&&x.mn&&String(x.mn).trim())?x.mn:x.m; return '<label class="imp-row"><input type="checkbox" data-sugi="'+i+'" checked><span><b>'+esc(x.w)+'</b>'+(x.pos?' <span class="pos">'+esc(cleanPos(x.pos))+'</span>':'')+(shownM?' · '+esc(shownM):'')+(x.def?'<small>'+esc(x.def)+'</small>':'')+(mine?'<small class="sug-own">'+(x.bad?'✏️ Your note had a small mistake, so the corrected version will be saved':'📝 Your own '+(x.mn&&x.en?'meaning and example':x.mn?'meaning':'example')+' will be kept')+'</small>':'')+'</span></label>'; }).join("")+'</div>'+
-    '<div class="note-actions"><button class="pill-btn pill-green" type="button" data-sug="add">Save to My words</button><button class="swap" type="button" data-sug="x">No thanks</button></div>';
+    '<div class="note-actions"><button class="pill-btn pill-green" type="button" data-sug="add">Save to My notebook</button><button class="swap" type="button" data-sug="x">No thanks</button></div>';
 };
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-sug]"); if(!b) return;
@@ -10134,7 +10148,7 @@ document.addEventListener("click",e=>{
   saveWordsNow(); box.hidden=true; box.innerHTML="";
   if(!n){ toast("Nothing new to add"); return; }
   if(window.csUse) try{ window.csUse("word"); }catch(er){}
-  const d=csDialog('<h3 style="margin-top:0">✅ Saved to My words</h3><p>'+n+(n===1?' new word is':' new words are')+' now in <b>My words</b>:</p><ul class="cs-added">'+added.map(w=>'<li>'+esc(w)+'</li>').join("")+'</ul><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="go">See my words</button><button class="swap" type="button" data-a="ok">OK</button></div>');
+  const d=csDialog('<h3 style="margin-top:0">✅ Saved to My notebook</h3><p>'+n+(n===1?' new word is':' new words are')+' now in <b>My notebook</b>:</p><ul class="cs-added">'+added.map(w=>'<li>'+esc(w)+'</li>').join("")+'</ul><div class="note-actions"><button class="pill-btn pill-green" type="button" data-a="go">See my words</button><button class="swap" type="button" data-a="ok">OK</button></div>');
   d.el.addEventListener("click",ev=>{ const b2=ev.target.closest("[data-a]"); if(!b2) return; d.close(); if(b2.dataset.a==="go"&&typeof go==="function") go("words",true); });
   try{ document.dispatchEvent(new CustomEvent("cs-wordsadded",{detail:{n}})); }catch(er){}
 });
@@ -10398,7 +10412,7 @@ document.getElementById("cnSave").addEventListener("click",()=>{
   setTimeout(()=>{ if(window.csSuggestWords) window.csSuggestWords(text); },400);
   const ok=LS.set("ncs-classnotes",cnotes);
   freeNotes.value=""; LS.set("ncs-freenotes",""); freeSaved.textContent="Your draft is saved as you type";
-  renderCN(); toast(ok?"📥 Moved to My class notes":"Saved for now, but this browser blocks storage");
+  renderCN(); toast(ok?"📥 Moved to your class notes in My notebook":"Saved for now, but this browser blocks storage");
 });
 function renderCN(){
   const n=cnotes.length;
@@ -10501,7 +10515,7 @@ function renderBack(){
   if(prev){
     const nb=document.querySelector('nav.side .navgroup:not(.starred) .navbtn[data-go="'+prev.id+'"]');
     const nbt=nb?(()=>{ const c=nb.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl,svg').forEach(x=>x.remove()); return c.textContent.trim(); })():"";
-    const name= prev.id==="notes"?"Home":prev.id==="classnotes"?"My class notes":prev.id==="words"?"My words":prev.id==="changelog"?"What's new":(nbt||prev.id);
+    const name= prev.id==="notes"?"Home":prev.id==="classnotes"?"My notebook":prev.id==="words"?"My notebook":prev.id==="changelog"?"What's new":(nbt||prev.id);
     const h1=document.querySelector("#v-"+prev.id+" h1"); const h1t=h1?(()=>{ const c=h1.cloneNode(true); c.querySelectorAll(".lvl,.badge,small,span[class*='lvl']").forEach(x=>x.remove()); return c.textContent.trim(); })():"";
     document.getElementById("backTxt").textContent=(name===prev.id&&h1t)?h1t:name;
     link.setAttribute("aria-label","Back to "+name);
@@ -10539,7 +10553,7 @@ function go(id,push){
   const cnB=document.getElementById("cnEditorBlock"), awB=document.getElementById("addWordBlock");
   if(cnB){ const to=document.getElementById(id==="classnotes"?"slotCnPage":"slotCnHome"); if(cnB.parentNode!==to) to.appendChild(cnB); }
   if(awB){ const to=document.getElementById(id==="words"?"slotAwPage":"slotAwHome"); if(awB.parentNode!==to) to.appendChild(awB); }
-  document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", (b.dataset.go===id||(id==="notebook"&&b.dataset.go==="classnotes"))?"true":"false"));
+  document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", ((b.dataset.go===id&&!b.classList.contains("nb-merged"))||((id==="notebook"||id==="classnotes")&&b.dataset.go==="words"))?"true":"false"));
   const cur=document.querySelector('.navbtn[aria-current="true"]'); if(cur&&cur.scrollIntoView&&window.innerWidth<=900) cur.scrollIntoView({block:"nearest",inline:"center"});
   try{localStorage.setItem("eep-view",id);}catch(e){}
   if(push&&!fromPop){ const U=id==="notes"?location.pathname+location.search:(window.__csDeep&&window.__csDeep[id]?window.__csDeep[id].hash():"#"+id); try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"",U); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"",U); else history.pushState({cs:1,v:id,n:++histN},"",U);}catch(e){} }
@@ -10943,9 +10957,9 @@ function runSearch(){
   if(q.length<2){ gRes.hidden=true; gIn.setAttribute("aria-expanded","false"); gHits=[]; return; }
   const per={}, hits=[];
   const mine=allWords().filter(x=>[x.w,x.m,x.e].some(s=>norm(s||"").includes(q)));
-  if(mine.length) hits.push({id:"words",label:"My words",text:mine.slice(0,3).map(x=>x.w+(x.m?" = "+x.m:"")).join(" · ")+(mine.length>3?" …":""),notes:true});
+  if(mine.length) hits.push({id:"words",label:"My notebook · words",text:mine.slice(0,3).map(x=>x.w+(x.m?" = "+x.m:"")).join(" · ")+(mine.length>3?" …":""),notes:true});
   const myNotes=cnotes.filter(x=>norm(x.text).includes(q));
-  if(myNotes.length) hits.push({id:"classnotes",label:"My class notes · "+myNotes.length,text:myNotes[0].text,cn:true});
+  if(myNotes.length) hits.push({id:"classnotes",label:"My notebook · class notes · "+myNotes.length,text:myNotes[0].text,cn:true});
   INDEX.filter(e=>norm(e.text).includes(q)).sort((a,b)=>a.kind-b.kind).forEach(e=>{
     if(hits.length>=9) return;
     per[e.id]=(per[e.id]||0)+1;
@@ -11026,6 +11040,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-notebook", date:"November 17, 2026", title:"Meet My notebook", items:[
+    ["📒","Words + class notes, together","<b>My words</b> and <b>My class notes</b> are now one place in the menu: <b>My notebook</b>. Nothing was lost.","words"],
+    ["🗂️","Three tabs","<b>Aa Words</b> (everything you save), <b>✏️ Class notes</b> (write during class, ✨ Hibi finds the new words) and <b>📓 Summaries</b> (each week, summed up).","classnotes"]
+  ]},
   {id:"2026-1117-goal2", date:"November 17, 2026", title:"A weekly goal that fits you", items:[
     ["🎯","Choose your goal","In <b>Practice</b>, pick <b>Easy</b> (3 rounds), <b>Steady</b> (5) or <b>Strong</b> (8) a week. Bigger goal, bigger reward: up to +12 🍪 and +12 friendship.",""],
     ["📖","More things count","Reading a <b>Learn it first</b> lesson and saying phrases out loud now count toward your goal too, not only practice rounds.",""],
@@ -11375,7 +11393,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117121325"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117123946"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -12666,6 +12684,35 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-wkgoal]")
     put("ncs-star-tr",1); let st=[]; try{ st=JSON.parse(localStorage.getItem("ncs-stars")||"[]")||[]; }catch(er){}
     if(!st.includes("translate")){ st.push("translate"); put("ncs-stars",st); if(window.__csListsReload) window.__csListsReload(); } }catch(e){} }
   document.addEventListener("cs-auth",()=>setTimeout(go,4000)); setTimeout(go,6000); })();
+</script>
+<script>
+/* step175: one-time pop-up: My words + My class notes are now My notebook */
+(function(){ const K="ncs-nb-intro";
+  const seen=()=>{ try{ return !!localStorage.getItem(K); }catch(e){ return true; } };
+  const mark=()=>{ try{ localStorage.setItem(K,JSON.stringify(1)); window.__csOnSet&&window.__csOnSet(K); }catch(e){} };
+  const busy=()=>[...document.querySelectorAll('.cs-dlg,.bd-modal,#whatsnew,#welcome')].some(x=>!x.hidden&&x.getClientRects().length)||(window.__csBusy&&window.__csBusy());
+  let tries=0;
+  function show(){
+    if(seen()||window.__csViewAsMode||window.__csPreview) return;
+    if(!localStorage.getItem("ncs-welcomed")){ mark(); return; }   /* new here: nothing was renamed for them */
+    if(busy()||document.hidden){ if(++tries<60) setTimeout(show,3000); return; }
+    mark();
+    const d=window.csDialog(`<div class="nb-intro"><h3>📒 Meet <em>My notebook</em></h3>
+      <p style="margin:0">Your <b>words</b> and your <b>class notes</b> are now together in one place: <b>My notebook</b> in the menu (it used to be <b>My words</b> and <b>My class notes</b>).</p>
+      <p style="margin:10px 0 4px">It has three tabs:</p>
+      <ul><li><span><b>Aa Words:</b> every word you save, same as before.</span></li>
+      <li><span><b>✏️ Class notes:</b> write during class and ✨ Hibi finds the new words for you.</span></li>
+      <li><span><b>📓 Summaries:</b> each week of notes, summed up.</span></li></ul>
+      <p class="muted" style="margin:0 0 4px;font-size:14px">Nothing was lost: all your words and notes are right where you left them.</p>
+      <p class="esb" style="margin:0">Tus palabras y tus apuntes de clase ahora están juntos en <b>My notebook</b>. ¡No se perdió nada!</p>
+      <div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" type="button" data-nbgo>Open My notebook</button><button class="swap" type="button" data-nbok>Got it</button></div></div>`,{cls:"nb-intro-dlg"});
+    d.el.querySelector("[data-nbgo]").addEventListener("click",()=>{ d.close(); if(window.csGo) window.csGo("words"); else location.hash="#words"; });
+    d.el.querySelector("[data-nbok]").addEventListener("click",()=>d.close());
+  }
+  let started=false; const start=()=>{ if(started) return; started=true; setTimeout(show,5000); };
+  window.addEventListener("cs-auth",e=>{ if(e.detail&&e.detail.signedIn) start(); });
+  if(window.__csAuth) start();
+})();
 </script>
 
 <script type="module">

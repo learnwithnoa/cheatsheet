@@ -442,7 +442,7 @@
           ${tog("csSpace", "More space", "Extra room between lines, words and paragraphs.")}
           ${tog("csBionic", "Bionic reading", "Bolds the start of each word. Some people find it easier to read; try it and see.")}
           ${tog("csRulerT", "Reading ruler", "A highlighted band that follows your mouse or finger, to keep your place.")}
-          ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click a word, or select a few words," : "Press and hold a word") + " to see what it means and save it to My words.") : ""}
+          ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click a word, or select a few words," : "Press and hold a word") + " to see what it means and save it to My notebook.") : ""}
         </div>
         <div class="cs-sec"><h4>Page tools</h4>
           ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on. Tap ☰ Menu at the top left to change pages." : "Hides the student list so you only see one student.")}
