@@ -1362,6 +1362,20 @@ html.cs-calm .cl-rxpick{animation:none}
 .pl-show{all:unset;cursor:pointer;margin-left:8px;font:700 12.5px var(--body);color:var(--royal);padding:3px 10px;border-radius:999px;border:1.5px solid var(--line)}
 .pl-ans{display:block;margin-top:4px;color:#16a34a;font-size:13.5px}
 
+/* step161: stages left, test out right */
+.ps-lesson{max-width:980px;margin:0 0 16px}
+.ps-cols{display:grid;grid-template-columns:minmax(0,680px) minmax(240px,284px);gap:16px;align-items:start;max-width:980px}
+.ps-cols.one{grid-template-columns:minmax(0,680px)}
+.ps-main{min-width:0}
+.ps-aside{position:sticky;top:76px}
+.ps-aside .ps-to{max-width:none;margin:0;flex-direction:column;align-items:stretch;gap:12px;padding:16px;
+  background:linear-gradient(160deg,color-mix(in srgb,#8E5CD9 16%,var(--surface)),color-mix(in srgb,#8E5CD9 6%,var(--surface)));border:1.5px solid color-mix(in srgb,#8E5CD9 55%,transparent)}
+.ps-aside .ps-to>div{display:flex;flex-direction:column;gap:6px}
+.ps-aside .ps-to b{font-size:15.5px;line-height:1.3}
+.ps-aside .ps-to .pill-btn{align-self:stretch;text-align:center;justify-content:center}
+.ps-aside .ps-to.done{background:color-mix(in srgb,var(--green) 10%,var(--surface));border-color:var(--green)}
+@media (max-width:980px){.ps-cols{grid-template-columns:minmax(0,1fr)}.ps-aside{position:static}.ps-list,.ps-goal{max-width:none}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -9082,13 +9096,13 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of '+(md.the!=null?md.the:"the ")+esc(md.lname)+'</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
       :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at '+(md.the!=null?md.the:"the ")+esc(md.lname)+'?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span></div>'+
         (triedToday?'<button class="pill-btn" type="button" disabled>Try again tomorrow</button>':'<button class="pill-btn pill-green" type="button" data-tostart>Take the test</button>')+'</div>';
-    box.innerHTML=(window.__psLesson?window.__psLesson(M):"")+toCard+'<div class="ps-list">'+md.stages.map(st=>{
+    box.innerHTML=(window.__psLesson?window.__psLesson(M):"")+'<div class="ps-cols'+(toCard?"":" one")+'"><div class="ps-main"><div class="ps-list">'+md.stages.map(st=>{
       const open=unlocked(st.n), best=p.b[st.n];
       return '<div class="card ps-stage'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?st.n:"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
         (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":testedOut()?"🎓 tested out":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
         (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
     }).join("")+'</div>'+
-    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p>';
+    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p></div>'+(toCard?'<aside class="ps-aside">'+toCard+'</aside>':"")+'</div>';
   }
 
   /* ---- a round ---- */
@@ -11003,7 +11017,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117003115"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117003854"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
