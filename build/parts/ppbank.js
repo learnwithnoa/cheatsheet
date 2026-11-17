@@ -297,6 +297,21 @@ I ___ two coffees so far. (drink)|have drunk/have had|drink,drinks,has drunk
 Oh no, I ___ my keys! I can't find them anywhere. (lose)|have lost/~lost|lose,loses,has lost
 Wait, I've ___ them! They were in my bag. (find)|found|finded,find,finding
 I've just ___ the door, and now I'm ready for work. (lock)|locked|lock,locking,locks
+`},
+ {n:8, adv:true, t:"Advanced: been, gone & -ing", sub:"been vs gone, I've been waiting, the first time I've…", why:"Present perfect at B2–C1: been vs gone, the continuous form and fixed patterns.", es:"Present perfect nivel B2–C1: been vs gone, la forma continua y estructuras fijas.", q:`
+She isn't here. She ___ to the dentist. (go)|has gone/'s gone|has been,have gone,has went|Gone to = she went and she's there now.|Gone to = fue y está allá ahora.
+I ___ to Japan three times. I love it! (be)|have been/'ve been|have gone,has been,am|Been to = you went and came back.|Been to = fuiste y volviste.
+I'm exhausted. I ___ all morning. (clean)|have been cleaning/'ve been cleaning/~have cleaned|am cleaning,have cleaning,has been cleaning|An activity until now, with a result you can see (tired) → present perfect continuous.|Una actividad hasta ahora con un resultado que se nota (cansado) → present perfect continuous.
+I ___ her for ten years. (know)|have known/'ve known|have been knowing,know,am knowing|Know is a state verb: no -ing, even with "for".|Know es un verbo de estado: sin -ing, aunque haya "for".
+It's the first time I ___ octopus. (eat)|have eaten/'ve eaten|eat,am eating,have eat|It's the first time + present perfect.|It's the first time + present perfect (en español usamos presente).
+That's the best pizza I've ever ___. (have)|had|have,having,has|After "I've ever", use the participle.|Después de "I've ever", usa el participio.
+I've lived here since I ___ a kid. (be)|was|have been,am,were|Since + a moment in the past → past simple after since.|Since + un momento pasado → past simple después de since.
+It ___ two years since we last met. (be)|has been/'s been|have been,is being,be|It's been + time + since…|It's been + tiempo + since… = han pasado…
+Call me as soon as you ___ the report. (finish)|have finished/'ve finished/~finish|finished,will finish,are finishing|After as soon as / when (future), use the present perfect (or the present), not will.|Después de as soon as / when (futuro), usa present perfect (o presente), no will.
+Breaking news: the president ___. He announced it at 9 a.m. (resign)|has resigned|resigning,have resigned,was resigned|News → present perfect first; details (when) → past simple.|Noticia → primero present perfect; detalles (cuándo) → past simple.
+How long ___ you been waiting?|have|did,are,has|How long + have you been + -ing?|How long + have you been + -ing?
+I ___ three emails this morning, and it's only 10 a.m. (write)|have written/'ve written/~wrote|have been writing,am writing,write|How many → simple form, not continuous. The morning isn't over.|Cuántos → forma simple, no continua. La mañana no ha terminado.
+We ___ for an hour, and we still haven't found the street. (walk)|have been walking/'ve been walking/~have walked|are walking,walk,have been walk|How long an activity has been going on → present perfect continuous.|Cuánto tiempo lleva una actividad → present perfect continuous.
 `}
 ];
 PP_STAGES.forEach(st=>{

@@ -1376,6 +1376,19 @@ html.cs-calm .cl-rxpick{animation:none}
 .ps-aside .ps-to.done{background:color-mix(in srgb,var(--green) 10%,var(--surface));border-color:var(--green)}
 @media (max-width:980px){.ps-cols{grid-template-columns:minmax(0,1fr)}.ps-aside{position:static}.ps-list,.ps-goal{max-width:none}}
 
+/* step162: advanced bonus stage */
+.ps-advhd{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin:10px 2px 0}
+.ps-advhd b{font-size:15px}.ps-advhd span{color:var(--muted);font-size:13px}
+.ps-stage.ps-adv{border:1.5px solid color-mix(in srgb,#f59e0b 55%,transparent);background:linear-gradient(160deg,color-mix(in srgb,#f59e0b 12%,var(--surface)),var(--surface))}
+.ps-stage.ps-adv .ps-num{background:color-mix(in srgb,#f59e0b 22%,transparent)}
+.ps-stage.ps-adv.locked{opacity:.75}
+
+/* step163 */
+.pl-tr{grid-template-columns:minmax(28px,auto) 1fr 1fr}
+.pl-sign{white-space:nowrap;font-size:13px}
+.pl-tr .pl-sign:only-child{font-size:16px}
+@media (max-width:560px){.pl-tr{grid-template-columns:minmax(24px,auto) 1fr}.pl-tr>span:last-child{grid-column:2}}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -6098,7 +6111,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Time to <em>practice</em> 🎯</h2>
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find four parts:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>present simple</b>, <b>past simple</b> and <b>present perfect</b>, in stages from easy to harder. Some start with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish). Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like the <b>present simple</b>, <b>past simple</b> and <b>present perfect</b>, in stages from easy to harder. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My words</b> to practice just those.</div></li>
@@ -7681,6 +7694,20 @@ At lunch, I ___ coffee on my new shirt. (spill)|spilled/spilt|spill,spilld,was s
 In the afternoon, my computer ___ working. (stop)|stopped|stoped,stop,stopt
 I ___ home at 8 p.m., really tired. (get)|got|getted,gotten,get
 But then my roommate ___ pizza for dinner, so the day ended well! (make)|made|maked,make,maded
+`},
+ {n:8, adv:true, t:"Advanced: used to, wishes & polite past", sub:"used to vs would, If I had…, I was wondering…", why:"Past forms at B2–C1: past habits, the earlier past and the 'unreal' past.", es:"Formas del pasado nivel B2–C1: hábitos pasados, el pasado anterior y el pasado 'irreal'.", q:`
+When I was a kid, I ___ play outside every day. (past habit)|used to/would|use to,was used to,am used to|Past habits: used to (or would).|Hábitos del pasado: used to (o would).
+I ___ have long hair, but now it's short. (past state)|used to|would,use to,was used to|For past states (have, be, live), use used to, not would.|Para estados del pasado (have, be, live), usa used to, no would.
+___ you use to live in Valparaíso?|Did|Do,Were,Have|Question: Did you use to…? (no -d on use).|Pregunta: Did you use to…? (use sin -d).
+It's late. It's time we ___ home. (go)|went|will go,going,gone|It's time + person + past simple = we should do it now.|It's time + persona + past simple = deberíamos hacerlo ya.
+If I ___ more time, I'd travel more. (have)|had|have,would have,will have|Second conditional: if + past simple, would + verb.|Segundo condicional: if + past simple, would + verbo.
+I wish I ___ how to swim. (know)|knew|know,would know,have known|Wish about now → past simple.|Wish sobre el presente → past simple.
+I'd rather you ___ tell anyone.|didn't|doesn't,won't,not|I'd rather + person + past simple.|I'd rather + persona + past simple.
+I ___ if you could help me with something. (wonder, polite)|was wondering/wondered/~wonder|am wonder,wonders,was wonder|Past forms sound more polite: I was wondering if…|El pasado suena más amable: I was wondering if…
+I ___ to call you, but I forgot. (mean)|meant|meaned,mean,have meant|Mean → meant.|Mean → meant.
+She ___ her keys, so she couldn't get in. (lose)|had lost/lost|has lost,loses,was lose|Something that happened before another past moment → past perfect (or past simple).|Algo que pasó antes de otro momento pasado → past perfect (o past simple).
+By the time we arrived, the movie ___. (start)|had started/had already started/~started|has started,starts,was start|Before another past moment → past perfect.|Antes de otro momento pasado → past perfect.
+I ___ dinner when the lights went out. (cook)|was cooking|cooked,am cooking,have cooked|Background action (in progress) → past continuous; the interruption → past simple.|Acción de fondo (en progreso) → past continuous; la interrupción → past simple.
 `}
 ];
 PS_STAGES.forEach(st=>{
@@ -8091,6 +8118,21 @@ I ___ two coffees so far. (drink)|have drunk/have had|drink,drinks,has drunk
 Oh no, I ___ my keys! I can't find them anywhere. (lose)|have lost/~lost|lose,loses,has lost
 Wait, I've ___ them! They were in my bag. (find)|found|finded,find,finding
 I've just ___ the door, and now I'm ready for work. (lock)|locked|lock,locking,locks
+`},
+ {n:8, adv:true, t:"Advanced: been, gone & -ing", sub:"been vs gone, I've been waiting, the first time I've…", why:"Present perfect at B2–C1: been vs gone, the continuous form and fixed patterns.", es:"Present perfect nivel B2–C1: been vs gone, la forma continua y estructuras fijas.", q:`
+She isn't here. She ___ to the dentist. (go)|has gone/'s gone|has been,have gone,has went|Gone to = she went and she's there now.|Gone to = fue y está allá ahora.
+I ___ to Japan three times. I love it! (be)|have been/'ve been|have gone,has been,am|Been to = you went and came back.|Been to = fuiste y volviste.
+I'm exhausted. I ___ all morning. (clean)|have been cleaning/'ve been cleaning/~have cleaned|am cleaning,have cleaning,has been cleaning|An activity until now, with a result you can see (tired) → present perfect continuous.|Una actividad hasta ahora con un resultado que se nota (cansado) → present perfect continuous.
+I ___ her for ten years. (know)|have known/'ve known|have been knowing,know,am knowing|Know is a state verb: no -ing, even with "for".|Know es un verbo de estado: sin -ing, aunque haya "for".
+It's the first time I ___ octopus. (eat)|have eaten/'ve eaten|eat,am eating,have eat|It's the first time + present perfect.|It's the first time + present perfect (en español usamos presente).
+That's the best pizza I've ever ___. (have)|had|have,having,has|After "I've ever", use the participle.|Después de "I've ever", usa el participio.
+I've lived here since I ___ a kid. (be)|was|have been,am,were|Since + a moment in the past → past simple after since.|Since + un momento pasado → past simple después de since.
+It ___ two years since we last met. (be)|has been/'s been|have been,is being,be|It's been + time + since…|It's been + tiempo + since… = han pasado…
+Call me as soon as you ___ the report. (finish)|have finished/'ve finished/~finish|finished,will finish,are finishing|After as soon as / when (future), use the present perfect (or the present), not will.|Después de as soon as / when (futuro), usa present perfect (o presente), no will.
+Breaking news: the president ___. He announced it at 9 a.m. (resign)|has resigned|resigning,have resigned,was resigned|News → present perfect first; details (when) → past simple.|Noticia → primero present perfect; detalles (cuándo) → past simple.
+How long ___ you been waiting?|have|did,are,has|How long + have you been + -ing?|How long + have you been + -ing?
+I ___ three emails this morning, and it's only 10 a.m. (write)|have written/'ve written/~wrote|have been writing,am writing,write|How many → simple form, not continuous. The morning isn't over.|Cuántos → forma simple, no continua. La mañana no ha terminado.
+We ___ for an hour, and we still haven't found the street. (walk)|have been walking/'ve been walking/~have walked|are walking,walk,have been walk|How long an activity has been going on → present perfect continuous.|Cuánto tiempo lleva una actividad → present perfect continuous.
 `}
 ];
 PP_STAGES.forEach(st=>{
@@ -8306,6 +8348,20 @@ overwhelmed|d|o-ver-WELMD
 motivated|id|MO-ti-vay-tid
 naked|id|NAY-kid|A rule-breaker! As an adjective, naked has the extra syllable.
 wicked|id|WI-kid|A rule-breaker! As an adjective, wicked has the extra syllable.
+`},
+ {n:8, adv:true, t:"Advanced: rule-breakers & used to", sub:"naked, beloved, crooked, used to", q:`
+naked|id|NAY-kid|An adjective rule-breaker: it keeps the extra syllable.
+beloved|id|bi-LUV-id|Before a noun (my beloved dog), it's usually bi-LUV-id.
+a learned professor|id|LER-nid|As an adjective (very educated), it's LER-nid. The verb (I learned) is "lernd".
+an aged parent|id|AY-jid|As an adjective (old), it's AY-jid. The verb (he aged) is "ayjd".
+crooked|id|KRU-kid|An adjective rule-breaker (not straight).
+ragged|id|RA-gid|An adjective rule-breaker (old and torn).
+rugged|id|RU-gid|An adjective rule-breaker (rough, strong).
+wretched|id|RE-chid|An adjective rule-breaker (very unhappy or bad).
+I used to swim|t|yoost-tuh|In "used to", the -ed is a /t/ that joins the "to": "yoost-tuh".
+coughed|t|koft|The -gh sounds like f, a quiet sound.
+breathed|d|breethd|The th in breathe is voiced (like "the"), so -ed is /d/.
+mixed|t|mikst|The x sounds like "ks", a quiet sound.
 `}
 ];
 ED_STAGES.forEach(st=>{
@@ -8480,6 +8536,20 @@ On Sundays, we ___ my grandma. (visit)|visit|visits,visiting,are visit
 She ___ the best empanadas in Chile! (cook)|cooks|cook,cooking,is cook
 She always ___: “Eat more!” (say)|says|say,saying,is say
 ___ you have a favorite day of the week? (do)|Do|Does,Are,Is
+`},
+ {n:8, adv:true, t:"Advanced: future, states & emphasis", sub:"The train leaves at 8, when I get home, I do like it", why:"Present simple at B2–C1: timetables, future time clauses, state verbs and emphatic do.", es:"Presente simple nivel B2–C1: horarios, oraciones de tiempo futuro, verbos de estado y do enfático.", q:`
+The train ___ at 7:45 tomorrow morning. (leave)|leaves/~is leaving/~will leave|is leave,will leaving,leave|Timetables → present simple, even for the future.|Horarios → presente simple, aunque sea futuro.
+I'll call you when I ___ home. (get)|get|will get,getting,gets|After when (talking about the future), use the present simple, not will.|Después de when (hablando del futuro), presente simple, no will.
+This soup ___ amazing! (taste)|tastes|is tasting,taste,tasting|Taste (how the soup is) is a state → no -ing.|Taste (cómo es la sopa) es un estado → sin -ing.
+I ___ you're right about that. (think)|think|am thinking,thinks,am think|Think = my opinion → present simple.|Think = mi opinión → presente simple.
+I don't eat meat, but I ___ like fish. (do, for emphasis)|do|does,am,doing|Emphatic do: "I do like fish" = I really like it.|Do enfático: "I do like fish" = sí me gusta.
+If it ___ tomorrow, we'll stay home. (rain)|rains|will rain,raining,rain|First conditional: if + present simple, will + verb.|Primer condicional: if + presente simple, will + verbo.
+Here ___ the bus! Run! (come)|comes|come,is come,coming|"Here comes…" uses the present simple for what's happening right now.|"Here comes…" usa presente simple para lo que pasa justo ahora.
+As soon as the class ___, I'll send you the link. (end)|ends|will end,ending,end|After as soon as (future), present simple.|Después de as soon as (futuro), presente simple.
+This bag ___ to my sister, not me. (belong)|belongs|is belonging,belong,belonging|Belong is a state verb: no -ing.|Belong es un verbo de estado: sin -ing.
+What ___ this word mean?|does|do,is,means|Mean is a state verb: What does it mean?|Mean es un verbo de estado: What does it mean?
+I ___ (not / understand) what you mean.|don't understand/do not understand|am not understanding,doesn't understand,not understand|Understand is a state verb: no -ing.|Understand es un verbo de estado: sin -ing.
+She ___ (have) breakfast right now, so call her later.|is having/'s having|has,have,is have|Have = eat is an action, so it can take -ing. Have = own can't.|Have = comer es una acción, así que puede ir con -ing. Have = tener, no.
 `}
 ];
 PRS_STAGES.forEach(st=>{
@@ -8649,6 +8719,21 @@ We need ___ a decision soon. (make)|to make|making,make,made
 Let's avoid ___ too much money. (spend)|spending|to spend,spend,spent
 Does anyone mind ___ the notes? (write)|writing|to write,write,wrote
 Great! I look forward to ___ the results. (see)|seeing|to see,see,saw
+`},
+ {n:8, adv:true, t:"Advanced: remember doing vs remember to do", sub:"stop, try, regret, be used to, it's worth", why:"-ing at B2–C1: verbs that change meaning, be used to, and fixed -ing patterns.", es:"-ing nivel B2–C1: verbos que cambian de significado, be used to y estructuras fijas con -ing.", q:`
+I remember ___ him at a party years ago. (meet)|meeting|to meet,meet,met|remember + -ing = a memory of something you did.|remember + -ing = un recuerdo de algo que hiciste.
+Remember ___ the door when you leave! (lock)|to lock|locking,lock,locked|remember + to = don't forget to do it.|remember + to = no olvides hacerlo.
+He stopped ___ two years ago. He feels great now. (smoke)|smoking|to smoke,smoke,smoked|stop + -ing = quit doing it.|stop + -ing = dejar de hacerlo.
+I'm not used to ___ up so early. (get)|getting|get,got,to get|be used to + -ing = be accustomed to.|be used to + -ing = estar acostumbrado a.
+This museum is worth ___. (visit)|visiting|to visit,visit,visited|It's worth + -ing = it's a good idea to do it.|It's worth + -ing = vale la pena.
+I can't help ___ when I see that video. (laugh)|laughing|to laugh,laugh,laughed|can't help + -ing = I can't stop myself.|can't help + -ing = no puedo evitarlo.
+I regret ___ to the party last night. I'm so tired today. (go)|going/having gone|to go,go,went|regret + -ing = I'm sorry I did it.|regret + -ing = me arrepiento de haberlo hecho.
+If the computer freezes, try ___ it off and on again. (turn)|turning/~to turn|turned,turn to,turns|try + -ing = do it as an experiment to see if it works.|try + -ing = probar a ver si funciona.
+She doesn't like ___ what to do. (tell, passive)|being told|telling,be told,been told|Passive -ing: being + participle.|-ing pasivo: being + participio.
+After ___ the whole book, I watched the movie. (read)|having read/reading|to read,read,have read|After + -ing ("having + participle" stresses it finished first).|After + -ing ("having + participio" recalca que terminó antes).
+Would you mind ___ the music down? (turn)|turning|to turn,turn,turned|mind + -ing.|mind + -ing.
+My car needs ___. It's so dirty. (wash)|washing/to be washed|to wash,wash,washed|need + -ing = it needs to be done (passive meaning).|need + -ing = necesita que lo hagan (sentido pasivo).
+I have trouble ___ new words. (remember)|remembering|to remember,remember,remembered|have trouble / difficulty + -ing.|have trouble / difficulty + -ing = me cuesta.
 `}
 ];
 ING_STAGES.forEach(st=>{
@@ -8806,6 +8891,20 @@ Today she's 85, and she ___ still cook for twenty people. (now)|can/is able to|c
 Last month she ___ walk to the river by herself! (one success)|was able to/managed to|could,can,were able to
 By next summer, I ___ talk to her neighbours in their dialect. (future)|will be able to/'ll be able to|will can,can,could
 I'm sure I ___ understand her stories better then. (future)|will be able to/'ll be able to|will can,can,could
+`},
+ {n:8, adv:true, t:"Advanced: managed to, could have…", sub:"I managed to, you could have called, it can't have been", why:"Ability and possibility at B2–C1: managed to, could have, can't have and being able to.", es:"Habilidad y posibilidad nivel B2–C1: managed to, could have, can't have y being able to.", q:`
+The exam was hard, but I ___ to pass. (succeed)|managed/~was able|manage,could,was manage|One specific success → managed to (or was able to), not could.|Un logro puntual → managed to (o was able to), no could.
+You ___ called me! I would have helped.|could have/could've|can have,could has,could of|Could have + participle = it was possible, but you didn't do it.|Could have + participio = era posible, pero no lo hiciste.
+He ___ stolen it. He was with me all day. (impossible)|can't have/couldn't have|mustn't have,can't has,couldn't of|Can't / couldn't have = I'm sure it didn't happen.|Can't / couldn't have = estoy seguro de que no pasó.
+I'd love ___ speak English without thinking.|to be able to|to can,being able,can|After love / want / need → to be able to (never "to can").|Después de love / want / need → to be able to (nunca "to can").
+___ able to work from home is a big advantage.|Being/~To be|Be,To can,Can|As the subject of a sentence → being able to.|Como sujeto de la oración → being able to.
+We were so tired that we ___ stay awake.|couldn't/could not|can't,didn't could,couldn't to|General past inability → couldn't.|Incapacidad en el pasado → couldn't.
+I ___ have finished earlier if you'd helped me.|could/~would|can,would can,could to|Could have + participle = an unreal past possibility.|Could have + participio = una posibilidad que no se dio.
+___ you possibly close the window? (very polite)|Could|Should,Must,Did|"Could you possibly…?" is a very polite request.|"Could you possibly…?" es una petición muy amable.
+The firefighters ___ to rescue everyone. (one specific success)|were able/managed|could,can,are able|One specific success in the past → were able to / managed to.|Un logro puntual en el pasado → were able to / managed to.
+I haven't ___ to sleep well since I moved. (be able)|been able|could,be able,can|Present perfect: haven't been able to.|Present perfect: haven't been able to.
+They ___ have gotten lost. Let's call them. (maybe)|might/may/could|can,must to,should of|Might / may / could have = maybe it happened.|Might / may / could have = tal vez pasó.
+You should ___ to see the mountains from the hotel. (be able)|be able|can,able,could|After a modal (should, might, will) → be able to.|Después de un modal (should, might, will) → be able to.
 `}
 ];
 COU_STAGES.forEach(st=>{
@@ -8963,6 +9062,20 @@ When I came back, ___ music and everyone was dancing. (past, uncountable)|there 
 ___ a problem with the neighbors? No, they came to the party too! (past question)|Was there|Were there,Is there,Had
 Sofía says ___ another party in December. (future)|there will be/there'll be|there is will,there will,will have
 I'm sure ___ enough ice next time! (future)|there will be/there'll be|there will,there is will,will have
+`},
+ {n:8, adv:true, t:"Advanced: there seems to be, there's been…", sub:"there must be, there used to be, there's no point", why:"There is/are at B2–C1: with modals, seem, used to and the present perfect.", es:"There is/are nivel B2–C1: con modales, seem, used to y el present perfect.", q:`
+There ___ to be a problem with the Wi-Fi. (seem)|seems|seem,are seem,seeming|There seems to be + singular.|There seems to be + singular = parece que hay.
+There ___ a lot of changes since you left. (be, present perfect)|have been|has been,were being,are been|Present perfect + plural: there have been.|Present perfect + plural: there have been.
+There ___ an accident on the highway. Traffic is terrible. (be)|has been/'s been/~was|have been,is been,was being|There has been = news with a result now.|There has been = noticia con un resultado ahora.
+There ___ be a cinema here, but now it's a supermarket.|used to|use to,was used to,would|There used to be = it existed in the past, not now.|There used to be = antes había, ahora no.
+There's no point ___ about it now. (worry)|worrying/in worrying|to worry,worry,worried|There's no point (in) + -ing.|There's no point (in) + -ing = no tiene sentido.
+There ___ have been a mistake. My name isn't on the list. (I'm almost sure)|must|musts,must to,can|There must have been = I'm almost sure it happened.|There must have been = estoy casi seguro de que pasó.
+There's bound ___ traffic at this time. (be)|to be|be,being,been|There's bound to be = there will definitely be.|There's bound to be = seguro que va a haber.
+There ___ (not / be) enough time, so we stopped.|wasn't/was not|weren't,isn't,hasn't|Time is uncountable → there wasn't.|Time es incontable → there wasn't.
+There ___ going to be a party on Friday.|is/'s|are,will,has|Future plan: there is going to be.|Plan futuro: there is going to be.
+I don't think there ___ any milk left.|is/'s|are,has,have|Milk is uncountable → is.|Milk es incontable → is.
+There ___ fewer people at the meeting than we expected.|were|was,had,is|People is plural, and it's the past → were.|People es plural y es pasado → were.
+There ___ no way I'm going out in this rain.|is/'s|are,be,has|There's no way… = it won't happen.|There's no way… = de ninguna manera.
 `}
 ];
 TH_STAGES.forEach(st=>{
@@ -9015,7 +9128,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
-  window.__csModInfo=()=>Object.values(MODS).map(md=>[md.id,md.stages.length]);
+  window.__csModInfo=()=>Object.values(MODS).map(md=>[md.id,md.stages.filter(st=>!st.adv).length]);
   const ITEM={}; Object.values(MODS).forEach(md=>md.stages.forEach(st=>st.items.forEach(q=>{ q.mod=md.id; ITEM[q.id]=q; }))); VOC_SETS.forEach(v=>v.qs.forEach(q=>ITEM[q.id]=q));
   const VSET={}; VOC_SETS.forEach(v=>VSET[v.id]=v);
   const vprog=()=>{ const v=LS.get("ncs-vocab",{}); return v&&typeof v==="object"?v:{}; };
@@ -9029,8 +9142,9 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   const testedOut=(id)=>{ const p=ps(id); return !!(p.to&&p.to.sc>=TOPASS); };
   const today=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
   const unlocked=n=>{ const p=ps(); return n===1||testedOut()||(p.b[n-1]|0)>=PASS||rec()[M]===n; };
-  const totalStars=(id)=>{ const p=ps(id); return MODS[id||M].stages.reduce((t,st)=>t+(p.s[st.n]|0),0); };
-  const allDone=(id)=>{ const p=ps(id); return testedOut(id)||MODS[id||M].stages.every(st=>(p.b[st.n]|0)>=PASS); };
+  const core=(id)=>MODS[id||M].stages.filter(st=>!st.adv);
+  const totalStars=(id)=>{ const p=ps(id); return core(id).reduce((t,st)=>t+(p.s[st.n]|0),0); };
+  const allDone=(id)=>{ const p=ps(id); return testedOut(id)||core(id).every(st=>(p.b[st.n]|0)>=PASS); };
   const mis=()=>{ const m=LS.get("ncs-mymis",{}); return m&&typeof m==="object"?m:{}; };
   const misList=()=>{ const m=mis(); return Object.keys(m).filter(id=>ITEM[id]).sort((a,b)=>(m[b].n-m[a].n)||(m[b].t-m[a].t)); };
   function noteAnswer(id,ok){
@@ -9057,7 +9171,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
       '<div class="pr-dots" aria-hidden="true">'+Array.from({length:GOAL},(_,i)=>'<i class="'+(i<w.n?"on":"")+'"></i>').join("")+'</div>'+
       '<p>'+(w.got?"Done for this week! 🎉 Your buddy got its reward. Keep going if you want, a new goal starts on Monday.":"Finish "+GOAL+" practice rounds this week (grammar or flashcards). Your buddy gets <b>+5 🍪</b> and <b>+5 friendship</b>.")+'</p>'+
       '<p class="esb">Meta semanal: termina '+GOAL+' rondas de práctica esta semana.</p>';
-    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.length*3; ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(r?' · <span class="pr-rec">'+(r==="all"?"⭐ Noa recommends this module":"Noa recommends stage "+r)+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
+    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.filter(st=>!st.adv).length*3; ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(r?' · <span class="pr-rec">'+(r==="all"?"⭐ Noa recommends this module":"Noa recommends stage "+r)+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
     const sc=$("prShortCount"); if(sc){ sc.textContent=Math.min(w.n,GOAL)+"/"+GOAL; sc.parentElement.classList.toggle("done",!!w.got); }
     const tm=$("prMisTile"); if(tm){ const n=misList().length; tm.querySelector(".pr-sub").textContent=n?n+(n===1?" question to review":" questions to review"):"Nothing to review yet"; }
   }
@@ -9098,11 +9212,14 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
         (triedToday?'<button class="pill-btn" type="button" disabled>Try again tomorrow</button>':'<button class="pill-btn pill-green" type="button" data-tostart>Take the test</button>')+'</div>';
     box.innerHTML=(window.__psLesson?window.__psLesson(M):"")+'<div class="ps-cols'+(toCard?"":" one")+'"><div class="ps-main"><div class="ps-list">'+md.stages.map(st=>{
       const open=unlocked(st.n), best=p.b[st.n];
+      if(st.adv) return '<div class="ps-advhd"><b>⭐ Advanced</b><span>B2–C1 · a bonus stage. You don’t need it to finish the module.</span></div><div class="card ps-stage ps-adv'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?"⭐":"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
+        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":open?"not tried yet":"pass stage "+(st.n-1)+" or test out")+'</small>'+
+        (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
       return '<div class="card ps-stage'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?st.n:"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
         (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":testedOut()?"🎓 tested out":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
         (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
     }).join("")+'</div>'+
-    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p></div>'+(toCard?'<aside class="ps-aside">'+toCard+'</aside>':"")+'</div>';
+    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.filter(st=>!st.adv).length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p></div>'+(toCard?'<aside class="ps-aside">'+toCard+'</aside>':"")+'</div>';
   }
 
   /* ---- a round ---- */
@@ -9219,7 +9336,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
 
   function finishTest(){
     const R=round, sc=R.score, pass=sc>=TOPASS, m=mods(), p=ps(), md=MD(), wasDone=allDone();
-    if(pass){ if(!p.to||sc>p.to.sc) p.to={sc,t:Date.now()}; md.stages.forEach(st=>{ p.s[st.n]=Math.max(p.s[st.n]|0,3); }); }
+    if(pass){ if(!p.to||sc>p.to.sc) p.to={sc,t:Date.now()}; md.stages.forEach(st=>{ if(!st.adv) p.s[st.n]=Math.max(p.s[st.n]|0,3); }); }
     p.r++; p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m);
     const finished=pass&&!wasDone;
     const box=area(); round=null;
@@ -10695,6 +10812,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-lessons-all", date:"November 17, 2026", title:"Lessons for every grammar module + an Advanced stage", items:[
+    ["📖","Learn it first, everywhere","Every grammar module now starts with a short lesson: <b>Basics</b> (A1–B1) and <b>Advanced</b> (B2–C1), in English or <b>Español</b>, with 🔊 examples and common mistakes.",""],
+    ["⭐","Stage 8: Advanced","Each module has a new bonus stage for B2–C1. It opens when you pass stage 7 (or test out). You don't need it to finish the module.",""]
+  ]},
   {id:"2026-1117-lesson", date:"November 17, 2026", title:"Learn it first: grammar lessons", items:[
     ["📖","Present perfect lesson","Open <b>Practice → Present perfect</b> and you'll find a short lesson before the stages: <b>Basics</b> (how to make it and when to use it, with examples and common mistakes) and <b>Advanced</b> for B2–C1. Switch it to <b>Español</b> anytime. More topics coming soon.",""]
   ]},
@@ -11017,7 +11138,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117003854"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117005035"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11730,13 +11851,13 @@ pp: {
     stage: { en: "Practice: Stage", es: "Practica: etapa" },
     wrong: { en: "Not", es: "No" }, right: { en: "Say", es: "Mejor" },
     show: { en: "Show answer", es: "Ver respuesta" },
-    advNote: { en: "For B2–C1. You don’t need this for most of the stages, but it helps you sound natural.", es: "Para nivel B2–C1. No lo necesitas para la mayoría de las etapas, pero te ayuda a sonar natural." },
+    advNote: { en: "For B2–C1. You don’t need it for stages 1–7, but it helps you sound natural. Stage 8 (Advanced) practices it once you pass stage 7 or test out.", es: "Para nivel B2–C1. No lo necesitas para las etapas 1–7, pero te ayuda a sonar natural. La etapa 8 (Avanzado) lo practica cuando apruebes la etapa 7 o des el examen para eximirte." },
     listen: { en: "Listen", es: "Escuchar" }
   };
   function block(b) {
     let h = `<div class="pl-b${b.key ? " key" : ""}"><h4>${T(b.h)}${b.stage ? `<span class="pl-st">${T(UI.stage)} ${b.stage}</span>` : ""}</h4>`;
     if (b.p) h += `<p>${T(b.p)}</p>`;
-    if (b.table) h += `<div class="pl-tbl">${b.table.map(r => `<div class="pl-tr"><span class="pl-sign">${r[0]}</span><span>${r[1]}</span><span>${r[2]}</span></div>`).join("")}</div>`;
+    if (b.table) h += `<div class="pl-tbl">${b.table.map(r => `<div class="pl-tr"><span class="pl-sign">${T(r[0])}</span><span>${T(r[1])}</span><span>${T(r[2])}</span></div>`).join("")}</div>`;
     if (b.note) h += `<p class="pl-note">💡 ${T(b.note)}</p>`;
     if (b.ex) h += `<ul class="pl-ex">${b.ex.map(e => `<li><button type="button" class="pl-say" data-plsay="${esc(strip(e[0]))}" aria-label="${T(UI.listen)}" title="${T(UI.listen)}">🔊</button><span><b>${esc(e[0])}</b>${lang() === "es" ? `<small>${esc(e[1])}</small>` : ""}</span></li>`).join("")}</ul>`;
     if (b.mis) h += `<ul class="pl-mis">${b.mis.map(m => `<li><span class="pl-x">✗ <s>${esc(m[0])}</s></span><span class="pl-ok">✓ <b>${esc(m[1])}</b></span><small>${esc(T(m[2]))}</small></li>`).join("")}</ul>`;
@@ -11767,6 +11888,362 @@ pp: {
     else if (t.dataset.plshow != null) { const a = t.nextElementSibling; if (a) a.hidden = false; t.hidden = true; }
   });
 })();
+
+</script>
+<script>
+/* ---------- "📖 Learn it" lessons for the other grammar modules (Nov 2026). Same shape as lesson_pp.js. ---------- */
+Object.assign(window.PS_LESSONS = window.PS_LESSONS || {}, {
+
+prs: {
+  name: { en: "Present simple", es: "Present simple" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "The present simple is for things that are <b>generally true</b>: habits, routines, facts, likes and opinions. Not for what’s happening right now.",
+           es: "El present simple es para lo que es <b>verdad en general</b>: hábitos, rutinas, hechos, gustos y opiniones. No para lo que está pasando justo ahora." } },
+    { h: { en: "How to make it", es: "Cómo se forma" }, stage: 1,
+      p: { en: "Use the base verb. With <b>he, she, it</b>, add <b>-s</b>.", es: "Se usa el verbo base. Con <b>he, she, it</b>, se agrega <b>-s</b>." },
+      table: [
+        ["+", "I / you / we / they <b>work</b>", "He / she / it <b>works</b>"],
+        ["−", "I <b>don’t</b> work.", "She <b>doesn’t</b> work."],
+        ["?", "<b>Do</b> you work? Yes, I do.", "<b>Does</b> he work? No, he doesn’t."]
+      ],
+      note: { en: "Spelling (Stage 3): add <b>-es</b> after s, sh, ch, x and o (watch<b>es</b>, go<b>es</b>). Consonant + y → <b>-ies</b> (stud<b>ies</b>). Have → <b>has</b>.",
+              es: "Ortografía (etapa 3): agrega <b>-es</b> después de s, sh, ch, x y o (watch<b>es</b>, go<b>es</b>). Consonante + y → <b>-ies</b> (stud<b>ies</b>). Have → <b>has</b>." } },
+    { h: { en: "1. Habits and routines", es: "1. Hábitos y rutinas" }, stage: 2,
+      p: { en: "Often with <b>always, usually, often, sometimes, never</b>. They go before the main verb, but after <b>be</b>.",
+           es: "Muchas veces con <b>always, usually, often, sometimes, never</b>. Van antes del verbo principal, pero después de <b>be</b>." },
+      ex: [["I usually get up at seven.", "Normalmente me levanto a las siete."], ["She never drinks coffee.", "Ella nunca toma café."], ["He’s always late.", "Él siempre llega tarde."]] },
+    { h: { en: "2. Facts", es: "2. Hechos" },
+      ex: [["Water boils at 100 degrees.", "El agua hierve a 100 grados."], ["Chile has a very long coast.", "Chile tiene una costa muy larga."]] },
+    { h: { en: "3. Likes, opinions and states", es: "3. Gustos, opiniones y estados" },
+      p: { en: "Verbs like <b>like, love, want, know, understand, believe</b> almost always use the present simple.",
+           es: "Verbos como <b>like, love, want, know, understand, believe</b> casi siempre van en present simple." },
+      ex: [["I love this song.", "Me encanta esta canción."], ["Do you understand?", "¿Entiendes?"]] },
+    { h: { en: "Negatives and questions", es: "Negativos y preguntas" }, stage: 4,
+      p: { en: "Use <b>don’t / doesn’t</b> and <b>do / does</b> + the base verb. The -s goes on does, so the verb has no -s.",
+           es: "Usa <b>don’t / doesn’t</b> y <b>do / does</b> + el verbo base. La -s va en does, así que el verbo va sin -s." },
+      ex: [["She doesn’t like spicy food.", "A ella no le gusta la comida picante."], ["Where does he live?", "¿Dónde vive él?"]] },
+    { h: { en: "Present simple or present continuous?", es: "¿Present simple o present continuous?" }, key: true,
+      p: { en: "<b>Usually / in general</b> → present simple. <b>Right now / these days</b> → present continuous (am / is / are + -ing).",
+           es: "<b>Normalmente / en general</b> → present simple. <b>Ahora mismo / estos días</b> → present continuous (am / is / are + -ing)." },
+      ex: [["I work from home. (usually)", "Trabajo desde la casa. (normalmente)"], ["I’m working from home today. (right now)", "Hoy estoy trabajando desde la casa. (ahora)"]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["She work in a bank.", "She works in a bank.", { en: "he / she / it → add -s.", es: "he / she / it → agrega -s." }],
+        ["He doesn’t works.", "He doesn’t work.", { en: "After doesn’t, no -s.", es: "Después de doesn’t, sin -s." }],
+        ["Does she likes it?", "Does she like it?", { en: "After does, no -s.", es: "Después de does, sin -s." }],
+        ["I’m work at a bank.", "I work at a bank.", { en: "Don’t add am / is / are to the present simple.", es: "No agregues am / is / are al present simple." }],
+        ["I am agree.", "I agree.", { en: "Agree is a verb, not an adjective.", es: "Agree es un verbo, no un adjetivo." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["He ___ (watch) TV every night.", "watches", { en: "he + -es after ch.", es: "he + -es después de ch." }],
+        ["___ you speak Spanish?", "Do", { en: "you → do.", es: "you → do." }],
+        ["She ___ (not / like) coffee.", "doesn’t like", { en: "she → doesn’t + base verb.", es: "she → doesn’t + verbo base." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Timetables and schedules (future)", es: "Horarios (futuro)" },
+      p: { en: "For timetables and fixed schedules, the present simple can talk about the future.", es: "Para horarios fijos, el present simple puede hablar del futuro." },
+      ex: [["The train leaves at 7:45 tomorrow.", "El tren sale mañana a las 7:45."], ["The course starts on Monday.", "El curso empieza el lunes."]] },
+    { h: { en: "After when, if, as soon as (future)", es: "Después de when, if, as soon as (futuro)" },
+      p: { en: "In future time clauses, English uses the present simple, not will.", es: "En oraciones de tiempo futuro, el inglés usa present simple, no will." },
+      ex: [["I’ll call you when I get home.", "Te llamo cuando llegue a la casa."], ["If it rains, we’ll stay in.", "Si llueve, nos quedamos en la casa."]] },
+    { h: { en: "State verbs with two meanings", es: "Verbos de estado con dos significados" },
+      p: { en: "Some verbs are states in one meaning (simple only) and actions in another (they can take -ing): <b>think, have, taste, see</b>.",
+           es: "Algunos verbos son estados en un significado (solo forma simple) y acciones en otro (pueden ir con -ing): <b>think, have, taste, see</b>." },
+      ex: [["I think it’s a good idea. (opinion)", "Creo que es buena idea. (opinión)"], ["I’m thinking about moving. (considering)", "Estoy pensando en mudarme. (evaluando)"], ["She has two cats. / She’s having lunch.", "Tiene dos gatos. / Está almorzando."], ["This soup tastes amazing.", "Esta sopa está buenísima."]] },
+    { h: { en: "Emphatic do", es: "Do enfático" },
+      p: { en: "Add <b>do / does</b> (stressed) to insist or contrast.", es: "Agrega <b>do / does</b> (con énfasis) para insistir o contrastar." },
+      ex: [["I don’t eat meat, but I do like fish.", "No como carne, pero el pescado sí me gusta."], ["She does know the answer!", "¡Ella sí sabe la respuesta!"]] },
+    { h: { en: "Telling stories, instructions and headlines", es: "Relatos, instrucciones y titulares" },
+      p: { en: "Live commentary, step-by-step instructions and news headlines use the present simple to sound direct.",
+           es: "Los relatos en vivo, las instrucciones paso a paso y los titulares usan present simple para sonar directos." },
+      ex: [["He takes the ball, runs past two players… and scores!", "Toma la pelota, pasa a dos jugadores… ¡y hace el gol!"], ["You open the app and tap the plus button.", "Abres la app y tocas el botón más."], ["Here comes the bus!", "¡Ahí viene la micro!"]] }
+  ]
+},
+
+ps: {
+  name: { en: "Past simple", es: "Past simple" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "The past simple is for <b>finished</b> actions and situations at a <b>finished time</b> in the past: yesterday, last week, in 2019, two years ago.",
+           es: "El past simple es para acciones y situaciones <b>terminadas</b> en un <b>momento terminado</b> del pasado: yesterday, last week, in 2019, two years ago." } },
+    { h: { en: "Regular verbs: + -ed", es: "Verbos regulares: + -ed" }, stage: 1,
+      p: { en: "Add <b>-ed</b>. It’s the same for every person (I, you, she, they…).", es: "Agrega <b>-ed</b>. Es igual para todas las personas (I, you, she, they…)." },
+      note: { en: "Spelling: live → liv<b>ed</b>, study → stud<b>ied</b>, stop → sto<b>pped</b> (short word ending in consonant-vowel-consonant: double it).",
+              es: "Ortografía: live → liv<b>ed</b>, study → stud<b>ied</b>, stop → sto<b>pped</b> (palabra corta que termina en consonante-vocal-consonante: se duplica)." },
+      ex: [["I worked late yesterday.", "Ayer trabajé hasta tarde."], ["We watched a movie last night.", "Anoche vimos una película."]] },
+    { h: { en: "Irregular verbs", es: "Verbos irregulares" }, stage: 2,
+      p: { en: "Many common verbs have their own past form. Learn them in groups: go → <b>went</b>, see → <b>saw</b>, have → <b>had</b>, make → <b>made</b>, buy → <b>bought</b>, take → <b>took</b>, get → <b>got</b>.",
+           es: "Muchos verbos comunes tienen su propia forma en pasado. Apréndelos en grupos: go → <b>went</b>, see → <b>saw</b>, have → <b>had</b>, make → <b>made</b>, buy → <b>bought</b>, take → <b>took</b>, get → <b>got</b>." },
+      ex: [["She went to Peru in 2019.", "Ella fue a Perú en 2019."], ["I bought a new phone last week.", "La semana pasada me compré un teléfono nuevo."]] },
+    { h: { en: "Was and were", es: "Was y were" }, stage: 3,
+      table: [
+        ["+", "I / he / she / it <b>was</b> tired.", "You / we / they <b>were</b> tired."],
+        ["−", "It <b>wasn’t</b> easy.", "They <b>weren’t</b> home."],
+        ["?", "<b>Was</b> it fun?", "<b>Were</b> you there?"]
+      ] },
+    { h: { en: "Negatives and questions", es: "Negativos y preguntas" }, stage: 4,
+      p: { en: "Use <b>didn’t</b> and <b>did</b> + the <b>base verb</b>. The past is already in did, so the verb goes back to its base form.",
+           es: "Usa <b>didn’t</b> y <b>did</b> + el <b>verbo base</b>. El pasado ya está en did, así que el verbo vuelve a su forma base." },
+      table: [
+        ["−", "I <b>didn’t go</b> to the party.", "She <b>didn’t see</b> it."],
+        ["?", "<b>Did</b> you <b>go</b>? Yes, I did.", "Where <b>did</b> she <b>go</b>?"]
+      ] },
+    { h: { en: "Telling a story", es: "Contar una historia" }, stage: 7,
+      p: { en: "Use a chain of past simple verbs for things that happened one after another.", es: "Usa una cadena de verbos en past simple para cosas que pasaron una después de otra." },
+      ex: [["I woke up, had a coffee and left.", "Me desperté, me tomé un café y salí."]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["I didn’t went.", "I didn’t go.", { en: "After didn’t, use the base verb.", es: "Después de didn’t, verbo base." }],
+        ["Did you saw it?", "Did you see it?", { en: "After did, use the base verb.", es: "Después de did, verbo base." }],
+        ["Yesterday I go to the beach.", "Yesterday I went to the beach.", { en: "Finished time → past form.", es: "Momento terminado → forma en pasado." }],
+        ["I goed home.", "I went home.", { en: "Go is irregular: went.", es: "Go es irregular: went." }],
+        ["I was go to work.", "I went to work.", { en: "Don’t add was to a past action.", es: "No agregues was a una acción en pasado." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["We ___ (meet) in 2020.", "met", { en: "Meet is irregular.", es: "Meet es irregular." }],
+        ["___ you call her yesterday?", "Did", { en: "Past question → did.", es: "Pregunta en pasado → did." }],
+        ["They ___ (not / be) at home.", "weren’t", { en: "they → were.", es: "they → were." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "used to and would (past habits)", es: "used to y would (hábitos pasados)" },
+      p: { en: "<b>used to</b> = past habits and states that aren’t true now. <b>would</b> = only past habits (actions), not states. Question: <b>Did you use to…?</b>",
+           es: "<b>used to</b> = hábitos y estados del pasado que ya no son así. <b>would</b> = solo hábitos (acciones), no estados. Pregunta: <b>Did you use to…?</b>" },
+      ex: [["I used to live in Concepción.", "Antes vivía en Concepción."], ["Every summer we would go to the beach.", "Todos los veranos íbamos a la playa."], ["Did you use to play football?", "¿Jugabas fútbol antes?"]] },
+    { h: { en: "Background and interruptions", es: "Fondo e interrupciones" },
+      p: { en: "Past continuous for the action in progress, past simple for what interrupted it.", es: "Past continuous para la acción en progreso, past simple para lo que la interrumpió." },
+      ex: [["I was cooking when the lights went out.", "Estaba cocinando cuando se cortó la luz."]] },
+    { h: { en: "The earlier past", es: "El pasado anterior" },
+      p: { en: "<b>had + participle</b> (past perfect) for something that happened before another past moment.", es: "<b>had + participio</b> (past perfect) para algo que pasó antes de otro momento pasado." },
+      ex: [["By the time we arrived, the movie had started.", "Cuando llegamos, la película ya había empezado."]] },
+    { h: { en: "The ‘unreal’ past", es: "El pasado ‘irreal’" },
+      p: { en: "After <b>if, wish, it’s time, I’d rather, suppose</b>, the past simple talks about the present, but something imaginary.",
+           es: "Después de <b>if, wish, it’s time, I’d rather, suppose</b>, el past simple habla del presente, pero de algo imaginario." },
+      ex: [["If I had more time, I’d travel more.", "Si tuviera más tiempo, viajaría más."], ["I wish I knew the answer.", "Ojalá supiera la respuesta."], ["It’s time we went home.", "Ya es hora de irnos a la casa."], ["I’d rather you didn’t tell anyone.", "Prefiero que no le cuentes a nadie."]] },
+    { h: { en: "The polite past", es: "El pasado amable" },
+      p: { en: "Past forms make requests softer and more polite.", es: "Las formas en pasado suavizan las peticiones y suenan más amables." },
+      ex: [["I was wondering if you could help me.", "Me preguntaba si me podrías ayudar."], ["I wanted to ask you something.", "Quería preguntarte algo."]] }
+  ]
+},
+
+th: {
+  name: { en: "There is / there are", es: "There is / there are" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "<b>There is / there are</b> says that something exists or is in a place. It’s the English for <b>hay</b>.",
+           es: "<b>There is / there are</b> dice que algo existe o está en un lugar. Es el <b>hay</b> del inglés." } },
+    { h: { en: "How to make it", es: "Cómo se forma" }, stage: 1,
+      p: { en: "<b>There is</b> (there’s) + one thing or something uncountable. <b>There are</b> + plural.",
+           es: "<b>There is</b> (there’s) + una cosa o algo incontable. <b>There are</b> + plural." },
+      table: [
+        ["+", "<b>There’s</b> a café near here.", "<b>There are</b> two parks."],
+        ["−", "<b>There isn’t</b> any milk.", "<b>There aren’t</b> any chairs."],
+        ["?", "<b>Is there</b> a bank? Yes, there is.", "<b>Are there</b> any buses? No, there aren’t."]
+      ],
+      note: { en: "Stages 2 and 3 practice negatives and questions. Also: <b>There’s no…</b> / <b>There are no…</b>, and <b>How many… are there?</b>",
+              es: "Las etapas 2 y 3 practican negativos y preguntas. También: <b>There’s no…</b> / <b>There are no…</b>, y <b>How many… are there?</b>" } },
+    { h: { en: "Past and future", es: "Pasado y futuro" }, stage: 4,
+      ex: [["There was a storm last night.", "Anoche hubo una tormenta."], ["There were a lot of people.", "Había mucha gente."], ["There will be a test on Friday.", "El viernes va a haber una prueba."], ["There’s going to be a party.", "Va a haber una fiesta."]] },
+    { h: { en: "There is or it is?", es: "¿There is o it is?" }, key: true,
+      p: { en: "Use <b>there is</b> to introduce something new. Then use <b>it / they</b> to talk about it.",
+           es: "Usa <b>there is</b> para presentar algo nuevo. Después usa <b>it / they</b> para hablar de eso." },
+      ex: [["There’s a café near my house. It’s really good.", "Hay un café cerca de mi casa. Es muy bueno."]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["Have a lot of people here.", "There are a lot of people here.", { en: "‘Hay’ → there is / there are, not have.", es: "‘Hay’ → there is / there are, no have." }],
+        ["It has a park near my house.", "There’s a park near my house.", { en: "To say something exists, use there is.", es: "Para decir que algo existe, usa there is." }],
+        ["There is two cars.", "There are two cars.", { en: "Plural → there are.", es: "Plural → there are." }],
+        ["There are much traffic.", "There’s a lot of traffic.", { en: "Traffic is uncountable → there is.", es: "Traffic es incontable → there is." }],
+        ["Is there a bank? Yes, is.", "Yes, there is.", { en: "Short answers need there.", es: "Las respuestas cortas llevan there." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["___ any eggs in the fridge?", "Are there", { en: "Plural question → are there.", es: "Pregunta en plural → are there." }],
+        ["There ___ a lot of noise last night.", "was", { en: "Noise is uncountable, past → was.", es: "Noise es incontable, pasado → was." }],
+        ["There ___ (not) a cloud in the sky.", "isn’t", { en: "One thing → isn’t.", es: "Una cosa → isn’t." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "There + modal verbs", es: "There + verbos modales" },
+      ex: [["There must be a mistake.", "Tiene que haber un error."], ["There might be a delay.", "Puede que haya un retraso."], ["There can’t be more than ten people.", "No puede haber más de diez personas."], ["There must have been a problem.", "Debe haber habido un problema."]] },
+    { h: { en: "seems to be, bound to be, used to be", es: "seems to be, bound to be, used to be" },
+      ex: [["There seems to be a problem with the Wi-Fi.", "Parece que hay un problema con el Wi-Fi."], ["There’s bound to be traffic at this time.", "A esta hora seguro que hay tráfico."], ["There used to be a cinema here.", "Antes había un cine aquí."]] },
+    { h: { en: "With the present perfect", es: "Con el present perfect" },
+      p: { en: "<b>There has been / there have been</b> for news and changes up to now.", es: "<b>There has been / there have been</b> para noticias y cambios hasta ahora." },
+      ex: [["There’s been an accident on the highway.", "Hubo un accidente en la carretera."], ["There have been a lot of changes.", "Ha habido muchos cambios."]] },
+    { h: { en: "Fixed expressions", es: "Expresiones fijas" },
+      ex: [["There’s no point worrying about it.", "No tiene sentido preocuparse."], ["There’s no way I’m going out in this rain.", "Ni loco salgo con esta lluvia."], ["Is there any chance you could help me?", "¿Habrá alguna posibilidad de que me ayudes?"]] },
+    { h: { en: "Informal speech", es: "Habla informal" },
+      p: { en: "In fast, informal speech, people often say <b>there’s</b> with a plural (“there’s two problems”). You’ll hear it, but write <b>there are</b>.",
+           es: "En el habla rápida e informal, mucha gente dice <b>there’s</b> con plural (“there’s two problems”). Lo vas a escuchar, pero escribe <b>there are</b>." } }
+  ]
+},
+
+cou: {
+  name: { en: "Could vs was able to", es: "Could vs was able to" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "To talk about <b>ability</b>: <b>can</b> (now), <b>could</b> (in general, in the past) and <b>be able to</b> (any tense).",
+           es: "Para hablar de <b>habilidad</b>: <b>can</b> (ahora), <b>could</b> (en general, en el pasado) y <b>be able to</b> (cualquier tiempo)." } },
+    { h: { en: "How to make it", es: "Cómo se forma" }, stage: 1,
+      p: { en: "<b>can / could</b> + base verb (no <i>to</i>, no <i>-s</i>). <b>be able to</b> + base verb, and you change <i>be</i> for the tense.",
+           es: "<b>can / could</b> + verbo base (sin <i>to</i>, sin <i>-s</i>). <b>be able to</b> + verbo base, y cambias <i>be</i> según el tiempo." },
+      table: [
+        [{ en: "Now", es: "Ahora" }, "I <b>can</b> swim.", "I’m <b>able to</b> swim."],
+        [{ en: "Past", es: "Pasado" }, "I <b>could</b> swim when I was five.", "I <b>was able to</b> swim."],
+        [{ en: "Future", es: "Futuro" }, { en: "<i>can has no future form</i>", es: "<i>can no tiene futuro</i>" }, { en: "I’ll <b>be able to</b> swim. (never “will can”)", es: "I’ll <b>be able to</b> swim. (nunca “will can”)" }]
+      ] },
+    { h: { en: "could: ability in general", es: "could: habilidad en general" }, stage: 2,
+      p: { en: "Use <b>could</b> for something you were able to do <b>in general</b>, over a period of time.", es: "Usa <b>could</b> para algo que podías hacer <b>en general</b>, durante un tiempo." },
+      ex: [["When I was a kid, I could run really fast.", "Cuando era niño, podía correr muy rápido."]] },
+    { h: { en: "was able to: one specific moment", es: "was able to: un momento puntual" }, stage: 3, key: true,
+      p: { en: "For <b>one specific success</b> in the past, use <b>was able to</b> or <b>managed to</b>, not could. In the negative, <b>couldn’t</b> works for both.",
+           es: "Para <b>un logro puntual</b> en el pasado, usa <b>was able to</b> o <b>managed to</b>, no could. En negativo, <b>couldn’t</b> sirve para los dos." },
+      ex: [["The fire was big, but everyone was able to escape.", "El incendio era grande, pero todos lograron escapar."], ["I couldn’t find my keys this morning.", "Esta mañana no pude encontrar mis llaves."]] },
+    { h: { en: "Questions and requests", es: "Preguntas y peticiones" }, stage: 5,
+      ex: [["Could you help me, please?", "¿Me podrías ayudar, por favor?"], ["Were you able to fix it?", "¿Pudiste arreglarlo?"]] },
+    { h: { en: "Other tenses", es: "Otros tiempos" }, stage: 6,
+      ex: [["I haven’t been able to sleep this week.", "Esta semana no he podido dormir."], ["You’ll be able to see it from the hotel.", "Lo vas a poder ver desde el hotel."]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["I will can come.", "I’ll be able to come.", { en: "Future → will be able to.", es: "Futuro → will be able to." }],
+        ["I can to swim.", "I can swim.", { en: "No to after can.", es: "Sin to después de can." }],
+        ["She cans drive.", "She can drive.", { en: "No -s on can.", es: "Can no lleva -s." }],
+        ["Yesterday I could finish the report.", "Yesterday I was able to / managed to finish the report.", { en: "One specific success → was able to / managed to.", es: "Un logro puntual → was able to / managed to." }],
+        ["I don’t can.", "I can’t.", { en: "Negative: can’t / cannot.", es: "Negativo: can’t / cannot." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["My grandma ___ speak four languages when she was young.", "could", { en: "General past ability.", es: "Habilidad general en el pasado." }],
+        ["After three hours, we ___ to fix the car.", "were able / managed", { en: "One specific success.", es: "Un logro puntual." }],
+        ["Next year I ___ drive.", "’ll be able to", { en: "Future → will be able to.", es: "Futuro → will be able to." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "could have, couldn’t have, can’t have", es: "could have, couldn’t have, can’t have" },
+      p: { en: "<b>could have + participle</b> = it was possible but didn’t happen (or maybe it happened). <b>can’t / couldn’t have</b> = I’m sure it didn’t happen.",
+           es: "<b>could have + participio</b> = era posible pero no pasó (o tal vez pasó). <b>can’t / couldn’t have</b> = estoy seguro de que no pasó." },
+      ex: [["You could have called me!", "¡Me podrías haber llamado!"], ["He can’t have stolen it. He was with me.", "No puede haberlo robado. Estaba conmigo."], ["They might have gotten lost.", "Puede que se hayan perdido."]] },
+    { h: { en: "managed to, succeeded in", es: "managed to, succeeded in" },
+      ex: [["I managed to finish on time.", "Logré terminar a tiempo."], ["She succeeded in getting the job.", "Logró conseguir el trabajo."]] },
+    { h: { en: "to be able to / being able to", es: "to be able to / being able to" },
+      p: { en: "After verbs like want, need, love → <b>to be able to</b>. As a subject or after a preposition → <b>being able to</b>.",
+           es: "Después de verbos como want, need, love → <b>to be able to</b>. Como sujeto o después de preposición → <b>being able to</b>." },
+      ex: [["I’d love to be able to speak without thinking.", "Me encantaría poder hablar sin pensar."], ["Being able to work from home is great.", "Poder trabajar desde la casa es genial."]] },
+    { h: { en: "be able to after other modals", es: "be able to después de otros modales" },
+      ex: [["You should be able to see the mountains.", "Deberías poder ver la cordillera."], ["I might be able to help.", "Puede que pueda ayudar."]] },
+    { h: { en: "could for possibility", es: "could para posibilidad" },
+      p: { en: "<b>could</b> also means <b>maybe</b>, about now or the future.", es: "<b>could</b> también significa <b>tal vez</b>, sobre el ahora o el futuro." },
+      ex: [["It could rain later.", "Podría llover más tarde."], ["Could you possibly close the window?", "¿Podrías cerrar la ventana, por favor?"]] }
+  ]
+},
+
+ing: {
+  name: { en: "Verb + -ing", es: "Verbo + -ing" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "The <b>-ing</b> form can work like a noun: after prepositions, after some verbs, and as the subject. Spanish often uses the infinitive here, English uses -ing.",
+           es: "La forma <b>-ing</b> puede funcionar como sustantivo: después de preposiciones, después de algunos verbos y como sujeto. En español aquí solemos usar el infinitivo; en inglés, -ing." } },
+    { h: { en: "1. After prepositions", es: "1. Después de preposiciones" }, stage: 1,
+      p: { en: "After <b>before, after, without, by, about, in, at, of</b>… always -ing.", es: "Después de <b>before, after, without, by, about, in, at, of</b>… siempre -ing." },
+      ex: [["Wash your hands before eating.", "Lávate las manos antes de comer."], ["She left without saying goodbye.", "Se fue sin despedirse."]] },
+    { h: { en: "2. Verbs that take -ing", es: "2. Verbos que van con -ing" }, stage: 2,
+      p: { en: "<b>enjoy, finish, mind, avoid, keep, miss, practice, consider, can’t stand</b> + -ing. Also <b>suggest, recommend</b> (Stage 3).",
+           es: "<b>enjoy, finish, mind, avoid, keep, miss, practice, consider, can’t stand</b> + -ing. También <b>suggest, recommend</b> (etapa 3)." },
+      ex: [["I enjoy cooking.", "Disfruto cocinar."], ["Do you mind waiting?", "¿Te molesta esperar?"], ["I suggest taking the metro.", "Sugiero tomar el metro."]] },
+    { h: { en: "3. Adjective + preposition", es: "3. Adjetivo + preposición" }, stage: 4,
+      p: { en: "<b>good at, interested in, tired of, afraid of</b>, and <b>look forward to</b> (here <i>to</i> is a preposition).",
+           es: "<b>good at, interested in, tired of, afraid of</b>, y <b>look forward to</b> (aquí <i>to</i> es preposición)." },
+      ex: [["She’s good at drawing.", "Ella es buena para dibujar."], ["I look forward to seeing you.", "Tengo ganas de verte."]] },
+    { h: { en: "4. As the subject", es: "4. Como sujeto" },
+      ex: [["Swimming is good exercise.", "Nadar es buen ejercicio."]] },
+    { h: { en: "-ing or to?", es: "¿-ing o to?" }, stage: 5, key: true,
+      p: { en: "<b>want, need, decide, hope, plan, would like</b> + to. <b>enjoy, finish, avoid, mind</b> + -ing. <b>like, love, hate, start, begin</b> can take both.",
+           es: "<b>want, need, decide, hope, plan, would like</b> + to. <b>enjoy, finish, avoid, mind</b> + -ing. <b>like, love, hate, start, begin</b> aceptan las dos." },
+      ex: [["I want to learn French.", "Quiero aprender francés."], ["I finished studying at ten.", "Terminé de estudiar a las diez."]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["I enjoy to dance.", "I enjoy dancing.", { en: "enjoy + -ing.", es: "enjoy + -ing." }],
+        ["I look forward to see you.", "I look forward to seeing you.", { en: "look forward to + -ing.", es: "look forward to + -ing." }],
+        ["Before to go, call me.", "Before going, call me.", { en: "Preposition + -ing.", es: "Preposición + -ing." }],
+        ["I suggest you to go.", "I suggest going. / I suggest (that) you go.", { en: "suggest + -ing, or suggest that…", es: "suggest + -ing, o suggest that…" }],
+        ["I’m interested in learn English.", "I’m interested in learning English.", { en: "in + -ing.", es: "in + -ing." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["I’m tired of ___ (wait).", "waiting", { en: "of + -ing.", es: "of + -ing." }],
+        ["She decided ___ (quit) her job.", "to quit", { en: "decide + to.", es: "decide + to." }],
+        ["Have you finished ___ (eat)?", "eating", { en: "finish + -ing.", es: "finish + -ing." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Verbs that change meaning", es: "Verbos que cambian de significado" },
+      p: { en: "<b>remember / forget / regret</b> + -ing = about the past. + to = about something to do. <b>stop</b> + -ing = quit; + to = stop in order to. <b>try</b> + -ing = experiment; + to = make an effort.",
+           es: "<b>remember / forget / regret</b> + -ing = sobre el pasado. + to = sobre algo por hacer. <b>stop</b> + -ing = dejar de; + to = parar para. <b>try</b> + -ing = probar; + to = esforzarse." },
+      ex: [["I remember meeting him. / Remember to call him.", "Me acuerdo de haberlo conocido. / Acuérdate de llamarlo."], ["He stopped smoking. / He stopped to rest.", "Dejó de fumar. / Paró para descansar."], ["Try restarting it. / I tried to open it, but I couldn’t.", "Prueba reiniciarlo. / Intenté abrirlo, pero no pude."]] },
+    { h: { en: "be used to / get used to + -ing", es: "be used to / get used to + -ing" },
+      p: { en: "<b>be used to + -ing</b> = be accustomed to. <b>get used to + -ing</b> = become accustomed. Don’t mix it up with <b>used to + verb</b> (past habit).",
+           es: "<b>be used to + -ing</b> = estar acostumbrado. <b>get used to + -ing</b> = acostumbrarse. No lo confundas con <b>used to + verbo</b> (hábito pasado)." },
+      ex: [["I’m used to getting up early.", "Estoy acostumbrado a levantarme temprano."], ["You’ll get used to driving on the left.", "Te vas a acostumbrar a manejar por la izquierda."]] },
+    { h: { en: "Fixed -ing expressions", es: "Expresiones fijas con -ing" },
+      ex: [["It’s worth visiting.", "Vale la pena visitarlo."], ["I can’t help laughing.", "No puedo evitar reírme."], ["I have trouble remembering names.", "Me cuesta recordar nombres."], ["There’s no point arguing.", "No tiene sentido discutir."]] },
+    { h: { en: "Perfect and passive -ing", es: "-ing perfecto y pasivo" },
+      ex: [["After having finished, I went home.", "Después de haber terminado, me fui a la casa."], ["She hates being told what to do.", "Odia que le digan qué hacer."], ["My car needs washing.", "Mi auto necesita una lavada."], ["Do you mind me asking?", "¿Te molesta que te pregunte?"]] }
+  ]
+},
+
+ed: {
+  name: { en: "-ed endings", es: "Terminaciones -ed" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "The <b>-ed</b> ending has <b>3 sounds</b>: /t/, /d/ and /ɪd/. Only <b>/ɪd/</b> adds an extra syllable. Saying every -ed as “ed” is the most common mistake for Spanish speakers.",
+           es: "La terminación <b>-ed</b> tiene <b>3 sonidos</b>: /t/, /d/ y /ɪd/. Solo <b>/ɪd/</b> agrega una sílaba extra. Pronunciar todas las -ed como “ed” es el error más común de quienes hablamos español." } },
+    { h: { en: "/ɪd/: an extra syllable", es: "/ɪd/: una sílaba extra" }, stage: 1,
+      p: { en: "Only when the verb ends in a <b>t</b> or <b>d</b> sound.", es: "Solo cuando el verbo termina en sonido <b>t</b> o <b>d</b>." },
+      ex: [["wanted (WAN-tid)", "quiso / quería"], ["needed (NEE-did)", "necesitó"], ["decided (de-SY-did)", "decidió"]] },
+    { h: { en: "/t/: a quiet sound", es: "/t/: un sonido sordo" }, stage: 2,
+      p: { en: "When the verb ends in a quiet sound: <b>p, k, f, s, sh, ch, x</b>. Touch your throat: no vibration. No extra syllable.",
+           es: "Cuando el verbo termina en un sonido sordo: <b>p, k, f, s, sh, ch, x</b>. Toca tu garganta: no vibra. Sin sílaba extra." },
+      ex: [["worked (workt)", "trabajó"], ["helped (helpt)", "ayudó"], ["watched (wotcht)", "vio / miró"]] },
+    { h: { en: "/d/: a voiced sound", es: "/d/: un sonido sonoro" }, stage: 3,
+      p: { en: "After vowels and voiced sounds (b, g, l, m, n, r, v, z…). Your throat vibrates. No extra syllable.",
+           es: "Después de vocales y sonidos sonoros (b, g, l, m, n, r, v, z…). La garganta vibra. Sin sílaba extra." },
+      ex: [["played (playd)", "jugó"], ["called (cawld)", "llamó"], ["opened (O-pend)", "abrió"]] },
+    { h: { en: "Listen to the sound, not the spelling", es: "Escucha el sonido, no la ortografía" }, stage: 5, key: true,
+      p: { en: "What matters is the <b>last sound</b>: fixed → /t/ (x sounds “ks”), closed → /d/ (s sounds “z”), laughed → /t/ (gh sounds “f”).",
+           es: "Lo que importa es el <b>último sonido</b>: fixed → /t/ (la x suena “ks”), closed → /d/ (la s suena “z”), laughed → /t/ (gh suena “f”)." },
+      ex: [["fixed (fikst)", "arregló"], ["closed (cloazd)", "cerró"], ["laughed (laft)", "se rio"]] },
+    { h: { en: "Feelings: -ed or -ing?", es: "Sentimientos: ¿-ed o -ing?" }, stage: 7,
+      p: { en: "<b>-ed</b> = how you feel. <b>-ing</b> = what causes the feeling.", es: "<b>-ed</b> = cómo te sientes. <b>-ing</b> = lo que causa ese sentimiento." },
+      ex: [["I’m bored. This movie is boring.", "Estoy aburrido. Esta película es aburrida."], ["She was surprised. The news was surprising.", "Ella estaba sorprendida. La noticia era sorprendente."]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["work-ed (2 syllables)", "workt (1 syllable)", { en: "Only t / d verbs get the extra syllable.", es: "Solo los verbos en t / d tienen sílaba extra." }],
+        ["look-ed", "lookt", { en: "k is quiet → /t/.", es: "k es sordo → /t/." }],
+        ["plan-ned", "pland", { en: "n is voiced → /d/, no extra syllable.", es: "n es sonoro → /d/, sin sílaba extra." }],
+        ["I’m boring in this class.", "I’m bored in this class.", { en: "Your feeling → -ed. (I’m boring = I make people bored!)", es: "Tu sentimiento → -ed. (I’m boring = ¡aburro a los demás!)" }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["“started”: extra syllable?", "Yes: STAR-tid", { en: "Ends in t.", es: "Termina en t." }],
+        ["“stopped”: which sound?", "/t/ (stopt)", { en: "p is quiet.", es: "p es sordo." }],
+        ["The trip was really ___ (tire).", "tiring", { en: "What causes the feeling → -ing.", es: "Lo que causa el sentimiento → -ing." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Adjectives that break the rule", es: "Adjetivos que rompen la regla" },
+      p: { en: "Some -ed <b>adjectives</b> keep the extra syllable even though the rule says they shouldn’t.", es: "Algunos <b>adjetivos</b> en -ed mantienen la sílaba extra, aunque la regla diga que no." },
+      ex: [["naked (NAY-kid)", "desnudo"], ["wicked (WI-kid)", "malvado"], ["crooked (KRU-kid)", "chueco"], ["rugged (RU-gid)", "robusto, agreste"], ["my beloved dog (bi-LUV-id)", "mi querido perro"]] },
+    { h: { en: "Same word, two pronunciations", es: "Misma palabra, dos pronunciaciones" },
+      ex: [["I learned a lot. (lernd)", "Aprendí mucho."], ["a learned professor (LER-nid)", "un profesor muy culto"], ["He aged fast. (ayjd)", "Envejeció rápido."], ["an aged parent (AY-jid)", "un padre anciano"]] },
+    { h: { en: "used to, supposed to", es: "used to, supposed to" },
+      p: { en: "The -ed joins the <b>to</b> and sounds like a soft t: “yoost-tuh”, “suh-POHS-tuh”.", es: "La -ed se une al <b>to</b> y suena como una t suave: “yoost-tuh”, “suh-POHS-tuh”." },
+      ex: [["I used to swim every day.", "Antes nadaba todos los días."], ["We’re supposed to be there at 8.", "Se supone que tenemos que estar ahí a las 8."]] },
+    { h: { en: "Linking in fast speech", es: "Enlace en el habla rápida" },
+      p: { en: "Before a vowel, the -ed links to the next word (“worked a lot” → “work-ta-lot”). Before a consonant, it’s often very soft, almost silent, but keep a tiny stop.",
+           es: "Antes de una vocal, la -ed se une a la palabra siguiente (“worked a lot” → “work-ta-lot”). Antes de una consonante, suele ser muy suave, casi muda, pero mantén una pequeña pausa." },
+      ex: [["I worked all day.", "Trabajé todo el día."], ["I watched TV last night.", "Anoche vi tele."]] }
+  ]
+}
+});
 
 </script>
 

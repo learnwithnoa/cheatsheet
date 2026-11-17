@@ -692,14 +692,14 @@ $("news").addEventListener("click", e => {
   const b = e.target.closest("[data-news]"); if (!b) return;
   current = b.dataset.news; mTab = "students"; renderTabs(); renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollIntoView({ behavior: "smooth" });
 });
-const PS_T = ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"];
+const PS_T = ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story", "⭐ Advanced (bonus, B2–C1)"];
 function weekKeyT() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
-const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story"] },
-  prs: { name: "Present simple", stages: ["I, you, we, they", "He, she, it + -s", "Spelling: -es, -ies, has", "Negatives: don't / doesn't", "Questions: do / does", "Mix it up", "Tell the story"] },
-  ing: { name: "Verb + -ing", stages: ["Before, after, without + -ing", "Verbs that take -ing", "suggest, recommend, propose", "good at, interested in, look forward to", "-ing or to?", "Mix it up", "Tell the story"] },
-  th: { name: "There is / there are", stages: ["There is / there are", "Negatives: there isn't / aren't", "Questions: Is there…? Are there…?", "Past: there was / there were", "Future: there will be", "Mix it up", "Tell the story"] },
-  cou: { name: "Could vs was able to", stages: ["can, could, be able to", "could: ability in general", "was able to: one specific moment", "Negatives: couldn't", "Questions: Could you…? Were you able to…?", "will be able to, have been able to", "Tell the story"] },
-  ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] } };
+const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present perfect", stages: ["Have / has + verb", "Irregular participles", "Negatives & questions", "Ever, never, already, yet, just", "For & since", "Present perfect or past simple?", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
+  prs: { name: "Present simple", stages: ["I, you, we, they", "He, she, it + -s", "Spelling: -es, -ies, has", "Negatives: don't / doesn't", "Questions: do / does", "Mix it up", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
+  ing: { name: "Verb + -ing", stages: ["Before, after, without + -ing", "Verbs that take -ing", "suggest, recommend, propose", "good at, interested in, look forward to", "-ing or to?", "Mix it up", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
+  th: { name: "There is / there are", stages: ["There is / there are", "Negatives: there isn't / aren't", "Questions: Is there…? Are there…?", "Past: there was / there were", "Future: there will be", "Mix it up", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
+  cou: { name: "Could vs was able to", stages: ["can, could, be able to", "could: ability in general", "was able to: one specific moment", "Negatives: couldn't", "Questions: Could you…? Were you able to…?", "will be able to, have been able to", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
+  ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives", "⭐ Advanced (bonus, B2–C1)"] } };
 const COL = { p: false, w: false };   /* Practice and Words start closed; stay as Noa left them while he moves between people */
 document.addEventListener("toggle", e => { const d = e.target; if (d && d.classList && d.classList.contains("mcol")) COL[d.dataset.col] = d.open; }, true);
 function modBlock(s, id) {

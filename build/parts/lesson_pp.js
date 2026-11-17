@@ -103,13 +103,13 @@ pp: {
     stage: { en: "Practice: Stage", es: "Practica: etapa" },
     wrong: { en: "Not", es: "No" }, right: { en: "Say", es: "Mejor" },
     show: { en: "Show answer", es: "Ver respuesta" },
-    advNote: { en: "For B2–C1. You don’t need this for most of the stages, but it helps you sound natural.", es: "Para nivel B2–C1. No lo necesitas para la mayoría de las etapas, pero te ayuda a sonar natural." },
+    advNote: { en: "For B2–C1. You don’t need it for stages 1–7, but it helps you sound natural. Stage 8 (Advanced) practices it once you pass stage 7 or test out.", es: "Para nivel B2–C1. No lo necesitas para las etapas 1–7, pero te ayuda a sonar natural. La etapa 8 (Avanzado) lo practica cuando apruebes la etapa 7 o des el examen para eximirte." },
     listen: { en: "Listen", es: "Escuchar" }
   };
   function block(b) {
     let h = `<div class="pl-b${b.key ? " key" : ""}"><h4>${T(b.h)}${b.stage ? `<span class="pl-st">${T(UI.stage)} ${b.stage}</span>` : ""}</h4>`;
     if (b.p) h += `<p>${T(b.p)}</p>`;
-    if (b.table) h += `<div class="pl-tbl">${b.table.map(r => `<div class="pl-tr"><span class="pl-sign">${r[0]}</span><span>${r[1]}</span><span>${r[2]}</span></div>`).join("")}</div>`;
+    if (b.table) h += `<div class="pl-tbl">${b.table.map(r => `<div class="pl-tr"><span class="pl-sign">${T(r[0])}</span><span>${T(r[1])}</span><span>${T(r[2])}</span></div>`).join("")}</div>`;
     if (b.note) h += `<p class="pl-note">💡 ${T(b.note)}</p>`;
     if (b.ex) h += `<ul class="pl-ex">${b.ex.map(e => `<li><button type="button" class="pl-say" data-plsay="${esc(strip(e[0]))}" aria-label="${T(UI.listen)}" title="${T(UI.listen)}">🔊</button><span><b>${esc(e[0])}</b>${lang() === "es" ? `<small>${esc(e[1])}</small>` : ""}</span></li>`).join("")}</ul>`;
     if (b.mis) h += `<ul class="pl-mis">${b.mis.map(m => `<li><span class="pl-x">✗ <s>${esc(m[0])}</s></span><span class="pl-ok">✓ <b>${esc(m[1])}</b></span><small>${esc(T(m[2]))}</small></li>`).join("")}</ul>`;

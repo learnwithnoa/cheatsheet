@@ -312,6 +312,20 @@ At lunch, I ___ coffee on my new shirt. (spill)|spilled/spilt|spill,spilld,was s
 In the afternoon, my computer ___ working. (stop)|stopped|stoped,stop,stopt
 I ___ home at 8 p.m., really tired. (get)|got|getted,gotten,get
 But then my roommate ___ pizza for dinner, so the day ended well! (make)|made|maked,make,maded
+`},
+ {n:8, adv:true, t:"Advanced: used to, wishes & polite past", sub:"used to vs would, If I had…, I was wondering…", why:"Past forms at B2–C1: past habits, the earlier past and the 'unreal' past.", es:"Formas del pasado nivel B2–C1: hábitos pasados, el pasado anterior y el pasado 'irreal'.", q:`
+When I was a kid, I ___ play outside every day. (past habit)|used to/would|use to,was used to,am used to|Past habits: used to (or would).|Hábitos del pasado: used to (o would).
+I ___ have long hair, but now it's short. (past state)|used to|would,use to,was used to|For past states (have, be, live), use used to, not would.|Para estados del pasado (have, be, live), usa used to, no would.
+___ you use to live in Valparaíso?|Did|Do,Were,Have|Question: Did you use to…? (no -d on use).|Pregunta: Did you use to…? (use sin -d).
+It's late. It's time we ___ home. (go)|went|will go,going,gone|It's time + person + past simple = we should do it now.|It's time + persona + past simple = deberíamos hacerlo ya.
+If I ___ more time, I'd travel more. (have)|had|have,would have,will have|Second conditional: if + past simple, would + verb.|Segundo condicional: if + past simple, would + verbo.
+I wish I ___ how to swim. (know)|knew|know,would know,have known|Wish about now → past simple.|Wish sobre el presente → past simple.
+I'd rather you ___ tell anyone.|didn't|doesn't,won't,not|I'd rather + person + past simple.|I'd rather + persona + past simple.
+I ___ if you could help me with something. (wonder, polite)|was wondering/wondered/~wonder|am wonder,wonders,was wonder|Past forms sound more polite: I was wondering if…|El pasado suena más amable: I was wondering if…
+I ___ to call you, but I forgot. (mean)|meant|meaned,mean,have meant|Mean → meant.|Mean → meant.
+She ___ her keys, so she couldn't get in. (lose)|had lost/lost|has lost,loses,was lose|Something that happened before another past moment → past perfect (or past simple).|Algo que pasó antes de otro momento pasado → past perfect (o past simple).
+By the time we arrived, the movie ___. (start)|had started/had already started/~started|has started,starts,was start|Before another past moment → past perfect.|Antes de otro momento pasado → past perfect.
+I ___ dinner when the lights went out. (cook)|was cooking|cooked,am cooking,have cooked|Background action (in progress) → past continuous; the interruption → past simple.|Acción de fondo (en progreso) → past continuous; la interrupción → past simple.
 `}
 ];
 PS_STAGES.forEach(st=>{

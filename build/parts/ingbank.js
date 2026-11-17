@@ -132,6 +132,21 @@ We need ___ a decision soon. (make)|to make|making,make,made
 Let's avoid ___ too much money. (spend)|spending|to spend,spend,spent
 Does anyone mind ___ the notes? (write)|writing|to write,write,wrote
 Great! I look forward to ___ the results. (see)|seeing|to see,see,saw
+`},
+ {n:8, adv:true, t:"Advanced: remember doing vs remember to do", sub:"stop, try, regret, be used to, it's worth", why:"-ing at B2–C1: verbs that change meaning, be used to, and fixed -ing patterns.", es:"-ing nivel B2–C1: verbos que cambian de significado, be used to y estructuras fijas con -ing.", q:`
+I remember ___ him at a party years ago. (meet)|meeting|to meet,meet,met|remember + -ing = a memory of something you did.|remember + -ing = un recuerdo de algo que hiciste.
+Remember ___ the door when you leave! (lock)|to lock|locking,lock,locked|remember + to = don't forget to do it.|remember + to = no olvides hacerlo.
+He stopped ___ two years ago. He feels great now. (smoke)|smoking|to smoke,smoke,smoked|stop + -ing = quit doing it.|stop + -ing = dejar de hacerlo.
+I'm not used to ___ up so early. (get)|getting|get,got,to get|be used to + -ing = be accustomed to.|be used to + -ing = estar acostumbrado a.
+This museum is worth ___. (visit)|visiting|to visit,visit,visited|It's worth + -ing = it's a good idea to do it.|It's worth + -ing = vale la pena.
+I can't help ___ when I see that video. (laugh)|laughing|to laugh,laugh,laughed|can't help + -ing = I can't stop myself.|can't help + -ing = no puedo evitarlo.
+I regret ___ to the party last night. I'm so tired today. (go)|going/having gone|to go,go,went|regret + -ing = I'm sorry I did it.|regret + -ing = me arrepiento de haberlo hecho.
+If the computer freezes, try ___ it off and on again. (turn)|turning/~to turn|turned,turn to,turns|try + -ing = do it as an experiment to see if it works.|try + -ing = probar a ver si funciona.
+She doesn't like ___ what to do. (tell, passive)|being told|telling,be told,been told|Passive -ing: being + participle.|-ing pasivo: being + participio.
+After ___ the whole book, I watched the movie. (read)|having read/reading|to read,read,have read|After + -ing ("having + participle" stresses it finished first).|After + -ing ("having + participio" recalca que terminó antes).
+Would you mind ___ the music down? (turn)|turning|to turn,turn,turned|mind + -ing.|mind + -ing.
+My car needs ___. It's so dirty. (wash)|washing/to be washed|to wash,wash,washed|need + -ing = it needs to be done (passive meaning).|need + -ing = necesita que lo hagan (sentido pasivo).
+I have trouble ___ new words. (remember)|remembering|to remember,remember,remembered|have trouble / difficulty + -ing.|have trouble / difficulty + -ing = me cuesta.
 `}
 ];
 ING_STAGES.forEach(st=>{

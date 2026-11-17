@@ -132,6 +132,20 @@ On Sundays, we ___ my grandma. (visit)|visit|visits,visiting,are visit
 She ___ the best empanadas in Chile! (cook)|cooks|cook,cooking,is cook
 She always ___: “Eat more!” (say)|says|say,saying,is say
 ___ you have a favorite day of the week? (do)|Do|Does,Are,Is
+`},
+ {n:8, adv:true, t:"Advanced: future, states & emphasis", sub:"The train leaves at 8, when I get home, I do like it", why:"Present simple at B2–C1: timetables, future time clauses, state verbs and emphatic do.", es:"Presente simple nivel B2–C1: horarios, oraciones de tiempo futuro, verbos de estado y do enfático.", q:`
+The train ___ at 7:45 tomorrow morning. (leave)|leaves/~is leaving/~will leave|is leave,will leaving,leave|Timetables → present simple, even for the future.|Horarios → presente simple, aunque sea futuro.
+I'll call you when I ___ home. (get)|get|will get,getting,gets|After when (talking about the future), use the present simple, not will.|Después de when (hablando del futuro), presente simple, no will.
+This soup ___ amazing! (taste)|tastes|is tasting,taste,tasting|Taste (how the soup is) is a state → no -ing.|Taste (cómo es la sopa) es un estado → sin -ing.
+I ___ you're right about that. (think)|think|am thinking,thinks,am think|Think = my opinion → present simple.|Think = mi opinión → presente simple.
+I don't eat meat, but I ___ like fish. (do, for emphasis)|do|does,am,doing|Emphatic do: "I do like fish" = I really like it.|Do enfático: "I do like fish" = sí me gusta.
+If it ___ tomorrow, we'll stay home. (rain)|rains|will rain,raining,rain|First conditional: if + present simple, will + verb.|Primer condicional: if + presente simple, will + verbo.
+Here ___ the bus! Run! (come)|comes|come,is come,coming|"Here comes…" uses the present simple for what's happening right now.|"Here comes…" usa presente simple para lo que pasa justo ahora.
+As soon as the class ___, I'll send you the link. (end)|ends|will end,ending,end|After as soon as (future), present simple.|Después de as soon as (futuro), presente simple.
+This bag ___ to my sister, not me. (belong)|belongs|is belonging,belong,belonging|Belong is a state verb: no -ing.|Belong es un verbo de estado: sin -ing.
+What ___ this word mean?|does|do,is,means|Mean is a state verb: What does it mean?|Mean es un verbo de estado: What does it mean?
+I ___ (not / understand) what you mean.|don't understand/do not understand|am not understanding,doesn't understand,not understand|Understand is a state verb: no -ing.|Understand es un verbo de estado: sin -ing.
+She ___ (have) breakfast right now, so call her later.|is having/'s having|has,have,is have|Have = eat is an action, so it can take -ing. Have = own can't.|Have = comer es una acción, así que puede ir con -ing. Have = tener, no.
 `}
 ];
 PRS_STAGES.forEach(st=>{

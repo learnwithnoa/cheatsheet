@@ -143,3 +143,12 @@ if '2026-1117-lesson' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 17: lessons for every grammar module + advanced stages
+s=open(p,encoding="utf-8").read()
+if '2026-1117-lessons-all' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-lessons-all", date:"November 17, 2026", title:"Lessons for every grammar module + an Advanced stage", items:[
+    ["📖","Learn it first, everywhere","Every grammar module now starts with a short lesson: <b>Basics</b> (A1–B1) and <b>Advanced</b> (B2–C1), in English or <b>Español</b>, with 🔊 examples and common mistakes.",""],
+    ["⭐","Stage 8: Advanced","Each module has a new bonus stage for B2–C1. It opens when you pass stage 7 (or test out). You don't need it to finish the module.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

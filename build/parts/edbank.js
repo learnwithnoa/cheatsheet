@@ -175,6 +175,20 @@ overwhelmed|d|o-ver-WELMD
 motivated|id|MO-ti-vay-tid
 naked|id|NAY-kid|A rule-breaker! As an adjective, naked has the extra syllable.
 wicked|id|WI-kid|A rule-breaker! As an adjective, wicked has the extra syllable.
+`},
+ {n:8, adv:true, t:"Advanced: rule-breakers & used to", sub:"naked, beloved, crooked, used to", q:`
+naked|id|NAY-kid|An adjective rule-breaker: it keeps the extra syllable.
+beloved|id|bi-LUV-id|Before a noun (my beloved dog), it's usually bi-LUV-id.
+a learned professor|id|LER-nid|As an adjective (very educated), it's LER-nid. The verb (I learned) is "lernd".
+an aged parent|id|AY-jid|As an adjective (old), it's AY-jid. The verb (he aged) is "ayjd".
+crooked|id|KRU-kid|An adjective rule-breaker (not straight).
+ragged|id|RA-gid|An adjective rule-breaker (old and torn).
+rugged|id|RU-gid|An adjective rule-breaker (rough, strong).
+wretched|id|RE-chid|An adjective rule-breaker (very unhappy or bad).
+I used to swim|t|yoost-tuh|In "used to", the -ed is a /t/ that joins the "to": "yoost-tuh".
+coughed|t|koft|The -gh sounds like f, a quiet sound.
+breathed|d|breethd|The th in breathe is voiced (like "the"), so -ed is /d/.
+mixed|t|mikst|The x sounds like "ks", a quiet sound.
 `}
 ];
 ED_STAGES.forEach(st=>{

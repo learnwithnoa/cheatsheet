@@ -120,6 +120,20 @@ Today she's 85, and she ___ still cook for twenty people. (now)|can/is able to|c
 Last month she ___ walk to the river by herself! (one success)|was able to/managed to|could,can,were able to
 By next summer, I ___ talk to her neighbours in their dialect. (future)|will be able to/'ll be able to|will can,can,could
 I'm sure I ___ understand her stories better then. (future)|will be able to/'ll be able to|will can,can,could
+`},
+ {n:8, adv:true, t:"Advanced: managed to, could have…", sub:"I managed to, you could have called, it can't have been", why:"Ability and possibility at B2–C1: managed to, could have, can't have and being able to.", es:"Habilidad y posibilidad nivel B2–C1: managed to, could have, can't have y being able to.", q:`
+The exam was hard, but I ___ to pass. (succeed)|managed/~was able|manage,could,was manage|One specific success → managed to (or was able to), not could.|Un logro puntual → managed to (o was able to), no could.
+You ___ called me! I would have helped.|could have/could've|can have,could has,could of|Could have + participle = it was possible, but you didn't do it.|Could have + participio = era posible, pero no lo hiciste.
+He ___ stolen it. He was with me all day. (impossible)|can't have/couldn't have|mustn't have,can't has,couldn't of|Can't / couldn't have = I'm sure it didn't happen.|Can't / couldn't have = estoy seguro de que no pasó.
+I'd love ___ speak English without thinking.|to be able to|to can,being able,can|After love / want / need → to be able to (never "to can").|Después de love / want / need → to be able to (nunca "to can").
+___ able to work from home is a big advantage.|Being/~To be|Be,To can,Can|As the subject of a sentence → being able to.|Como sujeto de la oración → being able to.
+We were so tired that we ___ stay awake.|couldn't/could not|can't,didn't could,couldn't to|General past inability → couldn't.|Incapacidad en el pasado → couldn't.
+I ___ have finished earlier if you'd helped me.|could/~would|can,would can,could to|Could have + participle = an unreal past possibility.|Could have + participio = una posibilidad que no se dio.
+___ you possibly close the window? (very polite)|Could|Should,Must,Did|"Could you possibly…?" is a very polite request.|"Could you possibly…?" es una petición muy amable.
+The firefighters ___ to rescue everyone. (one specific success)|were able/managed|could,can,are able|One specific success in the past → were able to / managed to.|Un logro puntual en el pasado → were able to / managed to.
+I haven't ___ to sleep well since I moved. (be able)|been able|could,be able,can|Present perfect: haven't been able to.|Present perfect: haven't been able to.
+They ___ have gotten lost. Let's call them. (maybe)|might/may/could|can,must to,should of|Might / may / could have = maybe it happened.|Might / may / could have = tal vez pasó.
+You should ___ to see the mountains from the hotel. (be able)|be able|can,able,could|After a modal (should, might, will) → be able to.|Después de un modal (should, might, will) → be able to.
 `}
 ];
 COU_STAGES.forEach(st=>{

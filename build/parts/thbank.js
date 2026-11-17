@@ -120,6 +120,20 @@ When I came back, ___ music and everyone was dancing. (past, uncountable)|there 
 ___ a problem with the neighbors? No, they came to the party too! (past question)|Was there|Were there,Is there,Had
 Sofía says ___ another party in December. (future)|there will be/there'll be|there is will,there will,will have
 I'm sure ___ enough ice next time! (future)|there will be/there'll be|there will,there is will,will have
+`},
+ {n:8, adv:true, t:"Advanced: there seems to be, there's been…", sub:"there must be, there used to be, there's no point", why:"There is/are at B2–C1: with modals, seem, used to and the present perfect.", es:"There is/are nivel B2–C1: con modales, seem, used to y el present perfect.", q:`
+There ___ to be a problem with the Wi-Fi. (seem)|seems|seem,are seem,seeming|There seems to be + singular.|There seems to be + singular = parece que hay.
+There ___ a lot of changes since you left. (be, present perfect)|have been|has been,were being,are been|Present perfect + plural: there have been.|Present perfect + plural: there have been.
+There ___ an accident on the highway. Traffic is terrible. (be)|has been/'s been/~was|have been,is been,was being|There has been = news with a result now.|There has been = noticia con un resultado ahora.
+There ___ be a cinema here, but now it's a supermarket.|used to|use to,was used to,would|There used to be = it existed in the past, not now.|There used to be = antes había, ahora no.
+There's no point ___ about it now. (worry)|worrying/in worrying|to worry,worry,worried|There's no point (in) + -ing.|There's no point (in) + -ing = no tiene sentido.
+There ___ have been a mistake. My name isn't on the list. (I'm almost sure)|must|musts,must to,can|There must have been = I'm almost sure it happened.|There must have been = estoy casi seguro de que pasó.
+There's bound ___ traffic at this time. (be)|to be|be,being,been|There's bound to be = there will definitely be.|There's bound to be = seguro que va a haber.
+There ___ (not / be) enough time, so we stopped.|wasn't/was not|weren't,isn't,hasn't|Time is uncountable → there wasn't.|Time es incontable → there wasn't.
+There ___ going to be a party on Friday.|is/'s|are,will,has|Future plan: there is going to be.|Plan futuro: there is going to be.
+I don't think there ___ any milk left.|is/'s|are,has,have|Milk is uncountable → is.|Milk es incontable → is.
+There ___ fewer people at the meeting than we expected.|were|was,had,is|People is plural, and it's the past → were.|People es plural y es pasado → were.
+There ___ no way I'm going out in this rain.|is/'s|are,be,has|There's no way… = it won't happen.|There's no way… = de ninguna manera.
 `}
 ];
 TH_STAGES.forEach(st=>{
