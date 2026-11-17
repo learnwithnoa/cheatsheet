@@ -3266,6 +3266,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 (function(){
   const box=document.getElementById("coachBox"); if(!box) return;
   let tab="classes", cSort=-1, wSort="new", openRep=null;
+  window.__csDeep=window.__csDeep||{}; window.__csDeep.coaching={hash:()=>"#coaching"+(tab&&tab!=="classes"?"/"+tab:""),open:p=>{ if(p[0]) tab=p[0]; setTimeout(()=>{ try{ render(); }catch(e){} },0); }};
   /* progress reports: ?report=<id>#coaching from the email opens that report */
   const REP_P="cs-open-report", REP_READ="cs-rep-read";
   try{ const q=new URLSearchParams(location.search).get("report"); if(q){ sessionStorage.setItem(REP_P,q.replace(/[^\w-]/g,"").slice(0,30)); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
@@ -3519,6 +3520,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const news=window.__csPreview?[]:newsFor(v);
     const newsBox=news.length?`<div class="ch-news" role="status"><div class="ch-news-h"><b>🔔 New in your coaching</b><button type="button" class="ch-go" data-cnseen="1">Got it ✓</button></div><ul>${news.map(n=>`<li>${n.ico} ${n.t} <span class="muted">· ${fd(n.d)}</span></li>`).join("")}</ul><small class="muted">You also get an email when Noa sends you something new.</small></div>`:"";
     const mapBox=v.map?`<button type="button" class="em-card ch-s" data-openmap="1"><span class="em-ci" aria-hidden="true">🗺️</span><span><b>Your English Map</b><small>Your level, your superpower, 3 focus areas and the route to ${esc((v.map.goal||"your goal").replace(/\.$/,""))}</small></span><span class="em-cgo" aria-hidden="true">→</span></button>`:"";
+    setTimeout(()=>window.__csSyncUrl&&window.__csSyncUrl("coaching"),0);
     box.innerHTML=newsBox+top+mapBox+recapBox+tipsBox+guideBox+zBox+resBox+stats+`<div class="ch-tabs">${tabs.map(([k,l,c])=>`<button type="button" class="ch-tab ${c}" data-ct="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
   }
   box.addEventListener("click",e=>{ const rv=window.__csHubView&&window.__csHubView.recap; if(!rv) return;
@@ -3537,7 +3539,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   window.__csCoachNews={ list:()=>window.__csPreview?[]:newsFor(window.__csHubView), seen:()=>{ if(window.__csPreview) return; markSeen(window.__csHubView); render(); },
     go:t=>{ if(window.csGo) window.csGo("coaching"); else location.hash="#coaching"; setTimeout(()=>{ if(t&&t!=="top"){ tab=t; render(); setTimeout(()=>box.querySelector(".ch-tabs")?.scrollIntoView({behavior:"smooth",block:"start"}),60); } else window.scrollTo({top:0,behavior:"smooth"}); },80); } };
   box.addEventListener("click",e=>{ const g=e.target.closest("[data-ctgo]"); if(!g) return; tab=g.dataset.ctgo; render(); setTimeout(()=>box.querySelector(".ch-tabs")?.scrollIntoView({behavior:"smooth",block:"start"}),30); });
-  box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); });
+  box.addEventListener("click",e=>{ const t=e.target.closest("[data-ct],[data-cs],[data-ws]"); if(!t) return; if(t.dataset.ct) tab=t.dataset.ct; if(t.dataset.cs) cSort=+t.dataset.cs; if(t.dataset.ws) wSort=t.dataset.ws; render(); if(window.__csSyncUrl) window.__csSyncUrl("coaching"); });
   document.addEventListener("cs-hubview",render); document.addEventListener("cs-teacher",nav);
   /* teacher: shortcuts in the phone menu */
   document.addEventListener("click",e=>{ const m=e.target.closest(".t-mnav[data-href]"); if(m) location.href=m.dataset.href; });
@@ -4035,6 +4037,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const isBeg=()=>{ try{ const v=localStorage.getItem("ncs-level")||""; return v==="beginner"||v==='"beginner"'; }catch(e){ return false; } };
   const L=(en,es)=>isBeg()?es:en; window.__clL=L;
   let tab=(()=>{ try{ return sessionStorage.getItem("cs-club-tab")||"week"; }catch(e){ return "week"; } })();
+  window.__csDeep=window.__csDeep||{}; window.__csDeep.club={hash:()=>"#club"+(tab&&tab!=="week"?"/"+tab:""),open:p=>{ if(p[0]){ tab=p[0]; try{ sessionStorage.setItem("cs-club-tab",tab); }catch(e){} } setTimeout(()=>{ render(); },0); }};
   const feed=()=>{ if(window.__csPreview&&window.__csPreview.kind==="private") return null; return window.__csClub||null; };
   const posts=f=>((f&&f.posts)||[]).filter(p=>p&&p.week).slice().sort((a,b)=>b.week.localeCompare(a.week));
   const seen=()=>{ try{ return localStorage.getItem(SEEN)||""; }catch(e){ return ""; } };
@@ -4334,6 +4337,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     igTop(); igNudge();
     box.innerHTML=`<div class="cl-tabs" role="group" aria-label="${L("Club sections","Secciones del club")}">${tabs.map(([k,l])=>`<button type="button" class="cl-tab" data-clt="${k}" aria-pressed="${tab===k}">${l}</button>`).join("")}</div>`+body;
     if(window.__clubSocial){ window.__clubSocial.mount(box); if(tab!=="wall") window.__clubSocial.refreshBadge(); }
+    if(window.__csSyncUrl) window.__csSyncUrl("club");
   }
   document.addEventListener("click",e=>{ const g=e.target.closest("[data-recgo]"); if(!g) return; const id=g.dataset.recgo, away=location.hash!=="#club";
     const apply=()=>{ RFOCUS=id; tab="recordings"; render(); setTimeout(()=>{ const c=document.querySelector(`.cl-rcard[open]`); if(c){ c.scrollIntoView({block:"center",behavior:"smooth"}); c.classList.add("cs-flash"); } },120); };
@@ -4359,7 +4363,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   let pend=false; const typing=()=>[...box.querySelectorAll("textarea,input[type=text]")].some(x=>x.value.trim());
   const soft=()=>{ if(typing()){ pend=true; nav(); return; } pend=false; render(); };
   document.addEventListener("cs-club",soft); box.addEventListener("focusout",()=>setTimeout(()=>{ if(pend&&!typing()) soft(); },200)); document.addEventListener("submit",()=>setTimeout(()=>{ if(pend&&!typing()) soft(); },1500)); document.addEventListener("cs-hubview",nav); window.addEventListener("cs-auth",()=>{ pubTried=false; setTimeout(soft,0); });
-  window.addEventListener("hashchange",()=>{ if(location.hash==="#club") setTimeout(render,0); });
+  window.addEventListener("hashchange",()=>{ if(location.hash==="#club"){ tab="week"; setTimeout(render,0); } });
   document.addEventListener("click",e=>{ if(e.target.closest('[data-go="club"]')) setTimeout(render,0); });
   /* keep "Live now" fresh, but never while someone is typing a comment */
   setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing) render(); else home(); } },60000);
@@ -9335,6 +9339,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   const mslug=id=>String(MODS[id].name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   function hashFor(c){ if(!c) return "#quiz"; if(c==="vset") c="vocab"; const p=par(c), me=c==="ps"?mslug(M):PSLUG[c]; return "#quiz/"+(p&&PSLUG[p]?PSLUG[p]+"/":"")+(me||""); }
   window.__prHash=()=>hashFor(cur);
+  window.__csDeep=window.__csDeep||{}; window.__csDeep.quiz={hash:()=>hashFor(cur),open:p=>window.__prOpenPath(p)};
   function syncUrl(){ try{ if(view.hidden) return; const h=hashFor(cur); if(location.hash!==h) history.replaceState(Object.assign({},history.state||{cs:1,v:"quiz"},{pp:cur,m:M}),"",h); }catch(e){} }
   window.__prOpenPath=parts=>{ parts=(parts||[]).filter(Boolean); if(!parts.length){ round=null; show(null,true); syncUrl(); return; }
     const inv={}; Object.keys(PSLUG).forEach(k=>inv[PSLUG[k]]=k);
@@ -10476,6 +10481,7 @@ window.addEventListener("popstate",e=>{
   if(top&&top.id===id){ backStack.pop(); go(id); setTimeout(()=>window.scrollTo({top:top.y}),20); } else go(id);
   goingBack=false; fromPop=false;
   if(id==="quiz"&&window.__prShow) window.__prShow(st.pp||null,true,st.m);
+  { const hp=location.hash.slice(1).split("/"); if(id!=="quiz"&&hp.length>1&&window.__csDeep&&window.__csDeep[id]) window.__csDeep[id].open(hp.slice(1)); }
   renderBack();
 });
 function go(id,push){
@@ -10493,10 +10499,11 @@ function go(id,push){
   document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", (b.dataset.go===id||(id==="notebook"&&b.dataset.go==="classnotes"))?"true":"false"));
   const cur=document.querySelector('.navbtn[aria-current="true"]'); if(cur&&cur.scrollIntoView&&window.innerWidth<=900) cur.scrollIntoView({block:"nearest",inline:"center"});
   try{localStorage.setItem("eep-view",id);}catch(e){}
-  if(push&&!fromPop){ const U=id==="notes"?location.pathname+location.search:(id==="quiz"&&window.__prHash?window.__prHash():"#"+id); try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"",U); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"",U); else history.pushState({cs:1,v:id,n:++histN},"",U);}catch(e){} }
+  if(push&&!fromPop){ const U=id==="notes"?location.pathname+location.search:(window.__csDeep&&window.__csDeep[id]?window.__csDeep[id].hash():"#"+id); try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"",U); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"",U); else history.pushState({cs:1,v:id,n:++histN},"",U);}catch(e){} }
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]"); if(!b)return; e.preventDefault(); go(b.dataset.go,true); if(b.closest("nav.side,header.top")){ backStack.length=0; renderBack(); } window.scrollTo({top:0}); if(b.dataset.go==="translate") setTimeout(()=>trIn.focus(),50);});
-window.addEventListener("hashchange",()=>{ const hp=location.hash.slice(1).split("/"), h=hp[0]; if(h&&h!==curView&&ids.includes(h)) go(h); if(h==="quiz"&&hp.length>1&&window.__prOpenPath&&window.__prHash&&window.__prHash()!==location.hash) window.__prOpenPath(hp.slice(1)); });
+window.addEventListener("hashchange",()=>{ const hp=location.hash.slice(1).split("/"), h=hp[0]; if(h&&h!==curView&&ids.includes(h)) go(h); const D=window.__csDeep&&window.__csDeep[h]; if(hp.length>1&&D&&D.hash()!==location.hash) D.open(hp.slice(1)); });
+window.__csSyncUrl=id=>{ try{ if(curView!==id) return; const D=window.__csDeep&&window.__csDeep[id]; if(!D) return; const h=D.hash(); if(location.hash!==h) history.replaceState(history.state,"",h); }catch(e){} };
 document.getElementById("backLink").addEventListener("click",goBack);
 document.getElementById("backFab").addEventListener("click",goBack);
 const deepStart=location.hash.slice(1).split("/").slice(1);
@@ -10504,7 +10511,7 @@ let start=location.hash.slice(1).split("/")[0];
 if(!ids.includes(start)){ try{ start=localStorage.getItem("eep-view")||"notes"; }catch(e){ start="notes"; } }
 go(start);
 try{ history.replaceState({cs:1,v:curView,n:0},"",curView==="notes"?location.pathname+location.search:"#"+curView); }catch(e){}
-if(curView==="quiz"&&deepStart.length&&window.__prOpenPath) window.__prOpenPath(deepStart);
+if(deepStart.length){ window.__csDeepStart={id:curView,parts:deepStart}; if(window.__csDeep&&window.__csDeep[curView]) window.__csDeep[curView].open(deepStart); }
 
 /* ---------------- starred sections ---------------- */
 let stars=LS.get("ncs-stars",[]);
@@ -10977,7 +10984,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
   {id:"2026-1117-links", date:"November 17, 2026", title:"Links that take you to the right place", items:[
-    ["🔗","The address follows you in Practice","When you open a grammar module or a practice page, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b>). Refresh, bookmark it or share it, and it opens right there.",""]
+    ["🔗","The address follows you","When you open a grammar module, a Club tab or a page of My coaching, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b> or <b>hibi.cl/#club/recordings</b>). Refresh, bookmark it or share it, and it opens right there.",""]
   ]},
   {id:"2026-1117-iq", date:"November 17, 2026", title:"New grammar module: Indirect questions", items:[
     ["❓","Do you know where it is?","A new module in <b>Practice → Grammar</b> (B1+ and up) for polite questions like <i>Do you know where the station is?</i> (not <i>where is the station</i>). A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
@@ -11316,7 +11323,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117103641"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117105016"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11430,7 +11437,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
   const sec=k=>document.getElementById("v-"+k);
   function load(k,bg){ const box=T[k]; if(!box||box.dataset.on) return; const sc=sec(k); if(sc.hidden&&bg!==true) return;
     if(!ok()){ if(!sc.hidden&&window.__csTeacher===false&&window.csGo) window.csGo("notes"); return; }
-    box.dataset.on="1"; box.innerHTML=`<iframe src="${box.id==="stFrame"?(()=>{ let v="overview"; try{ v=localStorage.getItem("cs-hub-view")||"overview"; }catch(er){} if(!["overview","students","money"].includes(v)) v="overview"; return box.dataset.src.split("#")[0]+"#"+v; })():box.dataset.src}" title="${box.dataset.ttl}" scrolling="no" allow="clipboard-write"></iframe>`; }
+    box.dataset.on="1"; box.innerHTML=`<iframe src="${box.id==="stFrame"?(()=>{ let v="overview"; try{ v=localStorage.getItem("cs-hub-view")||"overview"; }catch(er){} if(!["overview","students","money"].includes(v)) v="overview"; return box.dataset.src.split("#")[0]+"#"+(PEND.students||v); })():(PEND.members?box.dataset.src.split("#")[0]+"#"+PEND.members:box.dataset.src)}" title="${box.dataset.ttl}" scrolling="no" allow="clipboard-write"></iframe>`; }
   ["students","members"].forEach(k=>{ const sc=sec(k); if(sc) new MutationObserver(()=>load(k)).observe(sc,{attributes:true,attributeFilter:["hidden"]}); });
   const bgAll=()=>{ if(window.__csTeacher===true){ load("students",true); setTimeout(()=>load("members",true),1500); } };
   document.addEventListener("cs-teacher",()=>setTimeout(bgAll,2500)); setTimeout(()=>{ load("students"); load("members"); },800); setTimeout(bgAll,3000);
@@ -11440,6 +11447,14 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
     if(d.embH&&T[d.emb]){ const f=T[d.emb].querySelector("iframe"); if(f) f.style.height=d.embH+"px"; }
     /* a link to the other teacher page: switch tabs here */
     if(d.embGo&&T[d.embGo]){ openTab(d.embGo,d.hash||""); } });
+  const PEND={}; window.__csDeep=window.__csDeep||{};
+  const fhash=k=>{ try{ const f=T[k]&&T[k].querySelector("iframe"); return f&&f.contentWindow?f.contentWindow.location.hash.slice(1):""; }catch(e){ return ""; } };
+  ["students","members"].forEach(k=>{ window.__csDeep[k]={hash:()=>{ const h=PEND[k]||fhash(k); return "#"+k+(h?"/"+h:""); },open:p=>{ const h="#"+p.join("/"); const f=T[k]&&T[k].querySelector("iframe"); if(f){ openTab(k,h); } else PEND[k]=p.join("/"); }}; });
+  const ds=window.__csDeepStart; if(ds&&T[ds.id]) PEND[ds.id]=ds.parts.join("/");
+  function watch(k){ const f=T[k]&&T[k].querySelector("iframe"); if(!f||f.dataset.watch) return; f.dataset.watch="1";
+    const hook=()=>{ try{ if(PEND[k]){ const h="#"+PEND[k]; delete PEND[k]; if(f.contentWindow.location.hash!==h) f.contentWindow.location.hash=h; } f.contentWindow.addEventListener("hashchange",()=>window.__csSyncUrl&&window.__csSyncUrl(k)); window.__csSyncUrl&&window.__csSyncUrl(k); }catch(e){} };
+    f.addEventListener("load",hook); try{ if(f.contentDocument&&f.contentDocument.readyState==="complete"&&f.contentWindow.location.href!=="about:blank") hook(); }catch(e){} }
+  setInterval(()=>{ watch("students"); watch("members"); },700);
   function openTab(k,hash){ const b=document.querySelector(`.navbtn[data-go="${k}"]`); if(b) b.click(); load(k); const f=T[k]&&T[k].querySelector("iframe");
     if(f&&hash){ try{ if(f.contentWindow.location.hash!==hash) f.contentWindow.location.hash=hash; }catch(er){ f.src=T[k].dataset.src.split("#")[0]+hash; } } }
   /* links on Home to the teacher pages (notifications…) open the tabs instead */

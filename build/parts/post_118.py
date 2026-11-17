@@ -182,7 +182,7 @@ if '2026-1117-iq' not in s:
 s=open(p,encoding="utf-8").read()
 if '2026-1117-links' not in s:
     s=s.replace(a,a+'''  {id:"2026-1117-links", date:"November 17, 2026", title:"Links that take you to the right place", items:[
-    ["🔗","The address follows you in Practice","When you open a grammar module or a practice page, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b>). Refresh, bookmark it or share it, and it opens right there.",""]
+    ["🔗","The address follows you","When you open a grammar module, a Club tab or a page of My coaching, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b> or <b>hibi.cl/#club/recordings</b>). Refresh, bookmark it or share it, and it opens right there.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
