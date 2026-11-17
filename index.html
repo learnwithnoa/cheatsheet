@@ -1488,7 +1488,7 @@ button.cl-gwho:focus-visible,.cs-rxwho:focus-visible{outline:3px solid var(--bri
 html.cs-simple:not(.cs-smore) nav.side .navbtn:not(.sm-keep):not(.t-mnav):not(.t-tab),
 html.cs-simple:not(.cs-smore) nav.side .navbtn.locked,
 html.cs-simple:not(.cs-smore) nav.side .navgroup:not(.mine){display:none!important}
-html.cs-simple #searchWrap,html.cs-simple #searchToggle,html.cs-simple #hdrWord,html.cs-simple #musicBtn,html.cs-simple #tmWrap,html.cs-simple #hmArrange,
+html.cs-simple #searchWrap,html.cs-simple #searchToggle,html.cs-simple #hdrWord,html.cs-simple #musicBtn,html.cs-simple #hmArrange,
 html.cs-simple #awBox,html.cs-simple #homeClub.hc-tease,html.cs-simple #tStoic,html.cs-simple #v-notes .hm-lede,html.cs-simple #v-notes .lede-es{display:none!important}
 html.cs-simple:not(.cs-smore) #smMore,html.cs-simple.cs-smore #smLess{display:inline-flex!important}
 html.cs-simple #smDoors{display:block}
@@ -11512,7 +11512,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117162336"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117185623"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
