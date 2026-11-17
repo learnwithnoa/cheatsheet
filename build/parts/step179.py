@@ -45,6 +45,7 @@ html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-keep{min-height:54px;font-size
 .sm-ask .csc{max-width:420px}
 .sm-ask .csc-b p{margin:0 0 8px}
 .sm-ask .csc-b .es{color:var(--muted);font-size:14px}
+.sm-beg{display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:14.5px;line-height:1.35;cursor:pointer}.sm-beg input{margin-top:3px;width:18px;height:18px;flex:none}.sm-beg .es{color:var(--muted);font-size:13px}
 @media (max-width:900px){.sm-door{padding:12px 14px;min-height:68px;gap:12px}.sm-door .sm-ic{width:40px;height:40px;font-size:21px}.sm-door b{font-size:17px}.sm-door small{font-size:14px}.sm-doors .sm-sub{display:none}.sm-doors h2{margin-bottom:10px}}
 '''
 _i = s.index('</style>'); s = s[:_i] + _css + s[_i:]
@@ -97,8 +98,9 @@ _js = r'''<script>
     const busy=[...document.querySelectorAll(".cs-dlg,.bd-modal,#whatsnew,#welcome,.wl-backdrop,.qa-backdrop,.csc-bd,dialog[open]")].some(x=>!x.hidden&&x.getClientRects().length)||(window.__csBusy&&window.__csBusy());
     if(busy||window.__csAuth!==true){ if((tries||0)<40) setTimeout(()=>ask((tries||0)+1),2500); return; }
     const bd=document.createElement("div"); bd.className="csc-bd sm-ask";
-    bd.innerHTML='<div class="csc" role="alertdialog" aria-modal="true" aria-labelledby="smAskT"><h3 id="smAskT">Hibi, made simpler 🧩</h3><div class="csc-b"><p>Noa turned on <b>Simple mode</b> for you: just the main pages, with bigger buttons. Everything else is still here, under <b>☰ More</b>.</p><p class="es">Noa activó el modo simple: solo lo principal, con botones más grandes. Lo demás sigue en <b>☰ More</b>.</p></div><div class="csc-a"><button type="button" data-c="0">Show me everything</button><button type="button" data-c="1" class="csc-y">Keep it simple</button></div></div>';
-    const done=keep=>{ bd.remove(); document.removeEventListener("keydown",key,true); put(Object.assign({},get(),{on:keep,asked:true})); if(!keep) setMore(false); apply(); toast(keep?"Simple mode is on. Change it anytime in Settings.":"Simple mode off. You can turn it back on in Settings."); };
+    let beg=false; try{ const lv=localStorage.getItem("ncs-level")||""; beg=lv==="beginner"||lv==='"beginner"'; }catch(e){}
+    bd.innerHTML=`<div class="csc" role="alertdialog" aria-modal="true" aria-labelledby="smAskT"><h3 id="smAskT">Hibi, made simpler 🧩</h3><div class="csc-b"><p>Noa turned on <b>Simple mode</b> for you: just the main pages, with bigger buttons. Everything else is still here, under <b>☰ More</b>.</p><p class="es">Noa activó el modo simple: solo lo principal, con botones más grandes. Lo demás sigue en <b>☰ More</b>.</p></div>${beg?"":'<label class="sm-beg"><input type="checkbox" id="smBeg"><span>🌱 Also turn on <b>Spanish help</b> (Beginner mode)<br><span class="es">Activar ayuda en español</span></span></label>'}<div class="csc-a"><button type="button" data-c="0">Show me everything</button><button type="button" data-c="1" class="csc-y">Keep it simple</button></div></div>`;
+    const done=keep=>{ const bx=bd.querySelector("#smBeg"), bg=!!(bx&&bx.checked&&window.csSetLevel); if(bg){ try{ window.csSetLevel(true); }catch(e){} } bd.remove(); document.removeEventListener("keydown",key,true); put(Object.assign({},get(),{on:keep,asked:true})); if(!keep) setMore(false); apply(); if(!bg) toast(keep?"Simple mode is on. Change it anytime in Settings.":"Simple mode off. You can turn it back on in Settings."); };
     const key=e=>{ if(e.key==="Escape"){ e.preventDefault(); done(true); } };
     bd.addEventListener("click",e=>{ const b=e.target.closest("[data-c]"); if(b) done(b.dataset.c==="1"); });
     /* other one-time pop-ups wait while this one is open */
@@ -110,6 +112,8 @@ _js = r'''<script>
   /* the Club / My coaching buttons appear a moment after sign-in */
   const nb=document.querySelector("nav.side .navgroup.mine"); if(nb) new MutationObserver(()=>{ if(on()) doors(); }).observe(nb,{subtree:true,attributes:true,attributeFilter:["hidden","class"]});
   addEventListener("storage",e=>{ if(e.key===K) apply(); });
+  /* Noa's switch arrives with the first sync after sign-in: apply it (and ask) right away, no reload needed */
+  addEventListener("cs-synced",()=>{ apply(); try{ window.csComfort&&window.csComfort.apply&&window.csComfort.apply(); }catch(e){} ask(0); });
   setTimeout(()=>ask(0),3000);
 })();
 </script>'''

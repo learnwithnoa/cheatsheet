@@ -257,6 +257,7 @@ async function syncDown(fromReturn) {
     }).catch(() => {});
     if (toPush.length) await Promise.all(toPush.map(pushKey));
     status("synced");
+    try { window.dispatchEvent(new CustomEvent("cs-synced", { detail: { changed } })); } catch (e) {}
     checkInbox();
     if (changed && fromReturn && changedOther) { if (window.__csListsReload) { try { window.__csListsReload(); } catch (e) {} } offerSyncRefresh(); }
     else if (changed) mergedNeedsReload(!changedOther);   /* show what came from another device (waits while they're typing or doing a recap) */
