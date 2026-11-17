@@ -91,3 +91,33 @@ k='.lk-box[hidden]{display:none}'
 if '.lb-ov~.lk-box' not in s:
     i=s.index('</style>'); s=s[:i]+'\nhtml.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}\n.lb-ov .lb-box{-webkit-user-select:text;user-select:text}\n'+s[i:]
 open(p,"w",encoding="utf-8").write(s)
+# Nov 16 2026: "chip" cards (members' one-word answers as small pills in a "✨ Your words" panel next to the section's first card)
+# and the board's counter rules from the live board: the closing card, question cards and cards marked nocount don't count
+# (and when a board lists its sections, only the "✍️ Your ideas" sections count).
+s=open(p,encoding="utf-8").read()
+a='    const n=cards.filter(c=>c.style!=="wrap").length;'
+if s.count(a)==1:
+    s=s.replace(a,'''    const inp=Array.isArray(b.sections)&&b.sections.length?new Set(b.sections.filter(x=>x&&x.input).map(x=>x.name)):null;
+    const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&!(Array.isArray(c.questions)&&c.questions.length)&&(!inp||inp.has(c.section||""))).length;''')
+a='return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}">'
+if s.count(a)==1:
+    s=s.replace(a,'return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}${c.style==="chip"?" chip":""}">')
+a='<div class="lb-grid">${groups[k].map(card).join("")}</div>'
+if s.count(a)==1:
+    s=s.replace(a,'''${(g=>{ const ch=g.filter(c=>c.style==="chip"), rest=g.filter(c=>c.style!=="chip");
+        return ch.length?`<div class="lb-grid flow">${rest.map(card).join("")}<div class="lb-chipbox"><div class="lb-chiphd">✨ ${L("Your words","Sus palabras")} · ${ch.length}</div><div class="lb-chips">${ch.map(card).join("")}</div></div></div>`:`<div class="lb-grid">${g.map(card).join("")}</div>`; })(groups[k])}''')
+i=s.index('</style>'); s=s[:i]+'''
+/* live board: chip cards in a "Your words" panel */
+.lb-grid.flow{grid-template-columns:minmax(0,clamp(240px,30%,360px)) minmax(0,1fr);align-items:stretch}
+.lb-grid.flow>.lb-card{grid-column:1}
+.lb-chipbox{grid-column:2;grid-row:1;border-radius:20px;padding:clamp(14px,1.8vw,22px);border:1.5px dashed #dfe5f3;background:rgba(255,255,255,.55);display:flex;flex-direction:column;gap:12px}
+.lb-chiphd{font-family:"Space Mono",monospace;font-weight:700;text-transform:uppercase;letter-spacing:.24em;font-size:12px;color:#4a5170}
+.lb-chips{display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:10px;flex:1}
+.lb-card.chip{--h:59,130,246;display:inline-flex;align-items:center;padding:8px 16px;border-radius:999px;background:rgba(var(--h),.12)!important;border:1.5px solid rgba(var(--h),.45)!important;box-shadow:0 6px 16px rgba(var(--h),.15)}
+.lb-chips .lb-card.chip:nth-child(5n+2){--h:45,212,191}.lb-chips .lb-card.chip:nth-child(5n+3){--h:168,85,247}.lb-chips .lb-card.chip:nth-child(5n+4){--h:236,72,153}.lb-chips .lb-card.chip:nth-child(5n+5){--h:234,179,8}
+.lb-chips .lb-card.chip:nth-child(odd){transform:rotate(-1.2deg)}.lb-chips .lb-card.chip:nth-child(even){transform:rotate(1.2deg)}
+.lb-card.chip .lb-top{gap:8px;margin:0;align-items:center}.lb-card.chip .lb-emo{font-size:20px}.lb-card.chip .lb-id{font-size:clamp(17px,1.7vw,22px);line-height:1.1}
+.lb-ov.dark .lb-chipbox{background:rgba(11,20,48,.45);border-color:#2b3b6e}.lb-ov.dark .lb-chiphd{color:#facc15}.lb-ov.dark .lb-card.chip{background:rgba(var(--h),.16)!important}
+@media (max-width:720px){.lb-grid.flow{grid-template-columns:minmax(0,1fr)}.lb-chipbox{grid-column:1;grid-row:auto}}
+'''+s[i:]
+open(p,"w",encoding="utf-8").write(s)

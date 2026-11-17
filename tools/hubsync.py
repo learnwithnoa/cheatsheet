@@ -944,9 +944,10 @@ def main():
                 continue
             x = {k: _txt(c.get(k), n) for k, n in (("emoji", 16), ("text", 200), ("meaning", 600), ("example", 400), ("english", 200), ("uk", 200), ("section", 80), ("who", 60)) if c.get(k)}
             x["n"] = float(c.get("n") or len(cards) + 1)
-            qs = [_txt(q, 240) for q in (c.get("questions") or []) if _txt(q, 240)][:6]
+            qs = [_txt(q, 320) for q in (c.get("questions") or []) if _txt(q, 320)][:6]
             if qs: x["questions"] = qs
-            if c.get("style") == "wrap": x["style"] = "wrap"
+            if c.get("style") in ("wrap", "chip"): x["style"] = c["style"]   # chip = small pill in the "Your words" panel
+            if c.get("nocount"): x["nocount"] = True                          # not counted in the board's number
             cards.append(x)
         if not cards:
             raise SystemExit("need the board's cards")

@@ -10,6 +10,19 @@
 
 html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 .lb-ov .lb-box{-webkit-user-select:text;user-select:text}
+
+/* live board: chip cards in a "Your words" panel */
+.lb-grid.flow{grid-template-columns:minmax(0,clamp(240px,30%,360px)) minmax(0,1fr);align-items:stretch}
+.lb-grid.flow>.lb-card{grid-column:1}
+.lb-chipbox{grid-column:2;grid-row:1;border-radius:20px;padding:clamp(14px,1.8vw,22px);border:1.5px dashed #dfe5f3;background:rgba(255,255,255,.55);display:flex;flex-direction:column;gap:12px}
+.lb-chiphd{font-family:"Space Mono",monospace;font-weight:700;text-transform:uppercase;letter-spacing:.24em;font-size:12px;color:#4a5170}
+.lb-chips{display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:10px;flex:1}
+.lb-card.chip{--h:59,130,246;display:inline-flex;align-items:center;padding:8px 16px;border-radius:999px;background:rgba(var(--h),.12)!important;border:1.5px solid rgba(var(--h),.45)!important;box-shadow:0 6px 16px rgba(var(--h),.15)}
+.lb-chips .lb-card.chip:nth-child(5n+2){--h:45,212,191}.lb-chips .lb-card.chip:nth-child(5n+3){--h:168,85,247}.lb-chips .lb-card.chip:nth-child(5n+4){--h:236,72,153}.lb-chips .lb-card.chip:nth-child(5n+5){--h:234,179,8}
+.lb-chips .lb-card.chip:nth-child(odd){transform:rotate(-1.2deg)}.lb-chips .lb-card.chip:nth-child(even){transform:rotate(1.2deg)}
+.lb-card.chip .lb-top{gap:8px;margin:0;align-items:center}.lb-card.chip .lb-emo{font-size:20px}.lb-card.chip .lb-id{font-size:clamp(17px,1.7vw,22px);line-height:1.1}
+.lb-ov.dark .lb-chipbox{background:rgba(11,20,48,.45);border-color:#2b3b6e}.lb-ov.dark .lb-chiphd{color:#facc15}.lb-ov.dark .lb-card.chip{background:rgba(var(--h),.16)!important}
+@media (max-width:720px){.lb-grid.flow{grid-template-columns:minmax(0,1fr)}.lb-chipbox{grid-column:1;grid-row:auto}}
 </style>
 <script>
 /* first paint: show the page you're opening (not a default one), and you as signed in, from what this device remembers; the real data replaces it a moment later */
@@ -4926,18 +4939,20 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function boardHTML(b){ const t=String(b.title||L("Live board","Pizarra en vivo")).split(" "), last=t.pop();
     const cards=(b.cards||[]).filter(c=>!c.hidden).slice().sort((x,y)=>(x.n||0)-(y.n||0)), order=[], groups={};
     cards.forEach(c=>{ const k=c.section||""; if(!(k in groups)){ groups[k]=[]; order.push(k); } groups[k].push(c); });
-    const n=cards.filter(c=>c.style!=="wrap").length;
+    const inp=Array.isArray(b.sections)&&b.sections.length?new Set(b.sections.filter(x=>x&&x.input).map(x=>x.name)):null;
+    const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&!(Array.isArray(c.questions)&&c.questions.length)&&(!inp||inp.has(c.section||""))).length;
     const card=c=>{ const qs=Array.isArray(c.questions)&&c.questions.length, save=c.style!=="wrap"&&(c.english||c.meaning);
       const main=`<div><div class="lb-top">${c.emoji?`<span class="lb-emo" aria-hidden="true">${esc(c.emoji)}</span>`:""}<div class="lb-id">${esc(c.text||"")}</div></div>
         ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
         ${c.english?`<span class="lb-eq">🇺🇸 ${esc(c.english)}</span>`:""}${c.uk?`<span class="lb-eq uk">🇬🇧 ${esc(c.uk)}</span>`:""}
         ${save?`<div><button type="button" class="cl-addw lb-save" data-clw="${esc(JSON.stringify({w:c.text,tr:c.english||c.meaning||"",ex:c.example||""}))}">＋ ${L("My words","Mis palabras")}</button></div>`:""}</div>`;
-      return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}">${main}${qs?`<div class="lb-qs"><div class="lb-ql">${L("Let's use it!","¡Usémoslo!")}</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>`:""}</div>`; };
+      return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}${c.style==="chip"?" chip":""}">${main}${qs?`<div class="lb-qs"><div class="lb-ql">${L("Let's use it!","¡Usémoslo!")}</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>`:""}</div>`; };
     return `<div class="lb-head"><div><div class="lb-lbl">Noa's English Club${b.date?` · ${esc(new Date(b.date+"T12:00:00").toLocaleDateString(L("en-US","es-CL"),{weekday:"long",month:"long",day:"numeric"}))}`:""}</div>
         <h2 class="lb-h">${esc(t.join(" "))} <span class="lb-ul">${esc(last)}</span></h2>${b.subtitle?`<div class="lb-sub">${esc(b.subtitle)}</div>`:""}</div>
         <div class="lb-badge"><b>${n}</b><span>${esc(b.countLabel||L("ideas","ideas"))}</span></div></div>
       ${b.prompt?`<div class="lb-pill"><span aria-hidden="true">💬</span><b>${esc(b.prompt)}</b></div>`:""}
-      ${order.map((k,i)=>`<section class="lb-sec${i%2?" alt":""}${groups[k].some(c=>c.style==="wrap")?" wrapsec":""}">${k?`<div class="lb-lbl">${esc(k)}</div>`:""}<div class="lb-grid">${groups[k].map(card).join("")}</div></section>`).join("")}`; }
+      ${order.map((k,i)=>`<section class="lb-sec${i%2?" alt":""}${groups[k].some(c=>c.style==="wrap")?" wrapsec":""}">${k?`<div class="lb-lbl">${esc(k)}</div>`:""}${(g=>{ const ch=g.filter(c=>c.style==="chip"), rest=g.filter(c=>c.style!=="chip");
+        return ch.length?`<div class="lb-grid flow">${rest.map(card).join("")}<div class="lb-chipbox"><div class="lb-chiphd">✨ ${L("Your words","Sus palabras")} · ${ch.length}</div><div class="lb-chips">${ch.map(card).join("")}</div></div></div>`:`<div class="lb-grid">${g.map(card).join("")}</div>`; })(groups[k])}</section>`).join("")}`; }
   function closeBoard(){ const o=document.querySelector(".lb-ov"); if(o){ o.remove(); document.documentElement.classList.remove("lb-lock"); } }
   document.addEventListener("click",async e=>{ if(e.target.closest("[data-boardx]")||e.target.classList.contains("lb-ov")){ closeBoard(); return; }
     const b=e.target.closest("[data-board]"); if(!b) return; e.preventDefault(); const [wk,wd]=b.dataset.board.split("|");
@@ -10948,7 +10963,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261116220011"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261116220702"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
