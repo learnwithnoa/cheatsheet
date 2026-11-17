@@ -53,6 +53,7 @@ Usage:
       next to that class's recording and on This week). Same json as the live board: {"title","subtitle","prompt","countLabel","theme":"light"|"dark","cards":[{"n","emoji","text","meaning",
       "example","english","uk","section","questions":[...],"style":"wrap"}]}. Same date again = replaces it. Refuses before the class has ended.
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
+  HUB_PASSWORD=... python3 hubsync.py club-yt   newest videos in the club's YouTube playlist (refreshed every hour by the pay helper)
   HUB_PASSWORD=... python3 hubsync.py trials [days]   free 2-week club trials ("new": started/ended/joined in the last [days], default 2)
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
@@ -1034,6 +1035,10 @@ def main():
             out.append({"name": t.get("name"), "email": t.get("email"), "status": t.get("status"), "started": datetime.datetime.fromtimestamp((t.get("start") or 0) / 1000).strftime("%Y-%m-%d"),
                         "ends": t.get("until"), "new": when >= since})
         print(json.dumps(out, ensure_ascii=False)); return
+    if cmd == "club-yt":
+        # newest videos in Noa's English Club YouTube playlist (the pay helper reads its public feed every hour; YouTube itself is blocked here)
+        f = get_doc(tok, tu, "t-ytfeed") or {}
+        print(json.dumps({"checked": f.get("checked"), "videos": [{"url": "https://youtu.be/" + v["id"], "title": v.get("title"), "published": (v.get("published") or "")[:10], "description": v.get("description", "")} for v in f.get("videos", [])]}, ensure_ascii=False)); return
     if cmd == "access-requests":
         # people asking to join Hibi (Noa approves them on Hibi: Home → 🔔)
         out = []

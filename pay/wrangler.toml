@@ -7,6 +7,7 @@ workers_dev = true
 [vars]
 FLOW_ENV = "live"   # "sandbox" = Flow's practice version; "live" = real payments (since Nov 16 2026)
 PAYPAL_ENV = "live"   # real PayPal payments (since Nov 16 2026); "sandbox" = test mode
+YT_PLAYLIST = "PLGcDEByiGa7g"   # Noa's English Club playlist on YouTube (the helper reads its public feed every hour)
 FIREBASE_API_KEY = "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw"
 
 [triggers]

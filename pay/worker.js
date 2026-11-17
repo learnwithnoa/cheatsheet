@@ -653,6 +653,23 @@ async function unreadMail(env) {
   return out;
 }
 
+// Club recordings: YouTube blocks Claude's workspace, so the helper reads the club playlist's free public feed
+// and keeps the newest videos in users/{Noa}/data/t-ytfeed (hubsync.py club-yt shows them to the nightly task)
+const xmlText = (s) => String(s || "").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+async function ytFeed(env) {
+  const list = env.YT_PLAYLIST; if (!list) return { ok: false, why: "no playlist set" };
+  try {
+    const r = await fetch("https://www.youtube.com/feeds/videos.xml?playlist_id=" + encodeURIComponent(list), { headers: { "user-agent": "Mozilla/5.0 (hibi-pay)" } });
+    if (!r.ok) return { ok: false, why: "YouTube said " + r.status };
+    const x = await r.text();
+    const videos = [...x.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(([, e]) => {
+      const g = (re) => { const m = e.match(re); return m ? xmlText(m[1]) : ""; };
+      return { id: g(/<yt:videoId>([^<]+)</), title: g(/<title>([\s\S]*?)<\/title>/), published: g(/<published>([^<]+)</), description: g(/<media:description>([\s\S]*?)<\/media:description>/).slice(0, 600) };
+    }).filter((v) => v.id);
+    await setJ(env, TEACHER, "t-ytfeed", { playlist: list, checked: new Date().toISOString(), videos });
+    return { ok: true, videos: videos.length, newest: videos[0] ? videos[0].title.slice(0, 80) : "" };
+  } catch (e) { return { ok: false, why: String(e.message || e).slice(0, 120) }; }
+}
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
   try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
@@ -673,6 +690,7 @@ export default {
       switch (url.pathname) {
         case "/robots.txt": return new Response("User-agent: *\nAllow: /api/health\nAllow: /api/flow-callback\nDisallow: /\n");
         case "/api/health": return json(await health(env), 200, req);
+        case "/api/ytfeed": return json(await ytFeed(env), 200, req);   // refreshes the club playlist list now (public videos only, no personal data)
         case "/api/subscribe": return await subscribe(env, req, url);
         case "/api/card-return": return await cardReturn(env, req, url);
         case "/api/cancel": return await cancel(env, req);
@@ -708,5 +726,5 @@ export default {
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env)); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env), ytFeed(env)])); },
 };
