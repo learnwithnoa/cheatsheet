@@ -658,6 +658,15 @@ async function unreadMail(env) {
 const xmlText = (s) => String(s || "").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
 async function ytFeed(env) {
   const list = env.YT_PLAYLIST; if (!list) return { ok: false, why: "no playlist set" };
+  if (env.YT_API_KEY) try {   // the YouTube API also lists the playlist's unlisted videos (the free feed only shows public ones)
+    const r = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,status&maxResults=50&playlistId=${encodeURIComponent(list)}&key=${env.YT_API_KEY}`);
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) return { ok: false, why: "YouTube API: " + String((d.error && d.error.message) || r.status).slice(0, 120) };
+    const videos = (d.items || []).map((it) => ({ id: it.snippet.resourceId && it.snippet.resourceId.videoId, title: it.snippet.title || "", published: it.snippet.publishedAt || "", description: String(it.snippet.description || "").slice(0, 600), privacy: (it.status && it.status.privacyStatus) || "" }))
+      .filter((v) => v.id && v.privacy !== "private").sort((a, b) => (a.published < b.published ? 1 : -1));
+    await setJ(env, TEACHER, "t-ytfeed", { playlist: list, checked: new Date().toISOString(), videos });
+    return { ok: true, via: "api", videos: videos.length, newest: videos[0] ? videos[0].title.slice(0, 80) : "" };
+  } catch (e) { return { ok: false, why: String(e.message || e).slice(0, 120) }; }
   try {
     const r = await fetch("https://www.youtube.com/feeds/videos.xml?playlist_id=" + encodeURIComponent(list), { headers: { "user-agent": "Mozilla/5.0 (hibi-pay)" } });
     if (!r.ok) return { ok: false, why: "YouTube said " + r.status };
