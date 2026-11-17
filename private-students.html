@@ -566,7 +566,7 @@ async function doLink(uidv, hubId, auto) {
 function renderLinks(maybe) {
   const dism = new Set((meta && meta.dismissed) || []);
   const linkedU = new Set(Object.keys(rolesByUid).filter(k => rolesByUid[k].hub));
-  const loose = accounts.filter(a => !linkedU.has(a.uid) && (a.email || "").toLowerCase() !== TEACHER && !dism.has(a.uid) && !(rolesByUid[a.uid] && rolesByUid[a.uid].club === true && !rolesByUid[a.uid].private))
+  const loose = accounts.filter(a => !linkedU.has(a.uid) && (a.email || "").toLowerCase() !== TEACHER && !dism.has(a.uid) && !(rolesByUid[a.uid] && rolesByUid[a.uid].hibiOnly) && !(rolesByUid[a.uid] && rolesByUid[a.uid].club === true && !rolesByUid[a.uid].private))
     .filter(a => maybe.some(x => x.uid === a.uid) || (rolesByUid[a.uid] && rolesByUid[a.uid].club === false));
   const box = $("linkBox"); box.hidden = !loose.length; if (!loose.length) return;
   /* linking now lives on the Hibi members page; this is just a pointer */
