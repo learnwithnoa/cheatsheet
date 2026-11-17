@@ -445,6 +445,7 @@
           ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click a word, or select a few words," : "Press and hold a word") + " to see what it means and save it to My notebook.") : ""}
         </div>
         <div class="cs-sec"><h4>Page tools</h4>
+          ${isMain ? tog("csSimple", "🧩 Simple mode", "Only the main pages (Home, My coaching or Club, My notebook and Practice) with bigger buttons. Everything else is under ☰ More.") : ""}
           ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on. Tap ☰ Menu at the top left to change pages." : "Hides the student list so you only see one student.")}
           ${isMain ? tog("csInshort", "“In short” boxes", "A one-line summary at the top of each grammar page.") : ""}
           ${isMain && canSpeak ? tog("csRead", "Listen buttons", "A 🔊 Listen button on each page reads it aloud. Select text first to hear just that part.") : ""}
@@ -478,6 +479,7 @@
     if ($("csCursors")) $("csCursors").onclick = e => { const b = e.target.closest("[data-cscur]"); if (!b) return; S.cursor = b.dataset.cscur; save(); applyAll(); };
     bind("csSpace", "space"); bind("csBionic", "bionic"); bind("csRulerT", "ruler"); bind("csInshort", "inshort"); bind("csRead", "read"); bind("csCalm", "calm");
     if ($("csFocus")) $("csFocus").addEventListener("change", () => { setFocus($("csFocus").checked); applyAll(); if (focusOn()) { open(false); toast("Focus mode on. Tap ☰ Menu to change pages, or “Exit focus mode” at the bottom to leave."); } });
+    if ($("csSimple")) $("csSimple").addEventListener("change", () => { if (window.csSimple) { window.csSimple.set($("csSimple").checked); toast($("csSimple").checked ? "Simple mode on. Tap ☰ More in the menu for everything else." : "Simple mode off"); } });
     if ($("csRead")) $("csRead").addEventListener("change", () => { if (!S.read) stopReading(); });
     $("csResetAll").onclick = () => { S = Object.assign({}, DEF); save(); applyAll(); toast("Settings reset"); };
     if (isMain) {
@@ -530,7 +532,7 @@
     document.querySelectorAll("[data-csmenu]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.csmenu === (S.menu || "grouped"))));
     document.querySelectorAll("[data-csacc]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.csacc === (S.accent || "blue"))));
     document.querySelectorAll("[data-cscur]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cscur === (S.cursor || "default"))));
-    set("csSpace", S.space); set("csBionic", S.bionic); set("csRulerT", S.ruler); set("csFocus", focusOn()); set("csInshort", S.inshort); set("csRead", S.read); set("csCalm", S.calm);
+    set("csSpace", S.space); set("csBionic", S.bionic); set("csRulerT", S.ruler); set("csFocus", focusOn()); set("csSimple", !!(window.csSimple && window.csSimple.on())); set("csInshort", S.inshort); set("csRead", S.read); set("csCalm", S.calm);
     paintTimer();
   }
 

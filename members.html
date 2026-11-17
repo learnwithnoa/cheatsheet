@@ -185,7 +185,7 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
 <script src="emb.js?v=3"></script>
-<script src="comfort.js?v=31" defer></script>
+<script src="comfort.js?v=32" defer></script>
 <script src="tbar.js?v=2" defer></script>
 </head>
 <body>
@@ -411,7 +411,7 @@ async function load() {
         sheet: parse(data["ncs-sheet"], ""),
         buddy: parse(data["ncs-buddy"], null),
         loveLog: parse(data["ncs-ttlove-log"], []),
-        level: parse(data["ncs-level"], "normal"),
+        level: parse(data["ncs-level"], "normal"), simple: parse(data["ncs-simple"], null),
         mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), wkgoal: parse(data["ncs-wkgoal"], 3), modrec: parse(data["ncs-modrec"], {}) || {}, recDocAt,
         loveLast: parse(data["ncs-ttlove"], ""), mylevel: parse(data["ncs-mylevel"], null),
         role: roles[d.id] || {}
@@ -881,6 +881,8 @@ function renderDetail(s) {
       <select id="rLv" style="font:700 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${["", "A1", "A1–A2", "A2", "A2–B1", "B1", "B1–B2", "B2", "B2–C1", "C1", "C2"].map(v => `<option value="${v}" ${(s.role.lv || "") === v ? "selected" : ""}>${v || "Not set (use theirs)"}</option>`).join("")}</select>
       <span class="muted small">${s.role && s.role.hub ? "Same level as their coaching page on Private students." : "What you set here is what they see on Hibi."}</span></div>
     <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:10px;cursor:pointer"><input type="checkbox" id="lvlBeg" ${s.level === "beginner" ? "checked" : ""}> 🌱 Beginner mode (more Spanish, simpler examples, slower voice)</label>
+    <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="smOn" ${s.simple && s.simple.on ? "checked" : ""}> 🧩 Simple mode (only the main pages, bigger buttons)</label>
+    <div class="muted small" style="margin:2px 0 0 26px">${(() => { const v = s.simple || {}, n = esc(s.name.split(" ")[0]); if (v.on && !v.asked) return "On. " + n + " will be asked if they want to keep it the next time they open Hibi."; if (v.on) return v.by === "me" ? "On (" + n + " turned it on in Settings)." : "On. " + n + " chose to keep it."; if (v.asked && v.by === "noa") return n + " chose “Show me everything”."; if (v.by === "me") return n + " turned it off in Settings."; return "For people who feel overwhelmed: Home, My coaching, Club, My notebook and Practice, everything else under ☰ More. They can turn it off."; })()}</div>
     <div class="row" style="margin-top:10px"><button type="button" class="kd-btn" data-kd="msg-${esc(s.uid)}">💌 Send ${esc(s.name.split(" ")[0])} a message</button></div>
     ${kdOpen === "msg-" + s.uid ? composer("msg-" + s.uid, "Hi " + s.name.split(" ")[0] + "! ") : ""}
     <div class="stats"><div class="stat"><b>${words.length}</b><span>words</span></div><div class="stat"><b>${notes.length}</b><span>class notes</span></div><div class="stat"><b>${s.stars.length}</b><span>starred sections</span></div></div>
@@ -920,6 +922,11 @@ function renderDetail(s) {
     const v = lb.checked ? "beginner" : "normal";
     try { await setDoc(doc(db, "users", s.uid, "data", "ncs-level"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.level = v; toast(lb.checked ? "🌱 Beginner mode on for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Beginner mode off"); }
     catch (e) { console.warn(e); lb.checked = !lb.checked; toast("Couldn't save. Try again."); }
+  };
+  const so = $("smOn"); if (so) so.onchange = async () => {
+    const v = { on: so.checked, by: so.checked ? "noa" : "noa-off", asked: !so.checked, at: Date.now() };
+    try { await setDoc(doc(db, "users", s.uid, "data", "ncs-simple"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.simple = v; renderDetail(s); toast(so.checked ? "🧩 Simple mode on for " + s.name.split(" ")[0] + ". They'll see it next time they open Hibi." : "Simple mode off"); }
+    catch (e) { console.warn(e); so.checked = !so.checked; toast("Couldn't save. Try again."); }
   };
   const cp = $("cpW");
   if (cp) cp.onclick = async () => {

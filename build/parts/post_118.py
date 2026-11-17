@@ -228,3 +228,12 @@ if '2026-1117-buddytalk' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 17: Simple mode
+s=open(p,encoding="utf-8").read()
+if '2026-1117-simple' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-simple", date:"November 17, 2026", title:"Simple mode 🧩", items:[
+    ["🧩","Less on the screen","Too much on Hibi? Turn on <b>Simple mode</b> in <b>Settings</b>: the menu shows only Home, My coaching, Club, My notebook and Practice, with bigger buttons, and Home starts with big buttons to get where you want to go.",""],
+    ["☰","Everything is still there","Tap <b>☰ More</b> in the menu to see every page, and <b>Simple menu</b> to go back. Noa can turn it on for you, and you can always turn it off.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

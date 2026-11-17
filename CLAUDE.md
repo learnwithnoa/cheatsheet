@@ -84,6 +84,7 @@ Pages updates about a minute after the push. End commit messages with the attrib
 - Run `python3 tools/hubsync.py` with no arguments to list its commands (students, classes, recaps, club posts, recordings, backups…).
 - Rules: students must never see private notes (the "About" text, boleta, emails, health, money, family). "View as" must never change anything.
   Lesson plans are never shown to members before class. In View as, `build/cloud.js` turns every Firestore write into a no-op and `comfort_early.html` blocks pay-helper calls (except /api/my-price); keep it that way.
+  Simple mode (step179): per member in `users/{uid}/data/ncs-simple` {on, by:"noa"|"noa-off"|"me", asked}; Noa switches it in Hibi members (member detail); the member is asked once to keep it.
   Recommendation dates: `users/{Noa}/data/t-recs` ({uid:{mod:{at,n}}}), shown in Hibi members → 💡 Recommended. Ask Noa before adding uncertain payments or deleting data. Never invent data.
 
 ## Noa's standing rules
