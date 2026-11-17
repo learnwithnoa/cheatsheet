@@ -242,6 +242,7 @@ if '2026-1117-fewer' not in s:
     ["🔕","Fewer of these pop-ups","Use Hibi a lot? Tap <b>See fewer of these</b> under this window to get one summary a week instead, or choose <b>Never</b> in Settings → Home &amp; notifications. Everything new is always listed in What's new.",""],
     ["⚙️","Tidier Settings","Settings now has clearer groups: Make Hibi easier, Look &amp; feel, Text &amp; reading, Focus &amp; comfort, and Home &amp; notifications.",""],
     ["⇄","Translator in Simple mode","Simple mode now has the <b>Translator</b> as one of its main buttons.","translate"],
+    ["📒","Long word lists load faster","If you have lots of words, My notebook shows them 60 at a time. Scroll down and more appear by themselves (or tap <b>Show more words</b>). Search still looks through all of them.","words"],
     ["✨","Make it yours from the start","The welcome tour now lets new members pick their colors, text size, Simple mode and Calm mode right away. (You can replay the tour from <b>How this page works</b>.)",""]
   ]},
 ''',1)

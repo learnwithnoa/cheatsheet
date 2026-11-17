@@ -1553,6 +1553,10 @@ html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-keep{min-height:54px;font-size
 .wlm-tog b{display:block;font-weight:800}.wlm-tog small{display:block;color:var(--muted);font-size:14px;line-height:1.35;margin-top:2px}
 .wlm-tog:has(input:checked){border-color:var(--green);background:var(--green-soft)}
 
+/* step182: long word lists in batches */
+.w-more{display:flex;justify-content:center;padding:14px 0 6px}
+.w-more .pill-btn small{font-weight:600;opacity:.8;margin-left:4px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -6836,7 +6840,9 @@ function renderWords(){
   copyNewBtn.disabled = !newCount;
   if(!list.length){ wList.innerHTML='<div class="card empty-notes"><b>No words yet.</b><br>When you hear a new word in class, add it above. It takes five seconds.</div>'; return; }
   if(!shown.length){ wList.innerHTML='<div class="card empty-notes">No words match “'+esc(wSearch.value)+'”.</div>'; return; }
-  wList.innerHTML=shown.map(x=>{
+  let wLim=window.__wLim||60; if(editingId){ const ix=shown.findIndex(x=>x.id===editingId); if(ix>=wLim) wLim=window.__wLim=ix+1; }
+  const wLeft=shown.length-wLim;
+  wList.innerHTML=shown.slice(0,wLim).map(x=>{
     if(x.id===editingId) return '<form class="card wcard-edit" data-editform="'+x.id+'" autocomplete="off">'+
       '<div class="field"><label for="ed-w">English word / expression</label><input id="ed-w" type="text" value="'+esc(x.w)+'" spellcheck="false"></div>'+
       '<div class="field"><label for="ed-m">Spanish translation</label><input id="ed-m" type="text" value="'+esc(x.m||"")+'"></div>'+
@@ -6851,8 +6857,10 @@ function renderWords(){
       '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.pr?'<div class="wpr" title="How to say it (CAPITALS = the strong part)"><span aria-hidden="true">🗣️</span> '+esc(x.pr)+'</div>':'')+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.own?'<div class="wown">✍️ '+esc(x.own)+'</div>':(x.sample?'':'<button class="wown-add" type="button" data-ownw="'+x.id+'">✍️ Write my own sentence</button>'))+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
       '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
-  }).join("");
+  }).join("")+(wLeft>0?'<div class="w-more"><button class="pill-btn" type="button" id="wMore">Show more words <small>('+wLeft+' more)</small></button></div>':"");
+  if(window.__wMoreWatch) window.__wMoreWatch();
 }
+window.__wRender=renderWords;
 function isPending(x){ return !x.imp && x.t>lastCopy; }
 function addWord(w,m,e,n){
   w=(w||"").trim(); m=(m||"").trim(); e=(e||"").trim(); n=(n||"").trim();
@@ -11184,6 +11192,7 @@ const CHANGELOG=[
     ["🔕","Fewer of these pop-ups","Use Hibi a lot? Tap <b>See fewer of these</b> under this window to get one summary a week instead, or choose <b>Never</b> in Settings → Home &amp; notifications. Everything new is always listed in What's new.",""],
     ["⚙️","Tidier Settings","Settings now has clearer groups: Make Hibi easier, Look &amp; feel, Text &amp; reading, Focus &amp; comfort, and Home &amp; notifications.",""],
     ["⇄","Translator in Simple mode","Simple mode now has the <b>Translator</b> as one of its main buttons.","translate"],
+    ["📒","Long word lists load faster","If you have lots of words, My notebook shows them 60 at a time. Scroll down and more appear by themselves (or tap <b>Show more words</b>). Search still looks through all of them.","words"],
     ["✨","Make it yours from the start","The welcome tour now lets new members pick their colors, text size, Simple mode and Calm mode right away. (You can replay the tour from <b>How this page works</b>.)",""]
   ]},
   {id:"2026-1117-simple", date:"November 17, 2026", title:"Simple mode 🧩", items:[
@@ -11559,7 +11568,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117192249"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117193250"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -13131,6 +13140,24 @@ document.addEventListener("click",async e=>{
     setTimeout(paint,50);
   });
   new MutationObserver(()=>{ if(!wl.hidden) paint(); }).observe(wl,{attributes:true,attributeFilter:["hidden"],subtree:true});
+})();
+</script>
+<script>
+/* step182: show more words (button + loads by itself when you scroll to it) */
+(function(){
+  const STEP=60; let io=null;
+  const more=()=>{ window.__wLim=(window.__wLim||STEP)+STEP; if(window.__wRender) window.__wRender(); };
+  document.addEventListener("click",e=>{ if(e.target.closest("#wMore")){ e.preventDefault(); more(); } });
+  /* a new search or sort starts again from the top */
+  document.addEventListener("input",e=>{ if(e.target&&e.target.id==="wSearch") window.__wLim=STEP; },true);
+  document.addEventListener("change",e=>{ if(e.target&&e.target.closest&&e.target.closest("#v-words select")) window.__wLim=STEP; },true);
+  window.__wMoreWatch=function(){
+    if(!("IntersectionObserver" in window)) return;
+    if(io) io.disconnect();
+    const b=document.getElementById("wMore"); if(!b) return;
+    io=new IntersectionObserver(es=>{ if(es.some(x=>x.isIntersecting)&&!document.getElementById("v-words").hidden){ io.disconnect(); setTimeout(more,120); } },{rootMargin:"300px 0px"});
+    io.observe(b);
+  };
 })();
 </script>
 
