@@ -507,6 +507,27 @@ async function trialLog(env, uid, entry) {          // Noa's list (users/{Noa}/d
   if (i >= 0) list[i] = { ...list[i], ...entry }; else list.unshift({ uid, ...entry });
   await setJ(env, TEACHER, "t-trials", list.slice(0, 200));
 }
+// Trials Noa gave by hand (before Hibi had its own trial button): t-hubmeta.manualTrials = [{email, until: "YYYY-MM-DD" (last day), start?, len?}].
+// Each becomes a real Hibi trial once: the "Your membership" card with "Stay in the club", and the nightly check ends it the day after "until".
+async function manualTrials(env) {
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  const list = (meta.manualTrials || []).filter((t) => t && t.email && /^\d{4}-\d\d-\d\d$/.test(t.until || ""));
+  if (!list.length) return { applied: 0 };
+  const users = await fs(env, "GET", "users?pageSize=300"), byEmail = {}, names = {};
+  for (const d of (users && users.documents) || []) { const u = plain(d) || {}; if (u.email) { const id = d.name.split("/").pop(); byEmail[normEmail(u.email)] = id; names[id] = u.name || ""; } }
+  let applied = 0, noAccount = 0, skipped = 0;
+  for (const t of list) {
+    const uid = byEmail[normEmail(t.email)]; if (!uid) { noAccount++; continue; }
+    const b = await getBill(env, uid);
+    if (b.manualTrial === t.until || b.subscriptionId || ["active", "grace", "pending", "joined", "trial-ended", "trial-kept"].includes(b.status)) { skipped++; continue; }
+    const name = names[uid] || t.name || "";
+    // trialStart = now, so a club change Noa makes from now on still counts as "keep them" in the nightly check
+    await saveBill(env, uid, { status: "trial", trialUsed: true, trialStart: new Date().toISOString(), trialUntil: t.until, trialLen: t.len || "2wk", email: normEmail(t.email), name, manualTrial: t.until });
+    await trialLog(env, uid, { name, email: normEmail(t.email), start: t.start ? Date.parse(t.start + "T12:00:00Z") : Date.now(), until: t.until, status: "trial" });
+    applied++;
+  }
+  return { applied, skipped, noAccount };
+}
 async function startTrial(env, req) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
   const b = await getBill(env, me.uid);
@@ -700,7 +721,8 @@ export default {
       switch (url.pathname) {
         case "/robots.txt": return new Response("User-agent: *\nAllow: /api/health\nAllow: /api/flow-callback\nDisallow: /\n");
         case "/api/health": return json(await health(env), 200, req);
-        case "/api/ytfeed": return json(await ytFeed(env), 200, req);   // refreshes the club playlist list now (public videos only, no personal data)
+        case "/api/ytfeed": return json(await ytFeed(env), 200, req);
+        case "/api/manual-trials": return json(await manualTrials(env), 200, req);   // only counts, no names (the deploy log is public)   // refreshes the club playlist list now (public videos only, no personal data)
         case "/api/subscribe": return await subscribe(env, req, url);
         case "/api/card-return": return await cardReturn(env, req, url);
         case "/api/cancel": return await cancel(env, req);
@@ -736,5 +758,5 @@ export default {
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env), ytFeed(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env)), ytFeed(env)])); },
 };
