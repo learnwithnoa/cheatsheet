@@ -1437,38 +1437,51 @@ nav.side .navbtn.nb-merged{display:none!important}
 .aw-nav button{all:unset;cursor:pointer;font:800 13px var(--body);padding:4px 10px;border-radius:999px;border:1.5px solid var(--line)}
 .aw-nav button[disabled]{opacity:.35;cursor:default}
 .aw-nav button:focus-visible{outline:3px solid var(--bright)}
-.aw-lede{margin:0 0 6px;font-size:14px;color:var(--muted)}
-.aw-it{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;padding:14px 0;border-top:1px solid var(--line)}
-.aw-it:first-of-type{border-top:0}
-.aw-bud{width:52px;height:52px;border-radius:16px;background:color-mix(in srgb,var(--royal) 12%,var(--surface));display:grid;place-items:center;overflow:hidden;font-size:26px}
-.aw-bud svg{width:52px;height:52px;display:block;image-rendering:pixelated}
-.aw-k{display:inline-block;font:800 11px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
-.aw-h{display:flex;align-items:flex-start;gap:6px}
-.aw-h h3{margin:0;font-size:16.5px;line-height:1.3;flex:1}
-.aw-say{all:unset;cursor:pointer;font-size:15px;padding:0 4px;border-radius:8px}
+.aw-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:8px}
+.aw-it{display:flex;flex-direction:column;gap:4px;padding:12px;border:1.5px solid var(--line);border-radius:16px;min-width:0}
+.aw-head{display:flex;align-items:center;gap:8px}
+.aw-bud{width:34px;height:34px;flex:none;border-radius:11px;background:color-mix(in srgb,var(--royal) 12%,var(--surface));display:grid;place-items:center;overflow:hidden;font-size:18px}
+.aw-bud svg{width:34px;height:34px;display:block;image-rendering:pixelated}
+.aw-k{flex:1;font:800 10.5px var(--mono,monospace);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.aw-it h3{margin:2px 0 0;font-size:15.5px;line-height:1.3}
+.aw-it h3 a{color:var(--ink);text-decoration:none}
+.aw-it h3 a:hover{text-decoration:underline}
+.aw-ext{color:var(--royal);font-size:.9em}
+.aw-say{all:unset;cursor:pointer;font-size:14px;padding:0 4px;border-radius:8px}
 .aw-say:focus-visible{outline:3px solid var(--bright)}
-.aw-t{margin:4px 0 0;font-size:15px;line-height:1.5}
+.aw-t{margin:0;font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.aw-t.open{display:block;-webkit-line-clamp:unset}
 .aw-w{all:unset;cursor:pointer;font-weight:800;border-bottom:2px dotted var(--royal);color:var(--ink)}
 .aw-w:focus-visible{outline:3px solid var(--bright);border-radius:4px}
-.aw-go{display:inline-flex;gap:6px;align-items:center;margin-top:6px;font:800 13.5px var(--body);color:var(--royal);text-decoration:none}
-.aw-go small{font-weight:600;color:var(--muted)}
-.aw-q{margin:8px 0 0;padding:8px 11px;border-radius:12px;background:color-mix(in srgb,var(--bright) 12%,var(--surface));font-size:14px;line-height:1.45}
-.aw-q b{font-weight:800}
-.aw-rx{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
-.aw-rx button{all:unset;cursor:pointer;font:700 13px var(--body);padding:3px 10px;border-radius:999px;border:1.5px solid var(--line)}
+.aw-rx{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:auto;padding-top:6px}
+.aw-rx button{all:unset;cursor:pointer;font:700 12.5px var(--body);padding:2px 8px;border-radius:999px;border:1.5px solid var(--line)}
 .aw-rx button[aria-pressed="true"]{border-color:var(--royal);background:color-mix(in srgb,var(--royal) 16%,var(--surface))}
 .aw-rx button:focus-visible{outline:3px solid var(--bright)}
-.aw-rx .aw-who{border:0;padding:3px 4px;color:var(--muted);font-weight:600;text-decoration:underline dotted}
-.aw-x{all:unset;cursor:pointer;font-size:12px;color:var(--muted);margin-left:auto;padding:2px 8px;border-radius:8px;border:1px dashed var(--line)}
+.aw-rx .aw-who{border:0;padding:2px 3px;color:var(--muted);font-weight:600;text-decoration:underline dotted}
+.aw-x{all:unset;cursor:pointer;font-size:11.5px;color:var(--muted);padding:2px 8px;border-radius:8px;border:1px dashed var(--line);align-self:flex-start}
 .aw-hid{opacity:.45}
 .aw-wd h3{margin:0 0 4px}.aw-wd p{margin:4px 0}
-@media (max-width:600px){.aw{padding:14px}.aw-it{grid-template-columns:42px minmax(0,1fr);gap:4px 10px}.aw-bud,.aw-bud svg{width:42px;height:42px;border-radius:13px}.aw-top h2{font-size:17.5px}}
+@media (max-width:900px){.aw-list{grid-template-columns:minmax(0,1fr);gap:8px}.aw-it{padding:10px 12px}}
+@media (max-width:600px){.aw{padding:14px}.aw-top h2{font-size:17.5px}}
 /* club: who lists */
 button.cl-gwho{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 4px}
 button.cl-gwho:focus-visible,.cs-rxwho:focus-visible{outline:3px solid var(--bright)}
 .cs-whob{margin-left:6px}.cs-whob .cs-av{width:24px;height:24px;font-size:10px;margin-left:-6px;border:2px solid var(--surface)}.cs-whob .cs-av:first-child{margin-left:0}
 .cs-wholist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;max-height:55vh;overflow:auto}
 .cs-wholist li{display:flex;gap:8px;align-items:center;font-size:15px}
+
+/* step178: arrange Home */
+.hm-lede{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.hm-arr{all:unset;cursor:pointer;flex:none;font:700 13px var(--body);padding:4px 11px;border-radius:999px;border:1.5px solid var(--line);color:var(--ink)}
+.hm-arr:focus-visible{outline:3px solid var(--bright)}
+.hm-off{display:none!important}
+.hm-list{list-style:none;margin:10px 0;padding:0;display:grid;gap:6px}
+.hm-list li{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--line);border-radius:12px}
+.hm-list li.off span{opacity:.45;text-decoration:line-through}
+.hm-list span{flex:1;font-weight:700}
+.hm-list button{all:unset;cursor:pointer;width:32px;height:32px;display:grid;place-items:center;border-radius:9px;border:1.5px solid var(--line);font-size:14px}
+.hm-list button[disabled]{opacity:.3;cursor:default}
+.hm-list button:focus-visible{outline:3px solid var(--bright)}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -3135,7 +3148,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 <!-- ============ HOME ============ -->
 <section class="view" id="v-notes" hidden>
   <h1>Your <em>home</em></h1>
-  <p class="lede">Your word of the day, a thought for today and what's new in the club.</p>
+  <p class="lede hm-lede"><span>Your word of the day, a thought for today, little news from around the world and what's new in the club.</span><button type="button" class="hm-arr" id="hmArrange" aria-haspopup="dialog">✏️ Arrange</button></p>
   <div id="tStoic" class="t-stoic" hidden></div>
   <section class="card aw" id="awBox" hidden aria-labelledby="awTitle"></section>
   <div id="homeClub" hidden></div>
@@ -6193,7 +6206,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <ul class="wl-list">
       <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn, a question to talk about and reactions everyone can see.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Make Home yours:</b> tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn and reactions everyone can see. Tap a title to open the full story.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too: write them during class, ✨ Hibi finds the new words for you, and <b>📓 Summaries</b> sum up each week.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice them with flashcards.</b> The ones you miss come back sooner, so you spend your time on the hard ones.</div></li>
     </ul>
@@ -11088,7 +11102,8 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 const CHANGELOG=[
   {id:"2026-1117-world", date:"November 17, 2026", title:"Around the world today", items:[
     ["🌍","Little good news, every day","On your <b>Home</b> page: three small things happening in the world each day (a celebration, space or tech, and good news), presented by some random study buddies.","notes"],
-    ["📖","A word and a question","Tap the <b>underlined word</b> to learn it and save it, and use the <b>Talk about it</b> question to practise. Missed a day? Tap <b>‹ Yesterday</b>.","notes"],
+    ["📖","Learn a word, read more","Tap the <b>underlined word</b> to learn it and save it, and tap a title to open the full story. Missed a day? Tap <b>‹ Yesterday</b>.","notes"],
+    ["✏️","Make Home yours","Tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.","notes"],
     ["💛","Reactions everyone sees","React with 💛 🤯 😂 and see who else did. In the club you can now also tap the faces to see <b>who's going</b> to a class, who <b>enjoyed a recording</b>, and 👀 who reacted to a post or comment.","club"]
   ]},
   {id:"2026-1117-notebook", date:"November 17, 2026", title:"Meet My notebook", items:[
@@ -11444,7 +11459,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117140724"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117141910"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -12804,15 +12819,11 @@ document.addEventListener("click",async e=>{
     const items=(d.items||[]).map((it,i)=>({it,i})).filter(x=>T||!hid.includes(x.i));
     box.hidden=!items.length; if(!items.length) return;
     box.innerHTML=`<div class="aw-top"><h2 id="awTitle">🌍 Around the world ${d.date===today?"today":""}</h2><div class="aw-nav"><button type="button" data-awnav="1" ${at>=DAYS.length-1?"disabled":""} aria-label="Earlier day">‹ ${at===0&&d.date===today?"Yesterday":"Earlier"}</button><span>${d.date===today?"Today":esc(nice(d.date))}</span><button type="button" data-awnav="-1" ${at===0?"disabled":""} aria-label="Later day">${at===1&&DAYS[0].date===today?"Today":"Later"} ›</button></div></div>
-      <p class="aw-lede">Three little things happening in the world. Tap the <b>underlined word</b> to learn it.</p>
-      ${items.map(({it,i})=>`<article class="aw-it${hid.includes(i)?" aw-hid":""}"><div class="aw-bud" aria-hidden="true">${buddy(d.date,i,it.emoji)}</div><div>
-        <span class="aw-k">${esc(K[it.k]||"")}</span>
-        <div class="aw-h"><h3>${esc(it.title)}</h3><button type="button" class="aw-say" data-awsay="${i}" aria-label="Listen">🔊</button></div>
-        <p class="aw-t">${withWord(it)}</p>${it.es?`<p class="esb" lang="es">${esc(it.es)}</p>`:""}
-        ${it.link&&/^https:\/\//.test(it.link)?`<a class="aw-go" href="${esc(it.link)}" target="_blank" rel="noopener">${it.kind==="watch"?"Watch ▶":"Read more →"} <small>${esc(it.src||"")}</small></a>`:""}
-        ${it.q?`<p class="aw-q">💬 <b>Talk about it:</b> ${esc(it.q)}</p>`:""}
-        ${rxRow(d.date,i)}${T?`<button type="button" class="aw-x" data-awhide="${i}" data-on="${hid.includes(i)?0:1}">${hid.includes(i)?"Show it again":"✕ Hide for everyone"} <small>(only you see this)</small></button>`:""}
-      </div></article>`).join("")}`;
+      <div class="aw-list">${items.map(({it,i})=>{ const ok=it.link&&/^https:\/\//.test(it.link); return `<article class="aw-it${hid.includes(i)?" aw-hid":""}"><div class="aw-head"><div class="aw-bud" aria-hidden="true">${buddy(d.date,i,it.emoji)}</div><span class="aw-k">${esc(K[it.k]||"")}</span><button type="button" class="aw-say" data-awsay="${i}" aria-label="Listen">🔊</button></div>
+        <h3>${ok?`<a href="${esc(it.link)}" target="_blank" rel="noopener" title="${esc((it.kind==="watch"?"Watch on ":"Read on ")+(it.src||"the website"))}">${esc(it.title)}<span class="aw-ext" aria-hidden="true"> ${it.kind==="watch"?"▶":"↗"}</span></a>`:esc(it.title)}</h3>
+        <p class="aw-t" data-awmore="${i}">${withWord(it)}</p>${it.es?`<p class="esb" lang="es">${esc(it.es)}</p>`:""}
+        ${rxRow(d.date,i)}${T?`<button type="button" class="aw-x" data-awhide="${i}" data-on="${hid.includes(i)?0:1}">${hid.includes(i)?"Show it again":"✕ Hide for everyone"}</button>`:""}
+      </article>`; }).join("")}</div>`;
   }
   async function tok(){ try{ const f=F(); return f&&f.token?await f.token():null; }catch(e){ return null; } }
   async function loadRx(day){ const t=await tok(); if(!t) return; try{ const r=await fetch(API+"/api/world-reacts?day="+day,{headers:{authorization:"Bearer "+t}}); if(r.ok){ RXD[day]=await r.json(); draw(); } }catch(e){} }
@@ -12823,6 +12834,7 @@ document.addEventListener("click",async e=>{
   box.addEventListener("click",async e=>{
     const n=e.target.closest("[data-awnav]"); if(n){ at=Math.max(0,Math.min(DAYS.length-1,at+(+n.dataset.awnav))); draw(); const d=DAYS[at]; if(d&&!RXD[d.date]) loadRx(d.date); return; }
     const d=DAYS[at]; if(!d) return;
+    const mo=e.target.closest("[data-awmore]"); if(mo&&!e.target.closest("[data-aww]")){ mo.classList.toggle("open"); return; }
     const s=e.target.closest("[data-awsay]"); if(s){ const it=d.items[+s.dataset.awsay]; if(window.csSpeak) window.csSpeak(it.title+". "+it.text); return; }
     const w=e.target.closest("[data-aww]"); if(w){ const it=(d.items||[]).find(x=>new RegExp("^"+String(x.word||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"$","i").test(w.dataset.aww))||{}; const word=it.word||w.dataset.aww;
       const ex=(String(it.text||"").split(/(?<=[.!?])\s+/).find(x=>new RegExp("\\b"+word+"\\b","i").test(x))||"");
@@ -12841,6 +12853,44 @@ document.addEventListener("click",async e=>{
   load();
   window.addEventListener("cs-auth",()=>{ const d=DAYS[at]; if(d) loadRx(d.date); });
   document.addEventListener("cs-teacher",draw);
+})();
+</script>
+<script>
+/* step178: Home order + ✏️ Arrange */
+(function(){
+  const K="ncs-homeorder", DEF=["stoic","club","today","world","review"];
+  const S={stoic:["tStoic","🏛️ Daily Stoic"],club:["homeClub","💬 This week in the club"],today:["todayBox","📖 Word of the day + Thought for today"],world:["awBox","🌍 Around the world today"],review:["rvBox","🔁 Words to review today"]};
+  const get=()=>{ let v=null; try{ v=JSON.parse(localStorage.getItem(K)||"null"); }catch(e){} v=v&&typeof v==="object"?v:{}; const o=(Array.isArray(v.order)?v.order:[]).filter(k=>S[k]); DEF.forEach(k=>{ if(!o.includes(k)) o.splice(DEF.indexOf(k),0,k); }); return {order:o,hide:(Array.isArray(v.hide)?v.hide:[]).filter(k=>S[k])}; };
+  const put=v=>{ try{ localStorage.setItem(K,JSON.stringify(v)); }catch(e){} try{ window.__csOnSet&&window.__csOnSet(K); }catch(e){} };
+  function apply(){
+    const v=get(), view=document.getElementById("v-notes"); if(!view) return;
+    const anchor=view.querySelector(".lede-es")||view.querySelector(".hm-lede"); if(!anchor) return;
+    let after=anchor;
+    v.order.forEach(k=>{ const el=document.getElementById(S[k][0]); if(!el) return; if(after.nextElementSibling!==el) after.insertAdjacentElement("afterend",el); after=el; el.classList.toggle("hm-off",v.hide.includes(k)); });
+  }
+  const avail=k=>{ const el=document.getElementById(S[k][0]); if(!el) return false; if(k==="stoic") return !el.hidden||get().hide.includes(k); if(k==="club") return !!window.__csClub||get().hide.includes(k); return true; };
+  function open(){
+    if(!window.csDialog) return;
+    const dl=window.csDialog(`<h3 style="margin:0 0 4px">✏️ Arrange your Home</h3><p class="muted" style="margin:0;font-size:14px">Move sections up or down, or hide the ones you don't need. Only you see this order.</p><ul class="hm-list" id="hmList"></ul><div class="note-actions"><button type="button" class="pill-btn pill-green" data-hmdone>Done</button><button type="button" class="swap" data-hmreset>Back to default</button></div>`);
+    const L=dl.el.querySelector("#hmList");
+    const draw=()=>{ const v=get(), ks=v.order.filter(avail);
+      L.innerHTML=ks.map((k,i)=>{ const off=v.hide.includes(k); return `<li class="${off?"off":""}"><span>${S[k][1]}</span><button type="button" data-hmup="${k}" ${i?"":"disabled"} aria-label="Move up">↑</button><button type="button" data-hmdn="${k}" ${i<ks.length-1?"":"disabled"} aria-label="Move down">↓</button><button type="button" data-hmhide="${k}" aria-pressed="${off}" aria-label="${off?"Show":"Hide"}" title="${off?"Show":"Hide"}">${off?"🙈":"👁"}</button></li>`; }).join(""); };
+    draw();
+    dl.el.addEventListener("click",e=>{
+      const v=get(), ks=v.order.filter(avail);
+      const mv=(k,d)=>{ const a=ks.indexOf(k), b=a+d; if(b<0||b>=ks.length) return; const x=ks[b]; const i1=v.order.indexOf(k), i2=v.order.indexOf(x); v.order[i1]=x; v.order[i2]=k; put(v); apply(); draw(); const f=L.querySelector(`[data-hm${d<0?"up":"dn"}="${k}"]`); if(f&&!f.disabled) f.focus(); };
+      const u=e.target.closest("[data-hmup]"); if(u) return mv(u.dataset.hmup,-1);
+      const dn=e.target.closest("[data-hmdn]"); if(dn) return mv(dn.dataset.hmdn,1);
+      const h=e.target.closest("[data-hmhide]"); if(h){ const k=h.dataset.hmhide; v.hide=v.hide.includes(k)?v.hide.filter(x=>x!==k):v.hide.concat(k); put(v); apply(); draw(); return; }
+      if(e.target.closest("[data-hmreset]")){ put({order:DEF.slice(),hide:[]}); apply(); draw(); return; }
+      if(e.target.closest("[data-hmdone]")) dl.close();
+    });
+  }
+  document.addEventListener("click",e=>{ if(e.target.closest("#hmArrange")){ e.preventDefault(); open(); } });
+  apply(); document.addEventListener("DOMContentLoaded",apply);
+  window.addEventListener("cs-auth",()=>setTimeout(apply,1500)); document.addEventListener("cs-club",apply);
+  window.addEventListener("storage",e=>{ if(e.key===K) apply(); });
+  window.__csHomeApply=apply;
 })();
 </script>
 

@@ -215,7 +215,8 @@ if '2026-1117-notebook' not in s:
 if '2026-1117-world' not in s:
     s=s.replace(a,a+'''  {id:"2026-1117-world", date:"November 17, 2026", title:"Around the world today", items:[
     ["🌍","Little good news, every day","On your <b>Home</b> page: three small things happening in the world each day (a celebration, space or tech, and good news), presented by some random study buddies.","notes"],
-    ["📖","A word and a question","Tap the <b>underlined word</b> to learn it and save it, and use the <b>Talk about it</b> question to practise. Missed a day? Tap <b>‹ Yesterday</b>.","notes"],
+    ["📖","Learn a word, read more","Tap the <b>underlined word</b> to learn it and save it, and tap a title to open the full story. Missed a day? Tap <b>‹ Yesterday</b>.","notes"],
+    ["✏️","Make Home yours","Tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.","notes"],
     ["💛","Reactions everyone sees","React with 💛 🤯 😂 and see who else did. In the club you can now also tap the faces to see <b>who's going</b> to a class, who <b>enjoyed a recording</b>, and 👀 who reacted to a post or comment.","club"]
   ]},
 ''',1)

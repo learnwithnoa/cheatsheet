@@ -29,32 +29,32 @@ _css = r'''
 .aw-nav button{all:unset;cursor:pointer;font:800 13px var(--body);padding:4px 10px;border-radius:999px;border:1.5px solid var(--line)}
 .aw-nav button[disabled]{opacity:.35;cursor:default}
 .aw-nav button:focus-visible{outline:3px solid var(--bright)}
-.aw-lede{margin:0 0 6px;font-size:14px;color:var(--muted)}
-.aw-it{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;padding:14px 0;border-top:1px solid var(--line)}
-.aw-it:first-of-type{border-top:0}
-.aw-bud{width:52px;height:52px;border-radius:16px;background:color-mix(in srgb,var(--royal) 12%,var(--surface));display:grid;place-items:center;overflow:hidden;font-size:26px}
-.aw-bud svg{width:52px;height:52px;display:block;image-rendering:pixelated}
-.aw-k{display:inline-block;font:800 11px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
-.aw-h{display:flex;align-items:flex-start;gap:6px}
-.aw-h h3{margin:0;font-size:16.5px;line-height:1.3;flex:1}
-.aw-say{all:unset;cursor:pointer;font-size:15px;padding:0 4px;border-radius:8px}
+.aw-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:8px}
+.aw-it{display:flex;flex-direction:column;gap:4px;padding:12px;border:1.5px solid var(--line);border-radius:16px;min-width:0}
+.aw-head{display:flex;align-items:center;gap:8px}
+.aw-bud{width:34px;height:34px;flex:none;border-radius:11px;background:color-mix(in srgb,var(--royal) 12%,var(--surface));display:grid;place-items:center;overflow:hidden;font-size:18px}
+.aw-bud svg{width:34px;height:34px;display:block;image-rendering:pixelated}
+.aw-k{flex:1;font:800 10.5px var(--mono,monospace);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.aw-it h3{margin:2px 0 0;font-size:15.5px;line-height:1.3}
+.aw-it h3 a{color:var(--ink);text-decoration:none}
+.aw-it h3 a:hover{text-decoration:underline}
+.aw-ext{color:var(--royal);font-size:.9em}
+.aw-say{all:unset;cursor:pointer;font-size:14px;padding:0 4px;border-radius:8px}
 .aw-say:focus-visible{outline:3px solid var(--bright)}
-.aw-t{margin:4px 0 0;font-size:15px;line-height:1.5}
+.aw-t{margin:0;font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.aw-t.open{display:block;-webkit-line-clamp:unset}
 .aw-w{all:unset;cursor:pointer;font-weight:800;border-bottom:2px dotted var(--royal);color:var(--ink)}
 .aw-w:focus-visible{outline:3px solid var(--bright);border-radius:4px}
-.aw-go{display:inline-flex;gap:6px;align-items:center;margin-top:6px;font:800 13.5px var(--body);color:var(--royal);text-decoration:none}
-.aw-go small{font-weight:600;color:var(--muted)}
-.aw-q{margin:8px 0 0;padding:8px 11px;border-radius:12px;background:color-mix(in srgb,var(--bright) 12%,var(--surface));font-size:14px;line-height:1.45}
-.aw-q b{font-weight:800}
-.aw-rx{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
-.aw-rx button{all:unset;cursor:pointer;font:700 13px var(--body);padding:3px 10px;border-radius:999px;border:1.5px solid var(--line)}
+.aw-rx{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:auto;padding-top:6px}
+.aw-rx button{all:unset;cursor:pointer;font:700 12.5px var(--body);padding:2px 8px;border-radius:999px;border:1.5px solid var(--line)}
 .aw-rx button[aria-pressed="true"]{border-color:var(--royal);background:color-mix(in srgb,var(--royal) 16%,var(--surface))}
 .aw-rx button:focus-visible{outline:3px solid var(--bright)}
-.aw-rx .aw-who{border:0;padding:3px 4px;color:var(--muted);font-weight:600;text-decoration:underline dotted}
-.aw-x{all:unset;cursor:pointer;font-size:12px;color:var(--muted);margin-left:auto;padding:2px 8px;border-radius:8px;border:1px dashed var(--line)}
+.aw-rx .aw-who{border:0;padding:2px 3px;color:var(--muted);font-weight:600;text-decoration:underline dotted}
+.aw-x{all:unset;cursor:pointer;font-size:11.5px;color:var(--muted);padding:2px 8px;border-radius:8px;border:1px dashed var(--line);align-self:flex-start}
 .aw-hid{opacity:.45}
 .aw-wd h3{margin:0 0 4px}.aw-wd p{margin:4px 0}
-@media (max-width:600px){.aw{padding:14px}.aw-it{grid-template-columns:42px minmax(0,1fr);gap:4px 10px}.aw-bud,.aw-bud svg{width:42px;height:42px;border-radius:13px}.aw-top h2{font-size:17.5px}}
+@media (max-width:900px){.aw-list{grid-template-columns:minmax(0,1fr);gap:8px}.aw-it{padding:10px 12px}}
+@media (max-width:600px){.aw{padding:14px}.aw-top h2{font-size:17.5px}}
 /* club: who lists */
 button.cl-gwho{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 4px}
 button.cl-gwho:focus-visible,.cs-rxwho:focus-visible{outline:3px solid var(--bright)}
@@ -103,15 +103,11 @@ document.addEventListener("click",async e=>{
     const items=(d.items||[]).map((it,i)=>({it,i})).filter(x=>T||!hid.includes(x.i));
     box.hidden=!items.length; if(!items.length) return;
     box.innerHTML=`<div class="aw-top"><h2 id="awTitle">🌍 Around the world ${d.date===today?"today":""}</h2><div class="aw-nav"><button type="button" data-awnav="1" ${at>=DAYS.length-1?"disabled":""} aria-label="Earlier day">‹ ${at===0&&d.date===today?"Yesterday":"Earlier"}</button><span>${d.date===today?"Today":esc(nice(d.date))}</span><button type="button" data-awnav="-1" ${at===0?"disabled":""} aria-label="Later day">${at===1&&DAYS[0].date===today?"Today":"Later"} ›</button></div></div>
-      <p class="aw-lede">Three little things happening in the world. Tap the <b>underlined word</b> to learn it.</p>
-      ${items.map(({it,i})=>`<article class="aw-it${hid.includes(i)?" aw-hid":""}"><div class="aw-bud" aria-hidden="true">${buddy(d.date,i,it.emoji)}</div><div>
-        <span class="aw-k">${esc(K[it.k]||"")}</span>
-        <div class="aw-h"><h3>${esc(it.title)}</h3><button type="button" class="aw-say" data-awsay="${i}" aria-label="Listen">🔊</button></div>
-        <p class="aw-t">${withWord(it)}</p>${it.es?`<p class="esb" lang="es">${esc(it.es)}</p>`:""}
-        ${it.link&&/^https:\/\//.test(it.link)?`<a class="aw-go" href="${esc(it.link)}" target="_blank" rel="noopener">${it.kind==="watch"?"Watch ▶":"Read more →"} <small>${esc(it.src||"")}</small></a>`:""}
-        ${it.q?`<p class="aw-q">💬 <b>Talk about it:</b> ${esc(it.q)}</p>`:""}
-        ${rxRow(d.date,i)}${T?`<button type="button" class="aw-x" data-awhide="${i}" data-on="${hid.includes(i)?0:1}">${hid.includes(i)?"Show it again":"✕ Hide for everyone"} <small>(only you see this)</small></button>`:""}
-      </div></article>`).join("")}`;
+      <div class="aw-list">${items.map(({it,i})=>{ const ok=it.link&&/^https:\/\//.test(it.link); return `<article class="aw-it${hid.includes(i)?" aw-hid":""}"><div class="aw-head"><div class="aw-bud" aria-hidden="true">${buddy(d.date,i,it.emoji)}</div><span class="aw-k">${esc(K[it.k]||"")}</span><button type="button" class="aw-say" data-awsay="${i}" aria-label="Listen">🔊</button></div>
+        <h3>${ok?`<a href="${esc(it.link)}" target="_blank" rel="noopener" title="${esc((it.kind==="watch"?"Watch on ":"Read on ")+(it.src||"the website"))}">${esc(it.title)}<span class="aw-ext" aria-hidden="true"> ${it.kind==="watch"?"▶":"↗"}</span></a>`:esc(it.title)}</h3>
+        <p class="aw-t" data-awmore="${i}">${withWord(it)}</p>${it.es?`<p class="esb" lang="es">${esc(it.es)}</p>`:""}
+        ${rxRow(d.date,i)}${T?`<button type="button" class="aw-x" data-awhide="${i}" data-on="${hid.includes(i)?0:1}">${hid.includes(i)?"Show it again":"✕ Hide for everyone"}</button>`:""}
+      </article>`; }).join("")}</div>`;
   }
   async function tok(){ try{ const f=F(); return f&&f.token?await f.token():null; }catch(e){ return null; } }
   async function loadRx(day){ const t=await tok(); if(!t) return; try{ const r=await fetch(API+"/api/world-reacts?day="+day,{headers:{authorization:"Bearer "+t}}); if(r.ok){ RXD[day]=await r.json(); draw(); } }catch(e){} }
@@ -122,6 +118,7 @@ document.addEventListener("click",async e=>{
   box.addEventListener("click",async e=>{
     const n=e.target.closest("[data-awnav]"); if(n){ at=Math.max(0,Math.min(DAYS.length-1,at+(+n.dataset.awnav))); draw(); const d=DAYS[at]; if(d&&!RXD[d.date]) loadRx(d.date); return; }
     const d=DAYS[at]; if(!d) return;
+    const mo=e.target.closest("[data-awmore]"); if(mo&&!e.target.closest("[data-aww]")){ mo.classList.toggle("open"); return; }
     const s=e.target.closest("[data-awsay]"); if(s){ const it=d.items[+s.dataset.awsay]; if(window.csSpeak) window.csSpeak(it.title+". "+it.text); return; }
     const w=e.target.closest("[data-aww]"); if(w){ const it=(d.items||[]).find(x=>new RegExp("^"+String(x.word||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"$","i").test(w.dataset.aww))||{}; const word=it.word||w.dataset.aww;
       const ex=(String(it.text||"").split(/(?<=[.!?])\s+/).find(x=>new RegExp("\\b"+word+"\\b","i").test(x))||"");
@@ -147,5 +144,5 @@ _j=s.rfind('</body>'); s=(s[:_j]+_js+s[_j:]) if _j>=0 else (s+_js)
 
 # tour
 R('''      <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too:''',
-  '''      <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn, a question to talk about and reactions everyone can see.</div></li>
+  '''      <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn and reactions everyone can see. Tap a title to open the full story.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too:''')
