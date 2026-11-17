@@ -11081,7 +11081,7 @@ const CHANGELOG=[
   ]},
   {id:"2026-comfort", date:"October 30, 2026", title:"Make it comfortable for you ⚙️", items:[
     ["⚙","Reading &amp; comfort settings","tap <b>Settings</b> at the top: bigger text, easier-to-read fonts, more space, bionic reading and a reading ruler.",null],
-    ["🎯","Focus mode &amp; study timer","hide everything except the page you're on, and time your study sessions with a gentle chime.",null],
+    ["🎯","Focus mode &amp; study timer","hide everything except the page you're on (the ☰ Menu button still lets you change pages), and time your study sessions with a gentle chime.",null],
     ["📖","Calm mode &amp; Sepia","no animations, softer colors and no pop-ups. Plus a new <b>Sepia</b> look, like reading on a Kindle.",null],
     ["🔊","Listen &amp; In short","a 🔊 Listen button reads any page aloud, and grammar pages start with a one-line summary.","perfect"]
   ]},
@@ -11153,7 +11153,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117092121"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117092213"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
