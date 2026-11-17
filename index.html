@@ -58,9 +58,9 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 }catch(e){} })();
 </script>
 <script src="ios-sound.js?v=2"></script>
-<link rel="stylesheet" href="comfort.css?v=20">
+<link rel="stylesheet" href="comfort.css?v=21">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=29" defer></script>
+<script src="comfort.js?v=30" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -10820,6 +10820,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-focusmenu", date:"November 17, 2026", title:"Focus mode: a menu button", items:[
+    ["☰","Change pages in focus mode","In focus mode there's now a <b>☰ Menu</b> button at the top left. It opens the menu on the side, so you can jump to another page without leaving focus mode.",""]
+  ]},
   {id:"2026-1117-advtoys", date:"November 17, 2026", title:"New toys for your study buddy", items:[
     ["🎁","A toy for every Advanced stage","Pass the ⭐ Advanced stage of a grammar module and your buddy gets a new toy: ⏰ alarm clock, 📷 old camera, ✈️ paper plane, 🗺️ treasure map, 🥇 gold medal, 🎧 headphones and 🔭 telescope. See them all in your buddy's <b>Progress</b>.",""]
   ]},
@@ -11150,7 +11153,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117083802"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117092121"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

@@ -184,6 +184,24 @@
       if (!b) { b = document.createElement("button"); b.id = "csFocusExit"; b.type = "button"; b.textContent = "✕ Exit focus mode"; b.onclick = () => { setFocus(false); applyAll(); toast("Focus mode off"); }; document.body.appendChild(b); }
       b.hidden = false;
     } else if (b) b.hidden = true;
+    /* Hibi: a ☰ Menu button opens the menu as a side drawer, so focus mode never leaves you stuck on one page */
+    let m = $("csFocusNav");
+    if (on && isMain && document.querySelector("nav.side")) {
+      if (!m) {
+        m = document.createElement("button"); m.id = "csFocusNav"; m.type = "button"; m.setAttribute("aria-expanded", "false"); m.setAttribute("aria-label", "Open the menu");
+        m.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><span>Menu</span>';
+        const bg = document.createElement("div"); bg.id = "csFnavBg"; bg.hidden = true; document.body.appendChild(bg);
+        const x = document.createElement("button"); x.id = "csFnavX"; x.type = "button"; x.setAttribute("aria-label", "Close the menu"); x.innerHTML = '<span aria-hidden="true">✕</span> Close'; document.body.appendChild(x);
+        const drawer = v => { root.classList.toggle("cs-fnav", v); bg.hidden = !v; m.setAttribute("aria-expanded", v ? "true" : "false"); m.setAttribute("aria-label", v ? "Close the menu" : "Open the menu"); m.querySelector("span").textContent = v ? "Close" : "Menu"; if (v) { const n = document.querySelector("nav.side"); n && (n.scrollTop = 0); setTimeout(() => x.focus(), 30); } };
+        m.onclick = () => drawer(!root.classList.contains("cs-fnav"));
+        bg.onclick = () => drawer(false); x.onclick = () => { drawer(false); m.focus(); };
+        document.addEventListener("keydown", e => { if (e.key === "Escape" && root.classList.contains("cs-fnav")) drawer(false); });
+        document.addEventListener("click", e => { if (root.classList.contains("cs-fnav") && e.target.closest && e.target.closest("nav.side [data-go]")) setTimeout(() => drawer(false), 60); });
+        const ti = document.querySelector("header.top .top-in");
+        if (ti) { m.classList.add("in-top"); ti.insertBefore(m, ti.firstChild); } else document.body.appendChild(m);
+      }
+      m.hidden = false;
+    } else if (m) { m.hidden = true; root.classList.remove("cs-fnav"); const bg = $("csFnavBg"); if (bg) bg.hidden = true; }
   }
 
   /* ---------- read aloud (Hibi only) ---------- */
@@ -427,7 +445,7 @@
           ${isMain ? tog("csLookup", "Look up words", (matchMedia("(pointer:fine)").matches ? "Double-click a word, or select a few words," : "Press and hold a word") + " to see what it means and save it to My words.") : ""}
         </div>
         <div class="cs-sec"><h4>Page tools</h4>
-          ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on." : "Hides the student list so you only see one student.")}
+          ${tog("csFocus", "Focus mode", isMain ? "Hides the menu and extras so you only see the page you're on. Tap ☰ Menu at the top left to change pages." : "Hides the student list so you only see one student.")}
           ${isMain ? tog("csInshort", "“In short” boxes", "A one-line summary at the top of each grammar page.") : ""}
           ${isMain && canSpeak ? tog("csRead", "Listen buttons", "A 🔊 Listen button on each page reads it aloud. Select text first to hear just that part.") : ""}
 
@@ -459,7 +477,7 @@
     if ($("csAccent")) $("csAccent").onclick = e => { const b = e.target.closest("[data-csacc]"); if (!b) return; S.accent = b.dataset.csacc; save(); applyAll(); paintPanel(); };
     if ($("csCursors")) $("csCursors").onclick = e => { const b = e.target.closest("[data-cscur]"); if (!b) return; S.cursor = b.dataset.cscur; save(); applyAll(); };
     bind("csSpace", "space"); bind("csBionic", "bionic"); bind("csRulerT", "ruler"); bind("csInshort", "inshort"); bind("csRead", "read"); bind("csCalm", "calm");
-    if ($("csFocus")) $("csFocus").addEventListener("change", () => { setFocus($("csFocus").checked); applyAll(); if (focusOn()) { open(false); toast("Focus mode on. Tap “Exit focus mode” at the bottom to leave."); } });
+    if ($("csFocus")) $("csFocus").addEventListener("change", () => { setFocus($("csFocus").checked); applyAll(); if (focusOn()) { open(false); toast("Focus mode on. Tap ☰ Menu to change pages, or “Exit focus mode” at the bottom to leave."); } });
     if ($("csRead")) $("csRead").addEventListener("change", () => { if (!S.read) stopReading(); });
     $("csResetAll").onclick = () => { S = Object.assign({}, DEF); save(); applyAll(); toast("Settings reset"); };
     if (isMain) {

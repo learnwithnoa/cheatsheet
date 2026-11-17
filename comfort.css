@@ -221,3 +221,16 @@ html.cs-contrast :is(.muted,.hint,.esb,.pr-sub,.ps-kind,.vs-ex,.tr-also,.lk-ex){
 .tm-btn.brk{border-color:var(--green);background:var(--green-soft);color:var(--green)}
 .tm-btn.on:not(.brk){border-color:#E5533D;background:color-mix(in srgb,#E5533D 14%,var(--surface));color:#E5533D}
 .cs-hsub{display:block;font:500 12.5px var(--body,inherit);color:var(--muted);margin-top:2px;letter-spacing:0}
+
+/* focus mode: ☰ Menu button + the menu as a side drawer */
+#csFocusNav{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:max(12px,env(safe-area-inset-left,0px));z-index:1003;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px 0 11px;border-radius:99px;border:1.5px solid var(--line,#ddd);background:var(--surface,#fff);color:var(--ink,#222);font:700 14px/1 inherit;font-family:inherit;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.14)}
+#csFocusNav:hover{border-color:var(--bright,#3b82f6)}
+#csFocusNav[hidden]{display:none}
+#csFnavBg{position:fixed;inset:0;z-index:1001;background:rgba(10,14,30,.45)}
+#csFnavBg[hidden]{display:none}
+html.cs-focus.cs-fnav nav.side{display:block!important;position:fixed!important;top:0!important;left:0!important;bottom:0!important;width:min(290px,86vw)!important;max-height:none!important;height:auto!important;overflow:auto!important;z-index:1002!important;margin:0!important;padding:calc(env(safe-area-inset-top,0px) + 62px) 12px 24px!important;background:var(--bg,#fff)!important;border-right:1.5px solid var(--line,#ddd);box-shadow:8px 0 30px rgba(0,0,0,.25);border-radius:0 18px 18px 0}
+#csFocusNav.in-top{position:static;flex:none;margin-right:10px;box-shadow:none;height:36px}
+html.cs-focus.cs-fnav nav.side .navgroup{flex-wrap:wrap!important;width:auto!important;max-width:100%!important}
+html.cs-focus.cs-fnav nav.side .navbtn{max-width:100%}
+#csFnavX{display:none}
+html.cs-focus.cs-fnav #csFnavX{display:inline-flex;align-items:center;gap:6px;position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:max(14px,env(safe-area-inset-left,0px));z-index:1004;height:36px;padding:0 14px;border-radius:99px;border:1.5px solid var(--line,#ddd);background:var(--surface,#fff);color:var(--ink,#222);font:700 14px/1 inherit;font-family:inherit;cursor:pointer}
