@@ -285,14 +285,16 @@ async function checkInbox() {
    in an app's built-in browser, explain how to open Hibi in Safari/Chrome. Redirect only as a last resort off iOS. */
 const UA = navigator.userAgent || "";
 const IS_IOS = /iPhone|iPad|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-const IN_APP = /Instagram|FBAN|FBAV|FB_IAB|Line\/|WhatsApp|Snapchat|TikTok|musical_ly|; wv\)/i.test(UA);
+const IN_APP = /Instagram|FBAN|FBAV|FB_IAB|Line\/|WhatsApp|LinkedInApp|MicroMessenger|Twitter|Snapchat|TikTok|musical_ly|; wv\)/i.test(UA);
 let popupTries = 0;
 async function signIn() {
   if (IN_APP) { alertMsg(IS_IOS ? "Google sign-in doesn't work inside this app's browser. Tap ··· or the share icon and choose \"Open in Safari\" (or copy the link into Safari), then sign in there." : "Google sign-in doesn't work inside this app's browser. Tap ⋮ and choose \"Open in Chrome\" (or copy the link into Chrome), then sign in there."); return; }
   const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
   /* Nov 2026: sign-in runs on login.hibi.cl (same site as hibi.cl), so the full-page Google sign-in works everywhere,
      iPhone included, and it never leaves a stuck white pop-up behind. The pop-up stays as the fallback. */
-  try { await signInWithRedirect(auth, p); return; } catch (e) { console.warn(e); }
+  /* if the full-page sign-in came back empty in this browser before (some phones/browsers block it), use the Google window instead */
+  let usePopup = false; try { usePopup = localStorage.getItem("cs-auth-popup") === "1"; } catch (e) {}
+  if (!usePopup) { try { sessionStorage.setItem("cs-redir-at", String(Date.now())); await signInWithRedirect(auth, p); return; } catch (e) { console.warn(e); } }
   try { await signInWithPopup(auth, p); popupTries = 0; }
   catch (e) {
     const blocked = e && e.code === "auth/popup-blocked", unsupported = e && e.code === "auth/operation-not-supported-in-this-environment";
@@ -323,7 +325,12 @@ async function doSignOut() {
   await signOut(auth);
   location.reload();
 }
-getRedirectResult(auth).catch(e => { if (e && e.code && !/cancelled|closed-by-user|no-auth-event|redirect-cancelled/.test(e.code)) { console.warn(e); setTimeout(() => alertMsg("Sign-in didn't finish. Tap \"Continue with Google\" once more."), 400); } });
+/* came back from the Google page but still signed out (the "loop" some students saw): switch this browser to the Google window and say so */
+getRedirectResult(auth).then(r => { let t = 0; try { t = +(sessionStorage.getItem("cs-redir-at") || 0); sessionStorage.removeItem("cs-redir-at"); } catch (e) {}
+  if (!t || Date.now() - t > 10 * 60000) return;
+  setTimeout(() => { if (auth.currentUser || (r && r.user)) return; try { localStorage.setItem("cs-auth-popup", "1"); } catch (e) {}
+    alertMsg("Almost there! This browser didn't keep the sign-in. Tap \"Continue with Google\" once more: a small Google window will open."); }, 2500);
+}).catch(e => { try { sessionStorage.removeItem("cs-redir-at"); localStorage.setItem("cs-auth-popup", "1"); } catch (er) {} if (e && e.code && !/cancelled|closed-by-user|no-auth-event|redirect-cancelled/.test(e.code)) { console.warn(e); setTimeout(() => alertMsg("Sign-in didn't finish. Tap \"Continue with Google\" once more."), 400); } });
 
 /* ---------- UI ---------- */
 function alertMsg(t) { const el = $("authStatus"); if (el) el.textContent = t; const ag = document.getElementById("agMsg"); if (ag) { ag.textContent = t; ag.hidden = false; } try { const tst = document.getElementById("toast"); tst.textContent = t; tst.classList.add("show"); setTimeout(() => tst.classList.remove("show"), 3000); } catch (e) {} }
