@@ -616,7 +616,8 @@ const MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-fl
 /* paid service first (Agent Platform, on the Blaze plan), the free Gemini Developer API as a backup */
 let ai = null, aiPaid = null;
 try { ai = getAI(app, { backend: new GoogleAIBackend() }); } catch (e) { console.warn("AI Logic not available", e); }
-try { aiPaid = getAI(app, { backend: new AgentPlatformBackend("global") }); } catch (e) { aiPaid = null; }
+/* the paid service said "App Check token is invalid" with normal tokens (Nov 17): try one-time (limited-use) tokens for it */
+try { aiPaid = getAI(app, { backend: new AgentPlatformBackend("global"), useLimitedUseAppCheckTokens: true }); } catch (e) { aiPaid = null; }
 const aiCount = k => { try { window.csUse && window.csUse(k); } catch (e) {} };
 async function geminiSample(prompt, opts = {}) {
   let lastErr, limited = false; aiCount("ai");
