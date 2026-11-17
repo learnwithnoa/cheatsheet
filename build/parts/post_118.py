@@ -186,3 +186,11 @@ if '2026-1117-links' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 17: switch to yearly
+s=open(p,encoding="utf-8").read()
+if '2026-1117-yearly' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-yearly", date:"November 17, 2026", title:"Switch to the yearly plan", items:[
+    ["📅","Monthly member? You can switch to yearly","In <b>Club → Your membership</b>, tap <b>Switch to yearly</b>. The yearly plan costs half of 12 monthly payments. Your paid month stays as it is: the yearly payment starts the day it ends, and the monthly payments stop.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

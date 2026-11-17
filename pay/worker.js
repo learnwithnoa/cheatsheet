@@ -262,13 +262,14 @@ async function ppSubscribe(env, req, url, me, body) {
   const kind = body.plan === "yearly" ? "y" : "m";
   const usd = body.plan === "test" && TESTERS.includes(me.uid) ? 1 : kind === "y" ? STD_YEAR_USD : await usdFor(env, me.email, me.name);
   const b = await getBill(env, me.uid);
-  if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "paypal" && b.ppEnv === ppEnv(env)) || (b.provider !== "paypal" && b.subscriptionId && sameEnv(env, b)))) return json({ error: "You already have an active membership." }, 400, req);
+  const up = !!body.upgrade && kind === "y" && b.status === "active" && b.kind === "m" && b.provider === "paypal" && b.ppEnv === ppEnv(env) && !!b.ppSubId;
+  if (!up && ["active", "grace", "canceling"].includes(b.status) && ((b.provider === "paypal" && b.ppEnv === ppEnv(env)) || (b.provider !== "paypal" && b.subscriptionId && sameEnv(env, b)))) return json({ error: "You already have an active membership." }, 400, req);
   const plan = await ppPlan(env, kind, usd);
-  const start = kind === "m" && usd > 1 ? await firstCharge(env, me) : null;
+  const start = up ? (b.paidThrough && b.paidThrough > today() ? b.paidThrough : null) : kind === "m" && usd > 1 ? await firstCharge(env, me) : null;
   const sub = await pp(env, "POST", "/v1/billing/subscriptions", Object.assign(start ? { start_time: start + "T15:00:00Z" } : {}, { plan_id: plan, custom_id: me.uid,
     application_context: { brand_name: "Noa's English Club", user_action: "SUBSCRIBE_NOW", shipping_preference: "NO_SHIPPING", return_url: url.origin + "/api/paypal-return", cancel_url: SITE + "?membership=fail#club" } }));
   const link = (sub.links || []).find((l) => l.rel === "approve");
-  await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, ppPending: sub.id, ppPendingKind: kind, ppPendingUsd: usd });
+  await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, ppPending: sub.id, ppPendingKind: kind, ppPendingUsd: usd, ppUpFrom: up ? b.ppSubId : null });
   return json({ url: link && link.href }, 200, req);
 }
 async function ppReturn(env, req, url) {
@@ -279,7 +280,8 @@ async function ppReturn(env, req, url) {
   for (let i = 0; i < 4 && sub.status === "APPROVED"; i++) { await new Promise((r) => setTimeout(r, 1500)); sub = await pp(env, "GET", `/v1/billing/subscriptions/${id}`); }
   if (!["ACTIVE", "APPROVED"].includes(sub.status)) return Response.redirect(SITE + "?membership=fail#club", 303);
   await ppFinalize(env, id, sub);
-  return Response.redirect(SITE + "?membership=ok#club", 303);
+  const bb = await getBill(env, uid);
+  return Response.redirect(SITE + (bb.upgraded === today() && bb.kind === "y" ? "?membership=yearly#club" : "?membership=ok#club"), 303);
 }
 async function ppFinalize(env, id, sub) {
   const uid = sub.custom_id; if (!uid) return null;
@@ -287,10 +289,14 @@ async function ppFinalize(env, id, sub) {
   if (b.provider === "paypal" && b.ppSubId === id && b.status === "active") return uid;
   const kind = b.ppPendingKind || "m", usd = Number(b.ppPendingUsd) || STD_MONTH_USD;
   const next = sub.billing_info && sub.billing_info.next_billing_time;
+  const upFrom = b.ppUpFrom && b.ppUpFrom !== id ? b.ppUpFrom : null;   // switched to yearly: stop the monthly one (its paid month stays)
+  if (upFrom) await pp(env, "POST", `/v1/billing/subscriptions/${upFrom}/cancel`, { reason: "Switched to yearly on Hibi" }).catch((e) => console.log("cancel old monthly", e.message));
+  let paidThrough = next ? next.slice(0, 10) : addDays(today(), kind === "y" ? 365 : 31);
+  if (upFrom && b.paidThrough && b.paidThrough > paidThrough) paidThrough = b.paidThrough;
   await saveBill(env, uid, { provider: "paypal", ppSubId: id, ppEnv: ppEnv(env), kind, amount: usd, currency: "USD", card: "PayPal", status: "active",
-    paidThrough: next ? next.slice(0, 10) : addDays(today(), kind === "y" ? 365 : 31), graceUntil: null, since: b.since || today(), ppPending: null });
+    paidThrough, graceUntil: null, since: b.since || today(), ppPending: null, ppUpFrom: null, upgraded: upFrom ? today() : (b.upgraded || null) });
   await grantClub(env, uid, b.name || "");
-  if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
+  if (b.trialUsed && !upFrom) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
   return uid;
 }
 async function ppNightly(env, uid, b) {
@@ -322,13 +328,15 @@ async function mpSubscribe(env, req, url, me, body) {
   const kind = body.plan === "yearly" ? "y" : "m";
   const amount = test ? 1000 : kind === "y" ? STD_YEAR : await priceFor(env, me.email, me.name);
   const b = await getBill(env, me.uid);
-  if (["active", "grace", "canceling"].includes(b.status) && ((b.provider === "mp" && b.mpEnv === mpEnv(env)) || (b.provider === "paypal" && b.ppEnv === ppEnv(env)))) return json({ error: "You already have an active membership." }, 400, req);
-  const start = !test && kind === "m" ? await firstCharge(env, me) : null;   // moving from Skool: first payment on their Skool date
+  // monthly → yearly: a new yearly subscription that starts when the paid month ends; the monthly one is cancelled once the new one is approved
+  const up = !!body.upgrade && kind === "y" && b.status === "active" && b.kind === "m" && b.provider === "mp" && b.mpEnv === mpEnv(env) && !!b.mpId;
+  if (!up && ["active", "grace", "canceling"].includes(b.status) && ((b.provider === "mp" && b.mpEnv === mpEnv(env)) || (b.provider === "paypal" && b.ppEnv === ppEnv(env)))) return json({ error: "You already have an active membership." }, 400, req);
+  const start = up ? (b.paidThrough && b.paidThrough > today() ? b.paidThrough : null) : !test && kind === "m" ? await firstCharge(env, me) : null;   // moving from Skool: first payment on their Skool date
   const payer = normEmail(body.payerEmail || me.email);
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payer)) return json({ error: "Please check the email of your Mercado Pago account." }, 400, req);
   const sub = await mp(env, "POST", "/preapproval", { reason: kind === "y" ? "Noa's English Club (yearly)" : "Noa's English Club (monthly)", external_reference: me.uid, payer_email: payer,
     auto_recurring: Object.assign({ frequency: kind === "y" ? 12 : 1, frequency_type: "months", transaction_amount: amount, currency_id: "CLP" }, start ? { start_date: start + "T12:00:00.000-03:00" } : {}), back_url: url.origin + "/api/mp-return", status: "pending" });
-  await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, mpPending: sub.id, mpPendingKind: kind, mpPendingAmount: amount });
+  await patch(env, `billing/${me.uid}`, { email: me.email, name: me.name, mpPending: sub.id, mpPendingKind: kind, mpPendingAmount: amount, mpUpFrom: up ? b.mpId : null });
   return json({ url: sub.init_point }, 200, req);
 }
 async function mpReturn(env, req, url) {
@@ -337,7 +345,8 @@ async function mpReturn(env, req, url) {
   let sub = await mp(env, "GET", `/preapproval/${id}`);
   for (let i = 0; i < 4 && sub.status === "pending"; i++) { await new Promise((r) => setTimeout(r, 1500)); sub = await mp(env, "GET", `/preapproval/${id}`); }
   const uid = await mpFinalize(env, id, sub);
-  return Response.redirect(SITE + (uid ? "?membership=ok#club" : "?membership=fail#club"), 303);
+  const bb = uid ? await getBill(env, uid) : {};
+  return Response.redirect(SITE + (uid ? (bb.upgraded === today() && bb.kind === "y" ? "?membership=yearly#club" : "?membership=ok#club") : "?membership=fail#club"), 303);
 }
 // saves an authorized Mercado Pago subscription (from the return page, or later if the member never came back to Hibi)
 async function mpFinalize(env, id, sub) {
@@ -347,10 +356,14 @@ async function mpFinalize(env, id, sub) {
   const b = await getBill(env, uid);
   if (b.provider === "mp" && b.mpId === id && b.status === "active") return uid;   // already saved
   const kind = b.mpPendingKind || "m", amount = Number(b.mpPendingAmount) || (sub.auto_recurring && sub.auto_recurring.transaction_amount) || STD_MONTH;
+  const upFrom = b.mpUpFrom && b.mpUpFrom !== id ? b.mpUpFrom : null;   // switched to yearly: stop the monthly one (its paid month stays)
+  if (upFrom) await mp(env, "PUT", `/preapproval/${upFrom}`, { status: "cancelled" }).catch((e) => console.log("cancel old monthly", e.message));
+  let paidThrough = (sub.next_payment_date || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31);
+  if (upFrom && b.paidThrough && b.paidThrough > paidThrough) paidThrough = b.paidThrough;
   await saveBill(env, uid, { provider: "mp", mpId: id, mpEnv: mpEnv(env), kind, amount, currency: "CLP", card: "Mercado Pago", status: "active",
-    paidThrough: (sub.next_payment_date || "").slice(0, 10) || addDays(today(), kind === "y" ? 365 : 31), graceUntil: null, since: b.since || today(), mpPending: null });
+    paidThrough, graceUntil: null, since: b.since || today(), mpPending: null, mpUpFrom: null, upgraded: upFrom ? today() : (b.upgraded || null) });
   await grantClub(env, uid, b.name || "");
-  if (b.trialUsed) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
+  if (b.trialUsed && !upFrom) { await trialLog(env, uid, { status: "joined", joined: Date.now() }).catch(() => {}); await trackerRow(env, { email: b.email, status: "joined" }); }
   return uid;
 }
 // a sign-up that was approved at Mercado Pago / PayPal but whose return page never reached Hibi (tab closed, phone app…)

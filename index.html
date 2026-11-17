@@ -1395,6 +1395,16 @@ html.cs-calm .cl-rxpick{animation:none}
 .pr-fback{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin:0 0 12px;padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);font:700 13.5px var(--body);color:var(--ink)}
 .pr-fback:hover{border-color:var(--royal)}
 
+/* step170: switch to yearly (quiet) */
+#hbMem .hb-up{margin-top:2px}
+#hbMem .hb-up-pill{background:none;border:1.5px dashed color-mix(in srgb,#3FB37F 55%,var(--line));border-radius:999px;padding:4px 12px;font:700 12.5px var(--body);color:var(--ink);cursor:pointer}
+#hbMem .hb-up-pill span{color:var(--muted);font-weight:600}
+#hbMem .hb-up-pill:hover{border-style:solid}
+#hbMem .hb-upbox{border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+#hbMem .hb-up-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#hbMem .hb-up-row .hb-pay-btn{flex:none}
+#hbMem .hb-up-no{background:none;border:0;padding:0;font:700 13px var(--body);color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -10983,6 +10993,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-yearly", date:"November 17, 2026", title:"Switch to the yearly plan", items:[
+    ["📅","Monthly member? You can switch to yearly","In <b>Club → Your membership</b>, tap <b>Switch to yearly</b>. The yearly plan costs half of 12 monthly payments. Your paid month stays as it is: the yearly payment starts the day it ends, and the monthly payments stop.",""]
+  ]},
   {id:"2026-1117-links", date:"November 17, 2026", title:"Links that take you to the right place", items:[
     ["🔗","The address follows you","When you open a grammar module, a Club tab or a page of My coaching, the address at the top changes too (like <b>hibi.cl/#quiz/grammar/past-simple</b> or <b>hibi.cl/#club/recordings</b>). Refresh, bookmark it or share it, and it opens right there.",""]
   ]},
@@ -11323,7 +11336,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117105016"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117110651"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11704,7 +11717,7 @@ window.__csBusy = function(){
     if(!b.dataset.pp&&!b.dataset.mpgo&&!preview()&&!window.__csGuest){ askMp(b); return; }
     if(preview()){ say("In View as nothing is paid. Members go to Flow to add their card."); return; }
     const all=document.querySelectorAll("[data-hbjoin]"); all.forEach(x=>x.disabled=true);
-    try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin,provider:b.dataset.pp?"paypal":"mp",payerEmail:b.dataset.mpemail||""}); if(!d.url) throw new Error("Something went wrong. Please try again."); location.href=d.url; }
+    try{ const d=await call("/api/subscribe",{plan:b.dataset.hbjoin,provider:b.dataset.pp?"paypal":"mp",payerEmail:b.dataset.mpemail||"",upgrade:!!b.dataset.up}); if(!d.url) throw new Error("Something went wrong. Please try again."); location.href=d.url; }
     catch(err){ say(err.message); all.forEach(x=>x.disabled=false);
       /* also show it right under the button, so it can't be missed */
       let n=b.parentNode.querySelector(".hb-pay-err"); if(!n){ n=document.createElement("p"); n.className="hb-pay-err"; n.style.cssText="margin:6px 0 0;font:700 13px var(--body);color:#E5484D;flex-basis:100%"; b.parentNode.appendChild(n); }
@@ -11739,15 +11752,18 @@ window.__csBusy = function(){
     if(m.status==="active") links.push(`<button class="danger" data-hbmem="cancel">Cancel membership</button>`);
     const cta=m.status==="trial"?(payOn()?`<div class="hb-mem-cta"><button class="hb-pay-btn" data-hbjoin="monthly">💛 Stay in the club<small>${clp(35000)} a month</small></button><button class="hb-pay-btn alt" data-hbjoin="yearly">A year<small>${clp(210000)}</small></button></div><p class="hb-pay-note hb-pp">Outside Chile? Pay in US dollars with PayPal: <button class="hb-pp-btn" data-hbjoin="monthly" data-pp="1">US$35 a month</button> · <button class="hb-pp-btn" data-hbjoin="yearly" data-pp="1">US$210 a year</button></p>`
       :`<div class="hb-mem-cta"><a class="hb-pay-btn" href="#" data-joindm="stay" style="text-decoration:none">💛 I want to stay</a></div>`):"";
+    const upAmt=m.currency==="USD"?210:210000, upPct=m.amount?Math.round((1-upAmt/(12*m.amount))*100):0;
+    const upHTML=m.status==="active"&&m.kind==="m"&&payOn()&&upPct>=5?`<div class="hb-up"><button class="hb-up-pill" data-hbup="1" aria-expanded="false">📅 Switch to yearly <span>· ${upPct}% off</span></button></div>`:"";
     let min=false; try{ min=localStorage.getItem("hibi-mem-min")==="1"; }catch(e){}
     el.innerHTML=`<div class="hb-mem${warn?" warn":""}${min?" min":""}"><div class="hb-mem-h"><b>${String(m.status).startsWith("trial")?"🎁 Your free trial":"💛 Your membership"}</b><span class="hb-tag">${tag}</span><button class="hb-mem-min" data-hbmem="min" aria-expanded="${!min}" title="${min?"Show details":"Minimize"}">${min?"Show ▾":"Minimize ▴"}</button></div>
       <p>${line}</p>${m.card&&m.status!=="ended"?`<p class="hb-pay-note">Card: ${String(m.card).replace(/[<>&]/g,"")}</p>`:""}
-      ${cta}${links.length?`<div class="hb-mem-links">${links.join("")}</div>`:""}</div>`;
+      ${cta}${upHTML}${links.length?`<div class="hb-mem-links">${links.join("")}</div>`:""}</div>`;
     if(m.status==="trial") el.firstElementChild.classList.add("trial");
   }
   document.addEventListener("click",async e=>{
     const b=e.target.closest("[data-hbmem]"); if(!b) return; e.preventDefault();
     if(preview()&&b.dataset.hbmem!=="min"){ say("In View as nothing changes."); return; }
+    if(b.dataset.hbmem==="upno"){ const x=document.querySelector(".hb-upbox"); if(x) x.remove(); const p=document.querySelector("[data-hbup]"); if(p) p.setAttribute("aria-expanded","false"); return; }
     if(b.dataset.hbmem==="min"){ const box=b.closest(".hb-mem"), on=!box.classList.contains("min"); try{ localStorage.setItem("hibi-mem-min",on?"1":"0"); }catch(e){} drawMem(); return; }
     if(b.dataset.hbmem==="card"){ b.disabled=true; try{ const d=await call("/api/update-card"); location.href=d.url; }catch(err){ say(err.message); b.disabled=false; } return; }
     if(b.dataset.hbmem==="cancel"){
@@ -11756,9 +11772,21 @@ window.__csBusy = function(){
     }
   });
 
+  document.addEventListener("click",e=>{
+    const b=e.target.closest("[data-hbup]"); if(!b) return; e.preventDefault();
+    const old=document.querySelector(".hb-upbox"); if(old){ old.remove(); b.setAttribute("aria-expanded","false"); return; }
+    const m=MEM||{}, usd=m.currency==="USD", yr=usd?"US$210":clp(210000), mo=usd?"US$"+m.amount:clp(m.amount), pct=Math.round((1-(usd?210:210000)/(12*m.amount))*100);
+    const when=m.paidThrough?day(m.paidThrough):"the end of your paid month";
+    const box=document.createElement("div"); box.className="hb-upbox";
+    box.innerHTML=`<p><b>${yr} once a year</b> instead of ${mo} a month: ${pct}% less than paying monthly.</p>
+      <p class="hb-pay-note">Your current month is already paid, so nothing changes until <b>${when}</b>. That day the yearly payment starts and the monthly ones stop. You approve it once in ${m.provider==="paypal"?"PayPal":"Mercado Pago"}.</p>
+      <div class="hb-up-row"><button class="hb-pay-btn" data-hbjoin="yearly" data-up="1"${m.provider==="paypal"?' data-pp="1"':""}>Switch to yearly</button><button class="hb-up-no" data-hbmem="upno">Not now</button></div>`;
+    b.parentNode.after(box); b.setAttribute("aria-expanded","true");
+  });
+
   /* ---- coming back from Flow ---- */
   try{ const q=new URLSearchParams(location.search), st=q.get("membership");
-    if(st){ setTimeout(()=>say(st==="ok"?"Welcome to Noa’s English Club! 💛 Your membership is active.":st==="card"?"Your card is updated. 💳":"The payment didn’t go through, so nothing was charged. You can try again, or message Noa."),1200);
+    if(st){ setTimeout(()=>say(st==="yearly"?"Done! You’re on the yearly plan now. 💛 It starts when your paid month ends, and the monthly payments stop.":st==="ok"?"Welcome to Noa’s English Club! 💛 Your membership is active.":st==="card"?"Your card is updated. 💳":"The payment didn’t go through, so nothing was charged. You can try again, or message Noa."),1200);
       q.delete("membership"); q.delete("why"); history.replaceState(null,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); } }catch(e){}
 
   const tick=()=>{ decorateJoin(); decorateTrial(); if(!loaded&&F().uid&&F().uid()) loadMem(); else if(MEM&&!document.getElementById("hbMem")) drawMem(); };
