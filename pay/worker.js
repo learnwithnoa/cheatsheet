@@ -667,7 +667,8 @@ async function ytFeed(env) {
       return { id: g(/<yt:videoId>([^<]+)</), title: g(/<title>([\s\S]*?)<\/title>/), published: g(/<published>([^<]+)</), description: g(/<media:description>([\s\S]*?)<\/media:description>/).slice(0, 600) };
     }).filter((v) => v.id);
     await setJ(env, TEACHER, "t-ytfeed", { playlist: list, checked: new Date().toISOString(), videos });
-    return { ok: true, videos: videos.length, newest: videos[0] ? videos[0].title.slice(0, 80) : "" };
+    const ft = (x.match(/<title>([\s\S]*?)<\/title>/) || [])[1];
+    return { ok: true, playlist: xmlText(ft || "").slice(0, 80), videos: videos.length, newest: videos[0] ? videos[0].title.slice(0, 80) : "", bytes: x.length };
   } catch (e) { return { ok: false, why: String(e.message || e).slice(0, 120) }; }
 }
 async function health(env) {
