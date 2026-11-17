@@ -264,6 +264,14 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "house", name: "Little house", ico: "🏠", slot: "toy", m: "th", mt: "There is / there are" },
     { id: "gkey", name: "Golden key", ico: "🔑", slot: "toy", m: "cou", mt: "Could vs was able to" },
     { id: "bell", name: "Little bell", ico: "🔔", slot: "toy", m: "ed", mt: "-ed endings" },
+    /* grammar modules: pass the ⭐ Advanced stage (every new module with an Advanced stage gets one: id, pixel art in T below) */
+    { id: "clock", name: "Alarm clock", ico: "⏰", slot: "toy", ma: "prs", mt: "Present simple" },
+    { id: "camera", name: "Old camera", ico: "📷", slot: "toy", ma: "ps", mt: "Past simple" },
+    { id: "plane", name: "Paper plane", ico: "✈️", slot: "toy", ma: "pp", mt: "Present perfect" },
+    { id: "tmap", name: "Treasure map", ico: "🗺️", slot: "toy", ma: "th", mt: "There is / there are" },
+    { id: "medal", name: "Gold medal", ico: "🥇", slot: "toy", ma: "cou", mt: "Could vs was able to" },
+    { id: "phones", name: "Headphones", ico: "🎧", slot: "toy", ma: "ing", mt: "Verb + -ing" },
+    { id: "scope", name: "Telescope", ico: "🔭", slot: "toy", ma: "ed", mt: "-ed endings" },
     /* duels (club members): fighting gear */
     { id: "dbanner", name: "Duel banner", ico: "🚩", slot: "toy", dp: 1 },
     { id: "sword", name: "Wooden sword", ico: "🗡️", slot: "toy", dw: 1 },
@@ -308,10 +316,12 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   const TCH = () => window.__csTeacher === true && !window.__csPreview;  // in "View as", the buddy unlocks only what that member unlocked
   const musicDays = () => Array.isArray(S.mud) ? S.mud.length : 0;
   const modDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; return (p.to && p.to.sc >= 15) || [1, 2, 3, 4, 5, 6, 7].every(n => ((p.b || {})[n] | 0) >= 7); } catch (e) { return false; } };
-  const isOpen = it => { if (TCH()) return true; if (it.m) return modDone(it.m); if (it.md != null) return musicDays() >= it.md; if (it.dw != null) return (S.dw | 0) >= it.dw; if (it.ds != null) return (S.dbs | 0) >= it.ds; if (it.dp != null) return (S.dplay | 0) >= it.dp; const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
-  const lockTxt = it => it.md != null ? `after studying with music on ${it.md} different days (you have ${Math.min(musicDays(), it.md)})` : it.m ? "when you finish " + it.mt : it.dw != null ? "after " + it.dw + " duel " + (it.dw === 1 ? "win" : "wins") : it.ds != null ? "after " + it.ds + " duel wins in a row" : it.dp != null ? "after your first duel" : it.w != null ? it.w + " words" : it.l + " learned words";
-  const atW = it => it.m || it.md != null || it.dw != null || it.ds != null || it.dp != null ? "" : "at ";
-  const needTxt = it => it.m ? "⏪" : it.dw != null ? "⚔️" + it.dw : it.ds != null ? "🔥" + it.ds : it.dp != null ? "⚔️" : it.w != null ? it.w : it.l;
+  const advDone = m => { if (TCH()) return true; try { const p = (JSON.parse(localStorage.getItem("ncs-mods") || "{}") || {})[m] || {}; const n = (window.__csModAdv && window.__csModAdv()[m]) || 8; return ((p.b || {})[n] | 0) >= 7; } catch (e) { return false; } };
+  window.__bdAdvToy = m => { const it = ITEMS.find(i => i.ma === m); return it ? { ico: it.ico, name: it.name } : null; };
+  const isOpen = it => { if (TCH()) return true; if (it.ma) return advDone(it.ma); if (it.m) return modDone(it.m); if (it.md != null) return musicDays() >= it.md; if (it.dw != null) return (S.dw | 0) >= it.dw; if (it.ds != null) return (S.dbs | 0) >= it.ds; if (it.dp != null) return (S.dplay | 0) >= it.dp; const c = counts(); return it.w != null ? c.words >= it.w : c.learned >= it.l; };
+  const lockTxt = it => it.ma ? "when you pass the ⭐ Advanced stage of " + it.mt : it.md != null ? `after studying with music on ${it.md} different days (you have ${Math.min(musicDays(), it.md)})` : it.m ? "when you finish " + it.mt : it.dw != null ? "after " + it.dw + " duel " + (it.dw === 1 ? "win" : "wins") : it.ds != null ? "after " + it.ds + " duel wins in a row" : it.dp != null ? "after your first duel" : it.w != null ? it.w + " words" : it.l + " learned words";
+  const atW = it => it.m || it.ma || it.md != null || it.dw != null || it.ds != null || it.dp != null ? "" : "at ";
+  const needTxt = it => it.ma ? "⭐" : it.m ? "⏪" : it.dw != null ? "⚔️" + it.dw : it.ds != null ? "🔥" + it.ds : it.dp != null ? "⚔️" : it.w != null ? it.w : it.l;
   const animal = () => SP[S.a] ? S.a : "max";
   const palette = () => { const d = SP[animal()], c = d.colors[S.c | 0] || d.colors[0]; return Object.assign({}, d.p, c[1]); };
   const nameOf = () => { const n = S.n && String(S.n).trim(), sp = SP[animal()]; return n && n !== sp.old ? n : sp.name; };
@@ -410,6 +420,13 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       dbanner: [36, 3, ["k....", "krrrr", "krwrr", "krrrr", "k.rr.", "k....", "k....", "k...."], { k: "#5A4632", r: "#C2306F", w: "#F5C842" }],
       sword: [24, 18, ["....w", "...s.", "..s..", "hs...", ".h..."], { w: "#FFFFFF", s: "#C9A26B", h: "#7A5A3A" }],
       shield: [20, 20, ["bbbbb", "bybyb", "bbybb", ".bbb.", "..b.."], { b: "#3B6FD9", y: "#F5C842" }],
+      clock: [6, 10, ["r....r", ".rrrr.", "rwwkwr", "rwwkwr", "rwkkwr", "rwwwwr", ".rrrr."], { r: "#E5533D", w: "#FFFFFF", k: "#2E2E3A" }],
+      tmap: [6, 17, ["pppppp", "prppbp", "pprpxp", "pppppp"], { p: "#EED9A4", r: "#B8860B", b: "#6FB6F2", x: "#E5533D" }],
+      camera: [28, 9, [".kk...", "ssssss", "ssbbss", "sbwbbs", "ssbbss"], { s: "#A7B0C0", b: "#6FB6F2", w: "#FFFFFF", k: "#2E2E3A" }],
+      phones: [28, 14, [".kkkk.", "k....k", "pp..pp", "pp..pp"], { k: "#2E2E3A", p: "#9B6BFF" }],
+      plane: [19, 0, ["ww.....", ".wwww..", "..wwwww", ".ggw...", "gg....."], { w: "#FFFFFF", g: "#C9D3E0" }],
+      medal: [25, 0, ["b...b", ".b.b.", ".yyy.", "yyoyy", ".yyy."], { b: "#3B6FD9", y: "#F5C842", o: "#E8B931" }],
+      scope: [36, 20, ["..by", ".bb.", "bb..", ".k..", "k.k."], { b: "#3B6FD9", y: "#F5C842", k: "#5A4632" }],
       armour: [-6, 12, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
     toys.forEach(t => { const d = T[t]; if (!d) return; const at = (S.tp && S.tp[t]) || [d[0], d[1]]; r += `<g class="bd-toy" data-toyg="${t}"><rect x="${at[0] - .5}" y="${at[1] - .5}" width="${d[2][0].length + 1}" height="${d[2].length + 1}" fill="transparent"/>`; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(at[0] + dx, at[1] + dy, 1, 1, d[3][ch]); })); r += `</g>`; });
     return r;
@@ -623,7 +640,7 @@ html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-music .ms-dis
 .bd-chip:focus-visible{outline:3px solid var(--bright,#5BD38E)}
 .bd-chip .bd-new{font:800 9.5px var(--mono,monospace);background:#E5533D;color:#fff;border-radius:6px;padding:1px 4px}
 .bd-small{font-size:12.5px;color:var(--muted,#777);margin:6px 0 0;line-height:1.45}
-.bd-prog{margin:4px 0 2px;font-size:13.5px}
+.bd-prog{margin:4px 0 2px;font-size:13.5px}.bd-gmod{margin:8px 0 2px;font-size:13.5px}.bd-gmod .duel-gear{margin-top:4px}
 .bd-bar{height:9px;border-radius:9px;background:var(--line,#ddd);overflow:hidden;margin:5px 0 8px}
 .bd-bar i{display:block;height:100%;background:var(--green,#2E8B57);border-radius:9px}
 .bd-animals{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
@@ -1049,7 +1066,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       body = `${slotRow("room", "Background")}
       <div class="bd-toyh"><span class="bd-small" style="font-weight:700">Toys</span><span class="bd-row" style="gap:6px"><button class="bd-link" type="button" data-m="toyreset" title="Put every toy back in its own spot">✨ Tidy up</button>${toys.some(t => isOpen(t) && !(S.toyOff || []).includes(t.id)) ? `<button class="bd-link" type="button" data-m="toysaway">📦 Put all away</button>` : ""}${(S.toyOff || []).length ? `<button class="bd-link" type="button" data-m="toysout">🧸 Bring all out</button>` : ""}</span></div>
       ${[["📚 From learning words", t => t.l != null], ["🧩 From grammar modules", t => !!t.m], ["⚔️ From duels", t => t.dp != null || t.dw != null]].map(([h, f]) => { const g = toys.filter(f); return g.length ? `<div class="bd-small bd-toyg">${h}</div><div class="bd-row">${g.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${atW(t)}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${needTxt(t)}</small></span>`).join("")}</div>` : ""; }).join("")}
-      <p class="bd-small">Tap a toy to put it away or bring it back. New toys show up in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). The ⏳ hourglass and 🌍 globe come from finishing grammar modules.</p>
+      <p class="bd-small">Tap a toy to put it away or bring it back. New toys show up in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). Grammar toys come from finishing a module in Practice, and from passing its ⭐ Advanced stage.</p>
       <p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows on every day you study. Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`;
     } else if (sec === "buddy") {
       body = `${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}<p class="bd-small">Each buddy has its own friendship level. Your treats, words and unlocks are shared by all of them.</p>`;
@@ -1062,8 +1079,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       ${nextW ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.words, prevW ? prevW.w : 0, nextW.w)}%"></i></div>` : ""}
       <div class="bd-prog"><b>${c.learned}</b> ${c.learned === 1 ? "word" : "words"} learned${nextL ? ` · next: ${nextL.ico} <b>${esc(nextL.name)}</b> at ${nextL.l}` : " · every toy unlocked! 🎉"}</div>
       ${nextL ? `<div class="bd-bar" aria-hidden="true"><i style="width:${pct(c.learned, prevL ? prevL.l : 0, nextL.l)}%"></i></div>` : ""}
-      <div class="bd-prog">⏪ <b>Past simple:</b> ${modDone("ps") ? "⏳ Magic hourglass unlocked! ✨" : `finish it in Practice to get the ⏳ <b>Magic hourglass</b>`}</div>
-      <div class="bd-prog">🌍 <b>Present perfect:</b> ${modDone("pp") ? "🌍 Little globe unlocked! ✨" : `finish it in Practice to get the 🌍 <b>Little globe</b>`}</div>
+      <h4>Grammar toys</h4><p class="bd-small" style="margin-top:0">Finish a module in Practice for one toy, and pass its ⭐ Advanced stage for another.</p>
+      ${ITEMS.filter(i => i.m).map(it => { const ch = (x, on, adv) => `<span class="dg${on ? " on" : ""}" title="${esc(x.name)}${on ? " (unlocked)" : " · unlocks " + lockTxt(x)}">${on ? x.ico : "🔒"} ${adv ? "⭐ " : ""}${esc(x.name)}</span>`; const ad = ITEMS.find(i => i.ma === it.m); return `<div class="bd-gmod"><b>${esc(it.mt)}</b><div class="duel-gear">${ch(it, modDone(it.m))}${ad ? ch(ad, advDone(ad.ma), 1) : ""}</div></div>`; }).join("")}
       ${canDuel(duelMeRole) ? `<h4>Duels ⚔️</h4><div class="bd-prog"><b>${S.dw | 0}</b> ${(S.dw | 0) === 1 ? "win" : "wins"} · <b>${S.dl | 0}</b> ${(S.dl | 0) === 1 ? "loss" : "losses"}${(S.dbs | 0) >= 2 ? ` · best streak 🔥 ${S.dbs}` : ""}</div><div class="duel-gear">${gearLine()}</div>` : ""}
       <h4>How to earn treats 🍪</h4>
       <ul class="bd-earn"><li>Save a new word: <b>+1</b> (up to 10 a day)</li><li>Finish a flashcard round of 5+ cards: <b>+3</b> (up to 5 a day)</li><li>Finish a grammar round: <b>+2</b> (up to 3 a day)</li><li>Write a good sentence: <b>+1</b> (up to 5 a day)</li><li>Say it out loud: <b>+1</b> (up to 3 a day)</li><li>Weekly goal: <b>+5</b> · Rare park treat: <b>+2</b></li></ul>

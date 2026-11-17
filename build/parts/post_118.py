@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=58',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=59',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -150,6 +150,14 @@ if '2026-1117-lessons-all' not in s:
     ["📖","Learn it first, everywhere","Every grammar module now starts with a short lesson: <b>Basics</b> (A1–B1) and <b>Advanced</b> (B2–C1), in English or <b>Español</b>, with 🔊 examples and common mistakes.",""],
     ["⭐","Stage 8: Advanced","Each module has a new bonus stage for B2–C1. It opens when you pass stage 7 (or test out). You don't need it to finish the module.",""],
     ["🗂️","Verb tenses in one folder","In <b>Practice → Grammar</b>, the present simple, past simple and present perfect now live together in a <b>Verb tenses</b> folder, so the list stays tidy as more topics arrive.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+# Nov 17: advanced-stage buddy toys
+s=open(p,encoding="utf-8").read()
+if '2026-1117-advtoys' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-advtoys", date:"November 17, 2026", title:"New toys for your study buddy", items:[
+    ["🎁","A toy for every Advanced stage","Pass the ⭐ Advanced stage of a grammar module and your buddy gets a new toy: ⏰ alarm clock, 📷 old camera, ✈️ paper plane, 🗺️ treasure map, 🥇 gold medal, 🎧 headphones and 🔭 telescope. See them all in your buddy's <b>Progress</b>.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
