@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=61',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=62',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -218,6 +218,13 @@ if '2026-1117-world' not in s:
     ["📖","Learn a word, read more","Tap the <b>underlined word</b> to learn it and save it, and tap a title to open the full story. Missed a day? Tap <b>‹ Yesterday</b>.","notes"],
     ["✏️","Make Home yours","Tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.","notes"],
     ["💛","Reactions everyone sees","React with 💛 🤯 😂 and see who else did. In the club you can now also tap the faces to see <b>who's going</b> to a class, who <b>enjoyed a recording</b>, and 👀 who reacted to a post or comment.","club"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+if '2026-1117-buddytalk' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1117-buddytalk", date:"November 17, 2026", title:"Your study buddy has more to say", items:[
+    ["🐾","Smarter hellos","Your buddy now says something different each time: \\"welcome back\\" after a few days away, a reminder on club class days, Noa's recommended module, how close you are to your weekly goal, today's word and much more.",""],
+    ["🔁","No more repeats","It won't say the same thing over and over, and it only says hi when you arrive, not every time you refresh.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

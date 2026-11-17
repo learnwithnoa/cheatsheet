@@ -814,8 +814,67 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (l >= 5) opts.push(() => { const w = (document.getElementById("twWord") || {}).textContent; return w ? `Remember <b>${esc(w)}</b>? It's today's word.` : "Did you see today's word?"; });
     if (l >= 6) opts.push(() => { let n = 0; try { const c = Date.now() - 7 * 864e5; n = JSON.parse(localStorage.getItem("ncs-words") || "[]").filter(x => x && x.t >= c).length; } catch (e) {} return n ? `You saved <b>${n}</b> ${n === 1 ? "word" : "words"} this week! 🎉` : "Let's find a new word this week?"; });
     if (l >= 7) opts.push(() => { const [e, sp] = pick(IDIOMS); return `Idiom time: <b>${esc(e)}</b> = ${esc(sp)}`; });
-    if (l >= 10) opts.push(() => `Best friends forever 💛`);
+    opts.push(() => pick(["That tickles! 😆", "Again! Again!", "*purrs in English*", "Boop! 👉", "Hehe 💛", "I like it when you visit.", "Did you drink water today? 💧", "Stretch break? 🙆", "You're my favorite student. Don't tell the others 🤫", "Mistakes are proof you're trying!"]));
+    opts.push(() => greetLine(0).txt);
+    if (l >= 10) opts.push(() => pick([`Best friends forever 💛`, "We make a great team 🤝", "Level 10 friends! 🏆"]));
     return pick(opts)();
+  }
+  /* ---------- greetings: different every visit and a bit smart (welcome back, club days, Noa's recommendation, weekly goal…) ---------- */
+  const MODN = { ps: "Past simple", pp: "Present perfect", prs: "Present simple", ing: "Verb + -ing", th: "There is / there are", cou: "Could vs was able to", iq: "Indirect questions", ed: "-ed endings" };
+  const lsj = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
+  function greetLine(gapDays) {
+    const fn = friendName(), N = fn ? " " + esc(fn) : "", pick = a => a[Math.floor(Math.random() * a.length)];
+    const now = new Date(), h = now.getHours(), wd = now.getDay(), gap = gapDays || 0, C = [];
+    const add = (id, w, txt, acts) => C.push({ id, w, txt, acts: acts || "" });
+    const go = (to, label) => `<button class="bd-b go" type="button" data-bdgo="${to}">${label}</button>`;
+    /* coming back after a while */
+    if (gap >= 7) add("back7", 60, pick([`Hi${N}! It's been a while… I missed you 🥺`, `You're back${N}! A whole week without you 🥺💛`, `Welcome back${N}! Let's start small today: one word, one round.`, `${fn ? esc(fn) + "!" : "Hey!"} I kept your words safe while you were away 📚`]));
+    else if (gap >= 2) add("back2", 45, pick([`Welcome back${N}! 👋 It's been ${Math.floor(gap)} days.`, `Oh hi${N}! I was waiting for you 🐾`, `There you are${N}! Ready for a quick round?`, `Long time no see${N}! (That's an expression, by the way 😉)`]));
+    /* time of day */
+    if (h >= 5 && h < 12) add("morning", 6, pick([`Good morning${N}! ☀️`, `Morning${N}! Coffee and English? ☕`, `Rise and shine${N}! 🌅`, `Early bird${N}! 🐦`]));
+    else if (h >= 12 && h < 18) add("afternoon", 6, pick([`Good afternoon${N}! 🌤️`, `Hi${N}! Time for a study break? 📚`, `Afternoon${N}! How's your day going?`]));
+    else if (h >= 18 && h < 23) add("evening", 6, pick([`Good evening${N}! 🌙`, `Evening${N}! A little English before dinner?`, `Hi${N}! How was your day?`]));
+    else add("late", 8, pick([`Studying this late${N}? Don't forget to sleep 😴`, `Night owl mode 🦉`, `Shhh… everyone's sleeping. Just us and English 🌙`]));
+    /* the club */
+    if (window.__csClub) {
+      const cls = { 1: ["🧠 Deep Dive Monday", 20], 3: ["🎲 Wildcard Wednesday", 20], 4: ["💬 Word Up Thursday", 20], 5: ["😎 Free Talk Friday", 14.5] }[wd];
+      if (cls && h + now.getMinutes() / 60 < cls[1]) add("clubday", 28, pick([`Club today: <b>${cls[0]}</b>! See you there? 🙋`, `It's ${cls[0]} today! Are you going?`, `Don't forget: <b>${cls[0]}</b> today 🗓️`]), go("club", "See the class"));
+      add("club", 6, pick(["Have you been enjoying the club? 💬", "Did you check the community wall today? 👀", "Missed a class? The recording is in the club Library 🎬", "Tap 🙋 I'm going on a class so Noa knows you're coming!", "Post something on the club wall! Even a GIF counts 😄"]), go("club", "Open the club"));
+    }
+    /* Noa's recommendation */
+    const rec = lsj("ncs-modrec") || {}, rk = Object.keys(rec).filter(k => MODN[k]);
+    if (rk.length) { const k = pick(rk); add("rec", 20, `Noa recommended <b>${esc(MODN[k])}</b>${rec[k] !== "all" ? ` (stage ${esc(String(rec[k]))})` : ""} for you. Want to try it? 💡`, go("quiz", "Open Practice")); }
+    /* weekly goal */
+    const wk = lsj("ncs-wk"), g = [3, 5, 8].includes(+lsj("ncs-wkgoal")) ? +lsj("ncs-wkgoal") : 3;
+    if (wk && !wk.got) { const left = Math.max(0, g - (wk.n | 0)); if (left > 0 && left <= 2) add("goal", 16, `Only <b>${left}</b> ${left === 1 ? "round" : "rounds"} left for your weekly goal! 🎯`, go("quiz", "Practice")); }
+    if (wk && wk.got) add("goaldone", 5, pick(["You did your weekly goal! 🎉 I'm so proud.", "Weekly goal: done ✅. Anything extra is a bonus!"]));
+    if (wd === 1 && h < 15) add("monday", 8, pick(["New week, new goal! 🎯", "Monday! A fresh start 🌱"]));
+    if (wd === 5) add("friday", 6, pick(["It's Friday! 🎉 Any plans for the weekend?", "Friday feeling 😎"]));
+    if (wd === 0 || wd === 6) add("weekend", 6, pick(["Weekend English? Respect 🙌", "Happy weekend! 🌈 Even 5 minutes counts."]));
+    /* words */
+    const w = (document.getElementById("twWord") || {}).textContent; if (w) add("word", 7, pick([`Today's word is <b>${esc(w)}</b>. Can you use it in a sentence?`, `Psst… today's word: <b>${esc(w)}</b> 🤫`, `<b>${esc(w)}</b>! Say it out loud three times 🗣️`]));
+    const ws = lsj("ncs-words") || [], wk7 = ws.filter(x => x && x.t >= Date.now() - 7 * 864e5).length;
+    if (wk7 >= 5) add("saved", 7, `You saved <b>${wk7}</b> words this week. Look at you go! 🚀`);
+    else if (ws.length >= 15 && wk7 === 0) add("nosave", 6, "No new words this week yet… what did you hear in class? 👂", go("words", "My notebook"));
+    if (ws.length >= 20) add("review", 6, `You have <b>${ws.length}</b> words in My notebook. Flashcards? 🃏`, go("quiz", "Practice"));
+    /* around the world */
+    const aw = document.querySelector("#awBox .aw-it h3"); if (aw && !document.getElementById("awBox").hidden) add("world", 7, `Did you see? <b>${esc(aw.textContent.replace(/[↗▶]/g, "").trim())}</b> 🌍`);
+    /* just being cute */
+    add("fun", 7, pick(["Hi! 👋", "*happy wiggle*", "I'm so happy you're here!", `Hi${N}! 💛`, "Let's learn something new today!", "Fun fact: I love English. And snacks. 🍪", "Ready when you are! 🐾", "Small steps every day = big results. That's what 日々 means!", "You + me + English = 💛", "Don't worry about mistakes. Mistakes = learning!", "Ask me anything! (I'll just wiggle, but still 😅)", "Today is a good day to learn one new word."]));
+    const l = level();
+    if (l >= 10) add("bff", 3, `Hi${N}! Best friends forever 💛`);
+    if ((S.t | 0) >= 5) add("snack", 4, `I have ${S.t | 0} 🍪… just saying 👀`);
+    if ((S.t | 0) === 0) add("hungry", 5, "I'm a little hungry… a practice round gives me cookies 🍪", go("quiz", "Practice"));
+    const md = (now.getMonth() + 1) * 100 + now.getDate();
+    if (md >= 1220 && md <= 1226) add("xmas", 25, "Happy holidays! 🎄");
+    if (md >= 1229 || md <= 102) add("ny", 25, "Happy New Year! 🎉 What's your English goal this year?");
+    if (md === 214) add("vday", 25, "Happy Valentine's Day! 💛");
+    if (md === 1031) add("hw", 25, "Happy Halloween! 🎃 Boo!");
+    /* never the same few in a row */
+    const recent = Array.isArray(S.grR) ? S.grR : []; let pool = C.filter(c => !recent.includes(c.id)); if (!pool.length) pool = C;
+    let r = Math.random() * pool.reduce((a, c) => a + c.w, 0), ch = pool[0]; for (const c of pool) { r -= c.w; if (r <= 0) { ch = c; break; } }
+    S.grR = [ch.id].concat(recent.filter(x => x !== ch.id)).slice(0, 5); save();
+    return ch;
   }
   function friendName() { const t = (document.getElementById("authWho") || {}).textContent || ""; const n = t.split(" · ")[0].trim(); return n && !n.includes("@") && n !== "You" ? n.split(/\s+/)[0] : ""; }
 
@@ -1274,6 +1333,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (toys.length) say(`🎉 You've learned ${c.learned} words! New toy: <b>${toys.map(i => i.ico + " " + esc(i.name)).join(", ")}</b>`, `<button class="bd-b go" type="button" data-bd="open">See it</button>`, 9000);
     else say(S.t > old ? `Round done! +${S.t - old} 🍪` : "Round done! Treat jar's full 🍪", "", 3500);
   });
+  document.addEventListener("click", e => { const g = e.target.closest && e.target.closest("[data-bdgo]"); if (!g) return; e.preventDefault(); hideBub(); if (window.csGo) window.csGo(g.dataset.bdgo); else location.hash = "#" + g.dataset.bdgo; });
   document.addEventListener("click", e => {
     if (S.on !== true || root.hidden) return;
     if (e.target.closest("#fcKnew")) {
@@ -1340,7 +1400,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   if (S.on === undefined) setTimeout(() => { if (S.on === undefined && !document.documentElement.classList.contains("cs-calm")) say("Something's inside this egg… 🥚", `<button class="bd-b go" type="button" data-bd="adopt">Take a look</button><button class="bd-b" type="button" data-bd="later">Later</button>`, 9000); }, 4000);
   else if (S.on === true) {
     if (S.hi !== today()) { S.hi = today(); addFP(2); }
-    if (!S.min) setTimeout(() => { if (sleeping || !bub.hidden) return; const fn = friendName(); say(level() >= 10 ? `Hi${fn ? " " + esc(fn) : ""}! Best friends forever 💛` : level() >= 4 && fn ? `Hi ${esc(fn)}! 👋` : "Hi again! 👋", "", 2600); }, 2500);
+    const gapDays = S.vAt ? (Date.now() - S.vAt) / 864e5 : 0; S.vAt = Date.now(); save();
+    /* a greeting when they arrive, not on every refresh (at most once every 20 minutes, unless they've been away) */
+    if (!S.min && (gapDays >= 2 || Date.now() - (S.grAt || 0) > 20 * 60000)) setTimeout(() => { if (sleeping || !bub.hidden) return; const g = greetLine(gapDays); S.grAt = Date.now(); save(); say(g.txt, g.acts, g.acts ? 7000 : 4200); }, 3500);
   }
   window.addEventListener("storage", e => { if (e.key === KEY) { S = load(); visible(); if (!modal.hidden) renderModal(); } });
 

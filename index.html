@@ -6159,7 +6159,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=61" defer></script>
+<script src="buddy.js?v=62" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -11100,6 +11100,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-buddytalk", date:"November 17, 2026", title:"Your study buddy has more to say", items:[
+    ["🐾","Smarter hellos","Your buddy now says something different each time: \"welcome back\" after a few days away, a reminder on club class days, Noa's recommended module, how close you are to your weekly goal, today's word and much more.",""],
+    ["🔁","No more repeats","It won't say the same thing over and over, and it only says hi when you arrive, not every time you refresh.",""]
+  ]},
   {id:"2026-1117-world", date:"November 17, 2026", title:"Around the world today", items:[
     ["🌍","Little good news, every day","On your <b>Home</b> page: three small things happening in the world each day (a celebration, space or tech, and good news), presented by some random study buddies.","notes"],
     ["📖","Learn a word, read more","Tap the <b>underlined word</b> to learn it and save it, and tap a title to open the full story. Missed a day? Tap <b>‹ Yesterday</b>.","notes"],
@@ -11459,7 +11463,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117142520"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117143044"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
