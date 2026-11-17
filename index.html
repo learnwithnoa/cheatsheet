@@ -56,7 +56,7 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
   P.setItem=function(k,v){ if(this===ls&&theirs(k)){ ov[k]=String(v); return; } return s.call(this,k,v); };
   P.removeItem=function(k){ if(this===ls&&theirs(k)){ delete ov[k]; return; } return r.call(this,k); };
   /* nothing leaves the page either: no payments, trials or cancellations from the pay helper while viewing as someone */
-  const f0=window.fetch; window.fetch=function(u,o){ const url=String(u&&u.url||u||""); if(/workers\.dev\/api\//.test(url)&&!/\/api\/my-price/.test(url)){ try{ window.__csVaNo&&window.__csVaNo(); }catch(e){} return Promise.reject(new Error("View as: nothing is saved")); } return f0.apply(this,arguments); };
+  const f0=window.fetch; window.fetch=function(u,o){ const url=String(u&&u.url||u||""); if(/workers\.dev\/api\//.test(url)&&!/\/api\/(my-price|world-reacts)\b/.test(url)){ try{ window.__csVaNo&&window.__csVaNo(); }catch(e){} return Promise.reject(new Error("View as: nothing is saved")); } return f0.apply(this,arguments); };
 }catch(e){} })();
 </script>
 <script src="ios-sound.js?v=2"></script>
@@ -1428,6 +1428,47 @@ nav.side .navbtn.nb-merged{display:none!important}
 @media (max-width:600px){.cn-tabs.nb-tabs button{font-size:14px;padding:8px 10px}}
 .nb-intro ul{margin:0 0 10px}
 .nb-intro li{display:block;padding-left:4px}
+
+/* step177: 🌍 Around the world today */
+.aw{margin:0 0 18px;padding:16px 18px}
+.aw-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.aw-top h2{margin:0;font-size:19px}
+.aw-nav{display:flex;align-items:center;gap:6px;font:600 13px var(--body);color:var(--muted)}
+.aw-nav button{all:unset;cursor:pointer;font:800 13px var(--body);padding:4px 10px;border-radius:999px;border:1.5px solid var(--line)}
+.aw-nav button[disabled]{opacity:.35;cursor:default}
+.aw-nav button:focus-visible{outline:3px solid var(--bright)}
+.aw-lede{margin:0 0 6px;font-size:14px;color:var(--muted)}
+.aw-it{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;padding:14px 0;border-top:1px solid var(--line)}
+.aw-it:first-of-type{border-top:0}
+.aw-bud{width:52px;height:52px;border-radius:16px;background:color-mix(in srgb,var(--royal) 12%,var(--surface));display:grid;place-items:center;overflow:hidden;font-size:26px}
+.aw-bud svg{width:52px;height:52px;display:block;image-rendering:pixelated}
+.aw-k{display:inline-block;font:800 11px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.aw-h{display:flex;align-items:flex-start;gap:6px}
+.aw-h h3{margin:0;font-size:16.5px;line-height:1.3;flex:1}
+.aw-say{all:unset;cursor:pointer;font-size:15px;padding:0 4px;border-radius:8px}
+.aw-say:focus-visible{outline:3px solid var(--bright)}
+.aw-t{margin:4px 0 0;font-size:15px;line-height:1.5}
+.aw-w{all:unset;cursor:pointer;font-weight:800;border-bottom:2px dotted var(--royal);color:var(--ink)}
+.aw-w:focus-visible{outline:3px solid var(--bright);border-radius:4px}
+.aw-go{display:inline-flex;gap:6px;align-items:center;margin-top:6px;font:800 13.5px var(--body);color:var(--royal);text-decoration:none}
+.aw-go small{font-weight:600;color:var(--muted)}
+.aw-q{margin:8px 0 0;padding:8px 11px;border-radius:12px;background:color-mix(in srgb,var(--bright) 12%,var(--surface));font-size:14px;line-height:1.45}
+.aw-q b{font-weight:800}
+.aw-rx{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.aw-rx button{all:unset;cursor:pointer;font:700 13px var(--body);padding:3px 10px;border-radius:999px;border:1.5px solid var(--line)}
+.aw-rx button[aria-pressed="true"]{border-color:var(--royal);background:color-mix(in srgb,var(--royal) 16%,var(--surface))}
+.aw-rx button:focus-visible{outline:3px solid var(--bright)}
+.aw-rx .aw-who{border:0;padding:3px 4px;color:var(--muted);font-weight:600;text-decoration:underline dotted}
+.aw-x{all:unset;cursor:pointer;font-size:12px;color:var(--muted);margin-left:auto;padding:2px 8px;border-radius:8px;border:1px dashed var(--line)}
+.aw-hid{opacity:.45}
+.aw-wd h3{margin:0 0 4px}.aw-wd p{margin:4px 0}
+@media (max-width:600px){.aw{padding:14px}.aw-it{grid-template-columns:42px minmax(0,1fr);gap:4px 10px}.aw-bud,.aw-bud svg{width:42px;height:42px;border-radius:13px}.aw-top h2{font-size:17.5px}}
+/* club: who lists */
+button.cl-gwho{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 4px}
+button.cl-gwho:focus-visible,.cs-rxwho:focus-visible{outline:3px solid var(--bright)}
+.cs-whob{margin-left:6px}.cs-whob .cs-av{width:24px;height:24px;font-size:10px;margin-left:-6px;border:2px solid var(--surface)}.cs-whob .cs-av:first-child{margin-left:0}
+.cs-wholist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;max-height:55vh;overflow:auto}
+.cs-wholist li{display:flex;gap:8px;align-items:center;font-size:15px}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -3096,6 +3137,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   <h1>Your <em>home</em></h1>
   <p class="lede">Your word of the day, a thought for today and what's new in the club.</p>
   <div id="tStoic" class="t-stoic" hidden></div>
+  <section class="card aw" id="awBox" hidden aria-labelledby="awTitle"></section>
   <div id="homeClub" hidden></div>
   <div class="today" id="todayBox">
     <div class="card today-word">
@@ -4490,7 +4532,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const gifs=x=>(x.gifs||[]).filter(g=>g&&/^https:\/\/media\d*\.giphy\.com\//.test(g.u)).map(g=>`<div class="cs-gif"><img src="${esc(g.u)}" alt="${esc(g.t||"GIF")}" loading="lazy"${g.w&&g.h?` width="${+g.w}" height="${+g.h}"`:""}></div>`).join("");
   const imgs=x=>gifs(x)+((x.imgs||[]).length?`<div class="cs-imgs n${Math.min(x.imgs.length,4)}">${x.imgs.map(i=>`<button type="button" class="cs-ph" data-big="${esc(i)}" aria-label="Open photo"><img data-img="${esc(i)}" alt="Photo" loading="lazy"></button>`).join("")}</div>`:"");
   const likeBtn=(x,path)=>{ const c={}; let mine=null; (x.likes||[]).forEach(v=>{ const [u,e]=rxOf(v); c[e]=(c[e]||0)+1; if(u===me()) mine=e; });
-    return `<span class="cs-rx" data-rxpath="${esc(path)}">${RX.filter(e=>c[e]).map(e=>`<button type="button" class="cs-act${mine===e?" on":""}" data-rx="${e}" aria-pressed="${mine===e}" aria-label="${e} ${c[e]}">${e} ${c[e]}</button>`).join("")}<span class="cs-rxadd"><button type="button" class="cs-act cs-rxbtn" data-rxopen="1" aria-label="${L("Add a reaction","Reaccionar")}" aria-expanded="false">${mine?"":"🤍 "}＋</button><span class="cs-rxpal" hidden>${RX.map(e=>`<button type="button" data-rx="${e}" aria-label="React ${e}">${e}</button>`).join("")}</span></span></span>`; };
+    return `<span class="cs-rx" data-rxpath="${esc(path)}">${RX.filter(e=>c[e]).map(e=>`<button type="button" class="cs-act${mine===e?" on":""}" data-rx="${e}" aria-pressed="${mine===e}" aria-label="${e} ${c[e]}">${e} ${c[e]}</button>`).join("")}${(x.likes||[]).length?`<button type="button" class="cs-act cs-rxwho" data-rxwho="${esc(JSON.stringify((x.likes||[]).map(rxOf)))}" aria-label="${esc(L("Who reacted?","¿Quién reaccionó?"))}" title="${esc(L("Who reacted?","¿Quién reaccionó?"))}">👀</button>`:""}<span class="cs-rxadd"><button type="button" class="cs-act cs-rxbtn" data-rxopen="1" aria-label="${L("Add a reaction","Reaccionar")}" aria-expanded="false">${mine?"":"🤍 "}＋</button><span class="cs-rxpal" hidden>${RX.map(e=>`<button type="button" data-rx="${e}" aria-label="React ${e}">${e}</button>`).join("")}</span></span></span>`; };
   function composer(kind,target,ph){ return `<form class="cs-comp" data-comp="${kind}" data-target="${esc(target||"")}"><div class="cs-taw"><textarea rows="${kind==="comment"||kind==="poll"?2:3}" maxlength="3000" placeholder="${esc(ph)}" aria-label="${esc(ph)}"></textarea><div class="cs-ment" role="listbox" hidden></div></div><div class="cs-pollbox"${kind==="poll"?"":" hidden"}>${kind==="poll"?`<p class="cs-ph2">${L("Options (2 to 6):","Opciones (de 2 a 6):")}</p><div class="cs-popts">${optIn(1)}${optIn(2)}</div><button type="button" class="cs-act" data-polladd="1">＋ ${L("Option","Opción")}</button>`:""}</div>${kind==="idea"?`<div class="cs-cats" role="group" aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}${kind==="post"?`<div class="cs-cats" role="group" aria-label="${L("Topic (optional)","Tema (opcional)")}"><span>${L("Topic:","Tema:")}</span>${CATS.map(c=>`<button type="button" class="cs-cat" data-cat="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div><div class="cs-cats cs-ideak" role="group" hidden aria-label="${L("What kind of idea?","¿Qué tipo de idea?")}"><span>${L("It’s about:","Es sobre:")}</span>${IDEAK.map(c=>`<button type="button" class="cs-cat cs-ik" data-ik="${c[0]}" aria-pressed="false">${c[1]} ${esc(L(c[2][0],c[2][1]))}</button>`).join("")}</div>`:""}<div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row">${kind==="poll"?`<button type="button" class="cs-act" data-topost="1">← ${L("Back to post","Volver al post")}</button>`:""}<label class="cs-act cs-addph">📷 ${L("Photo","Foto")}<input type="file" accept="image/*" multiple hidden></label>${kind==="post"?`<button type="button" class="cs-act" data-topoll="1">📊 ${L("Poll","Encuesta")}</button>`:""}${GIPHY_KEY?'<button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button>':""}<span class="cs-msg" role="status"></span><button type="submit" class="cs-send">${kind==="post"?L("Post","Publicar"):kind==="chal"?L("Send my answer","Enviar mi respuesta"):kind==="poll"?L("Start the poll","Publicar encuesta"):kind==="idea"?L("Send my idea","Enviar mi idea"):kind==="dm"?L("Send","Enviar"):L("Comment","Comentar")}</button></div></form>`; }
   const OFF=`<p class="cs-off">💬 ${L("Comments and posts are almost ready. They’ll switch on very soon.","Los comentarios y posts están casi listos. Se activan muy pronto.")}</p>`;
   const COMM={};
@@ -4689,6 +4731,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{ const r=await api("GET","/clubStats?pageSize=300"); STATS={}; ((r&&r.documents)||[]).forEach(d=>{ const o=fromDoc(d); STATS[o.id]=o; }); }catch(e){ STATS=STATS||{}; }
     return PROFS; }
   const profOf=u=>(PROFS||[]).find(x=>x.id===u||x.uid===u)||null;
+  window.__clubWho=async list=>{ try{ await loadProfs(); }catch(e){} return list.map(([u,e])=>({n:u===me()?L("You","Tú"):((profOf(u)||{}).name||L("A member","Un miembro")),e})); };
   /* birthdays (only what each person chose to show) */
   const MONS=()=>L("January February March April May June July August September October November December","enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre").split(" ");
   const bdTxt=md=>{ const [m,d]=String(md).split("-").map(Number); if(!m||!d) return ""; return L(MONS()[m-1]+" "+d, d+" de "+MONS()[m-1]); };
@@ -4938,7 +4981,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const optIn=(i)=>`<input type="text" maxlength="80" placeholder="${L("Option","Opción")} ${i}" aria-label="${L("Option","Opción")} ${i}">`;
   /* RSVPs: "I'm going" on each class of this week */
   function rsvpHTML(week,wd,list){ const mineU=G()?"me":me(), going=list.filter(v=>String(v.opt||"").split(",").includes(String(wd))), on=going.some(v=>v.uid===mineU);
-    return `<button type="button" class="cl-going${on?" on":""}" data-rsvpgo="${esc(week)}" data-wd="${wd}" aria-pressed="${on}">${on?L("✓ I’m going","✓ Voy"):L("🙋 I’m going","🙋 Voy")}</button>${going.length?`<span class="cl-gwho" title="${esc(going.map(v=>v.name).join(", "))}">${going.slice(0,4).map(v=>av(v.uid,v.name)).join("")}<small>${going.length} ${L("going","van")}</small></span>`:""}`; }
+    return `<button type="button" class="cl-going${on?" on":""}" data-rsvpgo="${esc(week)}" data-wd="${wd}" aria-pressed="${on}">${on?L("✓ I’m going","✓ Voy"):L("🙋 I’m going","🙋 Voy")}</button>${going.length?`<button type="button" class="cl-gwho" data-whot="${esc(L("🙋 Going","🙋 Van"))}" data-who="${esc(JSON.stringify(going.map(v=>({n:v.name}))))}" aria-label="${esc(L("See who's going","Ver quién va"))}">${going.slice(0,4).map(v=>av(v.uid,v.name)).join("")}<small>${going.length} ${L("going","van")}</small></button>`:""}`; }
   async function paintRsvp(root){ const els=[...root.querySelectorAll(".cl-rsvp[data-rsvp]")]; if(!els.length) return; await loadPark();
     const weeks=[...new Set(els.map(e=>e.dataset.rsvp))];
     for(const w of weeks){ let list=[]; try{ list=await votes("r_"+w); }catch(e){ els.filter(x=>x.dataset.rsvp===w).forEach(x=>x.hidden=true); continue; }
@@ -5130,10 +5173,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   /* ✨ "I enjoyed this class" on recordings (clubVotes, poll rec_<id>) */
   async function paintFav(root){ const els=[...root.querySelectorAll(".cl-recfav[data-recfav]:not([data-fp])")].filter(x=>x.closest("details")?x.closest("details").open:true); if(!els.length) return; const mineU=G()?"me":me();
     await Promise.all(els.map(async el=>{ el.dataset.fp="1"; let vs=[]; try{ vs=await votes(el.dataset.recfav); }catch(e){} const on=vs.some(v=>v.uid===mineU);
-      el.innerHTML=`<button type="button" class="cs-act cl-favb${on?" on":""}" data-fav="${esc(el.dataset.recfav)}" aria-pressed="${on}" title="${esc(vs.map(v=>(v.name||"").split(" ")[0]).filter(Boolean).join(", "))}">✨ ${L("I enjoyed this class","Me gustó esta clase")}${vs.length?` · ${vs.length}`:""}</button>`; })); }
+      el.innerHTML=`<button type="button" class="cs-act cl-favb${on?" on":""}" data-fav="${esc(el.dataset.recfav)}" aria-pressed="${on}" title="${esc(vs.map(v=>(v.name||"").split(" ")[0]).filter(Boolean).join(", "))}">✨ ${L("I enjoyed this class","Me gustó esta clase")}${vs.length?` · ${vs.length}`:""}</button>${vs.length?`<button type="button" class="cl-gwho cs-whob" data-whot="${esc(L("✨ Enjoyed this class","✨ Les gustó esta clase"))}" data-who="${esc(JSON.stringify(vs.map(v=>({n:v.name}))))}" aria-label="${esc(L("See who enjoyed it","Ver a quién le gustó"))}">${vs.slice(0,4).map(v=>av(v.uid,v.name)).join("")}</button>`:""}`; })); }
   document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.classList&&d.classList.contains("cl-rcard")&&d.open) paintFav(d); },true);
   document.addEventListener("click",async e=>{ const b=e.target.closest("[data-fav]"); if(!b) return; if(api&&F()&&F().readOnly&&F().readOnly()){ toastRO(); return; } const poll=b.dataset.fav, mineU=G()?"me":me(), on=(VOTES[poll]||[]).some(v=>v.uid===mineU);
-    b.disabled=true; try{ await vote(poll,on?"":"1"); }catch(er){ b.disabled=false; toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } const el=b.closest(".cl-recfav"); delete el.dataset.fp; paintFav(el.parentElement); if(!on) toast(L("✨ Thanks! Noa will see it.","✨ ¡Gracias! Noa lo verá.")); });
+    b.disabled=true; try{ await vote(poll,on?"":"1"); }catch(er){ b.disabled=false; toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); return; } const el=b.closest(".cl-recfav"); delete el.dataset.fp; paintFav(el.parentElement); if(!on) toast(L("✨ Thanks! Noa and the club can see it.","✨ ¡Gracias! Noa y el club lo pueden ver.")); });
   /* ⭐ 1-5 star rating for podcast episodes (clubVotes, poll pr_<id>, opt "1".."5") */
   async function paintStars(root){ const els=[...(root||document).querySelectorAll(".cl-stars[data-stars]:not([data-sp])")]; if(!els.length) return; const mineU=G()?"me":me();
     await Promise.all(els.map(async el=>{ el.dataset.sp="1"; let vs=[]; try{ vs=await votes(el.dataset.stars); }catch(e){} const mine=vs.find(v=>v.uid===mineU), my=mine?+mine.opt:0, nums=vs.map(v=>+v.opt).filter(n=>n>=1&&n<=5), avg=nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:0;
@@ -6150,6 +6193,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <ul class="wl-list">
       <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn, a question to talk about and reactions everyone can see.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too: write them during class, ✨ Hibi finds the new words for you, and <b>📓 Summaries</b> sum up each week.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice them with flashcards.</b> The ones you miss come back sooner, so you spend your time on the hard ones.</div></li>
     </ul>
@@ -11042,6 +11086,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1117-world", date:"November 17, 2026", title:"Around the world today", items:[
+    ["🌍","Little good news, every day","On your <b>Home</b> page: three small things happening in the world each day (a celebration, space or tech, and good news), presented by some random study buddies.","notes"],
+    ["📖","A word and a question","Tap the <b>underlined word</b> to learn it and save it, and use the <b>Talk about it</b> question to practise. Missed a day? Tap <b>‹ Yesterday</b>.","notes"],
+    ["💛","Reactions everyone sees","React with 💛 🤯 😂 and see who else did. In the club you can now also tap the faces to see <b>who's going</b> to a class, who <b>enjoyed a recording</b>, and 👀 who reacted to a post or comment.","club"]
+  ]},
   {id:"2026-1117-notebook", date:"November 17, 2026", title:"Meet My notebook", items:[
     ["📒","Words + class notes, together","<b>My words</b> and <b>My class notes</b> are now one place in the menu: <b>My notebook</b>. Nothing was lost.","words"],
     ["🗂️","Three tabs","<b>Aa Words</b> (everything you save), <b>✏️ Class notes</b> (write during class, ✨ Hibi finds the new words) and <b>📓 Summaries</b> (each week, summed up).","classnotes"]
@@ -11395,7 +11444,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117130007"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117140724"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -12714,6 +12763,84 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-wkgoal]")
   let started=false; const start=()=>{ if(started) return; started=true; setTimeout(show,5000); };
   window.addEventListener("cs-auth",e=>{ if(e.detail&&e.detail.signedIn) start(); });
   if(window.__csAuth) start();
+})();
+</script>
+<script>
+/* step177: "who" lists (club going / enjoyed / reactions, and the world card) */
+window.csWho=function(title,rows){ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  if(!window.csDialog) return; window.csDialog(`<h3 style="margin:0 0 4px">${esc(title)}</h3><ul class="cs-wholist">${rows.map(r=>`<li>${r.e?`<span aria-hidden="true">${esc(r.e)}</span>`:"•"} ${esc(r.n||"Someone")}</li>`).join("")||"<li>Nobody yet</li>"}</ul>`); };
+document.addEventListener("click",async e=>{
+  const w=e.target.closest("[data-who]"); if(w){ e.preventDefault(); e.stopPropagation(); let l=[]; try{ l=JSON.parse(w.dataset.who); }catch(er){} window.csWho(w.dataset.whot||"Who",l); return; }
+  const r=e.target.closest("[data-rxwho]"); if(r){ e.preventDefault(); e.stopPropagation(); let l=[]; try{ l=JSON.parse(r.dataset.rxwho); }catch(er){} const rows=window.__clubWho?await window.__clubWho(l):l.map(([u,x])=>({n:"A member",e:x})); window.csWho("👀 Reactions",rows); }
+},true);
+
+/* step177: 🌍 Around the world today */
+(function(){
+  const box=document.getElementById("awBox"); if(!box) return;
+  const API="https://hibi-pay.learnwithnoa.workers.dev", RX=["💛","🤯","😂"];
+  const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const chileDay=()=>{ try{ return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Santiago",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date()); }catch(e){ return new Date().toISOString().slice(0,10); } };
+  const nice=d=>{ try{ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}); }catch(e){ return d; } };
+  const K={celebrate:"🎉 Celebrated today",space:"🚀 Space, science & tech",good:"😊 Good news"};
+  let DAYS=[], at=0, RXD={}, busy=false;
+  const F=()=>window.__csFire||null;
+  const teacher=()=>window.__csTeacher===true&&!window.__csPreview&&!window.__csViewAsMode;
+  /* a random pixel buddy for each piece, the same all day */
+  const HEAD=["party","flowers","beanie","gradcap","crown","wizard","laurel","","",""], FACE=["sunglasses","hearts","","",""];
+  function rnd(seed){ let h=2166136261; for(const c of seed){ h^=c.charCodeAt(0); h=Math.imul(h,16777619); } return ()=>{ h^=h<<13; h^=h>>>17; h^=h<<5; return ((h>>>0)%10000)/10000; }; }
+  function buddy(day,i,emoji){ try{ const SP=window.BUDDY_SPRITES; if(!SP||!window.csBuddyFace) return esc(emoji);
+      const ks=Object.keys(SP), r=rnd(day+"#"+i); let a=ks[Math.floor(r()*ks.length)];
+      const used=new Set(); for(let j=0;j<i;j++){ const rr=rnd(day+"#"+j); used.add(ks[Math.floor(rr()*ks.length)]); } let t=0; while(used.has(a)&&t++<10) a=ks[(ks.indexOf(a)+1)%ks.length];
+      const c=Math.floor(r()*((SP[a].colors||[1]).length)); const f=window.csBuddyFace({a,c,head:HEAD[Math.floor(r()*HEAD.length)],face:FACE[Math.floor(r()*FACE.length)]}); return f||esc(emoji); }catch(e){ return esc(emoji); } }
+  function withWord(it){ const t=esc(it.text||""), w=String(it.word||""); if(!w) return t; const re=new RegExp("\\b("+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")\\b","i");
+    return re.test(t)?t.replace(re,'<button type="button" class="aw-w" data-aww="$1">$1</button>'):t; }
+  function rxRow(day,i){ const d=RXD[day]; if(!d) return ""; const list=(d.rx&&d.rx[i])||[]; const c={}; let mine="";
+    list.forEach(v=>{ c[v.e]=(c[v.e]||0)+1; if(v.me) mine=v.e; });
+    const names=list.map(v=>v.me?"You":v.n), who=names.length?(names.length<=2?names.join(" and "):names.slice(0,2).join(", ")+" and "+(names.length-2)+" more"):"";
+    return `<div class="aw-rx" role="group" aria-label="Reactions">${RX.map(e=>`<button type="button" data-awrx="${e}" data-i="${i}" aria-pressed="${mine===e}" aria-label="${e} ${c[e]||0}">${e}${c[e]?" "+c[e]:""}</button>`).join("")}${who?`<button type="button" class="aw-who" data-awwho="${i}">${esc(who)}</button>`:""}</div>`; }
+  function draw(){
+    const d=DAYS[at]; if(!d){ box.hidden=true; return; }
+    const today=chileDay(), hid=(RXD[d.date]&&RXD[d.date].hidden)||[], T=teacher();
+    const items=(d.items||[]).map((it,i)=>({it,i})).filter(x=>T||!hid.includes(x.i));
+    box.hidden=!items.length; if(!items.length) return;
+    box.innerHTML=`<div class="aw-top"><h2 id="awTitle">🌍 Around the world ${d.date===today?"today":""}</h2><div class="aw-nav"><button type="button" data-awnav="1" ${at>=DAYS.length-1?"disabled":""} aria-label="Earlier day">‹ ${at===0&&d.date===today?"Yesterday":"Earlier"}</button><span>${d.date===today?"Today":esc(nice(d.date))}</span><button type="button" data-awnav="-1" ${at===0?"disabled":""} aria-label="Later day">${at===1&&DAYS[0].date===today?"Today":"Later"} ›</button></div></div>
+      <p class="aw-lede">Three little things happening in the world. Tap the <b>underlined word</b> to learn it.</p>
+      ${items.map(({it,i})=>`<article class="aw-it${hid.includes(i)?" aw-hid":""}"><div class="aw-bud" aria-hidden="true">${buddy(d.date,i,it.emoji)}</div><div>
+        <span class="aw-k">${esc(K[it.k]||"")}</span>
+        <div class="aw-h"><h3>${esc(it.title)}</h3><button type="button" class="aw-say" data-awsay="${i}" aria-label="Listen">🔊</button></div>
+        <p class="aw-t">${withWord(it)}</p>${it.es?`<p class="esb" lang="es">${esc(it.es)}</p>`:""}
+        ${it.link&&/^https:\/\//.test(it.link)?`<a class="aw-go" href="${esc(it.link)}" target="_blank" rel="noopener">${it.kind==="watch"?"Watch ▶":"Read more →"} <small>${esc(it.src||"")}</small></a>`:""}
+        ${it.q?`<p class="aw-q">💬 <b>Talk about it:</b> ${esc(it.q)}</p>`:""}
+        ${rxRow(d.date,i)}${T?`<button type="button" class="aw-x" data-awhide="${i}" data-on="${hid.includes(i)?0:1}">${hid.includes(i)?"Show it again":"✕ Hide for everyone"} <small>(only you see this)</small></button>`:""}
+      </div></article>`).join("")}`;
+  }
+  async function tok(){ try{ const f=F(); return f&&f.token?await f.token():null; }catch(e){ return null; } }
+  async function loadRx(day){ const t=await tok(); if(!t) return; try{ const r=await fetch(API+"/api/world-reacts?day="+day,{headers:{authorization:"Bearer "+t}}); if(r.ok){ RXD[day]=await r.json(); draw(); } }catch(e){} }
+  async function load(){
+    try{ const h=new Date(); const r=await fetch("world.json?h="+chileDay()+"-"+h.getHours(),{cache:"no-store"}); if(!r.ok) return; const j=await r.json();
+      const today=chileDay(); DAYS=(j.days||[]).filter(d=>d&&d.date&&d.date<=today&&(d.items||[]).length).sort((a,b)=>a.date<b.date?1:-1).slice(0,8); at=0; draw(); if(DAYS[0]) loadRx(DAYS[0].date); }catch(e){}
+  }
+  box.addEventListener("click",async e=>{
+    const n=e.target.closest("[data-awnav]"); if(n){ at=Math.max(0,Math.min(DAYS.length-1,at+(+n.dataset.awnav))); draw(); const d=DAYS[at]; if(d&&!RXD[d.date]) loadRx(d.date); return; }
+    const d=DAYS[at]; if(!d) return;
+    const s=e.target.closest("[data-awsay]"); if(s){ const it=d.items[+s.dataset.awsay]; if(window.csSpeak) window.csSpeak(it.title+". "+it.text); return; }
+    const w=e.target.closest("[data-aww]"); if(w){ const it=(d.items||[]).find(x=>new RegExp("^"+String(x.word||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"$","i").test(w.dataset.aww))||{}; const word=it.word||w.dataset.aww;
+      const ex=(String(it.text||"").split(/(?<=[.!?])\s+/).find(x=>new RegExp("\\b"+word+"\\b","i").test(x))||"");
+      const dl=window.csDialog(`<div class="aw-wd"><h3>${esc(word)} <button type="button" class="aw-say" data-sayw aria-label="Hear it">🔊</button></h3><p>${esc(it.mean||"")}</p>${it.tr?`<p class="muted" lang="es">🇪🇸 ${esc(it.tr)}</p>`:""}${ex?`<p class="muted"><i>“${esc(ex)}”</i></p>`:""}<div class="note-actions"><button class="pill-btn pill-green" type="button" data-savew>+ Save to My notebook</button></div></div>`);
+      dl.el.querySelector("[data-sayw]").onclick=()=>{ if(window.csSpeak) window.csSpeak(word); };
+      dl.el.querySelector("[data-savew]").onclick=()=>{ let ok=false; try{ ok=window.csAddWord&&window.csAddWord(word,it.tr||"",ex); }catch(er){} dl.close(); if(window.toast) window.toast(ok?"Saved to My notebook ✓":"Already in My notebook"); };
+      return; }
+    const wh=e.target.closest("[data-awwho]"); if(wh){ const list=((RXD[d.date]||{}).rx||{})[wh.dataset.awwho]||[]; window.csWho("Reactions",list.map(v=>({n:v.me?"You":v.n,e:v.e}))); return; }
+    const rx=e.target.closest("[data-awrx]"), hd=e.target.closest("[data-awhide]"); if(!rx&&!hd) return;
+    if(window.__csViewAsMode||window.__csPreview){ if(window.toast) window.toast("👁 View as: this isn't saved anywhere"); return; }
+    if(busy) return; const t=await tok(); if(!t){ if(window.toast) window.toast("Sign in to react"); return; } busy=true;
+    const body=hd?{day:d.date,i:+hd.dataset.awhide,hide:hd.dataset.on==="1"}:{day:d.date,i:+rx.dataset.i,e:rx.dataset.awrx,name:(F()&&F().name&&F().name())||""};
+    try{ const r=await fetch(API+"/api/world-react",{method:"POST",headers:{authorization:"Bearer "+t,"content-type":"application/json"},body:JSON.stringify(body)}); if(r.ok){ RXD[d.date]=await r.json(); draw(); } else if(window.toast) window.toast("Couldn't save. Try again."); }catch(er){ if(window.toast) window.toast("Couldn't save. Try again."); }
+    busy=false;
+  });
+  load();
+  window.addEventListener("cs-auth",()=>{ const d=DAYS[at]; if(d) loadRx(d.date); });
+  document.addEventListener("cs-teacher",draw);
 })();
 </script>
 

@@ -30,7 +30,7 @@
   P.setItem=function(k,v){ if(this===ls&&theirs(k)){ ov[k]=String(v); return; } return s.call(this,k,v); };
   P.removeItem=function(k){ if(this===ls&&theirs(k)){ delete ov[k]; return; } return r.call(this,k); };
   /* nothing leaves the page either: no payments, trials or cancellations from the pay helper while viewing as someone */
-  const f0=window.fetch; window.fetch=function(u,o){ const url=String(u&&u.url||u||""); if(/workers\.dev\/api\//.test(url)&&!/\/api\/my-price/.test(url)){ try{ window.__csVaNo&&window.__csVaNo(); }catch(e){} return Promise.reject(new Error("View as: nothing is saved")); } return f0.apply(this,arguments); };
+  const f0=window.fetch; window.fetch=function(u,o){ const url=String(u&&u.url||u||""); if(/workers\.dev\/api\//.test(url)&&!/\/api\/(my-price|world-reacts)\b/.test(url)){ try{ window.__csVaNo&&window.__csVaNo(); }catch(e){} return Promise.reject(new Error("View as: nothing is saved")); } return f0.apply(this,arguments); };
 }catch(e){} })();
 </script>
 <script src="ios-sound.js?v=2"></script>

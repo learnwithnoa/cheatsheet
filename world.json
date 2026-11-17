@@ -1,0 +1,52 @@
+{
+  "days": [
+    {
+      "date": "2026-11-17",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🍞",
+          "title": "It's Homemade Bread Day",
+          "text": "In the US, November 17 is a day to bake your own bread at home. The idea is simple: flour, water, yeast, a warm kitchen and a lot of patience while the dough rises.",
+          "word": "dough",
+          "mean": "flour and water mixed together, before you bake it",
+          "tr": "masa",
+          "es": "En EE. UU., el 17 de noviembre es el día de hornear tu propio pan en casa.",
+          "q": "What's a bread or food from your country that everyone should try at least once?",
+          "link": "https://www.holidayscalendar.com/event/national-homemade-bread-day",
+          "src": "Holidays Calendar",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🌠",
+          "title": "Shooting stars tonight: the Leonids",
+          "text": "The Leonid meteor shower peaks tonight and tomorrow morning. Look up between midnight and dawn, far from city lights, and you might see a few meteors every hour. No telescope needed!",
+          "word": "dawn",
+          "mean": "the moment when the sun starts to come up",
+          "tr": "amanecer",
+          "es": "La lluvia de meteoros Leónidas llega a su punto máximo esta noche y mañana temprano.",
+          "q": "Have you ever seen a shooting star? Where were you, and did you make a wish?",
+          "link": "https://www.space.com/leonid-meteor-shower",
+          "src": "Space.com",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🐾",
+          "title": "A coyote tried the world's biggest animal bridge first",
+          "text": "Near Los Angeles, a huge bridge for wildlife goes over a 10-lane freeway. It opens officially on December 2, but cameras already caught a coyote walking across it. It couldn't wait!",
+          "word": "wildlife",
+          "mean": "animals that live free in nature, not pets or farm animals",
+          "tr": "fauna silvestre",
+          "es": "Cerca de Los Ángeles, un puente gigante para animales cruza una autopista. Una cámara ya captó a un coyote cruzándolo.",
+          "q": "If you could build something to help animals in your city, what would it be?",
+          "link": "https://www.iflscience.com/worlds-largest-wildlife-crossing-is-set-to-open-next-month-camera-traps-just-caught-its-first-visitors-85175",
+          "src": "IFLScience",
+          "kind": "read"
+        }
+      ]
+    }
+  ]
+}

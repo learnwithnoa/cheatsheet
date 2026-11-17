@@ -109,6 +109,36 @@ async function whoIs(env, req) {
   return u ? { uid: u.localId, email: normEmail(u.email), name: u.displayName || "" } : null;
 }
 
+// ---------- 🌍 "Around the world today" on Home: reactions everyone can see (first names only, signed-in Hibi members only) ----------
+// worldReacts/{YYYY-MM-DD}: { json: {"0": {uid: {e, n}}, ...}, hidden: "[1]" }
+const WRX = ["💛", "🤯", "😂"];
+async function hibiMember(env, me) {
+  if (!me) return false; if (me.uid === TEACHER) return true;
+  const r = plain(await fs(env, "GET", `roles/${me.uid}`)); if (r) return true;
+  return !!(me.email && await fs(env, "GET", `access/${encodeURIComponent(me.email)}`));
+}
+async function worldDoc(env, day) { const d = plain(await fs(env, "GET", `worldReacts/${day}`)) || {}; let rx = {}, hidden = []; try { rx = JSON.parse(d.json || "{}") || {}; } catch (e) {} try { hidden = JSON.parse(d.hidden || "[]") || []; } catch (e) {} return { rx, hidden }; }
+const worldOut = (w, me) => ({ hidden: w.hidden, rx: Object.fromEntries(Object.entries(w.rx).map(([i, m]) => [i, Object.entries(m).map(([u, v]) => ({ e: v.e, n: v.n, me: !!me && u === me.uid }))])) });
+async function worldReacts(env, req, url) {
+  const day = String(url.searchParams.get("day") || ""); if (!/^\d{4}-\d\d-\d\d$/.test(day)) return json({ error: "day?" }, 400, req);
+  const me = await whoIs(env, req); if (!(await hibiMember(env, me))) return json({ error: "Sign in to Hibi first." }, 403, req);
+  return json(worldOut(await worldDoc(env, day), me), 200, req);
+}
+async function worldReact(env, req) {
+  const me = await whoIs(env, req); if (!(await hibiMember(env, me))) return json({ error: "Sign in to Hibi first." }, 403, req);
+  const b = await req.json().catch(() => ({})); const day = String(b.day || ""), i = String(b.i | 0);
+  if (!/^\d{4}-\d\d-\d\d$/.test(day) || +i < 0 || +i > 5) return json({ error: "bad request" }, 400, req);
+  const w = await worldDoc(env, day);
+  if (b.hide !== undefined) { if (me.uid !== TEACHER) return json({ error: "Only Noa can do this." }, 403, req);
+    w.hidden = b.hide ? [...new Set(w.hidden.concat(+i))] : w.hidden.filter((x) => x !== +i); }
+  else { const e = WRX.includes(b.e) ? b.e : ""; const m = w.rx[i] || {};
+    if (!e || (m[me.uid] && m[me.uid].e === e)) delete m[me.uid];
+    else { let n = String(b.name || me.name || "").trim().split(/\s+/)[0] || "Someone"; m[me.uid] = { e, n: n.slice(0, 24) }; }
+    w.rx[i] = m; }
+  await patch(env, `worldReacts/${day}`, { json: JSON.stringify(w.rx), hidden: JSON.stringify(w.hidden) });
+  return json(worldOut(w, me), 200, req);
+}
+
 // ---------- club access (same steps as the Members page's "Club" setting) ----------
 async function grantClub(env, uid, name) {
   await patch(env, `roles/${uid}`, { club: true });
@@ -742,6 +772,8 @@ export default {
         case "/api/update-card": return await updateCard(env, req, url);
         case "/api/trial": return await startTrial(env, req);
         case "/api/my-price": return await myPrice(env, req);
+        case "/api/world-reacts": return await worldReacts(env, req, url);
+        case "/api/world-react": return await worldReact(env, req);
         case "/api/mail-test": {   // one test email, only ever to Noa, at most once an hour (the deploy runs it when the email key is new)
           if (!env.RESEND_API_KEY) return json({ ok: false, email: "not set up" }, 200, req);
           const log = await mailLogFor(env); if (Date.now() - (log.test || 0) < 3600e3) return json({ ok: true, skipped: "sent less than an hour ago" }, 200, req);
