@@ -1541,6 +1541,18 @@ html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-keep{min-height:54px;font-size
 .cs-wnp button:focus-visible{outline:3px solid var(--bright)}
 .cs-wnp-box{padding:4px 0 6px}.cs-wnp-box b{display:block;font-weight:800}.cs-wnp-box small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 
+/* step181: welcome tour, "Make it yours" */
+.wlm-row{margin:12px 0}
+.wlm-l{display:block;font-weight:800;margin-bottom:6px}
+.wlm-seg{display:flex;flex-wrap:wrap;gap:6px}
+.wlm-seg button{all:unset;box-sizing:border-box;cursor:pointer;font:700 14px var(--body);padding:8px 12px;border-radius:999px;border:2px solid var(--line);background:var(--surface-2)}
+.wlm-seg button[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft)}
+.wlm-seg button:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.wlm-tog{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin:8px 0;border-radius:14px;border:2px solid var(--line);background:var(--surface-2);cursor:pointer}
+.wlm-tog input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:var(--green)}
+.wlm-tog b{display:block;font-weight:800}.wlm-tog small{display:block;color:var(--muted);font-size:14px;line-height:1.35;margin-top:2px}
+.wlm-tog:has(input:checked){border-color:var(--green);background:var(--green-soft)}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -6259,6 +6271,15 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     </div>
   </div>
 
+  <div class="wl-step" data-step="1b" hidden>
+    <h2>Make it <em>yours</em> ✨</h2>
+    <p class="wl-lede">Pick what feels good. You can change all of this later in <b>Settings</b> (your picture, top right).</p>
+    <div class="wlm-row"><b class="wlm-l">Colors</b><div class="wlm-seg" id="wlmTheme" role="group" aria-label="Colors"><button type="button" data-wlth="dark">☾ Dark</button><button type="button" data-wlth="light">☀ Light</button><button type="button" data-wlth="sepia">📖 Sepia</button><button type="button" data-wlth="midnight">🌑 Midnight</button><button type="button" data-wlth="unicorn">🦄 Unicorn</button></div></div>
+    <div class="wlm-row"><b class="wlm-l">Text size</b><div class="wlm-seg" id="wlmSize" role="group" aria-label="Text size"><button type="button" data-wlsz="1">Aa Normal</button><button type="button" data-wlsz="1.2" style="font-size:1.1em">Aa Bigger</button><button type="button" data-wlsz="1.35" style="font-size:1.2em">Aa Biggest</button></div></div>
+    <label class="wlm-tog"><input type="checkbox" id="wlmSimple"><span><b>🧩 Simple mode</b><small>Just the main pages, with big buttons. Everything else is under ☰ More. Good if Hibi feels like a lot.</small></span></label>
+    <label class="wlm-tog"><input type="checkbox" id="wlmCalm"><span><b>🌙 Calm mode</b><small>No animations, softer colors and fewer pop-ups.</small></span></label>
+  </div>
+
   <div class="wl-step" data-step="2" hidden>
     <h2><em>My notebook</em>: the heart of it 💛</h2>
     <p class="wl-lede">The words you save are the most important part of Hibi. Everything else builds on them.</p>
@@ -6324,7 +6345,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   </div>
 
   <div class="wl-nav">
-    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="note-actions wl-btns">
       <button class="swap" type="button" id="wlBack" hidden>← Back</button>
       <button class="pill-btn" type="button" id="wlNext">Next →</button>
@@ -11162,7 +11183,8 @@ const CHANGELOG=[
   {id:"2026-1117-fewer", date:"November 17, 2026", title:"Fewer pop-ups, tidier Settings", items:[
     ["🔕","Fewer of these pop-ups","Use Hibi a lot? Tap <b>See fewer of these</b> under this window to get one summary a week instead, or choose <b>Never</b> in Settings → Home &amp; notifications. Everything new is always listed in What's new.",""],
     ["⚙️","Tidier Settings","Settings now has clearer groups: Make Hibi easier, Look &amp; feel, Text &amp; reading, Focus &amp; comfort, and Home &amp; notifications.",""],
-    ["⇄","Translator in Simple mode","Simple mode now has the <b>Translator</b> as one of its main buttons.","translate"]
+    ["⇄","Translator in Simple mode","Simple mode now has the <b>Translator</b> as one of its main buttons.","translate"],
+    ["✨","Make it yours from the start","The welcome tour now lets new members pick their colors, text size, Simple mode and Calm mode right away. (You can replay the tour from <b>How this page works</b>.)",""]
   ]},
   {id:"2026-1117-simple", date:"November 17, 2026", title:"Simple mode 🧩", items:[
     ["🧩","Less on the screen","Too much on Hibi? Turn on <b>Simple mode</b> in <b>Settings</b>: the menu shows only Home, My coaching, Club, My notebook and Practice, with bigger buttons, and Home starts with big buttons to get where you want to go.",""],
@@ -11537,7 +11559,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261117192008"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261117192249"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -13083,6 +13105,32 @@ document.addEventListener("click",async e=>{
   /* the panel fills in over a few seconds (buddy, Daily Stoic, emails…): tidy it whenever it opens or changes */
   function hook(){ const P=$("csPanel"); if(!P){ setTimeout(hook,800); return; } let t=0; new MutationObserver(()=>{ clearTimeout(t); t=setTimeout(arrange,30); }).observe(P,{childList:true,attributes:true,attributeFilter:["hidden"]}); arrange(); }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",hook); else hook();
+})();
+</script>
+<script>
+/* step181: "Make it yours" in the welcome tour uses the same switches as Settings */
+(function(){
+  const wl=document.getElementById("welcome"); if(!wl) return;
+  const $=id=>document.getElementById(id);
+  const theme=()=>{ try{ const v=JSON.parse(localStorage.getItem("ncs-theme")||'"dark"'); return v||"dark"; }catch(e){ return localStorage.getItem("ncs-theme")||"dark"; } };
+  const size=()=>{ try{ return +(window.csComfort&&window.csComfort.get().size)||1; }catch(e){ return 1; } };
+  function paint(){
+    wl.querySelectorAll("[data-wlth]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.wlth===theme())));
+    const sz=size(); wl.querySelectorAll("[data-wlsz]").forEach(b=>b.setAttribute("aria-pressed",String(Math.abs(+b.dataset.wlsz-sz)<.06||(b.dataset.wlsz==="1.35"&&sz>1.3)||(b.dataset.wlsz==="1"&&sz<1.05))));
+    const s=$("wlmSimple"); if(s) s.checked=!!(window.csSimple&&window.csSimple.on());
+    const c=$("wlmCalm"); if(c) c.checked=document.documentElement.classList.contains("cs-calm");
+  }
+  function setSize(t){ const SIZES=[.8,.9,1,1.1,1.2,1.35,1.5]; let n=0; const go=()=>{ const cur=size(); if(Math.abs(cur-t)<.01||n++>8) return paint(); const b=$(cur<t?"csBigger":"csSmaller"); if(!b) return paint(); b.click(); setTimeout(go,0); }; go(); }
+  wl.addEventListener("click",e=>{
+    const th=e.target.closest("[data-wlth]"); if(th){ const b=document.querySelector('#csThemes [data-cstheme="'+th.dataset.wlth+'"]'); if(b) b.click(); setTimeout(paint,50); return; }
+    const sz=e.target.closest("[data-wlsz]"); if(sz){ setSize(+sz.dataset.wlsz); return; }
+  });
+  wl.addEventListener("change",e=>{
+    if(e.target.id==="wlmSimple"){ if(window.csSimple) window.csSimple.set(e.target.checked); }
+    if(e.target.id==="wlmCalm"){ const c=$("csCalm"); if(c){ c.checked=e.target.checked; c.dispatchEvent(new Event("change",{bubbles:true})); } }
+    setTimeout(paint,50);
+  });
+  new MutationObserver(()=>{ if(!wl.hidden) paint(); }).observe(wl,{attributes:true,attributeFilter:["hidden"],subtree:true});
 })();
 </script>
 
