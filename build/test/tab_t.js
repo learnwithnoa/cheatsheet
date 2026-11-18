@@ -22,6 +22,6 @@ const stub = fs.readFileSync(__dirname+'/fbstub3.js','utf8').replace('tester@exa
   await nav('students'); await p.waitForTimeout(3000);
   const sf = () => p.frames().find(f=>f.url().includes('private-students.html'));
   await sf().evaluate(()=>{ location.hash='#money'; }); await p.waitForTimeout(500); console.log('students picked:', await sf().evaluate(()=>location.hash));
-  await nav('notes'); await p.waitForTimeout(500); await nav('students'); await p.waitForTimeout(800);
+  await nav('notes'); await p.waitForTimeout(500); console.log('while away:', await sf().evaluate(()=>location.hash)); await nav('students'); console.log('right on return:', await sf().evaluate(()=>location.hash)); await p.waitForTimeout(800);
   console.log('students after return:', await sf().evaluate(()=>location.hash));
   console.log(errs.length?errs:'no errors'); await b.close(); })();
