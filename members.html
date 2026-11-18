@@ -667,6 +667,8 @@ function renderTabs() {
   const te = $("todoEmpty"); if (te) te.hidden = !!todo || ["news", "tips", "linkBox"].some(id => $(id) && !$(id).hidden);
   document.querySelectorAll("[data-pane]").forEach(p => { if (p.dataset.pane === "todo" || p.dataset.pane === "students") return; let e = p.querySelector(".pane-empty"); const empty = ![...p.querySelectorAll(".news")].some(n => !n.hidden && n.textContent.trim()); if (empty && !e) { e = document.createElement("p"); e.className = "muted pane-empty"; e.style.cssText = "padding:18px 4px"; e.textContent = { recs: "Nothing recommended right now. Open someone's Practice in 👥 Hibi members, or use 💡 Recommend inside a module on Hibi.", club: "Nothing new from the club right now.", ideas: "No ideas waiting. The nightly wrap-up adds new ones on weeknights.", usage: "No usage data yet." }[p.dataset.pane] || "Nothing here right now."; p.appendChild(e); } if (e) e.hidden = !empty; });
 }
+/* Hibi asks for this when Noa comes back to Hibi members from the menu: start again on the first tab */
+window.__mFirstTab = () => { mTab = null; try { sessionStorage.removeItem("cs-m-tab"); } catch (e) {} try { renderTabs(); } catch (e) {} };
 document.addEventListener("click", e => { const b = e.target.closest("[data-mtab]"); if (!b) return; mTab = b.dataset.mtab; try { sessionStorage.setItem("cs-m-tab", mTab); } catch (er) {} renderTabs(); });
 function renderTips() {
   /* most useful first: how many times it came up × how much it gets in the way (imp 1–3), then the newest */

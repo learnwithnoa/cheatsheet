@@ -1,0 +1,27 @@
+// teacher pages: back to the first tab when reopened from the menu
+const {chromium} = require('playwright'); const fs = require('fs');
+const page = fs.readFileSync(__dirname+'/../../private-students.html','utf8');
+const T = (page.match(/const TEACHER = "([^"]+)"/)||[])[1];
+const stub = fs.readFileSync(__dirname+'/fbstub3.js','utf8').replace('tester@example.com', T);
+(async () => { const b = await chromium.launch(); const errs=[];
+  const ctx = await b.newContext({viewport:{width:1280,height:900}});
+  await ctx.route(/fb\.js/, r => r.fulfill({body: stub, contentType: 'text/javascript'}));
+  await ctx.route(/googleapis|gstatic|firebaseapp|google\.com|ytimg|workers\.dev/, r => r.abort());
+  const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message));
+  await p.addInitScript(() => { localStorage.setItem('ncs-welcomed','1'); localStorage.setItem('ncs-nb-intro','1'); localStorage.setItem('ncs-seen-version','"zzzz"'); });
+  await p.goto('http://localhost:8768/index.html'); await p.waitForTimeout(4000);
+  await p.evaluate(()=>{ const o=document.getElementById('wnOk'); if(o&&!document.getElementById('whatsnew').hidden) o.click(); });
+  const nav = id => p.evaluate(i=>document.querySelector('nav.side [data-go="'+i+'"]').click(), id);
+  await nav('members'); await p.waitForTimeout(3000);
+  const mf = () => p.frames().find(f=>f.url().includes('members.html'));
+  const tab = async () => mf().evaluate(()=>(document.querySelector('[data-mtab][aria-pressed="true"]')||{}).textContent);
+  console.log('members first:', await tab());
+  await mf().evaluate(()=>document.querySelector('[data-mtab="club"]').click()); console.log('picked:', await tab());
+  await nav('notes'); await p.waitForTimeout(500); await nav('members'); await p.waitForTimeout(800);
+  console.log('after return:', await tab());
+  await nav('students'); await p.waitForTimeout(3000);
+  const sf = () => p.frames().find(f=>f.url().includes('private-students.html'));
+  await sf().evaluate(()=>{ location.hash='#money'; }); await p.waitForTimeout(500); console.log('students picked:', await sf().evaluate(()=>location.hash));
+  await nav('notes'); await p.waitForTimeout(500); await nav('students'); await p.waitForTimeout(800);
+  console.log('students after return:', await sf().evaluate(()=>location.hash));
+  console.log(errs.length?errs:'no errors'); await b.close(); })();
