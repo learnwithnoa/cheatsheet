@@ -9,7 +9,7 @@ const stub = fs.readFileSync(__dirname+'/fbstub3.js','utf8').replace('tester@exa
   await ctx.route(/fb\.js/, r => r.fulfill({body: stub, contentType: 'text/javascript'}));
   await ctx.route(/googleapis|gstatic|firebaseapp|google\.com|ytimg|workers\.dev/, r => r.abort());
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message));
-  const now=Date.now(); const up=[{start:new Date(now-10*60e3).toISOString(),end:new Date(now+40*60e3).toISOString(),name:'Pascal Cáceres',student:'',note:'Ask how his first club class went (trial). Story words in My words.'},{start:new Date(now+3*3600e3).toISOString(),name:'Bayron Amaro',student:'',note:'Class 8: past simple'}];
+  const now=Date.now(); const up=[{start:new Date(now-10*60e3).toISOString(),end:new Date(now+40*60e3).toISOString(),name:'Pascal Cáceres',student:'',note:'Ask how his first club class went (trial). Story words in My words.'},{start:new Date(now+27*3600e3).toISOString(),name:'Bayron Amaro',student:'',note:'Class 8: past simple'}];
   await p.addInitScript(c=>{ sessionStorage.setItem('__cloud', JSON.stringify(c)); }, {'users/u1/data/t-hubmeta':{json:JSON.stringify({upcoming:up}),deleted:false}});
   await p.goto('http://localhost:8768/private-students.html#overview'); await p.waitForTimeout(3000);
   console.log(vp.width, await p.evaluate(()=>{ const b=document.getElementById('nextBox'); return b.hidden?'HIDDEN':b.innerText.replace(/\s+/g,' ').slice(0,300); }));

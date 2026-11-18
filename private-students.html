@@ -284,6 +284,7 @@ tr.arch td{opacity:.85}
 .eng-pill.k-red{background:color-mix(in srgb,#EF4444 20%,var(--surface));color:color-mix(in srgb,#EF4444 65%,var(--ink))}
 .nextc li{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:8px 10px;border-radius:10px;background:var(--surface-2)}
 .nextc .t{font:700 12.5px var(--mono);color:var(--c-sky)}
+.nextc li.nx-none{display:block;padding:10px 12px;font-size:14px}
 .prof{white-space:pre-wrap;line-height:1.55}
 /* live now / starting soon in Coming up */
 .nx-live{display:block;margin:0 0 10px;padding:10px 14px;border-radius:12px;background:color-mix(in srgb,#E5484D 14%,var(--surface-2));border:2px solid #E5484D}
@@ -758,7 +759,7 @@ function renderNext() {
   /* the live / next class is already in the list below (highlighted): only show the banner when you're looking at another day */
   box.innerHTML = banner + `<div class="nx-h"><h2><span class="kc">📅</span> Coming up</h2>
       <div class="nx-nav"><button type="button" class="ib" data-nday="-1" ${i <= 0 ? "disabled" : ""} aria-label="Previous day">‹</button><b>${lbl}</b><span class="muted small">${d0.toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${up.length} ${up.length === 1 ? "class" : "classes"}</span><button type="button" class="ib" data-nday="1" ${i >= days.length - 1 ? "disabled" : ""} aria-label="Next day">›</button></div></div>
-    <ul class="nextc">${up.filter(u => u !== top).map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
+    <ul class="nextc">${up.filter(u => u !== top).length ? "" : `<li class="nx-none"><span class="muted">🎉 ${nextDay === td ? "No more 1:1 classes today." : "No other 1:1 classes this day."}${days[i + 1] ? ` Next: <button type="button" class="linkb" data-nday="1">${esc(new Date(days[i + 1] + "T12:00").toLocaleDateString("en-US", { weekday: "long" }))} →</button>` : ""}</span></li>`}${up.filter(u => u !== top).map(u => { const s = S.find(x => x.id === u.student); const lc = s ? s.classes.filter(c => c.kind !== "note").slice(-1)[0] : null; const t = new Date(u.start);
     const note = u.note ? esc(u.note) : lc ? `last time: ${esc(lc.topics)}${lc.homework ? " · homework: " + esc(lc.homework) : ""}` : "";
     const isLive = live && u === live, st = Date.parse(u.start), extra = isLive ? `<span class="in" style="color:#E5484D">● live now</span>` : st > now && st - now < 12 * 3600e3 && nextDay === td ? `<span class="in">${inTxt(st - now)}</span>` : "";
     return `<li${isLive ? ' class="live"' : ""}${u.student ? ` data-open="${esc(u.student)}" title="Open ${esc(s ? s.name : u.name || "")}'s page"` : ""}><span class="t">${t.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}${extra}</span><span><button type="button" class="linkb" data-open="${esc(u.student)}"><b>${esc(s ? s.name : u.name || "")}</b></button>${note ? `<span class="nx-note">${note}</span>` : ""}</span><button type="button" class="nx-x" data-nxdel="${esc(u.start)}|${esc(u.student || u.name || "")}" title="Cancelled? Remove it from Coming up">✕</button></li>`; }).join("")}</ul>`;
