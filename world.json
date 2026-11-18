@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-18",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🐭",
+          "title": "Happy 98th birthday, Mickey Mouse!",
+          "text": "On November 18, 1928, Mickey first appeared in \"Steamboat Willie\" at a theater in New York. It was a cartoon with sound, and Mickey made music with animals and pots on a boat. Not bad for a mouse!",
+          "word": "appeared",
+          "mean": "was seen for the first time",
+          "tr": "apareció",
+          "es": "Mickey Mouse apareció por primera vez el 18 de noviembre de 1928, ¡hoy cumple 98 años!",
+          "q": "What cartoon did you love as a child, and why did you like it so much?",
+          "link": "https://www.waltdisney.org/blog/happy-birthday-mickey",
+          "src": "The Walt Disney Family Museum",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🪐",
+          "title": "The Moon visits Saturn on Friday",
+          "text": "On Friday evening, look for the Moon: bright Saturn will be close to it in the sky. They'll be less than 6 degrees apart, so binoculars can show both together. A nice sky date for the weekend!",
+          "word": "binoculars",
+          "mean": "a tool with two small tubes that makes far things look closer",
+          "tr": "binoculares",
+          "es": "El viernes en la noche, la Luna y Saturno se verán muy cerca en el cielo.",
+          "q": "What's the best place you know for looking at the night sky?",
+          "link": "https://www.slsc.org/night-sky-update-november-17-27-2026/",
+          "src": "Saint Louis Science Center",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🐢",
+          "title": "Baby sea turtles, a California first",
+          "text": "For the first time ever, sea turtles made nests on the US West Coast, in Southern California. Experts moved the eggs to an aquarium to keep them safe, and the tiny olive ridley hatchlings went back to the Pacific.",
+          "word": "hatchlings",
+          "mean": "baby animals that just came out of their eggs",
+          "tr": "crías recién nacidas",
+          "es": "Por primera vez, tortugas marinas anidaron en California y sus crías volvieron al Pacífico.",
+          "q": "What's an animal you'd love to see in nature one day? Where would you go to see it?",
+          "link": "https://www.goodnewsnetwork.org/west-coasts-first-ever-sea-turtle-hatchlings-released-into-the-pacific-look/",
+          "src": "Good News Network",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-17",
       "by": "claude",
       "items": [
