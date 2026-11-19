@@ -251,7 +251,7 @@ if '2026-1117-fewer' not in s:
 s=open(p,encoding="utf-8").read()
 if '2026-1118-future' not in s:
     s=s.replace(a,a+'''  {id:"2026-1118-future", date:"November 18, 2026", title:"New: the future, and confusing word pairs", items:[
-    ["🔮","Talking about the future","A new module in <b>Practice → Grammar</b> (B1 and up): when to use <i>will</i>, <i>going to</i>, <i>I'm meeting…</i> and <i>the train leaves at 7</i>. A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
+    ["🔮","Talking about the future","A new module in <b>Practice → Grammar → Verb tenses</b> (B1 and up): when to use <i>will</i>, <i>going to</i>, <i>I'm meeting…</i> and <i>the train leaves at 7</i>. A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
     ["🔀","Confusing word pairs","A new word pack in <b>Practice → Word packs</b>: <i>fun or funny</i>, <i>say or tell</i>, <i>borrow or lend</i>, <i>lose or miss</i> and more.",""],
     ["🚀","Two new toys","Finish the future module for a 🔮 <b>crystal ball</b> for your study buddy, and pass its Advanced stage for a 🚀 <b>rocket</b>.",""]
   ]},

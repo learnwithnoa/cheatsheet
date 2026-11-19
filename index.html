@@ -6358,7 +6358,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Time to <em>practice</em> 🎯</h2>
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find four parts:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b>, <b>indirect questions</b> and <b>talking about the future</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect, talking about the future), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My notebook</b> to practice just those.</div></li>
@@ -11416,7 +11416,7 @@ const CHANGELOG=[
     ["🧩","Lists on the live board","When a card on a class's <b>🧩 Live board</b> has a list (like the options in a game or the things a group chose), it now shows as bullet points, one per line, just like in class.",""]
   ]},
   {id:"2026-1118-future", date:"November 18, 2026", title:"New: the future, and confusing word pairs", items:[
-    ["🔮","Talking about the future","A new module in <b>Practice → Grammar</b> (B1 and up): when to use <i>will</i>, <i>going to</i>, <i>I'm meeting…</i> and <i>the train leaves at 7</i>. A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
+    ["🔮","Talking about the future","A new module in <b>Practice → Grammar → Verb tenses</b> (B1 and up): when to use <i>will</i>, <i>going to</i>, <i>I'm meeting…</i> and <i>the train leaves at 7</i>. A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
     ["🔀","Confusing word pairs","A new word pack in <b>Practice → Word packs</b>: <i>fun or funny</i>, <i>say or tell</i>, <i>borrow or lend</i>, <i>lose or miss</i> and more.",""],
     ["🚀","Two new toys","Finish the future module for a 🔮 <b>crystal ball</b> for your study buddy, and pass its Advanced stage for a 🚀 <b>rocket</b>.",""]
   ]},
@@ -11800,7 +11800,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261119101620"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261119105525"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -13057,7 +13057,7 @@ fut: {
 <script>
 /* step164: a "Verb tenses" folder in Practice → Grammar */
 (function(){
-  const TENSES=["prs","ps","pp"];   /* add new tense modules here */
+  const TENSES=["prs","ps","pp","fut"];   /* add new tense modules here */
   const KEY="cs-gram-folder";
   function go(){
     const pan=document.querySelector('.pr-panel[data-pp="gram"]'); if(!pan) return; const grid=pan.querySelector(".pr-tiles:not(.pr-tools):not(.pr-fgrid)"); if(!grid||!grid.dataset.grouped||pan.dataset.folder) return;
