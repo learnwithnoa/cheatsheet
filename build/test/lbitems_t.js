@@ -14,8 +14,8 @@ const board = JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
     await p.evaluate(() => { [...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Got it').forEach(b=>b.click());
       document.body.insertAdjacentHTML('beforeend','<button id="tb" data-board="2026-11-16|3">x</button>'); document.getElementById('tb').click(); });
     await p.waitForTimeout(900);
-    console.log(t, await p.evaluate(() => [document.querySelectorAll('.lb-items').length, document.querySelectorAll('.lb-items li').length, document.querySelectorAll('.lb-card').length].join(' / ')));
-    await p.evaluate(() => { const c=[...document.querySelectorAll('.lb-card')].find(x=>x.textContent.includes('Wekondo')); c && c.scrollIntoView(); });
+    console.log(t, await p.evaluate(() => [document.querySelectorAll('.lb-items').length, document.querySelectorAll('.lb-items li').length, document.querySelectorAll('.lb-card').length, document.querySelectorAll('.lb-save:not(.lb-isave)').length, document.querySelectorAll('.lb-isave').length, !!document.querySelector('[data-lball]'), [...document.querySelectorAll('.lb-card')].filter(c=>c.querySelector('.lb-save:not(.lb-isave)')).map(c=>c.querySelector('b,h3,.lb-t')?.textContent||'').join('|')].join(' / ')));
+    await p.evaluate(() => { const c=[...document.querySelectorAll('.lb-card')].find(x=>x.textContent.includes('Explaining your choices')); c && c.scrollIntoView(); });
     await p.waitForTimeout(300); await p.screenshot({path:`/tmp/lbi-${t}.png`});
     await ctx.close(); }
   console.log(errs.length ? errs : 'no errors'); await b.close(); })();

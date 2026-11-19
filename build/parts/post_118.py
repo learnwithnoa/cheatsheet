@@ -265,3 +265,12 @@ if '2026-1118-lbitems' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 19: live board save buttons only on language; unread emails don't repeat
+s=open(p,encoding="utf-8").read()
+if '2026-1119-lbsave' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1119-lbsave", date:"November 19, 2026", title:"Smarter live boards", items:[
+    ["🧩","Save only the useful stuff","On a class's <b>🧩 Live board</b>, <b>+ My notebook</b> now shows only on new expressions and useful phrases (not on game rules or instructions), and every phrase in a list has its own little <b>＋</b>.",""],
+    ["📧","Fewer emails","If you get an email about an unread message, Hibi won't email you again until you've read it.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

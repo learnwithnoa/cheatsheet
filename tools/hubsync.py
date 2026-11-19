@@ -959,6 +959,7 @@ def main():
             if qs: x["questions"] = qs
             its = [_txt(t, 200) for t in (c.get("items") or []) if isinstance(t, str) and _txt(t, 200)][:12]
             if its: x["items"] = its                                          # bullet list, one item per line
+            if isinstance(c.get("save"), bool): x["save"] = c["save"]          # force "+ My notebook" on (true) or off (false)
             if c.get("style") in ("wrap", "chip"): x["style"] = c["style"]   # chip = small pill in the "Your words" panel
             if c.get("nocount"): x["nocount"] = True                          # not counted in the board's number
             cards.append(x)

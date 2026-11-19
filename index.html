@@ -27,6 +27,9 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 .lb-items li{position:relative;padding-left:20px;margin-top:4px}.lb-items li::before{content:"";position:absolute;left:4px;top:.5em;width:8px;height:8px;border-radius:50%;background:#f97316}
 .lb-ov.dark .lb-items{color:#b6c2e2}.lb-ov.dark .lb-items li::before{background:#facc15}
 .lb-card.wrap .lb-items{color:rgba(255,255,255,.93);display:inline-block;text-align:left}.lb-card.wrap .lb-items li::before{background:#fff}
+.lb-items li .lb-isave{margin-left:8px;width:26px;height:26px;padding:0;border-radius:50%;border:1.5px solid currentColor;background:transparent;color:#2b6cff;font-weight:900;font-size:15px;line-height:1;cursor:pointer;vertical-align:middle;opacity:.8}
+.lb-items li .lb-isave:hover{opacity:1}.lb-items li .lb-isave:disabled{opacity:.6;cursor:default}
+.lb-ov.dark .lb-items li .lb-isave{color:#facc15}
 </style>
 <script>
 /* first paint: show the page you're opening (not a default one), and you as signed in, from what this device remembers; the real data replaces it a moment later */
@@ -5186,9 +5189,9 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     cards.forEach(c=>{ const k=c.section||""; if(!(k in groups)){ groups[k]=[]; order.push(k); } groups[k].push(c); });
     const inp=Array.isArray(b.sections)&&b.sections.length?new Set(b.sections.filter(x=>x&&x.input).map(x=>x.name)):null;
     const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&!(Array.isArray(c.questions)&&c.questions.length)&&(!inp||inp.has(c.section||""))).length;
-    const card=c=>{ const qs=Array.isArray(c.questions)&&c.questions.length, save=c.style!=="wrap"&&(c.english||c.meaning);
+    const card=c=>{ const qs=Array.isArray(c.questions)&&c.questions.length, save=window.__lbSav(c);
       const main=`<div><div class="lb-top">${c.emoji?`<span class="lb-emo" aria-hidden="true">${esc(c.emoji)}</span>`:""}<div class="lb-id">${esc(c.text||"")}</div></div>
-        ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${Array.isArray(c.items)&&c.items.length?`<ul class="lb-items">${c.items.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
+        ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${Array.isArray(c.items)&&c.items.length?`<ul class="lb-items">${c.items.map(t=>`<li>${esc(t)}${window.__lbItemSav(c)?`<button type="button" class="lb-save lb-isave" title="${L("Save to My notebook","Guardar en Mi cuaderno")}" data-clw="${esc(JSON.stringify({w:t,tr:c.text||"",ex:""}))}">＋</button>`:""}</li>`).join("")}</ul>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
         ${c.english?`<span class="lb-eq">🇺🇸 ${esc(c.english)}</span>`:""}${c.uk?`<span class="lb-eq uk">🇬🇧 ${esc(c.uk)}</span>`:""}
         ${save?`<div><button type="button" class="cl-addw lb-save" data-clw="${esc(JSON.stringify({w:c.text,tr:c.english||c.meaning||"",ex:c.example||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></div>`:""}</div>`;
       return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}${c.style==="chip"?" chip":""}">${main}${qs?`<div class="lb-qs"><div class="lb-ql">${L("Let's use it!","¡Usémoslo!")}</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>`:""}</div>`; };
@@ -5204,7 +5207,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     try{ if(!BOARDDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BOARDDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
       const bd=(BOARDDOC[wk].boards||{})[wd]; if(!bd){ toast(L("Couldn’t find it.","No la encontré.")); return; }
       closeBoard(); document.documentElement.classList.add("lb-lock");
-      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${b.dataset.hasplan?`<button type="button" class="lb-mat" data-lbplan="${esc(b.dataset.board)}">📄 <span class="lb-long">${L("Full class material","Material completo de la clase")}</span><span class="lb-short">${L("Material","Material")}</span></button>`:""}${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
+      document.body.insertAdjacentHTML("beforeend",`<div class="lb-ov${bd.theme==="dark"?" dark":""}" role="dialog" aria-modal="true" aria-label="${L("Live board","Pizarra en vivo")}"><div class="lb-box"><div class="lb-bar">${b.dataset.hasplan?`<button type="button" class="lb-mat" data-lbplan="${esc(b.dataset.board)}">📄 <span class="lb-long">${L("Full class material","Material completo de la clase")}</span><span class="lb-short">${L("Material","Material")}</span></button>`:""}${(bd.cards||[]).some(c=>!c.hidden&&(window.__lbSav(c)||window.__lbItemSav(c)))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);
       const x=document.querySelector(".lb-x"); if(x) x.focus();
       window.__lbFrom=b;
     }catch(er){ toast(L("Couldn’t open it. Try again.","No se pudo abrir. Intenta de nuevo.")); } });
@@ -5225,10 +5228,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   const lbAdd=x=>{ try{ return typeof window.csAddWord==="function"&&!!window.csAddWord(x.w,x.tr||"",x.ex||""); }catch(er){ return false; } };
   document.addEventListener("click",e=>{ const ov=e.target.closest(".lb-ov"); if(!ov) return;
     const one=e.target.closest(".lb-save[data-clw]"); if(one){ e.stopPropagation(); if(one.disabled) return; let x={}; try{ x=JSON.parse(one.dataset.clw); }catch(er){}
-      const ok=lbAdd(x); one.disabled=true; one.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
+      const ok=lbAdd(x); one.disabled=true; one.textContent=one.classList.contains("lb-isave")?"✓":ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
       lbPop(one,ok?L("Saved to My notebook ✓","Guardada en Mi cuaderno ✓"):L("Already in My notebook","Ya está en Mi cuaderno")); return; }
     const all=e.target.closest("[data-lball]"); if(all){ e.stopPropagation(); if(all.disabled) return; let n=0;
-      ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); });
+      ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=b.classList.contains("lb-isave")?"✓":L("✓ Saved","✓ Guardada"); });
       all.disabled=true; all.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ All in your words","✓ Ya están todas");
       lbPop(all,n?L(`${n} ${n===1?"word":"words"} added to My notebook ✓`,`${n} ${n===1?"palabra agregada":"palabras agregadas"} a Mi cuaderno ✓`):L("They're all in My notebook already","Ya estaban todas en Mi cuaderno")); return; } },true);
   /* the first lines of a class's plan intro (for recordings that have no summary yet) */
@@ -11352,6 +11355,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1119-lbsave", date:"November 19, 2026", title:"Smarter live boards", items:[
+    ["🧩","Save only the useful stuff","On a class's <b>🧩 Live board</b>, <b>+ My notebook</b> now shows only on new expressions and useful phrases (not on game rules or instructions), and every phrase in a list has its own little <b>＋</b>.",""],
+    ["📧","Fewer emails","If you get an email about an unread message, Hibi won't email you again until you've read it.",""]
+  ]},
   {id:"2026-1118-lbitems", date:"November 18, 2026", title:"Easier-to-read live boards", items:[
     ["🧩","Lists on the live board","When a card on a class's <b>🧩 Live board</b> has a list (like the options in a game or the things a group chose), it now shows as bullet points, one per line, just like in class.",""]
   ]},
@@ -11740,7 +11747,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261118231155"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261119081508"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -12298,7 +12305,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]
     const F=window.__csFire; if(!F||!F.uid||!F.uid()||window.__csGuest) return;
     const anchor=document.getElementById("csResetAll"); if(!anchor) return;
     const box=document.createElement("div"); box.className="cs-sec cs-mailn";
-    box.innerHTML=`<h4>Messages</h4><label class="cs-tog"><input type="checkbox" id="csMailN"><span><b>Email me about unread messages</b><small>If a message waits 12 hours, Hibi sends one short email. Never more than one a day.</small></span></label>`;
+    box.innerHTML=`<h4>Messages</h4><label class="cs-tog"><input type="checkbox" id="csMailN"><span><b>Email me about unread messages</b><small>If a message waits 12 hours, Hibi sends one short email. Never more than one a day, and no reminders while that message is still unread.</small></span></label>`;
     const host=document.getElementById("csInstallSec")||anchor.closest(".cs-sec")||anchor.parentNode; host.parentNode.insertBefore(box,host);
     const cb=box.querySelector("input"); cb.checked=isOn();
     cb.addEventListener("change",()=>{
@@ -14122,6 +14129,17 @@ async function ttsOnce(text) {
 }
 if (ai) window.__csTTS = text => Promise.race([ttsOnce(text), new Promise((_, rej) => setTimeout(() => { const e = new Error("timeout"); e.code = "timeout"; rej(e); }, 15000))]);
 
+</script>
+<script>
+/* live board: which cards get "+ My notebook" */
+(function(){
+  const LANG=/language|vocab|expression|idiom|phras|slang|word|lexi|vocabulario|expresiones/i;
+  window.__lbSav=c=>{ if(!c||c.style==="wrap"||c.save===false) return false; if(c.save===true) return true;
+    if(c.english||c.uk) return true;
+    if(!c.section) return !!c.meaning;                     /* older boards without sections: as before */
+    return LANG.test(c.section)&&!!(c.meaning||c.example); };
+  window.__lbItemSav=c=>!!(c&&Array.isArray(c.items)&&c.items.length&&c.style!=="wrap"&&c.save!==false&&(c.save===true||LANG.test(c.section||"")));
+})();
 </script>
 </body>
 </html>

@@ -29,7 +29,7 @@ R('.lb-x{position:sticky;top:10px;float:right;z-index:2;border:1.5px solid #dfe5
 @media (max-width:600px){.lb-ov{padding:10px 6px}.lb-box{border-radius:20px}.lb-all{padding:11px 14px;font-size:14px}}''')
 R('.lb-ov.dark .lb-x{background:#111c42;border-color:#2b3b6e;color:#fff}','.lb-ov.dark .lb-x{background:#111c42;border-color:#2b3b6e;color:#fff}.lb-ov.dark .lb-pop{background:#fff;color:#0b1430}')
 R('''<div class="lb-wrap"><button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">✕ ${L("Close","Cerrar")}</button>${boardHTML(bd)}</div></div>`);''',
-  '''<div class="lb-box"><div class="lb-bar">${(bd.cards||[]).some(c=>!c.hidden&&c.style!=="wrap"&&(c.english||c.meaning))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My words","Guardar todas en Mis palabras")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);''')
+  '''<div class="lb-box"><div class="lb-bar">${(bd.cards||[]).some(c=>!c.hidden&&(window.__lbSav(c)||window.__lbItemSav(c)))?`<button type="button" class="lb-all" data-lball="1">＋ <span class="lb-long">${L("Save all to My words","Guardar todas en Mis palabras")}</span><span class="lb-short">${L("Save all","Guardar todas")}</span></button>`:""}<button type="button" class="lb-x" data-boardx="1" aria-label="${L("Close","Cerrar")}">×</button></div><div class="lb-wrap">${boardHTML(bd)}</div></div></div>`);''')
 # 2) "＋ My words" inside the board (it lives outside the club page, so it needs its own handler) + "Add all"
 R('''  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });''',
   '''  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.querySelector(".lb-ov")) closeBoard(); });
@@ -39,10 +39,10 @@ R('''  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&document.qu
   const lbAdd=x=>{ try{ return typeof window.csAddWord==="function"&&!!window.csAddWord(x.w,x.tr||"",x.ex||""); }catch(er){ return false; } };
   document.addEventListener("click",e=>{ const ov=e.target.closest(".lb-ov"); if(!ov) return;
     const one=e.target.closest(".lb-save[data-clw]"); if(one){ e.stopPropagation(); if(one.disabled) return; let x={}; try{ x=JSON.parse(one.dataset.clw); }catch(er){}
-      const ok=lbAdd(x); one.disabled=true; one.textContent=ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
+      const ok=lbAdd(x); one.disabled=true; one.textContent=one.classList.contains("lb-isave")?"✓":ok?L("✓ Saved","✓ Guardada"):L("✓ In your words","✓ Ya está en tus palabras");
       lbPop(one,ok?L("Saved to My words ✓","Guardada en Mis palabras ✓"):L("Already in My words","Ya está en Mis palabras")); return; }
     const all=e.target.closest("[data-lball]"); if(all){ e.stopPropagation(); if(all.disabled) return; let n=0;
-      ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=L("✓ Saved","✓ Guardada"); });
+      ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){} if(lbAdd(x)) n++; b.disabled=true; b.textContent=b.classList.contains("lb-isave")?"✓":L("✓ Saved","✓ Guardada"); });
       all.disabled=true; all.textContent=n?L(`✓ ${n} added`,`✓ ${n} agregadas`):L("✓ All in your words","✓ Ya están todas");
       lbPop(all,n?L(`${n} ${n===1?"word":"words"} added to My words ✓`,`${n} ${n===1?"palabra agregada":"palabras agregadas"} a Mis palabras ✓`):L("They're all in My words already","Ya estaban todas en Mis palabras")); return; } },true);''')
 open(p,"w",encoding="utf-8").write(s)
@@ -121,11 +121,32 @@ i=s.index('</style>'); s=s[:i]+'''
 @media (max-width:720px){.lb-grid.flow{grid-template-columns:minmax(0,1fr)}.lb-chipbox{grid-column:1;grid-row:auto}}
 '''+s[i:]
 # 2026-11-18: cards can carry "items" (a bullet list, one item per line), shown under the meaning like on the live board
-R('${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${c.example?', '${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${Array.isArray(c.items)&&c.items.length?`<ul class="lb-items">${c.items.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:""}${c.example?')
+R('${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${c.example?', '${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${Array.isArray(c.items)&&c.items.length?`<ul class="lb-items">${c.items.map(t=>`<li>${esc(t)}${window.__lbItemSav(c)?`<button type="button" class="lb-save lb-isave" title="${L("Save to My notebook","Guardar en Mi cuaderno")}" data-clw="${esc(JSON.stringify({w:t,tr:c.text||"",ex:""}))}">＋</button>`:""}</li>`).join("")}</ul>`:""}${c.example?')
 i=s.index('</style>')
 s=s[:i]+'''.lb-items{list-style:none;margin:8px 0 0;padding:0;font-weight:700;font-size:16px;line-height:1.35;color:#4a5170}
 .lb-items li{position:relative;padding-left:20px;margin-top:4px}.lb-items li::before{content:"";position:absolute;left:4px;top:.5em;width:8px;height:8px;border-radius:50%;background:#f97316}
 .lb-ov.dark .lb-items{color:#b6c2e2}.lb-ov.dark .lb-items li::before{background:#facc15}
 .lb-card.wrap .lb-items{color:rgba(255,255,255,.93);display:inline-block;text-align:left}.lb-card.wrap .lb-items li::before{background:#fff}
+'''+s[i:]
+# 2026-11-19: "+ My notebook" only where it makes sense (language, not rules, instructions or members' answers);
+# phrases in a list get their own small ＋. A card can force it with "save": true / false.
+R('save=c.style!=="wrap"&&(c.english||c.meaning);','save=window.__lbSav(c);')
+_j=s.rfind('</body>')
+s=s[:_j]+'''<script>
+/* live board: which cards get "+ My notebook" */
+(function(){
+  const LANG=/language|vocab|expression|idiom|phras|slang|word|lexi|vocabulario|expresiones/i;
+  window.__lbSav=c=>{ if(!c||c.style==="wrap"||c.save===false) return false; if(c.save===true) return true;
+    if(c.english||c.uk) return true;
+    if(!c.section) return !!c.meaning;                     /* older boards without sections: as before */
+    return LANG.test(c.section)&&!!(c.meaning||c.example); };
+  window.__lbItemSav=c=>!!(c&&Array.isArray(c.items)&&c.items.length&&c.style!=="wrap"&&c.save!==false&&(c.save===true||LANG.test(c.section||"")));
+})();
+</script>
+'''+s[_j:]
+i=s.index('</style>')
+s=s[:i]+'''.lb-items li .lb-isave{margin-left:8px;width:26px;height:26px;padding:0;border-radius:50%;border:1.5px solid currentColor;background:transparent;color:#2b6cff;font-weight:900;font-size:15px;line-height:1;cursor:pointer;vertical-align:middle;opacity:.8}
+.lb-items li .lb-isave:hover{opacity:1}.lb-items li .lb-isave:disabled{opacity:.6;cursor:default}
+.lb-ov.dark .lb-items li .lb-isave{color:#facc15}
 '''+s[i:]
 open(p,"w",encoding="utf-8").write(s)

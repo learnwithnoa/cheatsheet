@@ -659,7 +659,7 @@ async function nightly(env) {
 
 // ---------- email notifications (Resend): unread Hibi messages ----------
 // If a message stays unread for 12 hours, the person gets ONE short email (no message text, just who wrote),
-// at most one a day. Not for Noa. Members can turn it off in Settings (users/{uid}/data/ncs-mailnotif = "off").
+// at most one a day, and no new email while a message we already emailed about is still unread (no reminders). Not for Noa. Members can turn it off in Settings (users/{uid}/data/ncs-mailnotif = "off").
 // Every email sent is listed for Noa in users/{Noa}/data/t-mailsent (his 🔔 shows it).
 const MAIL_FROM = "Hibi <hola@hibi.cl>", MAIL_AFTER_H = 12;
 const escH = (x) => String(x || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -684,11 +684,13 @@ function unreadMailBody(first, froms) {
 async function mailLogFor(env) { const st = plain(await fs(env, "GET", "billingConfig/mailnotif")) || {}; let log = {}; try { log = JSON.parse(st.json || "{}") || {}; } catch (e) {} log.sent = log.sent || {}; log.done = log.done || {}; return log; }
 async function unreadMail(env) {
   if (!env.RESEND_API_KEY) return [];
-  const now = Date.now(), list = await fs(env, "GET", "dms?pageSize=300"), log = await mailLogFor(env), want = {}, out = [];
+  const now = Date.now(), list = await fs(env, "GET", "dms?pageSize=300"), log = await mailLogFor(env), want = {}, out = [], oldest = {};
   for (const d of (list && list.documents) || []) {
     const tid = d.name.split("/").pop(), f = d.fields || {}, p = plain(d) || {};
     let j = {}; try { j = JSON.parse(p.json || "{}") || {}; } catch (e) {}
     const last = j.last; if (!last || !last.at || !last.from) continue;
+    const mem = ((f.members && f.members.arrayValue && f.members.arrayValue.values) || []).map((v) => v.stringValue);
+    for (const u of mem) if (u && u !== last.from && Number(p["r_" + u] || 0) < last.at) oldest[u] = Math.min(oldest[u] || Infinity, last.at);   // oldest unread message per person
     if (now - last.at < MAIL_AFTER_H * 3600e3 || now - last.at > 4 * 864e5 || (log.done[tid] || 0) >= last.at) continue;
     const members = ((f.members && f.members.arrayValue && f.members.arrayValue.values) || []).map((v) => v.stringValue);
     for (const u of members) {
@@ -700,6 +702,7 @@ async function unreadMail(env) {
   for (const [u, items] of Object.entries(want)) {
     try {
       if (now - (log.sent[u] || 0) < 20 * 3600e3) continue;                      // at most one a day: try again later
+      if (log.sent[u] && (oldest[u] || Infinity) <= log.sent[u]) continue;      // Nov 19 2026: they haven't read what we already emailed about: don't email again until they do
       const off = await getJ(env, u, "ncs-mailnotif").catch(() => null);
       if (off === "off") { items.forEach((x) => (log.done[x.tid] = x.at)); continue; }
       const ud = plain(await fs(env, "GET", `users/${u}`)) || {}; if (!ud.email) continue;
