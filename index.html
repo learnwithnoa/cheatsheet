@@ -1606,6 +1606,9 @@ details[open]>summary::before{transform:rotate(90deg)}
 .cl-past>summary{justify-content:flex-start}
 .cl-past>summary>span{margin-left:auto}
 
+.vp-irr{margin:16px 0 0;color:var(--muted);font-size:14.5px}
+.vp-irr .linkish{background:none;border:none;padding:0;font:inherit;font-weight:700;color:var(--c2);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-align:left}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -9938,7 +9941,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   const haveW=()=>{ try{ return new Set((LS.get("ncs-words",[])||[]).map(x=>String(x.w||"").toLowerCase().trim())); }catch(e){ return new Set(); } };
   function renderVocab(){
     const box=$("vocArea"); if(!box) return; const vp=vprog();
-    box.innerHTML='<div class="pr-tiles">'+VOC_SETS.map(v=>{ const o=vp[v.id]||{}; return '<button class="pr-tile" type="button" data-vset="'+v.id+'"><span class="pr-ico" aria-hidden="true">'+v.ico+'</span><b>'+esc(v.t)+'</b><span class="pr-sub">'+esc(v.sub)+'</span><span class="pr-sub">'+v.items.length+' words · '+stars(o.s|0)+'</span></button>'; }).join("")+'</div>';
+    box.innerHTML='<div class="pr-tiles">'+VOC_SETS.map(v=>{ const o=vp[v.id]||{}; return '<button class="pr-tile" type="button" data-vset="'+v.id+'"><span class="pr-ico" aria-hidden="true">'+v.ico+'</span><b>'+esc(v.t)+'</b><span class="pr-sub">'+esc(v.sub)+'</span><span class="pr-sub">'+v.items.length+' words · '+stars(o.s|0)+'</span></button>'; }).join("")+'</div>'+'<p class="vp-irr">Looking for irregular verbs? <button type="button" class="linkish" onclick="window.__irrGo&&window.__irrGo(\'cards\')">They\'re in Grammar → 🔁 Irregular verbs</button></p>';
   }
   function renderSet(){
     const box=$("vsetArea"), v=VSET[vsCur]; if(!box||!v) return; const o=vprog()[v.id]||{}, have=haveW();
@@ -11797,7 +11800,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261119101230"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261119101620"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
