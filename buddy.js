@@ -1630,7 +1630,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     cards: { ico: "🃏", name: "Flashcard duel", how: "Who learns more words in flashcards in 7 days? (✓ I knew it, 3 times on a word)" },
     gram: { ico: "🧠", name: "Grammar duel", how: "Who finishes more grammar practice rounds in 7 days? (up to 5 a day count)" }
   };
-  const canDuel = r => !(r && r.private && r.club === false) && !(r && r.hidden);
+  const canDuel = r => !(r && (r.private || r.hub) && r.club === false) && !(r && r.hidden);   /* private students are linked with r.hub too */
   let duelList = null, duelMeRole = null, lastDuelCheck = 0;
   function wordsSince(st, en) {
     let w = []; try { w = JSON.parse(localStorage.getItem("ncs-words") || "[]") || []; } catch (e) {}
