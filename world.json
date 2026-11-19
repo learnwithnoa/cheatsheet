@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-19",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🤔",
+          "title": "Today is World Philosophy Day",
+          "text": "Every third Thursday of November, UNESCO invites the world to think about big questions. What makes a good life? Why are we here? Grab a coffee and wonder a little: it's free and it's good for your brain!",
+          "word": "wonder",
+          "mean": "to think about something and ask yourself questions about it",
+          "tr": "preguntarse, reflexionar",
+          "es": "Hoy es el Día Mundial de la Filosofía: ¡un día para pensar en las grandes preguntas!",
+          "q": "What's a big question you sometimes think about when you're alone?",
+          "link": "https://nationaltoday.com/world-philosophy-day/",
+          "src": "National Today",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🛰️",
+          "title": "Voyager 1 is now one light-day away",
+          "text": "Launched in 1977, NASA's Voyager 1 is now so far away that its radio messages take a full day to reach us. That's about 25.9 billion km! It's the most distant object humans have ever made.",
+          "word": "distant",
+          "mean": "very far away",
+          "tr": "lejano",
+          "es": "La sonda Voyager 1 ya está a un día luz de la Tierra: ¡sus mensajes tardan un día en llegar!",
+          "q": "If you could send one message to aliens far away, what would you say?",
+          "link": "https://earthsky.org/space/voyager-1-1-light-day-from-earth-november-17-18-2026/",
+          "src": "EarthSky",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🪜",
+          "title": "430 steps up a mountain, built for Mom",
+          "text": "In eastern China, an 86-year-old mom missed her mountain village, but the old path was overgrown. So her kids and family built 430 stone steps, some on a cliff, and even used a drone to carry stones. Now that's love!",
+          "word": "overgrown",
+          "mean": "covered with too many plants that grew without control",
+          "tr": "cubierto de maleza",
+          "es": "Unos hermanos construyeron 430 escalones en una montaña para que su mamá pudiera volver a su pueblo.",
+          "q": "What's something special your family did together, or something you did for someone you love?",
+          "link": "https://www.goodnewsnetwork.org/siblings-build-430-step-sky-ladder-for-their-mother-who-refuses-to-live-in-the-city/",
+          "src": "Good News Network",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-18",
       "by": "claude",
       "items": [
