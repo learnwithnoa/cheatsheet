@@ -1189,6 +1189,8 @@ def main():
         if cur:
             if cur.get("status") == "no":
                 print("skip: Noa said not now to this one"); return
+            if cur.get("status") == "done":
+                print("skip: already built on Hibi (" + str(cur.get("built")) + ")"); return
             if who and who not in cur.get("students", []):
                 cur.setdefault("students", []).append(who)
             ex = _txt(d.get("example"), 160)
