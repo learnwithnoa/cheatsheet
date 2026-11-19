@@ -1669,6 +1669,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     S.dr = S.dr || {}; if (S.dr[d.id]) return;
     const mine = d.fromMe ? d.fs : d.ts, theirs = d.fromMe ? d.ts : d.fs, opp = d.fromMe ? d.toName : d.fromName;
     const res = mine > theirs ? "w" : mine < theirs ? "l" : "d"; S.dr[d.id] = res;
+    S.dhist = [{ id: d.id, ty: d.ty, opp, mine, theirs, res, end: d.end || Date.now() }].concat(S.dhist || []).slice(0, 30);   /* Nov 19 2026: duel history */
     S.dplay = (S.dplay | 0) + 1; const before = ITEMS.filter(i => (i.dw != null || i.ds != null || i.dp != null) && isOpen(i)).map(i => i.id);
     if (res === "w") { S.dw = (S.dw | 0) + 1; S.dst = (S.dst | 0) + 1; S.dbs = Math.max(S.dbs | 0, S.dst); S.t = Math.min(MAXT + 15, (S.t | 0) + 10); addFP(15); }
     else if (res === "l") { S.dl = (S.dl | 0) + 1; S.dst = 0; S.t = Math.min(MAXT + 15, (S.t | 0) + 2); }
@@ -1692,7 +1693,49 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (fresh.length) { S.seenDz = (S.seenDz || []).concat(fresh.map(d => d.id)).slice(-40); ch = true;
       const d = fresh[0]; say(`⚔️ <b>${esc(d.fromName)}</b> challenged you to a <b>${DT[d.ty].ico} ${DT[d.ty].name}</b>!`, `<button class="bd-b go" type="button" data-bd="duels">See the challenge</button>`, 12000); }
     if (ch) save();
-    renderDuels(ds);
+    renderDuels(ds); duelNotes(ds); renderHomeDuels(ds);
+  }
+  /* Nov 19 2026: duels everywhere — 🔔 notes, a "⚔️ Your duels" card on Home (collapsed), a badge on Buddy park */
+  const mineOf = d => d.fromMe ? d.fs : d.ts, theirsOf = d => d.fromMe ? d.ts : d.fs, oppOf = d => d.fromMe ? d.toName : d.fromName;
+  function duelNotes(ds) {
+    S.dzst = S.dzst || {}; const now = Date.now(), notes = [];
+    ds.forEach(d => {
+      if (!(d.fromMe || d.toMe)) return; const pv = S.dzst[d.id], ty = `${DT[d.ty].ico} ${DT[d.ty].name}`, m = mineOf(d), t = theirsOf(d), o = esc(oppOf(d));
+      const lead = d.st === "live" ? Math.sign(m - t) : null, nx = { st: d.st, lead, w: pv && pv.w };
+      if (!pv) { if (d.toMe && d.st === "pending") notes.push(`⚔️ <b>${o}</b> challenged you to a <b>${ty}</b>`); }
+      else if (pv.st !== d.st) {
+        if (d.st === "live" && d.fromMe) notes.push(`✅ <b>${o}</b> accepted your ${ty}. It's on!`);
+        else if (d.st === "declined" && d.fromMe) notes.push(`${o} said no thanks to your ${ty}`);
+        else if (d.st === "expired" && d.fromMe) notes.push(`⌛ ${o} didn't answer your ${ty} in 3 days`);
+        else if (d.st === "done" && pv.st === "live") notes.push(m > t ? `🏆 You won your ${ty} against <b>${o}</b> (${m}–${t})!` : m < t ? `⚔️ <b>${o}</b> won your ${ty} (${t}–${m}). Good fight!` : `🤝 Your ${ty} with <b>${o}</b> was a draw (${m}–${t})`);
+      } else if (d.st === "live") {
+        if (pv.lead != null && lead !== pv.lead && lead !== 0) notes.push(lead > 0 ? `💪 You took the lead against <b>${o}</b> (${m}–${t})` : `😮 <b>${o}</b> passed you in your ${ty} (${t}–${m})`);
+        if (!pv.w && d.end && d.end - now < DAY) { nx.w = 1; notes.push(`⏰ 1 day left in your ${ty} with <b>${o}</b> (${m}–${t})`); }
+      }
+      S.dzst[d.id] = nx;
+    });
+    S.dzinit = 1;
+    if (notes.length) { S.dnote = notes.map(t => ({ at: now, t })).concat(S.dnote || []).slice(0, 15); }
+    save(); document.dispatchEvent(new CustomEvent("cs-duelnote"));
+  }
+  window.__bdDuelNotes = () => (window.__csPreview ? [] : (S.dnote || []));
+  function renderHomeDuels(ds) {
+    const box = $("dzBox"), inc = ds.filter(d => d.toMe && d.st === "pending" && !(S.da || {})[d.id]);
+    document.querySelectorAll('.navbtn[data-go="park"]').forEach(b => { let c = b.querySelector(".dz-badge"); if (!c) { c = document.createElement("span"); c.className = "cn-count dz-badge"; b.appendChild(c); } c.textContent = inc.length ? String(inc.length) : ""; c.hidden = !inc.length; });
+    if (!box) return;
+    if (!canDuel(duelMeRole) || window.__csPreview && window.__csPreview.kind === "private") { box.hidden = true; return; }
+    const live = ds.filter(d => (d.fromMe || d.toMe) && d.st === "live"), wait = ds.filter(d => d.fromMe && d.st === "pending");
+    if (!inc.length && !live.length && !wait.length) { box.hidden = true; return; }
+    const now = Date.now(), left = d => { const h = Math.max(0, Math.round((d.end - now) / 36e5)); return h > 48 ? Math.round(h / 24) + " days left" : h + " h left"; };
+    const bar = (n, mx) => `<i style="width:${Math.min(100, Math.round(n / Math.max(1, mx) * 100))}%"></i>`;
+    const bits = [inc.length ? `<span class="dz-new">${inc.length} new challenge${inc.length > 1 ? "s" : ""}</span>` : ""].concat(live.map(d => `<span>You ${mineOf(d)} · ${esc(oppOf(d))} ${theirsOf(d)}</span>`), wait.length ? [`<span>⏳ ${wait.length} waiting</span>`] : []).filter(Boolean);
+    box.innerHTML = `<summary><span class="dz-h">⚔️ Your duels</span><span class="dz-sum">${bits.join("")}</span></summary><div class="dz-body">
+      ${inc.map(d => `<div class="dz-row"><div class="dz-t"><b>${esc(d.fromName)}</b> challenged you to a <b>${DT[d.ty].ico} ${DT[d.ty].name}</b> <small>· 7 days</small></div><div class="dz-btns"><button type="button" class="go" data-dacc="${esc(d.id)}">⚔️ Accept</button><button type="button" data-ddec="${esc(d.id)}">No thanks</button></div></div>`).join("")}
+      ${live.map(d => { const m = mineOf(d), t = theirsOf(d), o = esc(oppOf(d)), mx = d.ty === "first15" ? 15 : Math.max(m, t, 5); return `<div class="dz-row"><div class="dz-t"><b>${DT[d.ty].ico} ${DT[d.ty].name}</b> with ${o} <small>· ${left(d)}</small></div>
+        <div class="dz-bars"><span>You</span><span class="dz-bar me">${bar(m, mx)}</span><b>${m}</b><span>${o}</span><span class="dz-bar">${bar(t, mx)}</span><b>${t}</b></div><div class="dz-msg">${m > t ? `You're ahead by ${m - t} 💪` : m < t ? `${o} is ahead by ${t - m}. You can catch up!` : "It's a tie!"}</div></div>`; }).join("")}
+      ${wait.map(d => `<div class="dz-row dz-wait">⏳ Waiting for <b>${esc(d.toName)}</b> to accept your ${DT[d.ty].ico} ${DT[d.ty].name}</div>`).join("")}
+      <div class="dz-foot"><button type="button" class="dz-park" data-dzgo="1">Buddy park →</button></div></div>`;
+    box.hidden = false;
   }
   async function duelCheck() { const P = window.__csPark; if (!P || !P.signedIn() || Date.now() - lastDuelCheck < 6e5) return; try { duelSync(await P.list()); } catch (e) {} }
   document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(duelCheck, 2000); });
@@ -1713,6 +1756,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       ${live.length ? `<h3>Live now</h3>${live.map(d => { const mx = d.ty === "first15" ? 15 : Math.max(d.fs, d.ts, 5); return `<div class="duel-card${d.fromMe || d.toMe ? " mine" : ""}"><div class="duel-t">${DT[d.ty].ico} <b>${DT[d.ty].name}</b> <span class="bd-small" style="margin:0">· ${left(d)}</span></div>
         <div class="duel-row"><span>${esc(d.fromName)}</span><span class="duel-bar">${bar(d.fs, mx)}</span><b>${d.fs}</b></div><div class="duel-row"><span>${esc(d.toName)}</span><span class="duel-bar">${bar(d.ts, mx)}</span><b>${d.ts}</b></div></div>`; }).join("")}` : ""}
       ${ds.filter(d => d.fromMe && d.st === "pending").map(d => `<div class="duel-card"><span class="bd-small" style="margin:0">⏳ Waiting for <b>${esc(d.toName)}</b> to accept your ${DT[d.ty].ico} ${DT[d.ty].name}.</span></div>`).join("")}
+      ${(S.dhist || []).length ? `<details class="duel-hist"><summary>📜 Your duels (${S.dhist.length}) · ${S.dw | 0} won · ${S.dl | 0} lost</summary><ul class="duel-done">${S.dhist.map(h => `<li>${h.res === "w" ? "🏆 Won" : h.res === "l" ? "⚔️ Lost" : "🤝 Draw"} · ${DT[h.ty] ? DT[h.ty].ico + " " + DT[h.ty].name : ""} with ${esc(h.opp)} (${h.mine}–${h.theirs}) <span class="bd-small" style="margin:0">· ${new Date(h.end).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span></li>`).join("")}</ul></details>` : ""}
       ${done.length ? `<h3>Recent winners</h3><ul class="duel-done">${done.map(d => `<li>${d.fs === d.ts ? `🤝 ${esc(d.fromName)} and ${esc(d.toName)} drew` : `🏆 <b>${esc(d.fs > d.ts ? d.fromName : d.toName)}</b> beat ${esc(d.fs > d.ts ? d.toName : d.fromName)}`} · ${DT[d.ty].ico} ${DT[d.ty].name} (${Math.max(d.fs, d.ts)}–${Math.min(d.fs, d.ts)})</li>`).join("")}</ul>` : ""}
       ${!inc.length && !live.length && !done.length && !mineOpen.length ? `<p class="bd-small">No duels yet. Tap someone's buddy in the park, then <b>⚔️ Duel</b> to challenge them!</p>` : mineOpen.length < OPEN_MAX ? `<p class="bd-small">Tap a buddy in the park, then <b>⚔️ Duel</b> to start a new one.</p>` : `<p class="bd-small">You have ${OPEN_MAX} duels going. Finish one to start another.</p>`}
       ${(() => { const dz = ITEMS.filter(i => i.dw != null || i.ds != null || i.dp != null), tile = i => `<div class="dgt${isOpen(i) ? " on" : ""}"><span class="dgi" aria-hidden="true">${isOpen(i) ? i.ico : "🔒"}</span><b>${esc(i.name)}</b><small>${isOpen(i) ? "Unlocked ✓" : esc(lockTxt(i))}</small></div>`, ord = i => i.dp != null ? 0 : i.ds != null ? i.ds + 0.5 : i.dw, wear = dz.filter(i => i.slot !== "toy").sort((a, b) => ord(a) - ord(b)), room = dz.filter(i => i.slot === "toy").sort((a, b) => ord(a) - ord(b));
@@ -1752,9 +1796,15 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const open = duelsFrom(duelList).filter(x => (x.fromMe || x.toMe) && x.st === "live");
       if (open.length >= OPEN_MAX) { toastMsg(`You have ${OPEN_MAX} duels going. Finish one first ⚔️`); return; }
       const now = Date.now(); S.da = Object.assign({}, S.da || {}, { [id]: now }); S.dd = Object.assign({}, S.dd || {}, { [id]: { ty: d.ty, lb: counts().learned, gb: S.gr | 0, st: now } });
-      save(); publishPark(); toastMsg(`⚔️ Duel on! Good luck against ${d.fromName}.`); hop(); fx(["⚔️", "💪", "⚔️"]); lastDuelCheck = 0; setTimeout(renderPark, 1800); return; }
-    if (dc) { S.dn = (S.dn || []).concat(dc.dataset.ddec).slice(-20); save(); publishPark(); toastMsg("No problem 👍"); setTimeout(renderPark, 1500); }
+      save(); publishPark(); toastMsg(`⚔️ Duel on! Good luck against ${d.fromName}.`); hop(); fx(["⚔️", "💪", "⚔️"]); lastDuelCheck = 0; setTimeout(renderPark, 1800); setTimeout(() => { lastDuelCheck = 0; duelCheck(); }, 2500); return; }
+    if (dc) { S.dn = (S.dn || []).concat(dc.dataset.ddec).slice(-20); save(); publishPark(); toastMsg("No problem 👍"); setTimeout(renderPark, 1500); setTimeout(() => { lastDuelCheck = 0; duelCheck(); }, 2500); }
+    if (e.target.closest("[data-dzgo]")) { const b = document.querySelector('.navbtn[data-go="park"]'); if (b) b.click(); setTimeout(() => { const x = $("duelBoard"); if (x) x.scrollIntoView({ block: "start" }); }, 400); }
   });
+  /* a grammar round or a flashcard round that counts for a live duel: say so */
+  function duelTick(ty) { setTimeout(() => { if (!duelList) return; const ds = duelsFrom(duelList).filter(d => (d.fromMe || d.toMe) && d.st === "live" && d.ty === ty); if (!ds.length) return;
+    toastMsg(ds.map(d => `⚔️ ${DT[d.ty].name}: you ${mineOf(d)} · ${oppOf(d)} ${theirsOf(d)}`).join(" · ")); }, 900); }
+  document.addEventListener("cs-modround", () => duelTick("gram"));
+  document.addEventListener("cs-fcround", () => duelTick("cards"));
 
   window.addEventListener("cs-auth", e => { if (e.detail && e.detail.signedIn) { setTimeout(publishPark, 2500); setTimeout(claimLove, 3000); setTimeout(duelCheck, 5000); } renderPark(); });
 

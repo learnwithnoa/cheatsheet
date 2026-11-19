@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=64',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=65',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -289,6 +289,15 @@ if '2026-1119-tries' not in s:
     ["📜","Your tries","Every grammar module now shows your <b>best score, how many tries and when</b>, even if you didn't get a star yet, plus a <b>📜 Your tries</b> history at the bottom.",""],
     ["⏸","Stop and continue later","If you tap <b>Stop this round</b>, Hibi remembers where you were. Tap <b>Continue</b> to pick up from the same question.",""],
     ["🎓","Your test out score","The test out box shows your last score and how many more you need to pass. Stars: ★ 7/10 · ★★ 9/10 · ★★★ 10/10.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1119-duels' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1119-duels", date:"November 19, 2026", title:"Follow your duels", items:[
+    ["⚔️","Your duels on Home","When you have a duel, <b>⚔️ Your duels</b> sits at the top of Home. Tap it to see the score, accept a challenge or check who you're waiting for.",""],
+    ["🔔","Duel news in the bell","The 🔔 tells you when someone challenges you, accepts, takes the lead, when there's 1 day left and who won.",""],
+    ["📜","Your past duels","Buddy park now keeps a list of your duels and results. After a practice round that counts for a duel, you'll see the new score.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
