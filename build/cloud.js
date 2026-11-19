@@ -525,7 +525,7 @@ window.__csTeach = {
     if (!window.__csTeacher || !user) return [];
     const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
     const out = []; (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
-      out.push({ uid: d.id, name: p.name || p.email || "(no name)", kind: r.private ? (r.club === false ? "private" : "both") : r.hibiOnly && r.club !== true ? "hibi" : "club" }); });
+      out.push({ uid: d.id, name: p.name || p.email || "(no name)", kind: r.hibiOnly && !r.hub && r.club !== true ? "hibi" : (r.private || r.hub) ? (r.club === false ? "private" : "both") : r.club === false ? "hibi" : "club" }); });   /* same rule as Hibi members (roleType): a private student is linked with r.hub (Nov 19 2026 fix: hub-linked students showed as Club) */
     return out.sort((a, b) => a.name.localeCompare(b.name));
   },
   /* Home notifications: every account with when it joined / was last here, plus its role */
