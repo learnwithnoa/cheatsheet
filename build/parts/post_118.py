@@ -278,7 +278,7 @@ if '2026-1119-lbsave' not in s:
 s=open(p,encoding="utf-8").read()
 if '2026-1119-irr' not in s:
     s=s.replace(a,a+'''  {id:"2026-1119-irr", date:"November 19, 2026", title:"Irregular verbs flashcards", items:[
-    ["🔁","Practice irregular verbs","All the verbs from <b>Irregular verbs</b> are now a word pack too: flip flashcards (go → <b>went · gone</b>) or take a quick quiz. Tap <b>🃏 Practice with flashcards</b> at the top of the Irregular verbs page, or find it in <b>Practice → Word packs</b>.",""]
+    ["🔁","Practice irregular verbs","Two new word packs: <b>⭐ Essential irregular verbs</b> (the 60 you'll use every day, like go → <b>went · gone</b>) and <b>🔁 All irregular verbs</b>. Flip flashcards or take a quick quiz, right from the top of the Irregular verbs page or in <b>Practice → Word packs</b>.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

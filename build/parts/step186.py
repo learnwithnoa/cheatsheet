@@ -4,25 +4,38 @@ import re as _re, json as _json
 _m = _re.search(r'const IRR = (\[.*?\]);', s, _re.S)
 _irr = _json.loads(_m.group(1))
 _js_irr = _json.dumps(_irr, ensure_ascii=False)
+# the most common ones, most used first (Nov 19 2026: Noa asked for an "essential" pack + "all")
+_ESS = ["be","have","do","go","get","make","say","see","know","take","come","think","give","find","tell","become","leave","feel","put","bring",
+        "begin","keep","hold","write","stand","hear","let","mean","meet","run","pay","sit","speak","read","lose","grow","fall","send","build","understand",
+        "spend","buy","eat","drink","sleep","sell","teach","catch","choose","drive","forget","wear","win","break","swim","sing","fly","wake","cut","hurt"]
+_by = {v[0]: v for v in _irr}
+_ess = [_by[w] for w in _ESS if w in _by]
 R('''VOC_SETS.forEach(set=>{''', '''/* step186: the Irregular verbs table as a pack: front = base verb, back = past · participle + Spanish */
-VOC_SETS.push({id:"irr", ico:"🔁", t:"Irregular verbs", sub:"go → went → gone, and '''+str(len(_irr)-1)+''' more", irr:'''+_js_irr+''', w:""});
+VOC_SETS.push({id:"irr1", ico:"⭐", t:"Essential irregular verbs", sub:"the '''+str(len(_ess))+''' you'll use every day: be, go, have, get…", irr:'''+_json.dumps(_ess, ensure_ascii=False)+''', w:""});
+VOC_SETS.push({id:"irr", ico:"🔁", t:"All irregular verbs", sub:"all '''+str(len(_irr))+''' from A to Z: arise → write", irr:'''+_js_irr+''', w:""});
 VOC_SETS.forEach(set=>{
   if(set.irr){ const V=set.irr, sp=f=>f.split("/").map(x=>x.trim()).filter(Boolean);
     set.items=V.map((v,i)=>({w:v[0], def:v[1]+" · "+v[2], ex:v[3], alt:[], i}));
     set.qs=[]; const n=V.length;
     V.forEach((v,i)=>{ const pick=(col)=>{ const out=[], ans=sp(v[col]); for(let k=1;out.length<3&&k<n;k++){ const o=sp(V[(i+k*7)%n][col])[0]; if(!ans.includes(o)&&!out.includes(o)&&!sp(v[1]).concat(sp(v[2])).includes(o)) out.push(o); } return out; };
-      set.qs.push({id:"v-irr-"+i+"-m", st:0, mco:true, q:"Past simple of “"+v[0]+"”: ___", a:sp(v[1]), o:pick(1), why:v[0]+" → "+v[1]+" → "+v[2]+" ("+v[3]+")", es:"", voc:"irr"});
-      set.qs.push({id:"v-irr-"+i+"-c", st:0, q:"Past participle of “"+v[0]+"” (I have ___): ", a:sp(v[2]), o:pick(2), why:v[0]+" → "+v[1]+" → "+v[2]+" ("+v[3]+")", es:"", voc:"irr"}); });
+      set.qs.push({id:"v-"+set.id+"-"+i+"-m", st:0, mco:true, q:"Past simple of “"+v[0]+"”: ___", a:sp(v[1]), o:pick(1), why:v[0]+" → "+v[1]+" → "+v[2]+" ("+v[3]+")", es:"", voc:set.id});
+      set.qs.push({id:"v-"+set.id+"-"+i+"-c", st:0, q:"Past participle of “"+v[0]+"” (I have ___): ", a:sp(v[2]), o:pick(2), why:v[0]+" → "+v[1]+" → "+v[2]+" ("+v[3]+")", es:"", voc:set.id}); });
     return; }''')
 # the American / British note goes above the list, and a pill to the flashcards
 _note = '''  <div class="note dismissible">Where you see two forms (<i>learned / learnt</i>), the first one is American English and the second is British. Both are correct.</div>
 '''
 R(_note, '')
 R('''  <div class="verb-tools">
-    <input id="verbSearch"''', _note + '''  <div class="note-actions" style="margin:0 0 14px"><button type="button" class="pill-btn pill-green" onclick="if(window.csVocSet){window.csVocSet('irr');setTimeout(function(){var b=document.querySelector('[data-vlearn=&quot;irr&quot;]');if(b)b.click();},60);}">🃏 Practice with flashcards</button><button type="button" class="pill-btn" onclick="if(window.csVocSet){window.csVocSet('irr');setTimeout(function(){var b=document.querySelector('[data-vqstart=&quot;irr&quot;]');if(b)b.click();},60);}">✏️ Quiz yourself</button></div>
+    <input id="verbSearch"''', _note + '''  <div class="irr-prac"><b>🃏 Practice</b><div class="note-actions"><button type="button" class="pill-btn pill-green" onclick="if(window.csVocSet){window.csVocSet('irr1');setTimeout(function(){var b=document.querySelector('[data-vlearn=&quot;irr1&quot;]');if(b)b.click();},60);}">⭐ Essential verbs ('''+str(len(_ess))+''')</button><button type="button" class="swap" onclick="if(window.csVocSet){window.csVocSet('irr1');setTimeout(function(){var b=document.querySelector('[data-vqstart=&quot;irr1&quot;]');if(b)b.click();},60);}">✏️ Quiz</button></div><div class="note-actions"><button type="button" class="pill-btn" onclick="if(window.csVocSet){window.csVocSet('irr');setTimeout(function(){var b=document.querySelector('[data-vlearn=&quot;irr&quot;]');if(b)b.click();},60);}">🔁 All verbs ('''+str(len(_irr))+''')</button><button type="button" class="swap" onclick="if(window.csVocSet){window.csVocSet('irr');setTimeout(function(){var b=document.querySelector('[data-vqstart=&quot;irr&quot;]');if(b)b.click();},60);}">✏️ Quiz</button></div></div>
   <div class="verb-tools">
     <input id="verbSearch"''')
 # 🔊 on an irregular verb reads the three forms (not the Spanish)
 _a = '''data-vsay="'+esc(it.w+". "+it.ex.replace(/[\\[\\]]/g,""))'''
 assert s.count(_a) == 2, s.count(_a)
 s = s.replace(_a, '''data-vsay="'+esc(v.irr?it.w+", "+it.def.replace(/ · /g,", ").replace(/ \\/ /g," or "):it.w+". "+it.ex.replace(/[\\[\\]]/g,""))''')
+_k = s.index('</style>'); s = s[:_k] + """
+/* step186: practice buttons on the Irregular verbs page */
+.irr-prac{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 16px}
+.irr-prac>b{font-weight:800;width:100%;font-size:15px}
+.irr-prac .note-actions{margin:0;flex-wrap:wrap}
+""" + s[_k:]
