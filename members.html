@@ -179,6 +179,13 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 .rc-st.go{background:color-mix(in srgb,#d97706 18%,transparent);color:#d97706}
 .rc-st.no{background:color-mix(in srgb,#8a94a8 18%,transparent);color:var(--muted,#8a94a8)}
 @media (max-width:640px){.rc-row{grid-template-columns:1fr auto}.rc-row>:nth-child(2){grid-column:1/-1;grid-row:2}.rc-row>:nth-child(3){grid-row:1;grid-column:2;font-size:12.5px}.rc-row>:nth-child(4){grid-column:1/-1;grid-row:3}}
+/* Nov 19 2026: every collapsible (details/summary) shows the same little arrow: ▸ closed, ▾ open */
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+details>summary::marker{content:""}
+details>summary::before{content:"▸";display:inline-block;flex:none;color:var(--muted,#8a93ad);margin-right:.45em;transition:transform .15s;font-weight:700}
+details[open]>summary::before{transform:rotate(90deg)}
+details.mcol>summary::before{content:"▸"}
 </style>
 <link rel="stylesheet" href="comfort.css?v=21">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>

@@ -1595,6 +1595,16 @@ html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-keep{min-height:54px;font-size
 .vs-item-top b{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;padding-top:4px}
 .vs-item-top .note-actions{flex:none;flex-wrap:nowrap;gap:6px;margin:0}
 .vs-item-top .swap{padding:6px 10px;font-size:13px;white-space:nowrap}
+/* Nov 19 2026: every collapsible (details/summary) shows the same little arrow: ▸ closed, ▾ open */
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+details>summary::marker{content:""}
+details>summary::before{content:"▸";display:inline-block;flex:none;color:var(--muted,#8a93ad);margin-right:.45em;transition:transform .15s;font-weight:700}
+details[open]>summary::before{transform:rotate(90deg)}
+
+.ps-lesson>summary::after{content:none}
+.cl-past>summary{justify-content:flex-start}
+.cl-past>summary>span{margin-left:auto}
 
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
@@ -11787,7 +11797,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261119101101"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261119101230"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
