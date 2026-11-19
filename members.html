@@ -535,7 +535,7 @@ function renderUsage() {
 document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
 /* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
 const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
-const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work" };
+const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work", pairs: "Confusing word pairs" };
 function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
 /* accounts that might be private students, not linked to their Coaching profile yet (this used to live on the Private students page) */
 function renderLinks() {
@@ -685,23 +685,33 @@ function renderTips() {
 }
 /* ideas for NEW grammar modules / word packs, collected by the nightly wrap-up from what keeps coming up in classes */
 function renderIdeas() {
-  const box = $("ideas"); const all = ((hubMeta && hubMeta.ideas) || []).filter(x => x.status !== "no" && x.status !== "done");
-  box.hidden = !all.length; if (!all.length) return;
+  const box = $("ideas"), ideas = (hubMeta && hubMeta.ideas) || [];
+  const all = ideas.filter(x => x.status !== "no" && x.status !== "done");
+  const built = ideas.filter(x => x.status === "done").sort((a, b) => (b.built || "").localeCompare(a.built || "")).slice(0, 12);
+  box.hidden = !all.length && !built.length; if (box.hidden) return;
   const ls = all.slice().sort((a, b) => (a.status === "yes") - (b.status === "yes") || (b.count || 1) - (a.count || 1) || (b.last || "").localeCompare(a.last || ""));
   const seenAt = (hubMeta && hubMeta.ideasSeen) || 0, isNew = x => x.status !== "yes" && (Date.parse(x.last || x.first || "") || Date.now()) > seenAt;
   const nNew = all.filter(isNew).length;
+  /* the weekly builder runs early on Monday: an idea marked "Build it" is built the Monday after that day */
+  const day = s => { const d = new Date((s || new Date().toISOString().slice(0, 10)) + "T12:00:00"); return isNaN(d) ? new Date() : d; };
+  const planFor = x => { const d = day(x.asked); d.setDate(d.getDate() + (((8 - d.getDay()) % 7) || 7)); return d; };
+  const fmt = d => d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  const ico = x => x.kind === "words" ? "🗂️" : "🧩", kindT = x => x.kind === "words" ? "word pack" : "grammar module";
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🧱 Ideas to build ${nNew ? `<span class="news-n" style="background:#12935C">${nNew} new</span>` : `<span class="news-c">${all.filter(x => x.status !== "yes").length}</span>`}</h2>${nNew ? `<button type="button" class="kd-btn" data-ideaseen="1">Mark all as seen</button>` : ""}</div>
-    <p class="muted" style="margin:4px 0 8px">Grammar modules and word packs Hibi doesn't have yet, from what keeps coming up in your classes. Tap <b>Build it</b> and ask Claude to make it.</p>
-    <ul class="news-list">${ls.map(x => `<li${isNew(x) ? "" : ' class="seen"'}><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${x.kind === "words" ? "🗂️" : "🧩"}</span>
-      <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${x.kind === "words" ? "word pack" : "grammar module"} · came up ${x.count || 1}×</span>${x.why ? `<br><span style="font-size:13.5px">${esc(x.why)}</span>` : ""}${(x.examples || []).length ? `<br><span class="muted" style="font-size:13px">“${x.examples.slice(-2).map(esc).join("” · “")}”</span>` : ""}${(x.students || []).length ? `<br><span class="muted" style="font-size:12.5px">${x.students.map(esc).join(", ")}</span>` : ""}</span>
-      ${x.status === "yes" ? `<span class="kc k-teal" style="color:var(--c-teal)">✓ Asked to build</span><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="new">Undo</button>` : `<button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="yes">🛠 Build it</button><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="no">✕ Not now</button>`}</div></li>`).join("")}</ul>`;
+    <p class="muted" style="margin:4px 0 8px">Grammar modules and word packs Hibi doesn't have yet, from what keeps coming up in your classes. Tap <b>Build it</b>: Claude builds it on the next Monday morning and it moves to <b>✅ Built</b>.</p>
+    ${ls.length ? `<ul class="news-list">${ls.map(x => `<li${isNew(x) ? "" : ' class="seen"'}><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${ico(x)}</span>
+      <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${kindT(x)} · came up ${x.count || 1}×</span>${x.why ? `<br><span style="font-size:13.5px">${esc(x.why)}</span>` : ""}${(x.examples || []).length ? `<br><span class="muted" style="font-size:13px">“${x.examples.slice(-2).map(esc).join("” · “")}”</span>` : ""}${(x.students || []).length ? `<br><span class="muted" style="font-size:12.5px">${x.students.map(esc).join(", ")}</span>` : ""}</span>
+      ${x.status === "yes" ? `<span class="kc k-teal" style="color:var(--c-teal)" title="Asked${x.asked ? " on " + esc(fmt(day(x.asked))) : ""}">🗓 Planned for ${esc(fmt(planFor(x)))}</span><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="new">Undo</button>` : `<button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="yes">🛠 Build it</button><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="no">✕ Not now</button>`}</div></li>`).join("")}</ul>` : `<p class="muted" style="margin:0 0 8px">Nothing new to decide right now.</p>`}
+    ${built.length ? `<h3 style="margin:14px 0 6px;font-size:15px">✅ Built</h3><ul class="news-list">${built.map(x => `<li class="seen"><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${ico(x)}</span>
+      <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${kindT(x)} · built ${esc(fmt(day(x.built)))}</span>${x.builtNote ? `<br><span style="font-size:13.5px">${esc(x.builtNote)}</span>` : ""}</span>
+      ${/^https:\/\/hibi\.cl\//.test(x.link || "") ? `<a class="kd-btn" style="text-decoration:none" href="${esc(x.link)}" target="_blank" rel="noopener">Open →</a>` : ""}</div></li>`).join("")}</ul>` : ""}`;
 }
 document.addEventListener("click", async e => { const b = e.target.closest("[data-idea]"); if (!b) return;
   try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
   const x = ((hubMeta && hubMeta.ideas) || []).find(i => i.id === b.dataset.idea); if (!x) return;
-  const prev = x.status || "new"; x.status = b.dataset.st; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta);
-  if (x.status === "no") undoBar("Idea dismissed", () => { x.status = prev; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta); });
-  else toast(x.status === "yes" ? "Noted ✓ Ask Claude to build “" + x.title + "”" : "Undone"); });
+  const prev = x.status || "new", prevAsked = x.asked; x.status = b.dataset.st; if (x.status === "yes") x.asked = new Date().toLocaleDateString("en-CA"); else delete x.asked; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta);
+  if (x.status === "no") undoBar("Idea dismissed", () => { x.status = prev; if (prevAsked) x.asked = prevAsked; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta); });
+  else toast(x.status === "yes" ? "Planned ✓ Claude builds “" + x.title + "” next Monday" : "Undone"); });
 document.addEventListener("click", e => { if (!e.target.closest("[data-ideaseen]")) return; const before = hubMeta.ideasSeen || 0; hubMeta.ideasSeen = Date.now(); renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta);
   undoBar("Ideas marked as seen", () => { hubMeta.ideasSeen = before; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta); }); });
 document.addEventListener("click", e => { if (!e.target.closest("[data-tipseen]")) return; const now = Date.now(); ((hubMeta && hubMeta.recs) || []).forEach(r => { if (!r.done && !r.seen) r.seen = now; }); renderTips(); renderTabs(); saveMetaNow();
@@ -778,6 +788,7 @@ const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present p
   th: { name: "There is / there are", stages: ["There is / there are", "Negatives: there isn't / aren't", "Questions: Is there…? Are there…?", "Past: there was / there were", "Future: there will be", "Mix it up", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
   cou: { name: "Could vs was able to", stages: ["can, could, be able to", "could: ability in general", "was able to: one specific moment", "Negatives: couldn't", "Questions: Could you…? Were you able to…?", "will be able to, have been able to", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
   iq: { name: "Indirect questions", stages: ["Back to normal order", "do, does, did disappear", "Yes/no questions: if or whether", "Polite openers", "The who / what trap", "Real life mix", "⭐ Advanced (bonus, B2–C1)"] },
+  fut: { name: "Talking about the future", stages: ["will: decide now, offer, promise", "going to: plans", "Predictions: going to or will", "Present continuous: arrangements", "Present simple: timetables", "Real life mix", "⭐ Advanced (bonus, B2–C1)"] },
   ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives", "⭐ Advanced (bonus, B2–C1)"] } };
 const COL = { p: false, w: false };   /* Practice and Words start closed; stay as Noa left them while he moves between people */
 document.addEventListener("toggle", e => { const d = e.target; if (d && d.classList && d.classList.contains("mcol")) COL[d.dataset.col] = d.open; }, true);
@@ -793,8 +804,8 @@ function practiceBox(s) {
   const nMis = Object.keys(s.mymis || {}).length, wk = s.wk && s.wk.w === weekKeyT() ? s.wk : { n: 0, got: false };
   const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
   const recN = Object.keys(s.modrec || {}).length;
-  return `<details class="parkbox mcol" data-col="p"${COL.p ? " open" : ""}><summary><b>Practice</b> <span class="muted">· recommend a stage or a whole module${recN ? ` · ⭐ ${recN} recommended now` : ""}</span></summary>${modBlock(s, "prs")}${modBlock(s, "th")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "cou")}${modBlock(s, "iq")}${modBlock(s, "ed")}
-    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 4 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, [3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3)} / ${[3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3} rounds${wk.got ? " ✓" : ""}</div>
+  return `<details class="parkbox mcol" data-col="p"${COL.p ? " open" : ""}><summary><b>Practice</b> <span class="muted">· recommend a stage or a whole module${recN ? ` · ⭐ ${recN} recommended now` : ""}</span></summary>${modBlock(s, "prs")}${modBlock(s, "th")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "cou")}${modBlock(s, "fut")}${modBlock(s, "iq")}${modBlock(s, "ed")}
+    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 5 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, [3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3)} / ${[3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3} rounds${wk.got ? " ✓" : ""}</div>
     <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. "Whole module" puts ⭐ on the module itself. Tap again to remove it.</p></details>`;
 }
 function buddyCard(b) {

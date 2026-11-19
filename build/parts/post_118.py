@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=62',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=63',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -244,6 +244,16 @@ if '2026-1117-fewer' not in s:
     ["⇄","Translator in Simple mode","Simple mode now has the <b>Translator</b> as one of its main buttons.","translate"],
     ["📒","Long word lists load faster","If you have lots of words, My notebook shows them 60 at a time. Scroll down and more appear by themselves (or tap <b>Show more words</b>). Search still looks through all of them.","words"],
     ["✨","Make it yours from the start","The welcome tour now lets new members pick their colors, text size, Simple mode and Calm mode right away. (You can replay the tour from <b>How this page works</b>.)",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+# Nov 18: future module + confusing word pairs (from Noa's Ideas to build)
+s=open(p,encoding="utf-8").read()
+if '2026-1118-future' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1118-future", date:"November 18, 2026", title:"New: the future, and confusing word pairs", items:[
+    ["🔮","Talking about the future","A new module in <b>Practice → Grammar</b> (B1 and up): when to use <i>will</i>, <i>going to</i>, <i>I'm meeting…</i> and <i>the train leaves at 7</i>. A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
+    ["🔀","Confusing word pairs","A new word pack in <b>Practice → Word packs</b>: <i>fun or funny</i>, <i>say or tell</i>, <i>borrow or lend</i>, <i>lose or miss</i> and more.",""],
+    ["🚀","Two new toys","Finish the future module for a 🔮 <b>crystal ball</b> for your study buddy, and pass its Advanced stage for a 🚀 <b>rocket</b>.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

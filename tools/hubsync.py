@@ -30,9 +30,10 @@ Usage:
            "th" (There is / there are, A1-A2 with Spanish help: 1 There is/there are, 2 Negatives: there isn't/aren't, 3 Questions: Is there/Are there, 4 Past: there was/were, 5 Future: there will be, 6 Mix it up, 7 Tell the story)
            "cou" (Could vs was able to, B1: 1 can/could/be able to, 2 could: ability in general, 3 was able to: one specific moment, 4 Negatives: couldn't, 5 Questions: Could you/Were you able to, 6 will be able to/have been able to, 7 Tell the story)
            "iq" (Indirect questions, B1+ to B2: 1 Back to normal order, 2 do/does/did disappear, 3 Yes/no: if or whether, 4 Polite openers, 5 The who/what trap, 6 Real life mix; 7 = ⭐ Advanced)
+           "fut" (Talking about the future, B1 to B2: 1 will: decide now/offer/promise, 2 going to: plans, 3 Predictions: going to or will, 4 Present continuous: arrangements, 5 Present simple: timetables, 6 Real life mix; 7 = ⭐ Advanced)
            "ing" (Verb + -ing, B1: 1 Before/after/without + -ing, 2 Verbs that take -ing, 3 suggest/recommend/propose, 4 good at/interested in/look forward to, 5 -ing or to?, 6 Mix it up, 7 Tell the story)
            "ed" (-ed endings, pronunciation: 1 Extra syllable or not?, 2 The /t/ sound, 3 The /d/ sound, 4 Mix it up, 5 Spelling tricks, 6 Odd one out, 7 Feelings: -ed adjectives)
-      or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work)
+      or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work, pairs = Confusing word pairs)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
            compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
   HUB_PASSWORD=... python3 hubsync.py club-post @/tmp/club-post.json   this week's club post, straight to club members' Hibi (Club page + Home card):
@@ -67,6 +68,8 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py idea '{"kind":"grammar"|"words","title":"Future: will vs going to","why":"what keeps coming up","example":"I will go tomorrow (planned)","student":"Laura Porcile"}'
       an idea for a NEW grammar module / word pack Hibi doesn't have yet; the same title again adds +1 and the student
   HUB_PASSWORD=... python3 hubsync.py ideas      list them
+  HUB_PASSWORD=... python3 hubsync.py ideas yes  only the ones Noa marked "Build it" (the weekly builder builds these)
+  HUB_PASSWORD=... python3 hubsync.py idea-built '<title or id>' '<link>' ['<one line>']   mark one as built (Noa sees ✅ Built on Hibi members)
   HUB_PASSWORD=... python3 hubsync.py add-payment <student-id> '{"date":"2026-11-09","what":"2nd half of Pack 36","clp":112200,"pack":"p1","paid":"full"}'
   HUB_PASSWORD=... python3 hubsync.py add-guide <student-id> '{"title":"Past simple guide","url":"https://docs.google.com/...","date":"2026-11-09"}'
   HUB_PASSWORD=... python3 hubsync.py set-focus <student-id> '{"focus":"what we're working on (the student sees it, written to them)","objective":"(optional) new goal"}'
@@ -418,7 +421,7 @@ def clean_lesson(d):
 
 def lesson_link(lid):
     return SITE + "?lesson=" + urllib.parse.quote(lid) + "#coaching"
-PACKS = ["expr", "phrasal", "travel", "work"]   # word packs on Hibi (Practice → Word packs)
+PACKS = ["expr", "phrasal", "travel", "work", "pairs"]   # word packs on Hibi (Practice → Word packs)
 
 
 def _txt(x, n=1200):
@@ -1200,8 +1203,20 @@ def main():
             print("ok: new idea", title)
         m["ideas"] = ideas[-80:]; set_doc(tok, tu, "t-hubmeta", m); return
     if cmd == "ideas":
-        m = get_doc(tok, tu, "t-hubmeta") or {}
-        print(json.dumps([{k: x.get(k) for k in ("kind", "title", "count", "students", "status")} for x in m.get("ideas", [])], ensure_ascii=False)); return
+        # ideas [yes]   all ideas, or only the ones Noa marked "Build it" (status yes) for the weekly builder
+        m = get_doc(tok, tu, "t-hubmeta") or {}; only = a[1] if len(a) > 1 else ""
+        keys = ("id", "key", "kind", "title", "why", "examples", "count", "status", "asked", "built", "link") if only else ("kind", "title", "count", "students", "status", "asked", "built")
+        print(json.dumps([{k: x.get(k) for k in keys if x.get(k) is not None} for x in m.get("ideas", []) if not only or x.get("status") == only], ensure_ascii=False)); return
+    if cmd == "idea-built":
+        # idea-built '<title, key or id>' '<link>' ['<what was built, one line>']   marks a "Build it" idea as built (Noa sees ✅ Built on Hibi members)
+        m = get_doc(tok, tu, "t-hubmeta") or {}; q = a[1]; qk = norm_name(q).replace(" ", "")
+        x = next((i for i in m.get("ideas", []) if i.get("id") == q or i.get("key") == qk or norm_name(i.get("title")) == norm_name(q)), None)
+        if not x:
+            raise SystemExit("no idea matches " + q)
+        x["status"] = "done"; x["built"] = datetime.date.today().isoformat(); x["link"] = _txt(a[2] if len(a) > 2 else "", 300)
+        if len(a) > 3:
+            x["builtNote"] = _txt(a[3], 200)
+        set_doc(tok, tu, "t-hubmeta", m); print("ok: built", x["title"]); return
     if cmd == "set-level":
         # set-level '<name or email>' B1 ['why']   club member's English level (from club class recordings); their Hibi adapts feedback to it
         who, lv = a[1], a[2].upper().replace(" ", "")
@@ -1283,7 +1298,7 @@ def main():
         roles = {}
         for d in (http("GET", f"{BASE}/roles?pageSize=300", token=tok) or {}).get("documents", []):
             f = d.get("fields", {}); roles[d["name"].split("/")[-1]] = (f.get("lv") or {}).get("stringValue", "")
-        MODN = {"ps": "past simple", "pp": "present perfect", "prs": "present simple", "th": "there is / there are", "ing": "verb + -ing", "cou": "could vs was able to", "iq": "indirect questions", "ed": "-ed endings"}
+        MODN = {"ps": "past simple", "pp": "present perfect", "prs": "present simple", "th": "there is / there are", "ing": "verb + -ing", "cou": "could vs was able to", "iq": "indirect questions", "fut": "talking about the future", "ed": "-ed endings"}
         out = []
         for d in users.get("documents", []):
             uid = d["name"].split("/")[-1]; f = d.get("fields", {}); g = lambda k: (f.get(k) or {}).get("stringValue", "")

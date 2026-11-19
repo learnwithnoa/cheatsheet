@@ -56,16 +56,38 @@ set up|to organize or prepare something|Can we [set up/~arrange/~organize] a cal
 on track|going as planned|Don't worry, the project is [on track].
 skill|something you are good at because you practiced it|Communication is an important [skill].
 update|new information about something|Can you give me an [update] on the project?
+`},
+ {id:"pairs", ico:"🔀", t:"Confusing word pairs", sub:"fun vs funny, say vs tell, borrow vs lend…", np:true, w:`
+fun|enjoyable, a good time|We had a lot of [fun] at the beach.|funny,funnily,fan
+funny|it makes you laugh|Why are you laughing? What's so [funny]?|fun,funnily,fan
+say|to speak words (you say something)|What did she [say] about the trip?|tell,talk,speak
+tell|to give information to a person (you tell someone something)|Can you [tell] me the time?|say,talk,speak
+finish|to complete something you are doing|I need to [finish] my homework before dinner.|end,ended,ending
+end|the last part of something|I cried at the [end] of the movie.|finish,final,finishing
+grow|to get bigger, like a child or a plant|My daughter is [growing] so fast!|increasing,raising,rising
+increase|to go up in number or amount|Prices [increased/~went up/~rose/~grew] by 10% last year.|raised,growed,increasing
+bet|to risk money on what will happen (also: I bet = I'm sure)|I [bet] you can't eat ten tacos!|gamble,bets,betting
+gamble|to play games of chance for money, like in a casino|He lost all his money because he loved to [gamble/~bet].|gambling,gambles,gambled
+borrow|to take something and give it back later|Can I [borrow] your pen?|lend,lent,borrowing
+lend|to give something to someone for a short time|Can you [lend] me 5,000 pesos?|borrow,borrowed,lending
+remember|to keep something in your mind|I can't [remember] his name.|remind,reminded,remembering
+remind|to make someone remember something|Please [remind] me to call my mom.|remember,remembered,reminding
+lose|to not have something anymore, or to not win|Don't [lose] your keys again!|miss,loose,lost
+miss|to be too late for something, or to feel sad someone isn't there|Hurry up or we'll [miss] the bus!|lose,loose,lost
+make|to create or build something|Did you [make] a mistake?|do,done,making
+do|to complete a task or an activity|I have to [do] my homework.|make,made,doing
+hear|sounds come to your ears (no effort)|Can you [hear] me? The connection is bad.|listen,listening,listened
+listen|to pay attention to sounds|I love to [listen] to podcasts.|hear,heard,listening
 `}
 ];
 VOC_SETS.forEach(set=>{
-  set.items=set.w.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); const alt=((p[2].match(/\[[^\]\/]+\/([^\]]*)\]/)||[])[1]||"").split("/").filter(Boolean); return {w:p[0], def:p[1], ex:p[2].replace(/\[([^\]\/]+)\/[^\]]*\]/,"[$1]"), alt, i}; });   /* [turn on/switch on]: other right answers; ~ = right but not this word */ delete set.w;
+  set.items=set.w.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); const alt=((p[2].match(/\[[^\]\/]+\/([^\]]*)\]/)||[])[1]||"").split("/").filter(Boolean); return {w:p[0], def:p[1], ex:p[2].replace(/\[([^\]\/]+)\/[^\]]*\]/,"[$1]"), alt, i, wr:p[3]?p[3].split(",").map(x=>x.trim()):null}; });   /* [turn on/switch on]: other right answers; ~ = right but not this word */ delete set.w;
   const n=set.items.length;
   set.qs=[];
   set.items.forEach((it,i)=>{
     const others=[1,2,3].map(k=>set.items[(i+k*3)%n]);
     set.qs.push({id:"v-"+set.id+"-"+i+"-m", st:0, mco:true, q:"“"+it.w+"” means ___.", a:[it.def], o:others.map(x=>x.def), why:"“"+it.w+"” = "+it.def+". Example: "+it.ex.replace(/[\[\]]/g,""), es:"", voc:set.id});
     const m=it.ex.match(/\[([^\]]+)\]/), ans=m?m[1]:it.w;
-    set.qs.push({id:"v-"+set.id+"-"+i+"-c", st:0, q:it.ex.replace(/\[[^\]]+\]/,"___")+" (= "+it.def+")", a:[ans].concat(it.alt), o:others.map(x=>{ const mm=x.ex.match(/\[([^\]]+)\]/); return /^[A-Z]/.test(ans)? x.w.charAt(0).toUpperCase()+x.w.slice(1) : x.w; }), why:"“"+it.w+"” = "+it.def+".", es:"", voc:set.id});
+    set.qs.push({id:"v-"+set.id+"-"+i+"-c", st:0, q:it.ex.replace(/\[[^\]]+\]/,"___")+(set.np?"":" (= "+it.def+")"), a:[ans].concat(it.alt), o:it.wr||others.map(x=>{ const mm=x.ex.match(/\[([^\]]+)\]/); return /^[A-Z]/.test(ans)? x.w.charAt(0).toUpperCase()+x.w.slice(1) : x.w; }), why:"“"+it.w+"” = "+it.def+".", es:"", voc:set.id});
   });
 });

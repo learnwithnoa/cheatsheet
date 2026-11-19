@@ -417,4 +417,60 @@ iq: {
       ex: [["What I don’t understand is why she left.", "Lo que no entiendo es por qué se fue."], ["The question is whether we have enough time.", "La pregunta es si tenemos suficiente tiempo."]] }
   ]
 }
+,
+fut: {
+  name: { en: "Talking about the future", es: "Hablar del futuro" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "English has no single “future tense”. You choose the form by <b>when you decided</b> and <b>how sure</b> you are: <i>will</i>, <i>going to</i>, the <i>present continuous</i> or the <i>present simple</i>. Often two forms are fine; this module teaches the most natural one for each situation.",
+           es: "El inglés no tiene un solo “tiempo futuro”. Eliges la forma según <b>cuándo lo decidiste</b> y <b>qué tan seguro</b> estás: <i>will</i>, <i>going to</i>, el <i>presente continuo</i> o el <i>presente simple</i>. Muchas veces dos formas sirven; este módulo enseña la más natural para cada situación." } },
+    { h: { en: "1. will: decide now, offer, promise", es: "1. will: decides ahora, ofreces, prometes" }, stage: 1, key: true,
+      p: { en: "You decide <b>in the moment</b>, offer help, or promise: <b>will / ’ll + verb</b>. Negative: <b>won’t</b>.", es: "Decides <b>en el momento</b>, ofreces ayuda o prometes: <b>will / ’ll + verbo</b>. Negativo: <b>won’t</b>." },
+      ex: [["The phone’s ringing! I’ll get it.", "¡Suena el teléfono! Yo contesto."], ["I’ll have the chicken, please.", "Para mí el pollo, por favor."], ["I won’t tell anyone, I promise.", "No le voy a contar a nadie, te lo prometo."]] },
+    { h: { en: "2. going to: plans", es: "2. going to: planes" }, stage: 2, key: true,
+      p: { en: "You <b>already decided</b> before speaking: <b>am / is / are going to + verb</b>.", es: "<b>Ya lo decidiste</b> antes de hablar: <b>am / is / are going to + verbo</b>." },
+      ex: [["I’m going to study Japanese next year.", "Voy a estudiar japonés el próximo año."], ["What are you going to do this weekend?", "¿Qué vas a hacer este fin de semana?"]] },
+    { h: { en: "3. Predictions: going to or will", es: "3. Predicciones: going to o will" }, stage: 3, key: true,
+      table: [
+        [{ en: "you can see it", es: "lo ves venir" }, "Look at those clouds!", "It’s <b>going to</b> rain."],
+        [{ en: "you think it", es: "lo crees" }, "I think… / I’m sure… / maybe…", "Chile <b>will</b> win."]
+      ] },
+    { h: { en: "4. Present continuous: arrangements", es: "4. Presente continuo: cosas acordadas" }, stage: 4,
+      p: { en: "Already arranged with other people, often with a time or place: <b>am / is / are + -ing</b>.", es: "Ya acordado con otras personas, muchas veces con hora o lugar: <b>am / is / are + -ing</b>." },
+      ex: [["I’m meeting Ana for lunch tomorrow.", "Mañana almuerzo con Ana."], ["What are you doing tonight?", "¿Qué vas a hacer esta noche?"]] },
+    { h: { en: "5. Present simple: timetables", es: "5. Presente simple: horarios" }, stage: 5,
+      p: { en: "Trains, flights, classes, shows, opening hours: the <b>present simple</b>, even for tomorrow.", es: "Trenes, vuelos, clases, funciones, horarios de atención: el <b>presente simple</b>, aunque sea mañana." },
+      ex: [["The train leaves at 7:15 tomorrow.", "El tren sale mañana a las 7:15."], ["What time does the movie start?", "¿A qué hora empieza la película?"]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["I will to call you.", "I’ll call you.", { en: "No to after will.", es: "Sin to después de will." }],
+        ["I going to study.", "I’m going to study.", { en: "Don’t forget am / is / are.", es: "No olvides am / is / are." }],
+        ["I’m going to studying.", "I’m going to study.", { en: "going to + base verb, no -ing.", es: "going to + verbo base, sin -ing." }],
+        ["Tomorrow I meet Ana for lunch.", "Tomorrow I’m meeting Ana for lunch.", { en: "Plans with people → present continuous.", es: "Planes con otras personas → presente continuo." }],
+        ["I’ll call you when I will arrive.", "I’ll call you when I arrive.", { en: "After when / as soon as: present simple.", es: "Después de when / as soon as: presente simple." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["That bag looks heavy. ___ help you. (I / will)", "I’ll", { en: "An offer → will.", es: "Una oferta → will." }],
+        ["Look at the sky! It’s ___ rain.", "going to", { en: "You can see it → going to.", es: "Lo ves venir → going to." }],
+        ["The bus ___ at 8 tomorrow. (leave)", "leaves", { en: "A timetable → present simple.", es: "Un horario → presente simple." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Future continuous: will be + -ing", es: "Futuro continuo: will be + -ing" },
+      p: { en: "Something <b>in progress</b> at a moment in the future. Also a polite way to ask about plans: <i>Will you be using the car tonight?</i>",
+           es: "Algo <b>en progreso</b> en un momento del futuro. También es una forma educada de preguntar por planes: <i>Will you be using the car tonight?</i>" },
+      ex: [["This time tomorrow, I’ll be lying on a beach.", "Mañana a esta hora voy a estar tirado en la playa."], ["Don’t call at 8. We’ll be having dinner.", "No llames a las 8. Vamos a estar comiendo."]] },
+    { h: { en: "Future perfect: will have + past participle", es: "Futuro perfecto: will have + participio" },
+      p: { en: "Something <b>finished before</b> a future moment (often with <b>by</b>). For how long: <b>will have been + -ing</b>.",
+           es: "Algo <b>terminado antes</b> de un momento futuro (muchas veces con <b>by</b>). Para cuánto tiempo: <b>will have been + -ing</b>." },
+      ex: [["By the time you arrive, we’ll have finished the cake.", "Cuando llegues, ya nos vamos a haber comido la torta."], ["By June, she’ll have been studying English for two years.", "En junio va a cumplir dos años estudiando inglés."]] },
+    { h: { en: "about to, due to, bound to", es: "about to, due to, bound to" },
+      p: { en: "<b>be about to</b> = very, very soon · <b>be due</b> = scheduled · <b>be bound to</b> = almost certain.",
+           es: "<b>be about to</b> = muy, muy pronto · <b>be due</b> = programado · <b>be bound to</b> = casi seguro." },
+      ex: [["Quick, the train is about to leave!", "¡Rápido, el tren está por salir!"], ["She’s so talented, she’s bound to succeed.", "Tiene tanto talento que seguro le va a ir bien."]] },
+    { h: { en: "when, as soon as + present", es: "when, as soon as + presente" },
+      p: { en: "In a time clause about the future, use the <b>present simple</b>, not will.", es: "En una frase de tiempo sobre el futuro, usa el <b>presente simple</b>, no will." },
+      ex: [["I’ll text you when I arrive.", "Te escribo cuando llegue."], ["As soon as she gets here, we’ll start.", "Apenas llegue, empezamos."]] }
+  ]
+}
 });

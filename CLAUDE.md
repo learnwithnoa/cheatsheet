@@ -87,6 +87,15 @@ Pages updates about a minute after the push. End commit messages with the attrib
   Simple mode (step179): per member in `users/{uid}/data/ncs-simple` {on, by:"noa"|"noa-off"|"me", asked}; Noa switches it in Hibi members (member detail); the member is asked once to keep it.
   Recommendation dates: `users/{Noa}/data/t-recs` ({uid:{mod:{at,n}}}), shown in Hibi members → 💡 Recommended. Ask Noa before adding uncertain payments or deleting data. Never invent data.
 
+## Ideas to build (weekly builder)
+
+- The nightly adds ideas for new grammar modules / word packs with `hubsync.py idea`; Noa sees them in Hibi members → 🧱 Ideas to build.
+  "🛠 Build it" sets status `yes` + `asked` (date); the page shows "🗓 Planned for Mon <date>".
+- Claude's scheduled task "Hibi: build the ideas (weekly)" runs early every Monday: `hubsync.py ideas yes` → builds each one following this file
+  (grammar module like step167/step184; word pack = a new set in `build/parts/vocbank.js`, optional 4th field = its own wrong options, `np:true` = no meaning hint),
+  tests, deploys, then `hubsync.py idea-built '<id>' '<https://hibi.cl/… link>' '<one line>'` → status `done`, shown under ✅ Built.
+  Grammar link: https://hibi.cl/#quiz/grammar/<module name as slug>; word packs: https://hibi.cl/#quiz/word-packs.
+
 ## Noa's standing rules
 
 - Student emails: Gmail **drafts only**, never sent. The only email ever sent is a summary to Noa himself.

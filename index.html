@@ -3467,7 +3467,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   const MAP_P="cs-open-map";
   try{ const sp=new URLSearchParams(location.search); if(sp.has("map")){ sessionStorage.setItem(MAP_P,"1"); history.replaceState(null,"",location.pathname+"#coaching"); } }catch(e){}
   const LV=["A1","A2","B1","B2","C1","C2"];
-  const MODNM={prs:"Present simple",th:"There is / there are",ps:"Past simple",pp:"Present perfect",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",ed:"-ed endings"};
+  const MODNM={prs:"Present simple",th:"There is / there are",ps:"Past simple",pp:"Present perfect",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",fut:"Talking about the future",ed:"-ed endings"};
   function mapHTML(v){ const m=v.map||{}, lv=String(m.level||v.level||"").toUpperCase().match(/[ABC][12]/), cur=lv?lv[0]:"", first=(v.name||"").split(" ")[0];
     const nextRev=(m.reviews||[]).filter(d=>!(m.reviewed||[]).includes(d)).sort()[0];
     const route=(m.route||[]).slice(0,4);
@@ -3572,7 +3572,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     lesOf(v).forEach(x=>{ if(x.date&&x.date>since) out.push({d:x.date,ico:x.kind==="guide"?"📄":"📼",t:`${x.kind==="guide"?"New study guide":"Your class recap"}: <b>${esc(x.title)}</b> (with exercises)`,tab:x.kind==="guide"?"guides":"recaps"}); });
     (v.guides||[]).forEach(g=>{ const rk=g.kind==="recap"||(!g.kind&&/recap|class notes|notes from|resumen/i.test(g.title||"")); if(g.date&&g.date>since) out.push({d:g.date,ico:rk?"📼":"📄",t:`${rk?"New class recap":"New guide"}: <b>${esc(g.title)}</b>`,tab:rk?"recaps":"guides"}); });
     (v.classes||[]).forEach(c=>{ if(c.date&&c.date>since&&(c.att==="Present"||!c.att)) out.push({d:c.date,ico:"🗓",t:`Your class on ${fd(c.date)} was added${c.homework?`. Homework: ${esc(c.homework)}`:""}`,tab:"classes"}); });
-    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
+    (v.tips||[]).forEach(t=>{ if(t.date&&t.date>since) out.push({d:t.date,ico:"⭐",t:`Noa recommends: <b>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",fut:"Talking about the future",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:""):t.pack?(t.title||"a word pack"):(t.title||t.page))}</b>`,tab:"top"}); });
     repsOf(v).forEach(r=>{ if(r.to&&(r.at||r.to)>since&&!repRead().includes(r.id)) out.push({d:r.at||r.to,ico:"📈",t:`Your progress report (${fs(r.from)} – ${fs(r.to)}) is ready`,tab:"reports"}); });
     if(v.recap&&v.recap.date&&v.recap.date>since) out.push({d:v.recap.date,ico:"📼",t:`Your class recap for ${fs(v.recap.date)} is ready`,tab:"top"});
     if(sn&&sn.f!=null&&v.focus&&sn.f!==hsh(v.focus)) out.push({d:today(),ico:"🛠",t:"Noa updated <b>What we're working on</b>",tab:"goals"});
@@ -3627,7 +3627,7 @@ html.cs-calm .cs-rxpal button{transition:none}
       ${tzr.length?`<div class="ch-tint ch-v ch-card"><div class="ch-k">🕐 Clocks are changing</div>${tzr.map(r=>`<div>Clocks change in <b>${esc(r.where)}</b> on <b>${fs(r.date)}</b>. Your class time with Noa might change, so he’ll check it with you.</div>`).join("")}</div>`:""}
     </div>`;
     /* Noa's practice tips: their own row under the last-class recap (not squeezed into the top row) */
-    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" ${t.mod?`data-gomod="${esc(t.mod)}" data-tipstage="${esc(String(t.stage||""))}"`:`data-go="${esc(t.page)}"`}>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
+    const tipsBox=`<div class="ch-tipsrow">${(v.tips||[]).length?`<div class="ch-tint ch-a ch-card"><div class="ch-k">⭐ Noa recommends</div>${v.tips.slice().reverse().slice(0,3).map(t=>`<div class="ch-tip">${t.pack?`<button type="button" class="ch-go" data-vsetgo="${esc(t.pack)}">🗂️ ${esc(({expr:"Everyday expressions",phrasal:"Everyday phrasal verbs",travel:"Travel",work:"English at work",pairs:"Confusing word pairs"})[t.pack]||t.title||"Word pack")} (word pack) →</button>`:`<button type="button" class="ch-go" ${t.mod?`data-gomod="${esc(t.mod)}" data-tipstage="${esc(String(t.stage||""))}"`:`data-go="${esc(t.page)}"`}>${esc(t.mod?(({ps:"Past simple",pp:"Present perfect",prs:"Present simple",th:"There is / there are",ing:"Verb + -ing",cou:"Could vs was able to",iq:"Indirect questions",fut:"Talking about the future",ed:"-ed endings"})[t.mod]||"Grammar")+(t.stage?" · stage "+t.stage:"")+(t.title?": "+t.title:""):(t.title||t.page))} →</button>`}${t.why?`<small>You said: “${esc(t.why)}”</small>`:""}</div>`).join("")}</div>`:""}</div>`.replace('<div class="ch-tipsrow"></div>',"");
     const rc=v.recap; let recapBox="";
     if(rc&&(rc.summary||(rc.talked||[]).length||(rc.vocab||[]).length)){
       let have=new Set(); try{ have=new Set((JSON.parse(localStorage.getItem("ncs-words")||"[]")||[]).map(x=>String(x&&x.w||"").toLowerCase().trim())); }catch(e){}
@@ -6168,7 +6168,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
-<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prThTile" data-modtile="th"><span class="pr-ico" aria-hidden="true">🏠</span><b>There is / there are</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prCouTile" data-modtile="cou"><span class="pr-ico" aria-hidden="true">💪</span><b>Could vs was able to</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIqTile" data-modtile="iq"><span class="pr-ico" aria-hidden="true">❓</span><b>Indirect questions</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prThTile" data-modtile="th"><span class="pr-ico" aria-hidden="true">🏠</span><b>There is / there are</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prCouTile" data-modtile="cou"><span class="pr-ico" aria-hidden="true">💪</span><b>Could vs was able to</b><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prFutTile" data-modtile="fut"><span class="pr-ico" aria-hidden="true">🔮</span><b>Talking about the future</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIqTile" data-modtile="iq"><span class="pr-ico" aria-hidden="true">❓</span><b>Indirect questions</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Past simple and past participle</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
 <div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My notebook</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
 <div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My notebook</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
 <div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
@@ -6233,7 +6233,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=62" defer></script>
+<script src="buddy.js?v=63" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -6301,8 +6301,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Time to <em>practice</em> 🎯</h2>
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find four parts:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect), in stages from easy to harder. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with flashcards and a quiz.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b>, <b>indirect questions</b> and <b>talking about the future</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect), in stages from easy to harder. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My notebook</b> to practice just those.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> pick 3, 5 or 8 rounds a week (bigger goal, bigger reward for your buddy). Lessons and saying phrases out loud count too, and 4 weeks in a row unlock a 🔥 campfire. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
@@ -7999,17 +7999,39 @@ set up|to organize or prepare something|Can we [set up/~arrange/~organize] a cal
 on track|going as planned|Don't worry, the project is [on track].
 skill|something you are good at because you practiced it|Communication is an important [skill].
 update|new information about something|Can you give me an [update] on the project?
+`},
+ {id:"pairs", ico:"🔀", t:"Confusing word pairs", sub:"fun vs funny, say vs tell, borrow vs lend…", np:true, w:`
+fun|enjoyable, a good time|We had a lot of [fun] at the beach.|funny,funnily,fan
+funny|it makes you laugh|Why are you laughing? What's so [funny]?|fun,funnily,fan
+say|to speak words (you say something)|What did she [say] about the trip?|tell,talk,speak
+tell|to give information to a person (you tell someone something)|Can you [tell] me the time?|say,talk,speak
+finish|to complete something you are doing|I need to [finish] my homework before dinner.|end,ended,ending
+end|the last part of something|I cried at the [end] of the movie.|finish,final,finishing
+grow|to get bigger, like a child or a plant|My daughter is [growing] so fast!|increasing,raising,rising
+increase|to go up in number or amount|Prices [increased/~went up/~rose/~grew] by 10% last year.|raised,growed,increasing
+bet|to risk money on what will happen (also: I bet = I'm sure)|I [bet] you can't eat ten tacos!|gamble,bets,betting
+gamble|to play games of chance for money, like in a casino|He lost all his money because he loved to [gamble/~bet].|gambling,gambles,gambled
+borrow|to take something and give it back later|Can I [borrow] your pen?|lend,lent,borrowing
+lend|to give something to someone for a short time|Can you [lend] me 5,000 pesos?|borrow,borrowed,lending
+remember|to keep something in your mind|I can't [remember] his name.|remind,reminded,remembering
+remind|to make someone remember something|Please [remind] me to call my mom.|remember,remembered,reminding
+lose|to not have something anymore, or to not win|Don't [lose] your keys again!|miss,loose,lost
+miss|to be too late for something, or to feel sad someone isn't there|Hurry up or we'll [miss] the bus!|lose,loose,lost
+make|to create or build something|Did you [make] a mistake?|do,done,making
+do|to complete a task or an activity|I have to [do] my homework.|make,made,doing
+hear|sounds come to your ears (no effort)|Can you [hear] me? The connection is bad.|listen,listening,listened
+listen|to pay attention to sounds|I love to [listen] to podcasts.|hear,heard,listening
 `}
 ];
 VOC_SETS.forEach(set=>{
-  set.items=set.w.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); const alt=((p[2].match(/\[[^\]\/]+\/([^\]]*)\]/)||[])[1]||"").split("/").filter(Boolean); return {w:p[0], def:p[1], ex:p[2].replace(/\[([^\]\/]+)\/[^\]]*\]/,"[$1]"), alt, i}; });   /* [turn on/switch on]: other right answers; ~ = right but not this word */ delete set.w;
+  set.items=set.w.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); const alt=((p[2].match(/\[[^\]\/]+\/([^\]]*)\]/)||[])[1]||"").split("/").filter(Boolean); return {w:p[0], def:p[1], ex:p[2].replace(/\[([^\]\/]+)\/[^\]]*\]/,"[$1]"), alt, i, wr:p[3]?p[3].split(",").map(x=>x.trim()):null}; });   /* [turn on/switch on]: other right answers; ~ = right but not this word */ delete set.w;
   const n=set.items.length;
   set.qs=[];
   set.items.forEach((it,i)=>{
     const others=[1,2,3].map(k=>set.items[(i+k*3)%n]);
     set.qs.push({id:"v-"+set.id+"-"+i+"-m", st:0, mco:true, q:"“"+it.w+"” means ___.", a:[it.def], o:others.map(x=>x.def), why:"“"+it.w+"” = "+it.def+". Example: "+it.ex.replace(/[\[\]]/g,""), es:"", voc:set.id});
     const m=it.ex.match(/\[([^\]]+)\]/), ans=m?m[1]:it.w;
-    set.qs.push({id:"v-"+set.id+"-"+i+"-c", st:0, q:it.ex.replace(/\[[^\]]+\]/,"___")+" (= "+it.def+")", a:[ans].concat(it.alt), o:others.map(x=>{ const mm=x.ex.match(/\[([^\]]+)\]/); return /^[A-Z]/.test(ans)? x.w.charAt(0).toUpperCase()+x.w.slice(1) : x.w; }), why:"“"+it.w+"” = "+it.def+".", es:"", voc:set.id});
+    set.qs.push({id:"v-"+set.id+"-"+i+"-c", st:0, q:it.ex.replace(/\[[^\]]+\]/,"___")+(set.np?"":" (= "+it.def+")"), a:[ans].concat(it.alt), o:it.wr||others.map(x=>{ const mm=x.ex.match(/\[([^\]]+)\]/); return /^[A-Z]/.test(ans)? x.w.charAt(0).toUpperCase()+x.w.slice(1) : x.w; }), why:"“"+it.w+"” = "+it.def+".", es:"", voc:set.id});
   });
 });
 
@@ -9276,6 +9298,143 @@ Tell me what ___. (What do you want?)|you want|No do: what you want.
 I wonder how long ___ here. (How long has she worked here?)|she has worked/she's worked|Normal order: how long she has worked.
 `.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"iqt-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
 
+/* ---------- Talking about the future question bank (B1 to B2, Spanish help on every question) ----------
+   same format as the other banks: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint
+   ~ = also correct English, but not the form this stage practices (never marked wrong)
+   6 core stages + the ⭐ Advanced one */
+const FUT_STAGES=[
+ {n:1, t:"will: decide now, offer, promise", sub:"I'll get it! · I'll help you · I won't tell anyone", why:"Use will ('ll) when you decide in the moment, offer help or make a promise.", es:"Usa will ('ll) cuando decides en el momento, ofreces ayuda o haces una promesa.", q:`
+The phone's ringing! Don't worry, ___ it. (I / get)|I'll get/I will get|I will getting,I will to get,I'm get|You decide right now → will: I'll get it.|Lo decides en el momento → will: I'll get it.
+It's cold in here. ___ the window. (I / close)|I'll close/I will close|I will closing,I will to close,I closing|A quick decision → will: I'll close it.|Una decisión rápida → will: I'll close it.
+(At a restaurant) ___ the chicken, please. (I / have)|I'll have/I will have/~I'm going to have|I will having,I having,I'm have|Ordering food: I'll have… is the classic.|Para pedir comida: I'll have… es lo típico.
+That bag looks heavy. ___ you. (I / help)|I'll help/I will help|I will helping,I helping,I'm help|An offer → will: I'll help you.|Una oferta de ayuda → will: I'll help you.
+I promise ___ anyone. (I / not tell)|I won't tell/I will not tell|I won't to tell,I not will tell,I don't will tell|A promise → will not = won't.|Una promesa → will not = won't.
+Are you thirsty? ___ you a glass of water. (I / get)|I'll get/I will get|I will getting,I'm get,I getting|An offer → will.|Una oferta → will.
+Don't worry, ___ your secret. (I / keep)|I'll keep/I will keep|I will keeping,I keeping,I'm keep|A promise → will.|Una promesa → will.
+You forgot your wallet? No problem, ___ for lunch. (I / pay)|I'll pay/I will pay|I will paying,I'm pay,I paying|You decide right now → will.|Lo decides en el momento → will.
+___ me a favor? (you / do)|Will you do/~Can you do/~Could you do/~Would you do|Do you will do,Will you doing,Will you to do|A request → Will you…?|Un pedido → Will you…?
+Hmm, the blue one or the red one? ___ the blue one. (I / take)|I'll take/I will take|I will taking,I taking,I'm take|Deciding in a shop → I'll take it.|Decidiendo en una tienda → I'll take it.
+Thanks for the book! ___ it back next week. (I / give)|I'll give/I will give/~I'm going to give|I will giving,I giving,I'm give|A promise → will.|Una promesa → will.
+It's late. I think ___ home now. (I / go)|I'll go/I will go/~I'm going to go|I will going,I'm go,I going|You decide right now → will.|Lo decides en el momento → will.
+Don't worry about the dishes. ___ them later. (I / do)|I'll do/I will do|I will doing,I'm do,I doing|An offer → will.|Una oferta → will.
+`},
+ {n:2, t:"going to: plans you already made", sub:"I'm going to study Japanese · We're going to visit Paris", why:"Use be going to for plans and intentions: you decided before you speak.", es:"Usa be going to para planes e intenciones: ya lo decidiste antes de hablar.", q:`
+I've decided: ___ Japanese next year. (I / study)|I'm going to study/I am going to study/~I'll study/~I will study|I going to study,I'm going study,I'm going to studying|A plan you already made → going to.|Un plan que ya hiciste → going to.
+We bought the tickets! ___ Paris in July. (we / visit)|We're going to visit/We are going to visit/~We're visiting/~We are visiting|We going to visit,We're going visit,We're go to visit|A plan → be going to + verb.|Un plan → be going to + verbo.
+She's saved a lot of money. ___ a car. (she / buy)|She's going to buy/She is going to buy|She going to buy,She's going buy,She's go to buy|Her plan → she's going to buy.|Su plan → she's going to buy.
+What ___ this weekend? (you / do)|are you going to do/~are you doing|you are going to do,are you going do,do you going to do|Question: are you going to + verb.|Pregunta: are you going to + verbo.
+___ my grandma on Sunday. It's her birthday. (I / visit)|I'm going to visit/I am going to visit/~I'm visiting/~I am visiting|I going to visit,I'm going visit,I'm go to visit|A plan → I'm going to visit.|Un plan → I'm going to visit.
+They ___ married next spring. They've found a place. (get)|are going to get/~are getting|going to get,are going get,are go to get|Their plan → are going to get married.|Su plan → are going to get married.
+___ the kitchen this year. We already chose the color. (we / paint)|We're going to paint/We are going to paint/~We're painting/~We are painting|We going to paint,We're going paint,We're going to painting|A plan → going to + verb (no -ing).|Un plan → going to + verbo (sin -ing).
+___ coffee anymore. I've decided. (I / not drink)|I'm not going to drink/I am not going to drink/~I won't drink/~I will not drink|I not going to drink,I'm not going drink,I don't going to drink|Negative plan → I'm not going to.|Plan negativo → I'm not going to.
+___ to the gym after work? (you / go)|Are you going to go/~Are you going|You going to go,Are you going go,Do you going to go|Question about plans → Are you going to…?|Pregunta sobre planes → Are you going to…?
+He ___ his job. He told his boss yesterday. (quit)|is going to quit/~is quitting|going to quit,is going quit,is go to quit|His plan → he's going to quit.|Su plan → he's going to quit.
+My sister ___ a cake for the party. She bought everything. (make)|is going to make/~is making|going to make,is going make,is go to make|A plan → is going to make.|Un plan → is going to make.
+When ___ him the news? (you / tell)|are you going to tell/~will you tell|you are going to tell,are you going tell,do you going to tell|Question about a plan → are you going to…?|Pregunta sobre un plan → are you going to…?
+`},
+ {n:3, t:"Predictions: going to or will", sub:"Look at those clouds, it's going to rain · I think you'll love it", why:"You can SEE it coming → going to. You THINK or believe it → will (I think, I'm sure, maybe, probably).", es:"Lo VES venir → going to. Lo CREES u opinas → will (I think, I'm sure, maybe, probably).", q:`
+Look at those black clouds! ___ rain. (it)|It's going to/It is going to/~It'll/~It will|It will to,It going to,It's going|You can see it → going to.|Lo puedes ver → going to.
+Careful! That glass ___ fall! (be going to)|is going to|going to,is going,are going to|You can see it → is going to.|Lo puedes ver → is going to.
+I think Chile ___ the match. (win)|will win/~is going to win|will winning,will to win,is win|I think… → will.|I think… → will.
+She's yawning a lot. She ___ asleep soon. (fall)|is going to fall/~will fall|going to fall,is going fall,will falling|You can see it → going to.|Lo puedes ver → going to.
+Don't worry, I'm sure you ___ the exam. (pass)|will pass/~are going to pass|will passing,are going pass,will to pass|I'm sure… → will.|I'm sure… → will.
+Watch out! You ___! (fall)|are going to fall/~will fall|going to fall,are going fall,will falling|You can see it → going to.|Lo puedes ver → going to.
+I don't think ___ today. (it / rain)|it will rain/it'll rain/~it's going to rain/~it is going to rain|it will raining,it going to rain,it's going rain|I don't think… → will.|I don't think… → will.
+In 2050, people ___ on Mars. (live)|will live/~will be living/~are going to live|will living,will to live,are live|A guess about the far future → will.|Una suposición sobre el futuro lejano → will.
+The traffic is terrible. We ___ late! (be)|are going to be/~will be|going to be,are going be,will being|You can see it → going to.|Lo puedes ver → going to.
+Maybe she ___ us later. (call)|will call/~is going to call|will calling,will to call,is call|Maybe… → will.|Maybe… → will.
+Look, the baby's face is red. He ___ cry. (be going to)|is going to|going to,is going,are going to|You can see it → going to.|Lo puedes ver → going to.
+Try this cake. I'm sure you ___ it. (love)|will love/~are going to love|will loving,will to love,are love|I'm sure… → will.|I'm sure… → will.
+`},
+ {n:4, t:"Present continuous: arrangements", sub:"I'm meeting Ana tomorrow · What are you doing tonight?", why:"For things already arranged with other people, with a time or place, English often uses the present continuous: I'm meeting Ana at 6.", es:"Para cosas ya acordadas con otras personas, con hora o lugar, el inglés suele usar el presente continuo: I'm meeting Ana at 6.", q:`
+___ Ana for lunch tomorrow. We booked a table. (I / meet)|I'm meeting/I am meeting/~I'm going to meet/~I am going to meet|I meeting,I'm meet,I am meet|An arrangement → I'm meeting.|Algo acordado → I'm meeting.
+What ___ tonight? (you / do)|are you doing/~are you going to do|you are doing,do you doing,are you do|Asking about plans → What are you doing tonight?|Para preguntar por planes → What are you doing tonight?
+___ to Lima on Friday. I have my ticket. (we / fly)|We're flying/We are flying/~We're going to fly/~We are going to fly|We flying,We're fly,We are fly|Arranged, with a ticket → we're flying.|Acordado, con pasaje → we're flying.
+My parents ___ dinner with us on Sunday. (have)|are having/~are going to have|having,are have,is having|An arrangement → are having.|Algo acordado → are having.
+___ the dentist at 4 tomorrow. (I / see)|I'm seeing/I am seeing/~I'm going to see/~I am going to see|I seeing,I'm see,I am see|An appointment → I'm seeing.|Una hora agendada → I'm seeing.
+She ___ tonight. She has a party. (not work)|isn't working/is not working/~isn't going to work/~is not going to work|not working,doesn't working,isn't work|Negative arrangement → isn't working.|Negativo → isn't working.
+___ anything this weekend? (you / do)|Are you doing/~Are you going to do|You doing,Do you doing,Are you do|Question → Are you doing…?|Pregunta → Are you doing…?
+Tom ___ to the party with us on Saturday. (come)|is coming/~is going to come|coming,is come,are coming|An arrangement → is coming.|Algo acordado → is coming.
+When ___ for Spain? (you / leave)|are you leaving/~are you going to leave|you are leaving,do you leaving,are you leave|Question about an arrangement → When are you leaving?|Pregunta sobre algo acordado → When are you leaving?
+We ___ married in June! (get)|are getting/~are going to get|getting,are get,is getting|An arrangement → we're getting married.|Algo acordado → we're getting married.
+___ a party next Saturday. Can you come? (we / have)|We're having/We are having/~We're going to have/~We are going to have|We having,We are have,We're have|An arrangement → we're having a party.|Algo acordado → we're having a party.
+I can't go out tomorrow. ___ my cousin at the airport. (I / pick up)|I'm picking up/I am picking up/~I'm going to pick up/~I am going to pick up|I picking up,I'm pick up,I am pick up|An arrangement → I'm picking up.|Algo acordado → I'm picking up.
+`},
+ {n:5, t:"Present simple: timetables", sub:"The train leaves at 7 · What time does the movie start?", why:"For timetables and schedules (trains, flights, classes, shows), use the present simple, even for the future.", es:"Para horarios (trenes, vuelos, clases, funciones), usa el presente simple, aunque sea futuro.", q:`
+The train ___ at 7:15 tomorrow. (leave)|leaves/~will leave/~is leaving|leave,is leave,leaving|A timetable → present simple: leaves.|Un horario → presente simple: leaves.
+The movie ___ at 8, so let's meet at 7:30. (start)|starts/~will start/~is starting|start,is start,starting|A schedule → starts.|Un horario → starts.
+What time ___ tomorrow? (the shop / open)|does the shop open/~will the shop open/~is the shop opening|the shop opens,do the shop open,does the shop opens|Timetable question → What time does it open?|Pregunta de horario → What time does it open?
+My flight ___ in Santiago at 6 a.m. (land)|lands/~will land/~is landing|land,is land,landing|A flight time → lands.|Hora de un vuelo → lands.
+Classes ___ next Monday. (begin)|begin/~will begin/~are beginning|begins,are begin,beginning|A school calendar → begin.|Un calendario escolar → begin.
+When ___? (the next train / leave)|does the next train leave/~is the next train leaving/~will the next train leave|the next train leaves,do the next train leave,does the next train leaves|Timetable question → does… leave?|Pregunta de horario → does… leave?
+Hurry up! The film ___ in five minutes. (start)|starts/~is starting/~will start|start,is start,starting|A schedule → starts.|Un horario → starts.
+The museum ___ at 6 p.m. today. (close)|closes/~will close/~is closing|close,is close,closing|Opening hours → closes.|Horario de atención → closes.
+The meeting ___ at 3 p.m. tomorrow. It's in the calendar. (be)|is/~will be|are,be,being|In the calendar → is.|En el calendario → is.
+Our holiday ___ on July 2nd. (start)|starts/~will start/~is starting|start,is start,starting|A fixed date → starts.|Una fecha fija → starts.
+What time ___ tomorrow? (your plane / arrive)|does your plane arrive/~will your plane arrive/~is your plane arriving|your plane arrives,do your plane arrive,does your plane arrives|Timetable question → does… arrive?|Pregunta de horario → does… arrive?
+The concert ___ until midnight. (not finish)|doesn't finish/does not finish/~won't finish/~will not finish/~isn't finishing/~is not finishing|don't finish,not finishes,doesn't finishes|Schedule, negative → doesn't finish.|Horario, negativo → doesn't finish.
+`},
+ {n:6, t:"Real life mix", sub:"at a restaurant, at work, with friends", why:"Choose by the situation: decision now/offer/promise → will · plan → going to · arrangement → present continuous · timetable → present simple · you can see it → going to.", es:"Elige según la situación: decisión ahora/oferta/promesa → will · plan → going to · algo acordado → presente continuo · horario → presente simple · lo ves venir → going to.", q:`
+(Waiter: What would you like?) ___ the soup, please. (I / have)|I'll have/I will have/~I'm going to have|I having,I will having,I'm have|Ordering → I'll have.|Para pedir → I'll have.
+(Why did you buy paint?) ___ my room. (I / paint)|I'm going to paint/I am going to paint/~I'm painting/~I am painting|I going to paint,I'm going paint,I will painting|A plan → I'm going to paint.|Un plan → I'm going to paint.
+(Are you free on Friday?) Sorry, ___ my cousin. (I / see)|I'm seeing/I am seeing/~I'm going to see/~I am going to see|I seeing,I'm see,I will seeing|An arrangement → I'm seeing.|Algo acordado → I'm seeing.
+Hurry! The bus ___ in five minutes. (leave)|leaves/~is leaving/~will leave|leave,is leave,leaving|A timetable → leaves.|Un horario → leaves.
+Look at the score! We ___! (win)|are going to win/~will win|going to win,are going win,will winning|You can see it → going to.|Lo puedes ver → going to.
+___ late again, I promise. (I / not be)|I won't be/I will not be|I don't will be,I won't to be,I not will be|A promise → won't.|Una promesa → won't.
+Those boxes look heavy. ___ you. (I / help)|I'll help/I will help|I will helping,I helping,I'm help|An offer → I'll help.|Una oferta → I'll help.
+Do you think she ___ the job? (get)|will get/~is going to get|will getting,will to get,is get|Do you think…? → will.|Do you think…? → will.
+(Work email) ___ you the report tomorrow. (I / send)|I'll send/I will send/~I'm going to send/~I am going to send/~I'm sending/~I am sending|I sending,I will sending,I'm send|A promise in an email → I'll send.|Una promesa en un correo → I'll send.
+Where do you think ___ in five years? (you / be)|you will be/you'll be/~you are going to be/~you're going to be|will you be,you be,you will being|Opinion → will, and normal order after "do you think".|Opinión → will, y orden normal después de "do you think".
+Next year ___ a master's degree. It's all planned. (I / start)|I'm going to start/I am going to start/~I'm starting/~I am starting|I going to start,I'm going start,I will starting|A plan → I'm going to start.|Un plan → I'm going to start.
+___ a barbecue on Saturday. Want to come? (we / have)|We're having/We are having/~We're going to have/~We are going to have|We having,We're have,We will having|An arrangement → we're having.|Algo acordado → we're having.
+What time ___? (the game / start)|does the game start/~is the game starting/~will the game start|the game starts,do the game start,does the game starts|A schedule → does… start?|Un horario → does… start?
+`},
+ {n:7, adv:true, t:"Advanced: future continuous, future perfect & more", sub:"This time tomorrow I'll be flying · By June I'll have finished", why:"Future at B2–C1: will be + -ing (in progress at a future time), will have + past participle (done before a future time), be about to, be due to, be bound to, and the present after when / as soon as.", es:"El futuro nivel B2–C1: will be + -ing (en progreso en un momento futuro), will have + participio (terminado antes de un momento futuro), be about to, be due to, be bound to, y el presente después de when / as soon as.", q:`
+This time tomorrow, ___ on a beach. (I / lie)|I'll be lying/I will be lying|I'll lying,I will be lie,I'm lie|In progress at a future time → will be + -ing.|En progreso en un momento futuro → will be + -ing.
+Don't call at 8. ___ dinner then. (we / have)|We'll be having/We will be having/~We're having/~We are having|We'll having,We will be have,We having|In progress at 8 → will be having.|En progreso a las 8 → will be having.
+By the time you arrive, ___ the cake. (we / finish)|we'll have finished/we will have finished|we'll finished,we will have finish,we have will finished|Done before a future moment → will have + past participle.|Terminado antes de un momento futuro → will have + participio.
+By next June, ___ English for two years. (she / study)|she'll have been studying/she will have been studying/~she'll have studied/~she will have studied|she'll been studying,she will have be studying,she will has been studying|How long, up to a future moment → will have been + -ing.|Cuánto tiempo, hasta un momento futuro → will have been + -ing.
+Quick, get in! The train ___ leave. (be about to)|is about to|about to,is about,are about to|Very soon → be about to.|Muy pronto → be about to.
+___ through Santiago tomorrow? I need a ride. (you / pass)|Will you be passing/~Are you passing/~Are you going to pass|Will you passing,Will you be pass,Do you will pass|A polite question about plans → Will you be + -ing?|Una pregunta educada sobre planes → Will you be + -ing?
+The report ___ on Friday. (be due)|is due/~will be due|are due,due,is due for|Scheduled → be due.|Programado → be due.
+She's so talented. She ___ succeed. (be bound to)|is bound to/~will|bound to,is bound,are bound to|Almost certain → be bound to.|Casi seguro → be bound to.
+Don't worry, ___ it by tomorrow. (I / finish)|I'll have finished/I will have finished/~I'll finish/~I will finish|I'll finished,I will have finish,I have will finished|Done before tomorrow → will have finished.|Terminado antes de mañana → will have finished.
+I'll call you when I ___ home. (get)|get|will get,gets,getting|After when (future): present simple, not will.|Después de when (futuro): presente simple, no will.
+As soon as she ___, we'll start. (arrive)|arrives|will arrive,arrive,arriving|After as soon as: present simple.|Después de as soon as: presente simple.
+We ___ leave when it started to rain. (be about to, past)|were about to|was about to,are about to,were about|Past of be about to → were about to.|Pasado de be about to → were about to.
+`}
+];
+FUT_STAGES.forEach(st=>{
+  st.items=st.q.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"fut"+st.n+"-"+i, st:st.n, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:(p[2]||"").split(",").map(x=>x.trim()).filter(Boolean), why:p[3]||st.why, es:p[4]||st.es}; });
+  delete st.q;
+});
+const FUT_TEST=`
+The phone's ringing! ___ it. (I / get)|I'll get/I will get|You decide right now → will.
+I've already decided: ___ a new phone. (I / buy)|I'm going to buy/I am going to buy/~I'll buy/~I will buy|A plan → going to.
+Look at those clouds! It ___ rain. (be going to)|is going to|You can see it → going to.
+I think you ___ this movie. (like)|will like/'ll like/~are going to like|I think… → will.
+___ Pedro at 6 tomorrow. (I / meet)|I'm meeting/I am meeting/~I'm going to meet/~I am going to meet|An arrangement → present continuous.
+The train ___ at 9:30. (leave)|leaves/~will leave/~is leaving|A timetable → present simple.
+I promise ___ late. (I / not be)|I won't be/I will not be|A promise → won't.
+What ___ this weekend? (you / do)|are you doing/are you going to do|Plans → are you doing / going to do.
+That box looks heavy. ___ you. (I / help)|I'll help/I will help|An offer → will.
+What time ___? (the class / start)|does the class start/~will the class start/~is the class starting|A schedule → does… start?
+Careful! You ___! (fall)|are going to fall/'re going to fall/~will fall|You can see it → going to.
+We ___ a party on Saturday. Can you come? (have)|are having/'re having/~are going to have|An arrangement → we're having.
+Maybe ___ later. (it / snow)|it will snow/it'll snow/~it's going to snow/~it is going to snow|Maybe… → will.
+(At a café) ___ a coffee, please. (I / have)|I'll have/I will have/~I'm going to have|Ordering → I'll have.
+She ___ a doctor. She starts university in March. (be going to / be)|is going to be/'s going to be|A plan → going to.
+I'm sure ___ the interview. (you / pass)|you will pass/you'll pass/~you're going to pass/~you are going to pass|I'm sure… → will.
+The shop ___ at 10 tomorrow. (open)|opens/~will open/~is opening|Opening hours → present simple.
+When ___ for Brazil? (you / leave)|are you leaving/~are you going to leave|An arrangement → are you leaving?
+Don't worry, ___ anyone. (I / not tell)|I won't tell/I will not tell|A promise → won't.
+They ___ married next year. They've booked the place. (get)|are getting/'re getting/are going to get/'re going to get|An arrangement or plan.
+I'll text you when I ___. (arrive)|arrive|After when: present simple.
+___ the dishes later, don't worry. (I / do)|I'll do/I will do|An offer → will.
+Do you think it ___ expensive? (be)|will be/'ll be/~is going to be|Do you think…? → will.
+My flight ___ at 11 p.m. (land)|lands/~will land/~is landing|A flight time → present simple.
+`.trim().split("\n").map((l,i)=>{ const p=l.split("|").map(x=>x.trim()); return {id:"futt-"+i, st:0, q:p[0], a:p[1].split("/").map(x=>x.trim()), o:[], why:p[2], es:""}; });
+
 /* ---------- There is / there are question bank (A1-A2 friendly, Spanish help on every question) ----------
    same format as the other banks: sentence with ___ | right answer(s) / ... | 3 wrong options | why | Spanish hint */
 const TH_STAGES=[
@@ -9462,6 +9621,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     th:{id:"th",name:"There is / there are",lname:"“there is / there are”",the:"",stages:TH_STAGES,test:TH_TEST,toy:"🏠 Little house",toyName:"Little house",ico:"🏠"},
     cou:{id:"cou",name:"Could vs was able to",lname:"“could vs was able to”",the:"",stages:COU_STAGES,test:COU_TEST,toy:"🔑 Golden key",toyName:"Golden key",ico:"💪"},
     iq:{id:"iq",name:"Indirect questions",lname:"indirect questions",the:"",stages:IQ_STAGES,test:IQ_TEST,toy:"🧭 Compass",toyName:"Compass",ico:"❓"},
+    fut:{id:"fut",name:"Talking about the future",lname:"future",the:"the ",stages:FUT_STAGES,test:FUT_TEST,toy:"🔮 Crystal ball",toyName:"Crystal ball",ico:"🔮"},
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
   };
   let M="ps"; const MD=()=>MODS[M];
@@ -11188,6 +11348,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1118-future", date:"November 18, 2026", title:"New: the future, and confusing word pairs", items:[
+    ["🔮","Talking about the future","A new module in <b>Practice → Grammar</b> (B1 and up): when to use <i>will</i>, <i>going to</i>, <i>I'm meeting…</i> and <i>the train leaves at 7</i>. A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
+    ["🔀","Confusing word pairs","A new word pack in <b>Practice → Word packs</b>: <i>fun or funny</i>, <i>say or tell</i>, <i>borrow or lend</i>, <i>lose or miss</i> and more.",""],
+    ["🚀","Two new toys","Finish the future module for a 🔮 <b>crystal ball</b> for your study buddy, and pass its Advanced stage for a 🚀 <b>rocket</b>.",""]
+  ]},
   {id:"2026-1117-fewer", date:"November 17, 2026", title:"Fewer pop-ups, tidier Settings", items:[
     ["🔕","Fewer of these pop-ups","Use Hibi a lot? Tap <b>See fewer of these</b> under this window to get one summary a week instead, or choose <b>Never</b> in Settings → Home &amp; notifications. Everything new is always listed in What's new.",""],
     ["⚙️","Tidier Settings","Settings now has clearer groups: Make Hibi easier, Look &amp; feel, Text &amp; reading, Focus &amp; comfort, and Home &amp; notifications.",""],
@@ -11568,7 +11733,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261118123753"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261118213645"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -11850,7 +12015,7 @@ window.__csBusy = function(){
 /* step131: group the grammar tiles */
 (function(){
   function go(){ const pan=document.querySelector('.pr-panel[data-pp="gram"]'); if(!pan) return; const grid=pan.querySelector(".pr-tiles"); if(!grid||grid.dataset.grouped) return;
-    const ORDER=["prs","th","ps","cou","pp","ing","iq"];   /* easiest first */
+    const ORDER=["prs","th","ps","cou","pp","ing","fut","iq"];   /* easiest first */
     ORDER.forEach(k=>{ const t=grid.querySelector('[data-modtile="'+k+'"]'); if(t) grid.appendChild(t); });
     const tools=[grid.querySelector('[data-pr="irr"]'),grid.querySelector('[data-pr="mis"]')].filter(Boolean); if(!tools.length) return;
     const h1=document.createElement("div"); h1.className="pr-grp"; h1.textContent="Topics"; grid.before(h1);
@@ -12761,6 +12926,62 @@ iq: {
       p: { en: "A strong way to focus on something: <b>What I don’t understand is why…</b> The second part also uses normal order.",
            es: "Una forma fuerte de destacar algo: <b>What I don’t understand is why…</b> La segunda parte también usa orden normal." },
       ex: [["What I don’t understand is why she left.", "Lo que no entiendo es por qué se fue."], ["The question is whether we have enough time.", "La pregunta es si tenemos suficiente tiempo."]] }
+  ]
+}
+,
+fut: {
+  name: { en: "Talking about the future", es: "Hablar del futuro" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "English has no single “future tense”. You choose the form by <b>when you decided</b> and <b>how sure</b> you are: <i>will</i>, <i>going to</i>, the <i>present continuous</i> or the <i>present simple</i>. Often two forms are fine; this module teaches the most natural one for each situation.",
+           es: "El inglés no tiene un solo “tiempo futuro”. Eliges la forma según <b>cuándo lo decidiste</b> y <b>qué tan seguro</b> estás: <i>will</i>, <i>going to</i>, el <i>presente continuo</i> o el <i>presente simple</i>. Muchas veces dos formas sirven; este módulo enseña la más natural para cada situación." } },
+    { h: { en: "1. will: decide now, offer, promise", es: "1. will: decides ahora, ofreces, prometes" }, stage: 1, key: true,
+      p: { en: "You decide <b>in the moment</b>, offer help, or promise: <b>will / ’ll + verb</b>. Negative: <b>won’t</b>.", es: "Decides <b>en el momento</b>, ofreces ayuda o prometes: <b>will / ’ll + verbo</b>. Negativo: <b>won’t</b>." },
+      ex: [["The phone’s ringing! I’ll get it.", "¡Suena el teléfono! Yo contesto."], ["I’ll have the chicken, please.", "Para mí el pollo, por favor."], ["I won’t tell anyone, I promise.", "No le voy a contar a nadie, te lo prometo."]] },
+    { h: { en: "2. going to: plans", es: "2. going to: planes" }, stage: 2, key: true,
+      p: { en: "You <b>already decided</b> before speaking: <b>am / is / are going to + verb</b>.", es: "<b>Ya lo decidiste</b> antes de hablar: <b>am / is / are going to + verbo</b>." },
+      ex: [["I’m going to study Japanese next year.", "Voy a estudiar japonés el próximo año."], ["What are you going to do this weekend?", "¿Qué vas a hacer este fin de semana?"]] },
+    { h: { en: "3. Predictions: going to or will", es: "3. Predicciones: going to o will" }, stage: 3, key: true,
+      table: [
+        [{ en: "you can see it", es: "lo ves venir" }, "Look at those clouds!", "It’s <b>going to</b> rain."],
+        [{ en: "you think it", es: "lo crees" }, "I think… / I’m sure… / maybe…", "Chile <b>will</b> win."]
+      ] },
+    { h: { en: "4. Present continuous: arrangements", es: "4. Presente continuo: cosas acordadas" }, stage: 4,
+      p: { en: "Already arranged with other people, often with a time or place: <b>am / is / are + -ing</b>.", es: "Ya acordado con otras personas, muchas veces con hora o lugar: <b>am / is / are + -ing</b>." },
+      ex: [["I’m meeting Ana for lunch tomorrow.", "Mañana almuerzo con Ana."], ["What are you doing tonight?", "¿Qué vas a hacer esta noche?"]] },
+    { h: { en: "5. Present simple: timetables", es: "5. Presente simple: horarios" }, stage: 5,
+      p: { en: "Trains, flights, classes, shows, opening hours: the <b>present simple</b>, even for tomorrow.", es: "Trenes, vuelos, clases, funciones, horarios de atención: el <b>presente simple</b>, aunque sea mañana." },
+      ex: [["The train leaves at 7:15 tomorrow.", "El tren sale mañana a las 7:15."], ["What time does the movie start?", "¿A qué hora empieza la película?"]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["I will to call you.", "I’ll call you.", { en: "No to after will.", es: "Sin to después de will." }],
+        ["I going to study.", "I’m going to study.", { en: "Don’t forget am / is / are.", es: "No olvides am / is / are." }],
+        ["I’m going to studying.", "I’m going to study.", { en: "going to + base verb, no -ing.", es: "going to + verbo base, sin -ing." }],
+        ["Tomorrow I meet Ana for lunch.", "Tomorrow I’m meeting Ana for lunch.", { en: "Plans with people → present continuous.", es: "Planes con otras personas → presente continuo." }],
+        ["I’ll call you when I will arrive.", "I’ll call you when I arrive.", { en: "After when / as soon as: present simple.", es: "Después de when / as soon as: presente simple." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["That bag looks heavy. ___ help you. (I / will)", "I’ll", { en: "An offer → will.", es: "Una oferta → will." }],
+        ["Look at the sky! It’s ___ rain.", "going to", { en: "You can see it → going to.", es: "Lo ves venir → going to." }],
+        ["The bus ___ at 8 tomorrow. (leave)", "leaves", { en: "A timetable → present simple.", es: "Un horario → presente simple." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Future continuous: will be + -ing", es: "Futuro continuo: will be + -ing" },
+      p: { en: "Something <b>in progress</b> at a moment in the future. Also a polite way to ask about plans: <i>Will you be using the car tonight?</i>",
+           es: "Algo <b>en progreso</b> en un momento del futuro. También es una forma educada de preguntar por planes: <i>Will you be using the car tonight?</i>" },
+      ex: [["This time tomorrow, I’ll be lying on a beach.", "Mañana a esta hora voy a estar tirado en la playa."], ["Don’t call at 8. We’ll be having dinner.", "No llames a las 8. Vamos a estar comiendo."]] },
+    { h: { en: "Future perfect: will have + past participle", es: "Futuro perfecto: will have + participio" },
+      p: { en: "Something <b>finished before</b> a future moment (often with <b>by</b>). For how long: <b>will have been + -ing</b>.",
+           es: "Algo <b>terminado antes</b> de un momento futuro (muchas veces con <b>by</b>). Para cuánto tiempo: <b>will have been + -ing</b>." },
+      ex: [["By the time you arrive, we’ll have finished the cake.", "Cuando llegues, ya nos vamos a haber comido la torta."], ["By June, she’ll have been studying English for two years.", "En junio va a cumplir dos años estudiando inglés."]] },
+    { h: { en: "about to, due to, bound to", es: "about to, due to, bound to" },
+      p: { en: "<b>be about to</b> = very, very soon · <b>be due</b> = scheduled · <b>be bound to</b> = almost certain.",
+           es: "<b>be about to</b> = muy, muy pronto · <b>be due</b> = programado · <b>be bound to</b> = casi seguro." },
+      ex: [["Quick, the train is about to leave!", "¡Rápido, el tren está por salir!"], ["She’s so talented, she’s bound to succeed.", "Tiene tanto talento que seguro le va a ir bien."]] },
+    { h: { en: "when, as soon as + present", es: "when, as soon as + presente" },
+      p: { en: "In a time clause about the future, use the <b>present simple</b>, not will.", es: "En una frase de tiempo sobre el futuro, usa el <b>presente simple</b>, no will." },
+      ex: [["I’ll text you when I arrive.", "Te escribo cuando llegue."], ["As soon as she gets here, we’ll start.", "Apenas llegue, empezamos."]] }
   ]
 }
 });

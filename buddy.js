@@ -265,6 +265,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "gkey", name: "Golden key", ico: "🔑", slot: "toy", m: "cou", mt: "Could vs was able to" },
     { id: "bell", name: "Little bell", ico: "🔔", slot: "toy", m: "ed", mt: "-ed endings" },
     { id: "compass", name: "Compass", ico: "🧭", slot: "toy", m: "iq", mt: "Indirect questions" },
+    { id: "cball", name: "Crystal ball", ico: "🔮", slot: "toy", m: "fut", mt: "Talking about the future" },
     /* weekly goal: done 4 weeks in a row */
     { id: "campfire", name: "Campfire", ico: "🔥", slot: "toy", wk: 4 },
     /* grammar modules: pass the ⭐ Advanced stage (every new module with an Advanced stage gets one: id, pixel art in T below) */
@@ -276,6 +277,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "phones", name: "Headphones", ico: "🎧", slot: "toy", ma: "ing", mt: "Verb + -ing" },
     { id: "scope", name: "Telescope", ico: "🔭", slot: "toy", ma: "ed", mt: "-ed endings" },
     { id: "magnifier", name: "Detective's magnifying glass", ico: "🔍", slot: "toy", ma: "iq", mt: "Indirect questions" },
+    { id: "rocket", name: "Rocket", ico: "🚀", slot: "toy", ma: "fut", mt: "Talking about the future" },
     /* duels (club members): fighting gear */
     { id: "dbanner", name: "Duel banner", ico: "🚩", slot: "toy", dp: 1 },
     { id: "sword", name: "Wooden sword", ico: "🗡️", slot: "toy", dw: 1 },
@@ -435,6 +437,8 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       campfire: [37, 10, [".r.", "ryr", "ryr", "kkk"], { r: "#E5533D", y: "#F5C842", k: "#7A5A3A" }],
       compass: [0, 0, [".yy.", "yrwy", "ywby", ".yy."], { y: "#E8B931", r: "#E5533D", w: "#FFFFFF", b: "#3B6FD9" }],
       magnifier: [12, 21, [".gg...", "gccgkk", ".gg..."], { g: "#C9A26B", c: "#CDEFFF", k: "#5A4632" }],
+      cball: [23, 21, [".pp.", "pwpp", "pppp", ".pp.", "kkkk"], { p: "#9B6BFF", w: "#E9DDFF", k: "#7A5A3A" }],
+      rocket: [0, 4, [".w.", "www", "wbw", "www", "rwr", ".o."], { w: "#F4F1EA", b: "#6FB6F2", r: "#E5533D", o: "#F5C842" }],
       armour: [-6, 12, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
     toys.forEach(t => { const d = T[t]; if (!d) return; const at = (S.tp && S.tp[t]) || [d[0], d[1]]; r += `<g class="bd-toy" data-toyg="${t}"><rect x="${at[0] - .5}" y="${at[1] - .5}" width="${d[2][0].length + 1}" height="${d[2].length + 1}" fill="transparent"/>`; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(at[0] + dx, at[1] + dy, 1, 1, d[3][ch]); })); r += `</g>`; });
     return r;
@@ -820,7 +824,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     return pick(opts)();
   }
   /* ---------- greetings: different every visit and a bit smart (welcome back, club days, Noa's recommendation, weekly goal…) ---------- */
-  const MODN = { ps: "Past simple", pp: "Present perfect", prs: "Present simple", ing: "Verb + -ing", th: "There is / there are", cou: "Could vs was able to", iq: "Indirect questions", ed: "-ed endings" };
+  const MODN = { ps: "Past simple", pp: "Present perfect", prs: "Present simple", ing: "Verb + -ing", th: "There is / there are", cou: "Could vs was able to", iq: "Indirect questions", fut: "Talking about the future", ed: "-ed endings" };
   const lsj = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
   function greetLine(gapDays) {
     const fn = friendName(), N = fn ? " " + esc(fn) : "", pick = a => a[Math.floor(Math.random() * a.length)];

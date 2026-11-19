@@ -13,7 +13,7 @@ const mode = process.argv[2] || 'teacher';
     const p = await ctx.newPage(); p.on('pageerror', e => errs.push(t+': '+e.message));
     await p.addInitScript(m => { localStorage.setItem('ncs-welcomed','1'); localStorage.setItem('cs-theme','light');
       localStorage.setItem('ncs-buddy', JSON.stringify({on:true,a:'cat',n:'Mimi',c:0,t:5,f:20}));
-      if (m!=='teacher') localStorage.setItem('ncs-mods', JSON.stringify({pp:{b:{8:8},s:{8:2}}, ps:{b:{1:9,2:9,3:9,4:9,5:9,6:9,7:9,8:9}}, iq:{b:{1:9,2:9,3:9,4:9,5:9,6:9,7:8}}})); }, mode);
+      if (m!=='teacher') localStorage.setItem('ncs-mods', JSON.stringify({pp:{b:{8:8},s:{8:2}}, ps:{b:{1:9,2:9,3:9,4:9,5:9,6:9,7:9,8:9}}, iq:{b:{1:9,2:9,3:9,4:9,5:9,6:9,7:8}}, fut:{b:{1:9,2:9,3:9,4:9,5:9,6:9,7:9}}})); }, mode);
     await p.goto('http://localhost:8768/index.html'); await p.waitForTimeout(2500);
     await p.evaluate(() => document.querySelectorAll('.qa-backdrop,.wl-backdrop,.wn-backdrop').forEach(e=>e.remove()));
     await p.evaluate(() => { [...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Got it').forEach(b=>b.click()); }); await p.waitForTimeout(300);
