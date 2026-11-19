@@ -1,4 +1,4 @@
-Deploy 2026-11-17T17:11:24Z
+Deploy 2026-11-19T11:15:57Z
 CLOUDFLARE_API_TOKEN: set
 CLOUDFLARE_ACCOUNT_ID: set
 FLOW_API_KEY: set
@@ -13,8 +13,8 @@ YT_API_KEY: set
 Firebase key: valid, project learnwithnoa-cheatsheet
 deploy exit: 0
 secrets exit: 0
-Uploaded hibi-pay (2.04 sec)
-Deployed hibi-pay triggers (1.04 sec)
+Uploaded hibi-pay (1.70 sec)
+Deployed hibi-pay triggers (1.05 sec)
   https://hibi-pay.learnwithnoa.workers.dev
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
 ✨ Successfully created secret for key: FLOW_API_KEY
@@ -29,5 +29,5 @@ Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more
 ✨ 9 secrets successfully uploaded
 health: {"ok":true,"flow":"live","flowKeys":true,"firebaseKey":true,"flowApi":"ok","mercadopago":"live","mercadopagoApi":"ok","paypal":"live","paypalApi":"ok","notion":"ok","recentErrors":[{"at":"2026-11-16T12:51:44.411Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:23:39.126Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:19:58.699Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:19:33.207Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"}],"email":"set up","database":"ok"}
 check: ok
-youtube: {"ok":true,"via":"api","videos":11,"newest":"2026-11-16 20.00.20 🧠 Deep Dive Monday"}
+youtube: {"ok":true,"via":"api","videos":12,"newest":"2026-11-18 20.01.59 🃏 Wildcard Wednesday"}
 manual trials: {"applied":0,"skipped":3,"noAccount":0}
