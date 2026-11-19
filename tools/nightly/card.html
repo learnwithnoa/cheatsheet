@@ -1,0 +1,63 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- The nightly wrap-up as a picture (rendered by render.py). Style: Noa's 1:1 coaching flyer (dark navy → purple, dots, gold + sky-blue Space Mono labels). -->
+<style>
+@font-face{font-family:Nunito;font-weight:600;src:url(fonts/nunito-latin-600-normal.woff2)}
+@font-face{font-family:Nunito;font-weight:800;src:url(fonts/nunito-latin-800-normal.woff2)}
+@font-face{font-family:Nunito;font-weight:900;src:url(fonts/nunito-latin-900-normal.woff2)}
+@font-face{font-family:"Space Mono";font-weight:400;src:url(fonts/space-mono-latin-400-normal.woff2)}
+@font-face{font-family:"Space Mono";font-weight:700;src:url(fonts/space-mono-latin-700-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:600px;font-family:Nunito,"Noto Color Emoji",sans-serif;color:#f1f5ff;
+  background:radial-gradient(circle,rgba(255,255,255,.07) 1.2px,transparent 1.6px) 0 0/22px 22px,linear-gradient(160deg,#0b1430 0%,#18184a 55%,#2a1a5e 100%)}
+.wrap{padding:30px 26px 26px}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.kick{font:700 12px/1 "Space Mono",monospace;letter-spacing:.22em;color:#7dd3fc;text-transform:uppercase}
+h1{font-weight:900;font-size:40px;line-height:1.05;margin-top:8px;display:inline-block;padding-bottom:6px;
+  background:linear-gradient(90deg,#3b82f6,#2dd4bf) bottom left/100% 5px no-repeat}
+.date{font-weight:800;font-size:17px;color:#b6c2e2;margin-top:8px}
+.badge{transform:rotate(4deg);background:#fff;color:#141b3a;border-radius:16px;padding:10px 14px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.35);flex:none}
+.badge b{display:block;font-weight:900;font-size:30px;line-height:1}
+.badge span{font:700 10px/1.2 "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}
+.badge.ok{background:#22c55e;color:#06210f}
+.sec{margin-top:22px;background:rgba(11,20,48,.72);border:1.5px solid #2b3b6e;border-radius:18px;padding:16px 18px 14px}
+.lbl{font:700 12px/1 "Space Mono",monospace;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.lbl i{font-style:normal;font-size:16px;letter-spacing:0}
+.you{border-color:#facc15;box-shadow:0 0 0 3px rgba(250,204,21,.12)}.you .lbl{color:#facc15}
+.bad{border-color:#f87171}.bad .lbl{color:#fca5a5}
+.soon .lbl{color:#7dd3fc}
+.done .lbl{color:#4ade80}
+ol,ul{list-style:none}
+.you li{display:flex;gap:12px;padding:9px 0;border-top:1px dashed rgba(255,255,255,.12)}.you li:first-child{border-top:none;padding-top:2px}
+.num{flex:none;width:28px;height:28px;border-radius:50%;background:#facc15;color:#141b3a;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.t{font-weight:900;font-size:18px;line-height:1.3}
+.d{font-weight:600;font-size:15.5px;line-height:1.4;color:#b6c2e2;margin-top:2px}
+.lk{font:400 12px/1.3 "Space Mono",monospace;color:#7dd3fc;margin-top:4px;word-break:break-all}
+.row{display:flex;gap:10px;padding:6px 0;align-items:baseline}
+.dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:7px}
+.bad .dot{background:#f87171}.soon .dot{background:#7dd3fc}
+.when{flex:none;font:700 11px/1 "Space Mono",monospace;color:#141b3a;background:#7dd3fc;border-radius:999px;padding:5px 8px;margin-left:auto}
+.done .row{border-top:1px dashed rgba(255,255,255,.1);padding:8px 0}.done .row:first-of-type{border-top:none}
+.k{flex:none;width:118px;font:700 12px/1.5 "Space Mono",monospace;color:#facc15;text-transform:uppercase;letter-spacing:.06em}
+.v{font-weight:800;font-size:16px;line-height:1.4}
+.chk{margin-top:10px;padding-top:10px;border-top:1px solid #2b3b6e}
+.chk .k{color:#7dd3fc;width:auto;margin-bottom:8px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-weight:800;font-size:13px;background:rgba(74,222,128,.13);color:#bbf7d0;border:1px solid rgba(74,222,128,.35);border-radius:999px;padding:4px 10px}
+.foot{margin-top:18px;display:flex;justify-content:space-between;font:400 11px/1 "Space Mono",monospace;color:#7c88b0;letter-spacing:.1em}
+</style></head><body><div class="wrap" id="root"></div>
+<script>
+const D = window.DATA || {};
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const you = D.forYou || [], bad = D.failed || [], soon = D.coming || [], done = D.done || [], chk = D.checked || [];
+const n = you.length;
+let h = `<div class="top"><div><div class="kick">Learn with Noa · Hibi</div><h1>🌙 Nightly</h1><div class="date">${esc(D.date)}</div></div>
+  <div class="badge${n || bad.length ? "" : " ok"}">${n ? `<b>${n}</b><span>for you</span>` : bad.length ? `<b>⚠️</b><span>check</span>` : `<b>✓</b><span>all done</span>`}</div></div>`;
+if (n) h += `<div class="sec you"><div class="lbl"><i>👉</i>For you</div><ol>${you.map((x, i) => `<li><span class="num">${i + 1}</span><div><div class="t">${esc(x.t)}</div>${x.d ? `<div class="d">${esc(x.d)}</div>` : ""}${x.link ? `<div class="lk">${esc(x.link)}</div>` : ""}</div></li>`).join("")}</ol></div>`;
+if (bad.length) h += `<div class="sec bad"><div class="lbl"><i>⚠️</i>Didn't work</div>${bad.map(x => `<div class="row"><span class="dot"></span><div><div class="t" style="font-size:16.5px">${esc(x.t)}</div>${x.d ? `<div class="d">${esc(x.d)}</div>` : ""}</div></div>`).join("")}</div>`;
+if (soon.length) h += `<div class="sec soon"><div class="lbl"><i>⏰</i>Coming up</div>${soon.map(x => `<div class="row"><span class="dot"></span><div class="v" style="font-weight:700">${esc(x.t)}</div>${x.when ? `<span class="when">${esc(x.when)}</span>` : ""}</div>`).join("")}</div>`;
+h += `<div class="sec done"><div class="lbl"><i>✅</i>Done</div>${done.map(x => `<div class="row"><span class="k">${esc(x.k)}</span><span class="v">${esc(x.v)}</span></div>`).join("")}
+  ${chk.length ? `<div class="chk"><span class="k">Checked, nothing new</span><div class="chips">${chk.map(c => `<span class="chip">${esc(c)}</span>`).join("")}</div></div>` : ""}</div>`;
+h += `<div class="foot"><span>NIGHTLY WRAP-UP</span><span>REPLY WITH THE NUMBERS</span></div>`;
+document.getElementById("root").innerHTML = h;
+</script></body></html>
