@@ -1611,6 +1611,21 @@ details[open]>summary::before{transform:rotate(90deg)}
 
 .pr-desc,.pr-folder .pr-fnames{font-size:14px;color:var(--muted);line-height:1.4}
 
+/* step192: what you've done in a module */
+.ps-legend{margin:-4px 0 14px;font-size:13.5px;color:var(--muted)}
+.ps-pause{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 16px;margin:0 0 14px;border:1.5px solid var(--c2,#5AB8FF)}
+.ps-last{display:block;margin-top:8px;font-weight:700;font-size:14px;color:var(--ink)}
+.ps-side .ps-pz{color:var(--c2,#5AB8FF);font-weight:700;white-space:nowrap}
+.ps-over{all:unset;cursor:pointer;white-space:nowrap;font-size:12.5px;color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+.ps-hist{margin:14px 0 0;border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;background:var(--surface)}
+.ps-hist summary{font-weight:800}
+.ps-hist ul{list-style:none;margin:10px 0 0;padding:0}
+.ps-hist li{display:flex;gap:12px;flex-wrap:wrap;padding:6px 0;border-top:1px dashed var(--line);font-size:14.5px}
+.ps-hist li:first-child{border-top:none}
+.ps-hd{color:var(--muted);font-size:13px;min-width:120px}
+.ps-hist .ps-stars{font-size:13px}
+.pr-when{white-space:nowrap}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -9696,6 +9711,18 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   const mods=()=>{ const m=LS.get("ncs-mods",{}); return m&&typeof m==="object"?m:{}; };
   const ps=(id)=>{ const m=mods(); const p=m[id||M]||{}; p.b=p.b||{}; p.s=p.s||{}; p.r=p.r|0; return p; };
   const rec=()=>{ const r=LS.get("ncs-modrec",{}); return r&&typeof r==="object"?r:{}; };
+  const hist=(p,e)=>{ e.t=Date.now(); p.h=Array.isArray(p.h)?p.h:[]; p.h.unshift(e); p.h=p.h.slice(0,20); };
+  const relD=t=>{ const d=new Date(t); if(isNaN(d)) return ""; const a=new Date(); a.setHours(0,0,0,0); const b=new Date(d); b.setHours(0,0,0,0); const n=Math.round((a-b)/864e5); return n<=0?"today":n===1?"yesterday":n<7?n+" days ago":"on "+d.toLocaleDateString("en-US",{month:"short",day:"numeric"}); };
+  const todT=s=>{ const m=String(s||"").match(/^(\d+)-(\d+)-(\d+)$/); return m?new Date(+m[1],+m[2]-1,+m[3],12).getTime():0; };
+  const triedTxt=(p,n,best)=>{ const tr=(p.tr||{})[n]|0, ls=(p.ls||{})[n]; return "best "+best+"/10"+(tr>1?" · "+tr+" tries":"")+(ls&&ls.t?" · last "+relD(ls.t)+(ls.sc!==best?" ("+ls.sc+"/10)":""):""); };
+  const stBtn=(p,n,best,open)=>{ if(!open) return ""; const pz=p.pause&&p.pause.n===n?p.pause:null;
+    if(pz) return '<small class="ps-pz">⏸ '+pz.i+'/'+pz.ids.length+' done</small><button class="pill-btn pill-green" type="button" data-pscont="'+n+'">Continue</button><button class="ps-over" type="button" data-psstart="'+n+'">Start over</button>';
+    return '<button class="pill-btn'+(best==null||best<PASS?" pill-green":"")+'" type="button" data-psstart="'+n+'">'+(best==null?"Start":best<PASS?"Try again":"Practice")+'</button>'; };
+  const lastTest=p=>{ if(p.lt&&p.lt.t) return "Last try: <b>"+p.lt.sc+"/15</b> "+relD(p.lt.t)+(p.lt.at?" (stopped after "+p.lt.at+" questions)":p.lt.sc<TOPASS?" · "+(TOPASS-p.lt.sc)+" more to pass":""); const t=todT(p.tod); return t?"Last try: "+relD(t)+" (no score saved for that one)":""; };
+  const histHTML=(p,md)=>{ const h=Array.isArray(p.h)?p.h:[]; if(!h.length) return "";
+    const nm=n=>{ const st=md.stages.find(x=>x.n===n); return st?(st.adv?"⭐ Advanced":"Stage "+n):"Stage "+n; };
+    return '<details class="ps-hist"><summary>📜 Your tries ('+h.length+')</summary><ul>'+h.map(e=>'<li><span class="ps-hd">'+new Date(e.t).toLocaleDateString("en-US",{month:"short",day:"numeric"})+' · '+new Date(e.t).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})+'</span><span>'+
+      (e.k==="to"?"🎓 Test out: <b>"+e.sc+"/15</b>"+(e.at?" (stopped after "+e.at+" questions)":e.sc>=TOPASS?" · passed 🎉":""):e.k==="stop"?"⏸ "+nm(e.n)+": stopped after "+e.at+" questions ("+e.sc+" right)":nm(e.n)+": <b>"+e.sc+"/10</b> "+stars(starsFor(e.sc)))+'</span></li>').join("")+'</ul></details>'; };
   const starsFor=sc=>sc>=10?3:sc>=9?2:sc>=PASS?1:0;
   const testedOut=(id)=>{ const p=ps(id); return !!(p.to&&p.to.sc>=TOPASS); };
   const today=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
@@ -9746,7 +9773,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
       '<div class="pr-gsize" role="group" aria-label="Goal size"><span class="muted">Goal:</span>'+[3,5,8].map(n=>'<button type="button" class="pr-gs" data-wkgoal="'+n+'" aria-pressed="'+(GOAL===n)+'">'+GOALS[n].k+' · '+n+'</button>').join("")+'</div>'+
       '<p class="pr-streak">'+(sk.n>=1?"🔥 <b>"+sk.n+(sk.n===1?" week":" weeks")+"</b> in a row. ":"")+((sk.best|0)>=4?"Your buddy has the 🔥 campfire.":"Do your goal 4 weeks in a row to unlock a 🔥 <b>campfire</b> for your buddy.")+'</p>'+
       '<p class="esb">Meta semanal: termina '+GOAL+' rondas esta semana. Elige el tamaño de tu meta: más rondas, más premio.</p>';
-    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.filter(st=>!st.adv).length*3; ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(r?' · <span class="pr-rec">'+(r==="all"?"⭐ Noa recommends this module":"Noa recommends stage "+r)+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
+    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.filter(st=>!st.adv).length*3; const pp=ps(id); ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(!t&&(pp.r||pp.tod||pp.pause)?" · started":"")+((pp.last||todT(pp.tod))?' · <span class="pr-when">practiced '+relD(pp.last||todT(pp.tod))+'</span>':"")+(r?' · <span class="pr-rec">'+(r==="all"?"⭐ Noa recommends this module":"Noa recommends stage "+r)+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
     const sc=$("prShortCount"); if(sc){ sc.textContent=Math.min(w.n,GOAL)+"/"+GOAL; sc.parentElement.classList.toggle("done",!!w.got); }
     const tm=$("prMisTile"); if(tm){ const n=misList().length; tm.querySelector(".pr-sub").textContent=n?n+(n===1?" question to review":" questions to review"):"Nothing to review yet"; }
   }
@@ -9796,18 +9823,19 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     const box=$("psArea"); if(!box) return; const p=ps(), r=rec()[M], md=MD(); setMod(M);
     const to=p.to, triedToday=p.tod===today();
     const toCard=testedOut()?'<div class="card ps-to done"><b>🎓 You tested out of '+(md.the!=null?md.the:"the ")+esc(md.lname)+'</b><span>'+to.sc+'/15 on '+new Date(to.t).toLocaleDateString("en-US",{month:"long",day:"numeric"})+'. You can still practice any stage.</span></div>'
-      :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at '+(md.the!=null?md.the:"the ")+esc(md.lname)+'?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span></div>'+
+      :allDone()?"":'<div class="card ps-to"><div><b>🎓 Already good at '+(md.the!=null?md.the:"the ")+esc(md.lname)+'?</b><span>Take the <b>test out</b> exam: 15 tricky questions, no multiple choice. Get <b>all 15 right</b> and you pass the whole module, with all the rewards. One try a day.</span><span class="esb">Examen para eximirte: 15 preguntas difíciles. Con las 15 correctas apruebas todo el módulo.</span>'+(lastTest(p)?'<span class="ps-last">'+lastTest(p)+'</span>':"")+'</div>'+
         (triedToday?'<button class="pill-btn" type="button" disabled>Try again tomorrow</button>':'<button class="pill-btn pill-green" type="button" data-tostart>Take the test</button>')+'</div>';
-    box.innerHTML=(window.__psLesson?window.__psLesson(M):"")+'<div class="ps-cols'+(toCard?"":" one")+'"><div class="ps-main"><div class="ps-list">'+md.stages.map(st=>{
+    box.innerHTML=(window.__psLesson?window.__psLesson(M):"")+'<p class="ps-legend">Stars: ★ 7/10 · ★★ 9/10 · ★★★ 10/10. Below 7, your best score and tries are still saved.</p>'+
+      (p.pause&&md.stages.find(x=>x.n===p.pause.n)?'<div class="card ps-pause"><span>⏸ You stopped <b>Stage '+p.pause.n+'</b> after '+p.pause.i+' of '+p.pause.ids.length+' questions ('+p.pause.score+' right) '+relD(p.pause.t)+'. Pick up where you left off:</span><button class="pill-btn pill-green" type="button" data-pscont="'+p.pause.n+'">Continue</button></div>':"")+'<div class="ps-cols'+(toCard?"":" one")+'"><div class="ps-main"><div class="ps-list">'+md.stages.map(st=>{
       const open=unlocked(st.n), best=p.b[st.n];
       if(st.adv) return '<div class="ps-advhd"><b>⭐ Advanced</b><span>B2–C1 · a bonus stage. You don’t need it to finish the module.'+((window.__bdAdvToy&&window.__bdAdvToy(M))?' Pass it to unlock the '+window.__bdAdvToy(M).ico+' <b>'+esc(window.__bdAdvToy(M).name)+'</b> for your study buddy.':"")+'</span></div><div class="card ps-stage ps-adv'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?"⭐":"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
-        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":open?"not tried yet":"pass stage "+(st.n-1)+" or test out")+'</small>'+
-        (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
+        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?triedTxt(p,st.n,best):open?(p.pause&&p.pause.n===st.n?"":"not tried yet"):"pass stage "+(st.n-1)+" or test out")+'</small>'+
+        stBtn(p,st.n,best,open)+'</div></div>';
       return '<div class="card ps-stage'+(open?"":" locked")+(r===st.n?" rec":"")+'"><div class="ps-num">'+(open?st.n:"🔒")+'</div><div class="ps-info"><b>Stage '+st.n+' · '+esc(st.t)+'</b><span>'+esc(st.sub)+'</span>'+
-        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?"best "+best+"/10":testedOut()?"🎓 tested out":open?"not tried yet":"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
-        (open?'<button class="pill-btn'+(best==null?" pill-green":"")+'" type="button" data-psstart="'+st.n+'">'+(best==null?"Start":"Practice")+'</button>':"")+'</div></div>';
+        (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?triedTxt(p,st.n,best):testedOut()?"🎓 tested out":open?(p.pause&&p.pause.n===st.n?"":"not tried yet"):"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
+        stBtn(p,st.n,best,open)+'</div></div>';
     }).join("")+'</div>'+
-    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.filter(st=>!st.adv).length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p></div>'+(toCard?'<aside class="ps-aside">'+toCard+'</aside>':"")+'</div>';
+    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.filter(st=>!st.adv).length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p>'+histHTML(p,md)+'</div>'+(toCard?'<aside class="ps-aside">'+toCard+'</aside>':"")+'</div>';
   }
 
   /* ---- a round ---- */
@@ -9816,7 +9844,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   function start(kind,stage){
     let pool, title;
     let story=null;
-    if(kind==="ps"){ const st=MD().stages[stage-1];
+    if(kind==="ps"){ const st=MD().stages[stage-1]; { const m0=mods(), p0=ps(); if(p0.pause&&p0.pause.n===stage){ delete p0.pause; m0[M]=p0; LS.set("ncs-mods",m0); } }
       if(st.story){ let last=""; try{ last=sessionStorage.getItem("cs-"+M+"-story")||""; }catch(e){} const opts=st.stories.filter(x=>x.title!==last); story=opts[Math.floor(Math.random()*opts.length)]||st.stories[0]; try{ sessionStorage.setItem("cs-"+M+"-story",story.title); }catch(e){} pool=story.items.slice(); }
       else pool=shuffle(st.items).slice(0,10);
       title="Stage "+st.n+" · "+st.t; }
@@ -9883,7 +9911,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     } else if(R.kind==="ps"){
       const m=mods(), p=ps(), md=MD(), st=R.stage, oldBest=p.b[st], wasDone=allDone(), wasOpen=md.stages[st]?unlocked(st+1):true;
       if(oldBest==null||R.score>oldBest) p.b[st]=R.score;
-      p.s[st]=Math.max(p.s[st]|0,starsFor(R.score)); p.r++; p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m);
+      p.s[st]=Math.max(p.s[st]|0,starsFor(R.score)); p.tr=p.tr||{}; p.tr[st]=(p.tr[st]|0)+1; p.ls=p.ls||{}; p.ls[st]={sc:R.score,t:Date.now()}; if(p.pause&&p.pause.n===st) delete p.pause; hist(p,{k:"st",n:st,sc:R.score}); p.r++; p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m);
       const nowOpen=md.stages[st]?unlocked(st+1):false, finishedAll=!wasDone&&allDone();
       const sg=starsFor(R.score);
       html='<div class="card ps-res"><div class="ps-big">'+R.score+' / 10</div>'+stars(sg)+
@@ -9912,6 +9940,16 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
     if(e.target.closest("[data-misstart]")){ start("mis"); return; }
     if(e.target.closest("[data-tostart]")){ start("test"); return; }
     if(e.target.closest("[data-psall]")){ round=null; renderStages(); window.scrollTo({top:0}); return; }
+    if(e.target.closest("[data-psquit]")&&round&&(round.kind==="ps"||round.kind==="test")){ const R=round, at=R.answered?R.i+1:R.i;
+      if(R.kind==="test"){ if(at>0){ const m=mods(), p=ps(); p.lt={sc:R.score,t:Date.now(),at:at}; hist(p,{k:"to",sc:R.score,at}); p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m); } round=null; renderStages(); return; }
+      if(R.retry||at>=R.list.length){ finish(); return; }
+      if(at>0&&!R.story&&R.list.every(x=>x.q&&ITEM[x.q.id])){ const m=mods(), p=ps(); p.pause={n:R.stage,ids:R.list.map(x=>x.q.id),mc:R.list.map(x=>!!x.mc),i:at,score:R.score,missed:R.missed.map(x=>x.q.id),t:Date.now()}; const h0=(p.h||[])[0]; if(!(h0&&h0.k==="stop"&&h0.n===R.stage&&h0.at===at)) hist(p,{k:"stop",n:R.stage,sc:R.score,at}); p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m); }
+      round=null; renderStages(); return; }
+    const pc=e.target.closest("[data-pscont]"); if(pc){ const p=ps(), pz=p.pause, st=pz&&MD().stages.find(x=>x.n===pz.n);
+      if(!pz||!st||!pz.ids.every(id=>ITEM[id])){ if(pz){ const m=mods(); delete p.pause; m[M]=p; LS.set("ncs-mods",m); } renderStages(); return; }
+      const list=pz.ids.map((id,j)=>({q:ITEM[id],mc:!!pz.mc[j]}));
+      round={kind:"ps",stage:pz.n,title:"Stage "+st.n+" · "+st.t,list,i:pz.i,score:pz.score|0,missed:(pz.missed||[]).map(id=>list.find(x=>x.q.id===id)).filter(Boolean),retry:false,answered:false,story:null};
+      show("ps"); paintQ(); return; }
     if(e.target.closest("[data-psquit]")){ const k=round&&round.kind; round=null; if(k==="mis") renderMis(); else if(k==="voc") renderSet(); else renderStages(); return; }
     const vs=e.target.closest("[data-vset]"); if(vs){ round=null; vsCur=vs.dataset.vset; vsMode="list"; show("vset"); return; }
     const vq=e.target.closest("[data-vqstart]"); if(vq){ start("voc",vq.dataset.vqstart); return; }
@@ -9926,7 +9964,7 @@ How much money ___ in your wallet? (now, question)|is there/~is|How much → is 
   function finishTest(){
     const R=round, sc=R.score, pass=sc>=TOPASS, m=mods(), p=ps(), md=MD(), wasDone=allDone();
     if(pass){ if(!p.to||sc>p.to.sc) p.to={sc,t:Date.now()}; md.stages.forEach(st=>{ if(!st.adv) p.s[st.n]=Math.max(p.s[st.n]|0,3); }); }
-    p.r++; p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m);
+    p.lt={sc,t:Date.now()}; hist(p,{k:"to",sc}); p.r++; p.last=Date.now(); m[M]=p; LS.set("ncs-mods",m);
     const finished=pass&&!wasDone;
     const box=area(); round=null;
     box.innerHTML='<div class="card ps-res"><div class="ps-big">'+sc+' / 15</div>'+(pass?stars(3):"")+
@@ -11407,6 +11445,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1119-tries", date:"November 19, 2026", title:"See all your practice, even without stars", items:[
+    ["📜","Your tries","Every grammar module now shows your <b>best score, how many tries and when</b>, even if you didn't get a star yet, plus a <b>📜 Your tries</b> history at the bottom.",""],
+    ["⏸","Stop and continue later","If you tap <b>Stop this round</b>, Hibi remembers where you were. Tap <b>Continue</b> to pick up from the same question.",""],
+    ["🎓","Your test out score","The test out box shows your last score and how many more you need to pass. Stars: ★ 7/10 · ★★ 9/10 · ★★★ 10/10.",""]
+  ]},
   {id:"2026-1119-irr", date:"November 19, 2026", title:"Irregular verbs, all in one place", items:[
     ["🔁","Irregular verbs: all in one place","<b>Practice → Grammar → Irregular verbs</b> now has everything: pick <b>⭐ Essential</b> (the 60 you'll use every day) or <b>All</b>, then 🃏 flashcards in random order (✓ I knew it / ✗ Didn't know), a ✏️ quiz, the ⌨️ writing drill, and 📌 Review for the ones you missed. Hibi remembers your progress. You can also start from the buttons at the top of the Irregular verbs page.",""]
   ]},
@@ -11802,7 +11845,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261119111534"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261119124507"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

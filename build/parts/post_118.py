@@ -282,3 +282,13 @@ if '2026-1119-irr' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 19: grammar progress you can see
+s=open(p,encoding="utf-8").read()
+if '2026-1119-tries' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1119-tries", date:"November 19, 2026", title:"See all your practice, even without stars", items:[
+    ["📜","Your tries","Every grammar module now shows your <b>best score, how many tries and when</b>, even if you didn't get a star yet, plus a <b>📜 Your tries</b> history at the bottom.",""],
+    ["⏸","Stop and continue later","If you tap <b>Stop this round</b>, Hibi remembers where you were. Tap <b>Continue</b> to pick up from the same question.",""],
+    ["🎓","Your test out score","The test out box shows your last score and how many more you need to pass. Stars: ★ 7/10 · ★★ 9/10 · ★★★ 10/10.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
