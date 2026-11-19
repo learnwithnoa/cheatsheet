@@ -33,7 +33,7 @@ Usage:
            "fut" (Talking about the future, B1 to B2: 1 will: decide now/offer/promise, 2 going to: plans, 3 Predictions: going to or will, 4 Present continuous: arrangements, 5 Present simple: timetables, 6 Real life mix; 7 = ⭐ Advanced)
            "ing" (Verb + -ing, B1: 1 Before/after/without + -ing, 2 Verbs that take -ing, 3 suggest/recommend/propose, 4 good at/interested in/look forward to, 5 -ing or to?, 6 Mix it up, 7 Tell the story)
            "ed" (-ed endings, pronunciation: 1 Extra syllable or not?, 2 The /t/ sound, 3 The /d/ sound, 4 Mix it up, 5 Spelling tricks, 6 Odd one out, 7 Feelings: -ed adjectives)
-      or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work, pairs = Confusing word pairs, irr1 = Essential irregular verbs, irr = All irregular verbs)
+      or instead of mod/stage use "pack": a word pack (expr = Everyday expressions, phrasal = Everyday phrasal verbs, travel = Travel, work = English at work, pairs = Confusing word pairs)
       or instead of mod/stage use "page": a Cheat Sheet page id (basics, be, tenses, verbs, mistakes, pronouns, time, place, tofor, quantity, frequency,
            compare, gerund, usedto, perfect, modals, conditionals, passive, reported, phrasal, domake, false, pronunciation, numbers, email, interview, linking, opinions)
   HUB_PASSWORD=... python3 hubsync.py club-post @/tmp/club-post.json   this week's club post, straight to club members' Hibi (Club page + Home card):
@@ -421,7 +421,7 @@ def clean_lesson(d):
 
 def lesson_link(lid):
     return SITE + "?lesson=" + urllib.parse.quote(lid) + "#coaching"
-PACKS = ["expr", "phrasal", "travel", "work", "pairs", "irr1", "irr"]   # word packs on Hibi (Practice → Word packs)
+PACKS = ["expr", "phrasal", "travel", "work", "pairs"]   # word packs on Hibi (Practice → Word packs)
 
 
 def _txt(x, n=1200):

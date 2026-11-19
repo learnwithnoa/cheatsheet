@@ -1,0 +1,33 @@
+const {chromium, devices} = require('playwright'); const fs = require('fs');
+const stub = fs.readFileSync(__dirname+'/fbstub3.js','utf8');
+(async () => { const b = await chromium.launch(); const errs = [];
+  for (const [t,o,cs] of [['d',{viewport:{width:1280,height:900}},'light'],['p',devices['iPhone 13'],'dark']]) {
+    const ctx = await b.newContext({...o, colorScheme: cs});
+    await ctx.route(/fb\.js/, r => r.fulfill({body: stub, contentType: 'text/javascript'}));
+    await ctx.route(/googleapis|gstatic|firebaseapp|google\.com|ytimg|workers\.dev/, r => r.abort());
+    const p = await ctx.newPage(); p.on('pageerror', e => errs.push(t+': '+e.message));
+    await p.addInitScript(() => { localStorage.setItem('ncs-welcomed','1'); });
+    await p.goto('http://localhost:8768/index.html#quiz'); await p.waitForTimeout(2200);
+    await p.evaluate(() => { document.querySelectorAll('.qa-backdrop,.wl-backdrop,.wn-backdrop,#whatsnew').forEach(x=>x.remove()); document.body.style.overflow=''; });
+    await p.evaluate(()=>window.__prShow&&window.__prShow("gram")); await p.waitForTimeout(400);
+    console.log(t,'gram order:', await p.evaluate(()=>[...document.querySelectorAll('.pr-panel[data-pp="gram"] .pr-tiles .pr-tile b')].map(x=>x.textContent).join(' | ')));
+    await p.screenshot({path:`/tmp/irr3-${t}-gram.png`, fullPage:true});
+    await p.click('.pr-panel[data-pp="gram"] [data-pr="irr"]'); await p.waitForTimeout(400);
+    await p.click('[data-irrflip]'); await p.waitForTimeout(150);
+    await p.screenshot({path:`/tmp/irr3-${t}-cards.png`});
+    await p.click('[data-irrans="0"]'); await p.click('[data-irrflip]'); await p.click('[data-irrans="1"]');
+    console.log(t, await p.evaluate(()=>document.getElementById('irrHub').innerText.replace(/\s+/g,' ')), await p.evaluate(()=>localStorage.getItem('ncs-irr')));
+    await p.click('[data-irrmode="quiz"]'); await p.waitForTimeout(150); await p.click('[data-irrpick]'); await p.waitForTimeout(150);
+    await p.screenshot({path:`/tmp/irr3-${t}-quiz.png`});
+    await p.click('[data-irrmode="review"]'); await p.waitForTimeout(150);
+    console.log(t,'review:', await p.evaluate(()=>document.getElementById('irrArea').innerText.replace(/\s+/g,' ').slice(0,80)));
+    await p.click('[data-irrmode="write"]'); await p.waitForTimeout(150);
+    await p.fill('#qzPast','xx'); await p.fill('#qzPP','yy'); await p.press('#qzPP','Enter'); await p.waitForTimeout(150);
+    console.log(t,'after drill:', await p.evaluate(()=>document.getElementById('irrHub').innerText.replace(/\s+/g,' ').slice(0,90)));
+    await p.screenshot({path:`/tmp/irr3-${t}-write.png`});
+    await p.goto('http://localhost:8768/index.html#verbs'); await p.waitForTimeout(1500);
+    await p.evaluate(() => { document.querySelectorAll('#whatsnew,.wn-backdrop,.cs-dlg,.cs-dlg-bd').forEach(x=>x.remove()); });
+    await p.click('.irr-prac .pill-green'); await p.waitForTimeout(400);
+    console.log(t,'from verbs page:', await p.evaluate(()=>!document.querySelector('.pr-panel[data-pp="irr"]').hidden && !!document.querySelector('[data-irrflip]')));
+    await ctx.close(); }
+  console.log(errs.length ? errs : 'no errors'); await b.close(); })();

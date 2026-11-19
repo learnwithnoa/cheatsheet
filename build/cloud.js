@@ -187,7 +187,7 @@ async function pushKey(k) {
 /* the page keeps lists in memory: after a merge brought in something from another device, reload it (not while typing) */
 let reloadWanted = false;
 /* counters, "seen" markers and progress the page re-reads anyway: never worth reloading the page for (usage minutes went back and forth between devices and reloaded the page every few seconds) */
-const QUIET = new Set(["ncs-wnlast", "ncs-lesson-prog", "ncs-usage", "ncs-ptime", "ncs-tnotif-read", "ncs-seen-version", "ncs-mst", "ncs-fc", "ncs-wk", "ncs-buddy",
+const QUIET = new Set(["ncs-wnlast", "ncs-lesson-prog", "ncs-usage", "ncs-ptime", "ncs-tnotif-read", "ncs-seen-version", "ncs-mst", "ncs-fc", "ncs-irr", "ncs-irrset", "ncs-wk", "ncs-buddy",
   /* small settings and markers (music volume, last copied, dismissed tips, filters…): never worth a reload either */
   "ncs-music-vol", "ncs-music-mode", "ncs-music-bal", "ncs-lastcopy", "ncs-hidden-tips", "ncs-nudge-snooze", "ncs-tnotif-seen", "ncs-tnotif-dis",
   "ncs-ttlove", "ncs-ttlove-log", "ncs-recap-bg", "ncs-welcomed", "ncs-joined", "ncs-modrec", "ncs-fcpick", "ncs-photo", "ncs-kudos", "ncs-feedback",

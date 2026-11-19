@@ -15,4 +15,4 @@ assert s.count('iq:"Indirect questions",ed:"-ed endings"') >= 3
 s = s.replace('iq:"Indirect questions",ed:"-ed endings"', 'iq:"Indirect questions",fut:"Talking about the future",ed:"-ed endings"')
 R('''<b>could vs was able to</b> and <b>indirect questions</b>, plus''', '''<b>could vs was able to</b>, <b>indirect questions</b> and <b>talking about the future</b>, plus''')
 # word pack "Confusing word pairs" (parts/vocbank.js): mention it in the tour
-R('''useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with''', '''useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>, irregular verbs), with''')
+R('''useful word sets by Noa (phrasal verbs, work, travel, everyday expressions), with''', '''useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with''')

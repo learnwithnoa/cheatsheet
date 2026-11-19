@@ -53,6 +53,7 @@ node build/test/smoke.js     # desktop + phone, reports page errors, screenshots
 `build/test/fbstub3.js` fakes the sign-in so tests never touch real data. Copy `smoke.js` to test a specific change
 (click through it, check the DOM, look at the screenshots on desktop **and** iPhone 13 size). Close the What's new pop-up first.
 `node build/test/questions.js` checks every practice question after you edit a question bank (`build/parts/*bank.js`).
+Place anything new in a logical spot next to what's already there (e.g. grammar tiles go in the step131 ORDER by level/topic; Irregular verbs sits after the Verb tenses folder, before Could), never just at the end.
 New grammar module: any number of core stages (about 4–8) plus an `adv:true` stage last; register it like step167 (bank, MODS, tile, ORDER, names, members.html/private-students.html MODT, hubsync docs); give it a buddy toy (`buddy.js` ITEMS with `m:`) and, if it has a ⭐ Advanced stage, a second one (`ma:`), each with pixel art in `T`; test with `node build/test/bd_t.js member`.
 
 ## Practice questions (build/parts/*bank.js)

@@ -535,7 +535,7 @@ function renderUsage() {
 document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
 /* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
 const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
-const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work", pairs: "Confusing word pairs", irr1: "Essential irregular verbs", irr: "All irregular verbs" };
+const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work", pairs: "Confusing word pairs" };
 function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
 /* accounts that might be private students, not linked to their Coaching profile yet (this used to live on the Private students page) */
 function renderLinks() {
@@ -805,7 +805,7 @@ function practiceBox(s) {
   const voc = s.vocab || {}, vDone = Object.values(voc).filter(v => (v.b | 0) >= 7).length;
   const recN = Object.keys(s.modrec || {}).length;
   return `<details class="parkbox mcol" data-col="p"${COL.p ? " open" : ""}><summary><b>Practice</b> <span class="muted">· recommend a stage or a whole module${recN ? ` · ⭐ ${recN} recommended now` : ""}</span></summary>${modBlock(s, "prs")}${modBlock(s, "th")}${modBlock(s, "ps")}${modBlock(s, "pp")}${modBlock(s, "ing")}${modBlock(s, "cou")}${modBlock(s, "fut")}${modBlock(s, "iq")}${modBlock(s, "ed")}
-    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 7 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, [3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3)} / ${[3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3} rounds${wk.got ? " ✓" : ""}</div>
+    <div class="muted" style="margin-top:8px">🗂️ Vocabulary: ${vDone} / 5 sets passed · 📌 ${nMis} ${nMis === 1 ? "question" : "questions"} in My mistakes · 🎯 this week: ${Math.min(wk.n | 0, [3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3)} / ${[3, 5, 8].includes(+s.wkgoal) ? +s.wkgoal : 3} rounds${wk.got ? " ✓" : ""}</div>
     <p class="hint" style="margin:6px 0 0">"Recommend" highlights a stage for them and opens it even if it's still locked. "Whole module" puts ⭐ on the module itself. Tap again to remove it.</p></details>`;
 }
 function buddyCard(b) {
