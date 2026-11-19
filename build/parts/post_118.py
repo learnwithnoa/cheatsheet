@@ -308,3 +308,10 @@ if '2026-1119-profpet' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1119-fchow' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1119-fchow", date:"November 19, 2026", title:"How to use flashcards", items:[
+    ["💡","Flashcard tips","Flashcards now have a short <b>💡 How to use flashcards</b> guide: try to remember before you flip, be honest with ✓ / ✗, and a word is learned after ✓ 3 times in a row. Close it once and it stays closed.","quiz"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

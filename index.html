@@ -1668,6 +1668,14 @@ details[open]>summary::before{transform:rotate(90deg)}
 @media (hover:hover){.cl-prof-pet:hover+.cl-prof-tip{opacity:1;visibility:visible;transform:none}}
 .cl-prof-pic.tip-on .cl-prof-tip,.cl-prof-pet:focus-visible+.cl-prof-tip{opacity:1;visibility:visible;transform:none}
 
+/* step195: how to use flashcards */
+.fc-how{margin:0 0 14px;padding:10px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);font-size:14.5px}
+.fc-how>summary{font-weight:800}
+.fc-how ol{margin:8px 0 0;padding-left:22px;line-height:1.5}
+.fc-how li{margin:3px 0}
+#fcEmpty:not([hidden])~.fc-howslot{display:none}
+.fc-how-tip{margin:8px 0 0;color:var(--muted);font-size:13.5px}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -6294,7 +6302,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
 <div class="pr-panel" data-pp="flash" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Flashcards</em></h1><p class="lede">Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p><div class="card flash-wrap" style="max-width:560px">
     <div id="fcEmpty" hidden><p style="margin:0 0 10px">You don't have any words yet. Save a few on your <b>Home</b> page and they'll show up here as flashcards.</p><button class="pill-btn pill-green" type="button" data-go="notes">Go to Home</button></div>
-    <div class="fc-set" role="group" aria-label="Which words to practice"><span class="fc-set-l">Which words?</span><button type="button" data-fcset="all">All</button><button type="button" data-fcset="today">Today&#39;s 5</button><button type="button" data-fcset="new20">Newest 20</button><button type="button" data-fcset="week">This week</button><button type="button" data-fcset="hard">Hard ones</button><button type="button" data-fcset="pick">My pick <span id="fcPickN"></span></button></div>
+    <div class="fc-howslot" data-fchow="words"></div><div class="fc-set" role="group" aria-label="Which words to practice"><span class="fc-set-l">Which words?</span><button type="button" data-fcset="all">All</button><button type="button" data-fcset="today">Today&#39;s 5</button><button type="button" data-fcset="new20">Newest 20</button><button type="button" data-fcset="week">This week</button><button type="button" data-fcset="hard">Hard ones</button><button type="button" data-fcset="pick">My pick <span id="fcPickN"></span></button></div>
     <div id="fcSetEmpty" class="fc-set-empty" hidden></div>
     <div id="fcBox">
       <div class="quiz-top"><span class="tag" id="fcDirTag">English → Español</span><span class="count" id="fcCount"></span></div>
@@ -11493,6 +11501,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1119-fchow", date:"November 19, 2026", title:"How to use flashcards", items:[
+    ["💡","Flashcard tips","Flashcards now have a short <b>💡 How to use flashcards</b> guide: try to remember before you flip, be honest with ✓ / ✗, and a word is learned after ✓ 3 times in a row. Close it once and it stays closed.","quiz"]
+  ]},
   {id:"2026-1119-profpet", date:"November 19, 2026", title:"Profiles show your photo and your buddy", items:[
     ["🐾","Meet their buddy","A member's profile now shows the same photo as the members list, with their study buddy in the corner. Hover over it (or tap it on your phone) to see its name, friendship level, what it's wearing and more.",""]
   ]},
@@ -11901,7 +11912,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261119133349"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261119135554"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -13601,7 +13612,7 @@ document.addEventListener("click",async e=>{
       if(tally.k+tally.m>=5) document.dispatchEvent(new CustomEvent("cs-irrround")); hub(); return; }
     const v=BY[deck[di]], st=rec()[v[0]]||{};
     a.innerHTML=`<div class="card"><div class="irr-row"><span class="tag">${mode==="review"?"📌 Review":"🃏 Flashcards · "+(set==="all"?"all verbs":"essential")}</span><span class="count">${di+1} / ${deck.length}</span></div>
-      <button type="button" class="irr-card" data-irrflip>${flip?`<span class="w">${esc(v[0])}</span><span class="f">${esc(v[1])} · ${esc(v[2])}</span><span class="es">${esc(v[3])}</span>`:`<span class="w">${esc(v[0])}</span><span class="es">${esc(v[3])}</span><span class="h">Past simple and past participle? Tap to check</span>`}</button>
+      ${window.__fcHow?window.__fcHow("irr"):""}<button type="button" class="irr-card" data-irrflip>${flip?`<span class="w">${esc(v[0])}</span><span class="f">${esc(v[1])} · ${esc(v[2])}</span><span class="es">${esc(v[3])}</span>`:`<span class="w">${esc(v[0])}</span><span class="es">${esc(v[3])}</span><span class="h">Past simple and past participle? Tap to check</span>`}</button>
       ${flip?`<div class="fc-answer"><button class="fc-no" type="button" data-irrans="0">✗ Didn't know</button><button class="fc-yes" type="button" data-irrans="1">✓ I knew it</button></div>`:""}
       <div class="irr-row"><button type="button" class="swap" data-irrsay="${esc(v[0]+", "+sp(v[1]).join(" or ")+", "+sp(v[2]).join(" or "))}" aria-label="Listen">🔊 Listen</button><span class="fc-stats" style="margin:0">${known(v[0])?"✓ you know this one":st.m?"📌 one to review":""}</span><button type="button" class="swap" data-irrskip>Skip →</button></div></div>`;
   }
@@ -13652,6 +13663,19 @@ document.addEventListener("click",async e=>{
 <script>/* step194: tap the buddy on a club profile to open/close its card (hover does it on a computer) */
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); document.querySelectorAll(".cl-prof-pic.tip-on").forEach(x=>{ if(!b||x!==b.parentElement){ x.classList.remove("tip-on"); const k=x.querySelector("[data-ppet]"); k&&k.setAttribute("aria-expanded","false"); } });
   if(b){ const on=b.parentElement.classList.toggle("tip-on"); b.setAttribute("aria-expanded",on?"true":"false"); } });
+</script><script>/* step195: how to use flashcards */
+(function(){
+  const K="ncs-fchow", shut=()=>{ try{ return localStorage.getItem(K)==="1"; }catch(e){ return false; } };
+  const steps={
+    words:["<b>Before you flip</b>, try to remember the meaning. Say it out loud or in your head.","<b>Tap the card</b> to flip it and check.","<b>Be honest:</b> tap ✓ <b>I knew it</b> only if you got it without peeking. If you weren't sure, tap ✗ <b>Didn't know</b>.","Words you don't know come back a few cards later. After ✓ <b>3 times in a row</b>, a word counts as <b>learned</b>.","Tip: tap <b>Start in Spanish</b> to practice saying the word in English."],
+    irr:["<b>Before you flip</b>, say the <b>past simple</b> and <b>past participle</b> out loud (go → went → gone).","<b>Tap the card</b> to flip it and check. Tap 🔊 Listen to hear it.","<b>Be honest:</b> tap ✓ <b>I knew it</b> only if you got both forms right. Otherwise tap ✗ <b>Didn't know</b>.","Verbs you miss go to 📌 <b>Review</b>. After ✓ <b>3 times in a row</b>, you know that verb."]
+  };
+  window.__fcHow=k=>`<details class="fc-how"${shut()?"":" open"}><summary>💡 How to use flashcards</summary><ol>${(steps[k]||steps.words).map(x=>`<li>${x}</li>`).join("")}</ol><p class="fc-how-tip">A few minutes every day works better than one long session.</p></details>`;
+  const fill=()=>document.querySelectorAll("[data-fchow]").forEach(s=>{ if(!s.firstChild) s.innerHTML=window.__fcHow(s.dataset.fchow); });
+  document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.classList&&d.classList.contains("fc-how")){ try{ localStorage.setItem(K,d.open?"0":"1"); }catch(_){}
+    document.querySelectorAll(".fc-how").forEach(x=>{ if(x!==d&&x.open!==d.open) x.open=d.open; }); } },true);
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",fill); else fill();
+})();
 </script>
 <script type="module">
 /* ---------- Hibi cloud sync (Firebase Auth + Firestore) ----------
