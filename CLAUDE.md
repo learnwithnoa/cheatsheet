@@ -80,7 +80,8 @@ Pages updates about a minute after the push. End commit messages with the attrib
 ## Data (tools/hubsync.py)
 
 - Needs Noa's helper password as the env var `HUB_PASSWORD` **only** (e.g. `export HUB_PASSWORD='…'` in the same command).
-  It is not in this repo. Ask Noa for it if a change needs Hibi's data. Never print it or write it into any file, commit, doc, email or reply.
+  It is not in this repo. Ask Noa for it if a change needs Hibi's data. Never write it into any file, commit, doc or email, and never show it unprompted;
+  only paste it in a chat reply when Noa asks for it in that chat.
 - Run `python3 tools/hubsync.py` with no arguments to list its commands (students, classes, recaps, club posts, recordings, backups…).
 - Rules: students must never see private notes (the "About" text, boleta, emails, health, money, family). "View as" must never change anything.
   Lesson plans are never shown to members before class. In View as, `build/cloud.js` turns every Firestore write into a no-op and `comfort_early.html` blocks pay-helper calls (except /api/my-price); keep it that way.

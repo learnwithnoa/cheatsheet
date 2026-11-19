@@ -23,6 +23,10 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 .lb-card.chip .lb-top{gap:8px;margin:0;align-items:center}.lb-card.chip .lb-emo{font-size:20px}.lb-card.chip .lb-id{font-size:clamp(17px,1.7vw,22px);line-height:1.1}
 .lb-ov.dark .lb-chipbox{background:rgba(11,20,48,.45);border-color:#2b3b6e}.lb-ov.dark .lb-chiphd{color:#facc15}.lb-ov.dark .lb-card.chip{background:rgba(var(--h),.16)!important}
 @media (max-width:720px){.lb-grid.flow{grid-template-columns:minmax(0,1fr)}.lb-chipbox{grid-column:1;grid-row:auto}}
+.lb-items{list-style:none;margin:8px 0 0;padding:0;font-weight:700;font-size:16px;line-height:1.35;color:#4a5170}
+.lb-items li{position:relative;padding-left:20px;margin-top:4px}.lb-items li::before{content:"";position:absolute;left:4px;top:.5em;width:8px;height:8px;border-radius:50%;background:#f97316}
+.lb-ov.dark .lb-items{color:#b6c2e2}.lb-ov.dark .lb-items li::before{background:#facc15}
+.lb-card.wrap .lb-items{color:rgba(255,255,255,.93);display:inline-block;text-align:left}.lb-card.wrap .lb-items li::before{background:#fff}
 </style>
 <script>
 /* first paint: show the page you're opening (not a default one), and you as signed in, from what this device remembers; the real data replaces it a moment later */
@@ -5184,7 +5188,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&!(Array.isArray(c.questions)&&c.questions.length)&&(!inp||inp.has(c.section||""))).length;
     const card=c=>{ const qs=Array.isArray(c.questions)&&c.questions.length, save=c.style!=="wrap"&&(c.english||c.meaning);
       const main=`<div><div class="lb-top">${c.emoji?`<span class="lb-emo" aria-hidden="true">${esc(c.emoji)}</span>`:""}<div class="lb-id">${esc(c.text||"")}</div></div>
-        ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
+        ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${Array.isArray(c.items)&&c.items.length?`<ul class="lb-items">${c.items.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
         ${c.english?`<span class="lb-eq">🇺🇸 ${esc(c.english)}</span>`:""}${c.uk?`<span class="lb-eq uk">🇬🇧 ${esc(c.uk)}</span>`:""}
         ${save?`<div><button type="button" class="cl-addw lb-save" data-clw="${esc(JSON.stringify({w:c.text,tr:c.english||c.meaning||"",ex:c.example||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></div>`:""}</div>`;
       return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}${c.style==="chip"?" chip":""}">${main}${qs?`<div class="lb-qs"><div class="lb-ql">${L("Let's use it!","¡Usémoslo!")}</div><ol>${c.questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ol></div>`:""}</div>`; };
@@ -11348,6 +11352,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1118-lbitems", date:"November 18, 2026", title:"Easier-to-read live boards", items:[
+    ["🧩","Lists on the live board","When a card on a class's <b>🧩 Live board</b> has a list (like the options in a game or the things a group chose), it now shows as bullet points, one per line, just like in class.",""]
+  ]},
   {id:"2026-1118-future", date:"November 18, 2026", title:"New: the future, and confusing word pairs", items:[
     ["🔮","Talking about the future","A new module in <b>Practice → Grammar</b> (B1 and up): when to use <i>will</i>, <i>going to</i>, <i>I'm meeting…</i> and <i>the train leaves at 7</i>. A short lesson, 6 stages, an ⭐ Advanced stage and a test out.",""],
     ["🔀","Confusing word pairs","A new word pack in <b>Practice → Word packs</b>: <i>fun or funny</i>, <i>say or tell</i>, <i>borrow or lend</i>, <i>lose or miss</i> and more.",""],
@@ -11733,7 +11740,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261118213645"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261118231155"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

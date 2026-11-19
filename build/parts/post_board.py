@@ -120,4 +120,12 @@ i=s.index('</style>'); s=s[:i]+'''
 .lb-ov.dark .lb-chipbox{background:rgba(11,20,48,.45);border-color:#2b3b6e}.lb-ov.dark .lb-chiphd{color:#facc15}.lb-ov.dark .lb-card.chip{background:rgba(var(--h),.16)!important}
 @media (max-width:720px){.lb-grid.flow{grid-template-columns:minmax(0,1fr)}.lb-chipbox{grid-column:1;grid-row:auto}}
 '''+s[i:]
+# 2026-11-18: cards can carry "items" (a bullet list, one item per line), shown under the meaning like on the live board
+R('${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${c.example?', '${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${Array.isArray(c.items)&&c.items.length?`<ul class="lb-items">${c.items.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:""}${c.example?')
+i=s.index('</style>')
+s=s[:i]+'''.lb-items{list-style:none;margin:8px 0 0;padding:0;font-weight:700;font-size:16px;line-height:1.35;color:#4a5170}
+.lb-items li{position:relative;padding-left:20px;margin-top:4px}.lb-items li::before{content:"";position:absolute;left:4px;top:.5em;width:8px;height:8px;border-radius:50%;background:#f97316}
+.lb-ov.dark .lb-items{color:#b6c2e2}.lb-ov.dark .lb-items li::before{background:#facc15}
+.lb-card.wrap .lb-items{color:rgba(255,255,255,.93);display:inline-block;text-align:left}.lb-card.wrap .lb-items li::before{background:#fff}
+'''+s[i:]
 open(p,"w",encoding="utf-8").write(s)

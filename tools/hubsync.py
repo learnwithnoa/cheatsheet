@@ -54,7 +54,7 @@ Usage:
       shows that class's lesson plan to members ("📄 Class material"). Refuses before the class has ended: plans are NEVER shown before class.
   HUB_PASSWORD=... python3 hubsync.py club-board <class date YYYY-MM-DD> @/tmp/board.json   the live board Noa shared in class, saved for members ("🧩 Live board"
       next to that class's recording and on This week). Same json as the live board: {"title","subtitle","prompt","countLabel","theme":"light"|"dark","cards":[{"n","emoji","text","meaning",
-      "example","english","uk","section","questions":[...],"style":"wrap"}]}. Same date again = replaces it. Refuses before the class has ended.
+      "example","english","uk","section","questions":[...],"items":[bullet list],"style":"wrap"}]}. Same date again = replaces it. Refuses before the class has ended.
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-yt   newest videos in the club's YouTube playlist (refreshed every hour by the pay helper)
   HUB_PASSWORD=... python3 hubsync.py trials [days]   free 2-week club trials ("new": started/ended/joined in the last [days], default 2)
@@ -957,6 +957,8 @@ def main():
             x["n"] = float(c.get("n") or len(cards) + 1)
             qs = [_txt(q, 320) for q in (c.get("questions") or []) if _txt(q, 320)][:6]
             if qs: x["questions"] = qs
+            its = [_txt(t, 200) for t in (c.get("items") or []) if isinstance(t, str) and _txt(t, 200)][:12]
+            if its: x["items"] = its                                          # bullet list, one item per line
             if c.get("style") in ("wrap", "chip"): x["style"] = c["style"]   # chip = small pill in the "Your words" panel
             if c.get("nocount"): x["nocount"] = True                          # not counted in the board's number
             cards.append(x)

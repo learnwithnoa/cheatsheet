@@ -257,3 +257,11 @@ if '2026-1118-future' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+# Nov 18: bullet lists on saved live boards
+s=open(p,encoding="utf-8").read()
+if '2026-1118-lbitems' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1118-lbitems", date:"November 18, 2026", title:"Easier-to-read live boards", items:[
+    ["🧩","Lists on the live board","When a card on a class's <b>🧩 Live board</b> has a list (like the options in a game or the things a group chose), it now shows as bullet points, one per line, just like in class.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
