@@ -692,13 +692,13 @@ function renderIdeas() {
   const ls = all.slice().sort((a, b) => (a.status === "yes") - (b.status === "yes") || (b.count || 1) - (a.count || 1) || (b.last || "").localeCompare(a.last || ""));
   const seenAt = (hubMeta && hubMeta.ideasSeen) || 0, isNew = x => x.status !== "yes" && (Date.parse(x.last || x.first || "") || Date.now()) > seenAt;
   const nNew = all.filter(isNew).length;
-  /* the weekly builder runs early on Monday: an idea marked "Build it" is built the Monday after that day */
+  /* the builder runs every night (about 3:30 am): an idea marked "Build it" is built the next morning */
   const day = s => { const d = new Date((s || new Date().toISOString().slice(0, 10)) + "T12:00:00"); return isNaN(d) ? new Date() : d; };
-  const planFor = x => { const d = day(x.asked); d.setDate(d.getDate() + (((8 - d.getDay()) % 7) || 7)); return d; };
+  const planFor = x => { const d = day(x.asked); d.setDate(d.getDate() + 1); const t = day(); return d < t ? t : d; };
   const fmt = d => d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   const ico = x => x.kind === "words" ? "🗂️" : "🧩", kindT = x => x.kind === "words" ? "word pack" : "grammar module";
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🧱 Ideas to build ${nNew ? `<span class="news-n" style="background:#12935C">${nNew} new</span>` : `<span class="news-c">${all.filter(x => x.status !== "yes").length}</span>`}</h2>${nNew ? `<button type="button" class="kd-btn" data-ideaseen="1">Mark all as seen</button>` : ""}</div>
-    <p class="muted" style="margin:4px 0 8px">Grammar modules and word packs Hibi doesn't have yet, from what keeps coming up in your classes. Tap <b>Build it</b>: Claude builds it on the next Monday morning and it moves to <b>✅ Built</b>.</p>
+    <p class="muted" style="margin:4px 0 8px">Grammar modules and word packs Hibi doesn't have yet, from what keeps coming up in your classes. Tap <b>Build it</b>: Claude builds it early the next morning and it moves to <b>✅ Built</b>.</p>
     ${ls.length ? `<ul class="news-list">${ls.map(x => `<li${isNew(x) ? "" : ' class="seen"'}><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${ico(x)}</span>
       <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${kindT(x)} · came up ${x.count || 1}×</span>${x.why ? `<br><span style="font-size:13.5px">${esc(x.why)}</span>` : ""}${(x.examples || []).length ? `<br><span class="muted" style="font-size:13px">“${x.examples.slice(-2).map(esc).join("” · “")}”</span>` : ""}${(x.students || []).length ? `<br><span class="muted" style="font-size:12.5px">${x.students.map(esc).join(", ")}</span>` : ""}</span>
       ${x.status === "yes" ? `<span class="kc k-teal" style="color:var(--c-teal)" title="Asked${x.asked ? " on " + esc(fmt(day(x.asked))) : ""}">🗓 Planned for ${esc(fmt(planFor(x)))}</span><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="new">Undo</button>` : `<button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="yes">🛠 Build it</button><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="no">✕ Not now</button>`}</div></li>`).join("")}</ul>` : `<p class="muted" style="margin:0 0 8px">Nothing new to decide right now.</p>`}
@@ -711,7 +711,7 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
   const x = ((hubMeta && hubMeta.ideas) || []).find(i => i.id === b.dataset.idea); if (!x) return;
   const prev = x.status || "new", prevAsked = x.asked; x.status = b.dataset.st; if (x.status === "yes") x.asked = new Date().toLocaleDateString("en-CA"); else delete x.asked; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta);
   if (x.status === "no") undoBar("Idea dismissed", () => { x.status = prev; if (prevAsked) x.asked = prevAsked; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta); });
-  else toast(x.status === "yes" ? "Planned ✓ Claude builds “" + x.title + "” next Monday" : "Undone"); });
+  else toast(x.status === "yes" ? "Planned ✓ Claude builds “" + x.title + "” tomorrow morning" : "Undone"); });
 document.addEventListener("click", e => { if (!e.target.closest("[data-ideaseen]")) return; const before = hubMeta.ideasSeen || 0; hubMeta.ideasSeen = Date.now(); renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta);
   undoBar("Ideas marked as seen", () => { hubMeta.ideasSeen = before; renderIdeas(); renderTabs(); saveTPref("t-hubmeta", hubMeta); }); });
 document.addEventListener("click", e => { if (!e.target.closest("[data-tipseen]")) return; const now = Date.now(); ((hubMeta && hubMeta.recs) || []).forEach(r => { if (!r.done && !r.seen) r.seen = now; }); renderTips(); renderTabs(); saveMetaNow();
