@@ -1676,6 +1676,11 @@ details[open]>summary::before{transform:rotate(90deg)}
 #fcEmpty:not([hidden])~.fc-howslot{display:none}
 .fc-how-tip{margin:8px 0 0;color:var(--muted);font-size:13.5px}
 
+/* step196: edit box with media */
+.cs-edit .cs-prev:empty{display:none}
+.cs-edit .cs-prev{margin:8px 0 0}
+.cs-edit .cs-row{flex-wrap:wrap}
+
 /* ---------- cloud sync ---------- */
 a.brand{text-decoration:none;color:inherit;border-radius:8px}
 a.brand:hover span{filter:brightness(1.15)}
@@ -4722,8 +4727,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const rest=(item.likes||[]).filter(v=>rxOf(v)[0]!==mine); item.likes=prev&&prev[1]===emo?rest:rest.concat([mine+"|"+emo]);
     await api("PATCH","/"+path+"?updateMask.fieldPaths=likes",{fields:{likes:{arrayValue:{values:item.likes.map(S)}}}});
     if(!(prev&&prev[1]===emo)&&!prev&&item.uid&&item.uid!==mine){ const ps=path.split("/"); note(item.uid,ps.length>2?"reactc":"react",ps[1],emo+(item.text?" "+item.text:"")); } }
-  async function editDoc(path,item,text){ const data={text,imgs:item.imgs||[],edited:Date.now()}; if(item.gifs) data.gifs=item.gifs;
-    await api("PATCH","/"+path+"?updateMask.fieldPaths=json",{fields:{json:S(JSON.stringify(data))}}); item.text=text; item.edited=data.edited; }
+  async function editDoc(path,item,text,media){ let data={}; try{ data=JSON.parse(item.json||"{}")||{}; }catch(e){ data={}; } ["ch","cat","poll","idea"].forEach(k=>{ if(item[k]!=null&&data[k]==null) data[k]=item[k]; });
+    data.text=text; data.edited=Date.now(); const imgs=media?media.imgs:(item.imgs||[]), gifs=media?media.gifs:(item.gifs||[]);
+    data.imgs=imgs; if(gifs&&gifs.length) data.gifs=gifs; else delete data.gifs;
+    const js=JSON.stringify(data); await api("PATCH","/"+path+"?updateMask.fieldPaths=json",{fields:{json:S(js)}});
+    item.json=js; item.text=text; item.edited=data.edited; item.imgs=imgs; if(data.gifs) item.gifs=data.gifs; else delete item.gifs; }
   async function del(path){ await api("DELETE","/"+path); }
   /* ---------- UI ---------- */
   const COLORS=["#E5533D","#F0A63A","#3DDC97","#5AB8FF","#B18CFF","#FF7EB6","#2DD4BF","#C9A26B"];
@@ -4869,6 +4877,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   function gifGrid(pick,list){ const grid=pick.querySelector(".cs-gg"); grid.innerHTML=list.length?list.map((g,i)=>`<button type="button" class="cs-gi" data-gifi="${i}" aria-label="${esc(g.t)}"><img src="${esc(g.s)}" alt="" loading="lazy"></button>`).join(""):'<p class="cs-empty">No GIFs found. Try another word.</p>'; pick._list=list; }
   async function gifLoad(pick,q){ const grid=pick.querySelector(".cs-gg"); grid.innerHTML='<p class="cs-load">Loading…</p>'; try{ gifGrid(pick,await giphy(q)); }catch(e){ grid.innerHTML='<p class="cs-off">GIFs couldn\u2019t load right now. Try again in a bit.</p>'; } }
   function gifShow(form){ const g=GIF.get(form), pv=form.querySelector(".cs-prev"); pv.querySelectorAll(".cs-pvg").forEach(x=>x.remove()); if(g) pv.insertAdjacentHTML("beforeend",`<span class="cs-pv cs-pvg"><img src="${esc(g.s||g.u)}" alt="GIF"><button type="button" data-ungif="1" aria-label="Remove GIF">✕</button></span>`); }
+  function edPrev(fm){ const pv=fm.querySelector(".cs-prev"); pv.innerHTML=(fm._imgs||[]).map(id=>`<span class="cs-pv"><img data-img="${esc(id)}" alt=""><button type="button" data-edunimg="${esc(id)}" aria-label="${L("Remove photo","Quitar foto")}">✕</button></span>`).join(""); gifShow(fm); paintImgs(pv); }
   let gTimer=null;
   document.addEventListener("input",e=>{ const inp=e.target.closest(".cs-gq"); if(!inp) return; clearTimeout(gTimer); const pick=inp.closest(".cs-gifpick"), q=inp.value.trim(); gTimer=setTimeout(()=>{ if(q.length===1) return; gifLoad(pick,q); },650); });
   document.addEventListener("click",e=>{
@@ -4891,18 +4900,22 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     const rp=t.closest("[data-reply]"); if(rp){ const box=rp.closest(".cs-th,.cs-sub"), ta=box&&box.querySelector(".cs-comp textarea"); if(ta){ const tag="@"+rp.dataset.reply+" "; const fm=ta.closest("form"); if(fm&&rp.dataset.ruid){ fm._at=fm._at||{}; fm._at[rp.dataset.reply]=rp.dataset.ruid; } if(!ta.value.startsWith(tag)) ta.value=tag+ta.value; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } return; }
     const ed=t.closest("[data-edit]"); if(ed){ const path=ed.dataset.edit, parts=path.split("/"), id=parts[parts.length-1];
       const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
-      const card=ed.closest(".cs-c,.cs-p"), p=card.querySelector(":scope > .cs-txt"); if(!p||card.querySelector(".cs-edit")) return;
-      p.hidden=true; p.insertAdjacentHTML("afterend",`<div class="cs-edit"><textarea rows="3" maxlength="3000" aria-label="Edit">${esc(item.text||"")}</textarea><div class="cs-row"><span class="cs-msg" role="status"></span><button type="button" class="cs-act" data-edcancel="1">Cancel</button><button type="button" class="cs-send" data-edsave="${esc(path)}">Save</button></div></div>`);
-      const ta=card.querySelector(".cs-edit textarea"); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); return; }
-    const ec=t.closest("[data-edcancel]"); if(ec){ const card=ec.closest(".cs-c,.cs-p"); card.querySelector(".cs-edit").remove(); const p=card.querySelector(":scope > .cs-txt"); p.hidden=!p.textContent.trim(); return; }
-    const es=t.closest("[data-edsave]"); if(es){ const path=es.dataset.edsave, parts=path.split("/"), id=parts[parts.length-1], card=es.closest(".cs-c,.cs-p"), box=card.querySelector(".cs-edit"), text=box.querySelector("textarea").value.trim();
+      const card=ed.closest(".cs-c,.cs-p,.cl-ans"), p=card.querySelector(":scope > .cs-txt"); if(!p||card.querySelector(".cs-edit")) return;
+      p.hidden=true; const media=card.querySelector(":scope > .cs-gif, :scope > .cs-imgs"); if(media) card.querySelectorAll(":scope > .cs-gif, :scope > .cs-imgs").forEach(x=>x.hidden=true);
+      p.insertAdjacentHTML("afterend",`<form class="cs-edit" novalidate><textarea rows="3" maxlength="3000" aria-label="Edit">${esc(item.text||"")}</textarea><div class="cs-prev"></div><div class="cs-gifpick" hidden></div><div class="cs-row"><button type="button" class="cs-act cs-gifbtn" data-gifopen="1" aria-expanded="false">GIF</button><span class="cs-msg" role="status"></span><button type="button" class="cs-act" data-edcancel="1">${L("Cancel","Cancelar")}</button><button type="button" class="cs-send" data-edsave="${esc(path)}">${L("Save","Guardar")}</button></div></form>`);
+      const fm=card.querySelector(".cs-edit"); fm._imgs=(item.imgs||[]).slice(); const g0=(item.gifs||[])[0]; if(g0) GIF.set(fm,g0); edPrev(fm);
+      const ta=fm.querySelector("textarea"); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); return; }
+    const ui=t.closest("[data-edunimg]"); if(ui){ const fm=ui.closest(".cs-edit"); fm._imgs=fm._imgs.filter(x=>x!==ui.dataset.edunimg); edPrev(fm); return; }
+    const ec=t.closest("[data-edcancel]"); if(ec){ const card=ec.closest(".cs-c,.cs-p,.cl-ans"); card.querySelector(".cs-edit").remove(); card.querySelectorAll(":scope > .cs-gif, :scope > .cs-imgs").forEach(x=>x.hidden=false); const p=card.querySelector(":scope > .cs-txt"); p.hidden=!p.textContent.trim(); return; }
+    const es=t.closest("[data-edsave]"); if(es){ const path=es.dataset.edsave, parts=path.split("/"), id=parts[parts.length-1], card=es.closest(".cs-c,.cs-p,.cl-ans"), box=card.querySelector(".cs-edit"), text=box.querySelector("textarea").value.trim();
       const item=parts.length>2?(COMM[parts[1]]||[]).find(x=>x.id===id):(POSTS||[]).find(x=>x.id===id); if(!item) return;
-      if(!text&&!(item.imgs||[]).length&&!(item.gifs||[]).length){ box.querySelector(".cs-msg").textContent="Write something first."; return; }
-      es.disabled=true; try{ await editDoc(path,item,text); }catch(er){ box.querySelector(".cs-msg").textContent="Couldn’t save. Try again."; es.disabled=false; return; }
-      const fresh=parts.length>2?commentHTML(parts[1],item):postHTML(item); card.outerHTML=fresh; const host=document.querySelector(`[data-cid="${id}"],[data-pid="${id}"]`); if(host){ paintImgs(host); paintPolls(host); } return; }
+      const g=GIF.get(box), nm={imgs:(box._imgs||item.imgs||[]).slice(),gifs:g?[{u:g.u,w:g.w||0,h:g.h||0,t:g.t||"GIF"}]:[]};
+      if(!text&&!nm.imgs.length&&!nm.gifs.length){ box.querySelector(".cs-msg").textContent=L("Write something first.","Escribe algo primero."); return; }
+      es.disabled=true; try{ await editDoc(path,item,text,nm); }catch(er){ box.querySelector(".cs-msg").textContent="Couldn’t save. Try again."; es.disabled=false; return; }
+      if(card.classList.contains("cl-ans")){ const cl=card.closest(".cl-chal-list"); if(cl){ cl.dataset.on=""; mountChal(cl); } return; } const fresh=parts.length>2?commentHTML(parts[1],item):postHTML(item); card.outerHTML=fresh; const host=document.querySelector(`[data-cid="${id}"],[data-pid="${id}"]`); if(host){ paintImgs(host); paintPolls(host); } return; }
     const pn=t.closest("[data-pin]"); if(pn){ const id=pn.dataset.pin; PINS=PINS.includes(id)?PINS.filter(x=>x!==id):[id].concat(PINS).slice(0,3); try{ await savePins(); }catch(er){ if(typeof window.toast==="function") window.toast("Couldn’t pin it."); return; } const w=pn.closest(".cl-wall"); if(w) paintWall(w); return; }
     const dl=t.closest("[data-del]"); if(dl){ if(!confirm(L("Delete this? It can't be undone.","¿Borrar esto? No se puede deshacer."))) return; const path=dl.dataset.del; try{ await del(path); }catch(er){ if(typeof window.toast==="function") window.toast("Couldn’t delete it."); return; }
-      const parts=path.split("/"); if(parts.length>2){ const pid=parts[1]; COMM[pid]=(COMM[pid]||[]).filter(x=>x.id!==parts[3]); dl.closest(".cs-c").remove(); } else { POSTS=(POSTS||[]).filter(x=>x.id!==parts[1]); dl.closest(".cs-p").remove(); } return; }
+      const parts=path.split("/"); if(parts.length>2){ const pid=parts[1]; COMM[pid]=(COMM[pid]||[]).filter(x=>x.id!==parts[3]); dl.closest(".cs-c").remove(); } else { POSTS=(POSTS||[]).filter(x=>x.id!==parts[1]); (dl.closest(".cs-p,.cl-ans")||{remove(){}}).remove(); } return; }
     const op=t.closest("[data-open]"); if(op){ openSub(op.closest(".cs-p"),op.dataset.open); return; }
     const big=t.closest("[data-big]"); if(big){ const d=IMG[big.dataset.big]; if(!d) return; if(window.__csLightbox) window.__csLightbox(d); return; }
   });
@@ -5203,7 +5216,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   async function mountChal(el){ el.dataset.on="1"; const cid=el.dataset.chal;
     try{ await Promise.all([POSTS?null:listPosts().then(p=>{ POSTS=p; }),loadPins(),loadPark()]); }catch(e){ el.innerHTML=state==="off"?OFF:""; return; }
     const cidG=G()?"wSAMPLE":cid, ans=(POSTS||[]).filter(p=>p.ch===cidG).sort((a,b)=>(PICKS[cidG]===b.id)-(PICKS[cidG]===a.id)||a.at-b.at), done=ans.some(p=>p.uid===me());
-    el.innerHTML=`${ans.length?`<div class="cl-chal-ans">${ans.map(p=>`<div class="cl-ans${PICKS[cidG]===p.id?" pick":""}"><div class="cs-top">${who(p)}</div>${PICKS[cidG]===p.id?`<span class="cs-pickf">⭐ ${L("Noa’s pick","Elegido por Noa")}</span>`:""}<p class="cs-txt">${txtHTML(p.text||"")}</p>${imgs(p)}<div class="cs-acts">${likeBtn(p,"clubPosts/"+p.id)}${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pick="${esc(p.id)}" data-ch="${esc(cidG)}">${PICKS[cidG]===p.id?"⭐ Unpick":"⭐ Pick"}</button>`:""}</div></div>`).join("")}</div>`:`<p class="cs-empty">${L("No answers yet. Be the first!","Aún no hay respuestas. ¡Sé el primero!")}</p>`}
+    el.innerHTML=`${ans.length?`<div class="cl-chal-ans">${ans.map(p=>`<div class="cl-ans${PICKS[cidG]===p.id?" pick":""}" data-pid="${esc(p.id)}"><div class="cs-top">${who(p)}${G()?"":tools(p,"clubPosts/"+p.id,true)}</div>${PICKS[cidG]===p.id?`<span class="cs-pickf">⭐ ${L("Noa’s pick","Elegido por Noa")}</span>`:""}<p class="cs-txt">${txtHTML(p.text||"")}</p>${imgs(p)}<div class="cs-acts">${likeBtn(p,"clubPosts/"+p.id)}${me()===NOA&&!G()?`<button type="button" class="cs-act" data-pick="${esc(p.id)}" data-ch="${esc(cidG)}">${PICKS[cidG]===p.id?"⭐ Unpick":"⭐ Pick"}</button>`:""}</div></div>`).join("")}</div>`:`<p class="cs-empty">${L("No answers yet. Be the first!","Aún no hay respuestas. ¡Sé el primero!")}</p>`}
       ${el.dataset.cur?(done?`<p class="cl-chal-done">✅ ${L("You took this week’s challenge. Nice!","Hiciste el desafío de esta semana. ¡Bien!")}</p>`:composer("chal",cid,L("Write your answer… (+5 🍪 for your buddy)","Escribe tu respuesta… (+5 🍪 para tu buddy)"))):""}`;
     paintImgs(el);
     /* a little reward when Noa picks your answer */
@@ -11501,6 +11514,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1119-editgif", date:"November 19, 2026", title:"Edit your GIFs and photos", items:[
+    ["✏️","Fix a post after you share it","Tap ✏️ on your post, comment or weekly challenge answer to change the text, remove a photo, or remove or change the GIF.","club"]
+  ]},
   {id:"2026-1119-fchow", date:"November 19, 2026", title:"How to use flashcards", items:[
     ["💡","Flashcard tips","Flashcards now have a short <b>💡 How to use flashcards</b> guide: try to remember before you flip, be honest with ✓ / ✗, and a word is learned after ✓ 3 times in a row. Close it once and it stays closed.","quiz"]
   ]},
@@ -11912,7 +11928,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261119135554"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261119200034"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

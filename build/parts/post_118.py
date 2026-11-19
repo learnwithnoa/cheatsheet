@@ -315,3 +315,10 @@ if '2026-1119-fchow' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1119-editgif' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1119-editgif", date:"November 19, 2026", title:"Edit your GIFs and photos", items:[
+    ["✏️","Fix a post after you share it","Tap ✏️ on your post, comment or weekly challenge answer to change the text, remove a photo, or remove or change the GIF.","club"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
