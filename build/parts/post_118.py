@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=65',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=66',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -298,6 +298,13 @@ if '2026-1119-duels' not in s:
     ["⚔️","Your duels on Home","When you have a duel, <b>⚔️ Your duels</b> sits at the top of Home. Tap it to see the score, accept a challenge or check who you're waiting for.",""],
     ["🔔","Duel news in the bell","The 🔔 tells you when someone challenges you, accepts, takes the lead, when there's 1 day left and who won.",""],
     ["📜","Your past duels","Buddy park now keeps a list of your duels and results. After a practice round that counts for a duel, you'll see the new score.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1119-profpet' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1119-profpet", date:"November 19, 2026", title:"Profiles show your photo and your buddy", items:[
+    ["🐾","Meet their buddy","A member's profile now shows the same photo as the members list, with their study buddy in the corner. Hover over it (or tap it on your phone) to see its name, friendship level, what it's wearing and more.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
