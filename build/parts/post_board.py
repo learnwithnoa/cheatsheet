@@ -92,13 +92,13 @@ if '.lb-ov~.lk-box' not in s:
     i=s.index('</style>'); s=s[:i]+'\nhtml.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}\n.lb-ov .lb-box{-webkit-user-select:text;user-select:text}\n'+s[i:]
 open(p,"w",encoding="utf-8").write(s)
 # Nov 16 2026: "chip" cards (members' one-word answers as small pills in a "✨ Your words" panel next to the section's first card)
-# and the board's counter rules from the live board: the closing card, question cards and cards marked nocount don't count
+# and the board's counter rules from the live board: the closing card, question-only prompt cards and cards marked nocount don't count
 # (and when a board lists its sections, only the "✍️ Your ideas" sections count).
 s=open(p,encoding="utf-8").read()
 a='    const n=cards.filter(c=>c.style!=="wrap").length;'
 if s.count(a)==1:
     s=s.replace(a,'''    const inp=Array.isArray(b.sections)&&b.sections.length?new Set(b.sections.filter(x=>x&&x.input).map(x=>x.name)):null;
-    const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&!(Array.isArray(c.questions)&&c.questions.length)&&(!inp||inp.has(c.section||""))).length;''')
+    const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&(!(Array.isArray(c.questions)&&c.questions.length)||c.example||c.english)&&(!inp||inp.has(c.section||""))).length;   /* Nov 20 2026: lesson expressions (example + "Let's use it!" questions) count too; prompt cards (questions only) don't */''')
 a='return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}">'
 if s.count(a)==1:
     s=s.replace(a,'return `<div class="lb-card${qs?" wide":""}${c.style==="wrap"?" wrap":""}${c.style==="chip"?" chip":""}">')

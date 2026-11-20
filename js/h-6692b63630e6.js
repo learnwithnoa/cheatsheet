@@ -643,7 +643,7 @@
     const cards=(b.cards||[]).filter(c=>!c.hidden).slice().sort((x,y)=>(x.n||0)-(y.n||0)), order=[], groups={};
     cards.forEach(c=>{ const k=c.section||""; if(!(k in groups)){ groups[k]=[]; order.push(k); } groups[k].push(c); });
     const inp=Array.isArray(b.sections)&&b.sections.length?new Set(b.sections.filter(x=>x&&x.input).map(x=>x.name)):null;
-    const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&!(Array.isArray(c.questions)&&c.questions.length)&&(!inp||inp.has(c.section||""))).length;
+    const n=cards.filter(c=>c.style!=="wrap"&&!c.nocount&&(!(Array.isArray(c.questions)&&c.questions.length)||c.example||c.english)&&(!inp||inp.has(c.section||""))).length;   /* Nov 20 2026: lesson expressions (example + "Let's use it!" questions) count too; prompt cards (questions only) don't */
     const card=c=>{ const qs=Array.isArray(c.questions)&&c.questions.length, save=window.__lbSav(c);
       const main=`<div><div class="lb-top">${c.emoji?`<span class="lb-emo" aria-hidden="true">${esc(c.emoji)}</span>`:""}<div class="lb-id">${esc(c.text||"")}</div></div>
         ${c.meaning?`<div class="lb-mean">${esc(c.meaning)}</div>`:""}${Array.isArray(c.items)&&c.items.length?`<ul class="lb-items">${c.items.map(t=>`<li>${esc(t)}${window.__lbItemSav(c)?`<button type="button" class="lb-save lb-isave" title="${L("Save to My notebook","Guardar en Mi cuaderno")}" data-clw="${esc(JSON.stringify({w:t,tr:c.text||"",ex:""}))}">＋</button>`:""}</li>`).join("")}</ul>`:""}${c.example?`<div class="lb-ex">${c.style==="wrap"?esc(c.example):`“${esc(c.example)}”`}</div>`:""}
