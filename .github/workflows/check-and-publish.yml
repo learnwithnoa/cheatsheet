@@ -7,6 +7,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # changes saved by GitHub's own helpers (podcast audio, world fallback) don't start a push run, so publish after them too
+  workflow_run:
+    workflows: ["Podcast audio", "Around the world (fallback)"]
+    types: [completed]
 permissions:
   contents: read
   pages: write
