@@ -15,10 +15,26 @@ self.addEventListener("fetch", e => {
   const same = url.origin === self.location.origin;
   const font = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
   if (!same && !font) return; /* sign-in, saving and AI always go straight to the internet */
+  /* Hibi's pieces (js/h-<hash>.js, m-<hash>.js) never change once made: use the saved copy if there is one */
+  if (same && /\/(js\/h|m)-[0-9a-f]{12}\.js$/.test(url.pathname)) {
+    e.respondWith((async () => {
+      const c = await caches.open(CACHE), hit = await c.match(req);
+      if (hit) return hit;
+      const res = await fetch(req); if (res && res.ok) c.put(req, res.clone()).catch(() => {});
+      return res;
+    })());
+    return;
+  }
   e.respondWith((async () => {
     try {
       const res = await fetch(req);
-      if (res && (res.ok || res.type === "opaque")) { const c = await caches.open(CACHE); c.put(req, res.clone()).catch(() => {}); }
+      if (res && (res.ok || res.type === "opaque")) { const c = await caches.open(CACHE); c.put(req, res.clone()).catch(() => {});
+        /* a fresh Hibi page: forget saved pieces it doesn't use anymore (keeps the phone's storage small) */
+        if (req.mode === "navigate" && res.ok) res.clone().text().then(async html => {
+          const used = new Set((html.match(/(js\/h|m)-[0-9a-f]{12}\.js/g) || []));
+          if (!used.size) return;
+          for (const k of await c.keys()) { const m = new URL(k.url).pathname.match(/(js\/h|m)-[0-9a-f]{12}\.js$/); if (m && !used.has(m[0])) c.delete(k); }
+        }).catch(() => {}); }
       return res;
     } catch (err) {
       const hit = await caches.match(req, { ignoreSearch: req.mode === "navigate" });
