@@ -109,13 +109,33 @@ async function whoIs(env, req) {
   return u ? { uid: u.localId, email: normEmail(u.email), name: u.displayName || "" } : null;
 }
 
+// ---------- page errors from members' phones/computers → Noa's 🔔 (users/{Noa}/data/t-errors) ----------
+// Same error again = one line with a count. No words, notes or emails are stored: only where it broke and on what device.
+async function pageError(env, req) {
+  if (req.method !== "POST") return json({ error: "POST" }, 405, req);
+  const me = await whoIs(env, req); if (!me || !(await hibiMember(env, me))) return json({ ok: false }, 200, req);
+  const b = await req.json().catch(() => ({}));
+  const clean = (v, n) => String(v || "").replace(/[\w.+-]+@[\w.-]+/g, "<email>").slice(0, n);
+  const e = { msg: clean(b.msg, 220), src: clean(String(b.src || "").replace(/[?#].*$/, ""), 120), line: +b.line || 0, view: clean(b.view, 40), dev: clean(b.dev, 60), v: clean(b.v, 20) };
+  if (!e.msg) return json({ ok: false }, 200, req);
+  const key = e.msg + "|" + e.src + "|" + e.line;
+  const list = (await getJ(env, TEACHER, "t-errors")) || [];
+  const i = list.findIndex((x) => x.key === key), first = (me.name || "").split(" ")[0] || "Someone";
+  if (i >= 0) { const x = list.splice(i, 1)[0]; x.n = (x.n || 1) + 1; x.at = Date.now(); x.v = e.v; x.dev = e.dev; x.view = e.view; if (!(x.who || []).includes(first)) x.who = (x.who || []).concat(first).slice(-6); list.unshift(x); }
+  else list.unshift(Object.assign({ key, n: 1, at: Date.now(), first: Date.now(), who: [first] }, e));
+  await setJ(env, TEACHER, "t-errors", list.slice(0, 40));
+  return json({ ok: true }, 200, req);
+}
+
 // ---------- 🌍 "Around the world today" on Home: reactions everyone can see (first names only, signed-in Hibi members only) ----------
 // worldReacts/{YYYY-MM-DD}: { json: {"0": {uid: {e, n}}, ...}, hidden: "[1]" }
 const WRX = ["💛", "🤯", "😂"];
 async function hibiMember(env, me) {
   if (!me) return false; if (me.uid === TEACHER) return true;
   const r = plain(await fs(env, "GET", `roles/${me.uid}`)); if (r) return true;
-  return !!(me.email && await fs(env, "GET", `access/${encodeURIComponent(me.email)}`));
+  if (!me.email) return false;
+  const a = plain(await fs(env, "GET", `access/${encodeURIComponent(me.email)}`));
+  return !!a && a.gone !== true;   // an old "removed invite" marker doesn't count
 }
 async function worldDoc(env, day) { const d = plain(await fs(env, "GET", `worldReacts/${day}`)) || {}; let rx = {}, hidden = []; try { rx = JSON.parse(d.json || "{}") || {}; } catch (e) {} try { hidden = JSON.parse(d.hidden || "[]") || []; } catch (e) {} return { rx, hidden }; }
 const worldOut = (w, me) => ({ hidden: w.hidden, rx: Object.fromEntries(Object.entries(w.rx).map(([i, m]) => [i, Object.entries(m).map(([u, v]) => ({ e: v.e, n: v.n, me: !!me && u === me.uid }))])) });
@@ -424,6 +444,7 @@ async function mpNightly(env, uid, b) {
 // ---------- routes ----------
 async function subscribe(env, req, url) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
+  if (!(await hibiMember(env, me))) return json({ error: "Noa hasn’t opened Hibi for this email yet." }, 403, req);
   const body = await req.json().catch(() => ({}));
   if (body.provider === "paypal") return await ppSubscribe(env, req, url, me, body);
   if (body.provider === "mp") return await mpSubscribe(env, req, url, me, body);
@@ -573,6 +594,7 @@ async function manualTrials(env) {
 }
 async function startTrial(env, req) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
+  if (!(await hibiMember(env, me))) return json({ error: "Noa hasn’t opened Hibi for this email yet." }, 403, req);   // Nov 20 2026: only people Noa let in
   const b = await getBill(env, me.uid);
   if (b.trialUsed) return json({ error: "You’ve already had your free trial. You can join anytime, or message Noa." }, 400, req);
   const role = plain(await fs(env, "GET", `roles/${me.uid}`)) || {};
@@ -787,9 +809,14 @@ export default {
           const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", [{ uid: TEACHER, name: "Noa (test)", from: "Hibi", at: Date.now(), why: "test email" }].concat(cur).slice(0, 100));
           return json({ ok: true, sent: true }, 200, req);
         }
+        case "/api/err": return await pageError(env, req);
         case "/api/paypal-return": return await ppReturn(env, req, url);
         case "/api/mp-return": return await mpReturn(env, req, url);
-        case "/api/flow-callback": await nightly(env); return new Response("ok");
+        case "/api/flow-callback": {   // public (Flow calls it): runs the payment check at most once every 10 minutes
+          const st = plain(await fs(env, "GET", "billingConfig/callback")) || {};
+          if (Date.now() - (+st.at || 0) < 600e3) return new Response("ok");
+          await patch(env, "billingConfig/callback", { at: String(Date.now()) }); await nightly(env); return new Response("ok");
+        }
         case "/api/nightly": {
           const me = await whoIs(env, req); if (!me || me.uid !== TEACHER) return json({ error: "Only Noa can do this." }, 403, req);
           return json(await nightly(env), 200, req);

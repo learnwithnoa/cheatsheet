@@ -4023,9 +4023,10 @@ html.cs-calm .cs-rxpal button{transition:none}
       let mine=[]; try{ mine=window.__clubSocial&&window.__clubSocial.myNotes?await window.__clubSocial.myNotes():[]; }catch(e){}
       let trials=[]; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-trials"); trials=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"[]")||[]; }catch(e){}
       let mails=[]; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-mailsent"); mails=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"[]")||[]; }catch(e){}
+      let errs=[]; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-errors"); errs=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"[]")||[]; }catch(e){}
       let welc={}; try{ const F=window.__csFire, j=await fsx("GET","/users/"+F.uid()+"/data/t-kudos-sent"); welc=JSON.parse((j&&j.fields&&j.fields.json&&j.fields.json.stringValue)||"{}")||{}; }catch(e){}
       try{ const th=window.__clubSocial&&window.__clubSocial.dms?await window.__clubSocial.dms():[], me=window.__csFire&&window.__csFire.uid(); (th||[]).forEach(t=>(t.members||[]).forEach(u=>{ if(u&&u!==me) welc[u+"-join"]=welc[u+"-join"]||1; })); }catch(e){}
-      data={acc,priv,club,reps,areq,mine,welc,trials,mails}; if(NP) open=true;
+      data={acc,priv,club,reps,areq,mine,welc,trials,mails,errs}; if(NP) open=true;
       try{ if(new URLSearchParams(location.search).get("notif")){ open=true; history.replaceState(null,"",location.pathname+location.hash); } }catch(e){}
       paint();
     }catch(e){ console.warn("notifications",e); } finally{ busy=false; }
@@ -4062,7 +4063,8 @@ html.cs-calm .cs-rxpal button{transition:none}
     curKeys=keys;
     const trAll=(data.trials||[]).filter(t=>{ const w=Math.max(t.start||0,t.ended||0,t.joined||0); return w>wk&&((w>since&&!rdK.includes(kTr(t)))||w>RD2); }), trNew=trAll.filter(t=>Math.max(t.start||0,t.ended||0,t.joined||0)>since&&!rdK.includes(kTr(t)));
     const mlAll=(data.mails||[]).filter(m=>m.at>wk&&((m.at>since&&!rdK.includes(kMl(m)))||m.at>RD2)), mlNew=mlAll.filter(m=>m.at>since&&!rdK.includes(kMl(m)));
-    const cnt=keys.filter(k=>!rd.includes(k)).length+clubNew.length+mineNew.length+trNew.length+mlNew.length;
+    const kEr=x=>"er:"+x.key+":"+x.n, erAll=(data.errs||[]).filter(x=>x.at>wk&&((x.at>since&&!rdK.includes(kEr(x)))||x.at>RD2)), erNew=erAll.filter(x=>x.at>since&&!rdK.includes(kEr(x)));
+    const cnt=keys.filter(k=>!rd.includes(k)).length+clubNew.length+mineNew.length+trNew.length+mlNew.length+erNew.length;
     try{ localStorage.setItem("cs-tn-count",String(cnt)); }catch(e){} npSay({n:cnt});
     b.hidden=false;
     /* closed: a small button that opens it again */
@@ -4072,6 +4074,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     const li=(a,old)=>{ const dm=a.kind==="club"||a.kind==="both"||a.kind==="hibi", act=dm?`data-dmto="${esc(a.uid)}" data-dmname="${esc(a.name)}" data-dmdraft="${esc(welcome(a.name))}"`:a.email?`data-tnmail="${esc(a.email)}" data-tnname="${esc(a.name)}"`:"";
       return `<li class="${old?"tn-old":""}" ${act}>🎉 <b>${esc(a.name)}</b> joined <span class="muted">· ${ago(a.first)}</span> <span class="tn-k ${KIND[a.kind][1]}">${KIND[a.kind][0]}</span>${act?`${(data.welc||{})[a.uid+"-join"]?`<span class="tn-hint tn-done">✓ Welcomed · open the chat</span>`:`<span class="tn-hint">👋 ${dm?"Send a welcome message":"Email a welcome"}</span>`}`:""}${old?"":`<button type="button" class="tn-rd" data-tnrd="j:${esc(a.uid)}" aria-label="Mark as read" title="Mark as read (it stays here, but stops counting in the 🔔 number)">✓</button>`}</li>`; };
     b.innerHTML=bell+`<div class="tn-box"><div class="tn-h"><b>🔔 Notifications</b><span style="flex:1"></span>${undoPrev!=null?`<button type="button" class="tn-btn" data-tn="undo">↩ Undo</button>`:""}${cnt?`<button type="button" class="tn-btn" data-tn="seen">✓ Mark all as read</button>`:""}<button type="button" class="tn-x" data-tn="hide" aria-label="Close">×</button></div>
+      ${erAll.length?`<h4>🐞 Problems on Hibi</h4><p class="muted" style="margin:0 0 6px;font-size:12.5px">Something broke on a member's screen. Send this to Claude and it'll fix it.</p><ul>${erAll.slice(0,6).map(x=>`<li${x.at>since&&!rdK.includes(kEr(x))?"":' class="tn-read"'}>🐞 <b>${esc(x.msg)}</b>${x.n>1?` <span class="muted">(${x.n} times)</span>`:""}<br><span class="muted">${esc((x.who||[]).join(", "))} · ${esc(x.view||"")} · ${esc(x.dev||"")}${x.src?` · ${esc(x.src)}:${x.line|0}`:""} · ${ago(x.at)}</span></li>`).join("")}</ul>`:""}
       ${mlAll.length?`<h4>📧 Emails Hibi sent</h4><ul>${mlAll.slice(0,8).map(m=>`<li${m.at>since&&!rdK.includes(kMl(m))?"":' class="tn-read"'}>📧 <b>${esc(m.name||"Someone")}</b> ${m.why==="test email"?"got the test email":`got an email: unread message from ${esc(m.from||"someone")}`} <span class="muted">· ${ago(m.at)}</span>${m.uid&&m.why!=="test email"?` <button type="button" class="tn-go" data-tnrdgo="${esc(kMl(m))}" data-dmto="${esc(m.uid)}" data-dmname="${esc(m.name||"")}">Chat →</button>`:""}</li>`).join("")}</ul>`:""}
       ${trAll.length?`<h4>🎁 Free club trials</h4><ul>${trAll.map(t=>{ const when=Math.max(t.start||0,t.ended||0,t.joined||0), dd=d=>{ try{ return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }catch(e){ return d; } };
         const what=t.status==="joined"?"joined the club after the trial 💛":t.status==="trial-ended"?"’s free trial ended (club access removed)":t.status==="trial-kept"?"’s trial ended, kept in the club (you set it)":`started a free 2-week trial · ends ${dd(t.until)}`;
@@ -11949,7 +11952,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261120084806"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261120085253"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -13712,6 +13715,25 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
   document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.classList&&d.classList.contains("fc-how")){ try{ localStorage.setItem(K,d.open?"0":"1"); }catch(_){}
     document.querySelectorAll(".fc-how").forEach(x=>{ if(x!==d&&x.open!==d.open) x.open=d.open; }); } },true);
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",fill); else fill();
+})();
+</script><script>/* step198: report page errors to Noa (no words or notes, just where it broke) */
+(function(){
+  if(window.__csPreview||window.__csGuest) return;
+  const API="https://hibi-pay.learnwithnoa.workers.dev/api/err", seen=new Set(); let sent=0;
+  const dev=()=>{ const u=navigator.userAgent; const os=/iPhone/.test(u)?"iPhone":/iPad/.test(u)?"iPad":/Android/.test(u)?"Android":/Mac OS X/.test(u)?"Mac":/Windows/.test(u)?"Windows":"other";
+    const br=/CriOS|Chrome\//.test(u)&&!/Edg\//.test(u)?"Chrome":/Edg\//.test(u)?"Edge":/Firefox|FxiOS/.test(u)?"Firefox":/Safari\//.test(u)?"Safari":"browser"; return os+" · "+br+(window.matchMedia&&matchMedia("(display-mode: standalone)").matches?" · app":""); };
+  const view=()=>{ const v=[...document.querySelectorAll("section.view")].find(x=>x.offsetParent); return (location.hash||"").slice(0,30)||(v&&v.id)||"home"; };
+  async function send(msg,src,line){
+    msg=String(msg||"").slice(0,300); src=String(src||"");
+    if(!msg||/^Script error\.?$/.test(msg)||/ResizeObserver loop/.test(msg)||/extension:\/\//.test(src)) return;
+    if(src&&!/hibi\.cl|localhost|github\.io|^$/.test(src)&&!/^https?:\/\/[^/]*hibi/.test(src)) return;   /* only Hibi's own code */
+    const k=msg+"|"+src+"|"+line; if(seen.has(k)||sent>=5) return; seen.add(k); sent++;
+    try{ const F=window.__csFire; if(!F||!F.token) return; const tok=await F.token(); if(!tok) return;
+      let v=""; try{ v=(window.__csVer||"")+""; }catch(e){}
+      fetch(API,{method:"POST",headers:{authorization:"Bearer "+tok,"content-type":"application/json"},body:JSON.stringify({msg,src:src.replace(/^https?:\/\/[^/]+/,""),line:line|0,view:view(),dev:dev(),v}),keepalive:true}).catch(()=>{}); }catch(e){}
+  }
+  window.addEventListener("error",e=>{ if(e&&e.message) send(e.message,e.filename,e.lineno); });
+  window.addEventListener("unhandledrejection",e=>{ const r=e&&e.reason; const m=r&&(r.message||String(r)); if(m&&!/network|Failed to fetch|Load failed|NetworkError|aborted|offline|permission|PERMISSION|unauthenticated|signin|Please sign in/i.test(m)) send("Unhandled: "+m,r&&r.stack&&(String(r.stack).match(/https?:\/\/[^\s)]+/)||[""])[0],0); });
 })();
 </script>
 <script type="module">
