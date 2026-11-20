@@ -1,0 +1,46 @@
+name: Check and publish Hibi
+# Every change (by Noa, Claude, the nightly tasks or the daily builder) is checked here first:
+# the page must load on desktop and phone without errors, every practice question must be OK, and the sign-in gate must work.
+# Only if everything passes does hibi.cl update. If something fails, the site stays as it was and GitHub emails Noa.
+# (Needs Settings → Pages → Source: "GitHub Actions".)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install the test browser
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save playwright@1 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Check everything
+        run: bash build/test/ci.sh
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Leave out the build recipe and tests (not part of the site)
+        run: rm -rf build .github node_modules
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: . }
+      - id: deploy
+        uses: actions/deploy-pages@v4
