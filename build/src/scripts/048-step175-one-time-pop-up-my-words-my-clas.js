@@ -1,7 +1,7 @@
 
 /* step175: one-time pop-up: My words + My class notes are now My notebook */
 (function(){ const K="ncs-nb-intro";
-  const seen=()=>{ try{ return !!localStorage.getItem(K); }catch(e){ return true; } };
+  const seen=()=>{ if(window.__csGuest||(window.__csViewAsMode&&window.__csViewAsMode.sample)) return true; /* previews: nothing to migrate */ try{ return !!localStorage.getItem(K); }catch(e){ return true; } };
   const mark=()=>{ try{ localStorage.setItem(K,JSON.stringify(1)); window.__csOnSet&&window.__csOnSet(K); }catch(e){} };
   const busy=()=>[...document.querySelectorAll('.cs-dlg,.bd-modal,#whatsnew,#welcome')].some(x=>!x.hidden&&x.getClientRects().length)||(window.__csBusy&&window.__csBusy());
   let tries=0;

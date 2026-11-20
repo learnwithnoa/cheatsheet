@@ -3562,7 +3562,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   <p class="lede">Your private classes with Noa: your next class, homework, guides, class recaps, goals and your pack. Noa keeps it up to date after your classes.</p>
   <div class="ch-wrap" id="coachBox"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-15dc4f3aab18.js"></script>
+<script src="js/h-8ba6a0e833b6.js"></script>
 
 <script src="js/h-dca52fb2dced.js"></script>
 
@@ -3596,7 +3596,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-224f8c2b3ad2.js"></script>
+<script src="js/h-5eb6cb510629.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -4540,7 +4540,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-7f3463a88297.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261120095132"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261120152034"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -4915,7 +4915,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-wkgoal]")
 <script>
 /* step175: one-time pop-up: My words + My class notes are now My notebook */
 (function(){ const K="ncs-nb-intro";
-  const seen=()=>{ try{ return !!localStorage.getItem(K); }catch(e){ return true; } };
+  const seen=()=>{ if(window.__csGuest||(window.__csViewAsMode&&window.__csViewAsMode.sample)) return true; /* previews: nothing to migrate */ try{ return !!localStorage.getItem(K); }catch(e){ return true; } };
   const mark=()=>{ try{ localStorage.setItem(K,JSON.stringify(1)); window.__csOnSet&&window.__csOnSet(K); }catch(e){} };
   const busy=()=>[...document.querySelectorAll('.cs-dlg,.bd-modal,#whatsnew,#welcome')].some(x=>!x.hidden&&x.getClientRects().length)||(window.__csBusy&&window.__csBusy());
   let tries=0;
@@ -5055,7 +5055,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
   },true);
 })();
 </script>
-<script type="module" src="m-8d625e64b21a.js"></script>
+<script type="module" src="m-c5c4b9998c3e.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */
 (function(){

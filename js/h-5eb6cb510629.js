@@ -2,11 +2,48 @@
 /* Noa's guest link: ?guest=hb7k2q (plain) or ?guest=hb7k2q&as=club (club member with a sample week) skips the sign-in screen in that tab */
 (function(){
   const K="cs-guest";
-  try{ const q=new URLSearchParams(location.search); if(q.get("guest")==="hb7k2q"){ sessionStorage.setItem(K,q.get("as")==="club"?"club":"plain"); history.replaceState(null,"",location.pathname+(location.hash||"")); } }catch(e){}
+  try{ const q=new URLSearchParams(location.search); if(q.get("guest")==="hb7k2q"){ const a=q.get("as"); sessionStorage.setItem(K,a==="club"?"club":a==="private"?"private":"plain"); history.replaceState(null,"",location.pathname+(location.hash||"")); } }catch(e){}
   let g=null; try{ g=sessionStorage.getItem(K); }catch(e){}
   if(g&&window.__csViewAsMode){ try{ sessionStorage.removeItem(K); }catch(e){} g=null; }  /* "View as" a real student = their real data, never the guest samples */
+  /* Nov 20 2026: a sample private student (not in the club), so Noa can show a new student what Hibi looks like for them (kickoff).
+     Used by the guest link ?guest=hb7k2q&as=private and by View as → Generic → Private student. */
+  window.__csSampleView=()=>import(new URL("hubview.js?v=17",document.baseURI).href).then(m=>m.makeView(sampleHub(),{}));
+  function sampleHub(){
+    const D=n=>{ const d=new Date(); d.setDate(d.getDate()+n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+    const hub={ id:"sample", name:"Alex Sample", cefr:"B1", schedule:"Tuesdays and Thursdays, 7:00 PM", objective:"Feel confident speaking English in work meetings", kind:"pack",
+      packs:[{ id:"p1", label:"Pack 36 créditos", size:36, unit:"credits", paid:"full", deadline:"in 3 months" }],
+      classes:[
+        { date:D(-21), topics:"Session Zero: getting to know you, your goals, your English Map", att:"Present", hour:"Standard", credits:3, pack:"p1" },
+        { date:D(-17), topics:"Talking about your job: what you do, your team, a typical day", homework:"Write 5 sentences about your typical workday", att:"Present", hour:"Standard", credits:3, pack:"p1" },
+        { date:D(-14), topics:"Past simple stories: your last weekend, regular and irregular verbs", homework:"Practice: Past simple, stage 1 on Hibi", att:"Present", hour:"Standard", credits:3, pack:"p1" },
+        { date:D(-10), topics:"Meetings: giving your opinion politely (I think…, In my opinion…, I see your point, but…)", homework:"Watch a 5-minute video and write 3 opinions about it", att:"Present", hour:"Standard", credits:3, pack:"p1" },
+        { date:D(-7), topics:"Role play: a short status update in a team meeting", att:"Present", hour:"Standard", credits:3, pack:"p1" },
+        { date:D(-3), topics:"Small talk before a meeting: weekend plans, the weather, follow-up questions", homework:"Save 5 new expressions in My notebook", att:"Present", hour:"Standard", credits:3, pack:"p1" }],
+      payments:[{ date:D(-22), what:"Pack 36 créditos", amount:"$264.000" }],
+      focus:"1. Past simple in stories (I went, I saw, I didn't go)\n2. Asking follow-up questions in small talk\n3. Sounding polite when you disagree in meetings",
+      words:[{ w:"to catch up", tr:"ponerse al día", ex:"Let's catch up after the meeting." },{ w:"to run late", tr:"ir atrasado", ex:"Sorry, I'm running a bit late." },{ w:"a heads-up", tr:"un aviso", ex:"Just a heads-up: the meeting moved to 3." },{ w:"to touch base", tr:"conversar brevemente", ex:"Let's touch base on Friday." },{ w:"to wrap up", tr:"terminar, cerrar", ex:"Let's wrap up with next steps." }],
+      reports:[{ id:"rsample", from:D(-21), to:D(-3), sessions:6, snapshot:"Three weeks in and you already talk about your job for minutes at a time, without stopping to translate.",
+        clicking:[{ win:"You tell stories with more past simple", example:"\"Last weekend I went to the beach and we ate seafood.\"" },{ win:"You ask more questions back", example:"\"And you? What did you do?\"" }],
+        topics:["Your job","Past weekend stories","Meetings and opinions","Small talk"], patterns:["Sometimes \"I go\" instead of \"I went\" when you're telling a story fast."],
+        focus:[{ area:"Irregular past verbs", tip:"Do the Irregular verbs flashcards for 5 minutes a day." }], closing:"Great start. Keep the 5-minutes-a-day habit and you'll feel the difference in a month.", lang:"en", at:D(-3) }],
+      map:{ level:"B1", date:D(-21), where:"You can hold a real conversation about your work and your life. You understand most of what people say, and you get your message across, even when the grammar wobbles.",
+        power:{ title:"You're not afraid to speak", quote:"I don't know the word, but it's like a meeting where everybody talks at the same time.", note:"When you don't know a word, you explain it. That's exactly what fluent speakers do." },
+        focus:[{ t:"Past simple in stories", said:"Yesterday I go to the office", fix:"Yesterday I went to the office", tip:"Story about the past? Put the verb in the past. Every time.", mod:"ps", stage:1 },
+          { t:"Follow-up questions", said:"Ok. Nice.", fix:"Oh nice! How was it?", tip:"Answer + one question back keeps any conversation going." },
+          { t:"Polite disagreement", said:"No, that's wrong.", fix:"I see your point, but I think…", tip:"Soften first, then say what you think." }],
+        route:[{ when:"In 1 month", what:"Tell a story about your weekend without stopping to translate" },{ when:"In 3 months", what:"Give your opinion in a team meeting with confidence" },{ when:"In 6 months", what:"Lead a short meeting in English" }],
+        goal:"feel confident speaking English at work",
+        routine:[{ k:"Read", v:"A short story at your level, 10 minutes" },{ k:"Listen", v:"A podcast on your way to work" },{ k:"Words", v:"5 new words in My notebook" },{ k:"Watch", v:"Your favorite series with English subtitles" }],
+        how:"Two classes a week with a pack of 36 credits.", dayone:"Your first class is recorded as your starting point. In 3 months we'll listen to it together." } };
+    return hub;
+  }
   if(!g) return;
   window.__csGuest=g;
+  if(g==="private"){ let sv=null;
+    /* keep the sample in place even when the page later says "no account, no coaching" */
+    const put=()=>{ if(!sv||window.__csHubView===sv) return; window.__csHubView=sv; window.__csClub=null; window.__csClubKnown=true; document.dispatchEvent(new CustomEvent("cs-hubview")); };
+    window.__csSampleView().then(v=>{ sv=v; put(); }).catch(e=>console.warn("sample coaching",e));
+    document.addEventListener("cs-hubview",()=>setTimeout(put,0)); }
   const SAMPLE_CLUB={info:{schedule:[{wd:1,ico:"🧠",name:"Deep Dive Monday",time:"20:00",dur:90,desc:"A thought-provoking topic, usually with a short video, then we talk about it."},{wd:3,ico:"🃏",name:"Wildcard Wednesday",time:"20:00",dur:90,desc:"Games and activities, pure speaking, no formal teaching."},{wd:4,ico:"💬",name:"Word Up Thursday",time:"20:00",dur:90,desc:"About 6 phrasal verbs, idioms or expressions on a theme, then conversation using them."},{wd:5,ico:"😎",name:"Free Talk Friday",time:"14:30",dur:60,host:"Laura",desc:"Relaxed conversation to close the week."}],links:[]},
     posts:[{id:"wsample",week:(()=>{ const d=new Date(), m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7)); return m.getFullYear()+"-"+String(m.getMonth()+1).padStart(2,"0")+"-"+String(m.getDate()).padStart(2,"0"); })(),title:"✨ This week in the club (sample)",intro:"This is a sample week, so you can see how the Club page looks. Real members see the real post and Zoom links here.",
       classes:[{day:"Mon",ico:"🐾",name:"Deep Dive Monday",title:"A sample topic",teaser:"One or two lines about the class."},{day:"Wed",ico:"🎤",name:"Wildcard Wednesday",title:"A sample game",teaser:"One or two lines about the class."},{day:"Thu",ico:"🐴",name:"Word Up Thursday",title:"Sample expressions",teaser:"One or two lines about the class."},{day:"Fri",ico:"😎",name:"Free Talk Friday",title:"with Laura",teaser:"Relaxed conversation to close the week."}],closing:"See you in class! 🫰🏻",
@@ -17,7 +54,7 @@
   if(g==="club"){ const put=()=>{ if(!window.__csClub){ window.__csClub=SAMPLE_CLUB; document.dispatchEvent(new CustomEvent("cs-club")); } }; document.addEventListener("cs-club",()=>setTimeout(put,0)); setTimeout(put,300); }
   const bar=()=>{ if(document.getElementById("guestBar")) return; const d=document.createElement("div"); d.id="guestBar"; d.setAttribute("role","status");
     d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;background:#1f2937;color:#fff;font:600 13px system-ui,sans-serif;padding:8px 10px 8px 14px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;max-width:calc(100vw - 24px)";
-    d.innerHTML=`<span>👀 Guest preview${g==="club"?" · club member (sample week)":""} · nothing is saved to an account</span><button type="button" style="all:unset;cursor:pointer;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px">Exit</button>`;
+    d.innerHTML=`<span>👀 Guest preview${g==="club"?" · club member (sample week)":g==="private"?" · private student (sample)":""} · nothing is saved to an account</span><button type="button" style="all:unset;cursor:pointer;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px">Exit</button>`;
     d.querySelector("button").onclick=()=>{ try{ sessionStorage.removeItem(K); }catch(e){} location.reload(); }; document.body.appendChild(d); };
   if(document.body) bar(); else document.addEventListener("DOMContentLoaded",bar);
 })();

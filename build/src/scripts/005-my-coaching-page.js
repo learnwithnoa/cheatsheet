@@ -301,7 +301,7 @@
     if(!pop){ pop=document.createElement("div"); pop.id="vaPop"; pop.className="va-pop card"; pop.hidden=true;
       pop.innerHTML=`<div class="cs-sec va-sec" id="vaSec"><h4>👁 View the site as…</h4>
         <div class="va-guest"><div class="va-h">Guest links</div>
-          ${[["New member","https://hibi.cl/?guest=hb7k2q"],["Club member (sample week)","https://hibi.cl/?guest=hb7k2q&as=club#club"]].map(([l,u])=>`<div class="va-gl"><span>${l}</span><button type="button" class="va-copy" data-vacopy="${u}">Copy link</button></div>`).join("")}</div>
+          ${[["New member","https://hibi.cl/?guest=hb7k2q"],["Club member (sample week)","https://hibi.cl/?guest=hb7k2q&as=club#club"],["Private student (sample)","https://hibi.cl/?guest=hb7k2q&as=private#coaching"]].map(([l,u])=>`<div class="va-gl"><span>${l}</span><button type="button" class="va-copy" data-vacopy="${u}">Copy link</button></div>`).join("")}</div>
         <div class="va-list" id="vaList"><div class="va-res"><p class="muted">Loading everyone…</p></div></div></div>`;
       document.body.appendChild(pop); }
   }
@@ -322,7 +322,7 @@
     const pv=vaData.priv.filter(x=>m(x.view.name)), cl=vaData.club.filter(x=>m(x.name));
     const act=pv.filter(x=>x.status!=="inactive"&&x.status!=="past"), old=pv.filter(x=>!act.includes(x));
     const pb=x=>`<button type="button" data-va="${esc(x.key)}">${x.both?"🌳🌼":"🌳"} ${esc(x.view.name)}</button>`;
-    L.querySelector(".va-res").innerHTML=(q?"":`<div class="va-h">Generic</div><div class="va-grid"><button type="button" data-va="club">🌼 Club member</button><button type="button" data-va="private">🌳 Private student</button><button type="button" data-va="both">🌳🌼 Both</button></div>`)+
+    L.querySelector(".va-res").innerHTML=(q?"":`<div class="va-h">Generic</div><div class="va-grid"><button type="button" data-va="club">🌼 Club member</button><button type="button" data-va="private" title="A new private student (not in the club), with sample classes: good for kickoff sessions">🌳 New private student</button><button type="button" data-va="both">🌳🌼 Both</button></div>`)+
       (act.length?`<div class="va-h">Private students (${act.length})</div><div class="va-grid">${act.map(pb).join("")}</div>`:"")+
       ((cl.length||old.some(x=>x.both))?`<div class="va-h">Club members (${cl.length+old.filter(x=>x.both).length})</div><div class="va-grid">${old.filter(x=>x.both).map(pb).join("")}${cl.map(x=>`<button type="button" data-va="${esc(x.key)}">🌼 ${esc(x.name)}</button>`).join("")}</div>`:"")+
       (q&&!act.length&&!old.some(x=>x.both)&&!cl.length?`<p class="muted">Nobody called “${esc(q)}”.</p>`:"");
@@ -355,7 +355,11 @@
     if(e.target.closest("#vaExit")){ window.__csPreview=null; banner(null); if(window.__csViewAs) window.__csViewAs.restore(); document.dispatchEvent(new CustomEvent("cs-preview")); nav(); const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); return; }
     const cp=e.target.closest("[data-vacopy]"); if(cp){ const u=cp.dataset.vacopy; (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{ cp.textContent="Copied ✓"; setTimeout(()=>cp.textContent="Copy link",1800); }).catch(()=>{ window.prompt("Copy this link:",u); }); return; }
     const pick=e.target.closest("[data-va]"); if(pick){ const k=pick.dataset.va;
-      if(k==="club") preview("a club member",null,"club"); else if(k==="private") preview("a private student (example)",SAMPLE,"private"); else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE,"both");
+      if(k==="club") preview("a club member",null,"club");
+      else if(k==="private"){ /* a brand-new private student (not in the club): sample classes, map and report, an empty notebook and a fresh buddy, read-only (for kickoff sessions) */
+        pick.disabled=true; pick.textContent="Loading…";
+        const go=v=>{ try{ sessionStorage.setItem("cs-viewas",JSON.stringify({label:"a new private student (sample)",kind:"private",view:v,uid:null,data:{},sample:true,at:Date.now()})); location.hash="#coaching"; location.reload(); }catch(er){ preview("a private student (example)",v,"private"); } };
+        (window.__csSampleView?window.__csSampleView():Promise.reject()).then(go,()=>go(SAMPLE)); } else if(k==="both") preview("a private student who's also in the club (example)",SAMPLE,"both");
       else if(k.startsWith("hub:")){ const x=vaData.priv.find(x=>x.key===k); if(x){ const lb=x.view.name+(x.both?" (private + club)":" (private)"); if(x.uid) realView(lb,x.view,x.both?"both":"private",x.uid,pick); else preview(lb+" · not on Hibi yet, so no words or notes",x.view,x.both?"both":"private"); } }
       else { const x=vaData.club.find(x=>x.key===k); if(x) realView(x.name+(x.inClub===false?" (not in the club yet)":" (club)"),null,"club",x.uid,pick); }
       return; }

@@ -345,7 +345,7 @@ window.__csFire = {
   token: async () => auth.currentUser ? auth.currentUser.getIdToken() : null,
   /* in Noa's "View as", the club shows things as that member sees them (reads only: the club refuses every write) */
   uid: () => VA && VA.uid ? VA.uid : auth.currentUser ? auth.currentUser.uid : null,
-  name: () => VA && VA.uid ? String(VA.name || VA.label || "").split(" · ")[0].replace(/\s*\((?:private \+ club|private|club)\)\s*$/, "") : auth.currentUser ? (NICK || auth.currentUser.displayName || (auth.currentUser.email || "").split("@")[0]) : "",
+  name: () => VA && VA.sample ? "Alex" : VA && VA.uid ? String(VA.name || VA.label || "").split(" · ")[0].replace(/\s*\((?:private \+ club|private|club)\)\s*$/, "") : auth.currentUser ? (NICK || auth.currentUser.displayName || (auth.currentUser.email || "").split("@")[0]) : "",
   readOnly: () => !!VA,
   email: () => auth.currentUser ? String(auth.currentUser.email || "").toLowerCase() : "",
   key: firebaseConfig.apiKey
