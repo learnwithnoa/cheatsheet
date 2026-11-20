@@ -322,3 +322,11 @@ if '2026-1119-editgif' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1120-autofill' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1120-autofill", date:"November 20, 2026", title:"Choose what Hibi fills in for your words", items:[
+    ["⚙️","Auto-fill, your way","When you save a word, Hibi fills in the Spanish, a simple meaning, the word type, how to say it and an example by itself. In <b>My notebook</b>, tap <b>⚙️ Auto-fill</b> to choose which ones (untick <b>Example sentence</b> if you like writing your own).","words"],
+    ["✨","Only when something's missing","The <b>✨ Fill in missing details</b> button now shows up only when some of your words are missing something, with how many.","words"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

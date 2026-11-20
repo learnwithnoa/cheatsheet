@@ -3454,7 +3454,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   <p class="lede">Every word you save, newest first. Practice them with flashcards, or paste a list (or your notes from class) and ✨ Hibi finds the words.</p>
   <div id="slotAwPage" class="page-slot"></div>
   <p class="ai-status" id="aiStatus" hidden aria-live="polite"></p>
-  <div class="note-actions" style="margin:4px 0 14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiClean" title="Step 1: fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" id="aiFill" title="Step 2: fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap w-goflash" type="button" id="wGoFlash">Practice with flashcards →</button></div>
+  <div class="note-actions" style="margin:4px 0 14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiClean" title="Fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" id="aiFill" hidden title="Some of your words are missing details: fill them in">✨ Fill in missing details <span class="aif-n"></span></button><button class="swap" type="button" id="aiAuto" title="Choose what Hibi fills in by itself when you save a word">⚙️ Auto-fill</button><button class="swap w-goflash" type="button" id="wGoFlash">Practice with flashcards →</button></div>
   <div class="card import-card" id="importCard" hidden>
     <div class="qa-top"><h3>Add many words at once</h3><button class="qa-x" type="button" id="impClose" aria-label="Close">×</button></div>
     <p class="imp-lede">Paste your words in <b>any format</b>: a list, a message, notes from class, a copy from a document… ✨ The AI finds the words, adds the Spanish and skips the ones you already have. You'll see the list before anything is added.</p>
@@ -4458,7 +4458,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2><em>My notebook</em>: the heart of it 💛</h2>
     <p class="wl-lede">The words you save are the most important part of Hibi. Everything else builds on them.</p>
     <ul class="wl-list">
-      <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. Just the word is enough: Hibi adds the Spanish, a simple meaning, the word type, how to say it and an example. Choose which ones with <b>⚙️ Auto-fill</b> in <b>My notebook</b>.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Make Home yours:</b> tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn and reactions everyone can see. Tap a title to open the full story.</div></li>
@@ -4537,10 +4537,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-7f3463a88297.js"></script>
+<script src="js/h-f4781421031d.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261120152034"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261120181345"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

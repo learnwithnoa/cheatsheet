@@ -3926,11 +3926,14 @@ const fillF=()=>{ const v=LS.get("ncs-fillf",null); if(!Array.isArray(v)) return
 const missF=(x,fs)=>x&&x.w&&!x.sample&&fs.some(f=>f==="pr"?(isShort(x)&&!x.pr&&!x.prTried):!x[f]);
 const PR_RULE="an easy pronunciation guide for a Spanish speaker: split the syllables with hyphens, write the STRESSED syllable in CAPITALS, use plain letters read the English way (no IPA symbols), keep phrasal verbs as separate words. Examples: leverage → LEV-er-ij, drawback → DRAW-bak, give up → giv UP, thought → thawt, comfortable → KUMF-ter-bul, schedule → SKEJ-ool";
 const cleanPos=p=>{ p=String(p||"").toLowerCase().trim(); return POS_LIST.includes(p)?p:(p.includes("phrasal")?"phrasal verb":p.slice(0,20)); };
-function saveWordsNow(){ LS.set("ncs-words",words); try{ renderWords(); fcShuffle(); renderFlash(); }catch(e){} }
+function saveWordsNow(){ LS.set("ncs-words",words); try{ renderWords(); fcShuffle(); renderFlash(); }catch(e){} updFill(); }
+/* "✨ Fill in missing details" shows only when some words (not the ones auto-fill is still working on) miss something */
+function updFill(){ const b=document.getElementById("aiFill"); if(!b) return; let n=0; try{ const fs=fillF(), now=Date.now(); n=fs.length?words.filter(x=>missF(x,fs)&&(x.ai||now-(+x.t||0)>90000)).length:0; }catch(e){} b.hidden=!n; const c=b.querySelector(".aif-n"); if(c) c.textContent=n?"("+n+")":""; }
+setInterval(()=>{ const v=document.getElementById("v-words"); if(v&&!v.hidden) updFill(); },5000);
 
 /* ---------- fill in the details of each word (part of speech, meaning, translation, example) ---------- */
 async function enrichBatch(list,fs){
-  fs=fs||FILLF.filter(f=>f!=="e"||!noEx()); const want=f=>fs.includes(f);
+  fs=fs||fillF(); const want=f=>fs.includes(f);
   const items=list.map(x=>({id:x.id,word:x.w,spanish:x.m||"",example:x.e||"",short:isShort(x)}));
   const p="You help a Spanish-speaking learner of English (from Chile) build their vocabulary list. For EACH item return:\n"+
     (want("pos")?"- pos: the part of speech, one of: "+POS_LIST.join(", ")+"\n":"- pos: always an empty string\n")+
@@ -3952,7 +3955,8 @@ async function enrichBatch(list,fs){
   saveWordsNow();
   return n;
 }
-const needsInfo=x=>x&&x.w&&!x.sample&&(!x.pos||!x.def||!x.m||!x.e)&&!x.ai;
+/* auto-fill follows the student's ⚙️ Auto-fill choices (Nov 20 2026) */
+const needsInfo=x=>x&&x.w&&!x.sample&&!x.ai&&missF(x,fillF());
 let enrQ=new Set(), enrT=null, enrBusy=false;
 function queueEnrich(ids){ ids.forEach(i=>enrQ.add(i)); clearTimeout(enrT); enrT=setTimeout(runEnrich,2200); }
 async function runEnrich(){
@@ -4006,10 +4010,11 @@ document.addEventListener("change",e=>{
   if(box.dataset.kind==="fill"){ const fs=opts.filter(o=>o.checked).map(o=>o.value), n=words.filter(x=>missF(x,fs)).length, c=document.getElementById("aiFillN"); if(c) c.textContent=n+(n===1?" word":" words"); }
 });
 const optList=(kind,items,on)=>'<div class="ai-opts" data-kind="'+kind+'"><label class="cs-chk ai-all"><input type="checkbox" data-selall'+(items.every(i=>on.includes(i[0]))?' checked':'')+'> <span><b>Select all</b></span></label>'+items.map(i=>'<label class="cs-chk"><input type="checkbox" data-opt value="'+i[0]+'"'+(on.includes(i[0])?' checked':'')+'> <span><b>'+i[1]+'</b>'+(i[2]?'<small>'+i[2]+'</small>':'')+'</span></label>').join("")+'</div>';
+const AUTOF=[["m","Spanish translation"],["def","Simple meaning","A short, easy English meaning"],["pos","Word type","noun, verb, phrasal verb…"],["pr","Pronunciation","How to say it, like LEV-er-ij (single words and short expressions)"],["e","Example sentence","Untick it if you like writing your own"]];
 const readOpts=el=>[...el.querySelectorAll("[data-opt]:checked")].map(o=>o.value);
 const CLEANF=[["spell","Spelling","English and Spanish typos"],["caps","Capital letters & punctuation",""],["es","Wrong Spanish meanings",""],["gram","Grammar in example sentences","Sentences you wrote yourself are only suggested, never changed unless you tick them"],["miss","Missing translations & examples",""],["dups","Repeated words","The same word saved twice: keep one and combine their details"]];
 const cleanF=()=>{ const v=LS.get("ncs-cleanf",null); return Array.isArray(v)?v:CLEANF.map(c=>c[0]); };
-setTimeout(showUndo,0);
+setTimeout(showUndo,0); setTimeout(updFill,0);
 
 /* "Complete my words": fill in everything that's missing, in small batches */
 async function completeAll(btn,fs){
@@ -4169,12 +4174,16 @@ async function cleanUp(btn,co){
 }
 document.addEventListener("click",e=>{
   const f=e.target.closest("#aiFill"), c=e.target.closest("#aiClean");
-  if(f){ const fs0=fillF(), n=words.filter(x=>missF(x,FILLF)).length;
-    if(!n){ const st=document.getElementById("aiStatus"); st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
-    const n0=words.filter(x=>missF(x,fs0)).length;
-    askFirst("✨ Complete my words",'<p>Choose what the AI fills in. It only fills what\'s <b>missing</b> (<span id="aiFillN">'+n0+(n0===1?" word":" words")+'</span>) and <b>never changes anything you already wrote</b>.</p>'+
-      optList("fill",[["m","Spanish translation"],["def","Simple meaning","A short, easy English meaning"],["pos","Word type","noun, verb, phrasal verb…"],["pr","Pronunciation","How to say it, like LEV-er-ij (single words and short expressions)"],["e","Example sentence","Untick it if you like writing your own. New words won\'t get one either"]],fs0),
-      el=>{ const fs=readOpts(el); LS.set("ncs-fillf",fs); LS.set("ncs-fillf-v",2); LS.set("ncs-noex",!fs.includes("e")); completeAll(f,fs); },"Complete them"); }
+  if(f){ const fs0=fillF(), n0=words.filter(x=>missF(x,fs0)).length, nm={m:"the Spanish",def:"a simple meaning",pos:"the word type",pr:"how to say it",e:"an example sentence"}, li=fs0.map(k=>nm[k]);
+    if(!n0){ updFill(); const st=document.getElementById("aiStatus"); st.hidden=false; st.textContent="✓ All your words already have their details."; return; }
+    askFirst("✨ Fill in missing details",'<p><b>'+n0+(n0===1?" word is":" words are")+'</b> missing something. Hibi fills in '+esc(li.length>1?li.slice(0,-1).join(", ")+" and "+li[li.length-1]:li[0])+' where it\'s missing, and <b>never changes anything you already wrote</b>.</p><p class="muted" style="font-size:13.5px">To change what gets filled in, use <b>⚙️ Auto-fill</b>.</p>',
+      ()=>completeAll(f,fs0),"Fill them in"); }
+  else if(e.target.closest("#aiAuto")){ const fs0=fillF();
+    const d=csDialog('<h3 style="margin-top:0">⚙️ Auto-fill</h3><p>When you save a word, Hibi fills in these by itself. It never changes anything you wrote.</p>'+
+      optList("auto",AUTOF,fs0)+'<div class="note-actions"><button class="pill-btn pill-green" type="button" data-af="y">Save</button><button class="swap" type="button" data-af="n">Cancel</button></div>');
+    d.el.addEventListener("click",ev=>{ const b=ev.target.closest("[data-af]"); if(!b) return; const fs=readOpts(d.el); d.close(); if(b.dataset.af!=="y") return;
+      LS.set("ncs-fillf",fs); LS.set("ncs-fillf-v",2); LS.set("ncs-noex",!fs.includes("e")); updFill();
+      toast(fs.length?"✓ Saved. New words get "+fs.length+(fs.length===1?" thing":" things")+" filled in":"✓ Saved. Auto-fill is off"); }); }
   else if(c) askFirst("🧹 Clean up my words",'<p>Choose what the AI checks. It shows you every change first, and <b>nothing changes until you press Apply</b>. Your own sentences (✍️) are never touched.</p>'+optList("clean",CLEANF,cleanF()),
       el=>{ const co=readOpts(el); LS.set("ncs-cleanf",co); cleanUp(c,co); },"Check my words");
   else if(e.target.closest("#aiUndo")) undoWords();
@@ -4197,7 +4206,8 @@ window.queueEnrich=queueEnrich; window.csBeginnerOn=csBeginner;
     ["#spMic","Toca y dilo","in"],
     ["#rvGo","Practicar estas 5","in"],
     ["#impOpen","Agregar muchas palabras","in"],
-    ["#aiFill","Completar mis palabras","in"],
+    ["#aiFill","Completar lo que falta","in"],
+    ["#aiAuto","Qué se completa solo","in"],
     ["#aiClean","Ordenar mis palabras","in"],
     ["#ttLove","Mandar cariño","in"],
     [".today-word .td-tag","Palabra del día","in"],
@@ -5002,6 +5012,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1120-autofill", date:"November 20, 2026", title:"Choose what Hibi fills in for your words", items:[
+    ["⚙️","Auto-fill, your way","When you save a word, Hibi fills in the Spanish, a simple meaning, the word type, how to say it and an example by itself. In <b>My notebook</b>, tap <b>⚙️ Auto-fill</b> to choose which ones (untick <b>Example sentence</b> if you like writing your own).","words"],
+    ["✨","Only when something's missing","The <b>✨ Fill in missing details</b> button now shows up only when some of your words are missing something, with how many.","words"]
+  ]},
   {id:"2026-1119-editgif", date:"November 19, 2026", title:"Edit your GIFs and photos", items:[
     ["✏️","Fix a post after you share it","Tap ✏️ on your post, comment or weekly challenge answer to change the text, remove a photo, or remove or change the GIF.","club"]
   ]},
