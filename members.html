@@ -163,6 +163,17 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 .pend-btns{display:flex;gap:6px}
 .pend-re,.pend-x{width:32px;height:32px;display:grid;place-items:center;padding:0;line-height:1;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer;font:700 13px var(--body)}
 .pend-re:hover{border-color:var(--royal,#3b82f6)}
+.rm-box{margin-top:28px;padding:14px 16px;border:1.5px dashed color-mix(in srgb,#e05252 55%,var(--line));border-radius:14px}
+.rm-box h3{margin:0 0 6px;font-size:16px}
+.rm-box p{margin:0 0 10px;line-height:1.5}
+.rm-btn{font:800 14px var(--body);padding:8px 16px;border-radius:999px;border:1.5px solid #e05252;background:transparent;color:#e05252;cursor:pointer}
+.rm-btn:hover,.rm-btn.sure{background:#e05252;color:#fff}
+.rm-list{margin-top:12px;border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;background:var(--surface)}
+.rm-list>summary{font-weight:800;cursor:pointer}
+.rm-list ul{list-style:none;margin:8px 0 0;padding:0}
+.rm-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.rm-list li>span{display:flex;flex-direction:column;min-width:0}
+.rm-list .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .pend-x{color:var(--muted,#8a94a8)}.pend-x svg{display:block}.pend-x:hover{border-color:#e05252;color:#e05252}
 .pend-hint{margin:6px 0 0;font-size:11.5px;color:var(--muted,#8a94a8)}
 .pend-twin{grid-column:1/-1;margin-top:6px;padding:6px 9px;border-radius:9px;font-size:12px;line-height:1.35;color:#d97706;background:color-mix(in srgb,#d97706 12%,transparent);overflow-wrap:anywhere}
@@ -425,7 +436,9 @@ async function load() {
       });
     }));
     list.sort((a, b) => b.lastSeen - a.lastSeen);
-    students = list.filter(s => s.email.toLowerCase() !== TEACHER);
+    const RM = (hubMeta && hubMeta.removed) || {};
+    students = list.filter(s => s.email.toLowerCase() !== TEACHER && !RM[s.uid]);
+    renderRemoved();
     loadPending();
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
@@ -963,7 +976,40 @@ function renderDetail(s) {
     const text = $("an").value.trim(); if (!text) { $("an").focus(); return; }
     guarded(s, "ncs-classnotes", list => list.concat([{ id: newId(), t: Date.now(), text, by: "teacher" }]), "Note added");
   };
+  /* Nov 20 2026: remove someone from Hibi (e.g. signed in with the wrong email) */
+  const r = s.role || {}, fn = esc(s.name.split(" ")[0]), mem = r.club || r.private || r.hub;
+  $("detail").insertAdjacentHTML("beforeend", `<div class="rm-box"><h3>🚫 Remove from Hibi</h3>
+    <p class="muted small">For an account that shouldn't be here, like someone who signed in with the wrong email. ${fn} won't be able to open Hibi with <b>${esc(s.email)}</b> anymore and disappears from your lists. Nothing they saved is deleted, and you can let them back in anytime from “🚫 Removed from Hibi” under the member list.${mem ? ` <b>Careful: ${fn} is set as a ${r.club && (r.private || r.hub) ? "club and private" : r.club ? "club" : "private"} member on this account.</b>` : ""}</p>
+    <button type="button" class="rm-btn" data-rmhibi="1">Remove ${fn} from Hibi</button></div>`);
 }
+/* removed people: hidden from every list here; "Let back in" gives them access again */
+function renderRemoved() {
+  let box = $("rmList"); if (!box) { box = document.createElement("details"); box.id = "rmList"; box.className = "rm-list"; $("list").insertAdjacentElement("afterend", box); }
+  const rm = Object.entries((hubMeta && hubMeta.removed) || {}).sort((a, b) => (b[1].at || 0) - (a[1].at || 0));
+  box.hidden = !rm.length;
+  box.innerHTML = `<summary>🚫 Removed from Hibi <span class="mt-n cnt">${rm.length}</span></summary><ul>${rm.map(([uid, x]) => `<li><span><b>${esc(x.name || "(no name)")}</b><span class="em">${esc(x.email || "")}</span><span class="muted small">removed ${fmtDate(x.at)}</span></span><button type="button" class="ib" data-rmback="${esc(uid)}">Let back in</button></li>`).join("")}</ul>`;
+}
+async function removeFromHibi(s) {
+  const em = (s.email || "").toLowerCase(); if (!em) { toast("This account has no email, so it can't be removed here."); return; }
+  try { await deleteDoc(doc(db, "access", em)); } catch (e) { console.warn("remove access", e); toast("Couldn't remove them. Try again."); return; }
+  try { await deleteDoc(doc(db, "park", s.uid)); } catch (e) {}
+  try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
+  hubMeta = hubMeta || {}; hubMeta.removed = hubMeta.removed || {};
+  hubMeta.removed[s.uid] = { email: em, name: s.name, at: Date.now() };
+  await saveMetaNow();
+  students = students.filter(x => x.uid !== s.uid); current = null;
+  $("detail").innerHTML = `<p class="muted">${esc(s.name)} was removed from Hibi. Pick a student on the left to see their words and notes.</p>`;
+  renderList(); renderRemoved(); renderClub(); renderTabs();
+  toast("🚫 " + s.name.split(" ")[0] + " can't open Hibi with " + em + " anymore");
+}
+async function letBackIn(uid) {
+  const x = ((hubMeta && hubMeta.removed) || {})[uid]; if (!x) return;
+  try { await setDoc(doc(db, "access", x.email), { name: x.name || "", at: Date.now(), by: "noa" }); } catch (e) { console.warn(e); toast("Couldn't do it. Try again."); return; }
+  try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
+  if (hubMeta && hubMeta.removed) delete hubMeta.removed[uid]; await saveMetaNow();
+  toast("✅ " + (x.name || x.email).split(" ")[0] + " can open Hibi again"); load();
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-rmback]"); if (b) { b.disabled = true; letBackIn(b.dataset.rmback); } });
 
 /* row buttons */
 let sureT = null;
@@ -991,6 +1037,10 @@ $("detail").addEventListener("click", e => {
   else if (d.nsave) { const id = d.nsave, text = $("en").value.trim(); if (!text) return; editN = null;
     guarded(s, "ncs-classnotes", list => list.map(x => x && x.id === id ? { ...x, text } : x), "Note updated"); }
   else if (d.ndel) confirmTwice(t, () => guarded(s, "ncs-classnotes", list => list.filter(x => !(x && x.id === d.ndel)), "Note deleted"));
+  else if (d.rmhibi) {
+    if (!t.classList.contains("sure")) { t.classList.add("sure"); t.textContent = "Yes, remove " + s.name.split(" ")[0] + " (tap again)"; clearTimeout(sureT); sureT = setTimeout(() => { t.classList.remove("sure"); t.textContent = "Remove " + s.name.split(" ")[0] + " from Hibi"; }, 4000); return; }
+    clearTimeout(sureT); t.disabled = true; t.textContent = "Removing…"; removeFromHibi(s).finally(() => { t.disabled = false; });
+  }
 });
 $("list").addEventListener("click", () => { editW = null; editN = null; }, true);
 

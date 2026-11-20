@@ -1031,9 +1031,10 @@ def main():
     if cmd == "access-sync":
         # Hibi is invite-only: approve every account that already exists (access/{email}), so nobody gets locked out
         n = 0
+        removed = (get_doc(tok, tu, "t-hubmeta") or {}).get("removed") or {}   # people Noa removed from Hibi stay out
         for x in get_accounts(tok):
             em = (x.get("email") or "").strip().lower()
-            if not em:
+            if not em or x.get("uid") in removed:
                 continue
             http("PATCH", f"{BASE}/access/{urllib.parse.quote(em)}", {"fields": {"name": {"stringValue": x.get("name", "")}, "at": {"integerValue": str(int(datetime.datetime.now().timestamp() * 1000))}, "by": {"stringValue": "existing account"}}}, token=tok)
             n += 1

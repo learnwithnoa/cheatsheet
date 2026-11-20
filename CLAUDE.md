@@ -87,6 +87,7 @@ Pages updates about a minute after the push. End commit messages with the attrib
 - Rules: students must never see private notes (the "About" text, boleta, emails, health, money, family). "View as" must never change anything.
   Lesson plans are never shown to members before class. In View as, `build/cloud.js` turns every Firestore write into a no-op and `comfort_early.html` blocks pay-helper calls (except /api/my-price); keep it that way.
   Simple mode (step179): per member in `users/{uid}/data/ncs-simple` {on, by:"noa"|"noa-off"|"me", asked}; Noa switches it in Hibi members (member detail); the member is asked once to keep it.
+  Removing someone: Hibi members → member → 🚫 Remove from Hibi deletes access/{email} and park/{uid} and lists them in t-hubmeta.removed {uid:{email,name,at}} (hidden from the members lists; "Let back in" undoes it; access-sync skips them).
   Recommendation dates: `users/{Noa}/data/t-recs` ({uid:{mod:{at,n}}}), shown in Hibi members → 💡 Recommended. Ask Noa before adding uncertain payments or deleting data. Never invent data.
 
 ## Ideas to build (daily builder)
