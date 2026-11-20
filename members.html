@@ -173,6 +173,8 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 .rm-list ul{list-style:none;margin:8px 0 0;padding:0}
 .rm-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
 .rm-list li>span{display:flex;flex-direction:column;min-width:0}
+.wait-list{margin:0 0 12px;border-color:color-mix(in srgb,#F5A623 60%,var(--line))}
+.wl-btns{display:flex;gap:6px;flex:none}
 .rm-list .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .pend-x{color:var(--muted,#8a94a8)}.pend-x svg{display:block}.pend-x:hover{border-color:#e05252;color:#e05252}
 .pend-hint{margin:6px 0 0;font-size:11.5px;color:var(--muted,#8a94a8)}
@@ -437,8 +439,13 @@ async function load() {
     }));
     list.sort((a, b) => b.lastSeen - a.lastSeen);
     const RM = (hubMeta && hubMeta.removed) || {};
-    students = list.filter(s => s.email.toLowerCase() !== TEACHER && !RM[s.uid]);
-    renderRemoved();
+    /* signed in but never let in (no access for their email): not members, they wait in their own box */
+    let ACC = null; try { ACC = {}; (await getDocs(collection(db, "access"))).forEach(d => { ACC[d.id.toLowerCase()] = d.data() || {}; }); } catch (e) { console.warn("access list", e); ACC = null; }
+    const isIn = s => !ACC || (ACC[s.email.toLowerCase()] && !ACC[s.email.toLowerCase()].gone);
+    const all = list.filter(s => s.email.toLowerCase() !== TEACHER && !RM[s.uid]);
+    waiting = all.filter(s => !isIn(s));
+    students = all.filter(s => isIn(s));
+    renderRemoved(); renderWaiting();
     loadPending();
     const totalW = students.reduce((n, s) => n + s.words.length, 0), totalN = students.reduce((n, s) => n + s.notes.length, 0);
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
@@ -982,6 +989,22 @@ function renderDetail(s) {
     <p class="muted small">For an account that shouldn't be here, like someone who signed in with the wrong email. ${fn} won't be able to open Hibi with <b>${esc(s.email)}</b> anymore and disappears from your lists. Nothing they saved is deleted, and you can let them back in anytime from “🚫 Removed from Hibi” under the member list.${mem ? ` <b>Careful: ${fn} is set as a ${r.club && (r.private || r.hub) ? "club and private" : r.club ? "club" : "private"} member on this account.</b>` : ""}</p>
     <button type="button" class="rm-btn" data-rmhibi="1">Remove ${fn} from Hibi</button></div>`);
 }
+/* people who signed in with Google but you never let in (e.g. a wrong email): "Let in" gives them access, "Remove" hides them */
+let waiting = [];
+function renderWaiting() {
+  let box = $("waitList"); if (!box) { box = document.createElement("details"); box.id = "waitList"; box.className = "rm-list wait-list"; box.open = true; $("list").insertAdjacentElement("beforebegin", box); }
+  box.hidden = !waiting.length;
+  box.innerHTML = `<summary>⏳ Signed in, waiting for you <span class="mt-n cnt">${waiting.length}</span></summary><p class="muted small" style="margin:6px 0 0">They signed in with Google but you haven't let this email in, so they only see "Almost there". Not counted as members.</p><ul>${waiting.map(s => `<li><span><b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span><span class="muted small">tried ${ago(s.lastSeen)}</span></span><span class="wl-btns"><button type="button" class="ib" data-wlin="${esc(s.uid)}">Let in</button><button type="button" class="ib del" data-wlrm="${esc(s.uid)}">Remove</button></span></li>`).join("")}</ul>`;
+}
+document.addEventListener("click", async e => {
+  const a = e.target.closest("[data-wlin]"), r = e.target.closest("[data-wlrm]"); if (!a && !r) return;
+  const s = waiting.find(x => x.uid === (a || r).dataset[a ? "wlin" : "wlrm"]); if (!s) return;
+  const b = a || r;
+  if (!b.classList.contains("sure")) { b.classList.add("sure"); const t = b.textContent; b.textContent = "Sure?"; setTimeout(() => { b.classList.remove("sure"); b.textContent = t; }, 3000); return; }
+  b.disabled = true;
+  if (a) { try { await setDoc(doc(db, "access", s.email.toLowerCase()), { name: s.name, at: Date.now(), by: "noa" }); toast("✅ " + s.name.split(" ")[0] + " can open Hibi now"); load(); } catch (er) { console.warn(er); toast("Couldn't do it. Try again."); b.disabled = false; } }
+  else { waiting = waiting.filter(x => x.uid !== s.uid); await removeFromHibi(s); renderWaiting(); }
+});
 /* removed people: hidden from every list here; "Let back in" gives them access again */
 function renderRemoved() {
   let box = $("rmList"); if (!box) { box = document.createElement("details"); box.id = "rmList"; box.className = "rm-list"; $("list").insertAdjacentElement("afterend", box); }

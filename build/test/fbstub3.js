@@ -10,3 +10,7 @@ export const getDoc=async(d)=>{ const all=C(); return {exists:()=>d.p in all,dat
 export const setDoc=async(d,v,o)=>{ const all=C(); all[d.p]=o&&o.merge?Object.assign({},all[d.p],v):v; W(all); };
 export const deleteDoc=async(d)=>{ const all=C(); delete all[d.p]; W(all); }, serverTimestamp=()=>null;
 export const initializeAppCheck=()=>({}); export class ReCaptchaEnterpriseProvider{}; export const getAI=()=>({}); export class GoogleAIBackend{}; export class AgentPlatformBackend{}; export const getGenerativeModel=()=>({generateContent:async()=>({response:{text:()=>""}})});
+/* tests: the sign-in gate asks the database whether this email is let in; answer "yes" (unless a test sets window.__testAccess = "no" | "down") */
+(()=>{ const f0=window.fetch.bind(window); window.fetch=(u,o)=>{ const s=String(u&&u.url||u); if(/\/access\//.test(s)){ const m=window.__testAccess||"yes";
+  if(m==="down") return Promise.reject(new TypeError("offline")); if(m==="no") return Promise.resolve(new Response("{}",{status:404})); if(m==="gone") return Promise.resolve(new Response('{"fields":{"gone":{"booleanValue":true}}}',{status:200}));
+  return Promise.resolve(new Response('{"fields":{}}',{status:200,headers:{"content-type":"application/json"}})); } return f0(u,o); }; })();

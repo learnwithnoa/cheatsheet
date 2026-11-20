@@ -4244,6 +4244,11 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <p class="ag-es" lang="es">Iniciaste sesión, pero Noa aún no ha aprobado este correo.</p>
       ${reqForm(em,true)}
       <button type="button" class="ag-link" data-agout>Use another Google account</button>`;
+    if(m==="retry") return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
+      <h2 id="agTitle">Hmm, Hibi couldn’t connect</h2><p>Check your internet connection and try again.</p>
+      <p class="ag-es" lang="es">Hibi no pudo conectarse. Revisa tu conexión a internet e inténtalo de nuevo.</p>
+      <button type="button" class="ag-btn" data-agretry>Try again</button>
+      <button type="button" class="ag-link" data-agout>Use another Google account</button>`;
     if(m==="sent") return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
       <h2 id="agTitle">Thanks! 🙌</h2><p>Noa got your request. He’ll email you as soon as you’re in (usually within a day). Then come back and sign in with Google using <b>the same email</b>.</p>
       <p class="ag-es" lang="es">¡Gracias! Noa recibió tu solicitud y te escribirá cuando estés dentro. Luego vuelve e inicia sesión con Google usando el mismo correo.</p>
@@ -4277,15 +4282,31 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     [...document.body.children].forEach(el=>{ if(el!==gate) el.inert=false; });
   }
   /* approved? (access/{email}); if the database can't say (e.g. rules not set up yet), let them in */
-  async function approved(){ const F=window.__csFire; if(!F||!F.email) return true; const em=F.email(), uid=F.uid&&F.uid(); if(!em) return true;
-    if(window.__csTeacher===true||em==="learnwithnoa@gmail.com") return true;
-    try{ const tok=await F.token(); const r=await fetch(F.base+"/access/"+encodeURIComponent(em),{headers:{Authorization:"Bearer "+tok}});
-      if(r.status===404) return false; if(r.ok) return true; return true; }catch(e){ return true; } }
-  async function check(){ const F=window.__csFire, uid=F&&F.uid?F.uid():""; let cached=false; try{ cached=!!localStorage.getItem(OKK(uid)); }catch(e){}
-    if(cached) hide(); else if(gate&&!gate.hidden) {} 
-    const ok=await approved(); try{ if(ok) localStorage.setItem(OKK(uid),"1"); else localStorage.removeItem(OKK(uid)); }catch(e){}
-    if(ok) hide(); else show("pending"); }
+  /* "yes" | "no" | "unknown" (couldn't reach the database) */
+  async function approved(){ const F=window.__csFire; if(!F||!F.email) return "unknown"; const em=String(F.email()||"").toLowerCase(); if(!em) return "unknown";
+    if(window.__csTeacher===true||em==="learnwithnoa@gmail.com") return "yes";
+    for(let i=0;i<3;i++){
+      try{ const tok=await F.token(); const r=await fetch(F.base+"/access/"+encodeURIComponent(em),{headers:{Authorization:"Bearer "+tok}});
+        if(r.status===404) return "no";
+        if(r.ok){ const d=await r.json().catch(()=>({})); const g=d&&d.fields&&d.fields.gone; return g&&g.booleanValue?"no":"yes"; }
+        if(r.status===403) return "no";
+      }catch(e){}
+      await new Promise(f=>setTimeout(f,1500*(i+1)));
+    }
+    return "unknown"; }
+  /* the sync (cloud.js) waits for this before touching anyone's data: window.__csGateWait(uid) -> true/false */
+  const GW={}; const gw=uid=>GW[uid]||(GW[uid]=(()=>{ let res; const p=new Promise(f=>res=f); p.res=res; return p; })());
+  window.__csGateWait=uid=>{ const p=gw(uid); return Promise.race([p,new Promise(f=>setTimeout(()=>f(false),30000))]); };
+  async function check(){ const F=window.__csFire, uid=F&&F.uid?F.uid():""; let cached=false; try{ const c=+localStorage.getItem(OKK(uid)); cached=c===1||(c>1&&Date.now()-c<30*864e5); }catch(e){}
+    if(cached) hide();
+    const st=await approved();
+    if(st==="yes"){ try{ localStorage.setItem(OKK(uid),String(Date.now())); }catch(e){} hide(); gw(uid).res(true); return; }
+    if(st==="no"){ try{ localStorage.removeItem(OKK(uid)); }catch(e){} show("pending"); gw(uid).res(false); return; }
+    /* couldn't check: someone approved on this device recently keeps going; anyone else waits */
+    if(cached){ gw(uid).res(true); return; }
+    show("retry"); gw(uid).res(false); }
   const on=s=>{ if(s) check(); else show(mode==="sent"?"sent":"out"); };
+  document.addEventListener("click",e=>{ if(e.target.closest("[data-agretry]")) location.reload(); });
   window.addEventListener("cs-auth",e=>on(!!(e.detail&&e.detail.signedIn)));
   if(window.__csAuth!=null) on(window.__csAuth);
   document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-agreq]"); if(!f) return; e.preventDefault(); const F=window.__csFire, msg=f.querySelector(".ag-fmsg"), btn=f.querySelector("button");
@@ -11928,7 +11949,7 @@ document.addEventListener("click",e=>{ if(e.target.closest('[data-go="changelog"
 </script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261119200034"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261120084806"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -13725,7 +13746,7 @@ catch (e) { console.warn("App Check not started", e); }
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const LOCAL_ONLY = new Set(["ncs-sync-uid", "ncs-theme"]);
+const LOCAL_ONLY = new Set(["ncs-sync-uid", "ncs-prev-uid", "ncs-theme"]);
 const KEEP_ON_SIGNOUT = new Set(["ncs-comfort", "ncs-theme", "ncs-welcomed", "ncs-seen-version", "ncs-music-mode", "ncs-music-vol", "ncs-music-bal"]);
 /* progress kept under older "cs-" names that should follow the person too (the rest of "cs-" is device-only: layout, tabs, caches) */
 const EXTRA = new Set(["cs-club-watched", "cs-rep-read", "cs-coach-seen", "cs-club-seen", "cs-wall-seen", "cs-club-welcomed", "cs-today5", "cs-pomo-today"]);
@@ -13920,15 +13941,27 @@ window.__csOnSet = k => {
 };
 
 let syncing = false;
+/* the sign-in gate decides first: nothing is synced for an account Noa hasn't let in */
+async function gateOK(uid) { const w = window.__csGateWait; if (!w) return true; try { return !!(await w(uid)); } catch (e) { return false; } }
+let gateBlocked = true;
 async function syncDown(fromReturn) {
   if (!user || syncing) return;
+  const me = user;
+  const okGate = await gateOK(me.uid); if (user === me) gateBlocked = !okGate;
+  if (!okGate) {
+    if (user === me) setDoc(doc(db, "users", me.uid), { name: me.displayName || "", email: me.email || "", lastSeen: serverTimestamp(), waiting: true }, { merge: true }).catch(() => {});
+    return;
+  }
+  if (user !== me || syncing) return;
   syncing = true; status("syncing");
   try {
     const snap = await getDocs(collection(db, "users", user.uid, "data"));
     const cloud = {};
     snap.forEach(d => { const x = d.data(); if (!x.deleted && typeof x.json === "string") cloud[localId(d.id)] = x.json; });
     const dz = dirty();
-    const first = getRaw("ncs-sync-uid") !== user.uid;
+    const prevUid = getRaw("ncs-sync-uid") || getRaw("ncs-prev-uid"), first = getRaw("ncs-sync-uid") !== user.uid;
+    /* this device was used by ANOTHER account before: start clean from the cloud, never copy that account's things into this one */
+    if (first && prevUid && prevUid !== user.uid) lsKeys().forEach(k => { if (k !== "ncs-sync-uid") { setRaw(k, null); try { setDirty(k, false); } catch (e) {} } });
     const keys = new Set([...Object.keys(cloud), ...lsKeys()]);
     let changed = false, changedOther = false; const toPush = [];
     for (const k of keys) {
@@ -13942,12 +13975,12 @@ async function syncDown(fromReturn) {
       if (v != null && v !== c) toPush.push(k);
       else if (LISTS[k] && v != null) setRaw(BASE(k), v);
     }
-    setRaw("ncs-sync-uid", user.uid);
+    setRaw("ncs-sync-uid", user.uid); setRaw("ncs-prev-uid", null);
     ready = true;
     // so the teacher can tell whose data is whose in the Firebase console
     getDoc(doc(db, "users", user.uid)).then(sn => {
       const x = sn.exists() ? (sn.data() || {}) : {};
-      const patch = { name: user.displayName || "", email: user.email || "", lastSeen: serverTimestamp() };
+      const patch = { name: user.displayName || "", email: user.email || "", lastSeen: serverTimestamp(), waiting: false };
       if (!x.firstSeen) patch.firstSeen = serverTimestamp();   // when they first joined (for the teacher's notifications)
       return setDoc(doc(db, "users", user.uid), patch, { merge: true });
     }).catch(() => {});
@@ -14037,6 +14070,7 @@ async function doSignOut() {
   await flush();
   for (const k of lsKeys()) if (!KEEP_ON_SIGNOUT.has(k)) setRaw(k, null);
   setRaw(DIRTY, null);
+  { const was = getRaw("ncs-sync-uid"); if (was) setRaw("ncs-prev-uid", was); }   /* remembered so the next account on this device starts clean */
   setRaw("ncs-sync-uid", null);
   try { localStorage.removeItem("cs-auth-hint"); Object.keys(localStorage).filter(k => k.indexOf("cs-hv-cache-") === 0).forEach(k => localStorage.removeItem(k)); } catch (e) {}
   await signOut(auth);
@@ -14220,7 +14254,7 @@ window.__csTeach = {
   async people() {
     if (!window.__csTeacher || !user) return [];
     const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
-    const out = []; (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
+    const out = []; (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden || p.waiting === true) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", kind: r.hibiOnly && !r.hub && r.club !== true ? "hibi" : (r.private || r.hub) ? (r.club === false ? "private" : "both") : r.club === false ? "hibi" : "club" }); });   /* same rule as Hibi members (roleType): a private student is linked with r.hub (Nov 19 2026 fix: hub-linked students showed as Club) */
     return out.sort((a, b) => a.name.localeCompare(b.name));
   },
@@ -14233,7 +14267,7 @@ window.__csTeach = {
   async _accounts() {
     const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
     const ms = t => t && t.toMillis ? t.toMillis() : 0, out = [];
-    (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
+    (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden || p.waiting === true) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", email: p.email || "", first: ms(p.firstSeen), last: ms(p.lastSeen),
         kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.hibiOnly ? "hibionly" : r.club === false ? "new" : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
     return out;
@@ -14302,7 +14336,7 @@ window.__csPark = {
   signedIn: () => !!user,
   uid: () => user ? user.uid : "",
   publish(b) {
-    if (!user || VA) return;
+    if (!user || VA || gateBlocked) return;   /* nobody's buddy goes to the park before Noa lets them in */
     clearTimeout(parkTimer);
     parkTimer = setTimeout(() => {
       const first = String(gName()).trim().split(/\s+/)[0] || "";

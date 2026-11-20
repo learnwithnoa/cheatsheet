@@ -14,7 +14,7 @@ cloud['users/u8'] = { name: 'Other Person', email: 'other@example.com' };
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message));
   await p.addInitScript(c => { if(!sessionStorage.getItem('__cloud')) sessionStorage.setItem('__cloud', JSON.stringify(c)); }, cloud);
   await p.goto('http://localhost:8768/members.html'); await p.waitForTimeout(2500);
-  console.log(t, 'list:', await p.evaluate(() => [...document.querySelectorAll('#list .stu b')].map(x=>x.textContent).join(', ')));
+  console.log(t, 'waiting:', await p.evaluate(() => { const w=document.getElementById('waitList'); return w&&!w.hidden?w.innerText.replace(/\s+/g,' '):'none'; })); console.log(t, 'list:', await p.evaluate(() => [...document.querySelectorAll('#list .stu b')].map(x=>x.textContent).join(', ')));
   await p.evaluate(() => document.querySelector('#list [data-uid="u7"]').click()); await p.waitForTimeout(400);
   await p.evaluate(() => document.querySelector('.rm-box').scrollIntoView({block:'center'}));
   await p.screenshot({path:`/tmp/rm-${t}-1.png`});

@@ -29,7 +29,7 @@ catch (e) { console.warn("App Check not started", e); }
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const LOCAL_ONLY = new Set(["ncs-sync-uid", "ncs-theme"]);
+const LOCAL_ONLY = new Set(["ncs-sync-uid", "ncs-prev-uid", "ncs-theme"]);
 const KEEP_ON_SIGNOUT = new Set(["ncs-comfort", "ncs-theme", "ncs-welcomed", "ncs-seen-version", "ncs-music-mode", "ncs-music-vol", "ncs-music-bal"]);
 /* progress kept under older "cs-" names that should follow the person too (the rest of "cs-" is device-only: layout, tabs, caches) */
 const EXTRA = new Set(["cs-club-watched", "cs-rep-read", "cs-coach-seen", "cs-club-seen", "cs-wall-seen", "cs-club-welcomed", "cs-today5", "cs-pomo-today"]);
@@ -224,15 +224,27 @@ window.__csOnSet = k => {
 };
 
 let syncing = false;
+/* the sign-in gate decides first: nothing is synced for an account Noa hasn't let in */
+async function gateOK(uid) { const w = window.__csGateWait; if (!w) return true; try { return !!(await w(uid)); } catch (e) { return false; } }
+let gateBlocked = true;
 async function syncDown(fromReturn) {
   if (!user || syncing) return;
+  const me = user;
+  const okGate = await gateOK(me.uid); if (user === me) gateBlocked = !okGate;
+  if (!okGate) {
+    if (user === me) setDoc(doc(db, "users", me.uid), { name: me.displayName || "", email: me.email || "", lastSeen: serverTimestamp(), waiting: true }, { merge: true }).catch(() => {});
+    return;
+  }
+  if (user !== me || syncing) return;
   syncing = true; status("syncing");
   try {
     const snap = await getDocs(collection(db, "users", user.uid, "data"));
     const cloud = {};
     snap.forEach(d => { const x = d.data(); if (!x.deleted && typeof x.json === "string") cloud[localId(d.id)] = x.json; });
     const dz = dirty();
-    const first = getRaw("ncs-sync-uid") !== user.uid;
+    const prevUid = getRaw("ncs-sync-uid") || getRaw("ncs-prev-uid"), first = getRaw("ncs-sync-uid") !== user.uid;
+    /* this device was used by ANOTHER account before: start clean from the cloud, never copy that account's things into this one */
+    if (first && prevUid && prevUid !== user.uid) lsKeys().forEach(k => { if (k !== "ncs-sync-uid") { setRaw(k, null); try { setDirty(k, false); } catch (e) {} } });
     const keys = new Set([...Object.keys(cloud), ...lsKeys()]);
     let changed = false, changedOther = false; const toPush = [];
     for (const k of keys) {
@@ -246,12 +258,12 @@ async function syncDown(fromReturn) {
       if (v != null && v !== c) toPush.push(k);
       else if (LISTS[k] && v != null) setRaw(BASE(k), v);
     }
-    setRaw("ncs-sync-uid", user.uid);
+    setRaw("ncs-sync-uid", user.uid); setRaw("ncs-prev-uid", null);
     ready = true;
     // so the teacher can tell whose data is whose in the Firebase console
     getDoc(doc(db, "users", user.uid)).then(sn => {
       const x = sn.exists() ? (sn.data() || {}) : {};
-      const patch = { name: user.displayName || "", email: user.email || "", lastSeen: serverTimestamp() };
+      const patch = { name: user.displayName || "", email: user.email || "", lastSeen: serverTimestamp(), waiting: false };
       if (!x.firstSeen) patch.firstSeen = serverTimestamp();   // when they first joined (for the teacher's notifications)
       return setDoc(doc(db, "users", user.uid), patch, { merge: true });
     }).catch(() => {});
@@ -341,6 +353,7 @@ async function doSignOut() {
   await flush();
   for (const k of lsKeys()) if (!KEEP_ON_SIGNOUT.has(k)) setRaw(k, null);
   setRaw(DIRTY, null);
+  { const was = getRaw("ncs-sync-uid"); if (was) setRaw("ncs-prev-uid", was); }   /* remembered so the next account on this device starts clean */
   setRaw("ncs-sync-uid", null);
   try { localStorage.removeItem("cs-auth-hint"); Object.keys(localStorage).filter(k => k.indexOf("cs-hv-cache-") === 0).forEach(k => localStorage.removeItem(k)); } catch (e) {}
   await signOut(auth);
@@ -524,7 +537,7 @@ window.__csTeach = {
   async people() {
     if (!window.__csTeacher || !user) return [];
     const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
-    const out = []; (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
+    const out = []; (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden || p.waiting === true) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", kind: r.hibiOnly && !r.hub && r.club !== true ? "hibi" : (r.private || r.hub) ? (r.club === false ? "private" : "both") : r.club === false ? "hibi" : "club" }); });   /* same rule as Hibi members (roleType): a private student is linked with r.hub (Nov 19 2026 fix: hub-linked students showed as Club) */
     return out.sort((a, b) => a.name.localeCompare(b.name));
   },
@@ -537,7 +550,7 @@ window.__csTeach = {
   async _accounts() {
     const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
     const ms = t => t && t.toMillis ? t.toMillis() : 0, out = [];
-    (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden) return;
+    (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden || p.waiting === true) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", email: p.email || "", first: ms(p.firstSeen), last: ms(p.lastSeen),
         kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.hibiOnly ? "hibionly" : r.club === false ? "new" : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
     return out;
@@ -606,7 +619,7 @@ window.__csPark = {
   signedIn: () => !!user,
   uid: () => user ? user.uid : "",
   publish(b) {
-    if (!user || VA) return;
+    if (!user || VA || gateBlocked) return;   /* nobody's buddy goes to the park before Noa lets them in */
     clearTimeout(parkTimer);
     parkTimer = setTimeout(() => {
       const first = String(gName()).trim().split(/\s+/)[0] || "";
