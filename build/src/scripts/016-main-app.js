@@ -2241,7 +2241,7 @@ function go(id,push){
   const cnB=document.getElementById("cnEditorBlock"), awB=document.getElementById("addWordBlock");
   if(cnB){ const to=document.getElementById(id==="classnotes"?"slotCnPage":"slotCnHome"); if(cnB.parentNode!==to) to.appendChild(cnB); }
   if(awB){ const to=document.getElementById(id==="words"?"slotAwPage":"slotAwHome"); if(awB.parentNode!==to) to.appendChild(awB); }
-  document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", ((b.dataset.go===id&&!b.classList.contains("nb-merged"))||((id==="notebook"||id==="classnotes")&&b.dataset.go==="words"))?"true":"false"));
+  document.querySelectorAll(".navbtn").forEach(b=>b.setAttribute("aria-current", ((b.dataset.go===id&&!b.classList.contains("nb-merged"))||((id==="notebook"||id==="classnotes")&&b.dataset.go==="words")||(id==="members"&&b.dataset.go==="students"))?"true":"false"));
   const cur=document.querySelector('.navbtn[aria-current="true"]'); if(cur&&cur.scrollIntoView&&window.innerWidth<=900) cur.scrollIntoView({block:"nearest",inline:"center"});
   try{localStorage.setItem("eep-view",id);}catch(e){}
   if(push&&!fromPop){ const U=id==="notes"?location.pathname+location.search:(window.__csDeep&&window.__csDeep[id]?window.__csDeep[id].hash():"#"+id); try{ if(history.state&&history.state.cs&&history.state.v===id) history.replaceState(history.state,"",U); else if(goingBack) history.replaceState({cs:1,v:id,n:histN},"",U); else history.pushState({cs:1,v:id,n:++histN},"",U);}catch(e){} }

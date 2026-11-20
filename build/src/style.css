@@ -2022,4 +2022,13 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .lk-have{color:var(--green);font-weight:700;font-size:14px}
 .lk-chip{all:unset;position:fixed;z-index:70;cursor:pointer;padding:6px 12px;border-radius:99px;background:var(--bright);color:#fff;font-size:14px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.3);white-space:nowrap}
 .lk-chip:focus-visible{outline:3px solid #fff}
-⟦include:parts/coaching.css⟧⟦include:parts/club.css⟧
+⟦include:parts/coaching.css⟧⟦include:parts/club.css⟧/* Nov 20 2026: one "Students" menu item, two tabs inside */
+#navMembers{display:none!important}
+.adm-head{display:flex;margin:4px 0 14px}
+.adm-head h1{margin-bottom:0}
+.adm-tabs{display:inline-flex;gap:3px;padding:4px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface-2,var(--surface))}
+.adm-tabs button{all:unset;cursor:pointer;font:800 14px var(--body);color:var(--muted);padding:8px 16px;border-radius:999px;white-space:nowrap}
+.adm-tabs button[aria-current="page"]{background:var(--ink);color:var(--bg,#0b1020)}
+.adm-tabs button:not([aria-current]):hover{color:var(--ink)}
+.adm-tabs button:focus-visible{outline:2px solid var(--blue,#5AB8FF);outline-offset:2px}
+@media (max-width:520px){.adm-tabs{width:100%}.adm-tabs button{flex:1;text-align:center;padding:8px 6px;font-size:13.5px}}
