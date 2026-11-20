@@ -178,6 +178,13 @@ details[open]>summary::before{transform:rotate(90deg)}
 :root{--c-green:#3DDC97;--c-amber:#FFB547;--c-sky:#5AB8FF;--c-violet:#B18CFF;--c-pink:#FF7EB6;--c-teal:#2DD4BF;--c-coral:#FF8A65;--c-red:#FF6B6B}
 :root[data-theme="light"],:root[data-theme="sepia"],:root[data-theme="unicorn"]{--c-green:#12935C;--c-amber:#B86E00;--c-sky:#1C6FD1;--c-violet:#7348D8;--c-pink:#C2306F;--c-teal:#0E8C7E;--c-coral:#C4502B;--c-red:#C93A3A}
 @media (min-width:861px){.layout{grid-template-columns:340px minmax(0,1fr)}}
+/* one admin area: the two pages are tabs of it (Nov 20 2026) */
+.adm-sw{display:inline-flex;gap:2px;padding:3px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface-2);margin-left:6px}
+.adm-sw a{font:800 13.5px var(--body);color:var(--muted);text-decoration:none;padding:6px 13px;border-radius:999px;white-space:nowrap}
+.adm-sw a[aria-current="page"]{background:var(--ink);color:var(--surface)}
+.adm-sw a:not([aria-current]):hover{color:var(--ink)}
+@media (max-width:640px){.adm-sw a{padding:6px 10px;font-size:13px}}
+@media (max-width:420px){.adm-sw .bt-l{display:none}.adm-sw a{font-size:16px;padding:5px 11px}}
 @media (max-width:640px){header .tag,#saving{display:none}.top{gap:8px;padding:8px 12px}.brand span{font-size:18px}header .btn{padding:6px 10px;font-size:13px}}
 @media (max-width:480px){header .bt-l{display:none}}
 .tint{--k:var(--c-sky);background:color-mix(in srgb,var(--k) 14%,var(--surface));border:1.5px solid color-mix(in srgb,var(--k) 45%,var(--line))}
@@ -310,8 +317,7 @@ html.emb body{background:transparent}
 </style>
 <header><div class="top">
   <a class="brand" href="./"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
-  <span class="tag">Private students</span>
-  <a class="btn" href="members.html" style="margin-left:6px" title="Go to the Hibi members page">👥<span class="bt-l"> Go to Hibi members →</span></a>
+  <nav class="adm-sw" aria-label="Admin pages"><a href="members.html">👥<span class="bt-l"> Hibi members</span></a><a href="private-students.html" aria-current="page">🎓<span class="bt-l"> Private students</span></a></nav>
   <div class="sp"></div>
   <span class="saving" id="saving"></span>
   <div class="cs-wrap" id="csWrap"></div>

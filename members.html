@@ -19,6 +19,13 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.5 var(--body)}
 header{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
 .top{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px}
+/* one admin area: the two pages are tabs of it (Nov 20 2026) */
+.adm-sw{display:inline-flex;gap:2px;padding:3px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface-2);margin-left:6px}
+.adm-sw a{font:800 13.5px var(--body);color:var(--muted);text-decoration:none;padding:6px 13px;border-radius:999px;white-space:nowrap}
+.adm-sw a[aria-current="page"]{background:var(--ink);color:var(--surface)}
+.adm-sw a:not([aria-current]):hover{color:var(--ink)}
+@media (max-width:640px){.adm-sw a{padding:6px 10px;font-size:13px}}
+@media (max-width:420px){.adm-sw .bt-l{display:none}.adm-sw a{font-size:16px;padding:5px 11px}}
 @media (max-width:640px){header .tag,#saving{display:none}.top{gap:8px;padding:8px 12px}.brand span{font-size:18px}header .btn{padding:6px 10px;font-size:13px}}
 @media (max-width:480px){header .bt-l{display:none}}
 .brand{text-decoration:none;display:flex;flex-direction:column;line-height:1.1}
@@ -173,6 +180,12 @@ select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-i
 .rm-list ul{list-style:none;margin:8px 0 0;padding:0}
 .rm-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
 .rm-list li>span{display:flex;flex-direction:column;min-width:0}
+.tl-box{margin-top:18px}
+.tl-mem{margin:10px 0 4px;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-size:14.5px}
+.tl{list-style:none;margin:10px 0 8px;padding:0 0 0 4px;border-left:2px solid var(--line)}
+.tl li{display:grid;grid-template-columns:62px 22px 1fr;gap:6px;align-items:baseline;padding:5px 0 5px 10px;font-size:14px;line-height:1.4}
+.tl .tl-d{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.tl li.tl-private .tl-d{color:#7348D8}.tl li.tl-club .tl-d{color:#D98A00}
 .wait-list{margin:0 0 12px;border-color:color-mix(in srgb,#F5A623 60%,var(--line))}
 .wl-btns{display:flex;gap:6px;flex:none}
 .rm-list .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
@@ -211,8 +224,7 @@ details.mcol>summary::before{content:"▸"}
 <body>
 <header><div class="top">
   <a class="brand" href="./"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
-  <span class="tag">Hibi members</span>
-  <a class="btn" href="private-students.html" style="margin-left:6px" title="Go to the Private students page">🎓<span class="bt-l"> Go to Private students →</span></a>
+  <nav class="adm-sw" aria-label="Admin pages"><a href="members.html" aria-current="page">👥<span class="bt-l"> Hibi members</span></a><a href="private-students.html">🎓<span class="bt-l"> Private students</span></a></nav>
   <div class="sp"></div>
   <div class="cs-wrap" id="csWrap"></div>
   <button id="outBtn" type="button" hidden>Sign out</button>
@@ -432,7 +444,7 @@ async function load() {
         buddy: parse(data["ncs-buddy"], null),
         loveLog: parse(data["ncs-ttlove-log"], []),
         level: parse(data["ncs-level"], "normal"), simple: parse(data["ncs-simple"], null),
-        mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), wkgoal: parse(data["ncs-wkgoal"], 3), modrec: parse(data["ncs-modrec"], {}) || {}, recDocAt,
+        mem: parse(data["membership"], null), mods: parse(data["ncs-mods"], {}) || {}, vocab: parse(data["ncs-vocab"], {}) || {}, usage: parse(data["ncs-usage"], {}) || {}, mymis: parse(data["ncs-mymis"], {}) || {}, wk: parse(data["ncs-wk"], null), wkgoal: parse(data["ncs-wkgoal"], 3), modrec: parse(data["ncs-modrec"], {}) || {}, recDocAt,
         loveLast: parse(data["ncs-ttlove"], ""), mylevel: parse(data["ncs-mylevel"], null),
         role: roles[d.id] || {}
       });
@@ -983,12 +995,61 @@ function renderDetail(s) {
     const text = $("an").value.trim(); if (!text) { $("an").focus(); return; }
     guarded(s, "ncs-classnotes", list => list.concat([{ id: newId(), t: Date.now(), text, by: "teacher" }]), "Note added");
   };
+  /* Nov 20 2026: everything about this person in one timeline (Hibi, trial, membership, private classes, practice) */
+  $("detail").insertAdjacentHTML("beforeend", timelineBox(s));
+  if (!TRIALS) loadTrials().then(() => { const b = $("tlBox"); if (b && current === s.uid) { const o = b.open; b.outerHTML = timelineBox(s); if (o) $("tlBox").open = true; } });
   /* Nov 20 2026: remove someone from Hibi (e.g. signed in with the wrong email) */
   const r = s.role || {}, fn = esc(s.name.split(" ")[0]), mem = r.club || r.private || r.hub;
   $("detail").insertAdjacentHTML("beforeend", `<div class="rm-box"><h3>🚫 Remove from Hibi</h3>
     <p class="muted small">For an account that shouldn't be here, like someone who signed in with the wrong email. ${fn} won't be able to open Hibi with <b>${esc(s.email)}</b> anymore and disappears from your lists. Nothing they saved is deleted, and you can let them back in anytime from “🚫 Removed from Hibi” under the member list.${mem ? ` <b>Careful: ${fn} is set as a ${r.club && (r.private || r.hub) ? "club and private" : r.club ? "club" : "private"} member on this account.</b>` : ""}</p>
     <button type="button" class="rm-btn" data-rmhibi="1">Remove ${fn} from Hibi</button></div>`);
 }
+/* ---------- 🕒 Timeline (one place for everything about a student) ---------- */
+let TRIALS = null, tlMore = false;
+async function loadTrials() { try { const d = await getDoc(doc(db, "users", tUid, "data", "t-trials")); TRIALS = d.exists() ? JSON.parse(d.data().json || "[]") || [] : []; } catch (e) { TRIALS = []; } }
+const tlDay = t => { const d = new Date(t); return isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: d.getFullYear() === new Date().getFullYear() ? undefined : "numeric" }); };
+const tlDate = v => { if (!v) return 0; if (typeof v === "number") return v; const m = String(v).match(/^(\d{4})-(\d\d)-(\d\d)$/); return m ? new Date(+m[1], +m[2] - 1, +m[3], 12).getTime() : (Date.parse(v) || 0); };
+function timelineBox(s) {
+  const ev = [], add = (t, ico, txt, kind) => { if (t) ev.push({ t, ico, txt, kind }); };
+  const clp = n => "$" + Number(n || 0).toLocaleString("es-CL");
+  add(s.firstSeen, "🔑", "Signed in to Hibi for the first time", "hibi");
+  /* club trial & membership */
+  (TRIALS || []).filter(x => x.uid === s.uid || (x.email && x.email.toLowerCase() === s.email.toLowerCase())).forEach(x => {
+    add(x.start, "🎁", `Free club trial started (until ${esc(x.until || "?")})`, "club");
+    if (x.ended) add(x.ended, "⌛", "Free trial ended", "club");
+    if (x.joined) add(x.joined, "💛", "Joined the club after the trial", "club"); });
+  const m = s.mem; let memLine = "";
+  if (m && m.status && m.status !== "none") {
+    const price = m.amount ? (m.currency === "USD" ? "US$" + m.amount : clp(m.amount)) + (m.kind === "y" ? " a year" : " a month") + (m.provider === "paypal" ? " · PayPal" : m.provider === "mp" ? " · Mercado Pago" : "") : "";
+    memLine = { active: `💳 Club membership: <b>active</b>${price ? " · " + price : ""}${m.paidThrough ? " · paid until " + esc(m.paidThrough) : ""}`, canceling: `💳 Club membership: <b>cancelled</b>, ends ${esc(m.paidThrough || "")}`, grace: `⚠️ Club membership: <b>payment failed</b>${m.graceUntil ? ", fix before " + esc(m.graceUntil) : ""}`, trial: `🎁 Club: <b>free trial</b> until ${esc(m.trialUntil || "")}`, "trial-ended": `⌛ Club: free trial ended ${esc(m.trialUntil || "")}` }[m.status] || `Club: ${esc(m.status)}`;
+    if (m.startedAt || m.since) add(tlDate(m.startedAt || m.since), "💳", "Started paying for the club" + (price ? " (" + price + ")" : ""), "club");
+  }
+  /* private classes (from their coaching page) */
+  const hub = s.role && s.role.hub ? hubList.find(h => h.id === s.role.hub) : null;
+  if (hub) {
+    (hub.classes || []).forEach(c => add(tlDate(c.date), c.att && /absent|no.?show/i.test(c.att) ? "🚫" : c.att && /cancel/i.test(c.att) ? "↩️" : "🎓",
+      `Private class${c.att && !/present/i.test(c.att) ? " · " + esc(c.att) : ""}${c.topics ? ": " + esc(String(c.topics).slice(0, 90)) : ""}`, "private"));
+    (hub.packs || []).forEach(p => { if (p.paid && p.paid !== "full" && tlDate(p.paid)) add(tlDate(p.paid), "💳", "Paid " + esc(p.label || "a pack") + (p.price ? " · " + esc(p.price) : ""), "private"); });
+    (hub.guides || []).forEach(g => add(tlDate(g.date), "📄", "Study guide: " + esc(g.title || ""), "private"));
+  }
+  /* practice */
+  Object.entries(s.mods || {}).forEach(([id, p]) => (Array.isArray(p && p.h) ? p.h : []).forEach(e => {
+    const nm = (MODT[id] && MODT[id].name) || id;
+    add(e.t, e.k === "to" ? "🎓" : e.k === "stop" ? "⏸" : "📚", e.k === "to" ? `${esc(nm)}: test out ${e.sc}/15` : e.k === "stop" ? `${esc(nm)}: stopped stage ${e.n} after ${e.at} questions` : `${esc(nm)} · stage ${e.n}: ${e.sc}/10`, "practice"); }));
+  const byDay = {}; (s.words || []).forEach(w => { if (!w.t) return; const k = new Date(w.t).toDateString(); (byDay[k] = byDay[k] || { t: w.t, n: 0, teacher: 0 }); byDay[k].n++; if (w.by === "teacher") byDay[k].teacher++; byDay[k].t = Math.max(byDay[k].t, w.t); });
+  Object.values(byDay).forEach(d => add(d.t, "📒", `Saved ${d.n} word${d.n > 1 ? "s" : ""}${d.teacher ? ` (${d.teacher} added by you)` : ""}`, "practice"));
+  (s.notes || []).forEach(n => add(n.t, "✏️", n.by === "teacher" ? "You wrote a class note" : "Wrote a class note", "practice"));
+  Object.entries(recAt[s.uid] || {}).forEach(([mod, r]) => add(r && r.at, "💡", `You recommended ${esc((MODT[mod] && MODT[mod].name) || PACK_T[mod] || mod)}`, "you"));
+  add(s.lastSeen, "👀", "Last seen on Hibi", "hibi");
+  ev.sort((a, b) => b.t - a.t);
+  const shown = tlMore ? ev : ev.slice(0, 25);
+  return `<details class="parkbox tl-box" id="tlBox"><summary><b>🕒 Timeline</b> <span class="muted">· classes, payments, trial, practice${TRIALS ? "" : " (loading…)"}</span></summary>
+    ${memLine ? `<p class="tl-mem">${memLine}</p>` : ""}
+    ${ev.length ? `<ol class="tl">${shown.map(e => `<li class="tl-${e.kind}"><span class="tl-d">${tlDay(e.t)}</span><span class="tl-i" aria-hidden="true">${e.ico}</span><span>${e.txt}</span></li>`).join("")}</ol>
+    ${ev.length > shown.length ? `<button type="button" class="ib" data-tlmore="1">Show all ${ev.length}</button>` : ""}` : `<p class="muted">Nothing yet.</p>`}
+    <p class="muted small" style="margin:8px 0 0">Messages aren't shown here (they're private between you and them).</p></details>`;
+}
+document.addEventListener("click", e => { if (!e.target.closest("[data-tlmore]")) return; tlMore = true; const s = students.find(x => x.uid === current); const b = $("tlBox"); if (s && b) { b.outerHTML = timelineBox(s); $("tlBox").open = true; } });
 /* people who signed in with Google but you never let in (e.g. a wrong email): "Let in" gives them access, "Remove" hides them */
 let waiting = [];
 function renderWaiting() {
@@ -1065,7 +1126,7 @@ $("detail").addEventListener("click", e => {
     clearTimeout(sureT); t.disabled = true; t.textContent = "Removing…"; removeFromHibi(s).finally(() => { t.disabled = false; });
   }
 });
-$("list").addEventListener("click", () => { editW = null; editN = null; }, true);
+$("list").addEventListener("click", () => { editW = null; editN = null; tlMore = false; }, true);
 
 onAuthStateChanged(auth, u => {
   $("outBtn").hidden = !u;
