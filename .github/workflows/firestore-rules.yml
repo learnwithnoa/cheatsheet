@@ -1,0 +1,29 @@
+name: Firestore rules
+# Keeps Hibi's database security rules in this repo (firestore.rules) and publishes them when that file changes.
+# The first run saves the rules that are live now. tools/rules-log.txt shows the result (no secrets).
+on:
+  push:
+    branches: [main]
+    paths: ["firestore.rules", "tools/rules_sync.py", ".github/workflows/firestore-rules.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: firestore-rules
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -q google-auth requests
+      - name: Save or publish the rules
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -f firestore.rules ]; then python3 tools/rules_sync.py deploy; else python3 tools/rules_sync.py fetch; fi
+      - name: Save the result
+        run: |
+          git config user.name "hibi-bot"; git config user.email "actions@users.noreply.github.com"
+          git add tools/rules-log.txt firestore.rules firestore.rules.previous 2>/dev/null || true
+          git commit -m "Firestore rules log [skip ci]" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 5; done
