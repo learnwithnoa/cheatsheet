@@ -16,10 +16,10 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
   unchanged parts cached (sw.js serves them cache-first). To find code on the built site, search `index.html` **and** `js/*.js` `m-*.js`.
 - `tools/hubsync.py` — Noa's helper for reading/changing Hibi's data (students, classes, club). See "Data" below.
 - `pay/` — the pay helper (Cloudflare Worker for Flow club subscriptions; deployed by `.github/workflows/pay-helper.yml`,
-  result in `pay/deploy-log.txt`). Its keys are GitHub Actions secrets, never in files. Club payments on Hibi are live since Nov 16, 2026 (`PAY_LIVE`, set in `build/parts/step146.py`; v2.0).
+  result in `pay/deploy-log.txt`). Its keys are GitHub Actions secrets, never in files. Club payments on Hibi are live since Nov 16, 2026 (`PAY_LIVE`, set in `build/src/scripts/034-step135-club-payments-flow-through-the-h.js`; v2.0).
   Payments: Mercado Pago (pesos, automatic) and PayPal (US$), both live; Flow is connected but unused (no automatic charging for a persona natural).
   Legacy prices: Members page → Club members → "Hibi price" (t-hubmeta.clubPrices by email); empty = their Skool price ×1000 CLP / same US$.
-  Skool move: Noa cancelled every Skool renewal on Nov 16, 2026. Members switch on Hibi ("Move your membership" card, step145);
+  Skool move: Noa cancelled every Skool renewal on Nov 16, 2026. Members switch on Hibi ("Move your membership" card, `src/scripts/038-step145-…`);
   the first Hibi charge waits until their Skool month ends (club list date), and the nightly check removes club access 5 days after that if they didn't switch.
   Unread-message emails: hourly, through Resend (secret RESEND_API_KEY, sender hola@hibi.cl): one short email if a Hibi message waits 12 h (never again while that one is still unread),
   max one a day, never to Noa; members turn it off in Settings (ncs-mailnotif); every email sent is listed in Noa's 🔔 (t-mailsent).
@@ -36,15 +36,20 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
 ```
 bash build/build.sh          # builds index.html, music.js, version.json at the repo root
 ```
-How the recipe works:
-- `build/build_site.py` starts from `build/english-pack.html`, then runs the change steps `build/parts/step14.py` … `step119.py`
-  (chained: each `stepN.py` ends by exec-ing the next; the chain is listed at the end of `parts/step19.py`), adds `cloud.js`.
-- Each step edits the page text `s` with `R(old, new)` — `old` must match **exactly once** or the build stops.
-  CSS goes before `</style>`. JS is appended with: `_j=s.rfind('</body>'); s=(s[:_j]+_js+s[_j:]) if _j>=0 else (s+_js)`.
+How the recipe works (cleaned up Nov 20 2026; before that the site was ~200 chained patch steps, kept for history in `build/old/steps/`):
+- **The source is `build/src/`** — edit these files directly:
+  - `page.html`: the page skeleton (header, menu, footer) with tokens `⟦style⟧`, `⟦script:NAME⟧`, `⟦view:ID⟧`.
+  - `style.css`: all the CSS. `views/<id>.html`: one file per page of the site (`<section class="view" id="v-…">`).
+  - `scripts/NNN-name.js`: every script, in page order (e.g. `016-main-app.js` = practice, grammar modules MODS/ORDER, tiles code;
+    `015-club-community.js` = club). Find things with grep across `build/src`.
+  - Inside them, `⟦include:parts/FILE⟧` pulls in `build/parts/` files that stay separate: question banks (`*bank.js`, `vocbank.js`),
+    lessons (`lessons_more.js`, `lesson_pp.js`), `club.css`, `coaching.css`… `⟦build⟧` = build number.
+- `build/build_site.py` puts it together (`build/assemble.py`), runs optional patch steps listed in `parts/step19.py`
+  (a `parts/stepNNN.py` with `R(old, new)` on the page text `s`, old must match exactly once — still fine for a quick find-and-replace),
+  wraps it with `build/cloud.js` and the head (`parts/comfort_early.html`).
 - After that, `parts/ext/*.patch` are applied and `parts/post_*.py` run on the finished `index.html` (the live board and
   the What's new list live there; edit those files for changes to them). Inside Python strings in post scripts write CSS newlines as `\\n`.
-- **To make a change:** add a new step file (`parts/step120.py`, then 121, …) and append `exec(open("parts/step120.py").read())`
-  to the end of `parts/step19.py`. Don't rewrite old steps unless a fix needs it.
+  The last one, `post_zzz_split.py`, moves the big scripts into cached `js/h-<hash>.js` files.
 
 ## Test
 
@@ -55,8 +60,9 @@ node build/test/smoke.js     # desktop + phone, reports page errors, screenshots
 `build/test/fbstub3.js` fakes the sign-in so tests never touch real data. Copy `smoke.js` to test a specific change
 (click through it, check the DOM, look at the screenshots on desktop **and** iPhone 13 size). Close the What's new pop-up first.
 `node build/test/questions.js` checks every practice question after you edit a question bank (`build/parts/*bank.js`).
-Place anything new in a logical spot next to what's already there (e.g. grammar tiles go in the step131 ORDER by level/topic; Irregular verbs sits after the Verb tenses folder, before Could), never just at the end.
-New grammar module: any number of core stages (about 4–8) plus an `adv:true` stage last; register it like step167 (bank, MODS, tile, ORDER, names, members.html/private-students.html MODT, hubsync docs); give its tile a one-line example in `build/parts/step191.py` _DESC (e.g. "I went, did you…?"; a cloned tile must get its own pr-desc); give it a buddy toy (`buddy.js` ITEMS with `m:`) and, if it has a ⭐ Advanced stage, a second one (`ma:`), each with pixel art in `T`; test with `node build/test/bd_t.js member`.
+`bash build/test/ci.sh` runs all the automatic checks (the same ones GitHub runs before publishing).
+Place anything new in a logical spot next to what's already there (e.g. grammar tiles go in the ORDER list in `src/scripts/032-step131-group-the-grammar-tiles.js` by level/topic; Irregular verbs sits after the Verb tenses folder, before Could), never just at the end.
+New grammar module: any number of core stages (about 4–8) plus an `adv:true` stage last; register it like Talking about the future (`fut`) — copy every place `fut` appears: grep `fut` / `FUT_` in `build/src` (bank include next to `⟦include:parts/futbank.js⟧`, MODS in `016-main-app.js`, the tile in `views/v-quiz.html` with its one-line example in `<span class="pr-desc">` (e.g. "I went, did you…?"), ORDER, the name lists), plus members.html/private-students.html MODT and hubsync docs; `build/old/steps/step184.py` shows how fut was added. Give it a buddy toy (`buddy.js` ITEMS with `m:`) and, if it has a ⭐ Advanced stage, a second one (`ma:`), each with pixel art in `T`; test with `node build/test/bd_t.js member`.
 
 ## Practice questions (build/parts/*bank.js)
 
@@ -92,7 +98,7 @@ Pages updates about a minute after the push. End commit messages with the attrib
 - Run `python3 tools/hubsync.py` with no arguments to list its commands (students, classes, recaps, club posts, recordings, backups…).
 - Rules: students must never see private notes (the "About" text, boleta, emails, health, money, family). "View as" must never change anything.
   Lesson plans are never shown to members before class. In View as, `build/cloud.js` turns every Firestore write into a no-op and `comfort_early.html` blocks pay-helper calls (except /api/my-price); keep it that way.
-  Simple mode (step179): per member in `users/{uid}/data/ncs-simple` {on, by:"noa"|"noa-off"|"me", asked}; Noa switches it in Hibi members (member detail); the member is asked once to keep it.
+  Simple mode (`src/scripts/051-step179-simple-mode.js`): per member in `users/{uid}/data/ncs-simple` {on, by:"noa"|"noa-off"|"me", asked}; Noa switches it in Hibi members (member detail); the member is asked once to keep it.
   Removing someone: Hibi members → member → 🚫 Remove from Hibi deletes access/{email} and park/{uid} and lists them in t-hubmeta.removed {uid:{email,name,at}} (hidden from the members lists; "Let back in" undoes it; access-sync skips them).
   Recommendation dates: `users/{Noa}/data/t-recs` ({uid:{mod:{at,n}}}), shown in Hibi members → 💡 Recommended. Ask Noa before adding uncertain payments or deleting data. Never invent data.
 
@@ -101,9 +107,11 @@ Pages updates about a minute after the push. End commit messages with the attrib
 - The nightly adds ideas for new grammar modules / word packs with `hubsync.py idea`; Noa sees them in Hibi members → 🧱 Ideas to build.
   "🛠 Build it" sets status `yes` + `asked` (date); the page shows "🗓 Planned for <the next day>".
 - Claude's scheduled task "Hibi: build the ideas (daily)" runs every day at 3:23 Chile time: `hubsync.py ideas yes` → builds each one following this file
-  (grammar module like step167/step184; word pack = a new set in `build/parts/vocbank.js`, optional 4th field = its own wrong options, `np:true` = no meaning hint),
+  (grammar module like `fut`, see the Test section; word pack = a new set in `build/parts/vocbank.js`, optional 4th field = its own wrong options, `np:true` = no meaning hint),
   tests, deploys, then `hubsync.py idea-built '<id>' '<https://hibi.cl/… link>' '<one line>'` → status `done`, shown under ✅ Built.
   Grammar link: https://hibi.cl/#quiz/grammar/<module name as slug>; word packs: https://hibi.cl/#quiz/word-packs.
+  Its instructions (written before the Nov 20 cleanup) mention `build/parts/step184.py`, a step chained in `step19.py` and MODS in `index.html`:
+  step184 is now in `build/old/steps/`, MODS is in `build/src/scripts/016-main-app.js`, and a step file listed in `parts/step19.py` still works.
 
 ## Noa's standing rules
 

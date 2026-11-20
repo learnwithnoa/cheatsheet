@@ -1,0 +1,1 @@
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });

@@ -1,0 +1,15 @@
+<section class="view" id="v-classnotes" hidden>
+  <h1>My <em>notebook</em></h1>
+  <div class="cn-tabs nb-tabs" role="tablist" aria-label="My notebook"><button type="button" role="tab" data-go="words" aria-selected="false">Aa Words</button><button type="button" role="tab" data-go="classnotes" aria-selected="true">✏️ Class notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Summaries</button></div>
+  <p class="lede">Write today's notes here or on your Home page. Every note you save shows up below, newest first.</p>
+  <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
+  <div id="slotCnPage" class="page-slot"></div>
+  <div class="list-head" style="margin-top:6px">
+    <h2 style="margin:0">Notes <span class="count" id="cnCount"></span></h2>
+    <div class="list-tools">
+      <input id="cnSearch" type="search" placeholder="Search my notes…" aria-label="Search my class notes" autocomplete="off">
+      <button class="pill-btn" type="button" id="cnCopyAll">Copy all notes</button>
+    </div>
+  </div>
+  <div id="cnList" class="cn-list"></div>
+</section>

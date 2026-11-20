@@ -1,0 +1,25 @@
+<section class="view" id="v-translate" hidden>
+  <h1><em>Translator</em></h1>
+  <p class="lede">Write a word or sentence in Spanish <i>or</i> English and tap <b>Translate here</b>. It figures out the language for you, and shows you how to say the English part. You can also open it in Google Translate or DeepL.</p>
+  <div class="tr">
+    <div class="card">
+      <div class="dir"><strong id="fromLbl">Español</strong><span aria-hidden="true">→</span><strong id="toLbl">English</strong><button class="swap" id="swapBtn" type="button">Swap ⇄</button></div>
+      <label for="trIn" class="count" style="display:block;margin-bottom:6px">Your text</label>
+      <textarea id="trIn" placeholder="Ej: Me cuesta entender cuando hablan rápido"></textarea>
+      <div class="links">
+        <button class="pill-btn" id="trBtn" type="button" hidden>Translate here</button>
+        <a class="linkbtn" id="lnkGoogle" href="https://translate.google.com/" target="_blank" rel="noopener">Google Translate ↗</a>
+        <a class="linkbtn" id="lnkDeepl" href="https://www.deepl.com/translator" target="_blank" rel="noopener">DeepL ↗</a>
+        <a class="linkbtn" id="lnkWR" href="https://www.wordreference.com/" target="_blank" rel="noopener" hidden>WordReference ↗</a>
+      </div>
+    </div>
+    <div class="card" id="outCard" hidden>
+      <div class="dir"><strong>Translation</strong></div>
+      <div class="out placeholder" id="trOut" aria-live="polite">Your translation shows up here.</div>
+      <p class="tr-note" id="trNote" hidden></p>
+      <div class="tr-say" id="trSay" hidden><span class="tr-say-l">How to say it</span><span class="tr-say-p" id="trSayP"></span><button class="say" type="button" id="trSayBtn" aria-label="Listen">🔊</button></div>
+      <div class="note-actions" style="margin-top:12px"><button class="pill-btn pill-green" id="trSave" type="button">+ Save to My notebook</button></div>
+    </div>
+  </div>
+  <div class="note dismissible">Tip: translate whole ideas, not word by word. And try saying it in English <i>first</i>, then check. That's how you actually get faster.</div>
+</section>

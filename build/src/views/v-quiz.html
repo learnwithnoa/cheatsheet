@@ -1,0 +1,76 @@
+<section class="view" id="v-quiz" hidden>
+<div id="prHub">
+  <h1><em>Practice</em></h1>
+  <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
+  <p class="esb">Elige qué quieres practicar hoy.</p>
+  <div class="card pr-goal" id="prGoal"></div>
+  <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button></div>
+  <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
+<div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
+<div class="pr-panel" data-pp="gram" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Grammar</em></h1><p class="lede">Pick a topic. More grammar modules are on the way!</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prPrsTile" data-modtile="prs"><span class="pr-ico" aria-hidden="true">☀️</span><b>Present simple</b><span class="pr-desc">I work, she works, do you…?</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prThTile" data-modtile="th"><span class="pr-ico" aria-hidden="true">🏠</span><b>There is / there are</b><span class="pr-desc">there is a…, there are some…</span> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPsTile" data-modtile="ps"><span class="pr-ico" aria-hidden="true">⏪</span><b>Past simple</b><span class="pr-desc">I went, did you…?, I didn't…</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prPpTile" data-modtile="pp"><span class="pr-ico" aria-hidden="true">🌍</span><b>Present perfect</b><span class="pr-desc">I've been, have you ever…?</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIngTile" data-modtile="ing"><span class="pr-ico" aria-hidden="true">🏃</span><b>Verb + -ing</b><span class="pr-desc">I enjoy reading, I want to go</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prCouTile" data-modtile="cou"><span class="pr-ico" aria-hidden="true">💪</span><b>Could vs was able to</b><span class="pr-desc">I could swim, I was able to finish</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prFutTile" data-modtile="fut"><span class="pr-ico" aria-hidden="true">🔮</span><b>Talking about the future</b><span class="pr-desc">will, going to, I'm meeting…</span> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="ps" id="prIqTile" data-modtile="iq"><span class="pr-ico" aria-hidden="true">❓</span><b>Indirect questions</b><span class="pr-desc">Can you tell me where it is?</span> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 18 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button><button class="pr-tile" type="button" data-pr="irr"><span class="pr-ico" aria-hidden="true">🔁</span><b>Irregular verbs</b><span class="pr-sub">Flashcards, quiz and writing drill</span></button><button class="pr-tile" type="button" data-pr="mis" id="prMisTile"><span class="pr-ico" aria-hidden="true">📌</span><b>My mistakes</b><span class="pr-sub">Nothing to review yet</span></button></div></div>
+<div class="pr-panel" data-pp="words" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Your <em>words</em></h1><p class="lede">Practice the words you saved in <b>My notebook</b>.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="flash"><span class="pr-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span class="pr-sub">Review the words you saved</span></button><button class="pr-tile" type="button" data-pr="sent"><span class="pr-ico" aria-hidden="true">✍️</span><b>Use it in a sentence</b><span class="pr-sub">Write a sentence and get feedback</span></button><button class="pr-tile" type="button" data-pr="say"><span class="pr-ico" aria-hidden="true">🎤</span><b>Say it out loud</b><span class="pr-sub">Practice your pronunciation</span></button></div></div>
+<div class="pr-panel" data-pp="vocab" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Word <em>packs</em></h1><p class="lede">New words and expressions picked by Noa, in sets (not your saved words: those are in <b>My notebook</b>). Learn them with flashcards, then take the quiz.</p><div id="vocArea"></div></div>
+<div class="pr-panel" data-pp="vset" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="vsetTitle">Vocabulary</h1><div id="vsetArea"></div></div>
+<div class="pr-panel" data-pp="ps" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1 id="psTitle"><em>Past simple</em></h1><p class="lede">Short stages, from easy to harder. Each round has 10 questions: first you choose the answer, then you write it. Get 7/10 to open the next stage.<span class="esb">Etapas cortas, de fácil a más difícil. Saca 7/10 para abrir la siguiente.</span></p><div id="psArea"></div></div>
+<div class="pr-panel" data-pp="mis" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>My mistakes</em></h1><p class="lede">The grammar questions you missed, saved so you can practice them again.</p><div id="misArea"></div></div>
+<div class="pr-panel" data-pp="flash" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Flashcards</em></h1><p class="lede">Flip each card and tell it if you knew the word: the ones you miss come back sooner, so you spend your time on the hard ones.</p><div class="card flash-wrap" style="max-width:560px">
+    <div id="fcEmpty" hidden><p style="margin:0 0 10px">You don't have any words yet. Save a few on your <b>Home</b> page and they'll show up here as flashcards.</p><button class="pill-btn pill-green" type="button" data-go="notes">Go to Home</button></div>
+    <div class="fc-howslot" data-fchow="words"></div><div class="fc-set" role="group" aria-label="Which words to practice"><span class="fc-set-l">Which words?</span><button type="button" data-fcset="all">All</button><button type="button" data-fcset="today">Today&#39;s 5</button><button type="button" data-fcset="new20">Newest 20</button><button type="button" data-fcset="week">This week</button><button type="button" data-fcset="hard">Hard ones</button><button type="button" data-fcset="pick">My pick <span id="fcPickN"></span></button></div>
+    <div id="fcSetEmpty" class="fc-set-empty" hidden></div>
+    <div id="fcBox">
+      <div class="quiz-top"><span class="tag" id="fcDirTag">English → Español</span><span class="count" id="fcCount"></span></div>
+      <button class="flashcard" type="button" id="fcCard" aria-live="polite">
+        <span class="fc-front" id="fcFront"></span>
+        <span class="fc-back" id="fcBack" hidden></span>
+        <span class="fc-hint" id="fcHint">Tap to flip</span>
+      </button>
+      <div class="fc-answer" id="fcAnswer" hidden><button class="fc-no" type="button" id="fcMiss">✗ Didn't know</button><button class="fc-yes" type="button" id="fcKnew">✓ I knew it</button></div>
+      <p class="fc-stats" id="fcStats"></p>
+      <div class="quiz-btns"><button class="pill-btn" type="button" id="fcNext">Skip →</button><button class="swap" type="button" id="fcShuffle">Shuffle</button><button class="swap" type="button" id="fcDir">Start in Spanish</button></div>
+    </div>
+  </div>
+  </div>
+<div class="pr-panel" data-pp="level" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>My English <em>level</em></h1>
+  <p class="lede">Your level helps Hibi give you fair feedback: the stars for your sentences are <b>for your level</b>, never compared with anyone else. It's not a grade, and you can change it any time.</p>
+  <div id="lvlBox"></div></div>
+<div class="pr-panel" data-pp="sent" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Use it in a <em>sentence</em></h1>
+  <p>Write your own sentence with one of your words and get quick feedback. Each sentence gets ⭐ to ⭐⭐⭐ <b>for your level</b> (not compared with anyone else), and your buddy gets 1 to 3 🍪. Like your sentence? Save it as the word's example.</p>
+  <div class="card sn-card" id="snCard" style="max-width:560px">
+    <div class="quiz-top"><span class="tag">✍️ Your word</span><button class="swap" type="button" id="snNext">Another word →</button></div>
+    <div class="sn-word"><b id="snWord"></b><span id="snMean"></span></div>
+    <label class="sr" for="snText">Your sentence</label>
+    <textarea id="snText" rows="2" placeholder="Write a sentence with this word…" spellcheck="true"></textarea>
+    <div class="note-actions"><button class="pill-btn pill-green" type="button" id="snCheck">Check my sentence</button><span class="muted" id="snOff" hidden style="font-size:13px">The checker is loading…</span></div>
+    <div class="sn-out" id="snOut" hidden aria-live="polite"></div>
+  </div>
+  </div>
+<div class="pr-panel" data-pp="say" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Say it <em>out loud</em></h1>
+  <p>Practice your pronunciation: say one of your words (or its example sentence) and see if the computer understands you.</p>
+  <div class="card sn-card" id="spCard" style="max-width:560px">
+    <div class="quiz-top"><span class="tag">🎤 Say this</span><button class="swap" type="button" id="spNext">Another word →</button></div>
+    <div class="sn-word"><b id="spTarget"></b><span id="spMean"></span></div>
+    <div class="note-actions"><button class="sp-mic" type="button" id="spMic">🎤 <span>Tap and say it</span></button><button class="swap" type="button" id="spHear">🔊 Listen</button><button class="swap" type="button" id="spMode" hidden>Say the example sentence</button></div>
+    <p class="muted" id="spNo" hidden style="font-size:14px;margin:8px 0 0">Your browser can't listen to you. Try Chrome, Edge or Safari.</p>
+    <div class="sn-out" id="spOut" hidden aria-live="polite"></div>
+  </div>
+  </div>
+<div class="pr-panel" data-pp="irr" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1>Irregular <em>verbs</em></h1>
+  <p class="lede" style="margin-bottom:12px">Learn them with flashcards, check yourself with a quiz, then write them from memory.</p>
+  <div id="irrHub"></div>
+  <div id="irrArea"></div>
+  <div id="irrDrill" hidden><p class="muted" style="margin:0 0 10px">Write the past simple and the past participle. Press Enter to check.</p>
+  <div class="card quiz" style="max-width:560px">
+    <div class="quiz-top"><span class="tag" id="qzLevel">common verbs</span><span class="count" id="qzScore">0 correct · streak 0</span></div>
+    <div class="quiz-verb" id="qzVerb">go</div>
+    <div class="es" id="qzEs" style="margin:-4px 0 14px">ir</div>
+    <form id="qzForm" class="quiz-form" autocomplete="off">
+      <div class="field"><label for="qzPast">Past simple</label><input id="qzPast" type="text" spellcheck="false" autocapitalize="off"></div>
+      <div class="field"><label for="qzPP">Past participle</label><input id="qzPP" type="text" spellcheck="false" autocapitalize="off"></div>
+      <div class="quiz-btns"><button class="pill-btn" type="submit" id="qzCheck">Check</button><button class="swap" type="button" id="qzShow">Show answer</button><button class="swap" type="button" id="qzNext">Next →</button></div>
+    </form>
+    <div id="qzFeedback" class="quiz-fb" aria-live="polite"></div>
+  </div>
+  <div class="chips" style="margin-top:14px" hidden><button class="chip" type="button" data-ql="common" aria-pressed="true">Common verbs</button><button class="chip" type="button" data-ql="all" aria-pressed="false">All verbs</button></div>
+  </div>
+</div>
+</section>

@@ -1,0 +1,2 @@
+try{var _h=JSON.parse(localStorage.getItem("cs-auth-hint")||"null");if(_h&&_h.t)document.documentElement.classList.add("t-hint");}catch(e){}
+(function(){var t0=Date.now();(function w(){var ok=document.getElementById("tmWrap")&&document.getElementById("csPanel");if(ok||Date.now()-t0>1200){document.documentElement.classList.add("hdr-ok");return;}requestAnimationFrame(w);})();})();

@@ -1,0 +1,442 @@
+<script>⟦script:001-teacher-pages-embed-home-as-their-music-⟧</script>
+<title>Cheat Sheet</title>
+<script>⟦script:002-theme-early⟧</script>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<style>⟦style⟧</style>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="./" data-go="notes" aria-label="Cheat Sheet, go to Home"><small>Learn with Noa</small><span>Cheat Sheet</span></a>
+    <div class="search" id="searchWrap" role="search">
+      <label for="gSearch" class="sr">Search Hibi</label>
+      <span class="search-ico" aria-hidden="true"></span>
+      <input id="gSearch" type="search" placeholder="Search everything… (try “since” or “make”)" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="gResults" aria-autocomplete="list">
+      <kbd class="search-kbd" aria-hidden="true">/</kbd>
+      <div class="g-results" id="gResults" role="listbox" hidden></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="search-toggle" id="searchToggle" type="button" aria-label="Search" aria-controls="searchWrap" aria-expanded="false"><span class="search-ico" aria-hidden="true"></span></button>
+    <a class="theme-btn t-ico" id="navTeacher" href="members.html" title="Cheat Sheet members" aria-label="Cheat Sheet members" hidden>👥</a>
+    <a class="theme-btn t-ico" id="navHub" href="private-students.html" title="Private students" aria-label="Private students" hidden>🎓</a>
+    <button class="theme-btn" id="hdrWord" type="button" title="Add a word to My notebook" aria-label="Add a word" aria-haspopup="dialog" aria-controls="qa"><span aria-hidden="true" style="font-size:17px;line-height:1">＋</span><span class="theme-txt">Word</span></button>
+    <div class="music-wrap">
+      <button class="theme-btn music-btn" id="musicBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="musicPanel"><span class="mu-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></svg></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only">Study music</span></button>
+      <div class="music-panel card" id="musicPanel" role="dialog" aria-label="Study music" hidden>
+        <div class="qa-top"><h3>Study music</h3><button class="qa-x" type="button" id="musicClose" aria-label="Close">×</button></div>
+        <button class="music-play" type="button" id="musicPlay" aria-pressed="false"><span class="mp-ico" id="mpIco" aria-hidden="true">▶</span><span id="mpTxt">Play</span></button>
+        <div class="chips" role="radiogroup" aria-label="Sound" id="musicModes">
+          <span class="mm-cat" aria-hidden="true">🎵 Music</span>
+          <button type="button" class="chip" role="radio" data-mm="lofi">Lo-fi beats</button>
+          <button type="button" class="chip" role="radio" data-mm="both">Lo-fi + rain</button>
+          <button type="button" class="chip" role="radio" data-mm="piano">Calm piano</button>
+          <button type="button" class="chip" role="radio" data-mm="pianorain">Piano + rain</button>
+          <span class="mm-cat" aria-hidden="true">🌊 Sounds</span>
+          <button type="button" class="chip" role="radio" data-mm="rain">Just rain</button>
+          <button type="button" class="chip" role="radio" data-mm="ocean">Ocean waves</button>
+          <button type="button" class="chip" role="radio" data-mm="brown">Brown noise</button>
+          <button type="button" class="chip" role="radio" data-mm="pink">Pink noise</button>
+          <button type="button" class="chip" role="radio" data-mm="white">White noise</button>
+        </div>
+        <label class="vol" for="musicVol"><span class="vol-lbl">Volume</span><span aria-hidden="true">🔈</span><input type="range" id="musicVol" min="0" max="100" value="45"><span aria-hidden="true">🔊</span></label>
+        <label class="vol bal" for="musicBal" id="balRow" hidden><span class="vol-lbl">Mix</span><span class="bal-end">Music</span><input type="range" id="musicBal" min="0" max="100" value="40" aria-valuetext="40% rain"><span class="bal-end">Rain</span></label>
+        <p class="music-note" id="mnDesc"></p>
+        <p class="music-note" id="mnLofi" hidden>Want real tracks? <a href="https://www.youtube.com/@LofiGirl" target="_blank" rel="noopener">Lofi Girl on YouTube ↗</a></p>
+      </div>
+    </div>
+    <button id="csTimerChip" type="button" hidden aria-label="Study timer"></button>
+    <button class="theme-btn cs-hide-phone" id="themeBtn" type="button" aria-label="Switch to light mode"><span aria-hidden="true" id="themeIcon">☀</span><span class="theme-txt" id="themeTxt">Light</span></button>
+    <div class="cs-wrap" id="csWrap"></div>
+    <div class="music-wrap auth-wrap">
+      <button class="theme-btn auth-btn" id="authBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="authPanel"><span class="g-ico" id="authIco" aria-hidden="true">G</span><span class="theme-txt" id="authTxt">Sign in</span></button>
+      <div class="music-panel card auth-panel" id="authPanel" role="dialog" aria-label="Your account" hidden>
+        <div class="qa-top"><h3>Your profile</h3><button class="qa-x" type="button" id="authClose" aria-label="Close">×</button></div>
+        <p class="auth-who" id="authWho"></p>
+        <p class="auth-status" id="authStatus"></p>
+        <div class="auth-stats" id="authStats"></div>
+
+        <div id="authOutBox"><button class="swap" type="button" id="authOut">Sign out</button></div>
+        <div class="confirm-bar" id="authOutConfirm" hidden><p><b>Sign out?</b> Your notes stay safe in your Google account. They'll be removed from this device until you sign in again.</p><div class="note-actions"><button class="pill-btn" type="button" id="authOutYes">Sign out</button><button class="swap" type="button" id="authOutNo">Cancel</button></div></div>
+      </div>
+    </div>
+  </div>
+</header><script>⟦script:003-header-height⟧</script>
+
+
+<div class="shell">
+  <nav class="side" aria-label="Sections">
+    <div class="navgroup mine">
+      <button class="navbtn notes-nav" data-go="notes"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/></svg><span>Home</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="members.html" id="mnavTeacher" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2"/><circle cx="16.8" cy="9.5" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.4 1.4 5 4.6"/></svg><span>Hibi members</span></button>
+      <button class="navbtn cn-nav t-mnav" type="button" data-href="private-students.html" id="mnavHub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>Private students</span></button>
+      <button class="navbtn cn-nav t-tab" data-go="students" id="navStudents" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>1:1 students</span><span class="st-live" id="stLiveDot" hidden>LIVE</span></button>
+      <button class="navbtn cn-nav t-tab" data-go="members" id="navMembers" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2"/><circle cx="16.8" cy="9.5" r="2.6"/><path d="M15.6 14.4c2.6-.3 4.4 1.4 5 4.6"/></svg><span>Hibi members</span></button>
+      <button class="navbtn cn-nav coach-nav" data-go="coaching" id="navCoaching" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.2c1.4 1.3 3.3 2 5.5 2s4.1-.7 5.5-2v-4.2"/><path d="M21.5 9.5v5"/></svg><span>My coaching</span></button>
+      <button class="navbtn cn-nav club-nav" data-go="club" id="navClub" hidden><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.2V15.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M17 9.5h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v2.7l-3.4-2.7H12"/></svg><span>Club</span></button><script>⟦script:004-club-nav-early⟧</script>
+      <button class="navbtn cn-nav nb-merged" data-go="classnotes" hidden><span class="nb-ico" aria-hidden="true"></span><span>My class notes</span><span id="cnNavCount" hidden></span></button>
+      <button class="navbtn cn-nav" data-go="words"><span class="nb-ico" aria-hidden="true"></span><span>My notebook</span><span class="cn-count" id="wNavCount"></span></button>
+      <button class="navbtn cn-nav" data-go="quiz"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span>Practice</span></button>
+      <button class="navbtn cn-nav" data-go="translate"><span class="w-ico tr-ico" aria-hidden="true">⇄</span><span>Translator</span></button>
+      <button class="navbtn cn-nav" data-go="park"><svg class="home-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5c-3.3 0-5.6 2.4-5.6 5.3 0 .6.1 1.2.3 1.7-1.4.8-2.2 2.1-2.2 3.6 0 2.4 2.1 4.2 4.6 4.2h5.8c2.5 0 4.6-1.8 4.6-4.2 0-1.5-.8-2.8-2.2-3.6.2-.5.3-1.1.3-1.7 0-2.9-2.3-5.3-5.6-5.3z"/><path d="M12 11v9.5"/></svg><span>Buddy park</span></button>
+    </div>
+    <div class="navgroup starred" id="starGroup" hidden><h4>★ Starred</h4><div class="star-list" id="starList"></div></div>
+    <div class="navgroup ng-start"><h4>Essentials</h4>
+      <button class="navbtn" data-go="basics">Sentence basics</button>
+      <button class="navbtn" data-go="be">Verb to be</button>
+      <button class="navbtn" data-go="tenses">Verb tenses</button>
+      <button class="navbtn" data-go="verbs">Irregular verbs</button>
+      <button class="navbtn" data-go="mistakes">Common mistakes</button>
+    </div>
+    <div class="navgroup ng-speaking"><h4>Speaking</h4>
+      <button class="navbtn" data-go="summary">Summary helper</button>
+      <button class="navbtn" data-go="stuck">I'm stuck!</button>
+      <button class="navbtn" data-go="opinions">Opinions</button>
+      <button class="navbtn" data-go="conversation">Conversation</button>
+      <button class="navbtn" data-go="linking">Linking words</button>
+    </div>
+    <div class="navgroup ng-grammar"><h4>Grammar</h4>
+      <button class="navbtn" data-go="pronouns">Pronouns</button>
+      <button class="navbtn" data-go="time">In / on / at (time)</button>
+      <button class="navbtn" data-go="place">Prepositions of place</button>
+      <button class="navbtn" data-go="tofor">To vs for</button>
+      <button class="navbtn" data-go="quantity">Quantifiers</button>
+      <button class="navbtn" data-go="frequency">Frequency</button>
+      <button class="navbtn" data-go="compare">Comparatives</button>
+      <button class="navbtn" data-go="gerund">-ing or to?</button>
+      <button class="navbtn" data-go="usedto">Used to</button>
+      <button class="navbtn" data-go="perfect">Perfect vs past</button>
+      <button class="navbtn" data-go="modals">Modal verbs</button>
+      <button class="navbtn" data-go="conditionals">Conditionals</button>
+      <button class="navbtn" data-go="passive">Passive voice</button>
+      <button class="navbtn" data-go="reported">Reported speech</button>
+    </div>
+    <div class="navgroup ng-words"><h4>Words &amp; sounds</h4>
+      <button class="navbtn" data-go="phrasal">Phrasal verbs</button>
+      <button class="navbtn" data-go="domake">Do vs make</button>
+      <button class="navbtn" data-go="false">False friends</button>
+      <button class="navbtn" data-go="pronunciation">Pronunciation</button>
+      <button class="navbtn" data-go="numbers">Numbers &amp; dates</button>
+    </div>
+    <div class="navgroup ng-work"><h4>Work</h4>
+      <button class="navbtn" data-go="email">Emails &amp; meetings</button>
+      <button class="navbtn" data-go="interview">Job interviews</button>
+    </div>
+  </nav>
+
+  <main>
+
+<!-- ============ TENSES ============ -->
+⟦view:v-tenses⟧
+
+<!-- ============ VERBS ============ -->
+⟦view:v-verbs⟧
+
+<!-- ============ HOME ============ -->
+⟦view:v-notes⟧
+
+<!-- ============ FEEDBACK ============ -->
+⟦view:v-feedback⟧
+
+<!-- ============ MY WORDS ============ -->
+⟦view:v-words⟧
+
+<!-- ============ CLASS NOTES ============ -->
+⟦view:v-classnotes⟧
+
+<!-- ============ TRANSLATOR ============ -->
+⟦view:v-notebook⟧
+
+⟦view:v-park⟧
+
+⟦view:v-students⟧
+⟦view:v-members⟧
+⟦view:v-coaching⟧
+<script>⟦script:005-my-coaching-page⟧</script>
+
+<script>⟦script:006-noa-only-notifications-at-the-top-of-hom⟧</script>
+
+<script>⟦script:007-the-student-s-english-level-for-level-ad⟧</script>
+
+<script>⟦script:008-my-english-level-a-quick-level-check-20-⟧</script>
+<script>⟦script:009-header-word-button⟧</script>
+<script>⟦script:010-noa-doesn-t-need-the-quick-word-button-s⟧</script>
+
+<script>⟦script:011-the-logo-always-takes-you-home-and-refre⟧</script>
+
+<script>⟦script:012-noa-s-guest-link-guest-hb7k2q-plain-or-g⟧</script>
+
+<script>⟦script:013-vocab-set-links⟧</script>
+
+⟦view:v-club⟧
+<script>⟦script:014-beginner-mode-the-club-s-buttons-and-lab⟧</script>
+<script>⟦script:015-club-community⟧</script>
+⟦view:v-translate⟧
+
+<!-- ============ COMMON MISTAKES ============ -->
+⟦view:v-mistakes⟧
+
+<!-- ============ PREPOSITIONS OF PLACE ============ -->
+⟦view:v-place⟧
+
+<!-- ============ USED TO ============ -->
+⟦view:v-usedto⟧
+
+<!-- ============ PASSIVE VOICE ============ -->
+⟦view:v-passive⟧
+
+<!-- ============ REPORTED SPEECH ============ -->
+⟦view:v-reported⟧
+
+<!-- ============ BACKUP ============ -->
+⟦view:v-backup⟧
+
+<!-- ============ CHANGELOG ============ -->
+⟦view:v-changelog⟧
+
+<!-- ============ TO BE ============ -->
+⟦view:v-be⟧
+
+<!-- ============ MODALS ============ -->
+⟦view:v-modals⟧
+
+<!-- ============ DO / MAKE ============ -->
+⟦view:v-domake⟧
+
+<!-- ============ IN ON AT ============ -->
+⟦view:v-time⟧
+
+<!-- ============ TO FOR ============ -->
+⟦view:v-tofor⟧
+
+<!-- ============ PRONOUNS ============ -->
+⟦view:v-pronouns⟧
+
+<!-- ============ QUANTIFIERS ============ -->
+⟦view:v-quantity⟧
+
+<!-- ============ FREQUENCY ============ -->
+⟦view:v-frequency⟧
+
+<!-- ============ CONVERSATION ============ -->
+⟦view:v-conversation⟧
+
+<!-- ============ LINKING ============ -->
+⟦view:v-linking⟧
+
+<!-- ============ FALSE FRIENDS ============ -->
+⟦view:v-false⟧
+
+<!-- ============ BASICS ============ -->
+⟦view:v-basics⟧
+
+<!-- ============ SUMMARY HELPER ============ -->
+⟦view:v-summary⟧
+
+<!-- ============ STUCK ============ -->
+⟦view:v-stuck⟧
+
+<!-- ============ OPINIONS ============ -->
+⟦view:v-opinions⟧
+
+<!-- ============ CONDITIONALS ============ -->
+⟦view:v-conditionals⟧
+
+<!-- ============ PERFECT VS PAST ============ -->
+⟦view:v-perfect⟧
+
+<!-- ============ GERUND / INFINITIVE ============ -->
+⟦view:v-gerund⟧
+
+<!-- ============ PHRASAL VERBS ============ -->
+⟦view:v-phrasal⟧
+
+<!-- ============ COMPARATIVES ============ -->
+⟦view:v-compare⟧
+
+<!-- ============ PRONUNCIATION ============ -->
+⟦view:v-pronunciation⟧
+
+<!-- ============ NUMBERS ============ -->
+⟦view:v-numbers⟧
+
+<!-- ============ EMAIL / WORK ============ -->
+⟦view:v-email⟧
+
+<!-- ============ JOB INTERVIEWS ============ -->
+⟦view:v-interview⟧
+
+<!-- ============ QUIZ ============ -->
+⟦view:v-quiz⟧
+
+<footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Cheat Sheet · by Learn with Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
+<script src="buddy.js?v=52" defer></script>
+  </main>
+</div>
+<button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
+<button class="back-fab" id="backFab" type="button" hidden aria-label="Back"><span aria-hidden="true">←</span></button>
+<button class="fab" id="fab" type="button" aria-haspopup="dialog" aria-controls="qa"><span aria-hidden="true">+</span> word</button>
+<div class="qa-backdrop" id="qaBackdrop" hidden></div>
+
+<div class="qa-backdrop wl-backdrop" id="wnBackdrop" hidden></div>
+<section class="welcome card whatsnew" id="whatsnew" role="dialog" aria-modal="true" aria-labelledby="wnTitle" hidden>
+  <span class="tag wn-tag">New update</span>
+  <h2 id="wnTitle">What's <em>new</em></h2>
+  <div id="wnBody"></div>
+  <div class="note-actions"><button class="pill-btn" type="button" id="wnOk">Got it</button><button class="swap" type="button" data-go="changelog" id="wnAll">See all updates</button></div>
+  <button type="button" class="wn-less" id="wnLess" data-to="week">See fewer of these</button>
+</section>
+<div class="qa-backdrop wl-backdrop" id="wlBackdrop" hidden></div>
+<section class="welcome card" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlTitle" hidden>
+  <div class="wl-top"><span class="wl-count" id="wlCount">1 of 4</span><button class="qa-x" type="button" id="wlSkip" aria-label="Close the tour">×</button></div>
+
+  <div class="wl-step" data-step="0">
+    <h2 id="wlTitle">Welcome to your <em>Cheat Sheet</em> 👋</h2>
+    <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. It does three jobs:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">📚</span><div><b>A quick reference while you speak.</b> Verb tenses, irregular verbs, grammar and phrases for when you're stuck, all short and clear. Keep it open next to Zoom during class.</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">📝</span><div><b>Your own English notebook.</b> Save the new words and class notes that matter to <i>you</i>.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>A place to practice.</b> Grammar step by step, vocabulary sets and flashcards with your own words.</div></li>
+    </ul>
+    <p class="esb">Tu compañero de inglés: referencia rápida, cuaderno personal y práctica.</p>
+    <div class="wl-hibi"><b lang="ja">日々</b><div><b>Why “Hibi”?</b> <i>Hibi</i> (日々) is Japanese for <b>“day by day”</b>. That's how a language grows: a few new words, one class note, one short practice round, every day. Small steps, done daily, add up.</div></div>
+    <p class="wl-tip">🔎 <b>Tip:</b> <b>double-click</b> any word on Hibi (on your phone, <b>press and hold</b>) to see what it means and save it to <b>My notebook</b>. Select a few words to look up a phrase.</p>
+  </div>
+
+  <div class="wl-step" data-step="1" hidden>
+    <h2>Your <em>level</em> 🌱</h2>
+    <p class="wl-lede">Do you want more help in Spanish? You can change this anytime in <b>Settings</b>.</p>
+    <div class="wl-choice">
+      <button class="wl-opt" type="button" data-wllevel="beginner"><b>🌱 Yes, please</b><span>I'm a beginner. Más ayuda en español, ejemplos más simples y una voz más lenta.</span></button>
+      <button class="wl-opt" type="button" data-wllevel="normal"><b>🚀 I'm OK in English</b><span>Show me everything in English, with Spanish only where it helps.</span></button>
+    </div>
+  </div>
+
+  <div class="wl-step" data-step="1b" hidden>
+    <h2>Make it <em>yours</em> ✨</h2>
+    <p class="wl-lede">Pick what feels good. You can change all of this later in <b>Settings</b> (your picture, top right).</p>
+    <div class="wlm-row"><b class="wlm-l">Colors</b><div class="wlm-seg" id="wlmTheme" role="group" aria-label="Colors"><button type="button" data-wlth="dark">☾ Dark</button><button type="button" data-wlth="light">☀ Light</button><button type="button" data-wlth="sepia">📖 Sepia</button><button type="button" data-wlth="midnight">🌑 Midnight</button><button type="button" data-wlth="unicorn">🦄 Unicorn</button></div></div>
+    <div class="wlm-row"><b class="wlm-l">Text size</b><div class="wlm-seg" id="wlmSize" role="group" aria-label="Text size"><button type="button" data-wlsz="1">Aa Normal</button><button type="button" data-wlsz="1.2" style="font-size:1.1em">Aa Bigger</button><button type="button" data-wlsz="1.35" style="font-size:1.2em">Aa Biggest</button></div></div>
+    <label class="wlm-tog"><input type="checkbox" id="wlmSimple"><span><b>🧩 Simple mode</b><small>Just the main pages, with big buttons. Everything else is under ☰ More. Good if Hibi feels like a lot.</small></span></label>
+    <label class="wlm-tog"><input type="checkbox" id="wlmCalm"><span><b>🌙 Calm mode</b><small>No animations, softer colors and fewer pop-ups.</small></span></label>
+  </div>
+
+  <div class="wl-step" data-step="2" hidden>
+    <h2><em>My notebook</em>: the heart of it 💛</h2>
+    <p class="wl-lede">The words you save are the most important part of the Cheat Sheet. Everything else builds on them.</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. You don't even need the translation: it's added for you.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Make Home yours:</b> tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn and reactions everyone can see. Tap a title to open the full story.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too: write them during class, ✨ Hibi finds the new words for you, and <b>📓 Summaries</b> sum up each week.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice them with flashcards.</b> The ones you miss come back sooner, so you spend your time on the hard ones.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-step" data-step="3" hidden>
+    <h2>Time to <em>practice</em> 🎯</h2>
+    <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find four parts:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect, talking about the future), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with flashcards and a quiz.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
+      <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My notebook</b> to practice just those.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> pick 3, 5 or 8 rounds a week (bigger goal, bigger reward for your buddy). Lessons and saying phrases out loud count too, and 4 weeks in a row unlock a 🔥 campfire. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-step" data-step="4" hidden>
+    <h2>Your <em>classes</em>, all in one place 🎓</h2>
+    <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. To react to a message someone sends you, tap ☺ next to it (or double-tap it for a ❤️). If a message waits unread for 12 hours, Hibi sends you one short email (you can turn that off in Settings). Paying for the club now happens right here on Hibi, at the top of the Club page. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed (Noa’s private students get a free month).</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-step" data-step="5" hidden>
+    <h2>Your <em>study buddy</em> 🐾</h2>
+    <div class="wl-bdprev"><div class="wl-bdimg" id="wlBdImg"><span></span><i>✦</i><i>✦</i><i>✦</i></div><div><b>Meet Miki</b>, Noa's buddy, with her crown and sparkles. Yours starts as an egg 🥚: <b>tap the egg in the bottom-right corner</b> of any page to hatch it.</div></div>
+    <ul class="wl-list">
+      <li><span class="wl-ico" aria-hidden="true">🍪</span><div><b>Earn treats by studying:</b> saving words, flashcard rounds, grammar rounds, writing sentences and more. Then <b>feed</b> your buddy (up to 5 a day).</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💛</span><div><b>Friendship levels:</b> feeding, petting and visiting raise its level. Each level unlocks a new trick, and in the <b>Buddy park</b> it starts to glow: silver, gold and rainbow.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">👕</span><div><b>Clothes, colors and toys</b> unlock as you save and learn words. Finish grammar modules (and their ⭐ Advanced stages) for special toys.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">✋</span><div><b>Move it anywhere:</b> drag your buddy around the screen, and tap it to pet it, feed it or dress it up.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🌳</span><div><b>Buddy park:</b> see everyone's buddies and send them love. It never gets sick or sad if you're away, it just naps.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚔️</span><div><b>Duels</b> (club members): challenge someone in the park to a friendly 7-day duel. Winners get treats and prizes, including clothes your buddy can wear. While you have a duel, <b>⚔️ Your duels</b> sits at the top of Home (tap it to see the score), the 🔔 tells you about new challenges, lead changes and results, and your past duels are in <b>📜 Your duels</b> in the park.</div></li>
+    </ul>
+    <div class="note-actions wl-adopt" id="wlAdoptRow"><button class="pill-btn pill-green" type="button" data-wladopt>🐾 Choose my buddy</button></div>
+  </div>
+
+  <div class="wl-step" data-step="6" hidden>
+    <h2>Make it <em>yours</em> ⚙️</h2>
+    <ul class="wl-list">
+      <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
+      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (your photo, top right): pick your photo (your Google one, your own, or your buddy), and jump to your words and your club profile. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (tap your photo, top right, then <b>⚙ Settings</b>): themes, bigger text, easier fonts, bionic reading, calm mode and more. Too much on the screen? Turn on <b>🧩 Simple mode</b>: just the main pages with bigger buttons (everything else is under <b>☰ More</b>). You can also turn on the <b>🏛️ Daily Stoic</b>: one short idea a day at the top of Home.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⏱</span><div><b>Study timer</b> (⏱ at the top): focus for 25 minutes, then take a short break.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music</b> (🎧 at the top): lo-fi, piano, rain or calm noise while you study.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🔊</span><div><b>Listen</b> (next to a page title): Hibi reads the page out loud. Select some text first to hear just that part.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">★</span><div><b>Star</b> (next to a page title): adds that page to the <b>★ Starred</b> list in the menu, so it's one click away.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Something missing?</b> Use “Tell Noa” at the bottom of any page.</div></li>
+    </ul>
+  </div>
+
+  <div class="wl-nav">
+    <div class="wl-dots" id="wlDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="note-actions wl-btns">
+      <button class="swap" type="button" id="wlBack" hidden>← Back</button>
+      <button class="pill-btn" type="button" id="wlNext">Next →</button>
+      <button class="swap" type="button" data-go="notes" id="wlNotes" hidden>Take me to Home</button>
+      <button class="pill-btn" type="button" id="wlOk" hidden>Let's go!</button>
+    </div>
+  </div>
+</section>
+<form class="qa card" id="qa" role="dialog" aria-modal="true" aria-labelledby="qaTitle" hidden autocomplete="off">
+  <div class="qa-top"><h3 id="qaTitle">Save a word</h3><button class="qa-x" type="button" id="qaClose" aria-label="Close">×</button></div>
+  <div class="field"><label for="qaWord">English word / expression</label><input id="qaWord" type="text" spellcheck="false"></div>
+  <div class="field"><label for="qaMeaning">Spanish translation <span class="opt">(optional)</span></label><input id="qaMeaning" type="text" placeholder="Leave it empty and we’ll add it for you"></div>
+  <div class="field"><label for="qaExample">Example sentence <span class="opt">(optional)</span></label><input id="qaExample" type="text"></div>
+  <div class="field"><label for="qaNote">Notes <span class="opt">(optional)</span></label><input id="qaNote" type="text" placeholder="e.g. Informal. Similar to &quot;work out&quot;."></div>
+  <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
+</form>
+
+<script>⟦script:016-main-app⟧</script>
+<script>⟦script:017-a-newer-hibi-is-online-refresh-quietly-w⟧</script>
+<script>⟦script:018-auth-hint-early⟧</script>
+<script>⟦script:019-step85-one-window-two-tabs-works-with-th⟧</script>
+<script>⟦script:020-step90-tap-any-photo-in-messages-to-see-⟧</script>
+<script>⟦script:021-step93-tell-the-teacher-page-how-big-to-⟧</script>
+<script>⟦script:022-noa-s-teacher-tabs-each-loads-its-page-i⟧</script><script>⟦script:023-noa-s-notifications-click-anywhere-on-a-⟧</script><script>⟦script:024-teacher-bell-mark-read⟧</script><script>⟦script:025-home-club-card-links⟧</script><script>⟦script:026-noa-only-the-daily-stoic-on-home-it-come⟧</script><script>⟦script:027-the-menu-button-of-the-page-you-re-alrea⟧</script><script>⟦script:028-step116-the-buttons-in-the-top-bar-each-⟧</script>
+<script>⟦script:029-bell-and-messages-popup⟧</script>
+<script>⟦script:030-step120-is-the-person-in-the-middle-of-s⟧</script>
+<script>⟦script:031-step126-only-one-top-window-open-at-a-ti⟧</script>
+<script>⟦script:032-step131-group-the-grammar-tiles⟧</script>
+<script>⟦script:033-step134-line-each-top-window-up-under-it⟧</script>
+<script>⟦script:034-step135-club-payments-flow-through-the-h⟧</script>
+<script>⟦script:035-step137-a-real-window-toast-before-windo⟧</script>
+<script>⟦script:036-pay-testers⟧</script>
+<script>⟦script:037-step141-tapping-a-recommended-stage-save⟧</script>
+<script>⟦script:038-step145-club-members-still-paying-on-sko⟧</script>
+<script>⟦script:039-step149-settings-switch-for-the-unread-m⟧</script>
+<script>⟦script:040-step151-the-poll-form-takes-the-place-of⟧</script>
+<script>⟦script:041-step154-daily-stoic-on-home-for-members-⟧</script>
+<script>⟦script:042-lesson-present-perfect⟧</script>
+<script>⟦script:043-lessons-more⟧</script>
+<script>⟦script:044-step164-a-verb-tenses-folder-in-practice⟧</script>
+<script>⟦script:045-step171-why-the-ai-didn-t-answer-in-plai⟧</script>
+<script>⟦script:046-step172-grammar-opens-on-all-topics⟧</script>
+<script>⟦script:047-step174-change-the-weekly-goal-size⟧</script>
+<script>⟦script:048-step175-one-time-pop-up-my-words-my-clas⟧</script>
+<script>⟦script:049-step177-who-lists-club-going-enjoyed-rea⟧</script>
+<script>⟦script:050-step178-home-order-arrange⟧</script>
+<script>⟦script:051-step179-simple-mode⟧</script><script>⟦script:052-step180-settings-in-a-clearer-order-plus⟧</script>
+<script>⟦script:053-step181-make-it-yours-in-the-welcome-tou⟧</script>
+<script>⟦script:054-step182-show-more-words-button-loads-by-⟧</script>
+<script>⟦script:055-step183-teacher-pages-go-back-to-their-f⟧</script>
+<script>⟦script:056-step187-irregular-verbs-practice-hub⟧</script>
+<script>⟦script:057-step194-tap-the-buddy-on-a-club-profile-⟧</script><script>⟦script:058-step195-how-to-use-flashcards⟧</script><script>⟦script:059-step198-report-page-errors-to-noa-no-wor⟧</script>

@@ -4530,7 +4530,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-61ad6e5b275e.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261120085833"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261120091020"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

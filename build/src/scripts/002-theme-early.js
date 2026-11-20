@@ -1,0 +1,1 @@
+(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft"){t="sepia";localStorage.setItem("ncs-theme",t);}}catch(e){}document.documentElement.setAttribute("data-theme",t);})();

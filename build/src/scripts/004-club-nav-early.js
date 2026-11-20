@@ -1,0 +1,1 @@
+try{var _w=localStorage.getItem("cs-club-nav");if(_w){var _b=document.getElementById("navClub");_b.hidden=false;if(_w==="2")_b.classList.add("locked");}}catch(e){}

@@ -1,0 +1,5 @@
+(function(){ var t=document.querySelector("header.top"); if(!t) return; function f(){ document.documentElement.style.setProperty("--hdr-h", Math.round(t.getBoundingClientRect().height)+"px"); } f(); try{ new ResizeObserver(f).observe(t); }catch(e){ addEventListener("resize",f); }
+  var ro=null, cur=null; function va(){ var b=document.getElementById("vaBanner"); if(b===cur) return; cur=b; if(ro){ ro.disconnect(); ro=null; }
+    if(!b){ document.documentElement.style.setProperty("--va-h","0px"); return; }
+    var g=function(){ document.documentElement.style.setProperty("--va-h", Math.round(b.getBoundingClientRect().height)+"px"); }; g(); try{ ro=new ResizeObserver(g); ro.observe(b); }catch(e){} }
+  new MutationObserver(va).observe(document.body||document.documentElement,{childList:true}); va(); })();

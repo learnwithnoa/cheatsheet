@@ -1,0 +1,28 @@
+<section class="view" id="v-feedback" hidden>
+  <h1>Send <em>feedback</em></h1>
+  <p class="lede">Something missing, confusing or not working? Tell me. I read every message and use them to make this page better. Writing it in English is great practice, but Spanish is fine too.</p>
+  <form class="card fb-form" id="fbForm" autocomplete="off">
+    <div class="field"><span class="fb-label" id="fbTypeLbl">What's it about?</span>
+      <div class="chips" role="radiogroup" aria-labelledby="fbTypeLbl" id="fbTypes">
+        <button type="button" class="chip" role="radio" data-fbtype="Something's missing" aria-checked="true" aria-pressed="true">Something's missing</button>
+        <button type="button" class="chip" role="radio" data-fbtype="Something's not working" aria-checked="false" aria-pressed="false">Something's not working</button>
+        <button type="button" class="chip" role="radio" data-fbtype="Idea" aria-checked="false" aria-pressed="false">I have an idea</button>
+        <button type="button" class="chip" role="radio" data-fbtype="Other" aria-checked="false" aria-pressed="false">Other</button>
+      </div>
+    </div>
+    <div class="fb-row">
+      <div class="field"><label for="fbSection">Which section?</label><select id="fbSection"></select></div>
+      <div class="field"><label for="fbName">Your name <span class="opt">(optional)</span></label><input id="fbName" type="text" placeholder="So I know who to thank"></div>
+    </div>
+    <div class="field"><label for="fbMsg">Your message</label><textarea id="fbMsg" placeholder="e.g. It would be great to have a section about prepositions of place."></textarea></div>
+    <div class="fb-send">
+      <span class="fb-label">Send it with one tap</span>
+      <div class="links">
+        <a class="pill-btn pill-green fb-btn" id="fbGmail" href="#" target="_blank" rel="noopener">Send by Gmail ↗</a>
+        <button class="swap" type="button" id="fbCopy">Copy message</button>
+      </div>
+      <p class="fb-err" id="fbErr" hidden>Write your message first.</p>
+      <p class="fb-help">Gmail opens in a new tab with your message already written. Just press <b>send</b> there. Use a different email? Copy the message and send it to <b class="mono">learnwithnoa@gmail.com</b> <button class="foot-link" type="button" id="fbCopyEmail">copy email</button></p>
+    </div>
+  </form>
+</section>

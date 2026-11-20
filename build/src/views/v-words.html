@@ -1,0 +1,65 @@
+<section class="view" id="v-words" hidden>
+  <h1>My <em>notebook</em></h1>
+  <div class="cn-tabs nb-tabs" role="tablist" aria-label="My notebook"><button type="button" role="tab" data-go="words" aria-selected="true">Aa Words</button><button type="button" role="tab" data-go="classnotes" aria-selected="false">✏️ Class notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Summaries</button></div>
+  <p class="lede">Every word you save, newest first. Practice them with flashcards, or paste a list (or your notes from class) and ✨ Hibi finds the words.</p>
+  <div id="slotAwPage" class="page-slot"></div>
+  <p class="ai-status" id="aiStatus" hidden aria-live="polite"></p>
+  <div class="note-actions" style="margin:4px 0 14px"><button class="pill-btn pill-green" type="button" id="impOpen" aria-expanded="false" aria-controls="importCard">+ Add many words</button><button class="swap" type="button" id="aiClean" title="Step 1: fix spelling, punctuation and capital letters, and find repeated words">🧹 Clean up my words</button><button class="swap" type="button" id="aiFill" title="Step 2: fill in missing translations, meanings, word types and examples">✨ Complete my words</button><button class="swap w-goflash" type="button" id="wGoFlash">Practice with flashcards →</button></div>
+  <div class="card import-card" id="importCard" hidden>
+    <div class="qa-top"><h3>Add many words at once</h3><button class="qa-x" type="button" id="impClose" aria-label="Close">×</button></div>
+    <p class="imp-lede">Paste your words in <b>any format</b>: a list, a message, notes from class, a copy from a document… ✨ The AI finds the words, adds the Spanish and skips the ones you already have. You'll see the list before anything is added.</p>
+    <label for="impText" class="sr">Paste your words</label>
+    <textarea id="impText" spellcheck="false" placeholder="Paste here. For example:&#10;figure out&#10;run into = toparse con&#10;Today I learned &quot;break the ice&quot; and &quot;call it a day&quot;"></textarea>
+    <div class="note-actions">
+      <button class="pill-btn pill-green" type="button" id="impAI">✨ Find my words</button>
+      <label class="swap file-btn" for="impFile">Or choose a file (.csv, .txt)</label>
+      <input type="file" id="impFile" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values" class="sr">
+    </div>
+    <div id="impPick" aria-live="polite"></div>
+    <p class="imp-preview" id="impPreview" aria-live="polite"></p>
+    <details class="imp-sheet">
+      <summary>Copying from a spreadsheet? You can also import it exactly as it is</summary>
+      <ol class="imp-steps">
+        <li>Open the spreadsheet or document where you keep your words.</li>
+        <li>Select the rows with your words (the English, Spanish and example columns) and copy them (Ctrl+C / ⌘C).</li>
+        <li>Paste them in the box above and press <b>Import exactly as pasted</b>. No AI, every row becomes one word.</li>
+      </ol>
+      <button class="pill-btn" type="button" id="impBtn">Import exactly as pasted</button>
+    </details>
+  </div>
+  <div class="card sheet-card" style="margin-bottom:18px" hidden>
+    <div id="sheetEmpty">
+      <h3>Link your English Journey sheet <span class="opt">(1:1 students)</span></h3>
+      <p class="sheet-help">Open your <b>English Journey</b> Google Sheet in your Drive folder, copy the link from the address bar and paste it here, so your sheet is always one click away. You only do this once.</p>
+      <form id="sheetForm" class="row-form" novalidate>
+        <label for="sheetIn" class="sr">Google Sheets link</label>
+        <input id="sheetIn" type="url" placeholder="https://docs.google.com/…" autocomplete="off" spellcheck="false">
+        <button class="pill-btn" type="submit">Save link</button>
+      </form>
+      <p class="err" id="sheetErr" hidden>That doesn't look like a link. Copy it from your browser's address bar. It starts with <span class="mono">https://</span></p>
+    </div>
+    <div id="sheetSet" class="sheet-row" hidden>
+      <div class="sheet-ico" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="sheet-txt"><h3 id="sheetTitle">My vocabulary sheet</h3><p id="sheetSub">English Journey · your vocabulary tab</p></div>
+      <a class="pill-btn" id="sheetOpen" href="#" target="_blank" rel="noopener">Open my sheet ↗</a>
+      <button class="swap" type="button" id="sheetChange">Change link</button>
+    </div>
+  </div>
+  <div class="list-head">
+    <h2 style="margin:0">Your words <span class="count" id="wCount"></span></h2>
+    <div class="list-tools">
+      <input id="wSearch" type="search" placeholder="Search my words…" aria-label="Search my words" autocomplete="off">
+      <select id="wSort" class="w-sort" aria-label="Sort my words"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">A → Z</option><option value="za">Z → A</option></select>
+      <button class="swap" type="button" id="wSelBtn" aria-pressed="false" hidden>Choose words</button>
+      <button class="pill-btn" type="button" id="copyNew">Copy new words</button>
+      <button class="swap" type="button" id="copyAll">Copy all</button>
+      <button class="swap danger" type="button" id="delAll">Delete all</button>
+    </div>
+  </div>
+  <div class="confirm-bar" id="delAllBar" role="alertdialog" aria-labelledby="delAllTxt" hidden>
+    <p id="delAllTxt"><b>Delete all your words?</b> This can't be undone. If you want to keep them, copy them first.</p>
+    <div class="note-actions"><button class="swap" type="button" id="delAllCopy">Copy all first</button><button class="pill-btn danger-btn" type="button" id="delAllYes">Yes, delete all</button><button class="swap" type="button" id="delAllNo">Cancel</button></div>
+  </div>
+  <div class="w-selbar" id="wSelBar" hidden><span id="wSelN">0 chosen</span><button class="swap" type="button" id="wSelAll">Choose all shown</button><button class="swap" type="button" id="wSelNone">Clear</button><button class="pill-btn pill-green" type="button" id="wSelGo">🃏 Practice these with flashcards →</button><button class="swap" type="button" id="wSelDone" hidden>Done</button></div>
+<div id="wordList" class="word-list"></div>
+</section>
