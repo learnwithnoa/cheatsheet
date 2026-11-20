@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-20",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🧒",
+          "title": "Happy World Children's Day!",
+          "text": "Every November 20, kids in around 190 countries celebrate their rights. Some even take over adult jobs for a day, in TV, sport or business! Famous buildings like the Eiffel Tower light up in blue.",
+          "word": "take over",
+          "mean": "to start doing a job or role that someone else usually does",
+          "tr": "tomar el control, asumir",
+          "es": "Hoy es el Día Mundial de la Infancia: ¡los niños celebran sus derechos en todo el mundo!",
+          "q": "If a child took over your job for one day, what do you think would happen?",
+          "link": "https://www.unicef.org/world-childrens-day",
+          "src": "UNICEF",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🪐",
+          "title": "Uranus is at its best this week",
+          "text": "On November 25, Uranus reaches opposition: Earth is right between it and the Sun, so it shines its brightest all night. With a small telescope, you can spot a tiny green disc. Say hi to the ice giant!",
+          "word": "spot",
+          "mean": "to see or notice something that is hard to see",
+          "tr": "divisar, distinguir",
+          "es": "Esta semana Urano está en su mejor momento: ¡se ve más brillante que nunca en el cielo nocturno!",
+          "q": "What's the most amazing thing you've ever seen in the night sky?",
+          "link": "https://www.skyatnightmagazine.com/news/uranus-november-2026",
+          "src": "BBC Sky at Night Magazine",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🐱",
+          "title": "Your cat meows to ask you for help",
+          "text": "Scientists in Brazil put treats in a box that 38 cats couldn't open. Alone, the cats meowed 20 times in total. With a person there: 86 times! They also looked from the human to the box. Message: fix this, please!",
+          "word": "treats",
+          "mean": "small, special pieces of food, often given as a reward",
+          "tr": "golosinas, premios",
+          "es": "Un estudio en Brasil muestra que los gatos maúllan para pedirnos ayuda.",
+          "q": "How do your pets, or the pets of people you know, ask for what they want?",
+          "link": "https://mymodernmet.com/new-study-cats-meowing/",
+          "src": "My Modern Met",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-19",
       "by": "claude",
       "items": [
