@@ -8,7 +8,7 @@ service cloud.firestore {
   match /dms/{tid} {
   allow read: if request.auth != null
     && (resource == null || request.auth.uid in resource.data.members);
-  allow create, update: if request.auth != null
+  allow create, update: if hbApproved()
     && request.auth.uid in request.resource.data.members
     && request.resource.data.members.size() == 2
     && tid == request.resource.data.members[0] + '_' + request.resource.data.members[1];
@@ -16,7 +16,7 @@ service cloud.firestore {
 
   match /msgs/{mid} {
     allow read: if request.auth != null && request.auth.uid in tid.split('_');
-    allow create: if request.auth != null
+    allow create: if hbApproved()
       && request.auth.uid in tid.split('_')
       && request.resource.data.from == request.auth.uid;
     allow update, delete: if false;
@@ -78,8 +78,15 @@ service cloud.firestore {
     }
       // ===== Hibi club community (added Nov 2026) =====
           match /clubPublic/{doc} {
-      allow read: if request.auth != null;
+      allow read: if hbApproved();
       allow write: if request.auth != null && (request.auth.uid == "J8D2tjQmBaaA2QN730tSfSrjfm73" || request.auth.token.email == "nightly-helper@learnwithnoa-cheatsheet.firebaseapp.com");
+    }
+    // Nov 20 2026: let in by Noa (access/{email}, not marked gone), or Noa / the helper
+    function hbApproved() {
+      return request.auth != null && (hbTeacher() || isTeacher() || hbHelper()
+        || (request.auth.token.email is string
+            && exists(/databases/$(database)/documents/access/$(request.auth.token.email.lower()))
+            && get(/databases/$(database)/documents/access/$(request.auth.token.email.lower())).data.get('gone', false) != true));
     }
     function hbTeacher() { return request.auth != null && request.auth.uid == "J8D2tjQmBaaA2QN730tSfSrjfm73"; }
     function hbHelper() { return request.auth != null && request.auth.token.email == "nightly-helper@learnwithnoa-cheatsheet.firebaseapp.com"; }
@@ -146,13 +153,13 @@ service cloud.firestore {
 
     // Buddy park: everyone signed in can see the buddies
     match /park/{uid} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && (request.auth.uid == uid || isTeacher());
+      allow read: if hbApproved();
+      allow write: if hbApproved() && (request.auth.uid == uid || isTeacher());
     }
 
     // love sent in the park: one per person per buddy per day
     match /park/{uid}/hearts/{hid} {
-      allow create: if request.auth != null && request.auth.uid != uid
+      allow create: if hbApproved() && request.auth.uid != uid
         && request.resource.data.from == request.auth.uid
         && hid.matches(request.auth.uid + '_.*');
       allow read, delete: if request.auth != null && request.auth.uid == uid;
@@ -160,7 +167,7 @@ service cloud.firestore {
 
     // club / private / hidden: only you (and the nightly helper, for linking) can set it
     match /roles/{uid} {
-      allow read: if request.auth != null;
+      allow read: if hbApproved();
       allow write: if isTeacher() || isHelper();
     }
 
