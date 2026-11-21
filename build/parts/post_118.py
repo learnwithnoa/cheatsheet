@@ -330,3 +330,10 @@ if '2026-1120-autofill' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1121-jobint' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1121-jobint", date:"November 21, 2026", title:"New word pack: Job interviews", items:[
+    ["👔","Job interviews","A new word pack in <b>Practice → Word packs</b> for your next interview: <i>strength</i> and <i>weakness</i>, <i>cover letter</i>, <i>I was in charge of…</i>, <i>they asked several questions at once</i>, <i>I lost my train of thought</i> and more.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

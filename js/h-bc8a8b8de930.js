@@ -1652,6 +1652,28 @@ make|to create or build something|Did you [make] a mistake?|do,done,making
 do|to complete a task or an activity|I have to [do] my homework.|make,made,doing
 hear|sounds come to your ears (no effort)|Can you [hear] me? The connection is bad.|listen,listening,listened
 listen|to pay attention to sounds|I love to [listen] to podcasts.|hear,heard,listening
+`},
+ {id:"jobint", ico:"👔", t:"Job interviews", sub:"strength, cover letter, at once…", w:`
+apply for|to ask for a job, usually by sending your CV|I want to [apply for] a job at a hotel.|postulate to,apply,applicate for
+CV|a document with your studies and work experience|I sent my [CV/resume/résumé] to five companies.|curriculum,carrier,cover
+cover letter|a short letter you send with your CV|Write a [cover letter] that explains why you want the job.|motivation card,front letter,cover paper
+interviewer|the person who asks the questions in an interview|The [interviewer] asked me about my last job.|interviewed,interviewing,interview
+Tell me about yourself|the usual first question in an interview|The interview started with “[Tell me about yourself].”|Say me about yourself,Talk me about yourself,Explain me about yourself
+strength|something you are very good at|My biggest [strength] is that I'm very organized.|strong,strongness,strongly
+weakness|something you need to improve|My biggest [weakness] is that I sometimes speak too fast.|weak,weakly,weaken
+experience|what you learned from doing a job before|I have three years of [experience] in customer service.|experiment,experiences,expert
+be in charge of|to be the person responsible for something|At my last job, I [was in charge of/~was responsible for] the night team.|was in the,was charged of,was on charge of
+teamwork|working well together with other people|This job needs good [teamwork].|workteam,team job,teamed
+hard-working|someone who works a lot and does it well|I'm [hard-working/hardworking] and I learn quickly.|hard-worked,hard-work,hard-workers
+at once|at the same time|They asked me several questions [at once/~at the same time].|at one,in once,at ones
+lose your train of thought|to forget what you were going to say|Sorry, I [lost my train of thought/~got lost]. What was the question?|lost my thought train,lost my train of thinking,missed my train of thought
+could you repeat…?|a polite way to ask someone to say something again|Sorry, [could you repeat] the question, please?|can you to repeat,could you repeating,could you repeated
+full-time|working all the normal hours of the week|Is this a [full-time] job or a part-time job?|full-hours,complete-time,all-time
+shift|a period of work, like the morning or the night|I can work the night [shift].|turn,turns,shifting
+salary|the money you get for a job, usually every month|What [salary/~pay] are you expecting?|sale,salad,earn
+hire|to give someone a job|They want to [hire/~employ] two new receptionists.|higher,rent,hiring
+reference|a person who can tell a new company about your work|Can you give us a [reference/~referee] from your last job?|referent,reverence,refer
+crew|the people who work on a ship or a plane|I want to join the [crew] of a cruise ship.|crow,crews,tripulation
 `}
 ];
 VOC_SETS.forEach(set=>{
@@ -5012,6 +5034,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1121-jobint", date:"November 21, 2026", title:"New word pack: Job interviews", items:[
+    ["👔","Job interviews","A new word pack in <b>Practice → Word packs</b> for your next interview: <i>strength</i> and <i>weakness</i>, <i>cover letter</i>, <i>I was in charge of…</i>, <i>they asked several questions at once</i>, <i>I lost my train of thought</i> and more.",""]
+  ]},
   {id:"2026-1120-autofill", date:"November 20, 2026", title:"Choose what Hibi fills in for your words", items:[
     ["⚙️","Auto-fill, your way","When you save a word, Hibi fills in the Spanish, a simple meaning, the word type, how to say it and an example by itself. In <b>My notebook</b>, tap <b>⚙️ Auto-fill</b> to choose which ones (untick <b>Example sentence</b> if you like writing your own).","words"],
     ["✨","Only when something's missing","The <b>✨ Fill in missing details</b> button now shows up only when some of your words are missing something, with how many.","words"]

@@ -574,7 +574,7 @@ function renderUsage() {
 document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
 /* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
 const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
-const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work", pairs: "Confusing word pairs" };
+const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work", pairs: "Confusing word pairs", jobint: "Job interviews" };
 function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
 /* accounts that might be private students, not linked to their Coaching profile yet (this used to live on the Private students page) */
 function renderLinks() {
