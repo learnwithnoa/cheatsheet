@@ -118,14 +118,14 @@ pp: {
     return h + "</div>";
   }
   function inner(id) {
-    const L = window.PS_LESSONS[id], tab = get("cs-lesson-tab-" + id, "basics") === "adv" ? "adv" : "basics";
-    return `<div class="pl-bar"><div class="pl-tabs" role="tablist">
+    const L = window.PS_LESSONS[id], tab = L.adv && get("cs-lesson-tab-" + id, "basics") === "adv" ? "adv" : "basics";
+    return `<div class="pl-bar">${L.adv ? `<div class="pl-tabs" role="tablist">
         <button type="button" role="tab" aria-selected="${tab === "basics"}" class="${tab === "basics" ? "on" : ""}" data-pltab="basics">${T(UI.basics)} <small>A1–B1</small></button>
-        <button type="button" role="tab" aria-selected="${tab === "adv"}" class="${tab === "adv" ? "on" : ""}" data-pltab="adv">${T(UI.adv)} <small>B2–C1</small></button></div>
+        <button type="button" role="tab" aria-selected="${tab === "adv"}" class="${tab === "adv" ? "on" : ""}" data-pltab="adv">${T(UI.adv)} <small>B2–C1</small></button></div>` : "<span></span>"}
       <div class="pl-lang" role="group" aria-label="Language"><button type="button" class="${lang() === "en" ? "on" : ""}" data-pllang="en">English</button><button type="button" class="${lang() === "es" ? "on" : ""}" data-pllang="es">Español</button></div></div>
       <p class="pl-hint">${tab === "adv" ? T(UI.advNote) : T(UI.hint)}</p>${L[tab].map(block).join("")}`;
   }
-  const sum = id => `<b>${T(UI.learn)}: ${esc(T(window.PS_LESSONS[id].name))}</b><small>${T(UI.basics)} · ${T(UI.adv)}</small>`;
+  const sum = id => `<b>${T(UI.learn)}: ${esc(T(window.PS_LESSONS[id].name))}</b>${window.PS_LESSONS[id].adv ? `<small>${T(UI.basics)} · ${T(UI.adv)}</small>` : ""}`;
   window.__psLesson = function (id) {
     const L = window.PS_LESSONS && window.PS_LESSONS[id]; if (!L) return "";
     const seen = get("cs-lesson-seen-" + id, ""); if (!seen) set("cs-lesson-seen-" + id, "1");

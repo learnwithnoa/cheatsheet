@@ -824,7 +824,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     return pick(opts)();
   }
   /* ---------- greetings: different every visit and a bit smart (welcome back, club days, Noa's recommendation, weekly goal…) ---------- */
-  const MODN = { ps: "Past simple", pp: "Present perfect", prs: "Present simple", ing: "Verb + -ing", th: "There is / there are", cou: "Could vs was able to", iq: "Indirect questions", fut: "Talking about the future", ed: "-ed endings" };
+  const MODN = { ps: "Past simple", pp: "Present perfect", prs: "Present simple", ing: "Verb + -ing", th: "There is / there are", cou: "Could vs was able to", iq: "Indirect questions", fut: "Talking about the future", ed: "-ed endings", int: "Job interviews" };
   const lsj = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
   function greetLine(gapDays) {
     const fn = friendName(), N = fn ? " " + esc(fn) : "", pick = a => a[Math.floor(Math.random() * a.length)];

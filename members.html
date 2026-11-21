@@ -574,7 +574,7 @@ function renderUsage() {
 document.addEventListener("click", e => { const b = e.target.closest("[data-ud]"); if (!b) return; usageDays = +b.dataset.ud; renderUsage(); });
 /* ---------- practice tips from class recordings (written by the nightly helper) ---------- */
 const PAGE_T = { basics: "Sentence basics", be: "Verb to be", tenses: "Verb tenses", verbs: "Irregular verbs", mistakes: "Common mistakes", pronouns: "Pronouns", time: "In / on / at (time)", place: "Prepositions of place", tofor: "To vs for", quantity: "Quantifiers", frequency: "Frequency", compare: "Comparatives", gerund: "-ing or to?", usedto: "Used to", perfect: "Perfect vs past", modals: "Modal verbs", conditionals: "Conditionals", passive: "Passive voice", reported: "Reported speech", phrasal: "Phrasal verbs", domake: "Do vs make", false: "False friends", pronunciation: "Pronunciation", numbers: "Numbers & dates", email: "Emails & meetings", interview: "Job interviews", linking: "Linking words", opinions: "Opinions" };
-const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work", pairs: "Confusing word pairs", jobint: "Job interviews" };
+const PACK_T = { expr: "Everyday expressions", phrasal: "Everyday phrasal verbs", travel: "Travel", work: "English at work", pairs: "Confusing word pairs" };
 function tipStudent(r) { return students.find(s => s.role && s.role.hub === r.hub) || students.find(s => s.name.toLowerCase() === String(r.name || "").toLowerCase()); }
 /* accounts that might be private students, not linked to their Coaching profile yet (this used to live on the Private students page) */
 function renderLinks() {
@@ -828,7 +828,8 @@ const MODT = { ps: { name: "Past simple", stages: PS_T }, pp: { name: "Present p
   cou: { name: "Could vs was able to", stages: ["can, could, be able to", "could: ability in general", "was able to: one specific moment", "Negatives: couldn't", "Questions: Could you…? Were you able to…?", "will be able to, have been able to", "Tell the story", "⭐ Advanced (bonus, B2–C1)"] },
   iq: { name: "Indirect questions", stages: ["Back to normal order", "do, does, did disappear", "Yes/no questions: if or whether", "Polite openers", "The who / what trap", "Real life mix", "⭐ Advanced (bonus, B2–C1)"] },
   fut: { name: "Talking about the future", stages: ["will: decide now, offer, promise", "going to: plans", "Predictions: going to or will", "Present continuous: arrangements", "Present simple: timetables", "Real life mix", "⭐ Advanced (bonus, B2–C1)"] },
-  ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives", "⭐ Advanced (bonus, B2–C1)"] } };
+  ed: { name: "-ed endings", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives", "⭐ Advanced (bonus, B2–C1)"] },
+  int: { name: "Job interviews", stages: ["Tell me about yourself", "Your experience and results", "Telling a work story", "Strengths and weaknesses", "What would you do if…?", "Goals and the future", "Buying time and staying calm", "Your questions for them"] } };
 const COL = { p: false, w: false };   /* Practice and Words start closed; stay as Noa left them while he moves between people */
 document.addEventListener("toggle", e => { const d = e.target; if (d && d.classList && d.classList.contains("mcol")) COL[d.dataset.col] = d.open; }, true);
 function modBlock(s, id) {

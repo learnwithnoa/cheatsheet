@@ -1087,6 +1087,7 @@ function todays5(){
 ⟦include:parts/iqbank.js⟧
 ⟦include:parts/futbank.js⟧
 ⟦include:parts/thbank.js⟧
+⟦include:parts/intbank.js⟧
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
 (function(){
   const view=document.getElementById("v-quiz"), hub=document.getElementById("prHub"); if(!view||!hub) return;
@@ -1103,11 +1104,14 @@ function todays5(){
     cou:{id:"cou",name:"Could vs was able to",lname:"“could vs was able to”",the:"",stages:COU_STAGES,test:COU_TEST,toy:"🔑 Golden key",toyName:"Golden key",ico:"💪"},
     iq:{id:"iq",name:"Indirect questions",lname:"indirect questions",the:"",stages:IQ_STAGES,test:IQ_TEST,toy:"🧭 Compass",toyName:"Compass",ico:"❓"},
     fut:{id:"fut",name:"Talking about the future",lname:"future",the:"the ",stages:FUT_STAGES,test:FUT_TEST,toy:"🔮 Crystal ball",toyName:"Crystal ball",ico:"🔮"},
-    ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"}
+    ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"},
+    /* English for Specific Purposes (Nov 21 2026): same stages engine, no buddy toy, lives in its own Practice section */
+    int:{id:"int",name:"Job interviews",lname:"job interview English",the:"",stages:INT_STAGES,test:INT_TEST,esp:true,noToy:true,ico:"👔"}
   };
   let M="ps"; const MD=()=>MODS[M];
-  window.__csModInfo=()=>Object.values(MODS).map(md=>[md.id,md.stages.filter(st=>!st.adv).length]);
-  window.__csModAdv=()=>{ const o={}; Object.values(MODS).forEach(md=>{ const a=md.stages.find(st=>st.adv); if(a) o[md.id]=a.n; }); return o; };
+  /* grammar totals and buddy toys only count the grammar / pronunciation modules */
+  window.__csModInfo=()=>Object.values(MODS).filter(md=>!md.noToy).map(md=>[md.id,md.stages.filter(st=>!st.adv).length]);
+  window.__csModAdv=()=>{ const o={}; Object.values(MODS).filter(md=>!md.noToy).forEach(md=>{ const a=md.stages.find(st=>st.adv); if(a) o[md.id]=a.n; }); return o; };
   const ITEM={}; Object.values(MODS).forEach(md=>md.stages.forEach(st=>st.items.forEach(q=>{ q.mod=md.id; ITEM[q.id]=q; }))); VOC_SETS.forEach(v=>v.qs.forEach(q=>ITEM[q.id]=q));
   const VSET={}; VOC_SETS.forEach(v=>VSET[v.id]=v);
   const vprog=()=>{ const v=LS.get("ncs-vocab",{}); return v&&typeof v==="object"?v:{}; };
@@ -1187,10 +1191,10 @@ function todays5(){
   let cur=null;
   function setMod(id){ if(!MODS[id]) return; M=id; const h=$("psTitle"); if(h) h.innerHTML="<em>"+esc(MODS[id].name)+"</em>"; try{ sessionStorage.setItem("cs-mod",id); }catch(e){} }
   try{ const sm=sessionStorage.getItem("cs-mod"); if(MODS[sm]) M=sm; }catch(e){}
-  const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab"};
-  const par=c=>c==="ps"&&M==="ed"?"pron":PARENT[c];
-  const PNAME={gram:"Grammar",words:"Your words",vocab:"Word packs",pron:"Pronunciation"};
-  const PSLUG={gram:"grammar",words:"my-words",vocab:"word-packs",pron:"pronunciation",mis:"my-mistakes",irr:"irregular-verbs",flash:"flashcards",sent:"sentences",say:"say-it",level:"level-check"};
+  const PARENT={ps:"gram",mis:"gram",irr:"gram",flash:"words",sent:"words",say:"words",vset:"vocab",intv:"esp"};
+  const par=c=>c==="ps"&&M==="ed"?"pron":c==="ps"&&MODS[M]&&MODS[M].esp?"esp":PARENT[c];
+  const PNAME={gram:"Grammar",words:"Your words",vocab:"Word packs",pron:"Pronunciation",esp:"Specific purposes"};
+  const PSLUG={gram:"grammar",words:"my-words",vocab:"word-packs",pron:"pronunciation",mis:"my-mistakes",irr:"irregular-verbs",flash:"flashcards",sent:"sentences",say:"say-it",level:"level-check",esp:"specific-purposes",intv:"practice-interview"};
   const mslug=id=>String(MODS[id].name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   function hashFor(c){ if(!c) return "#quiz"; if(c==="vset") c="vocab"; const p=par(c), me=c==="ps"?mslug(M):PSLUG[c]; return "#quiz/"+(p&&PSLUG[p]?PSLUG[p]+"/":"")+(me||""); }
   window.__prHash=()=>hashFor(cur);
@@ -1211,6 +1215,8 @@ function todays5(){
     if(cur==="mis"&&!round) renderMis();
     if(cur==="vocab") renderVocab();
     if(cur==="vset"&&!round) renderSet();
+    if(cur==="intv"&&window.__intvRender) window.__intvRender();
+    if(cur==="esp") renderHub();
     if(!cur) renderHub();
     window.scrollTo({top:0});
     syncUrl();
@@ -1242,7 +1248,10 @@ function todays5(){
         (r===st.n?'<span class="pr-rec">⭐ Noa recommends this one</span>':"")+'</div><div class="ps-side">'+stars(p.s[st.n]|0)+'<small>'+(best!=null?triedTxt(p,st.n,best):testedOut()?"🎓 tested out":open?(p.pause&&p.pause.n===st.n?"":"not tried yet"):"get "+PASS+"/10 in stage "+(st.n-1))+'</small>'+
         stBtn(p,st.n,best,open)+'</div></div>';
     }).join("")+'</div>'+
-    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.filter(st=>!st.adv).length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p>'+histHTML(p,md)+'</div>'+(toCard?'<aside class="ps-aside">'+toCard+'</aside>':"")+'</div>';
+    (md.noToy?'<p class="ps-goal">'+(allDone()?"🎉 You finished every stage!":"Get "+PASS+"/10 or more in each stage to finish the module.")+'</p>':
+    '<p class="ps-goal">'+(allDone()?md.toy.split(" ")[0]+" You finished every stage! Your buddy has the <b>"+md.toyName+"</b>.":"Finish all "+md.stages.filter(st=>!st.adv).length+" stages ("+PASS+"/10 or more) to unlock the "+md.toy.split(" ")[0]+" <b>"+md.toyName+"</b> for your buddy.")+'</p>')+
+    (M==="int"?'<div class="card ps-to intv-cta"><div><b>🎤 Practice interview</b><span>Answer real interview questions in writing and Hibi checks your <b>English</b>: grammar, more professional words, stronger verbs. Not the content: that depends on your job.</span><span class="esb">Responde preguntas reales de entrevista y Hibi revisa tu inglés (no el contenido).</span></div><button class="pill-btn pill-green" type="button" data-pr="intv">Start a practice interview</button></div>':"")+
+    histHTML(p,md)+'</div>'+(toCard?'<aside class="ps-aside">'+toCard+'</aside>':"")+'</div>';
   }
 
   /* ---- a round ---- */
@@ -1324,12 +1333,12 @@ function todays5(){
       html='<div class="card ps-res"><div class="ps-big">'+R.score+' / 10</div>'+stars(sg)+
         '<p class="ps-sent">'+(R.score===10?"Perfect round! 🎉":R.score>=9?"Excellent! 🌟":R.score>=PASS?"Well done! You passed this stage. 👍":"Good practice! Get "+PASS+"/10 to pass this stage. You can do it 💪")+'</p>'+
         (nowOpen&&!wasOpen?'<p class="ps-unlock">🔓 Stage '+(st+1)+' is open!</p>':"")+
-        (finishedAll?'<p class="ps-unlock">'+md.toy.split(" ")[0]+' You finished the whole '+esc(md.lname)+' module! Your buddy got the <b>'+md.toyName+'</b>.</p>':"")+
+        (finishedAll?(md.noToy?'<p class="ps-unlock">🎉 You finished the whole '+esc(md.name)+' module!</p>':'<p class="ps-unlock">'+md.toy.split(" ")[0]+' You finished the whole '+esc(md.lname)+' module! Your buddy got the <b>'+md.toyName+'</b>.</p>'):"")+
         ((()=>{ const sa=md.stages.find(x=>x.n===st&&x.adv), ty=sa&&window.__bdAdvToy&&window.__bdAdvToy(M); return ty&&R.score>=PASS&&!(oldBest>=PASS)?'<p class="ps-unlock">'+ty.ico+' You passed the Advanced stage! Your buddy got the <b>'+esc(ty.name)+'</b>.</p>':""; })())+
         (R.missed.length?'<p class="muted">The questions you missed are saved in <b>My mistakes</b>, so you can review them later.</p>':"")+
         '<div class="note-actions" style="justify-content:center">'+(nowOpen&&md.stages[st]?'<button class="pill-btn pill-green" type="button" data-psstart="'+(st+1)+'">Next stage →</button>':"")+
         '<button class="pill-btn'+(nowOpen?"":" pill-green")+'" type="button" data-psstart="'+st+'">Try again</button><button class="swap" type="button" data-psall>All stages</button></div></div>';
-      document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:R.score,perfect,finished:finishedAll,mod:M,toy:md.toy}}));
+      document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:R.score,perfect,finished:finishedAll&&!md.noToy,mod:M,toy:md.toy}}));
     } else {
       const left=misList().length;
       html='<div class="card ps-res"><div class="ps-big">'+R.score+' / '+n+'</div><p class="ps-sent">'+(perfect?"All correct! 🎉":"Good review! 👍")+'</p><p class="muted">'+(left?left+(left===1?" question is":" questions are")+" still on your list. A question leaves the list when you get it right twice in a row.":"Your list is empty. Nothing left to review! 🎉")+'</p>'+
@@ -1376,11 +1385,11 @@ function todays5(){
     const box=area(); round=null;
     box.innerHTML='<div class="card ps-res"><div class="ps-big">'+sc+' / 15</div>'+(pass?stars(3):"")+
       '<p class="ps-sent">'+(pass?"Perfect! 🎓 You tested out of "+(md.the!=null?md.the:"the ")+md.lname+".":sc>=13?"So close! You need 15/15 to test out. 💪":"Good try! You need 15/15 to test out. 💪")+'</p>'+
-      (finished?'<p class="ps-unlock">'+md.toy.split(" ")[0]+' Every stage is done, and your buddy got the <b>'+md.toyName+'</b>!</p>':"")+
+      (finished?(md.noToy?'<p class="ps-unlock">🎉 Every stage is done!</p>':'<p class="ps-unlock">'+md.toy.split(" ")[0]+' Every stage is done, and your buddy got the <b>'+md.toyName+'</b>!</p>'):"")+
       (pass?"":'<p class="muted">You can try the test again tomorrow, or practice the stages to get there step by step.</p>')+
       (R.missed.length?'<div class="ps-miss"><b>'+(R.missed.length===1?"The one you missed":"The ones you missed")+'</b><ul>'+R.missed.map(x=>'<li>'+esc(x.q.q).replace("___","<b>"+esc(x.q.a[0])+"</b>")+(x.val?' <small>(you wrote: '+esc(x.val)+')</small>':"")+'<br><span class="muted">'+esc(x.q.why)+'</span></li>').join("")+'</ul></div>':"")+
       '<div class="note-actions" style="justify-content:center"><button class="pill-btn pill-green" type="button" data-psall>See the stages</button></div></div>';
-    document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:sc,perfect:sc===15,finished,mod:M,toy:md.toy}}));
+    document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:sc,perfect:sc===15,finished:finished&&!md.noToy,mod:M,toy:md.toy}}));
     bumpWeek();
   }
   /* ---- Vocabulary ---- */

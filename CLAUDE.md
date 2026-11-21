@@ -62,6 +62,9 @@ node build/test/smoke.js     # desktop + phone, reports page errors, screenshots
 `node build/test/questions.js` checks every practice question after you edit a question bank (`build/parts/*bank.js`).
 `bash build/test/ci.sh` runs all the automatic checks (the same ones GitHub runs before publishing).
 Place anything new in a logical spot next to what's already there (e.g. grammar tiles go in the ORDER list in `src/scripts/032-step131-group-the-grammar-tiles.js` by level/topic; Irregular verbs sits after the Verb tenses folder, before Could), never just at the end.
+English for Specific Purposes (Practice → 🎯, `#quiz/specific-purposes`, panels `esp` and `intv` in `views/v-quiz.html`): modules built on the same stages engine with `esp:true,noToy:true` in MODS
+(no buddy toy, not counted in grammar totals); first one: Job interviews (`int`, `build/parts/intbank.js`, a line starting with `*` = always multiple choice) + the 🎤 Practice interview
+(`src/scripts/061-practice-interview.js`, AI checks only the English, answers in `ncs-intv`). Noa doesn't want interview prep as a word pack.
 New grammar module: any number of core stages (about 4–8) plus an `adv:true` stage last; register it like Talking about the future (`fut`) — copy every place `fut` appears: grep `fut` / `FUT_` in `build/src` (bank include next to `⟦include:parts/futbank.js⟧`, MODS in `016-main-app.js`, the tile in `views/v-quiz.html` with its one-line example in `<span class="pr-desc">` (e.g. "I went, did you…?"), ORDER, the name lists), plus members.html/private-students.html MODT and hubsync docs; `build/old/steps/step184.py` shows how fut was added. Give it a buddy toy (`buddy.js` ITEMS with `m:`) and, if it has a ⭐ Advanced stage, a second one (`ma:`), each with pixel art in `T`; test with `node build/test/bd_t.js member`.
 
 ## Practice questions (build/parts/*bank.js)

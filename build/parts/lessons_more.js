@@ -418,6 +418,45 @@ iq: {
   ]
 }
 ,
+int: {
+  name: { en: "Job interviews", es: "Entrevistas de trabajo" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "Every interview is different, so this module doesn’t tell you <b>what</b> to say about your job. It trains the <b>English</b> you need for any interview: the right tenses for your career, strong verbs and numbers for your results, stories, hypothetical questions, phrases to buy time, and polite questions at the end. Finish with the <b>🎤 Practice interview</b>, where Hibi checks your English.",
+           es: "Cada entrevista es distinta, así que este módulo no te dice <b>qué</b> decir de tu trabajo. Entrena el <b>inglés</b> que necesitas en cualquier entrevista: los tiempos verbales para tu carrera, verbos fuertes y números para tus resultados, historias, preguntas hipotéticas, frases para ganar tiempo y preguntas educadas al final. Termina con la <b>🎤 Entrevista de práctica</b>, donde Hibi revisa tu inglés." } },
+    { h: { en: "1. Tell me about yourself", es: "1. Háblame de ti" }, stage: 1, key: true,
+      p: { en: "Your job now → <b>present simple</b>. These days → <b>present continuous</b>. From the past until now → <b>present perfect</b> (+ for / since).", es: "Tu trabajo actual → <b>presente simple</b>. Estos días → <b>presente continuo</b>. Desde el pasado hasta ahora → <b>present perfect</b> (+ for / since)." },
+      ex: [["I work for a logistics company.", "Trabajo en una empresa de logística."], ["I’m currently doing a Master’s degree.", "Actualmente estoy haciendo un magíster."], ["I’ve been working in marketing for five years.", "Llevo cinco años trabajando en marketing."]] },
+    { h: { en: "2. Your experience and results", es: "2. Tu experiencia y resultados" }, stage: 2, key: true,
+      p: { en: "A finished job → <b>past simple</b> with strong verbs (<i>led, managed, created, improved</i>). Numbers: increase / reduce <b>by</b> 20%.", es: "Un trabajo terminado → <b>pasado simple</b> con verbos fuertes (<i>led, managed, created, improved</i>). Números: increase / reduce <b>by</b> 20%." },
+      ex: [["In my last job, I led a team of eight people.", "En mi último trabajo, lideré un equipo de ocho personas."], ["We increased sales by 20%.", "Aumentamos las ventas en un 20%."]] },
+    { h: { en: "3. Telling a work story", es: "3. Contar una historia de trabajo" }, stage: 3, key: true,
+      p: { en: "Situation → what you did → result. <b>At the time</b>… <b>While I was</b> + -ing… <b>First</b>… <b>After</b>… <b>As a result</b>…", es: "Situación → qué hiciste → resultado. <b>At the time</b>… <b>While I was</b> + -ing… <b>First</b>… <b>After</b>… <b>As a result</b>…" },
+      ex: [["At the time, I was working as a sales assistant.", "En ese momento, trabajaba como asistente de ventas."], ["As a result, we kept the client.", "Como resultado, mantuvimos al cliente."]] },
+    { h: { en: "4. Strengths and weaknesses", es: "4. Fortalezas y debilidades" }, stage: 4,
+      p: { en: "<b>good at</b> + -ing · work well <b>under</b> pressure · describe me <b>as</b> · I <b>tend to</b> + verb · I’m <b>detail-oriented</b> (not “detailist”).", es: "<b>good at</b> + -ing · trabajar bien <b>bajo</b> presión · describe me <b>as</b> · I <b>tend to</b> + verbo · I’m <b>detail-oriented</b> (no “detailist”)." },
+      ex: [["I’m good at solving problems.", "Soy bueno resolviendo problemas."], ["Sometimes I find it hard to delegate, but I’m learning.", "A veces me cuesta delegar, pero estoy aprendiendo."]] },
+    { h: { en: "5. “What would you do if…?”", es: "5. “¿Qué harías si…?”" }, stage: 5,
+      p: { en: "<b>If + past simple, … would + verb.</b> With be: <i>If I were you…</i>", es: "<b>If + pasado simple, … would + verbo.</b> Con be: <i>If I were you…</i>" },
+      ex: [["If a client was angry, I would listen first.", "Si un cliente estuviera enojado, primero lo escucharía."]] },
+    { h: { en: "6. Goals and the future", es: "6. Metas y futuro" }, stage: 6,
+      p: { en: "<b>I’d like to</b> / <b>I’m hoping to</b> / <b>I’m planning to</b> + verb · <b>I see myself</b> + -ing · looking forward <b>to</b> + -ing.", es: "<b>I’d like to</b> / <b>I’m hoping to</b> / <b>I’m planning to</b> + verbo · <b>I see myself</b> + -ing · looking forward <b>to</b> + -ing." },
+      ex: [["In five years, I’d like to lead a team.", "En cinco años, me gustaría liderar un equipo."]] },
+    { h: { en: "7. Buying time", es: "7. Ganar tiempo" }, stage: 7,
+      p: { en: "<i>That’s a great question. Let me think for a second.</i> · <i>Could you rephrase that?</i> · <i>Just to make sure I understand, you mean…?</i>", es: "<i>That’s a great question. Let me think for a second.</i> · <i>Could you rephrase that?</i> · <i>Just to make sure I understand, you mean…?</i>" } },
+    { h: { en: "8. Your questions for them", es: "8. Tus preguntas para ellos" }, stage: 8,
+      p: { en: "Indirect questions keep <b>normal word order</b>: <i>Could you tell me what a typical day <b>looks</b> like?</i> (not “does look”).", es: "Las preguntas indirectas mantienen el <b>orden normal</b>: <i>Could you tell me what a typical day <b>looks</b> like?</i> (no “does look”)." } },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["I have 30 years.", "I’m 30.", { en: "Age uses be.", es: "La edad va con be." }],
+        ["I have five years working in sales.", "I have five years of experience in sales.", { en: "years OF experience.", es: "years OF experience." }],
+        ["I’m very detailist.", "I’m very detail-oriented.", { en: "“detailist” isn’t English.", es: "“detailist” no existe en inglés." }],
+        ["I work since 2019 here.", "I’ve worked here since 2019.", { en: "since → present perfect.", es: "since → present perfect." }],
+        ["Could you tell me what does the job involve?", "Could you tell me what the job involves?", { en: "Indirect question → normal order.", es: "Pregunta indirecta → orden normal." }]
+      ] }
+  ]
+}
+,
 fut: {
   name: { en: "Talking about the future", es: "Hablar del futuro" },
   basics: [
