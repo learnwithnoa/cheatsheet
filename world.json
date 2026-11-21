@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-21",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "📺",
+          "title": "Happy World Television Day!",
+          "text": "Every November 21, the UN celebrates TV. The day began in 1996, after the first World Television Forum. The idea: TV connects people all over the planet. So yes, today you have the perfect excuse to binge-watch!",
+          "word": "binge-watch",
+          "mean": "to watch many episodes of a show one after another",
+          "tr": "ver series de corrido, maratonear",
+          "es": "Hoy es el Día Mundial de la Televisión: ¡la tele conecta a personas de todo el mundo!",
+          "q": "What show would you binge-watch this weekend, and why?",
+          "link": "https://www.un.org/en/node/111044",
+          "src": "United Nations",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🌅",
+          "title": "Four bright planets before breakfast",
+          "text": "Wake up early this week and look east: Venus, Jupiter, Mars and Mercury are all in the sky before sunrise. Venus is the brightest, and it shines its best on November 24. It's a free show for early birds!",
+          "word": "early birds",
+          "mean": "people who get up very early in the morning",
+          "tr": "madrugadores",
+          "es": "Esta semana se ven cuatro planetas brillantes antes del amanecer: ¡Venus, Júpiter, Marte y Mercurio!",
+          "q": "Are you an early bird or a night owl? What do you like to do at that time?",
+          "link": "https://whenthecurveslineup.com/2026/11/12/2026-november-21-four-bright-planets-before-sunrise-and-saturn-near-the-beaver-moon/",
+          "src": "When the Curves Line Up",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🐼",
+          "title": "Futa, the world's oldest red panda",
+          "text": "Futa became famous in Japan in 2005 for standing up on two legs. Now he's 23, and Guinness World Records says he's the oldest red panda in captivity. Most live 12 to 17 years. He's even a great-great-grandfather!",
+          "word": "in captivity",
+          "mean": "living in a zoo or a place made by people, not in nature",
+          "tr": "en cautiverio",
+          "es": "Futa, un panda rojo de Japón, es el más longevo del mundo: ¡tiene 23 años!",
+          "q": "What's the oldest animal or pet you have ever known, and what was it like?",
+          "link": "https://goodnewsdose.com/oldest-red-panda-futa/",
+          "src": "Good News Dose",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-20",
       "by": "claude",
       "items": [
