@@ -966,7 +966,7 @@ function renderDetail(s) {
   const rl = $("rLv"); if (rl) rl.onchange = async () => { await saveRole(s, { lv: rl.value });
     /* private students: the same level on their coaching page (one level per person) */
     const hid = s.role && s.role.hub; if (!hid || !tUid) return;
-    try { const ref = doc(db, "users", tUid, "data", "t-hub-" + hid), d = await getDoc(ref); if (!d.exists()) return; const h = JSON.parse(d.data().json || "{}"); h.cefr = String(rl.value || "").replace("–", "-");
+    try { const ref = doc(db, "users", tUid, "data", "t-hub-" + hid), d = await getDoc(ref); if (!d.exists()) return; const h = JSON.parse(d.data().json || "{}"); h.cefr = String(rl.value || "").replace("–", "-"); h.level = String(rl.value || "");
       await setDoc(ref, { json: JSON.stringify(h), deleted: false, at: serverTimestamp() });
       if (s.uid) await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(h, hubMeta || {})), deleted: false, at: serverTimestamp() });
       toast("Saved on their coaching page too"); } catch (e) { console.warn("level sync", e); } };

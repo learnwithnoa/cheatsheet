@@ -1228,6 +1228,7 @@ def main():
         who, lv = a[1], a[2].upper().replace(" ", "")
         if not re.fullmatch(r"[ABC][12]([–-][ABC][12])?", lv):
             print("level must look like B1 or A2-B1"); return
+        lv = lv.replace("-", "–")   # the Hibi members page writes ranges with an en dash
         accts = get_accounts(tok); w = who.lower().strip()
         hit = [x for x in accts if (x.get("email") or "").lower() == w] or [x for x in accts if norm_name(x.get("name")) == norm_name(who)]
         if not hit:
@@ -1240,6 +1241,13 @@ def main():
         fields = {"lv": {"stringValue": lv}, "lvWhy": {"stringValue": (a[3] if len(a) > 3 else "")[:200]}, "lvAt": {"stringValue": datetime.date.today().isoformat()}, "at": {"timestampValue": now}}
         mask = "&".join("updateMask.fieldPaths=" + k for k in fields)
         http("PATCH", f"{BASE}/roles/{u['uid']}?{mask}", {"fields": fields}, token=tok)
+        # one level per person: a private student's coaching page (cefr + the old free-text level) gets the same one
+        meta = get_doc(tok, tu, "t-hubmeta") or {}
+        for sid in meta.get("ids") or []:
+            s = get_doc(tok, tu, "t-hub-" + sid)
+            if s and s.get("uid") == u["uid"]:
+                s["cefr"] = lv.replace("–", "-"); s["level"] = lv.replace("-", "–"); save(tok, tu, s, meta)
+                print("coaching page too:", s.get("name"))
         print("ok", u.get("name"), lv); return
     if cmd == "tz-check":
         # clock changes in Chile or a foreign student's country in the next 21 days (for the nightly Heads-up)
