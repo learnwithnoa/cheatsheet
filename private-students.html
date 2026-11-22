@@ -317,7 +317,7 @@ html.emb body{background:transparent}
 </style>
 <header><div class="top">
   <a class="brand" href="./"><i class="brand-row"><span>Hibi</span><b class="kj" lang="ja">日々</b></i></a>
-  <nav class="adm-sw" aria-label="Admin pages"><a href="members.html">👥<span class="bt-l"> Hibi members</span></a><a href="private-students.html" aria-current="page">🎓<span class="bt-l"> Private students</span></a></nav>
+  <nav class="adm-sw" aria-label="Admin pages"><a href="private-students.html" aria-current="page">🎓<span class="bt-l"> Private students</span></a><a href="members.html">👥<span class="bt-l"> Hibi members</span></a></nav>
   <div class="sp"></div>
   <span class="saving" id="saving"></span>
   <div class="cs-wrap" id="csWrap"></div>
@@ -815,21 +815,31 @@ function renderMoney() {
   $("moneyBox").innerHTML = `<h2>💰 Money in</h2><div class="muted small">Pesos received per month (payments with an amount; ≈ = estimated from the pack price)</div>
     <div class="mbars">${ms.map(m => `<div class="${m === now ? "now" : ""}" title="${clp(e.by[m] || 0)}"><span>${(e.by[m] || 0) ? Math.round((e.by[m] || 0) / 1000) + "k" : ""}</span><i style="height:${Math.round((e.by[m] || 0) / mx * 80)}px"></i>${new Date(m + "-15").toLocaleDateString("en-US", { month: "short" })}</div>`).join("")}</div>
     ${e.usdY ? `<p class="muted small" style="margin:8px 0 0">Includes US$${e.usdY} this year, converted at the dollar rate of each payment day (today: 1 USD ≈ ${clp(usdRate)}).</p>` : ""}`;
-  const C = meta && meta.club; if (C && Array.isArray(C.members)) {
-    const ms2 = C.members, pay = ms2.filter(x => /paying|leaving|ask|watch/.test(x.status)), mo = x => x.per === "year" ? x.price / 12 : x.price;
-    const gross = pay.reduce((n, x) => n + mo(x), 0), leaving = ms2.filter(x => x.status === "leaving"), after = gross - leaving.reduce((n, x) => n + mo(x), 0), fee = C.fee || 0;
-    const soon = pay.filter(x => x.renew && x.renew >= today() && x.renew <= addDays(today(), 14)).sort((a, b) => a.renew.localeCompare(b.renew));
-    const priv = e.by[now] || 0, clubClp = Math.round(gross * (1 - fee) * usdRate);
-    $("moneyBox").insertAdjacentHTML("beforeend", `<div class="club-m"><h3>🌼 Club (Skool)</h3>
-      <div class="club-k"><div><b>US$${Math.round(gross)}</b><span>a month (before Skool's ${Math.round(fee * 100)}%)</span></div><div><b>≈ ${clp(clubClp)}</b><span>a month after the fee</span></div><div><b>${ms2.filter(x => /paying|ask|watch/.test(x.status)).length}</b><span>paying · ${ms2.filter(x => /free|trial|direct/.test(x.status)).length} free/trial</span></div></div>
-      <p class="muted small" style="margin:6px 0">This month so far: private ${clp(priv)} + club ≈ ${clp(clubClp)} = <b>≈ ${clp(priv + clubClp)}</b>. After the move (without the ${leaving.length} leaving): US$${Math.round(after)}/month.</p>
-      ${soon.length ? `<div class="muted small" style="font-weight:700;margin-top:6px">Renewing in the next 2 weeks</div><ul class="exp">${soon.map(x => `<li><span class="when">${fmtShort(x.renew)}</span><span>${esc(x.name)}${x.status === "leaving" ? ' <span class="muted">(leaving)</span>' : ""}</span><span class="amt">US$${x.price}</span></li>`).join("")}</ul>` : ""}
-      <div class="club-who">${[["leaving", "🚪 Not moving over"], ["ask", "❓ Ask before the move"], ["watch", "👀 Only if they start coming"], ["trial", "🧪 On a trial"]].map(([k, l]) => { const g = ms2.filter(x => x.status === k); return g.length ? `<div><b>${l}</b> <span class="muted">${g.map(x => `<span title="${esc(x.note || "")}">${esc(x.name)}</span>`).join(", ")}</span></div>` : ""; }).join("")}</div>
-      <p class="muted small" style="margin:6px 0 0">From your Skool export (${esc(C.asOf || "")}). Prices are what Skool charges; I'll update this when you send a new export. <a href="members.html">Full club list and statuses on Hibi members →</a></p></div>`);
-  }
+  clubMoney(e.by[now] || 0);
   const ex = expected();
   $("expBox").innerHTML = `<h2>📆 Coming in</h2><div class="muted small">Second installments and likely renewals, guessed from each student's pace</div>
     <ul class="exp" style="margin-top:8px">${ex.slice(0, 10).map(x => `<li><span class="when">${fmtShort(x.d)}</span><span><b>${esc(x.s.name)}</b> <span class="muted">· ${esc(x.t)}</span></span><span class="amt">${x.guess ? "≈" : ""}${clp(x.v)}</span></li>`).join("") || `<li class="muted">Nothing expected in the next 45 days.</li>`}</ul>`;
+}
+/* ---------- club money on Hibi (Mercado Pago in pesos, PayPal in dollars), from each member's users/{uid}/data/membership (written by the pay helper) ---------- */
+let clubMem = null, clubMemBusy = false;
+async function clubMoney(priv) {
+  if (!clubMem) { if (clubMemBusy) return; clubMemBusy = true;
+    const uids = Object.keys(rolesByUid).filter(u => rolesByUid[u] && rolesByUid[u].club === true);
+    clubMem = (await Promise.all(uids.map(async u => { try { const d = await getDoc(doc(db, "users", u, "data", "membership")); if (!d.exists() || d.data().deleted) return null; const m = JSON.parse(d.data().json || "null"); return m && m.status && m.status !== "none" ? { uid: u, name: (accounts.find(x => x.uid === u) || {}).name || rolesByUid[u].name || "", ...m } : null; } catch (err) { return null; } }))).filter(Boolean);
+    clubMemBusy = false; }
+  const box = $("moneyBox"); if (!box || box.querySelector(".club-m")) return;
+  const paying = clubMem.filter(m => /active|grace|canceling/.test(m.status) && m.amount);
+  const toClp = m => m.currency === "USD" ? m.amount * usdRate : m.amount, mo = m => (m.kind === "y" ? toClp(m) / 12 : toClp(m));
+  const monthly = Math.round(paying.reduce((n, m) => n + mo(m), 0));
+  const soon = paying.filter(m => m.status !== "canceling" && m.paidThrough && m.paidThrough >= today() && m.paidThrough <= addDays(today(), 14)).sort((a, b) => a.paidThrough.localeCompare(b.paidThrough));
+  const grp = k => clubMem.filter(m => m.status === k);
+  const nm = m => esc(m.name || "Someone");
+  box.insertAdjacentHTML("beforeend", `<div class="club-m"><h3>🌼 Club on Hibi</h3>
+    <div class="club-k"><div><b>≈ ${clp(monthly)}</b><span>a month from memberships (yearly ones ÷ 12; dollars at today's rate)</span></div><div><b>${paying.length}</b><span>paying · ${grp("trial").length} on a free trial</span></div><div><b>${paying.filter(m => m.provider === "paypal").length}</b><span>pay with PayPal (US$)</span></div></div>
+    <p class="muted small" style="margin:6px 0">This month so far: private ${clp(priv)} + club ≈ ${clp(monthly)} = <b>≈ ${clp(priv + monthly)}</b>. Mercado Pago and PayPal take their own fees.</p>
+    ${soon.length ? `<div class="muted small" style="font-weight:700;margin-top:6px">Renewing in the next 2 weeks</div><ul class="exp">${soon.map(m => `<li><span class="when">${fmtShort(m.paidThrough)}</span><span>${nm(m)}${m.kind === "y" ? ' <span class="muted">(yearly)</span>' : ""}</span><span class="amt">${m.currency === "USD" ? "US$" + m.amount : clp(m.amount)}</span></li>`).join("")}</ul>` : ""}
+    <div class="club-who">${[["grace", "⚠️ Payment failed"], ["canceling", "🚪 Cancelled (still in until their date)"], ["trial-ended", "🎁 Trial ended, didn't join"]].map(([k, l]) => { const g = grp(k); return g.length ? `<div><b>${l}</b> <span class="muted">${g.map(nm).join(", ")}</span></div>` : ""; }).join("")}</div>
+    <p class="muted small" style="margin:6px 0 0">From the memberships on Hibi. Members who still pay on Skool until their month ends aren't counted. <a href="members.html">Full club list on Hibi members →</a></p></div>`);
 }
 /* ---------- trends (last 12 months) ---------- */
 function months12() { const out = []; for (let i = 11; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); out.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0")); } return out; }
@@ -860,7 +870,7 @@ function renderTrends() {
     </div>
     <div class="two"><div><div class="small" style="margin-bottom:4px">${L("var(--c-sky)", "Hours taught")}${L("var(--c-violet)", "Private students with classes")}</div>${lineSvg(ms, [{ n: "Hours", v: hours, c: "var(--c-sky)" }, { n: "Students", v: studs, c: "var(--c-violet)" }])}</div>
     <div><div class="small" style="margin-bottom:4px">${L("var(--c-teal)", "Standard-hour classes")}${L("var(--c-pink)", "Priority-hour classes")}</div>${lineSvg(ms, [{ n: "Standard", v: std, c: "var(--c-teal)" }, { n: "Priority", v: pri, c: "var(--c-pink)" }])}</div></div>
-    <p class="muted small" style="margin:8px 0 0">Club members only count people signed in to Hibi; Skool members aren't here yet.</p>`;
+    <p class="muted small" style="margin:8px 0 0">Club members count everyone with club access on Hibi.</p>`;
 }
 /* Archived = marked "Archived" by hand, or (not paused) no class in 4+ weeks and nothing booked. They come back on their own after a new class. */
 function hasUpcoming(s) { return !!(meta && Array.isArray(meta.upcoming) && meta.upcoming.some(u => u.student === s.id && Date.parse(u.start) > Date.now())); }

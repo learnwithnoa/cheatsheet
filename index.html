@@ -3420,7 +3420,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <div class="cn-top"><label for="freeNotes" class="cn-date" id="cnToday">Today</label><span class="count" id="freeSaved">Your draft is saved as you type</span></div>
     <textarea id="freeNotes" placeholder="Write your notes for today's class: corrections, things to practice, questions for next class…"></textarea>
     <div class="note-actions"><button class="swap" type="button" id="cnDraft" title="Keep what you've written here, so you can keep adding to it during class">💾 Save draft</button><button class="pill-btn pill-green" type="button" id="cnSave" title="Add this note to your class notes in My notebook, find its new words for you, and start a fresh one">📥 Move to my notes + ✨ find words</button><button class="swap" type="button" data-go="classnotes" id="cnAllBtn">All my class notes →</button></div>
-    <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here (and in your account if you're signed in). When the class is over, press <b>Move to my notes</b>: Hibi files it and finds the new words and expressions in it, ready to add to My notebook.</p>
+    <p class="cn-help">Taking notes during class? Press <b>Save draft</b> as often as you like: it stays here and in your account. When the class is over, press <b>Move to my notes</b>: Hibi files it and finds the new words and expressions in it, ready to add to My notebook.</p>
     <div id="cnSuggest" class="cn-sug" hidden aria-live="polite"></div>
   </div>
   </div></div>
@@ -3542,7 +3542,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 <section class="view" id="v-classnotes" hidden>
   <h1>My <em>notebook</em></h1>
   <div class="cn-tabs nb-tabs" role="tablist" aria-label="My notebook"><button type="button" role="tab" data-go="words" aria-selected="false">Aa Words</button><button type="button" role="tab" data-go="classnotes" aria-selected="true">✏️ Class notes</button><button type="button" role="tab" data-go="notebook" aria-selected="false">📓 Summaries</button></div>
-  <p class="lede">Write today's notes here or on your Home page. Every note you save shows up below, newest first.</p>
+  <p class="lede">Write today's notes here during class. Every note you save shows up below, newest first.</p>
   <div class="sync-info dismissible when-in"><span class="sync-ico" aria-hidden="true">✓</span><div><b>Saved to your Google account.</b> Your class notes sync automatically to any device where you sign in.</div></div>
   <div id="slotCnPage" class="page-slot"></div>
   <div class="list-head" style="margin-top:6px">
@@ -3782,30 +3782,6 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <!-- ============ BACKUP ============ -->
-<section class="view" id="v-backup" hidden>
-  <h1>Back up &amp; <em>move</em></h1>
-  <div class="sync-info when-in" style="margin-bottom:14px"><span class="sync-ico" aria-hidden="true">✓</span><div><b>You're signed in, so you don't need this page.</b> Everything already syncs to any device where you sign in with Google.</div></div>
-  <p class="lede">Not signed in? Your words, class notes and starred sections live only in this browser. Use this page to save a backup, or to move everything to another computer, browser or your phone. Or just <button class="foot-link" type="button" data-signin>sign in with Google</button> and it all syncs on its own.</p>
-  <div class="grid two">
-    <div class="card bk-card"><span class="tag">step 1 · on this device</span>
-      <h3>Copy your backup code</h3>
-      <p class="bk-sum" id="bkSummary"></p>
-      <button class="pill-btn" type="button" id="bkCopy">Copy backup code</button>
-      <p class="fb-help">Then paste it somewhere you can open on the other device: an email to yourself, Google Keep, a Google Doc or a chat with yourself.</p>
-      <label for="bkOut" class="sr">Your backup code</label>
-      <textarea id="bkOut" class="bk-out" readonly hidden></textarea>
-    </div>
-    <div class="card bk-card"><span class="tag" style="background:var(--green-soft);color:var(--green)">step 2 · on the other device</span>
-      <h3>Paste it here</h3>
-      <p class="fb-help" style="margin:0">Open Hibi on the other device, come to this page (<b>Back up or move your notes</b>, at the bottom of any page) and paste the code.</p>
-      <label for="bkIn" class="sr">Paste your backup code</label>
-      <textarea id="bkIn" spellcheck="false" placeholder="Paste your backup code here"></textarea>
-      <button class="pill-btn pill-green" type="button" id="bkRestore">Restore</button>
-      <p class="imp-preview" id="bkMsg" aria-live="polite"></p>
-    </div>
-  </div>
-  <div class="note dismissible">Restoring <b>adds</b> to what's already on that device. It never deletes anything, and words or notes that are already there won't be duplicated. Do this again whenever you want the other device to catch up.</div>
-</section>
 
 <!-- ============ CHANGELOG ============ -->
 <section class="view" id="v-changelog" hidden>
@@ -4429,7 +4405,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=67" defer></script>
+<script src="buddy.js?v=68" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -4497,12 +4473,12 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>Time to <em>practice</em> 🎯</h2>
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find five parts:</p>
     <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect, talking about the future), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with flashcards and a quiz.</div></li>
-          <li><span class="wl-ico" aria-hidden="true">👔</span><div><b>English for Specific Purposes:</b> the English for one real situation, starting with <b>job interviews</b>: 8 stages plus a <b>🎤 Practice interview</b> where you write your answers and Hibi checks your English (not the content).</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My notebook</b> to practice just those.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> pick 3, 5 or 8 rounds a week (bigger goal, bigger reward for your buddy). Lessons and saying phrases out loud count too, and 4 weeks in a row unlock a 🔥 campfire. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect, talking about the future), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with flashcards and a quiz.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">👔</span><div><b>English for Specific Purposes:</b> the English for one real situation, starting with <b>job interviews</b>: 8 stages plus a <b>🎤 Practice interview</b> where you write your answers and Hibi checks your English (not the content).</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> pick 3, 5 or 8 rounds a week (bigger goal, bigger reward for your buddy). Lessons, job interview practice and saying phrases out loud count too, and 4 weeks in a row unlock a 🔥 campfire. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
     </ul>
   </div>
 
@@ -4564,10 +4540,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-8f14ba25c440.js"></script>
+<script src="js/h-3639f71c59a7.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261121153231"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261122083954"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -5081,7 +5057,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
     if(last==="members"&&!document.querySelector("#v-members:not([hidden])")){ e.preventDefault(); e.stopImmediatePropagation(); const m=document.querySelector('.navbtn[data-go="members"]'); if(m) m.click(); }
   },true);
 })();
-</script><script src="js/h-6dbd1f59926c.js"></script>
+</script><script src="js/h-d83da1da7733.js"></script>
 <script type="module" src="m-c5c4b9998c3e.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */

@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=67',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=68',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -335,6 +335,14 @@ if '2026-1121-esp' not in s:
     s=s.replace(a,a+'''  {id:"2026-1121-esp", date:"November 21, 2026", title:"New: English for Specific Purposes 🎯", items:[
     ["👔","Job interviews","A new section in <b>Practice</b>: <b>English for Specific Purposes</b>. The first module is <b>Job interviews</b>: 8 stages with the English you need for any interview (talking about your experience, results, stories, strengths and weaknesses, “what would you do if…”, buying time and your questions at the end).","quiz"],
     ["🎤","Practice interview","Answer 12 real interview questions in writing and Hibi checks your <b>English</b>: mistakes, a more natural version and useful phrases. It never judges the content, because that depends on your job.","quiz"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1122-sweep' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1122-sweep", date:"November 22, 2026", title:"Small fixes and tidy-ups", items:[
+    ["🎤","Interview practice counts","Each question you check in the <b>🎤 Practice interview</b> now counts as a round for your weekly goal (once per question each week).","quiz"],
+    ["✏️","Clearer class notes","The help text in <b>My notebook → Class notes</b> now matches how it works: write in the box, <b>Save draft</b> during class, then <b>Move to my notes</b>.","classnotes"]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

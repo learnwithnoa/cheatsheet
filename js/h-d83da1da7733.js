@@ -60,6 +60,10 @@
     r.fixes=(Array.isArray(r.fixes)?r.fixes:[]).filter(f=>f&&f.from&&f.to).slice(0,6); r.phrases=(Array.isArray(r.phrases)?r.phrases:[]).map(String).slice(0,3);
     fb={k:q.k,txt,r}; const d=get(); d.a=d.a||{}; d.a[q.k]={txt,r,t:Date.now()}; put(d);
     render(); document.dispatchEvent(new CustomEvent("cs-modround",{detail:{score:10,perfect:false,finished:false,mod:"intv"}}));
+    /* weekly goal: each question checked counts as one round, once per question per week (Nov 22 2026 sweep) */
+    try{ const mon=new Date(); mon.setHours(0,0,0,0); mon.setDate(mon.getDate()-((mon.getDay()+6)%7)); const wk=mon.toISOString().slice(0,10);
+      let g=JSON.parse(localStorage.getItem("ncs-intv-wk")||"{}"); if(g.w!==wk) g={w:wk,ks:[]};
+      if(!g.ks.includes(q.k)){ g.ks.push(q.k); localStorage.setItem("ncs-intv-wk",JSON.stringify(g)); if(typeof window.__prBumpWeek==="function") window.__prBumpWeek(); } }catch(e){}
     const f=document.getElementById("intvFb"); if(f) f.scrollIntoView({behavior:"smooth",block:"nearest"}); }
   document.addEventListener("click",e=>{ const box=area(); if(!box||!box.contains(e.target)&&!e.target.closest('[data-pp="intv"]')) return;
     const s=e.target.closest("[data-intvs]"); if(s){ const t=document.getElementById("intvTxt"); if(t){ const v=Q[i].s[+s.dataset.intvs].split("…")[0].trimEnd()+" "; t.value=(t.value.trim()?t.value.trim()+" ":"")+v; t.focus(); t.setSelectionRange(t.value.length,t.value.length); } return; }

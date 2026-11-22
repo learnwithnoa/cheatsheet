@@ -1466,10 +1466,14 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const msg = h => { el.innerHTML = decoFor(sceneNow()) + `<div class="park-msg"><div>${h}</div></div>`; };
     const P = window.__csPark;
     if (!P) { msg("Opening the park gates… 🌳"); setTimeout(renderPark, 1500); return; }
-    if (!P.signedIn()) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses Hibi: all roaming around together.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
+    /* guest previews (kickoff and sample-club links): a few sample buddies instead of "sign in" (Nov 22 2026 sweep) */
+    const guest = !P.signedIn() && !!window.__csGuest;
+    if (!P.signedIn() && !guest) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses Hibi: all roaming around together.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
     parkBusy = true; msg("Opening the park gates… 🌳");
     let list = [];
-    try { list = await P.list(); }
+    if (guest) { const ks = Object.keys(SP), nm = ["Alex", "Sam", "Fran", "Javi", "Caro", "Nico"];
+      list = nm.map((f, i) => ({ uid: "", first: f + " (sample)", a: ks[(i * 3) % ks.length], c: i % 4, on: true, words: [42, 17, 88, 9, 130, 55][i], lvl: [3, 1, 6, 2, 8, 4][i], role: { club: true } })); }
+    else try { list = await P.list(); }
     catch (e) { parkBusy = false; msg(/permission/i.test(String(e && (e.code || e.message))) ? "The park isn't open yet. Check back soon! 🌳" : `Couldn't load the park. <button class="bd-b" type="button" data-park="retry">Try again</button>`); return; }
     parkBusy = false;
     const listAll = list.slice();
@@ -1491,7 +1495,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}<span class="pi-3">${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && !(window.__csPreview && window.__csPreview.kind === "private") ? `<span class="pb-feed pb-duel" role="button" tabindex="0" data-duel="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Challenge ${esc(x.first || bn)} to a duel">⚔️ Duel</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && window.__clubDM ? `<span class="pb-feed pb-dm" role="button" tabindex="0" data-pdm="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Message ${esc(x.first || bn)}">💬 Message</span>` : ""}</span></span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;
     applyZoom(false); startPark(); dropTreat();
-    try { duelSync(listAll); } catch (e) { console.warn("duels", e); }
+    if (!guest) try { duelSync(listAll); } catch (e) { console.warn("duels", e); }
   }
   /* ---------- park: zoom ---------- */
   const ZL = [0.6, 0.8, 1, 1.35, 1.8, 2.4];

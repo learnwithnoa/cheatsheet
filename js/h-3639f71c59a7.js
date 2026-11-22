@@ -3479,7 +3479,7 @@ Since I joined the company, I ___ two promotions. (get)|have got/have gotten/'ve
     const sk=streak(), rw=(GOALS[GOAL]||GOALS[3]).r;
     if(g) g.innerHTML='<div class="pr-goal-top"><b>🎯 This week\'s goal</b><span>'+Math.min(w.n,GOAL)+' / '+GOAL+' rounds</span></div>'+
       '<div class="pr-dots" aria-hidden="true">'+Array.from({length:GOAL},(_,i)=>'<i class="'+(i<w.n?"on":"")+'"></i>').join("")+'</div>'+
-      '<p>'+(w.got?"Done for this week! 🎉 Your buddy got its reward. Keep going if you want, a new goal starts on Monday.":"Finish "+GOAL+" rounds this week: grammar, flashcards, word packs, pronunciation, reading a lesson or saying phrases out loud. Your buddy gets <b>+"+rw+" 🍪</b> and <b>+"+rw+" friendship</b>.")+'</p>'+
+      '<p>'+(w.got?"Done for this week! 🎉 Your buddy got its reward. Keep going if you want, a new goal starts on Monday.":"Finish "+GOAL+" rounds this week: grammar, flashcards, word packs, pronunciation, job interview practice, reading a lesson or saying phrases out loud. Your buddy gets <b>+"+rw+" 🍪</b> and <b>+"+rw+" friendship</b>.")+'</p>'+
       '<div class="pr-gsize" role="group" aria-label="Goal size"><span class="muted">Goal:</span>'+[3,5,8].map(n=>'<button type="button" class="pr-gs" data-wkgoal="'+n+'" aria-pressed="'+(GOAL===n)+'">'+GOALS[n].k+' · '+n+'</button>').join("")+'</div>'+
       '<p class="pr-streak">'+(sk.n>=1?"🔥 <b>"+sk.n+(sk.n===1?" week":" weeks")+"</b> in a row. ":"")+((sk.best|0)>=4?"Your buddy has the 🔥 campfire.":"Do your goal 4 weeks in a row to unlock a 🔥 <b>campfire</b> for your buddy.")+'</p>'+
       '<p class="esb">Meta semanal: termina '+GOAL+' rondas esta semana. Elige el tamaño de tu meta: más rondas, más premio.</p>';
@@ -4489,39 +4489,9 @@ const MIS=[
 searchable("misSearch","misBody","misCount","misEmpty",MIS,r=>'<tr><td class="no">'+esc(r[0])+'</td><td class="ok">'+esc(r[1])+'</td><td class="mis-why">'+esc(r[2])+'</td></tr>',"mistakes");
 
 /* ---------------- backup & move ---------------- */
-function bkData(){ return {v:1,app:"cheatsheet",at:Date.now(),words,cnotes,stars:LS.get("ncs-stars",[]),sheet:LS.get("ncs-sheet",""),fc:LS.get("ncs-fc",{}),lastCopy}; }
-function bkEncode(o){ return "CHEATSHEET1:"+btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
-function bkDecode(t){ t=(t||"").trim().replace(/\s+/g,""); const m=t.match(/CHEATSHEET1:([A-Za-z0-9+/=]+)/); if(!m) throw new Error("bad"); return JSON.parse(decodeURIComponent(escape(atob(m[1])))); }
-function bkRender(){
-  const st=LS.get("ncs-stars",[]);
-  document.getElementById("bkSummary").innerHTML="This device has <b>"+words.length+"</b> "+(words.length===1?"word":"words")+", <b>"+cnotes.length+"</b> class "+(cnotes.length===1?"note":"notes")+" and <b>"+st.length+"</b> starred "+(st.length===1?"section":"sections")+".";
-}
-document.getElementById("bkCopy").addEventListener("click",async()=>{
-  const code=bkEncode(bkData()); const out=document.getElementById("bkOut");
-  if(await copyText(code)){ out.hidden=true; toast("Backup code copied. Paste it somewhere safe."); }
-  else { out.hidden=false; out.value=code; out.focus(); out.select(); toast("Select the code below and copy it by hand"); }
-});
+/* the old "Back up & move" page (for people who weren't signed in) was removed in the Nov 22 2026 sweep: signing in is required and everything syncs */
 window.__csListsReload=function(){ words=LS.get("ncs-words",[])||[]; cnotes=LS.get("ncs-classnotes",[])||[]; stars=LS.get("ncs-stars",[])||[];
   renderStars(); renderSheet(); renderWords(); renderCN(); fcShuffle(); renderFlash(); return true; };
-document.getElementById("bkRestore").addEventListener("click",()=>{
-  const msg=document.getElementById("bkMsg"), inp=document.getElementById("bkIn");
-  let d; try{ d=bkDecode(inp.value); }catch(e){ msg.innerHTML='<span style="color:var(--red);font-weight:800">That code doesn\'t look right.</span> Make sure you copied all of it. It starts with CHEATSHEET1:'; return; }
-  let nw=0,nn=0,ns=0;
-  const have=new Set(words.map(x=>norm(x.w)));
-  (d.words||[]).forEach(x=>{ if(!x||!x.w) return; const k=norm(x.w); if(have.has(k)) return; have.add(k); words.push({id:x.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),w:x.w,m:x.m||"",e:x.e||"",t:x.t||Date.now(),imp:!!x.imp}); nw++; });
-  const haveN=new Set(cnotes.map(x=>x.id)), haveT=new Set(cnotes.map(x=>x.t+"|"+x.text));
-  (d.cnotes||[]).forEach(x=>{ if(!x||!x.text) return; if(haveN.has(x.id)||haveT.has(x.t+"|"+x.text)) return; cnotes.push({id:x.id||Date.now().toString(36),text:x.text,t:x.t||Date.now()}); nn++; });
-  const st=LS.get("ncs-stars",[]); (d.stars||[]).forEach(id=>{ if(!st.includes(id)&&document.getElementById("v-"+id)){ st.push(id); ns++; } });
-  if(d.sheet && !LS.get("ncs-sheet","")) LS.set("ncs-sheet",d.sheet);
-  const fc=LS.get("ncs-fc",{}); Object.entries(d.fc||{}).forEach(([k,v])=>{ if(!(k in fc)) fc[k]=v; }); fcStats=fc; LS.set("ncs-fc",fc);
-  if(d.lastCopy && d.lastCopy>lastCopy){ lastCopy=d.lastCopy; LS.set("ncs-lastcopy",lastCopy); }
-  LS.set("ncs-words",words); LS.set("ncs-classnotes",cnotes); LS.set("ncs-stars",st);
-  stars=st; renderStars(); renderSheet(); renderWords(); renderCN(); fcShuffle(); renderFlash(); bkRender();
-  inp.value="";
-  msg.innerHTML="✓ Restored <b>"+nw+"</b> "+(nw===1?"word":"words")+", <b>"+nn+"</b> class "+(nn===1?"note":"notes")+" and <b>"+ns+"</b> starred "+(ns===1?"section":"sections")+". Everything that was already here stayed.";
-  toast("Backup restored");
-});
-document.addEventListener("click",e=>{ if(e.target.closest('[data-go="backup"]')) bkRender(); });
 if(location.hash==="#backup") setTimeout(()=>{ const h=document.querySelector('[data-go="notes"]'); if(h) h.click(); },0);
 
 /* class notes: draft on Home, saved notes list sorted by date */
@@ -4551,7 +4521,7 @@ function renderCN(){
   document.getElementById("cnCount").textContent= n? "· "+n : "";
   const q=norm(cnSearch.value.trim());
   const list=cnotes.slice().sort((a,b)=>b.t-a.t).filter(x=>!q||norm(x.text).includes(q));
-  if(!n){ cnList.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Write your notes on your Home page during class, then press <b>Save note</b>. They\'ll show up here, sorted by date.<br><button class="pill-btn pill-green" type="button" data-go="notes" style="margin-top:12px">Write a note</button></div>'; return; }
+  if(!n){ cnList.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Write your notes in the box above during class and press <b>Save draft</b> as often as you like. When the class is over, press <b>Move to my notes</b> and they\'ll show up here, sorted by date.</div>'; return; }
   if(!list.length){ cnList.innerHTML='<div class="card empty-notes">No notes match “'+esc(cnSearch.value)+'”.</div>'; return; }
   let html="", month="";
   list.forEach(x=>{
@@ -4733,7 +4703,6 @@ document.addEventListener("click",e=>{
   LS.set("ncs-stars",stars); renderStars();
 });
 renderStars();
-bkRender();
 (function(){
   const h=location.hash||"";
   if(!h.startsWith("#import=")) return;
@@ -4986,7 +4955,10 @@ bkRender();
 const FB_MAIL="learnwithnoa@gmail.com";
 const fbSection=document.getElementById("fbSection"), fbMsg=document.getElementById("fbMsg"), fbName=document.getElementById("fbName"), fbGmail=document.getElementById("fbGmail"), fbErr=document.getElementById("fbErr");
 let fbType="Something's missing";
-const fbOpts=[["General","General / the whole page"]].concat([...document.querySelectorAll("nav.side .navbtn")].filter(b=>!b.closest(".starred") && b.dataset.go!=="feedback").map(b=>{ const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl,svg').forEach(x=>x.remove()); return [b.dataset.go, b.dataset.go==="notes"?"Home":c.textContent.replace(/\d+$/,"").trim()]; }));
+/* sections students can pick: never Noa's admin pages, and Class notes is a tab of My notebook now (Nov 22 2026 sweep) */
+const fbSkip=["feedback","students","members","classnotes","backup"], fbSeen=new Set();
+const fbOpts=[["General","General / the whole page"]].concat([...document.querySelectorAll("nav.side .navbtn")].filter(b=>!b.closest(".starred") && b.dataset.go && !fbSkip.includes(b.dataset.go) && !b.classList.contains("t-tab") && !b.classList.contains("t-mnav")).map(b=>{ const c=b.cloneNode(true); c.querySelectorAll('[aria-hidden="true"],.cn-count,.nav-lvl,svg').forEach(x=>x.remove()); return [b.dataset.go, b.dataset.go==="notes"?"Home":c.textContent.replace(/\d+$/,"").trim()]; })).filter(o=>!fbSeen.has(o[0])&&fbSeen.add(o[0]));
+{ const qi=fbOpts.findIndex(o=>o[0]==="quiz"); fbOpts.splice(qi<0?fbOpts.length:qi+1,0,["quiz/specific-purposes","Practice: English for Specific Purposes"]); }
 fbSection.innerHTML=fbOpts.map(o=>'<option value="'+o[0]+'">'+esc(o[1])+'</option>').join("");
 const fbDraft=LS.get("ncs-feedback",{});
 if(fbDraft.msg) fbMsg.value=fbDraft.msg; if(fbDraft.name) fbName.value=fbDraft.name;
@@ -5170,6 +5142,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1122-sweep", date:"November 22, 2026", title:"Small fixes and tidy-ups", items:[
+    ["🎤","Interview practice counts","Each question you check in the <b>🎤 Practice interview</b> now counts as a round for your weekly goal (once per question each week).","quiz"],
+    ["✏️","Clearer class notes","The help text in <b>My notebook → Class notes</b> now matches how it works: write in the box, <b>Save draft</b> during class, then <b>Move to my notes</b>.","classnotes"]
+  ]},
   {id:"2026-1121-esp", date:"November 21, 2026", title:"New: English for Specific Purposes 🎯", items:[
     ["👔","Job interviews","A new section in <b>Practice</b>: <b>English for Specific Purposes</b>. The first module is <b>Job interviews</b>: 8 stages with the English you need for any interview (talking about your experience, results, stories, strengths and weaknesses, “what would you do if…”, buying time and your questions at the end).","quiz"],
     ["🎤","Practice interview","Answer 12 real interview questions in writing and Hibi checks your <b>English</b>: mistakes, a more natural version and useful phrases. It never judges the content, because that depends on your job.","quiz"]
