@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-22",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "💑",
+          "title": "Happy Good Couples Day, Japan!",
+          "text": "In Japan, November 22 is Good Couples Day. Why? The date 11/22 can be read as \"ii fufu\", which sounds like \"good husband and wife\". Many couples even choose today to register their marriage!",
+          "word": "sounds like",
+          "mean": "is similar in sound to",
+          "tr": "suena como",
+          "es": "En Japón, el 22 de noviembre es el Día de las Buenas Parejas: ¡11/22 suena como «buen marido y esposa»!",
+          "q": "Which couple do you know that makes a great team, and what makes them work so well?",
+          "link": "https://en.wikipedia.org/wiki/Good_Spouses_Day",
+          "src": "Wikipedia",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🌕",
+          "title": "A super Beaver Moon is coming",
+          "text": "On Tuesday, November 24, the Moon is full, and it's a supermoon: a little bigger and brighter than usual. It's called the Beaver Moon because beavers get ready for winter now. Look up when it rises on the 23rd or 24th!",
+          "word": "supermoon",
+          "mean": "a full moon that looks a bit bigger and brighter because it is closer to Earth",
+          "tr": "superluna",
+          "es": "¡El martes 24 hay superluna llena, la «Luna del Castor»!",
+          "q": "Where is your favorite place to look at the Moon or the stars, and why?",
+          "link": "https://www.farmersalmanac.com/november-2026-night-sky-guide",
+          "src": "Farmers' Almanac",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🐦",
+          "title": "China's mangroves are full of birds again",
+          "text": "China's coastal mangrove forests grew from about 26,000 acres in 1998 to about 70,000 in 2020. And the birds noticed! The number of bird species living there jumped from 148 to 397. Trees make a great home.",
+          "word": "jumped",
+          "mean": "went up quickly by a lot",
+          "tr": "subió de golpe",
+          "es": "Los manglares de China crecieron mucho y ahora viven allí ¡casi 400 especies de aves!",
+          "q": "What wild birds or animals can you see near your home, and which one is your favorite?",
+          "link": "https://www.goodgoodgood.co/articles/good-news-this-week-november-21-2026",
+          "src": "Good Good Good",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-21",
       "by": "claude",
       "items": [
