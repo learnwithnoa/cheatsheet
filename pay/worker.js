@@ -236,7 +236,10 @@ async function rosterFor(env, me) {
 // Noa cancelled every Skool renewal on Nov 16, 2026, so each member's Skool access ends on their next Skool date after that day.
 // That's when their first Hibi payment happens. After it (+5 days of grace) club access ends unless they switched.
 const SKOOL_CANCELLED = "2026-11-16";
-const skoolEnd = (m) => (m && m.per !== "year" && m.renew ? parseRenew(m.renew, SKOOL_CANCELLED) : null);
+// Noa can type the exact end date in Hibi members → Club members (m.end, YYYY-MM-DD); otherwise it comes from the Skool export's renewal date
+const skoolEnd = (m) => (m && /^\d{4}-\d{2}-\d{2}$/.test(m.end || "") ? m.end : m && m.per !== "year" && m.renew ? parseRenew(m.renew, SKOOL_CANCELLED) : null);
+// people marked "🚪 Not moving over" lose access right after their end date; everyone else gets 5 days to switch to Hibi
+const moveGrace = (m) => (m && m.status === "leaving" ? 0 : GRACE_DAYS);
 async function firstCharge(env, me) {
   const r = skoolEnd(await rosterFor(env, me)); if (!r) return null;
   return r >= addDays(today(), 1) && r <= addDays(today(), 70) ? r : null;   // later than that, or already passed: charged today
@@ -250,8 +253,8 @@ async function skoolMoveCheck(env) {
   for (const d of (users && users.documents) || []) { const u = plain(d) || {}; if (u.email) byEmail[normEmail(u.email)] = d.name.split("/").pop(); }
   const out = [];
   for (const m of ms) {
-    const r = skoolEnd(m); if (!r || today() <= addDays(r, GRACE_DAYS)) continue;
-    const pays = Number(m.price) > 0 || prices[normEmail(m.email)]; if (!pays) continue;   // free members stay
+    const r = skoolEnd(m); if (!r || today() <= addDays(r, moveGrace(m))) continue;
+    const pays = (Number(m.price) > 0 || prices[normEmail(m.email)]) && !["free", "direct"].includes(m.status); if (!pays) continue;   // free members (and people who pay Noa directly) stay
     const uid = m.email && byEmail[normEmail(m.email)]; if (!uid || !clubUids.has(uid)) continue;
     let b = await getBill(env, uid);
     if (await pendingSync(env, uid, b)) b = await getBill(env, uid);
@@ -269,7 +272,7 @@ async function myPrice(env, req) {
   const m = await rosterFor(env, me);
   const p = await legacyPrice(env, me.email, me.name);
   const o = { clp: Number(p && p.clp) || STD_MONTH, usd: Number(p && p.usd) || STD_MONTH_USD, legacy: !!p, onList: !!m, renew: (m && m.renew) || null, start: await firstCharge(env, me) };
-  const end = skoolEnd(m); if (end && !o.start && end <= addDays(today(), 1)) { o.ended = end; o.switchBy = addDays(end, GRACE_DAYS); }
+  const end = skoolEnd(m); if (end && !o.start && end <= addDays(today(), 1)) { o.ended = end; o.switchBy = addDays(end, moveGrace(m)); }
   if (p && p.usd && !p.clp) o.usdOnly = true;
   if (m && m.per === "year") o.annual = true;
   if (m && !(Number(m.price) > 0) && !p) o.free = true;

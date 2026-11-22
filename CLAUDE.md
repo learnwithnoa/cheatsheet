@@ -20,7 +20,7 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
   Payments: Mercado Pago (pesos, automatic) and PayPal (US$), both live; Flow is connected but unused (no automatic charging for a persona natural).
   Legacy prices: Members page → Club members → "Hibi price" (t-hubmeta.clubPrices by email); empty = their Skool price ×1000 CLP / same US$.
   Skool move: Noa cancelled every Skool renewal on Nov 16, 2026. Members switch on Hibi ("Move your membership" card, `src/scripts/038-step145-…`);
-  the first Hibi charge waits until their Skool month ends (club list date), and the nightly check removes club access 5 days after that if they didn't switch.
+  the first Hibi charge waits until their Skool month ends (club list date, or Noa's own date in Hibi members → Club members → Skool ends = club.members[].end), and the pay helper's nightly check (6:00 Chile) removes club access 5 days after that if they didn't switch (right after it for people marked 🚪 Not moving over; free / pays-directly / yearly members stay). `hubsync.py skool-ends` lists everyone's end and loses-access dates for the nightly email; `skool-ends set '<name>' YYYY-MM-DD|-` changes one.
   Unread-message emails: hourly, through Resend (secret RESEND_API_KEY, sender hola@hibi.cl): one short email if a Hibi message waits 12 h (never again while that one is still unread),
   max one a day, never to Noa; members turn it off in Settings (ncs-mailnotif); every email sent is listed in Noa's 🔔 (t-mailsent).
   It also runs the free 2-week club trial (no card; 14 days counting the first, 30 for Noa's private students; `/api/trial` also sends Noa's welcome message as a Hibi message,

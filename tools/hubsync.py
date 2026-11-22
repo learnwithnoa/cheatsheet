@@ -1050,6 +1050,51 @@ def main():
             out.append({"name": t.get("name"), "email": t.get("email"), "status": t.get("status"), "started": datetime.datetime.fromtimestamp((t.get("start") or 0) / 1000).strftime("%Y-%m-%d"),
                         "ends": t.get("until"), "new": when >= since})
         print(json.dumps(out, ensure_ascii=False)); return
+    if cmd == "skool-ends":
+        # Skool members moving to Hibi (Noa cancelled Skool renewals on Nov 16, 2026): each one's Skool end date, the day the pay helper's
+        # nightly check (6:00 Chile) removes their club access if they haven't started paying on Hibi, and whether they already switched.
+        # end = Noa's own date (club list "end", set in Hibi members → Club members → Skool ends) or the export's renewal date moved forward to Nov 16 or later.
+        # grace: 5 days to switch, 0 for people marked "leaving" (Not moving over). Free and yearly members are never removed.
+        # [skool-ends set '<name>' YYYY-MM-DD|-]  sets (or with - clears) someone's end date
+        meta = get_doc(tok, tu, "t-hubmeta") or {}; ms = (meta.get("club") or {}).get("members") or []
+        if len(a) > 1 and a[1] == "set":
+            m = next((x for x in ms if x.get("name", "").lower() == a[2].lower()), None) or next((x for x in ms if a[2].lower() in x.get("name", "").lower()), None)
+            if not m: print("not on the club list:", a[2]); return
+            if a[3] == "-": m.pop("end", None)
+            else: datetime.date.fromisoformat(a[3]); m["end"] = a[3]
+            set_doc(tok, tu, "t-hubmeta", meta)
+            print("ok", m["name"], m.get("end") or "(from the export)"); return
+        def endOf(m):
+            if re.match(r"^\d{4}-\d{2}-\d{2}$", m.get("end") or ""): return m["end"]
+            if m.get("per") == "year" or not re.match(r"^\d{4}-\d{2}-\d{2}", m.get("renew") or ""): return None
+            y, mo, d = map(int, m["renew"][:10].split("-")); r = m["renew"][:10]
+            for _ in range(24):
+                if r >= "2026-11-16": break
+                mo += 1
+                if mo > 12: mo, y = 1, y + 1
+                last = (datetime.date(y + (mo == 12), mo % 12 + 1, 1) - datetime.timedelta(days=1)).day
+                r = f"{y}-{mo:02d}-{min(d, last):02d}"
+            return r
+        users = http("GET", f"{BASE}/users?pageSize=300", token=tok) or {}; byEmail = {}
+        for d in users.get("documents", []):
+            em = ((d.get("fields", {}).get("email") or {}).get("stringValue") or "").lower()
+            if em: byEmail[em] = d["name"].split("/")[-1]
+        prices = meta.get("clubPrices") or {}; clubUids = set(meta.get("clubUids") or []); today = datetime.date.today().isoformat(); out = []
+        for m in ms:
+            e = endOf(m); em = (m.get("email") or "").lower()
+            if not e or not (float(m.get("price") or 0) > 0 or prices.get(em)) or m.get("status") in ("free", "direct"): continue
+            grace = 0 if m.get("status") == "leaving" else 5
+            removal = (datetime.date.fromisoformat(e) + datetime.timedelta(days=grace + 1)).isoformat()
+            uid = byEmail.get(em); mem = None
+            if uid:
+                try: mem = get_doc(tok, uid, "membership")
+                except SystemExit: mem = None
+            st = (mem or {}).get("status") or "none"
+            out.append({"name": m.get("name"), "status": m.get("status") or "paying", "skoolEnds": e, "losesAccess": removal, "graceDays": grace,
+                        "onHibi": bool(uid), "inClub": bool(uid and uid in clubUids), "hibiMembership": st,
+                        "switched": st in ("active", "grace", "canceling", "trial"), "endSetByNoa": bool(m.get("end"))})
+        out.sort(key=lambda x: x["losesAccess"])
+        print(json.dumps({"today": today, "members": out}, ensure_ascii=False, indent=1)); return
     if cmd == "club-yt":
         # newest videos in Noa's English Club YouTube playlist (the pay helper reads its public feed every hour; YouTube itself is blocked here)
         f = get_doc(tok, tu, "t-ytfeed") or {}
