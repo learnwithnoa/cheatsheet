@@ -53,9 +53,10 @@
       recap:{recordings:[{wd:5,title:"Free Talk Friday",url:"https://zoom.us/"}],vocab:[{w:"to make a habit of",tr:"acostumbrarse a",ex:"I'm trying to make a habit of reading at night."}]}}]};
   if(g==="club"){ const put=()=>{ if(!window.__csClub){ window.__csClub=SAMPLE_CLUB; document.dispatchEvent(new CustomEvent("cs-club")); } }; document.addEventListener("cs-club",()=>setTimeout(put,0)); setTimeout(put,300); }
   const bar=()=>{ if(document.getElementById("guestBar")) return; const d=document.createElement("div"); d.id="guestBar"; d.setAttribute("role","status");
-    d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;background:#1f2937;color:#fff;font:600 13px system-ui,sans-serif;padding:8px 10px 8px 14px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;max-width:calc(100vw - 24px)";
-    d.innerHTML=`<span>👀 Guest preview${g==="club"?" · club member (sample week)":g==="private"?" · private student (sample)":""} · nothing is saved to an account</span><button type="button" style="all:unset;cursor:pointer;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px">Exit</button>`;
-    d.querySelector("button").onclick=()=>{ try{ sessionStorage.removeItem(K); }catch(e){} location.reload(); }; document.body.appendChild(d); };
+    /* a slim strip at the very top of the page (not floating), so it never covers the buddy or anything else (Nov 22 2026) */
+    d.style.cssText="position:relative;z-index:5;background:#1f2937;color:#fff;font:600 13px/1.35 system-ui,sans-serif;padding:7px 12px calc(7px);padding-top:calc(7px + env(safe-area-inset-top,0px));display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center";
+    d.innerHTML=`<style>#guestBar{flex-wrap:nowrap!important}@media(max-width:560px){#guestBar .gb-ns{display:none}}</style><span>👀 Preview${g==="club"?": club member (sample week)":g==="private"?": private student (sample)":""}<span class="gb-ns"> · nothing is saved</span></span><button type="button" style="all:unset;cursor:pointer;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:999px">Exit</button>`;
+    d.querySelector("button").onclick=()=>{ try{ sessionStorage.removeItem(K); }catch(e){} location.reload(); }; document.body.prepend(d); };
   if(document.body) bar(); else document.addEventListener("DOMContentLoaded",bar);
 })();
 /* Hibi is invite-only: people ask for access (name + email, no Google yet), Noa approves, then they sign in with Google.
