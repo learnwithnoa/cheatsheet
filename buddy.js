@@ -278,7 +278,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "scope", name: "Telescope", ico: "🔭", slot: "toy", ma: "ed", mt: "-ed endings" },
     { id: "magnifier", name: "Detective's magnifying glass", ico: "🔍", slot: "toy", ma: "iq", mt: "Indirect questions" },
     { id: "rocket", name: "Rocket", ico: "🚀", slot: "toy", ma: "fut", mt: "Talking about the future" },
-    /* duels (club members): fighting gear */
+    /* duels (any Hibi member): fighting gear */
     { id: "dbanner", name: "Duel banner", ico: "🚩", slot: "toy", dp: 1 },
     { id: "sword", name: "Wooden sword", ico: "🗡️", slot: "toy", dw: 1 },
     { id: "shield", name: "Shield", ico: "🛡️", slot: "toy", dw: 3 },
@@ -1492,7 +1492,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const bn = (x.n && String(x.n).trim() && String(x.n).trim() !== SP[x.a].old ? String(x.n).trim() : SP[x.a].name), owner = x.me ? "You" : (x.first ? x.first + "'s buddy" : "");
       const info = `<span class="pi-1"><b>${esc(bn)}</b>${owner ? ` <small>· ${esc(owner)}</small>` : ""}</span><span class="pi-2">📚 ${wc(x)} ${wc(x) === 1 ? "word" : "words"}${x.lvl > 1 ? ` · 💛 ${x.lvl | 0}` : ""}${(() => { const c = x.me ? (window.csLevel ? window.csLevel().lv : "") : (x.cefr || (x.role && x.role.lv) || ""); return c ? ` · 📊 ${esc(String(c).slice(0, 7))}` : ""; })()}</span>`;
       const lv = x.lvl | 0 || 1, tier = lv >= 10 ? 3 : lv >= 7 ? 2 : lv >= 4 ? 1 : 0;
-      return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}<span class="pi-3">${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && !(window.__csPreview && window.__csPreview.kind === "private") ? `<span class="pb-feed pb-duel" role="button" tabindex="0" data-duel="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Challenge ${esc(x.first || bn)} to a duel">⚔️ Duel</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) && window.__clubDM ? `<span class="pb-feed pb-dm" role="button" tabindex="0" data-pdm="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Message ${esc(x.first || bn)}">💬 Message</span>` : ""}</span></span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
+      return `<button class="park-b${x.me ? " me" : ""}${tier ? " tier-" + tier : ""}" type="button" data-uid="${x.me ? "" : esc(x.uid || "")}" data-a="${esc(x.a)}" data-bn="${esc(bn)}" data-lvl="${x.lvl | 0 || 1}" data-zone="${x.role && x.role.club === false ? "p" : "c"}" style="left:${l}%;top:${t}%" aria-label="${esc(bn)}${owner ? ", " + esc(x.me ? "your buddy" : x.first + "'s buddy") : ""}, ${wc(x)} words, friendship level ${x.lvl | 0 || 1}"><span class="pinfo">${info}<span class="pi-3">${!x.me && x.uid ? `<span class="pb-feed" role="button" tabindex="0" data-feed="1" aria-label="Feed ${esc(bn)} a treat">🍪 Feed</span>` : ""}${!x.me && x.uid && canDuel(mine && mine.role) && canDuel(x.role) ? `<span class="pb-feed pb-duel" role="button" tabindex="0" data-duel="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Challenge ${esc(x.first || bn)} to a duel">⚔️ Duel</span>` : ""}${!x.me && x.uid && canDM(mine && mine.role) && canDM(x.role) && window.__clubDM ? `<span class="pb-feed pb-dm" role="button" tabindex="0" data-pdm="${esc(x.uid)}" data-first="${esc(x.first || "")}" aria-label="Message ${esc(x.first || bn)}">💬 Message</span>` : ""}</span></span>${tier ? `<span class="pb-aura" aria-hidden="true">${tier === 3 ? "<i>✦</i><i>✦</i><i>✦</i>" : tier === 2 ? "<i>✦</i>" : ""}</span>` : ""}<span class="pb-flip">${petSVG({ a: x.a, pal: palFor(x), wear: { head: x.head, face: x.face, neck: x.neck }, plain: true })}</span><span class="pn">${esc(bn)}</span></button>`;
     }).join("")}</div></div>`;
     applyZoom(false); startPark(); dropTreat();
     if (!guest) try { duelSync(listAll); } catch (e) { console.warn("duels", e); }
@@ -1624,7 +1624,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (a.dataset.park === "signin" && window.csSignIn) window.csSignIn(); else if (a.dataset.park === "retry") renderPark(); else if (a.dataset.park === "adopt") openModal("adopt");
   });
   (function watchPark() { const v = $("v-park"); if (!v) return; new MutationObserver(() => { if (!v.hidden) renderPark(); }).observe(v, { attributes: true, attributeFilter: ["hidden"] }); if (!v.hidden) renderPark(); })();
-  /* ---------- ⚔️ duels: club members (and "both") challenge each other for 7 days ----------
+  /* ---------- ⚔️ duels: any Hibi members challenge each other for 7 days (club or not, since Nov 22 2026) ----------
      Everything lives in each person's own park doc: dz = challenges I sent, da = ones I accepted,
      dn = ones I declined, dsc = my score in each duel. Both sides work out the winner the same way. */
   const DAY = 864e5, DUEL_LEN = 7 * DAY, OPEN_MAX = 3;
@@ -1634,7 +1634,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     cards: { ico: "🃏", name: "Flashcard duel", how: "Who learns more words in flashcards in 7 days? (✓ I knew it, 3 times on a word)" },
     gram: { ico: "🧠", name: "Grammar duel", how: "Who finishes more grammar practice rounds in 7 days? (up to 5 a day count)" }
   };
-  const canDuel = r => !(r && (r.private || r.hub) && r.club === false) && !(r && r.hidden);   /* private students are linked with r.hub too */
+  const canDuel = r => !(r && r.hidden);   /* Nov 22 2026: everyone on Hibi can duel, club or not (Noa) */
+  const canDM = r => !(r && (r.private || r.hub) && r.club === false) && !(r && r.hidden);   /* club messages stay club-only; private students are linked with r.hub too */
   let duelList = null, duelMeRole = null, lastDuelCheck = 0;
   function wordsSince(st, en) {
     let w = []; try { w = JSON.parse(localStorage.getItem("ncs-words") || "[]") || []; } catch (e) {}
@@ -1727,7 +1728,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const box = $("dzBox"), inc = ds.filter(d => d.toMe && d.st === "pending" && !(S.da || {})[d.id]);
     document.querySelectorAll('.navbtn[data-go="park"]').forEach(b => { let c = b.querySelector(".dz-badge"); if (!c) { c = document.createElement("span"); c.className = "cn-count dz-badge"; b.appendChild(c); } c.textContent = inc.length ? String(inc.length) : ""; c.hidden = !inc.length; });
     if (!box) return;
-    if (!canDuel(duelMeRole) || window.__csPreview && window.__csPreview.kind === "private") { box.hidden = true; return; }
+    if (!canDuel(duelMeRole)) { box.hidden = true; return; }
     const live = ds.filter(d => (d.fromMe || d.toMe) && d.st === "live"), wait = ds.filter(d => d.fromMe && d.st === "pending");
     if (!inc.length && !live.length && !wait.length) { box.hidden = true; return; }
     const now = Date.now(), left = d => { const h = Math.max(0, Math.round((d.end - now) / 36e5)); return h > 48 ? Math.round(h / 24) + " days left" : h + " h left"; };
@@ -1747,7 +1748,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   function renderDuels(ds) {
     const area = $("parkArea"); if (!area) return;
     let box = $("duelBoard"); if (!box) { box = document.createElement("section"); box.id = "duelBoard"; box.className = "duel-board"; (document.getElementById("parkLegend") || area).insertAdjacentElement("afterend", box); }
-    if (!canDuel(duelMeRole) || window.__csPreview && window.__csPreview.kind === "private") { box.hidden = true; return; }
+    if (!canDuel(duelMeRole)) { box.hidden = true; return; }
     box.hidden = false; const now = Date.now(), recent = d => d.st === "done" && d.end && now - d.end < 14 * DAY;
     const inc = ds.filter(d => d.toMe && d.st === "pending" && !(S.da || {})[d.id]);
     const mineOpen = ds.filter(d => (d.fromMe || d.toMe) && (d.st === "pending" || d.st === "live"));
@@ -1770,7 +1771,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   function duelHelp() {
     if (!window.csDialog) return;
-    window.csDialog(`<h3 style="margin-top:0">⚔️ How duels work</h3><p>Challenge another club member to a friendly 7-day duel. It starts when they accept.</p><ul>${Object.values(DT).map(t => `<li>${t.ico} <b>${t.name}</b>: ${esc(t.how)}</li>`).join("")}</ul>
+    window.csDialog(`<h3 style="margin-top:0">⚔️ How duels work</h3><p>Challenge anyone on Hibi to a friendly 7-day duel. It starts when they accept.</p><ul>${Object.values(DT).map(t => `<li>${t.ico} <b>${t.name}</b>: ${esc(t.how)}</li>`).join("")}</ul>
       <p class="muted" style="font-size:14px">Only words with a meaning <b>and</b> an example sentence count, up to 10 a day. Scores update when each of you opens Hibi.</p>
       <p><b>Prizes:</b> the winner gets <b>+10 🍪</b> (even past the 30 limit) and <b>+15 friendship</b>. A draw gives +5 🍪, and everyone who finishes a duel gets at least +2 🍪.</p>
       <p><b>Prizes your buddy can wear:</b> 🥋 fighter headband after your first duel · 🥇 champion medal at 2 wins · ⛑️ knight helmet at 5 · 😎 battle shades at 7 · 🌿 victory laurel at 15 · 🦸 hero cape for 3 wins in a row.</p>

@@ -4405,7 +4405,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=68" defer></script>
+<script src="buddy.js?v=69" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -4501,7 +4501,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <li><span class="wl-ico" aria-hidden="true">👕</span><div><b>Clothes, colors and toys</b> unlock as you save and learn words. Finish grammar modules (and their ⭐ Advanced stages) for special toys.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✋</span><div><b>Move it anywhere:</b> drag your buddy around the screen, and tap it to pet it, feed it or dress it up.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🌳</span><div><b>Buddy park:</b> see everyone's buddies and send them love. It never gets sick or sad if you're away, it just naps.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⚔️</span><div><b>Duels</b> (club members): challenge someone in the park to a friendly 7-day duel. Winners get treats and prizes, including clothes your buddy can wear. While you have a duel, <b>⚔️ Your duels</b> sits at the top of Home (tap it to see the score), the 🔔 tells you about new challenges, lead changes and results, and your past duels are in <b>📜 Your duels</b> in the park.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⚔️</span><div><b>Duels</b> (everyone on Hibi): challenge someone in the park to a friendly 7-day duel. Winners get treats and prizes, including clothes your buddy can wear. While you have a duel, <b>⚔️ Your duels</b> sits at the top of Home (tap it to see the score), the 🔔 tells you about new challenges, lead changes and results, and your past duels are in <b>📜 Your duels</b> in the park.</div></li>
     </ul>
     <div class="note-actions wl-adopt" id="wlAdoptRow"><button class="pill-btn pill-green" type="button" data-wladopt>🐾 Choose my buddy</button></div>
   </div>
@@ -4540,10 +4540,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-3639f71c59a7.js"></script>
+<script src="js/h-e8899c9c6513.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261122092618"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261122115638"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
