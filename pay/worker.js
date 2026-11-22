@@ -314,16 +314,16 @@ async function skoolMoveNotify(env, force) {
   const st = plain(await fs(env, "GET", "billingConfig/movenotify")) || {}; let log = {}; try { log = JSON.parse(st.json || "{}") || {}; } catch (e) {}
   const users = await fs(env, "GET", "users?pageSize=300"), byEmail = {};
   for (const d of (users && users.documents) || []) { const u = plain(d) || {}; if (u.email) byEmail[normEmail(u.email)] = { uid: d.name.split("/").pop(), email: u.email, name: u.name || "" }; }
-  const sentList = []; let sent = 0, errors = 0;
+  const sentList = [], skipped = {}; let sent = 0, errors = 0; const skip = (k) => (skipped[k] = (skipped[k] || 0) + 1);
   for (const m of ms) {
     const end = skoolEnd(m); if (!end) continue;
     const stage = ch.day >= end ? "last" : ch.day >= addDays(end, -3) ? "3d" : null; if (!stage) continue;
     const pays = (Number(m.price) > 0 || prices[normEmail(m.email)]) && !["free", "direct"].includes(m.status); if (!pays) continue;
-    const u = m.email && byEmail[normEmail(m.email)]; if (!u || !clubUids.has(u.uid)) continue;
-    const key = `${u.uid}:${stage}:${end}`; if (log[key]) continue;
+    const u = m.email && byEmail[normEmail(m.email)]; if (!u) { skip("not on Hibi"); continue; } if (!clubUids.has(u.uid)) { skip("not in the club on Hibi"); continue; }
+    const key = `${u.uid}:${stage}:${end}`; if (log[key]) { skip("already sent"); continue; }
     try {
       const b = await getBill(env, u.uid);
-      if (["active", "grace", "canceling", "trial"].includes(b.status) || b.moveEnded || b.mpPending || b.ppPending) continue;
+      if (["active", "grace", "canceling", "trial"].includes(b.status)) { skip("switched: " + b.status); continue; } if (b.moveEnded) { skip("already removed"); continue; } if (b.mpPending || b.ppPending) { skip("payment started, not finished"); continue; }
       const first = String(u.name || m.name || "").split(/\s+/)[0] || "there";
       const ended = end === ch.day ? "ends today (" + longDate(end) + ")" : "ended on " + longDate(end);
       const deadline = "tomorrow (" + longDate(addDays(ch.day, 1)) + ")";
@@ -340,7 +340,7 @@ async function skoolMoveNotify(env, force) {
     await patch(env, "billingConfig/movenotify", { json: JSON.stringify(log) });
     const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", sentList.concat(cur).slice(0, 100));
   }
-  return { sent, errors };   // counts only: the deploy log is public
+  return { sent, errors, skipped };   // counts only: the deploy log is public
 }
 // what a club member who still pays on Skool will pay on Hibi (for the "Move your membership to Hibi" card)
 async function myPrice(env, req) {
