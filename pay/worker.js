@@ -234,17 +234,18 @@ async function rosterFor(env, me) {
   return ms.find((x) => x.email && normEmail(x.email) === normEmail(me.email)) || (nn(me.name) ? ms.find((x) => nn(x.name) === nn(me.name)) : null);
 }
 // Noa cancelled every Skool renewal on Nov 16, 2026, so each member's Skool access ends on their next Skool date after that day.
-// That's when their first Hibi payment happens. After it (+5 days of grace) club access ends unless they switched.
+// That's when their first Hibi payment happens. The morning after it, club access ends unless they switched (no grace: Noa, Nov 22 2026).
+// Yearly Skool members too: their access ends when their paid year does.
 const SKOOL_CANCELLED = "2026-11-16";
 // Noa can type the exact end date in Hibi members → Club members (m.end, YYYY-MM-DD); otherwise it comes from the Skool export's renewal date
-const skoolEnd = (m) => (m && /^\d{4}-\d{2}-\d{2}$/.test(m.end || "") ? m.end : m && m.per !== "year" && m.renew ? parseRenew(m.renew, SKOOL_CANCELLED) : null);
-// people marked "🚪 Not moving over" lose access right after their end date; everyone else gets 5 days to switch to Hibi
-const moveGrace = (m) => (m && m.status === "leaving" ? 0 : GRACE_DAYS);
+const skoolEnd = (m) => (m && /^\d{4}-\d{2}-\d{2}$/.test(m.end || "") ? m.end : m && m.renew ? parseRenew(m.renew, SKOOL_CANCELLED) : null);
+// everyone switches by their end date: no grace days (the payment-failure grace below is separate)
+const moveGrace = () => 0;
 async function firstCharge(env, me) {
   const r = skoolEnd(await rosterFor(env, me)); if (!r) return null;
   return r >= addDays(today(), 1) && r <= addDays(today(), 70) ? r : null;   // later than that, or already passed: charged today
 }
-// nightly: Skool members whose Skool month ended more than 5 days ago and who didn't switch lose club access (not Hibi)
+// nightly: Skool members whose Skool membership (month or year) ended and who didn't switch lose club access (not Hibi)
 async function skoolMoveCheck(env) {
   const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
   const ms = (meta.club && meta.club.members) || [], clubUids = new Set(meta.clubUids || []), prices = meta.clubPrices || {};
@@ -274,7 +275,7 @@ async function myPrice(env, req) {
   const o = { clp: Number(p && p.clp) || STD_MONTH, usd: Number(p && p.usd) || STD_MONTH_USD, legacy: !!p, onList: !!m, renew: (m && m.renew) || null, start: await firstCharge(env, me) };
   const end = skoolEnd(m); if (end && !o.start && end <= addDays(today(), 1)) { o.ended = end; o.switchBy = addDays(end, moveGrace(m)); }
   if (p && p.usd && !p.clp) o.usdOnly = true;
-  if (m && m.per === "year") o.annual = true;
+  if (m && m.per === "year" && !o.start && !o.ended) o.annual = true;   // within 70 days of the end of their Skool year they get the normal switch card
   if (m && !(Number(m.price) > 0) && !p) o.free = true;
   return json(o, 200, req);
 }

@@ -36,9 +36,8 @@
     if(preview()) body=`${head("Same price")}<p>Members who still pay on Skool see <b>their own price</b> here, with a button to switch. Their first Hibi payment waits until the day Skool would have charged them.</p>`;
     else if(P.annual) body=`${head("Paid")}<p>Your year is <b>already paid</b>${P.renew?` until <b>${/^\d{4}-\d\d-\d\d$/.test(P.renew)?new Date(P.renew+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}):String(P.renew).replace(/[<>&]/g,"")}</b>`:""}. Nothing to do now: you keep the club, and Noa will remind you before it ends.</p>`;
     else { const usdOnly=P.usdOnly, price=usdOnly?`US$${P.usd} a month`:`${clp(P.clp)} a month`;
-      const plus5=d=>{ const x=new Date(d+"T12:00:00"); x.setDate(x.getDate()+5); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); };
-      const when=P.start?`Nothing is charged today. Your first payment on Hibi is on <b>${day(P.start)}</b>, when your Skool month ends. Your Skool subscription is already cancelled, so you never pay twice.<br><span class="hb-mv-warn">Switch before then to keep your spot. If you haven’t switched by ${day(plus5(P.start))}, your club access pauses (the rest of Hibi stays).</span>`
-        :P.ended?`Your Skool month ended on <b>${day(P.ended)}</b>. Switch by <b>${day(P.switchBy)}</b> to keep your club access. Your first payment is today, and then once a month.`
+      const when=P.start?`Nothing is charged today. Your first payment on Hibi is on <b>${day(P.start)}</b>, when your Skool month ends. Your Skool subscription is already cancelled, so you never pay twice.<br><span class="hb-mv-warn">Switch before then to keep your spot. If you haven’t switched by ${day(P.start)}, your club access pauses the next morning (the rest of Hibi stays).</span>`
+        :P.ended?`Your Skool membership ends <b>today</b>. Switch today to keep your club access: tomorrow morning it pauses until you do. Your first payment is today, and then once a month.`
         :`Your first payment is today, and then once a month.`;
       body=`${head("Same price")}<p>You keep your price: <b>${price}</b>. ${when}</p>
         <ol class="hb-mv-steps"><li>Tap the button and confirm with ${usdOnly?"PayPal":"Mercado Pago"}.</li><li>That’s it. You can see, change or cancel it right here on Hibi.</li></ol>

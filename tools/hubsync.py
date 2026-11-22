@@ -1054,7 +1054,7 @@ def main():
         # Skool members moving to Hibi (Noa cancelled Skool renewals on Nov 16, 2026): each one's Skool end date, the day the pay helper's
         # nightly check (6:00 Chile) removes their club access if they haven't started paying on Hibi, and whether they already switched.
         # end = Noa's own date (club list "end", set in Hibi members → Club members → Skool ends) or the export's renewal date moved forward to Nov 16 or later.
-        # grace: 5 days to switch, 0 for people marked "leaving" (Not moving over). Free and yearly members are never removed.
+        # No grace (Noa, Nov 22 2026): they lose access the morning after their end date. Monthly and yearly alike; free / pays-directly members are never removed.
         # [skool-ends set '<name>' YYYY-MM-DD|-]  sets (or with - clears) someone's end date
         meta = get_doc(tok, tu, "t-hubmeta") or {}; ms = (meta.get("club") or {}).get("members") or []
         if len(a) > 1 and a[1] == "set":
@@ -1066,7 +1066,7 @@ def main():
             print("ok", m["name"], m.get("end") or "(from the export)"); return
         def endOf(m):
             if re.match(r"^\d{4}-\d{2}-\d{2}$", m.get("end") or ""): return m["end"]
-            if m.get("per") == "year" or not re.match(r"^\d{4}-\d{2}-\d{2}", m.get("renew") or ""): return None
+            if not re.match(r"^\d{4}-\d{2}-\d{2}", m.get("renew") or ""): return None
             y, mo, d = map(int, m["renew"][:10].split("-")); r = m["renew"][:10]
             for _ in range(24):
                 if r >= "2026-11-16": break
@@ -1083,7 +1083,7 @@ def main():
         for m in ms:
             e = endOf(m); em = (m.get("email") or "").lower()
             if not e or not (float(m.get("price") or 0) > 0 or prices.get(em)) or m.get("status") in ("free", "direct"): continue
-            grace = 0 if m.get("status") == "leaving" else 5
+            grace = 0
             removal = (datetime.date.fromisoformat(e) + datetime.timedelta(days=grace + 1)).isoformat()
             uid = byEmail.get(em); mem = None
             if uid:

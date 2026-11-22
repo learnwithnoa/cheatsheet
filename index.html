@@ -4543,7 +4543,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-e8899c9c6513.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261122115638"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261122181124"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -4834,7 +4834,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-tipstage]
     r[b.dataset.gomod]= st>0 ? st : "all"; localStorage.setItem(k,JSON.stringify(r)); if(window.__csOnSet) window.__csOnSet(k); }catch(er){}
 },true);
 </script>
-<script src="js/h-308f295c308b.js"></script>
+<script src="js/h-2662556b1af8.js"></script>
 <script>
 /* step149: Settings switch for the unread-message emails */
 (function(){
