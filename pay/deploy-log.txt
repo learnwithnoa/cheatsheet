@@ -1,4 +1,4 @@
-Deploy 2026-11-22T21:48:14Z
+Deploy 2026-11-22T21:51:15Z
 CLOUDFLARE_API_TOKEN: set
 CLOUDFLARE_ACCOUNT_ID: set
 FLOW_API_KEY: set
@@ -13,8 +13,8 @@ YT_API_KEY: set
 Firebase key: valid, project learnwithnoa-cheatsheet
 deploy exit: 0
 secrets exit: 0
-Uploaded hibi-pay (1.11 sec)
-Deployed hibi-pay triggers (0.55 sec)
+Uploaded hibi-pay (1.10 sec)
+Deployed hibi-pay triggers (0.54 sec)
   https://hibi-pay.learnwithnoa.workers.dev
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
 ✨ Successfully created secret for key: FLOW_API_KEY
@@ -31,4 +31,4 @@ health: {"ok":true,"flow":"live","flowKeys":true,"firebaseKey":true,"flowApi":"o
 check: ok
 youtube: {"ok":true,"via":"api","videos":14,"newest":"free talk friday nov 20"}
 manual trials: {"applied":0,"skipped":3,"noAccount":0}
-skool move reminders: {"sent":2,"errors":0}
+skool move reminders: {"sent":0,"errors":0,"skipped":{"not in the club on Hibi":1,"already sent":2,"not on Hibi":5,"payment started, not finished":1}}
