@@ -266,6 +266,82 @@ async function skoolMoveCheck(env) {
   }
   return out;
 }
+// Reminders for Skool members who haven't switched (Noa, Nov 22 2026): a Hibi message from Noa + the same as an email,
+// 3 days before their Skool membership ends, and again on their last day (or right away if their end date already passed
+// and the morning check hasn't removed them yet). Each one only once. Sent between 10:00 and 20:59 Chile time (hourly run).
+// Noa can change the texts: t-hubmeta.moveNotice3 / t-hubmeta.moveNoticeLast ({name}, {end date}, {deadline}); moveNoticeOff = true stops them.
+const MOVE_NOTICE_3 = `Hey {name}! Quick heads-up 💛 Your Skool membership ends on {end date}, and the club now lives here on Hibi.
+
+To keep coming to classes, tap "Switch to Hibi" at the top of the Club page. It's the same price you paid on Skool and takes a minute with Mercado Pago (or PayPal if you're outside Chile). Your first Hibi payment only happens on {end date}, so you never pay twice.
+
+If you haven't switched by then, your club access pauses the next morning at 6 am. Everything else on Hibi stays: your words, notes and buddy.
+
+Any questions, just reply here. See you in class! ✨`;
+const MOVE_NOTICE_LAST = `Hey {name}! Quick heads-up 💛 Your Skool membership {ended}, and the club now lives here on Hibi.
+
+To keep coming to classes, tap "Switch to Hibi" at the top of the Club page. It's the same price you paid on Skool and takes a minute with Mercado Pago (or PayPal if you're outside Chile).
+
+If you haven't switched by tonight, your club access pauses {deadline} at 6 am. Everything else on Hibi stays: your words, notes and buddy. You can come back anytime from the Club page.
+
+Any questions, just reply here. Hope to see you in class! ✨`;
+const chileNow = () => { const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Santiago", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hour12: false }).formatToParts(new Date()).map((x) => [x.type, x.value])); return { day: `${p.year}-${p.month}-${p.day}`, hour: +p.hour % 24 }; };
+async function noaMessage(env, uid, name, text) {   // a Hibi message from Noa (🔔 → 💬 Messages), same as the trial welcome
+  const tid = [TEACHER, uid].sort().join("_"), now = Date.now();
+  const S = (v) => ({ stringValue: String(v) }), I = (v) => ({ integerValue: String(v) });
+  await fs(env, "PATCH", `dms/${tid}?updateMask.fieldPaths=members&updateMask.fieldPaths=json&updateMask.fieldPaths=at&updateMask.fieldPaths=r_${TEACHER}`, { fields: {
+    members: { arrayValue: { values: [TEACHER, uid].sort().map(S) } },
+    json: S(JSON.stringify({ names: { [TEACHER]: "Noa", [uid]: name || "" }, last: { text: text.slice(0, 120), from: TEACHER, at: now } })),
+    at: I(now), ["r_" + TEACHER]: I(now) } });
+  await fs(env, "POST", `dms/${tid}/msgs?documentId=${now.toString(36)}w${Math.random().toString(36).slice(2, 7)}`, { fields: { from: S(TEACHER), at: I(now), json: S(JSON.stringify({ text })) } });
+}
+function moveMail(text, last, endLong) {
+  const paras = text.split(/\n\s*\n/).map((p) => `<p>${escH(p).replace(/"Switch to Hibi"/, "<b>Switch to Hibi</b>")}</p>`);
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#1f2937;max-width:520px">
+${paras.slice(0, -1).join("\n")}
+<p><a href="${SITE}#club" style="display:inline-block;background:#3FB37F;color:#fff;text-decoration:none;font-weight:700;padding:10px 18px;border-radius:999px">Go to the Club page</a></p>
+${paras.slice(-1).join("")}
+<p>Noa</p>
+<p style="color:#6b7280;font-size:13px">You're getting this because you're a member of Noa's English Club. This message is also waiting for you on Hibi (🔔 → 💬 Messages).</p>
+</div>`;
+  return { subject: last ? "Keep your spot in Noa's English Club 💛" : "Your club is moving to Hibi: switch by " + endLong + " 💛", html, text: text + `\n\nGo to the Club page: ${SITE}#club\n\nNoa` };
+}
+async function skoolMoveNotify(env, force) {
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  if (meta.moveNoticeOff) return { off: true };
+  const ch = chileNow(); if (!force && (ch.hour < 10 || ch.hour > 20)) return { waiting: "outside 10:00–20:59 Chile time" };
+  const ms = (meta.club && meta.club.members) || [], clubUids = new Set(meta.clubUids || []), prices = meta.clubPrices || {};
+  if (!ms.length || !clubUids.size) return { sent: 0 };
+  const st = plain(await fs(env, "GET", "billingConfig/movenotify")) || {}; let log = {}; try { log = JSON.parse(st.json || "{}") || {}; } catch (e) {}
+  const users = await fs(env, "GET", "users?pageSize=300"), byEmail = {};
+  for (const d of (users && users.documents) || []) { const u = plain(d) || {}; if (u.email) byEmail[normEmail(u.email)] = { uid: d.name.split("/").pop(), email: u.email, name: u.name || "" }; }
+  const sentList = []; let sent = 0, errors = 0;
+  for (const m of ms) {
+    const end = skoolEnd(m); if (!end) continue;
+    const stage = ch.day >= end ? "last" : ch.day >= addDays(end, -3) ? "3d" : null; if (!stage) continue;
+    const pays = (Number(m.price) > 0 || prices[normEmail(m.email)]) && !["free", "direct"].includes(m.status); if (!pays) continue;
+    const u = m.email && byEmail[normEmail(m.email)]; if (!u || !clubUids.has(u.uid)) continue;
+    const key = `${u.uid}:${stage}:${end}`; if (log[key]) continue;
+    try {
+      const b = await getBill(env, u.uid);
+      if (["active", "grace", "canceling", "trial"].includes(b.status) || b.moveEnded || b.mpPending || b.ppPending) continue;
+      const first = String(u.name || m.name || "").split(/\s+/)[0] || "there";
+      const ended = end === ch.day ? "ends today (" + longDate(end) + ")" : "ended on " + longDate(end);
+      const deadline = "tomorrow (" + longDate(addDays(ch.day, 1)) + ")";
+      const text = String(stage === "3d" ? meta.moveNotice3 || MOVE_NOTICE_3 : meta.moveNoticeLast || MOVE_NOTICE_LAST)
+        .replace(/\{name\}/g, first).replace(/\{end ?date\}/gi, longDate(end)).replace(/\{ended\}/g, ended).replace(/\{deadline\}/g, deadline);
+      await noaMessage(env, u.uid, u.name || m.name, text);
+      const mm = moveMail(text, stage === "last", longDate(end));
+      if (env.RESEND_API_KEY) await sendMail(env, u.email, mm.subject, mm.html, mm.text);
+      log[key] = Date.now(); sent++;
+      sentList.push({ uid: u.uid, name: u.name || m.name || "", email: normEmail(u.email), from: "Noa", at: Date.now(), why: stage === "3d" ? "Skool ends in 3 days (message + email)" : "Skool ended: last day to switch (message + email)" });
+    } catch (e) { errors++; console.log("move notice", e.message); }
+  }
+  if (sent) {
+    await patch(env, "billingConfig/movenotify", { json: JSON.stringify(log) });
+    const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", sentList.concat(cur).slice(0, 100));
+  }
+  return { sent, errors };   // counts only: the deploy log is public
+}
 // what a club member who still pays on Skool will pay on Hibi (for the "Move your membership to Hibi" card)
 async function myPrice(env, req) {
   const me = await whoIs(env, req); if (!me) return json({ error: "Please sign in again." }, 401, req);
@@ -794,6 +870,7 @@ export default {
         case "/robots.txt": return new Response("User-agent: *\nAllow: /api/health\nAllow: /api/flow-callback\nDisallow: /\n");
         case "/api/health": return json(await health(env), 200, req);
         case "/api/ytfeed": return json(await ytFeed(env), 200, req);
+        case "/api/move-notify": return json(await skoolMoveNotify(env), 200, req);   // sends due Skool-move reminders now (each only once, 10:00–20:59 Chile; counts only)
         case "/api/manual-trials": return json(await manualTrials(env), 200, req);   // only counts, no names (the deploy log is public)   // refreshes the club playlist list now (public videos only, no personal data)
         case "/api/subscribe": return await subscribe(env, req, url);
         case "/api/card-return": return await cardReturn(env, req, url);
@@ -837,5 +914,5 @@ export default {
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env)), ytFeed(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : Promise.all([unreadMail(env), skoolMoveNotify(env).catch((e) => console.log("move notify", e.message))])), ytFeed(env)])); },
 };
