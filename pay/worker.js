@@ -322,8 +322,10 @@ async function skoolMoveNotify(env, force) {
     const u = m.email && byEmail[normEmail(m.email)]; if (!u) { skip("not on Hibi"); continue; } if (!clubUids.has(u.uid)) { skip("not in the club on Hibi"); continue; }
     const key = `${u.uid}:${stage}:${end}`; if (log[key]) { skip("already sent"); continue; }
     try {
-      const b = await getBill(env, u.uid);
-      if (["active", "grace", "canceling", "trial"].includes(b.status)) { skip("switched: " + b.status); continue; } if (b.moveEnded) { skip("already removed"); continue; } if (b.mpPending || b.ppPending) { skip("payment started, not finished"); continue; }
+      let b = await getBill(env, u.uid);
+      if ((b.mpPending || b.ppPending) && await pendingSync(env, u.uid, b)) b = await getBill(env, u.uid);   // they paid but never came back to Hibi
+      if (["active", "grace", "canceling", "trial"].includes(b.status)) { skip("switched: " + b.status); continue; } if (b.moveEnded) { skip("already removed"); continue; }
+      if (b.mpPending || b.ppPending) skip("started paying but didn't finish (reminded)");
       const first = String(u.name || m.name || "").split(/\s+/)[0] || "there";
       const ended = end === ch.day ? "ends today (" + longDate(end) + ")" : "ended on " + longDate(end);
       const deadline = "tomorrow (" + longDate(addDays(ch.day, 1)) + ")";
