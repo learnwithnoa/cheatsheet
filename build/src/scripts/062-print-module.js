@@ -108,12 +108,13 @@ ${test.length ? `<section class="stage"><div class="sh"><span class="sn">🏁</s
     let head = pan.querySelector(".ps-head");
     if (!head) { head = document.createElement("div"); head.className = "ps-head"; h.parentNode.insertBefore(head, h); head.appendChild(h); }
     let b = head.querySelector(".prt-btn");
-    if (!b) { b = document.createElement("button"); b.type = "button"; b.className = "prt-btn"; head.appendChild(b); }
+    if (!b) { b = document.createElement("button"); b.type = "button"; b.className = "star-btn prt-btn"; head.appendChild(b); }
+    const rb = pan.querySelector(".ps-recbtn"); if (rb && rb.parentNode !== head) head.appendChild(rb);   /* Noa's 💡 Recommend sits right next to it */
     const md = window.__prModFull && window.__prModFull();
     const on = !!md && !NOPRINT.includes(md.id);
     b.hidden = !on; if (!on) return;
     const n = (md.stages || []).length, lesson = !!(window.PS_LESSONS || {})[md.id];
-    b.innerHTML = `<span class="pi" aria-hidden="true">🖨️</span><span class="pt">Print or save as PDF<small>${lesson ? "Lesson + " : ""}all ${n} stages + answers</small></span>`;
+    b.innerHTML = `<span aria-hidden="true">🖨️</span><span class="star-txt">Print or save as PDF</span>`;
     b.title = "Print the whole module: " + (lesson ? "the lesson, " : "") + "every stage and the answers";
   }
   document.addEventListener("click", e => { if (e.target.closest(".prt-btn")) { e.preventDefault(); doPrint(); } });
