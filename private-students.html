@@ -172,7 +172,7 @@ details[open]>summary::before{transform:rotate(90deg)}
 
 /* student page header, Nov 23 2026: clearer order (who → next class → links → pack → resources → about) */
 .dsub{margin:6px 0 0;color:var(--muted);font-size:13.5px}
-.nextc{display:flex;width:fit-content;max-width:100%;align-items:center;gap:6px;margin-top:10px!important;padding:6px 14px!important;border-radius:99px;background:color-mix(in srgb,#3B82F6 16%,transparent);color:var(--ink);font-weight:700;font-size:13.5px}
+.nxcls{display:flex;width:fit-content;max-width:100%;align-items:center;gap:6px;margin-top:10px!important;padding:6px 14px!important;border-radius:99px;background:color-mix(in srgb,#3B82F6 16%,transparent);color:var(--ink);font-weight:700;font-size:13.5px}
 .lkrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .lkb{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);font:600 13px var(--body);text-decoration:none}
 .lkb:hover{border-color:var(--royal)}.lkb.lkb-q{color:var(--muted)}.lkb-em{cursor:default}.lkb-em a{color:inherit;text-decoration:none}
@@ -181,7 +181,7 @@ details[open]>summary::before{transform:rotate(90deg)}
 .pst .psk{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pst .psv{font:700 26px/1.15 var(--body);margin-top:4px}.pst .psv small{font-size:13px;color:var(--muted);font-weight:600;margin-left:4px}
 .pv-pink{color:#E2559B}.pv-violet{color:#8B5CF6}
-.pbar{height:7px;border-radius:99px;background:color-mix(in srgb,var(--line) 70%,transparent);margin-top:10px;overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#34D399,#22C55E);border-radius:99px}
+.pst .pbar{height:7px;border-radius:99px;background:color-mix(in srgb,var(--line) 70%,transparent);margin-top:10px;overflow:hidden}.pst .pbar i{display:block;height:100%;background:linear-gradient(90deg,#34D399,#22C55E);border-radius:99px}
 .pst .psh{font-size:12px;color:var(--muted);margin-top:6px}
 .dsec{margin-top:16px}.dlbl{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .dsec .resrow{display:flex;flex-wrap:wrap;gap:6px;margin:0}
@@ -1034,7 +1034,7 @@ function renderDetail() {
     ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Archived" }, cur = ST[s.status] ? s.status : "active";
       return `<label class="cefr-pick st-pick st-${cur}" title="Status (tap to change)"><b>${ST[cur]}</b><span class="cp-car" aria-hidden="true">▾</span><select id="stStatus" aria-label="Status">${Object.keys(ST).map(k => `<option value="${k}" ${cur === k ? "selected" : ""}>${ST[k]}</option>`).join("")}</select></label>`; })()}</div>
     <p class="dsub">${[s.level, s.schedule].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}</p>
-    ${(() => { const n = nextClassAt(s); return n ? `<div class="nextc">📅 Next class: ${esc(fmtNext(n))}</div>` : ""; })()}
+    ${(() => { const n = nextClassAt(s); return n ? `<div class="nxcls">📅 Next class: ${esc(fmtNext(n))}</div>` : ""; })()}
     ${links ? `<div class="lkrow">${links}</div>` : ""}
     ${autoArch(s) ? `<p class="muted small" style="margin:10px 0 0">📦 In <b>Archived</b> automatically: no class in over 4 weeks and nothing booked. They come back to Active by themselves after their next class.</p>` : ""}
     <div class="pstats">
