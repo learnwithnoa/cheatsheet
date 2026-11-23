@@ -307,6 +307,9 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     try { window.__csOnSet && window.__csOnSet(KEY); } catch (e) {}
     try { if (!base) publishPark(); } catch (e) {}
   }
+  /* once a day, say "still here" to the park, so active people never look away (the park hides buddies quiet for 30 days) */
+  const parkHello = () => { try { const d = new Date().toDateString(); if (localStorage.getItem("cs-park-day") !== d && window.__csPark && window.__csPark.signedIn() && !window.__csViewAsMode && !window.__csPreview) { localStorage.setItem("cs-park-day", d); publishPark(); } } catch (e) {} };
+  setTimeout(parkHello, 8000); setInterval(parkHello, 600000);
   function publishPark() {
     const P = window.__csPark; if (!P || !P.signedIn()) return;
     if (S.on !== true || !S.a) { P.publish({ on: false }); return; }
@@ -1478,7 +1481,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     parkBusy = false;
     const listAll = list.slice();
     const mine = list.find(x => x.me);
-    list = list.filter(x => !x.me && x.on && SP[x.a] && !(x.role && x.role.hidden));
+    /* Nov 23 2026: buddies of people who haven't used Hibi in 30 days rest at home (past students, people on a break); they come back the day their owner does */
+    const AWAY = 30 * 864e5, atMs = x => x.at && typeof x.at.toMillis === "function" ? x.at.toMillis() : (typeof x.at === "number" ? x.at : 0);
+    list = list.filter(x => !x.me && x.on && SP[x.a] && !(x.role && x.role.hidden) && (guest || !atMs(x) || Date.now() - atMs(x) < AWAY));
     if (S.on === true && S.a) list.push({ me: true, words: counts().words, a: S.a, c: S.c | 0, n: S.n, head: S.head, face: S.face, neck: S.neck, lvl: level(), role: mine ? mine.role : {}, first: "" });
     if (!list.length) { msg(`The park is empty right now. <b>Adopt a buddy</b> to be the first one here! 🥚<br><button class="bd-b go" type="button" data-park="adopt" style="margin-top:10px">Adopt a buddy</button>`); return; }
     /* everyone roams the whole park: start spread out, each one where there's the most room */

@@ -5154,6 +5154,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1123-park-active", date:"November 23, 2026", title:"A livelier Buddy park 🌳", items:[
+    ["🌳","Only buddies people are visiting","The <b>Buddy park</b> now shows the buddies of people who've been on Hibi in the last 30 days, so it's easier to find someone to send love to or challenge to a duel. Away for a while? Your buddy comes back to the park as soon as you open Hibi.","park"]
+  ]},
   {id:"2026-1123-board-undo", date:"November 23, 2026", title:"Live board words, tidier 🧩", items:[
     ["↩️","See what you saved (and undo it)","On a class's <b>🧩 Live board</b>, <b>＋ Save all</b> now shows exactly which words went to My notebook, with an <b>Undo</b> button if you change your mind.","club"],
     ["📚","Each recording has its own words","In the Club <b>Library</b>, a recording now shows the words from <i>that</i> class (from its live board), not the same list for the whole week.","club"],

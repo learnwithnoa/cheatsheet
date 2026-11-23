@@ -93,19 +93,21 @@ export function tzReminders(s, todayIso, ahead, back) {
 }
 export function makeView(s, meta) {
   meta = meta || {};
-  const cp = curPack(s), cst = cp ? packStats(s, cp) : null, now = Date.now();
-  const due = cp && cst && s.kind !== "trueque" && cp.size ? { label: cp.label, half: cp.paid === "half", pending: cp.paid === "pending", instAt: cp.paid === "half" ? instAt(cp, cst) : null, nextNo: cst.done + 1, left: cst.left, classesLeft: cst.classesLeft, unit: cp.unit } : null;
+  const cp = curPack(s), cst = cp ? packStats(s, cp) : null, now = Date.now(), wasPast = s.status === "inactive" || s.status === "past";
+  const due = !wasPast && cp && cst && s.kind !== "trueque" && cp.size ? { label: cp.label, half: cp.paid === "half", pending: cp.paid === "pending", instAt: cp.paid === "half" ? instAt(cp, cst) : null, nextNo: cst.done + 1, left: cst.left, classesLeft: cst.classesLeft, unit: cp.unit } : null;
   const up = (meta.upcoming || []).filter(u => u && u.student === s.id && Date.parse(u.start) > now - 36e5).sort((a, b) => Date.parse(a.start) - Date.parse(b.start))[0];
   const packs = (s.packs || []).map(p => {
     const st = packStats(s, p);
-    return { id: p.id, label: p.label, size: p.size || null, unit: p.unit, used: st.used, done: st.done, left: st.left, deadline: deadline(p, st.first), paid: p.paid, current: !p.archived, color: p.color || "" };
+    return { id: p.id, label: p.label, size: p.size || null, unit: p.unit, used: st.used, done: st.done, left: st.left, deadline: deadline(p, st.first), paid: p.paid, current: !p.archived && !wasPast, color: p.color || "" };
   });
   return {
     v: 1, name: s.name, level: s.cefr || s.level || "", schedule: s.schedule || "", objective: s.objective || "", kind: s.kind || "pack",
+    /* Nov 23 2026: a past student (Archived): My coaching keeps their history, drops next class / pack, and shows "Miss our classes?" */
+    past: wasPast ? { book: BOOK_URL } : null,
     packs,
     classes: (s.classes || []).filter(c => c.kind !== "note").map(c => ({ date: c.date || "", dateText: c.dateText || "", topics: c.topics || "", homework: c.homework || "", att: c.att || "", hour: c.hour || "", credits: c.credits ?? null, pack: c.pack || "" })),
     payments: (s.payments || []).map(p => ({ date: p.date || "", what: p.what || "", amount: p.amount || "" })),
-    focus: s.focus || "", recap: s.recap || null, resources: resFor(s), tz: s.tz || "", country: s.country || "", next: up ? up.start : "", nextZoom: up && /^https:\/\/[\w.-]*zoom\.us\//.test(up.zoom || "") ? up.zoom : "", book: /flexib/i.test(s.schedule || "") ? BOOK_URL : "", due,
+    focus: s.focus || "", recap: s.recap || null, resources: resFor(s), tz: s.tz || "", country: s.country || "", next: up && !wasPast ? up.start : "", nextZoom: up && !wasPast && /^https:\/\/[\w.-]*zoom\.us\//.test(up.zoom || "") ? up.zoom : "", book: /flexib/i.test(s.schedule || "") ? BOOK_URL : "", due,
     club: s.uid && (meta.clubUids || []).includes(s.uid) ? (meta.clubFeed || null) : null,
     reports: (s.reports || []).filter(r => r && r.id).slice(-12).map(r => ({ id: r.id, from: r.from || "", to: r.to || "", sessions: r.sessions || 0, snapshot: r.snapshot || "", clicking: r.clicking || [], topics: r.topics || [], patterns: r.patterns || [], focus: r.focus || [], resource: r.resource || null, recordings: r.recordings || [], month: r.month || "", closing: r.closing || "", hibi: r.hibi || [], lang: r.lang === "es" ? "es" : "en", at: r.at || "" })),
     lessons: (s.lessons || []).filter(x => x && x.id).slice(-30),

@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=69',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=70',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -380,6 +380,13 @@ if '2026-1123-board-undo' not in s:
     ["↩️","See what you saved (and undo it)","On a class's <b>🧩 Live board</b>, <b>＋ Save all</b> now shows exactly which words went to My notebook, with an <b>Undo</b> button if you change your mind.","club"],
     ["📚","Each recording has its own words","In the Club <b>Library</b>, a recording now shows the words from <i>that</i> class (from its live board), not the same list for the whole week.","club"],
     ["🌈","Colors that mean something","Words are colored by type, the same everywhere on Hibi (My notebook, flashcards, word packs, the word look-up, and the word cards in the Library and podcast): 🔴 nouns, 🟠 verbs, 🟡 phrasal verbs, 🟢 adjectives, 🩵 adverbs, 🟣 expressions. In My notebook you can also sort your words by <b>🌈 Type of word</b>.","words"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1123-park-active' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1123-park-active", date:"November 23, 2026", title:"A livelier Buddy park 🌳", items:[
+    ["🌳","Only buddies people are visiting","The <b>Buddy park</b> now shows the buddies of people who've been on Hibi in the last 30 days, so it's easier to find someone to send love to or challenge to a duel. Away for a while? Your buddy comes back to the park as soon as you open Hibi.","park"]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
