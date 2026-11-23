@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-23",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🌀",
+          "title": "Today is Fibonacci Day!",
+          "text": "Why the 23rd? Because 11/23 gives 1, 1, 2, 3 — the start of a famous number pattern where each number is the sum of the two before it. You can find it in flowers, shells and even hurricanes.",
+          "word": "pattern",
+          "mean": "an order or design that repeats",
+          "tr": "patrón",
+          "es": "¡Hoy es el Día de Fibonacci! 11/23 son los primeros números de su famoso patrón: 1, 1, 2, 3…",
+          "q": "Where do you see patterns in your everyday life — in music, in nature, or in your routine?",
+          "link": "https://www.timeanddate.com/holidays/fun/fibonacci-day",
+          "src": "Time and Date",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "✨",
+          "title": "Mars meets a bright star this week",
+          "text": "Red Mars is passing very close to Regulus, the blue-white star in Leo. They are closest on Thursday, less than two degrees apart — about a finger's width at arm's length. Look late at night or before dawn: no telescope needed!",
+          "word": "at arm's length",
+          "mean": "as far from you as your arm can reach",
+          "tr": "a la distancia del brazo",
+          "es": "Esta semana Marte pasa muy cerca de la estrella Regulus; el jueves estarán casi juntos. ¡A simple vista!",
+          "q": "What is the last thing you remember seeing in the night sky, and who were you with?",
+          "link": "https://starwalk.space/en/news/night-sky-tonight",
+          "src": "Star Walk",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🐋",
+          "title": "A drone caught a whale's breath",
+          "text": "A drone flew through the spray from a humpback whale's blowhole and caught its breath in a little dish. That was enough DNA to read the whale's whole genome! Scientists took 58 samples from 26 whales in Canada, without touching one.",
+          "word": "samples",
+          "mean": "small amounts of something collected to study",
+          "tr": "muestras",
+          "es": "Un dron atrapó el aliento de una ballena jorobada y así leyeron todo su ADN, ¡sin tocarla!",
+          "q": "If you could watch one wild animal up close for a day, which one would you choose and why?",
+          "link": "https://www.goodnewsnetwork.org/breath-of-whale-captured-via-drone-to-complete-genome-sequence/",
+          "src": "Good News Network",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-22",
       "by": "claude",
       "items": [
