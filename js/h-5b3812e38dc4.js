@@ -5154,7 +5154,7 @@ const CHANGELOG=[
   {id:"2026-1123-board-undo", date:"November 23, 2026", title:"Live board words, tidier 🧩", items:[
     ["↩️","See what you saved (and undo it)","On a class's <b>🧩 Live board</b>, <b>＋ Save all</b> now shows exactly which words went to My notebook, with an <b>Undo</b> button if you change your mind.","club"],
     ["📚","Each recording has its own words","In the Club <b>Library</b>, a recording now shows the words from <i>that</i> class (from its live board), not the same list for the whole week.","club"],
-    ["🌈","Colors that mean something","The word cards in the Library and the podcast are colored by type, in rainbow order: 🔴 nouns, 🟠 verbs, 🟡 phrasal verbs, 🟢 adjectives, 🩵 adverbs, 🟣 expressions.","club"]
+    ["🌈","Colors that mean something","Words are colored by type, the same everywhere on Hibi (My notebook, flashcards, word packs, the word look-up, and the word cards in the Library and podcast): 🔴 nouns, 🟠 verbs, 🟡 phrasal verbs, 🟢 adjectives, 🩵 adverbs, 🟣 expressions.","words"]
   ]},
   {id:"2026-1123-print", date:"November 23, 2026", title:"Print a whole module 🖨️", items:[
     ["🖨️","Print it or save it as a PDF","Like studying on paper? Open any grammar module (or Job interviews) and tap <b>🖨️ Print or save as PDF</b> at the top. You get the whole thing: the 📖 Learn it lesson (basics and advanced), every stage with a line to write your answer, the final test and an answer key at the end.","quiz"]

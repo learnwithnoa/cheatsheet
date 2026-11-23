@@ -3241,6 +3241,14 @@ html.cs-calm .cs-rxpal button{transition:none}
 .prt-btn span:first-child{color:inherit}
 #v-quiz .prt-btn .star-txt{display:inline!important}
 @media (max-width:640px){#v-quiz .ps-head{margin-bottom:14px}#v-quiz .ps-head h1{flex-basis:100%;margin-bottom:2px}}
+
+/* 🌈 part of speech colors (063-pos-colors.js): same rainbow as the Library / podcast word cards */
+[data-pk="noun"]{--pk:#EF4444}[data-pk="verb"]{--pk:#F97316}[data-pk="phrasal"]{--pk:#D4A106}[data-pk="adj"]{--pk:#22C55E}[data-pk="adv"]{--pk:#06B6D4}[data-pk="expr"]{--pk:#6366F1}[data-pk="slang"]{--pk:#A855F7}[data-pk="other"]{--pk:#94A3B8}
+.pos[data-pk]{color:color-mix(in srgb,var(--pk) 78%,var(--ink))!important;background:color-mix(in srgb,var(--pk) 15%,var(--surface))!important}
+.lk-w .pos[data-pk]{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:1px 6px;vertical-align:3px}
+.wcard[data-pk],.vs-item[data-pk]{box-shadow:inset 4px 0 0 var(--pk),var(--shadow,none)}
+.vs-item-top .pos{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:1px 6px;margin-left:8px;vertical-align:2px}
+.vs-item-top b+.pos{margin-right:auto}
 </style>
 
 <header class="top">
@@ -3664,7 +3672,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">This week's classes and Zoom links, the community wall, recordings, the calendar and everyone in the club.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-ef8176e2551f.js"></script>
+<script src="js/h-5d9218c6c0f4.js"></script>
 <script src="js/h-638b7aabb2b9.js"></script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
@@ -4497,7 +4505,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <ul class="wl-list">
       <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. Just the word is enough: Hibi adds the Spanish, a simple meaning, the word type, how to say it and an example. Choose which ones with <b>⚙️ Auto-fill</b> in <b>My notebook</b>.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🔢</span><div><b>Every word has a number</b> (like <b>#65</b>). Want Noa to check a word? Just tell him its number. Type it in the search box to find it fast.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🔢</span><div><b>Every word has a number</b> (like <b>#65</b>). Want Noa to check a word? Just tell him its number. Type it in the search box to find it fast. The color shows the type of word: 🔴 noun, 🟠 verb, 🟡 phrasal verb, 🟢 adjective, 🩵 adverb, 🟣 expression.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Make Home yours:</b> tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn and reactions everyone can see. Tap a title to open the full story.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too: write them during class, ✨ Hibi finds the new words for you, and <b>📓 Summaries</b> sum up each week.</div></li>
@@ -4576,10 +4584,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-0760f921889f.js"></script>
+<script src="js/h-5b3812e38dc4.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261123114240"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261123120057"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -5093,7 +5101,25 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
     if(last==="members"&&!document.querySelector("#v-members:not([hidden])")){ e.preventDefault(); e.stopImmediatePropagation(); const m=document.querySelector('.navbtn[data-go="members"]'); if(m) m.click(); }
   },true);
 })();
-</script><script src="js/h-d83da1da7733.js"></script><script src="js/h-efe9d46bd78b.js"></script>
+</script><script src="js/h-d83da1da7733.js"></script><script src="js/h-efe9d46bd78b.js"></script><script>/* 🌈 Part of speech = color, everywhere a word is shown (Nov 23 2026): My notebook, flashcards, the word look-up and word packs.
+   Same rainbow as the Library / podcast word cards: noun red, verb orange, phrasal verb yellow, adjective green, adverb cyan,
+   expression indigo, slang violet, anything else grey. Every ".pos" tag gets data-pk; its word card gets the same color as a side stripe. */
+(function(){
+  const key=t=>{ t=String(t||"").toLowerCase();
+    if(/phrasal/.test(t)) return "phrasal"; if(/\bverb/.test(t)) return "verb"; if(/noun/.test(t)) return "noun"; if(/adj/.test(t)) return "adj";
+    if(/adv/.test(t)) return "adv"; if(/slang/.test(t)) return "slang"; if(/idiom|expression|phrase|collocation|saying|interjection|exclamation/.test(t)) return "expr"; return "other"; };
+  window.__posKey=key;
+  function paint(root){
+    (root||document).querySelectorAll(".pos:not([data-pk])").forEach(el=>{ const k=key(el.textContent); el.dataset.pk=k; const c=el.closest(".wcard"); if(c) c.dataset.pk=k; });
+    /* word packs have no word type stored: work it out like the Library cards do */
+    if(window.__clVocPos) (root||document).querySelectorAll(".vs-item:not([data-pk])").forEach(it=>{ const b=it.querySelector(".vs-item-top b"), d=it.querySelector("p"); if(!b) return;
+      const k=window.__clVocPos({w:b.textContent,tr:d?d.textContent:""}), l=(window.__clPosLabels||{})[k]||"";
+      it.dataset.pk=k; if(l&&!b.querySelector(".pos")) b.insertAdjacentHTML("afterend",`<span class="pos" data-pk="${k}">${l}</span>`); });
+  }
+  let q=false; new MutationObserver(()=>{ if(q) return; q=true; requestAnimationFrame(()=>{ q=false; try{ paint(); }catch(e){} }); }).observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(paint,500);
+})();
+</script>
 <script type="module" src="m-a076a6382765.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */

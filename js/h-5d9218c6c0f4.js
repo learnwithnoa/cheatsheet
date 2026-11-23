@@ -177,13 +177,15 @@
     if(/[áéíóúñ¿¡]|\b(que|la|los|las|el|se|me|como|una|del|al|pal|hacer|andar|estar|tirarle|echar)\b/i.test(w)) return "expr";   /* a Spanish saying */
     if(/^to\s/i.test(w)) return /^to\s+\S+\s+(up|down|out|off|on|in|over|away|back|around|round|through|into|along|after|by|for|with)\b/i.test(w)&&n<=4?"phrasal":n<=3?"verb":"expr";
     if(/^(a|an|the)\s/i.test(w)&&n<=4) return "noun";
+    if(n>=2&&(/['’]/.test(w)||/^(i|it|you|we|they|he|she|that|this|no|not|on|in|at|so|how|what|sounds?|let)\b/i.test(w))) return "expr";   /* a whole little sentence: "I'm in", "it depends", "no big deal" */
     if(n===2&&/\s(up|down|out|off|on|in|over|away|back|around|round|through|along)$/i.test(w)) return "phrasal";
     if(n>=3) return "expr";
     if(/^to\s/i.test(m)) return n===2&&/\s(up|down|out|off|on|in|over|away|back|around)$/i.test(w)?"phrasal":"verb";
-    if(/^(a|an|the|someone who|something that|a person)\s/i.test(m)) return "noun";
+    if(n===1&&/^(a|an|the|someone who|something that|a person)\s/i.test(m)) return "noun";
     if(n===1&&/ly$/i.test(w)) return "adv";
     if(n===2) return "expr";
     return "other"; }
+  window.__clVocPos=x=>vocPos(x||{}); window.__clPosLabels=Object.fromEntries(POS);   /* also used by 063-pos-colors.js (word packs) */
   window.__clVocCards=function(v,title){ v=(v||[]).filter(x=>x&&x.w); if(!v.length) return "";
     const ord=k=>POS.findIndex(p=>p[0]===k), cards=v.map((x,i)=>({x,i,k:vocPos(x)})).sort((a,b)=>ord(a.k)-ord(b.k)||a.i-b.i);
     return `<div class="cl-pvh"><b>${title} <span class="muted">· ${v.length}</span></b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</button></div><div class="cl-pvrow">${cards.map(({x,k})=>{ const lbl=(POS.find(p=>p[0]===k)||[])[1]||"";

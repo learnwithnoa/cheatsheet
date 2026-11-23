@@ -2067,3 +2067,11 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .prt-btn span:first-child{color:inherit}
 #v-quiz .prt-btn .star-txt{display:inline!important}
 @media (max-width:640px){#v-quiz .ps-head{margin-bottom:14px}#v-quiz .ps-head h1{flex-basis:100%;margin-bottom:2px}}
+
+/* 🌈 part of speech colors (063-pos-colors.js): same rainbow as the Library / podcast word cards */
+[data-pk="noun"]{--pk:#EF4444}[data-pk="verb"]{--pk:#F97316}[data-pk="phrasal"]{--pk:#D4A106}[data-pk="adj"]{--pk:#22C55E}[data-pk="adv"]{--pk:#06B6D4}[data-pk="expr"]{--pk:#6366F1}[data-pk="slang"]{--pk:#A855F7}[data-pk="other"]{--pk:#94A3B8}
+.pos[data-pk]{color:color-mix(in srgb,var(--pk) 78%,var(--ink))!important;background:color-mix(in srgb,var(--pk) 15%,var(--surface))!important}
+.lk-w .pos[data-pk]{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:1px 6px;vertical-align:3px}
+.wcard[data-pk],.vs-item[data-pk]{box-shadow:inset 4px 0 0 var(--pk),var(--shadow,none)}
+.vs-item-top .pos{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:1px 6px;margin-left:8px;vertical-align:2px}
+.vs-item-top b+.pos{margin-right:auto}
