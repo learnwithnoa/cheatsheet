@@ -445,6 +445,9 @@ let wSortMode="new"; try{ wSortMode=localStorage.getItem("cs-wsort")||"new"; }ca
 const wKey=x=>String(x.w||"").toLowerCase().replace(/^(to|a|an|the)\s+/,"").trim();
 function sortWords(l){
   if(wSortMode==="old") return l.sort((a,b)=>(a.t||0)-(b.t||0));
+  /* 🌈 by type of word, in rainbow order (noun, verb, phrasal verb, adjective, adverb, expression, slang, other); newest first inside each */
+  if(wSortMode==="pos"){ const R=["noun","verb","phrasal","adj","adv","expr","slang","other"], k=x=>{ const v=window.__posKey?window.__posKey(x.pos||""):"other"; const i=R.indexOf(x.pos?v:"other"); return i<0?R.length:i; };
+    return l.sort((a,b)=>k(a)-k(b)||(b.t||0)-(a.t||0)); }
   if(wSortMode==="az"||wSortMode==="za"){ l.sort((a,b)=>wKey(a).localeCompare(wKey(b),"en",{sensitivity:"base"})); return wSortMode==="za"?l.reverse():l; }
   return l.sort((a,b)=>(b.t||0)-(a.t||0));
 }

@@ -3566,7 +3566,7 @@ html.cs-calm .cs-rxpal button{transition:none}
     <h2 style="margin:0">Your words <span class="count" id="wCount"></span></h2>
     <div class="list-tools">
       <input id="wSearch" type="search" placeholder="Search words or #12" aria-label="Search my words or a word number" autocomplete="off">
-      <select id="wSort" class="w-sort" aria-label="Sort my words"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">A → Z</option><option value="za">Z → A</option></select>
+      <select id="wSort" class="w-sort" aria-label="Sort my words"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">A → Z</option><option value="za">Z → A</option><option value="pos">🌈 Type of word</option></select>
       <button class="swap" type="button" id="wSelBtn" aria-pressed="false" hidden>Choose words</button>
       <button class="pill-btn" type="button" id="copyNew">Copy new words</button>
       <button class="swap" type="button" id="copyAll">Copy all</button>
@@ -4584,10 +4584,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-5b3812e38dc4.js"></script>
+<script src="js/h-6e791d4bcbf9.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261123120057"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261123143856"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

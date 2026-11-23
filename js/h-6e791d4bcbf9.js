@@ -445,6 +445,9 @@ let wSortMode="new"; try{ wSortMode=localStorage.getItem("cs-wsort")||"new"; }ca
 const wKey=x=>String(x.w||"").toLowerCase().replace(/^(to|a|an|the)\s+/,"").trim();
 function sortWords(l){
   if(wSortMode==="old") return l.sort((a,b)=>(a.t||0)-(b.t||0));
+  /* 🌈 by type of word, in rainbow order (noun, verb, phrasal verb, adjective, adverb, expression, slang, other); newest first inside each */
+  if(wSortMode==="pos"){ const R=["noun","verb","phrasal","adj","adv","expr","slang","other"], k=x=>{ const v=window.__posKey?window.__posKey(x.pos||""):"other"; const i=R.indexOf(x.pos?v:"other"); return i<0?R.length:i; };
+    return l.sort((a,b)=>k(a)-k(b)||(b.t||0)-(a.t||0)); }
   if(wSortMode==="az"||wSortMode==="za"){ l.sort((a,b)=>wKey(a).localeCompare(wKey(b),"en",{sensitivity:"base"})); return wSortMode==="za"?l.reverse():l; }
   return l.sort((a,b)=>(b.t||0)-(a.t||0));
 }
@@ -5154,7 +5157,7 @@ const CHANGELOG=[
   {id:"2026-1123-board-undo", date:"November 23, 2026", title:"Live board words, tidier 🧩", items:[
     ["↩️","See what you saved (and undo it)","On a class's <b>🧩 Live board</b>, <b>＋ Save all</b> now shows exactly which words went to My notebook, with an <b>Undo</b> button if you change your mind.","club"],
     ["📚","Each recording has its own words","In the Club <b>Library</b>, a recording now shows the words from <i>that</i> class (from its live board), not the same list for the whole week.","club"],
-    ["🌈","Colors that mean something","Words are colored by type, the same everywhere on Hibi (My notebook, flashcards, word packs, the word look-up, and the word cards in the Library and podcast): 🔴 nouns, 🟠 verbs, 🟡 phrasal verbs, 🟢 adjectives, 🩵 adverbs, 🟣 expressions.","words"]
+    ["🌈","Colors that mean something","Words are colored by type, the same everywhere on Hibi (My notebook, flashcards, word packs, the word look-up, and the word cards in the Library and podcast): 🔴 nouns, 🟠 verbs, 🟡 phrasal verbs, 🟢 adjectives, 🩵 adverbs, 🟣 expressions. In My notebook you can also sort your words by <b>🌈 Type of word</b>.","words"]
   ]},
   {id:"2026-1123-print", date:"November 23, 2026", title:"Print a whole module 🖨️", items:[
     ["🖨️","Print it or save it as a PDF","Like studying on paper? Open any grammar module (or Job interviews) and tap <b>🖨️ Print or save as PDF</b> at the top. You get the whole thing: the 📖 Learn it lesson (basics and advanced), every stage with a line to write your answer, the final test and an answer key at the end.","quiz"]
