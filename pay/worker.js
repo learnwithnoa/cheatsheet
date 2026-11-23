@@ -277,6 +277,26 @@ To keep coming to classes, tap "Switch to Hibi" at the top of the Club page. It'
 If you haven't switched by then, your club access pauses the next morning at 6 am. Everything else on Hibi stays: your words, notes and buddy.
 
 Any questions, just reply here. See you in class! ✨`;
+const MOVE_NOTICE_PAUSED = `Hey {name}! Quick heads-up 💛 Your Skool membership ended on {end date}, and the club now lives here on Hibi, so your club access is paused for now.
+
+To come back, tap "Switch to Hibi" at the top of the Club page. It's the same price you paid on Skool and takes a minute with Mercado Pago (or PayPal if you're outside Chile). You're back in as soon as it's done.
+
+Everything else on Hibi stays: your words, notes and buddy. Any questions, just reply here. Hope to see you in class! ✨`;
+// Noa sends this one by hand (POST /api/move-paused {email}, Noa only) to someone whose club access already paused
+async function movePaused(env, req) {
+  const me = await whoIs(env, req); if (!me || me.uid !== TEACHER) return json({ error: "Only Noa can do this." }, 403, req);
+  const b = await req.json().catch(() => ({})), meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
+  const m = ((meta.club && meta.club.members) || []).find((x) => x.email && normEmail(x.email) === normEmail(b.email)); if (!m) return json({ error: "not on the club list" }, 404, req);
+  const users = await fs(env, "GET", "users?pageSize=300"); let u = null;
+  for (const d of (users && users.documents) || []) { const x = plain(d) || {}; if (x.email && normEmail(x.email) === normEmail(b.email)) u = { uid: d.name.split("/").pop(), email: x.email, name: x.name || "" }; }
+  if (!u) return json({ error: "not on Hibi" }, 404, req);
+  const first = String(u.name || m.name || "").split(/\s+/)[0] || "there", end = skoolEnd(m);
+  const text = MOVE_NOTICE_PAUSED.replace(/\{name\}/g, first).replace(/\{end ?date\}/gi, longDate(end));
+  await noaMessage(env, u.uid, u.name || m.name, text);
+  const mm = moveMail(text, true, longDate(end)); await sendMail(env, u.email, mm.subject, mm.html, mm.text);
+  const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", [{ uid: u.uid, name: u.name || m.name || "", email: normEmail(u.email), from: "Noa", at: Date.now(), why: "Skool ended, club paused: how to come back (message + email)" }].concat(cur).slice(0, 100));
+  return json({ ok: true, sent: first }, 200, req);
+}
 const MOVE_NOTICE_LAST = `Hey {name}! Quick heads-up 💛 Your Skool membership {ended}, and the club now lives here on Hibi.
 
 To keep coming to classes, tap "Switch to Hibi" at the top of the Club page. It's the same price you paid on Skool and takes a minute with Mercado Pago (or PayPal if you're outside Chile).
@@ -319,6 +339,7 @@ async function skoolMoveNotify(env, force) {
     const end = skoolEnd(m); if (!end) continue;
     const stage = ch.day >= end ? "last" : ch.day >= addDays(end, -3) ? "3d" : null; if (!stage) continue;
     const pays = (Number(m.price) > 0 || prices[normEmail(m.email)]) && !["free", "direct"].includes(m.status); if (!pays) continue;
+    if (m.status === "leaving" || m.noMoveNotice) { skip("leaving the club"); continue; }   // told Noa they won't continue: no reminders (still removed at the end)
     const u = m.email && byEmail[normEmail(m.email)]; if (!u) { skip("not on Hibi"); continue; } if (!clubUids.has(u.uid)) { skip("not in the club on Hibi"); continue; }
     const key = `${u.uid}:${stage}:${end}`; if (log[key]) { skip("already sent"); continue; }
     try {
@@ -872,6 +893,7 @@ export default {
         case "/robots.txt": return new Response("User-agent: *\nAllow: /api/health\nAllow: /api/flow-callback\nDisallow: /\n");
         case "/api/health": return json(await health(env), 200, req);
         case "/api/ytfeed": return json(await ytFeed(env), 200, req);
+        case "/api/move-paused": return await movePaused(env, req);
         case "/api/move-notify": return json(await skoolMoveNotify(env), 200, req);   // sends due Skool-move reminders now (each only once, 10:00–20:59 Chile; counts only)
         case "/api/manual-trials": return json(await manualTrials(env), 200, req);   // only counts, no names (the deploy log is public)   // refreshes the club playlist list now (public videos only, no personal data)
         case "/api/subscribe": return await subscribe(env, req, url);
