@@ -550,9 +550,12 @@ window.__csTeach = {
   async _accounts() {
     const roles = {}; try { (await getDocs(collection(db, "roles"))).forEach(d => roles[d.id] = d.data() || {}); } catch (e) {}
     const ms = t => t && t.toMillis ? t.toMillis() : 0, out = [];
-    (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden || p.waiting === true) return;
+    /* people Noa removed from Hibi (Hibi members → 🚫 Remove) never show up in the notifications */
+    let removed = {}; try { const md = await getDoc(doc(db, "users", user.uid, "data", "t-hubmeta")); if (md.exists()) removed = (JSON.parse(md.data().json || "{}") || {}).removed || {}; } catch (e) {}
+    (await getDocs(collection(db, "users"))).forEach(d => { const p = d.data() || {}, r = roles[d.id] || {}; if (d.id === user.uid || r.hidden || p.waiting === true || removed[d.id]) return;
       out.push({ uid: d.id, name: p.name || p.email || "(no name)", email: p.email || "", first: ms(p.firstSeen), last: ms(p.lastSeen),
-        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.hibiOnly ? "hibionly" : r.club === false ? "new" : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
+        /* "former": the pay helper took them out of the club (trial ended / Skool ended without switching): nothing for Noa to link */
+        kind: r.hub || r.private ? (r.club === false ? "private" : "both") : (r.club === true ? "club" : r.hibiOnly ? "hibionly" : r.club === false ? (r.clubEnded ? "former" : "new") : "hibi") }); });   /* "hibi": signed up, but Noa hasn't put them in the club */
     return out;
   },
   /* Recommend a grammar module (n = "all") or one stage to a student: same place the Members page writes it */

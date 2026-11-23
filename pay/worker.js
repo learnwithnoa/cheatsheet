@@ -175,7 +175,7 @@ async function grantClub(env, uid, name) {
 }
 async function removeClub(env, uid) {
   if (uid === TEACHER) return;
-  await patch(env, `roles/${uid}`, { club: false });
+  await patch(env, `roles/${uid}`, { club: false, clubEnded: String(Date.now()) });   // clubEnded: Noa's 🔔 shows them as "left the club", not "not linked yet"
   const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
   if ((meta.clubUids || []).includes(uid)) { meta.clubUids = meta.clubUids.filter((x) => x !== uid); await setJ(env, TEACHER, "t-hubmeta", meta); }
   await fs(env, "DELETE", `clubAccess/${uid}`).catch(() => {});
@@ -290,7 +290,7 @@ async function sendPaused(env, meta, byEmail, email) {
   const first = String(u.name || m.name || "").split(/\s+/)[0] || "there", end = skoolEnd(m);
   const text = MOVE_NOTICE_PAUSED.replace(/\{name\}/g, first).replace(/\{end ?date\}/gi, longDate(end));
   await noaMessage(env, u.uid, u.name || m.name, text);
-  const mm = moveMail(text, true, longDate(end)); if (env.RESEND_API_KEY) await sendMail(env, u.email, mm.subject, mm.html, mm.text);
+  const mm = moveMail(text, true, longDate(end)); if (env.RESEND_API_KEY) await sendMail(env, u.email, mm.subject, mm.html, mm.text); await markMailed(env, u.uid).catch(() => {});
   const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", [{ uid: u.uid, name: u.name || m.name || "", email: normEmail(u.email), from: "Noa", at: Date.now(), why: "Skool ended, club paused: how to come back (message + email)" }].concat(cur).slice(0, 100));
   return "sent";
 }
@@ -302,6 +302,11 @@ If you haven't switched by tonight, your club access pauses {deadline} at 6 am. 
 
 Any questions, just reply here. Hope to see you in class! ✨`;
 const chileNow = () => { const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Santiago", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hour12: false }).formatToParts(new Date()).map((x) => [x.type, x.value])); return { day: `${p.year}-${p.month}-${p.day}`, hour: +p.hour % 24 }; };
+// this message was already emailed: the hourly "you have an unread message" email skips it (no second email about the same thing)
+async function markMailed(env, uid) {
+  const tid = [TEACHER, uid].sort().join("_"), log = await mailLogFor(env); log.done[tid] = Date.now() + 60000;
+  await patch(env, "billingConfig/mailnotif", { json: JSON.stringify(log) });
+}
 async function noaMessage(env, uid, name, text) {   // a Hibi message from Noa (🔔 → 💬 Messages), same as the trial welcome
   const tid = [TEACHER, uid].sort().join("_"), now = Date.now();
   const S = (v) => ({ stringValue: String(v) }), I = (v) => ({ integerValue: String(v) });
@@ -357,6 +362,7 @@ async function skoolMoveNotify(env, force) {
       await noaMessage(env, u.uid, u.name || m.name, text);
       const mm = moveMail(text, stage === "last", longDate(end));
       if (env.RESEND_API_KEY) await sendMail(env, u.email, mm.subject, mm.html, mm.text);
+      await markMailed(env, u.uid).catch(() => {});
       log[key] = Date.now(); sent++;
       sentList.push({ uid: u.uid, name: u.name || m.name || "", email: normEmail(u.email), from: "Noa", at: Date.now(), why: stage === "3d" ? "Skool ends in 3 days (message + email)" : "Skool ended: last day to switch (message + email)" });
     } catch (e) { errors++; console.log("move notice", e.message); }
@@ -939,5 +945,5 @@ export default {
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : Promise.all([unreadMail(env), skoolMoveNotify(env).catch((e) => console.log("move notify", e.message))])), ytFeed(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env).catch((e) => console.log("unread mail", e.message)).then(() => skoolMoveNotify(env)).catch((e) => console.log("move notify", e.message))), ytFeed(env)])); },
 };
