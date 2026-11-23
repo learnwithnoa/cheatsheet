@@ -5142,6 +5142,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1123-simple-search", date:"November 23, 2026", title:"Search in Simple mode 🔎", items:[
+    ["🔎","Search is back in Simple mode","If you use <b>Simple mode</b>, the search bar at the top is back, so you can find your words, lessons and practice in a second.",""]
+  ]},
   {id:"2026-1122-duels-all", date:"November 22, 2026", title:"Duels for everyone ⚔️", items:[
     ["⚔️","Duel anyone on Hibi","You don't need to be in the club anymore: everyone on Hibi can challenge anyone else to a 7-day duel. Tap someone's buddy in the <b>Buddy park</b>, then <b>⚔️ Duel</b>.","park"]
   ]},

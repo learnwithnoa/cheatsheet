@@ -1406,7 +1406,7 @@ html.cs-simple:not(.cs-smore) nav.side .navbtn.sm-only{display:flex!important}
 html.cs-simple:not(.cs-smore) nav.side .navbtn:not(.sm-keep):not(.t-mnav):not(.t-tab),
 html.cs-simple:not(.cs-smore) nav.side .navbtn.locked,
 html.cs-simple:not(.cs-smore) nav.side .navgroup:not(.mine){display:none!important}
-html.cs-simple #searchWrap,html.cs-simple #searchToggle,html.cs-simple #hdrWord,html.cs-simple #hmArrange,
+html.cs-simple #hdrWord,html.cs-simple #hmArrange,
 html.cs-simple #awBox,html.cs-simple #homeClub.hc-tease,html.cs-simple #tStoic,html.cs-simple #v-notes .hm-lede,html.cs-simple #v-notes .lede-es{display:none!important}
 html.cs-simple:not(.cs-smore) #smMore,html.cs-simple.cs-smore #smLess{display:inline-flex!important}
 html.cs-simple #smDoors{display:block}

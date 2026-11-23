@@ -353,3 +353,10 @@ if '2026-1122-duels-all' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1123-simple-search' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1123-simple-search", date:"November 23, 2026", title:"Search in Simple mode 🔎", items:[
+    ["🔎","Search is back in Simple mode","If you use <b>Simple mode</b>, the search bar at the top is back, so you can find your words, lessons and practice in a second.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
