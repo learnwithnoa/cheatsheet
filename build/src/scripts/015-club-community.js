@@ -690,8 +690,10 @@
         if(!BWDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BWDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
         const bd=(BWDOC[wk].boards||{})[wd]; const sav=window.__lbSav||(c=>!!(c&&c.style!=="wrap"&&(c.english||c.meaning)));
         const cards=bd?(bd.cards||[]).filter(c=>!c.hidden&&c.text&&sav(c)).sort((a,b)=>(a.n||0)-(b.n||0)):[];
-        if(!cards.length){ el.remove(); continue; }
-        el.innerHTML=`<h4>📚 ${L("Words from this class","Palabras de esta clase")} <small class="muted">· ${cards.length}</small></h4><ul class="cl-voc">${cards.map(c=>{ const tr=c.english||c.meaning||""; return `<li><span><b>${esc(c.text)}</b>${tr?` <i>· ${esc(tr)}</i>`:""}${c.example?`<br><small>“${esc(c.example)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:c.text,tr,ex:c.example||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></li>`; }).join("")}</ul>`;
+        if(cards.length<3){ el.remove(); continue; }   /* one or two words looks odd: only show a real list */
+        const v=cards.map(c=>({w:c.text,tr:c.english||c.meaning||"",ex:c.example||""}));
+        /* same look as the podcast's "Words from this episode": a row you swipe sideways + Save all */
+        el.innerHTML=`<div class="cl-pvh"><b>📚 ${L("Words from this class","Palabras de esta clase")} <span class="muted">· ${v.length}</span></b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v))}">＋ ${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify(x))}">＋ ${L("My notebook","Mi cuaderno")}</button></div>`).join("")}</div>`;
       }catch(er){ el.removeAttribute("data-ip"); } } }
   async function paintIntro(root){ const els=[...(root||document).querySelectorAll(".cl-planintro[data-pintro]:not([data-ip])")]; for(const el of els){ el.dataset.ip="1"; try{ const t=await planIntro(el.dataset.pintro); if(t) el.textContent=t; else el.remove(); }catch(er){ el.remove(); } } }
   async function paintSoon(root){ const els=[...root.querySelectorAll(".cl-soonv[data-soon]")]; if(!els.length) return; const mineU=G()?"me":me();
