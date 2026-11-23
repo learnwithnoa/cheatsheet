@@ -303,6 +303,7 @@ footer{margin-top:40px;color:var(--muted);font-size:13px}
 .badge.new{background:var(--green-soft);color:var(--green)}
 .badge.ex{background:var(--sky);color:var(--royal)}
 .badge.date{color:var(--muted);padding-left:0}
+.badge.wnum{font-family:var(--mono,ui-monospace,monospace);font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--line) 55%,transparent)}
 .wcard .del{all:unset;cursor:pointer;font:700 12px var(--mono);color:var(--muted);padding:4px 8px;border-radius:8px;border:1px solid transparent}
 .wcard .del:hover{color:var(--red);border-color:var(--line)}
 .wcard .del.confirm{color:#fff;background:var(--red)}
@@ -3522,7 +3523,7 @@ html.cs-calm .cs-rxpal button{transition:none}
   <div class="list-head">
     <h2 style="margin:0">Your words <span class="count" id="wCount"></span></h2>
     <div class="list-tools">
-      <input id="wSearch" type="search" placeholder="Search my words…" aria-label="Search my words" autocomplete="off">
+      <input id="wSearch" type="search" placeholder="Search words or #12" aria-label="Search my words or a word number" autocomplete="off">
       <select id="wSort" class="w-sort" aria-label="Sort my words"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">A → Z</option><option value="za">Z → A</option></select>
       <button class="swap" type="button" id="wSelBtn" aria-pressed="false" hidden>Choose words</button>
       <button class="pill-btn" type="button" id="copyNew">Copy new words</button>
@@ -4462,6 +4463,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <ul class="wl-list">
       <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. Just the word is enough: Hibi adds the Spanish, a simple meaning, the word type, how to say it and an example. Choose which ones with <b>⚙️ Auto-fill</b> in <b>My notebook</b>.</div></li>
       <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🔢</span><div><b>Every word has a number</b> (like <b>#65</b>). Want Noa to check a word? Just tell him its number. Type it in the search box to find it fast.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Make Home yours:</b> tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn and reactions everyone can see. Tap a title to open the full story.</div></li>
       <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too: write them during class, ✨ Hibi finds the new words for you, and <b>📓 Summaries</b> sum up each week.</div></li>
@@ -4540,10 +4542,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-d0ca18d17186.js"></script>
+<script src="js/h-43e38f811e4c.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261123090417"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261123092411"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

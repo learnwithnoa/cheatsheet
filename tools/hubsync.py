@@ -1633,9 +1633,27 @@ def main():
             have.add(k)
             s.setdefault("words", []).append({"w": w["w"].strip(), "tr": (w.get("tr") or "").strip(), "ex": (w.get("ex") or "").strip(), "t": now})
             added.append(w["w"])
+        # also copy new sheet words straight into the student's My notebook on Hibi (same rule as the Private students page:
+        # once each, so a word they delete there stays deleted), so it doesn't wait until Noa opens that page
+        pushed = []
+        if s.get("uid"):
+            try:
+                cur = get_doc(tok, s["uid"], "ncs-words")
+                cur = cur if isinstance(cur, list) else []
+                inbook = {norm_name(str((w or {}).get("w", ""))).replace(" ", "") for w in cur if isinstance(w, dict)}
+                done = {norm_name(x).replace(" ", "") for x in (s.get("pushedWords") or [])}
+                todo = [w for w in s.get("words", []) if w.get("w") and norm_name(w["w"]).replace(" ", "") not in inbook | done]
+                if todo:
+                    now2 = int(datetime.datetime.now().timestamp() * 1000)
+                    for i, w in enumerate(todo):
+                        cur.append({"id": format(now2, "x") + format(i, "x") + format(random.randint(0, 46655), "x"), "w": w["w"].strip(), "m": (w.get("tr") or "").strip(), "e": (w.get("ex") or "").strip(), "t": now2, "src": "sheet"})
+                    set_doc(tok, s["uid"], "ncs-words", cur)
+                    s["pushedWords"] = (s.get("pushedWords") or []) + [w["w"] for w in todo]; pushed = [w["w"] for w in todo]; added = added or ["(notebook only)"]
+            except SystemExit:
+                pass
         if added:
             save(tok, tu, s)
-        print(json.dumps({"added": added}, ensure_ascii=False)); return
+        print(json.dumps({"added": [a for a in added if a != "(notebook only)"], "toNotebook": pushed}, ensure_ascii=False)); return
     if cmd == "set-zrecs":  # this student's Zoom class recordings: [{"date","url","until","min","title"}] (newest last); replaces the list
         L = json.loads(a[2]) if a[2].strip().startswith("[") else json.load(open(a[2].lstrip("@")))
         s["zrecs"] = sorted([{"date": str(r.get("date", ""))[:10], "url": r["url"], "until": str(r.get("until", ""))[:10], "min": int(r.get("min") or 0), "title": str(r.get("title", ""))[:120]} for r in L if r.get("url")], key=lambda r: r["date"])[-12:]

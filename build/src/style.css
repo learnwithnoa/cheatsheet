@@ -212,6 +212,7 @@ footer{margin-top:40px;color:var(--muted);font-size:13px}
 .badge.new{background:var(--green-soft);color:var(--green)}
 .badge.ex{background:var(--sky);color:var(--royal)}
 .badge.date{color:var(--muted);padding-left:0}
+.badge.wnum{font-family:var(--mono,ui-monospace,monospace);font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--line) 55%,transparent)}
 .wcard .del{all:unset;cursor:pointer;font:700 12px var(--mono);color:var(--muted);padding:4px 8px;border-radius:8px;border:1px solid transparent}
 .wcard .del:hover{color:var(--red);border-color:var(--line)}
 .wcard .del.confirm{color:#fff;background:var(--red)}

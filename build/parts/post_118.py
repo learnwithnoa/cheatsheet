@@ -360,3 +360,10 @@ if '2026-1123-simple-search' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1123-wordnums' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1123-wordnums", date:"November 23, 2026", title:"Numbered words 🔢", items:[
+    ["🔢","Every word has a number","In <b>My notebook</b>, each word now shows a number like <b>#65</b> (#1 is the first word you saved). Want Noa to look at a word? Just tell him the number. You can also type <b>#65</b> in the search box to find it.","words"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

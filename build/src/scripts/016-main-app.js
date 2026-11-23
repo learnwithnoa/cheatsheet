@@ -455,11 +455,15 @@ function renderSelBar(){
   const n=fcPick.length; document.getElementById("wSelN").textContent=n+(n===1?" word":" words")+" chosen";
   document.getElementById("wSelGo").disabled=!n;
 }
+/* every word gets a number in the order it was added (#1 = the first word), so a student can say "look at #65" */
+function wordNums(){ const m=new Map(); words.map((x,i)=>[x,i]).sort((a,b)=>((a[0].t||0)-(b[0].t||0))||(a[1]-b[1])).forEach(([x],i)=>m.set(x.id,i+1)); return m; }
+window.__wNums=wordNums;
 function renderWords(){
-  const list=sortWords(allWords().slice());
+  const list=sortWords(allWords().slice()), nums=wordNums();
   if(typeof renderSelBar==="function") renderSelBar();
   const q=norm(wSearch.value.trim());
-  const shown=list.filter(x=>!q||[x.w,x.m,x.e,x.n,x.def,x.pos].some(s=>norm(s||"").includes(q)));
+  const qn=(wSearch.value.trim().match(/^#\s*(\d+)$/)||[])[1];
+  const shown=list.filter(x=>!q||(qn?nums.get(x.id)===+qn:[x.w,x.m,x.e,x.n,x.def,x.pos].some(s=>norm(s||"").includes(q))||String(nums.get(x.id))===q));
   const newCount=words.filter(isPending).length + (showSamples()?SAMPLE.length:0);
   wCount.textContent= list.length? "· "+list.length : "";
   document.getElementById("wNavCount").textContent= words.length? words.length : "";
@@ -486,7 +490,7 @@ function renderWords(){
     const picked=wSel&&fcPick.includes(x.id);
     return '<article class="card wcard'+(picked?' picked':'')+'">'+'<span class="w-lead">'+(x.sample?'':'<label class="w-chkw" title="Pick for flashcards"><input type="checkbox" class="w-chk" data-wpick="'+x.id+'" aria-label="Pick '+esc(x.w)+' for flashcards"'+(picked?' checked':'')+'></label>')+sayBtn(x.w.replace(/\(.*?\)/g,""))+'</span>'+
       '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.pr?'<div class="wpr" title="How to say it (CAPITALS = the strong part)"><span aria-hidden="true">🗣️</span> '+esc(x.pr)+'</div>':'')+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.own?'<div class="wown">✍️ '+esc(x.own)+'</div>':(x.sample?'':'<button class="wown-add" type="button" data-ownw="'+x.id+'">✍️ Write my own sentence</button>'))+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
-      '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
+      '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'<span class="badge wnum" title="Word number (in the order you added them)">#'+nums.get(x.id)+'</span>')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
   }).join("")+(wLeft>0?'<div class="w-more"><button class="pill-btn" type="button" id="wMore">Show more words <small>('+wLeft+' more)</small></button></div>':"");
   if(window.__wMoreWatch) window.__wMoreWatch();
