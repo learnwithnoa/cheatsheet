@@ -3098,9 +3098,18 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-podnoa{display:flex;justify-content:flex-end}.cl-podnoa .cs-act{width:auto}
 .cl-podn{border-top:1px dashed var(--line);padding-top:8px}
 .cl-pvh{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 6px}
-.cl-pvrow{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity}
-.cl-pvc{flex:0 0 210px;scroll-snap-align:start;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
-.cl-pvc i{font-size:13.5px;color:var(--muted)}.cl-pvc small{font-size:13px;line-height:1.35;flex:1}.cl-pvc .cl-addw{align-self:flex-start;margin-top:4px}
+/* word cards you swipe sideways (podcast + library): same size, tidy text, the save button always at the bottom (Nov 23 2026) */
+.cl-pvrow{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--muted) 45%,transparent) transparent;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
+.cl-pvrow::-webkit-scrollbar{height:6px}.cl-pvrow::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--muted) 45%,transparent);border-radius:99px}.cl-pvrow::-webkit-scrollbar-track{background:transparent}
+.cl-pvc{--pc:#3B82F6;flex:0 0 212px;scroll-snap-align:start;display:flex;flex-direction:column;gap:5px;padding:13px 14px 12px;border-radius:16px;border:1.5px solid color-mix(in srgb,var(--pc) 28%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 10%,var(--surface)),var(--surface) 70%);position:relative;overflow:hidden}
+.cl-pvc::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--pc);opacity:.85}
+.cl-pvc:nth-child(5n+2){--pc:#14B8A6}.cl-pvc:nth-child(5n+3){--pc:#A855F7}.cl-pvc:nth-child(5n+4){--pc:#F59E0B}.cl-pvc:nth-child(5n+5){--pc:#EC4899}
+.cl-pvc b{font-size:15px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cl-pvc i{font-size:13px;line-height:1.3;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cl-pvc small{font-size:12.5px;line-height:1.35;color:var(--ink);opacity:.85;padding-left:8px;border-left:2px solid color-mix(in srgb,var(--pc) 55%,transparent);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.cl-pvc .cl-addw{align-self:flex-start;margin-top:auto;font-size:12px;padding:5px 11px;border:1.5px solid color-mix(in srgb,var(--pc) 70%,var(--line))}
+.cl-pvc .cl-addw:hover{background:color-mix(in srgb,var(--pc) 14%,transparent)}
+.cl-pvh b .muted{font-weight:700}
 /* ✨ I enjoyed this class */
 .cl-favb.on{background:color-mix(in srgb,#F5C842 25%,var(--surface))!important;border-color:color-mix(in srgb,#F5C842 60%,var(--line))!important}
 /* ideas as a wall topic */
@@ -4568,7 +4577,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-7750c948c24c.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261123104559"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261123113347"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
