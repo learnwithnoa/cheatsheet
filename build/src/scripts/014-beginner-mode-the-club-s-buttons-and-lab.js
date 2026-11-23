@@ -166,8 +166,28 @@
       <div class="cl-podp">${podPlayer(e.url)}</div><div class="cl-stars" data-stars="pr_${esc(e.id)}"></div>${podNotes(e)}
       ${older.length?`<details class="cl-podold"><summary>${L("Earlier episodes","Episodios anteriores")} (${older.length})</summary>${older.map(x=>`<details class="cl-rcard"><summary><span class="cl-rico" aria-hidden="true">🎧</span><span class="cl-rt"><b>${esc(x.title||L("Club podcast","Podcast del club"))}</b><small>${L("Week of","Semana del")} ${esc(fd(x.date))}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span></summary><div class="cl-rbody">${diffHTML(x)}${podPlayer(x.url)}<div class="cl-stars" data-stars="pr_${esc(x.id)}"></div>${podNotes(x)}${noa?`<button type="button" class="cs-act" data-poddel="${esc(x.id)}">✕ Remove</button>`:""}</div></details>`).join("")}</details>`:""}${add}</div>`; }
   function podNotes(e){ return e.notes||(e.vocab||[]).length?`<details class="cl-podn"><summary>📝 ${L("Show notes","Notas del episodio")}${(e.vocab||[]).length?` <span class="muted">· ${e.vocab.length} ${L("words","palabras")}</span>`:""}</summary>${e.notes?`<p>${esc(e.notes).replace(/\n/g,"<br>")}</p>`:""}${podVocab(e)}</details>`:""; }
-  function podVocab(e){ const v=(e.vocab||[]).filter(x=>x&&x.w); if(!v.length) return "";
-    return `<div class="cl-pvh"><b>📚 ${L("Words from this episode","Palabras de este episodio")}</b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</button></div><div class="cl-pvrow">${v.map(x=>`<div class="cl-pvc"><b>${esc(x.w)}</b>${x.tr?`<i>${esc(x.tr)}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></div>`).join("")}</div>`; }
+  /* word cards you swipe (podcast + library): the color shows the part of speech, in rainbow order (Nov 23 2026).
+     Board/podcast words don't store it, so it's worked out from the card: "(noun)" in the text, "To …", the meaning ("To …" / "A …"), or a longer saying. */
+  const POS=[["noun","noun"],["verb","verb"],["phrasal","phrasal verb"],["adj","adjective"],["adv","adverb"],["expr","expression"],["slang","slang"],["other","word"]];
+  function vocPos(x){ const t=String(x.w||""), m=String(x.tr||"").trim(), lp=String(x.pos||"").toLowerCase();
+    const tag=(lp||(t.match(/\(([^)]*)\)\s*$/)||[])[1]||(m.match(/^\(([^)]*)\)/)||[])[1]||"").toLowerCase();
+    if(/phrasal/.test(tag)) return "phrasal"; if(/\bverb/.test(tag)) return "verb"; if(/noun/.test(tag)) return "noun"; if(/adj/.test(tag)) return "adj"; if(/adv/.test(tag)) return "adv"; if(/slang/.test(tag)) return "slang"; if(/idiom|expression|phrase|saying/.test(tag)) return "expr";
+    const w=t.replace(/\([^)]*\)/g," ").replace(/\s+/g," ").trim(), n=w.split(" ").length;
+    if(/[áéíóúñ¿¡]|\b(que|la|los|las|el|se|me|como|una|del|al|pal|hacer|andar|estar|tirarle|echar)\b/i.test(w)) return "expr";   /* a Spanish saying */
+    if(/^to\s/i.test(w)) return /^to\s+\S+\s+(up|down|out|off|on|in|over|away|back|around|round|through|into|along|after|by|for|with)\b/i.test(w)&&n<=4?"phrasal":n<=3?"verb":"expr";
+    if(/^(a|an|the)\s/i.test(w)&&n<=4) return "noun";
+    if(n===2&&/\s(up|down|out|off|on|in|over|away|back|around|round|through|along)$/i.test(w)) return "phrasal";
+    if(n>=3) return "expr";
+    if(/^to\s/i.test(m)) return n===2&&/\s(up|down|out|off|on|in|over|away|back|around)$/i.test(w)?"phrasal":"verb";
+    if(/^(a|an|the|someone who|something that|a person)\s/i.test(m)) return "noun";
+    if(n===1&&/ly$/i.test(w)) return "adv";
+    if(n===2) return "expr";
+    return "other"; }
+  window.__clVocCards=function(v,title){ v=(v||[]).filter(x=>x&&x.w); if(!v.length) return "";
+    const ord=k=>POS.findIndex(p=>p[0]===k), cards=v.map((x,i)=>({x,i,k:vocPos(x)})).sort((a,b)=>ord(a.k)-ord(b.k)||a.i-b.i);
+    return `<div class="cl-pvh"><b>${title} <span class="muted">· ${v.length}</span></b><button type="button" class="cs-act" data-clwall="${esc(JSON.stringify(v.map(x=>({w:x.w,tr:x.tr||"",ex:x.ex||""}))))}">＋ ${L("Save all to My notebook","Guardar todas en Mi cuaderno")}</button></div><div class="cl-pvrow">${cards.map(({x,k})=>{ const lbl=(POS.find(p=>p[0]===k)||[])[1]||"";
+      return `<div class="cl-pvc pos-${k}">${lbl?`<span class="cl-pos">${lbl}</span>`:""}<b>${esc(x.w)}</b>${x.tr?`<i>${esc(String(x.tr).replace(/^\((noun|verb|phrasal verb|adjective|adverb|idiom|expression|slang)\)\s*/i,""))}</i>`:""}${x.ex?`<small>“${esc(x.ex)}”</small>`:""}<button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:x.w,tr:x.tr||"",ex:x.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></div>`; }).join("")}</div>`; };
+  function podVocab(e){ return window.__clVocCards(e.vocab, `📚 ${L("Words from this episode","Palabras de este episodio")}`); }
   function weekOf(t){ const d=new Date(t); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function podNewHTML(){ const e=pods()[0]; if(!e||Date.now()-new Date(e.date+"T12:00:00").getTime()>10*864e5) return "";
     return `<button type="button" class="cl-catch cl-podnew" data-clt="recordings"><span aria-hidden="true">🎧</span><span><b>${L("New podcast episode:","Nuevo episodio del podcast:")}</b> ${esc(e.title||L("this week in the club","esta semana en el club"))}</span><span class="cl-mego">→</span></button>`; }

@@ -3103,7 +3103,9 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-pvrow::-webkit-scrollbar{height:6px}.cl-pvrow::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--muted) 45%,transparent);border-radius:99px}.cl-pvrow::-webkit-scrollbar-track{background:transparent}
 .cl-pvc{--pc:#3B82F6;flex:0 0 212px;scroll-snap-align:start;display:flex;flex-direction:column;gap:5px;padding:13px 14px 12px;border-radius:16px;border:1.5px solid color-mix(in srgb,var(--pc) 28%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 10%,var(--surface)),var(--surface) 70%);position:relative;overflow:hidden}
 .cl-pvc::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--pc);opacity:.85}
-.cl-pvc:nth-child(5n+2){--pc:#14B8A6}.cl-pvc:nth-child(5n+3){--pc:#A855F7}.cl-pvc:nth-child(5n+4){--pc:#F59E0B}.cl-pvc:nth-child(5n+5){--pc:#EC4899}
+/* part of speech = color, in rainbow order */
+.cl-pvc.pos-noun{--pc:#EF4444}.cl-pvc.pos-verb{--pc:#F97316}.cl-pvc.pos-phrasal{--pc:#EAB308}.cl-pvc.pos-adj{--pc:#22C55E}.cl-pvc.pos-adv{--pc:#06B6D4}.cl-pvc.pos-expr{--pc:#6366F1}.cl-pvc.pos-slang{--pc:#A855F7}.cl-pvc.pos-other{--pc:#94A3B8}
+.cl-pos{align-self:flex-start;font:700 10.5px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--pc) 75%,var(--ink));background:color-mix(in srgb,var(--pc) 16%,transparent);padding:2px 7px;border-radius:99px;margin-bottom:1px}
 .cl-pvc b{font-size:15px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cl-pvc i{font-size:13px;line-height:1.3;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cl-pvc small{font-size:12.5px;line-height:1.35;color:var(--ink);opacity:.85;padding-left:8px;border-left:2px solid color-mix(in srgb,var(--pc) 55%,transparent);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
@@ -3662,8 +3664,8 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">This week's classes and Zoom links, the community wall, recordings, the calendar and everyone in the club.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-0062cb411ad4.js"></script>
-<script src="js/h-d3b910b637f2.js"></script>
+<script src="js/h-ef8176e2551f.js"></script>
+<script src="js/h-638b7aabb2b9.js"></script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
   <p class="lede">Write a word or sentence in Spanish <i>or</i> English and tap <b>Translate here</b>. It figures out the language for you, and shows you how to say the English part. You can also open it in Google Translate or DeepL.</p>
@@ -4574,10 +4576,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-7750c948c24c.js"></script>
+<script src="js/h-0760f921889f.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261123113347"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261123114240"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
