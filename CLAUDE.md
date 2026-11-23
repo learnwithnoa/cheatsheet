@@ -105,6 +105,7 @@ Pages updates about a minute after the push. End commit messages with the attrib
   Kickoff previews: View as (👁) → Generic → "🌳 New private student" reloads Hibi read-only as a sample private student (not in the club, empty notebook, fresh buddy;
   cs-viewas with `sample:true`); the guest link `?guest=hb7k2q&as=private#coaching` shows the same sample signed out. The sample lives in `src/scripts/012-…` (`sampleHub()`, `window.__csSampleView`).
   Simple mode (`src/scripts/051-step179-simple-mode.js`): per member in `users/{uid}/data/ncs-simple` {on, by:"noa"|"noa-off"|"me", asked}; Noa switches it in Hibi members (member detail); the member is asked once to keep it.
+  Noa's 🔔 (src/scripts/006-…, accounts() in build/cloud.js) skips removed accounts; roles.clubEnded (set by the pay helper's removeClub) shows someone as "left the club", not "not linked yet".
   Removing someone: Hibi members → member → 🚫 Remove from Hibi deletes access/{email} and park/{uid} and lists them in t-hubmeta.removed {uid:{email,name,at}} (hidden from the members lists; "Let back in" undoes it; access-sync skips them).
   Recommendation dates: `users/{Noa}/data/t-recs` ({uid:{mod:{at,n}}}), shown in Hibi members → 💡 Recommended. Ask Noa before adding uncertain payments or deleting data. Never invent data.
 
