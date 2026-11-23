@@ -484,7 +484,8 @@ function renderList() {
   $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
       <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
       <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both", hibi: s.role.clubEnded ? "📘 Hibi only · left the club" : "📘 Hibi only", none: "⚪ Not assigned yet: club or private?" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
-    : `<p class="muted">${students.length ? "No match." : "No one has signed in yet."}</p>`;
+    : `<p class="muted">${!students.length ? "No one has signed in yet." : q ? `No one matches “${esc(q)}”.` : `No one here right now: ${esc((($("tKind").selectedOptions || [])[0] || {}).textContent || "this filter")}.`}${students.length && (q || kind !== "all") ? ` <button type="button" class="seg" data-showall="1" style="margin-top:6px">Show everyone (${students.length})</button>` : ""}</p>`;
+  const sa = $("list").querySelector("[data-showall]"); if (sa) sa.onclick = () => { $("q").value = ""; $("tKind").value = "all"; $("tKind").dispatchEvent(new Event("change")); renderList(); };
 }
 $("q").oninput = renderList;
 try { $("tSortSel").value = localStorage.getItem("cs-t-sort") || "az"; $("tKind").value = localStorage.getItem("cs-t-kind") || "all"; } catch (e) {}
