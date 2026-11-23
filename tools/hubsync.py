@@ -93,6 +93,11 @@ Usage:
       Prints the link (?map#coaching). Running it again replaces the map; check-ins already marked done are kept.
   HUB_PASSWORD=... python3 hubsync.py lessons <student-id>   ·   del-lesson <student-id> <lesson-id>
   HUB_PASSWORD=... python3 hubsync.py link-new     link new Cheat Sheet accounts to hub students (email / full name); prints unsure ones
+  HUB_PASSWORD=... python3 hubsync.py add-student '<json>'   a NEW private student, same as Private students → Add student (+ Add pack):
+      {"name":"Matías Abadie","email":"x@gmail.com","level":"B1","schedule":"Mon 7:00pm","objective":"...","alwaysStd":false,"kind":"pack"|"trueque",
+       "pack":{"size":12|36|72,"first":true,"paid":"full"|"half"|"pending","price":85000 (optional, else standard price, -15% if first),"deadline":"YYYY-MM-DD" (optional),"date":"YYYY-MM-DD" (payment date, optional)}}
+      Private student only (never adds them to the club). Approves their Hibi sign-in (access list). Refuses if the email is already a student.
+      Prints the new student id. They link to their page when they first sign in (or run link-new).
 
 Any '<json>' argument can also be @/path/to/file.json or - (read from stdin).
 
@@ -1116,6 +1121,70 @@ def main():
         em = a[1].strip().lower()
         http("PATCH", f"{BASE}/access/{urllib.parse.quote(em)}", {"fields": {"name": {"stringValue": a[2] if len(a) > 2 else ""}, "at": {"integerValue": str(int(datetime.datetime.now().timestamp() * 1000))}, "by": {"stringValue": "helper"}}}, token=tok)
         print("ok"); return
+    if cmd == "add-student":
+        d = json.loads(open(a[1][1:], encoding="utf-8").read() if a[1].startswith("@") else (sys.stdin.read() if a[1] == "-" else a[1]))
+        import unicodedata, re as _re
+        name = str(d.get("name") or "").strip()
+        if not name:
+            raise SystemExit("add-student needs a name")
+        em = norm_email(d.get("email") or "")
+        if em and not _re.match(r"^[^@\s]+@[^@\s]+\.[a-z]{2,}$", em):
+            raise SystemExit(f"That email doesn't look right: {em}")
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        ids = list(m.get("ids") or [])
+        if em:
+            for sid0 in ids:
+                o = get_doc(tok, tu, "t-hub-" + sid0) or {}
+                if em in [norm_email(e) for e in [o.get("email")] + (o.get("emails") or []) if e]:
+                    raise SystemExit(f"{em} is already a student: {sid0} ({o.get('name')})")
+        sid = unicodedata.normalize("NFD", name.lower())
+        sid = "".join(ch for ch in sid if not unicodedata.combining(ch))
+        sid = _re.sub(r"[^a-z0-9]+", "-", sid).strip("-")
+        rnd = lambda n=7: "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(n))
+        if sid in ids or get_doc(tok, tu, "t-hub-" + sid) is not None:
+            sid += "-" + rnd(3)
+        today_ = datetime.date.today().isoformat()
+        kind = "trueque" if d.get("kind") == "trueque" else "pack"
+        st = {"id": sid, "name": name, "status": "active", "kind": kind, "email": d.get("email", "").strip(), "level": str(d.get("level") or "").strip(),
+              "schedule": str(d.get("schedule") or "").strip(), "objective": str(d.get("objective") or "").strip(), "about": "", "zoomKey": name.split(" ")[0],
+              "sheetId": "", "folderId": str(d.get("folderId") or ""), "boleta": "", "info": {}, "packs": [], "classes": [], "payments": [], "words": [], "other": [], "created": today_}
+        if d.get("alwaysStd"):
+            st["alwaysStd"] = True
+        pk = d.get("pack")
+        if pk:   # same as the Add pack form in private-students.html
+            STD = {12: 100000, 36: 264000, 72: 480000}
+            NAMES = {12: "Pack Básico 12 créditos", 36: "Pack Intermedio 36 créditos", 72: "Pack Intensivo 72 créditos"}
+            clp = lambda n: "$" + f"{int(round(n)):,}".replace(",", ".")
+            first = bool(pk.get("first"))
+            if kind == "trueque":
+                label, size, unit = "Trueque", None, "classes"
+            else:
+                size = int(pk.get("size") or 12); unit = "credits"
+                if size not in NAMES:
+                    raise SystemExit("pack size must be 12, 36 or 72")
+                label = NAMES[size]
+            price = int(pk.get("price") or 0) or (round(STD[size] * (0.85 if first else 1)) if size in STD else 0)
+            if first and kind != "trueque":
+                label += " (15% off, first pack)"
+            paid = "n/a" if kind == "trueque" else (pk.get("paid") or "full")
+            st["packs"].append({"id": "p" + rnd(), "label": label, "size": size, "unit": unit, "price": clp(price) if price else "", "deadline": "",
+                                "deadlineISO": str(pk.get("deadline") or ""), "color": "#d5a6bd", "paid": paid, "archived": False, "created": today_,
+                                "allStd": first and size == 12})
+            if kind != "trueque" and paid != "pending":
+                v = round(price / 2) if paid == "half" else price
+                st["payments"].append({"id": rnd(), "date": str(pk.get("date") or today_), "what": ("Half of " if paid == "half" else "") + label,
+                                       "amount": clp(v) if v else "", "clp": v or None, "method": str(pk.get("method") or "")})
+        st["updatedAt"] = int(datetime.datetime.now().timestamp() * 1000)
+        set_doc(tok, tu, "t-hub-" + sid, st)
+        if get_doc(tok, tu, "t-hub-" + sid) is None:
+            raise SystemExit("Couldn't save the student (nothing changed in the list)")
+        m = get_doc(tok, tu, "t-hubmeta") or {}
+        m["ids"] = sorted(set((m.get("ids") or []) + [sid]))
+        set_doc(tok, tu, "t-hubmeta", m)
+        if em:   # sign-in list, like the hub's grantAccess(); club access is never given here
+            if http("GET", f"{BASE}/access/{urllib.parse.quote(em)}", token=tok) is None:
+                http("PATCH", f"{BASE}/access/{urllib.parse.quote(em)}", {"fields": {"name": {"stringValue": name}, "at": {"integerValue": str(int(datetime.datetime.now().timestamp() * 1000))}, "by": {"stringValue": "hub"}}}, token=tok)
+        print(json.dumps({"ok": True, "id": sid, "name": name, "email": em, "access": bool(em), "club": False, "packs": [p["label"] for p in st["packs"]]}, ensure_ascii=False)); return
     if cmd == "club-ideas":
         # members' ideas for future classes (Club → Polls & ideas), most supported first; skips ones Noa marked done
         q = {"structuredQuery": {"from": [{"collectionId": "clubPosts"}], "limit": 300}}
