@@ -150,3 +150,54 @@ s=s[:i]+'''.lb-items li .lb-isave{margin-left:8px;width:26px;height:26px;padding
 .lb-ov.dark .lb-items li .lb-isave{color:#facc15}
 '''+s[i:]
 open(p,"w",encoding="utf-8").write(s)
+# Nov 23 2026: "Save all" shows a pop-up with exactly which words were added, and an Undo button
+s=open(p,encoding="utf-8").read()
+if 'lb-addpop' not in s:
+    i=s.index('</style>')
+    s=s[:i]+'''.lb-addpop{position:sticky;top:64px;z-index:5;margin:0 clamp(10px,2vw,22px) 12px auto;max-width:420px;background:#fff;color:#141b3a;border:1.5px solid #dfe5f3;border-radius:20px;padding:14px 16px 14px;box-shadow:0 14px 34px rgba(20,27,58,.18);font:600 15px/1.4 "Nunito","Lexend",sans-serif;animation:lbPopIn .18s ease-out}
+@keyframes lbPopIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.lb-addpop .ap-h{display:flex;align-items:center;gap:10px;font-weight:900;font-size:16px}
+.lb-addpop .ap-h b{flex:1}.lb-addpop .ap-x{border:0;background:transparent;font-size:22px;line-height:1;cursor:pointer;color:#6b7394;padding:2px 4px}
+.lb-addpop .ap-list{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px;max-height:180px;overflow:auto}
+.lb-addpop .ap-list span{padding:4px 11px;border-radius:999px;background:#eaf2ff;color:#1d4ed8;font-weight:800;font-size:13.5px}
+.lb-addpop .ap-row{display:flex;gap:8px;flex-wrap:wrap}
+.lb-addpop .ap-row button{border-radius:999px;padding:9px 15px;font:900 14px/1 "Nunito","Lexend",sans-serif;cursor:pointer}
+.lb-addpop .ap-undo{border:1.5px solid #dfe5f3;background:#fff;color:#141b3a}
+.lb-addpop .ap-ok{border:0;color:#fff;background:linear-gradient(135deg,#2563eb,#16a34a)}
+.lb-addpop .ap-note{margin:6px 0 0;color:#6b7394;font-size:13px}
+.lb-ov.dark .lb-addpop{background:#111c42;border-color:#2b3b6e;color:#fff}.lb-ov.dark .lb-addpop .ap-list span{background:#1d2c5e;color:#bcd2ff}.lb-ov.dark .lb-addpop .ap-undo{background:#0b1430;border-color:#2b3b6e;color:#fff}.lb-ov.dark .lb-addpop .ap-x{color:#b6c2e2}
+@media (max-width:600px){.lb-addpop{margin:0 8px 10px;max-width:none;top:58px}}
+'''+s[i:]
+    _j=s.rfind('</body>')
+    s=s[:_j]+'''<script>
+/* live board "Save all": say exactly what was added, with Undo (runs before the older handler and replaces it) */
+(function(){
+  const L=(en,es)=>{ try{ return (document.documentElement.lang||"").startsWith("es")&&window.__clubLang==="es"?es:en; }catch(e){ return en; } };
+  const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  function pop(box,html){ box.querySelectorAll(".lb-addpop").forEach(x=>x.remove()); const d=document.createElement("div"); d.className="lb-addpop"; d.setAttribute("role","status"); d.innerHTML=html;
+    const bar=box.querySelector(".lb-bar"); (bar?bar:box.firstChild).insertAdjacentElement(bar?"afterend":"beforebegin",d); return d; }
+  window.addEventListener("click",e=>{
+    const all=e.target.closest("[data-lball]"); if(!all||!all.closest(".lb-ov")) return;
+    e.stopImmediatePropagation(); e.preventDefault(); if(all.disabled) return;
+    const ov=all.closest(".lb-ov"), box=all.closest(".lb-box")||ov;
+    const ids0=new Set(typeof window.csWordIds==="function"?window.csWordIds():[]), touched=[];
+    ov.querySelectorAll(".lb-save[data-clw]").forEach(b=>{ if(b.disabled) return; let x={}; try{ x=JSON.parse(b.dataset.clw); }catch(er){}
+      try{ if(typeof window.csAddWord==="function") window.csAddWord(x.w,x.tr||"",x.ex||""); }catch(er){}
+      touched.push([b,b.innerHTML]); b.disabled=true; b.textContent=b.classList.contains("lb-isave")?"✓":"✓ Saved"; });
+    const added=(typeof window.csWordIds==="function"?window.csWordIds():[]).filter(id=>!ids0.has(id));
+    const ws=added.map(id=>window.csWordById&&window.csWordById(id)).filter(Boolean);
+    const allTxt=all.innerHTML; all.disabled=true; all.textContent=ws.length?`✓ ${ws.length} added`:"✓ All in your words";
+    if(!ws.length){ const d=pop(box,`<div class="ap-h"><span aria-hidden="true">👍</span><b>They're all in My notebook already</b><button type="button" class="ap-x" aria-label="Close">×</button></div>`); d.querySelector(".ap-x").onclick=()=>d.remove(); setTimeout(()=>d.remove(),4000); return; }
+    const d=pop(box,`<div class="ap-h"><span aria-hidden="true">✅</span><b>${ws.length} ${ws.length===1?"word":"words"} added to My notebook</b><button type="button" class="ap-x" aria-label="Close">×</button></div>
+      <div class="ap-list">${ws.map(w=>`<span>${esc(w.w)}</span>`).join("")}</div>
+      <div class="ap-row"><button type="button" class="ap-undo">↩ Undo</button><button type="button" class="ap-ok">Got it</button></div>`);
+    d.querySelector(".ap-x").onclick=d.querySelector(".ap-ok").onclick=()=>d.remove();
+    d.querySelector(".ap-undo").onclick=()=>{ const n=window.csRemoveWords?window.csRemoveWords(added):0;
+      touched.forEach(([b,h])=>{ b.disabled=false; b.innerHTML=h; }); all.disabled=false; all.innerHTML=allTxt;
+      d.innerHTML=`<div class="ap-h"><span aria-hidden="true">↩</span><b>Undone: ${n} ${n===1?"word":"words"} taken out of My notebook</b><button type="button" class="ap-x" aria-label="Close">×</button></div>`;
+      d.querySelector(".ap-x").onclick=()=>d.remove(); setTimeout(()=>d.remove(),3500); };
+  },true);
+})();
+</script>
+'''+s[_j:]
+open(p,"w",encoding="utf-8").write(s)

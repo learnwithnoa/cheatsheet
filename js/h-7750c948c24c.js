@@ -4140,6 +4140,10 @@ setTimeout(()=>{ if(aiOK()) prBackfill(); },6000);
 const _addWordPlain=addWord;
 addWord=function(){ const before=words.length, r=_addWordPlain.apply(this,arguments); if(words.length>before) queueEnrich([words[words.length-1].id]); return r; };
 window.csAddWord=function(){ return addWord.apply(this,arguments); };
+/* for "Save all" + Undo on live boards: which words exist, and take back the ones just added */
+window.csWordIds=()=>words.map(x=>x.id);
+window.csWordById=id=>words.find(x=>x.id===id)||null;
+window.csRemoveWords=ids=>{ const s=new Set(ids); let n=0; for(let i=words.length-1;i>=0;i--) if(s.has(words[i].id)){ words.splice(i,1); n++; } if(n){ LS.set("ncs-words",words); renderWords(); } return n; };
 
 /* ---------- safety net for the AI tools: explain first, then keep an undo copy ---------- */
 const UNDO_KEY="cs-words-undo";
@@ -5147,6 +5151,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1123-board-undo", date:"November 23, 2026", title:"Live board words, tidier 🧩", items:[
+    ["↩️","See what you saved (and undo it)","On a class's <b>🧩 Live board</b>, <b>＋ Save all</b> now shows exactly which words went to My notebook, with an <b>Undo</b> button if you change your mind.","club"],
+    ["📚","Each recording has its own words","In the Club <b>Library</b>, a recording now shows the words from <i>that</i> class (from its live board), not the same list for the whole week.","club"]
+  ]},
   {id:"2026-1123-print", date:"November 23, 2026", title:"Print a whole module 🖨️", items:[
     ["🖨️","Print it or save it as a PDF","Like studying on paper? Open any grammar module (or Job interviews) and tap <b>🖨️ Print or save as PDF</b> at the top. You get the whole thing: the 📖 Learn it lesson (basics and advanced), every stage with a line to write your answer, the final test and an answer key at the end.","quiz"]
   ]},

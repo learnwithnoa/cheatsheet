@@ -374,3 +374,11 @@ if '2026-1123-print' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1123-board-undo' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1123-board-undo", date:"November 23, 2026", title:"Live board words, tidier 🧩", items:[
+    ["↩️","See what you saved (and undo it)","On a class's <b>🧩 Live board</b>, <b>＋ Save all</b> now shows exactly which words went to My notebook, with an <b>Undo</b> button if you change your mind.","club"],
+    ["📚","Each recording has its own words","In the Club <b>Library</b>, a recording now shows the words from <i>that</i> class (from its live board), not the same list for the whole week.","club"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

@@ -1717,6 +1717,10 @@ setTimeout(()=>{ if(aiOK()) prBackfill(); },6000);
 const _addWordPlain=addWord;
 addWord=function(){ const before=words.length, r=_addWordPlain.apply(this,arguments); if(words.length>before) queueEnrich([words[words.length-1].id]); return r; };
 window.csAddWord=function(){ return addWord.apply(this,arguments); };
+/* for "Save all" + Undo on live boards: which words exist, and take back the ones just added */
+window.csWordIds=()=>words.map(x=>x.id);
+window.csWordById=id=>words.find(x=>x.id===id)||null;
+window.csRemoveWords=ids=>{ const s=new Set(ids); let n=0; for(let i=words.length-1;i>=0;i--) if(s.has(words[i].id)){ words.splice(i,1); n++; } if(n){ LS.set("ncs-words",words); renderWords(); } return n; };
 
 /* ---------- safety net for the AI tools: explain first, then keep an undo copy ---------- */
 const UNDO_KEY="cs-words-undo";

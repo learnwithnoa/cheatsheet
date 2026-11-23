@@ -154,7 +154,7 @@
   async function openSub(art,pid){ const sub=art.querySelector(".cs-sub"), b=art.querySelector("[data-open]"); if(!sub.hidden){ sub.hidden=true; b.setAttribute("aria-expanded","false"); return; } sub.hidden=false; b.setAttribute("aria-expanded","true"); sub.innerHTML=`<p class="cs-load">${L("Loading…","Cargando…")}</p>`;
     try{ const list=COMM[pid]=await listComments(pid); sub.innerHTML=list.map(c=>commentHTML(pid,c)).join("")+composer("comment",pid,L("Write a comment…","Escribe un comentario…")); paintImgs(sub); }catch(e){ sub.innerHTML=`<p class="cs-off">${L("Couldn’t load the comments.","No se pudieron cargar los comentarios.")}</p>`; } }
   function mount(root){ root.querySelectorAll(".cl-thread[data-thread]:not([data-on='1'])").forEach(mountThread); root.querySelectorAll(".cl-wall:not([data-on='1'])").forEach(mountWall);
-    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); try{ paintStars(root); paintIntro(root); }catch(e){} root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-bdays:not([data-on='1'])").forEach(el=>mountBdays(el).catch(()=>{})); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); loadPlans(); paintSoon(root); paintFav(root); ensureMe(); }
+    root.querySelectorAll(".cl-members:not([data-on='1'])").forEach(mountMembers); paintRsvp(root); try{ paintStars(root); paintIntro(root); paintBoardWords(root); }catch(e){} root.querySelectorAll(".cl-chal-list:not([data-on='1'])").forEach(mountChal); root.querySelectorAll(".cl-me:not([data-on='1'])").forEach(mountMe); root.querySelectorAll(".cl-bdays:not([data-on='1'])").forEach(el=>mountBdays(el).catch(()=>{})); root.querySelectorAll(".cl-insights:not([data-on='1'])").forEach(mountInsights); root.querySelectorAll(".cl-say:not([data-on='1'])").forEach(mountSay); loadRecs(); loadPods(); loadPlans(); paintSoon(root); paintFav(root); ensureMe(); }
   /* picked photos (up to 4) */
   const PICK=new WeakMap();
   document.addEventListener("change",e=>{ const inp=e.target.closest(".cs-comp input[type=file]"); if(!inp) return; const form=inp.closest("form"); const arr=(PICK.get(form)||[]).concat([...inp.files]).slice(0,4); PICK.set(form,arr); inp.value="";
@@ -680,8 +680,19 @@
   document.addEventListener("click",async e=>{ const b=e.target.closest(".cl-stars [data-star]"); if(!b) return; if(api&&F()&&F().readOnly&&F().readOnly()){ toastRO(); return; } const el=b.closest(".cl-stars"), poll=el.dataset.stars, n=+b.dataset.star, mineU=G()?"me":me(), cur=(VOTES[poll]||[]).find(v=>v.uid===mineU);
     const val=cur&&+cur.opt===n?"":String(n); el.querySelectorAll("[data-star]").forEach(x=>x.disabled=true);
     try{ await vote(poll,val); }catch(er){ toast(L("Couldn’t save. Try again.","No se pudo guardar. Intenta de nuevo.")); } delete el.dataset.sp; paintStars(el.parentElement); if(val) toast(L("⭐ Thanks! Noa will see your rating.","⭐ ¡Gracias! Noa verá tu nota.")); });
-  document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.tagName==="DETAILS"&&d.open){ paintStars(d); paintIntro(d); } },true);
+  document.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.tagName==="DETAILS"&&d.open){ paintStars(d); paintIntro(d); paintBoardWords(d); } },true);
   /* recordings without a summary: show the first lines of that class's lesson plan intro */
+  /* 📚 a recording's words come from THAT class's live board (Nov 23 2026: the week's word list was the same on every class of the week) */
+  const BWDOC={};
+  async function paintBoardWords(root){ if(G()) return; const els=[...(root||document).querySelectorAll(".cl-bwords[data-bw]:not([data-ip])")].filter(el=>{ const d=el.closest("details"); return !d||d.open; });
+    for(const el of els){ el.dataset.ip="1"; const [wk,wd]=el.dataset.bw.split("|");
+      try{ const idx=window.__clubBoards; if(idx&&!((idx[wk]||[]).includes(Number(wd)))){ el.remove(); continue; }
+        if(!BWDOC[wk]){ const r=await api("GET","/clubStats/_boards_"+wk.replace(/-/g,"")); BWDOC[wk]=r&&r.fields&&r.fields.json?JSON.parse(r.fields.json.stringValue):{}; }
+        const bd=(BWDOC[wk].boards||{})[wd]; const sav=window.__lbSav||(c=>!!(c&&c.style!=="wrap"&&(c.english||c.meaning)));
+        const cards=bd?(bd.cards||[]).filter(c=>!c.hidden&&c.text&&sav(c)).sort((a,b)=>(a.n||0)-(b.n||0)):[];
+        if(!cards.length){ el.remove(); continue; }
+        el.innerHTML=`<h4>📚 ${L("Words from this class","Palabras de esta clase")} <small class="muted">· ${cards.length}</small></h4><ul class="cl-voc">${cards.map(c=>{ const tr=c.english||c.meaning||""; return `<li><span><b>${esc(c.text)}</b>${tr?` <i>· ${esc(tr)}</i>`:""}${c.example?`<br><small>“${esc(c.example)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:c.text,tr,ex:c.example||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></li>`; }).join("")}</ul>`;
+      }catch(er){ el.removeAttribute("data-ip"); } } }
   async function paintIntro(root){ const els=[...(root||document).querySelectorAll(".cl-planintro[data-pintro]:not([data-ip])")]; for(const el of els){ el.dataset.ip="1"; try{ const t=await planIntro(el.dataset.pintro); if(t) el.textContent=t; else el.remove(); }catch(er){ el.remove(); } } }
   async function paintSoon(root){ const els=[...root.querySelectorAll(".cl-soonv[data-soon]")]; if(!els.length) return; const mineU=G()?"me":me();
     for(const el of els){ let list=[]; try{ list=await votes("soon_"+el.dataset.soon); }catch(e){ el.hidden=true; continue; } const on=list.some(v=>v.uid===mineU);
