@@ -169,6 +169,36 @@ details>summary::-webkit-details-marker{display:none}
 details>summary::marker{content:""}
 details>summary::before{content:"▸";display:inline-block;flex:none;color:var(--muted,#8a93ad);margin-right:.45em;transition:transform .15s;font-weight:700}
 details[open]>summary::before{transform:rotate(90deg)}
+
+/* student page header, Nov 23 2026: clearer order (who → next class → links → pack → resources → about) */
+.dsub{margin:6px 0 0;color:var(--muted);font-size:13.5px}
+.nextc{display:flex;width:fit-content;max-width:100%;align-items:center;gap:6px;margin-top:10px!important;padding:6px 14px!important;border-radius:99px;background:color-mix(in srgb,#3B82F6 16%,transparent);color:var(--ink);font-weight:700;font-size:13.5px}
+.lkrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.lkb{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);font:600 13px var(--body);text-decoration:none}
+.lkb:hover{border-color:var(--royal)}.lkb.lkb-q{color:var(--muted)}.lkb-em{cursor:default}.lkb-em a{color:inherit;text-decoration:none}
+.pstats{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;margin-top:16px}
+.pst{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.pst .psk{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pst .psv{font:700 26px/1.15 var(--body);margin-top:4px}.pst .psv small{font-size:13px;color:var(--muted);font-weight:600;margin-left:4px}
+.pv-pink{color:#E2559B}.pv-violet{color:#8B5CF6}
+.pbar{height:7px;border-radius:99px;background:color-mix(in srgb,var(--line) 70%,transparent);margin-top:10px;overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#34D399,#22C55E);border-radius:99px}
+.pst .psh{font-size:12px;color:var(--muted);margin-top:6px}
+.dsec{margin-top:16px}.dlbl{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.dsec .resrow{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+details.dmeta{margin-top:12px;color:var(--muted);font-size:13px}details.dmeta summary{cursor:pointer;font-weight:600}
+#detail .tabs{display:flex;gap:6px;margin:20px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.acts-row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+.acts-row>*{margin-top:0!important}
+.acts-row>.tint,.acts-row>.recl,.acts-row>form,.acts-row>p,.acts-row>.recf{flex-basis:100%}
+.acts-row>.row{margin:0!important}
+.acts-row .ib{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);font:700 13.5px var(--body);color:var(--ink)}
+.acts-row .ib:hover{border-color:var(--royal)}
+details.logc{margin:12px 0 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+details.logc>summary{list-style:none;cursor:pointer;padding:11px 16px;font-weight:700;display:flex;align-items:center;gap:8px}
+details.logc>summary::-webkit-details-marker{display:none}
+details.logc>summary small{color:var(--muted);font-weight:500}
+details.logc>form{margin:0 10px 10px!important}
+@media (max-width:640px){.recl-r{grid-template-columns:minmax(0,1fr) auto}.recl-r>span:nth-child(2){display:none}.pstats{grid-template-columns:1fr 1fr}.pst-main{grid-column:1/-1}#detail .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#detail .tabs .seg{flex:none;white-space:nowrap}details.logc>summary small{display:none}.lkb{font-size:12.5px;padding:6px 10px}}
 </style>
 <link rel="stylesheet" href="comfort.css?v=21">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -931,7 +961,7 @@ const TABS = [["classes", "Classes", "k-sky"], ["packs", "Packs & payments", "k-
 function emailUI(s) {
   const all = [s.email].concat(s.emails || []).filter(Boolean); if (!all.length) return "";
   const pick = s._mail && all.includes(s._mail) ? s._mail : all[0];
-  return `<a class="linkb" id="mailLink" target="_blank" rel="noopener" href="${GM(pick)}" title="Write in Gmail">✉️ ${esc(pick)}</a>${all.length > 1 ? ` <select id="mailPick" aria-label="Choose email" style="width:auto;font:600 12.5px var(--body);padding:2px 6px;border-radius:8px">${all.map(e => `<option ${e === pick ? "selected" : ""}>${esc(e)}</option>`).join("")}</select>` : ""}`;
+  return `<a class="linkb" id="mailLink" target="_blank" rel="noopener" href="${GM(pick)}" title="Write to ${esc(pick)} in Gmail">✉️ Email</a>${all.length > 1 ? ` <select id="mailPick" aria-label="Choose email" style="width:auto;font:600 12.5px var(--body);padding:2px 6px;border-radius:8px">${all.map(e => `<option ${e === pick ? "selected" : ""}>${esc(e)}</option>`).join("")}</select>` : ""}`;
 }
 const REC_MODS = { prs: { name: "Present simple", stages: ["I, you, we, they", "He, she, it + -s", "Spelling: -es, -ies, has", "Negatives: don't / doesn't", "Questions: do / does", "Mix it up", "Tell the story"] },
   ps: { name: "Past simple", stages: ["Regular verbs", "Irregular verbs", "Was / were", "Negatives", "Questions", "Mix it up", "Tell the story"] },
@@ -996,24 +1026,27 @@ function renderDetail() {
   const s = S_(); const box = $("detail");
   if (!s) { box.innerHTML = ""; return; }
   const p = curPack(s), st = p ? packStats(s, p) : null, en = engagement(s), r = roles[s.id];
-  const links = [`<a class="linkb" href="index.html?viewas=${encodeURIComponent(s.id)}#coaching" title="Opens Hibi showing exactly what ${esc(s.name.split(" ")[0])} sees (read-only)">👁 Their My coaching</a>`, s.folderId ? `<a class="linkb" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/${esc(s.folderId)}">Drive folder ↗</a>` : "", emailUI(s)].filter(Boolean).join(" · ");
+  const links = [`<a class="lkb" href="index.html?viewas=${encodeURIComponent(s.id)}#coaching" title="Opens Hibi showing exactly what ${esc(s.name.split(" ")[0])} sees (read-only)">👁 Their My coaching</a>`, emailUI(s) ? `<span class="lkb lkb-em">${emailUI(s)}</span>` : "", s.boleta ? `<button type="button" class="lkb lkb-q" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""].filter(Boolean).join("");
   const tabs = TABS.concat(s.other.length ? [["other", "Other tabs", "k-teal"]] : []);
   box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px${avIn(s).st}">${avIn(s).html}</span><h2><span class="nm-wrap">${esc(s.name)}${en ? `<sup class="eng-pill ${en.k}" title="Engagement: ${en.lvl} (${esc(en.parts.join(" · "))})">${en.k === "k-green" ? "🔥" : en.k === "k-amber" ? "🙂" : "💤"} ${en.lvl}</sup>` : ""}</span></h2>
-    ${s.boleta ? `<button class="chipb tint k-amber" data-copy="${esc(s.boleta)}" title="Copy for the SII">🧾 Boleta ${esc(s.boleta)}</button>` : ""}
     ${(() => { const LV = ["A1", "A2", "A2-B1", "B1", "B1-B2", "B2", "B2-C1", "C1", "C2"], fromLevel = String(s.level || "").toUpperCase().replace(/[–—]/g, "-").replace(/\s+/g, ""), cur = s.cefr || (LV.includes(fromLevel) ? fromLevel : "");
       return `<label class="cefr-pick" title="Their English level (tap to change). Hibi grades their practice for it, and it shows in the Buddy park"><span class="cp-k">Level</span><b>${cur || "Set…"}</b><span class="cp-car" aria-hidden="true">▾</span><select data-f="cefr" aria-label="English level">${(cur ? [] : [""]).concat(LV).map(l => `<option value="${l}" ${cur === l ? "selected" : ""}>${l || "Set level…"}</option>`).join("")}</select></label>`; })()}
     ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Archived" }, cur = ST[s.status] ? s.status : "active";
       return `<label class="cefr-pick st-pick st-${cur}" title="Status (tap to change)"><b>${ST[cur]}</b><span class="cp-car" aria-hidden="true">▾</span><select id="stStatus" aria-label="Status">${Object.keys(ST).map(k => `<option value="${k}" ${cur === k ? "selected" : ""}>${ST[k]}</option>`).join("")}</select></label>`; })()}</div>
-    <p class="muted small" style="margin:8px 0 0">${[s.level, s.schedule, (() => { const n = nextClassAt(s); return n ? "🗓 " + fmtNext(n) : ""; })()].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}${links ? `<span class="dlinks">${links}</span>` : ""}${(s.docs || []).length || resFor(s).length ? `<span class="resrow">` : ""}${(s.docs || []).length ? `<span class="docrow">${s.docs.map(g => `<a class="resb docb" href="${esc(g.url)}" target="_blank" rel="noopener" title="Only you see this">${/notion/.test(g.url) ? "📓" : "📎"} ${esc(g.title)}</a>`).join("")}</span>` : ""}${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}${(s.docs || []).length || resFor(s).length ? `</span>` : ""}</p>
-    ${autoArch(s) ? `<p class="muted small" style="margin:6px 0 0">📦 In <b>Archived</b> automatically: no class in over 4 weeks and nothing booked. They come back to Active by themselves after their next class.</p>` : ""}
-    <p class="muted small dmeta2">${[since(s), s.prevCourses || "", r ? `✓ On Hibi (${r.club === true ? "private + club" : "private student"})${hibiSeen(s) ? " · last active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}` : "Not linked to a Hibi account yet (links when they sign in with their email)"].filter(Boolean).map(esc).join(" · ")}</p>
-    <div class="stats">
-      ${p && st && st.size ? `<div class="stat tint k-green"><b>${Math.max(0, st.left)}</b><span>${p.unit} left</span></div><div class="stat tint k-amber"><b>${st.classesLeft}</b><span>${st.classesLeft === 1 ? "class" : "classes"} left (approx.)</span></div>` : ""}
-      ${p && st ? `<div class="stat tint k-sky"><b>${st.done}</b><span>classes this pack</span></div>` : ""}
-      ${p && st && deadline(p, st.first) ? `<div class="stat tint k-pink"><b>${fmtShort(deadline(p, st.first))}</b><span>pack ends</span></div>` : ""}
-      <div class="stat tint k-violet"><b>${s.classes.filter(c => c.kind !== "note").length}</b><span>classes in total</span></div>
-
+    <p class="dsub">${[s.level, s.schedule].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}</p>
+    ${(() => { const n = nextClassAt(s); return n ? `<div class="nextc">📅 Next class: ${esc(fmtNext(n))}</div>` : ""; })()}
+    ${links ? `<div class="lkrow">${links}</div>` : ""}
+    ${autoArch(s) ? `<p class="muted small" style="margin:10px 0 0">📦 In <b>Archived</b> automatically: no class in over 4 weeks and nothing booked. They come back to Active by themselves after their next class.</p>` : ""}
+    <div class="pstats">
+      ${p && st && st.size ? (() => { const left = Math.max(0, st.left), used = Math.min(100, Math.max(0, (st.size - left) / st.size * 100)), nm = String(p.label || "Pack").replace(/\s*[(–-].*$/, "").trim() || "Pack";
+        return `<div class="pst pst-main"><div class="psk">${esc(nm)}${p.paid === "half" ? " · ½ paid" : p.paid === "pending" ? " · not paid yet" : ""}</div><div class="psv">${left} <small>${p.unit} left · ≈${st.classesLeft} ${st.classesLeft === 1 ? "class" : "classes"}</small></div><div class="pbar"><i style="width:${(100 - used).toFixed(0)}%"></i></div><div class="psh">${st.done} ${st.done === 1 ? "class" : "classes"} so far in this pack</div></div>`; })() : p && st ? `<div class="pst pst-main"><div class="psk">${esc(String(p.label || "Pack"))}</div><div class="psv">${st.done} <small>${st.done === 1 ? "class" : "classes"} this pack</small></div></div>` : ""}
+      ${p && st && deadline(p, st.first) ? (() => { const dl = deadline(p, st.first), dd = Math.round((new Date(dl + "T12:00") - new Date(today() + "T12:00")) / 864e5);
+        return `<div class="pst"><div class="psk">Pack ends</div><div class="psv pv-pink">${fmtShort(dl)}</div><div class="psh">${dd < 0 ? "ended " + (-dd) + (dd === -1 ? " day" : " days") + " ago" : dd === 0 ? "today" : dd < 14 ? "in " + dd + (dd === 1 ? " day" : " days") : "in " + Math.round(dd / 7) + " weeks"}</div></div>`; })() : ""}
+      <div class="pst"><div class="psk">All classes</div><div class="psv pv-violet">${s.classes.filter(c => c.kind !== "note").length}</div><div class="psh">in total</div></div>
     </div>
+    ${(s.docs || []).length || resFor(s).length ? `<div class="dsec"><div class="dlbl">Resources on their My coaching${(s.docs || []).length ? " · your docs" : ""}</div><div class="resrow">${resFor(s).map(r => `<a class="resb" href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.note)}">${r.ico} ${esc(r.name)}${r.k === "fabulang" && fabLevel(s) ? " · " + fabLevel(s).toUpperCase() : ""}</a>`).join("")}${(s.docs || []).map(g => `<a class="resb docb" href="${esc(g.url)}" target="_blank" rel="noopener" title="Only you see this">${/notion/.test(g.url) ? "📓" : "📎"} ${esc(g.title)}</a>`).join("")}</div></div>` : ""}
+    ${(() => { const m = [since(s), s.prevCourses || "", r ? `✓ On Hibi (${r.club === true ? "private + club" : "private student"})${hibiSeen(s) ? " · last active " + new Date(hibiSeen(s) + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}` : "Not linked to a Hibi account yet (links when they sign in with their email)"].filter(Boolean);
+      return `<details class="dmeta"><summary>${esc(m[0] || "ℹ️ About")}</summary>${esc(m.slice(1).join(" · "))}</details>`; })()}
     <div class="tabs">${tabs.map(([k, l, c]) => `<button type="button" class="seg ${c}" data-tab="${k}" aria-pressed="${tab === k}">${l}${k === "words" ? ` (${new Set(s.words.map(w => nw(w.w)).concat((appWords[s.id] || []).map(w => nw(w && w.w)))).size})` : ""}</button>`).join("")}</div>
     <div id="tabBody">${({ classes: tClasses, packs: tPacks, info: tInfo, words: tWords, other: tOther }[tab] || tClasses)(s)}</div>`;
 }
@@ -1039,7 +1072,7 @@ function tClasses(s) {
     return `<tr class="${c.tab && c.tab !== "Class Log" ? "arch" : ""}"><td class="sw" style="--pc:${pc(c.pack)}" title="${num[c.id] ? "Class #" + num[c.id] + " of this pack" : ""}">${num[c.id] || ""}</td><td class="d">${c.date ? fmtD(c.date) : esc(c.dateText)}</td><td>${esc(c.topics)}</td><td>${esc(c.homework)}${c.extra ? `<div class="muted small">${esc(c.extra)}</div>` : ""}</td><td>${attB(c.att)}</td><td class="hr ${esc(c.hour || "")}">${esc(c.hour || "")}</td><td class="d">${c.credits ?? ""}</td><td class="act"><button class="ib" data-act="editRow" data-id="${c.id}">Edit</button><button class="ib del" data-act="delRow" data-id="${c.id}">✕</button></td></tr>`;
   }).join("");
   const hourNow = () => { const h = new Date().getHours(); return h >= 10 && h < 15 ? "Standard" : "Priority"; };
-  return bringUp(s) + recBox(s) + `<form class="frm tint k-sky" id="addClass" autocomplete="off">
+  return `<div class="acts-row">${bringUp(s)}${recBox(s)}</div>` + `<details class="logc"${window.__logOpen ? " open" : ""} ontoggle="window.__logOpen=this.open"><summary>＋ Log a class <small>· Claude fills these in every night</small></summary><form class="frm tint k-sky" id="addClass" autocomplete="off">
       <div class="fld"><label>Date</label><input type="date" name="date" value="${today()}" required></div>
       <div class="fld w2"><label>Topics covered</label><input name="topics" placeholder="fabulang: …, convo: …"></div>
       <div class="fld w3"><label>Homework</label><input name="homework" value="${esc((s.classes.filter(c => c.kind !== "note").pop() || {}).homework || "")}"></div>
@@ -1048,7 +1081,7 @@ function tClasses(s) {
       <div class="fld"><label>Credits</label><input type="number" name="credits" min="0" max="10" placeholder="auto"></div>
       <div class="fld w2"><label>Pack</label><select name="pack">${packOpts(s, p ? p.id : "")}</select></div>
       <div class="row frm-acts"><button type="button" data-act="addNote" title="A note without a class (e.g. 'moved Friday's class')">＋ Note only</button><button class="primary" type="submit">＋ Add class</button></div>
-    </form>
+    </form></details>
     <div class="tbl"><table><thead><tr><th title="Class number in its pack">#</th><th class="sortable" data-csort="${-clsSort}" title="Click to show ${clsSort < 0 ? "oldest" : "newest"} first" aria-sort="${clsSort < 0 ? "descending" : "ascending"}">Date ${clsSort < 0 ? "↓" : "↑"}</th><th>Topics</th><th>Homework</th><th>Attendance</th><th>Hour</th><th>Cr.</th><th></th></tr></thead><tbody>${body || `<tr><td colspan="8" class="muted">No classes yet.</td></tr>`}</tbody></table></div>`;
 }
 function tPacks(s) {
