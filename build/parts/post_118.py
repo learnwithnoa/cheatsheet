@@ -390,3 +390,10 @@ if '2026-1123-park-active' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1123-fill-retry' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1123-fill-retry", date:"November 23, 2026", title:"Auto-fill tries again ✨", items:[
+    ["✨","If a word didn't get its details","Sometimes the AI helper can't connect for a moment. Now Hibi tells you clearly when that happens, and words that are still missing something fill in by themselves the next time you open Hibi.","words"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

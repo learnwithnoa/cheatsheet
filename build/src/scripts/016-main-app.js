@@ -1710,6 +1710,8 @@ async function runEnrich(){
   enrBusy=false;
 }
 window.addEventListener("cs-sample-ready",()=>{ if(enrQ.size) runEnrich(); prBackfill(); });
+/* Nov 23 2026: words whose auto-fill failed (AI busy or couldn't connect) try again once each time Hibi opens (newest 20, last 30 days) */
+setTimeout(()=>{ if(window.__csViewAsMode||window.__csPreview) return; try{ const ids=words.filter(x=>needsInfo(x)&&Date.now()-(+x.t||0)<30*864e5&&Date.now()-(+x.t||0)>90000).slice(-20).map(x=>x.id); if(ids.length) queueEnrich(ids); }catch(e){} },9000);
 /* words saved before pronunciation existed get it quietly, a few at a time */
 let prRuns=0, prBusy=false;
 async function prBackfill(){ if(prBusy||prRuns>=3||!aiOK()) return; const fs=fillF(); if(!fs.includes("pr")) return;
@@ -1775,7 +1777,10 @@ async function completeAll(btn,fs){
     for(let i=0;i<list.length;i+=20){ st.textContent="✨ Filling in your words… "+Math.min(i,list.length)+" of "+list.length; done+=await enrichBatch(list.slice(i,i+20),fs); }
     const nm={m:"Spanish translation",def:"simple meaning",pos:"word type",e:"example sentence",pr:"pronunciation"}, li=fs.map(f=>nm[f]);
     st.textContent="✓ Done! Filled in "+(li.length>1?li.slice(0,-1).join(", ")+" and "+li[li.length-1]:li[0])+" for "+done+(done===1?" word":" words")+". Anything you wrote yourself stayed the same.";
-  }catch(e){ console.warn(e); st.textContent="Stopped after "+done+" words: the AI didn't answer. Try again in a minute (it continues where it stopped)."; }
+  }catch(e){ console.warn(e);
+    /* Nov 23 2026: say clearly that it didn't work (a student thought "nothing happened") */
+    st.innerHTML=(done?"✓ Filled in "+done+(done===1?" word":" words")+", then ":"")+"⚠️ "+(done?"the":"The")+" AI helper couldn't connect right now, so "+(done?"the rest weren't":"nothing was")+" filled in. <b>Reload the page and try again in a few minutes.</b> Words that still miss something also fill in by themselves the next time you open Hibi.";
+    toast("⚠️ The AI helper couldn't connect. Try again in a few minutes."); }
   btn.disabled=false;
 }
 
