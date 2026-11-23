@@ -2057,3 +2057,15 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .intv-list details{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .intv-list summary{cursor:pointer;font-weight:700}
 .esp-more .linklike{all:unset;cursor:pointer;color:var(--c-sky,#4F9DF0);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
+/* 🖨️ Print or save as PDF button on module pages (062-print-module.js) */
+#v-quiz .ps-head{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap}
+#v-quiz .ps-head h1{margin-right:auto}
+#v-quiz .ps-head .ps-recbtn{float:none;margin:0;order:3}
+.prt-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:9px;padding:7px 15px 7px 8px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px var(--body);line-height:1.2;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.prt-btn[hidden]{display:none}
+.prt-btn:hover{border-color:var(--bright);transform:translateY(-1px)}
+.prt-btn:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.prt-btn .pi{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#FFE7A3,#FFC94D);font-size:15px;flex:none}
+.prt-btn small{display:block;font:600 11.5px var(--body);color:var(--muted);margin-top:1px}
+@media (max-width:640px){#v-quiz .ps-head{margin-bottom:16px}#v-quiz .ps-head h1{margin-bottom:0;flex-basis:100%}}

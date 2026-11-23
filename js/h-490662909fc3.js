@@ -3501,6 +3501,7 @@ Since I joined the company, I ___ two promotions. (get)|have got/have gotten/'ve
   const mslug=id=>String(MODS[id].name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   function hashFor(c){ if(!c) return "#quiz"; if(c==="vset") c="vocab"; const p=par(c), me=c==="ps"?mslug(M):PSLUG[c]; return "#quiz/"+(p&&PSLUG[p]?PSLUG[p]+"/":"")+(me||""); }
   window.__prHash=()=>hashFor(cur);
+  window.__prModFull=()=>MODS[M];   /* 🖨️ print (062-print-module.js) reads the current module's stages and test */
   window.__prMod=()=>({id:M,name:MODS[M].name,stages:MODS[M].stages.map(st=>({n:st.n,t:st.t,adv:!!st.adv})),path:hashFor("ps").slice(1)});
   window.__csDeep=window.__csDeep||{}; window.__csDeep.quiz={hash:()=>hashFor(cur),open:p=>window.__prOpenPath(p)};
   function syncUrl(){ try{ if(view.hidden) return; const h=hashFor(cur); if(location.hash!==h) history.replaceState(Object.assign({},history.state||{cs:1,v:"quiz"},{pp:cur,m:M}),"",h); }catch(e){} }
@@ -5146,6 +5147,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1123-print", date:"November 23, 2026", title:"Print a whole module 🖨️", items:[
+    ["🖨️","Print it or save it as a PDF","Like studying on paper? Open any grammar module (or Job interviews) and tap <b>🖨️ Print or save as PDF</b> at the top. You get the whole thing: the 📖 Learn it lesson (basics and advanced), every stage with a line to write your answer, the final test and an answer key at the end.","quiz"]
+  ]},
   {id:"2026-1123-wordnums", date:"November 23, 2026", title:"Numbered words 🔢", items:[
     ["🔢","Every word has a number","In <b>My notebook</b>, each word now shows a number like <b>#65</b> (#1 is the first word you saved). Want Noa to look at a word? Just tell him the number. You can also type <b>#65</b> in the search box to find it.","words"]
   ]},

@@ -367,3 +367,10 @@ if '2026-1123-wordnums' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1123-print' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1123-print", date:"November 23, 2026", title:"Print a whole module 🖨️", items:[
+    ["🖨️","Print it or save it as a PDF","Like studying on paper? Open any grammar module (or Job interviews) and tap <b>🖨️ Print or save as PDF</b> at the top. You get the whole thing: the 📖 Learn it lesson (basics and advanced), every stage with a line to write your answer, the final test and an answer key at the end.","quiz"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

@@ -3207,6 +3207,18 @@ html.cs-calm .cs-rxpal button{transition:none}
 .intv-list details{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .intv-list summary{cursor:pointer;font-weight:700}
 .esp-more .linklike{all:unset;cursor:pointer;color:var(--c-sky,#4F9DF0);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
+/* 🖨️ Print or save as PDF button on module pages (062-print-module.js) */
+#v-quiz .ps-head{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap}
+#v-quiz .ps-head h1{margin-right:auto}
+#v-quiz .ps-head .ps-recbtn{float:none;margin:0;order:3}
+.prt-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:9px;padding:7px 15px 7px 8px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px var(--body);line-height:1.2;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.prt-btn[hidden]{display:none}
+.prt-btn:hover{border-color:var(--bright);transform:translateY(-1px)}
+.prt-btn:focus-visible{outline:3px solid var(--bright);outline-offset:2px}
+.prt-btn .pi{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#FFE7A3,#FFC94D);font-size:15px;flex:none}
+.prt-btn small{display:block;font:600 11.5px var(--body);color:var(--muted);margin-top:1px}
+@media (max-width:640px){#v-quiz .ps-head{margin-bottom:16px}#v-quiz .ps-head h1{margin-bottom:0;flex-basis:100%}}
 </style>
 
 <header class="top">
@@ -4476,7 +4488,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find five parts:</p>
     <ul class="wl-list">
       <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My notebook</b> to practice just those.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect, talking about the future), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam.</div></li>
+      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect, talking about the future), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam. Like paper? <b>🖨️ Print or save as PDF</b> (top right of a module) gives you the whole lesson, every stage and the answers.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">👔</span><div><b>English for Specific Purposes:</b> the English for one real situation, starting with <b>job interviews</b>: 8 stages plus a <b>🎤 Practice interview</b> where you write your answers and Hibi checks your English (not the content).</div></li>
@@ -4542,10 +4554,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-43e38f811e4c.js"></script>
+<script src="js/h-490662909fc3.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261123092411"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261123101855"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -5059,7 +5071,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
     if(last==="members"&&!document.querySelector("#v-members:not([hidden])")){ e.preventDefault(); e.stopImmediatePropagation(); const m=document.querySelector('.navbtn[data-go="members"]'); if(m) m.click(); }
   },true);
 })();
-</script><script src="js/h-d83da1da7733.js"></script>
+</script><script src="js/h-d83da1da7733.js"></script><script src="js/h-11f425fee0d9.js"></script>
 <script type="module" src="m-c5c4b9998c3e.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */
