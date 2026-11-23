@@ -46,6 +46,11 @@ h2{font:700 22px var(--display);margin:22px 0 10px}
 input[type=search]{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;margin-bottom:10px}
 .frm-acts{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;margin-top:4px;padding-top:10px;border-top:1px dashed var(--line)}
 .recf{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.recl{margin:8px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);display:grid;gap:6px}
+.recl-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px 10px;align-items:center;padding-top:6px;border-top:1px dashed var(--line)}
+.recl-r>span:last-child{grid-column:1/-1}
+.recl-st{font:800 12px var(--body);padding:2px 9px;border-radius:99px;background:var(--surface);border:1.5px solid var(--line)}
+.recl-st.done{color:#1F9D5C;border-color:#1F9D5C}.recl-st.go{color:#C98A00;border-color:#E0A100}.recl-st.no{color:var(--muted)}
 .recf select,.recf input{font:600 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px}.recf input{flex:1;min-width:200px}
 .tenkey{display:flex;align-items:center;gap:3px;margin:6px 2px 8px;font-size:11.5px;color:var(--muted)}.tenkey[hidden]{display:none}.tenkey i{width:16px;height:6px;border-radius:3px}.tenkey span{margin:0 4px}
 .wtools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}.wsel-all{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:14px}
@@ -938,10 +943,33 @@ const REC_MODS = { prs: { name: "Present simple", stages: ["I, you, we, they", "
   fut: { name: "Talking about the future", stages: ["will: decide now, offer, promise", "going to: plans", "Predictions: going to or will", "Present continuous: arrangements", "Present simple: timetables", "Real life mix"] },
   ed: { name: "-ed endings (pronunciation)", stages: ["Extra syllable or not?", "The /t/ sound", "The /d/ sound", "Mix it up", "Spelling tricks", "Odd one out", "Feelings: -ed adjectives"] },
   int: { name: "Job interviews (Specific Purposes)", stages: ["Tell me about yourself", "Your experience and results", "Telling a work story", "Strengths and weaknesses", "What would you do if…?", "Goals and the future", "Buying time and staying calm", "Your questions for them"] } };
+/* 💡 what this student has been recommended (from here or from Hibi members / 💡 Recommend in a module), with their progress:
+   same data as Hibi members → 💡 Recommended (their ncs-modrec + ncs-mods, dates in t-recs) */
+const recData = {}; let recAtAll = null;
+async function loadRecs(s) {
+  if (!s.uid || recData[s.id] === "loading") return; recData[s.id] = "loading";
+  try {
+    const rd = async (u, k) => { const d = await getDoc(doc(db, "users", u, "data", k)); try { return d.exists() && !d.data().deleted ? JSON.parse(d.data().json || "null") : null; } catch (e) { return null; } };
+    const [modrec, mods, at] = await Promise.all([rd(s.uid, "ncs-modrec"), rd(s.uid, "ncs-mods"), recAtAll ? Promise.resolve(recAtAll) : rd(tUid, "t-recs")]);
+    recAtAll = at || {}; recData[s.id] = { modrec: modrec || {}, mods: mods || {} };
+  } catch (e) { console.warn("recs", e); recData[s.id] = { modrec: {}, mods: {} }; }
+  if (S_() === s && tab === "classes") renderDetail();
+}
+function recList(s) {
+  if (!s.uid) return "";
+  const d = recData[s.id]; if (!d) { loadRecs(s); return ""; } if (d === "loading") return "";
+  const day = t => new Date(t).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  const L = { done: "✓ Done", go: "Started", no: "Not started" };
+  const rows = Object.entries(d.modrec || {}).map(([mod, n]) => { const T = REC_MODS[mod]; if (!T) return null;
+    const p = d.mods[mod] || {}, b = p.b || {}, tOut = !!(p.to && p.to.sc >= 15), r = (recAtAll[s.uid] || {})[mod], at = r && r.at ? r.at : 0; let st, prog;
+    if (n === "all") { const pass = T.stages.filter((_, i) => (b[i + 1] | 0) >= 7).length, tried = T.stages.filter((_, i) => b[i + 1] != null).length; st = tOut || pass === T.stages.length ? "done" : tried ? "go" : "no"; prog = tOut ? "🎓 tested out" : `${pass} / ${T.stages.length} stages passed`; }
+    else { const v = b[n]; st = tOut || (v | 0) >= 7 ? "done" : v != null ? "go" : "no"; prog = tOut ? "🎓 tested out" : v != null ? `best ${v}/10` : "not tried yet"; }
+    return { mod, n, T, st, prog, at }; }).filter(Boolean).sort((a, b) => (b.at || 0) - (a.at || 0));
+  if (!rows.length) return `<p class="muted small" style="margin:6px 0 0">💡 Nothing recommended right now.</p>`;
+  return `<div class="recl"><b class="small">💡 Recommended (${rows.length})</b>${rows.map(r => `<div class="recl-r"><span><b>${esc(r.T.name)}</b> · ${r.n === "all" ? "⭐ whole module" : `stage ${r.n}: ${esc(r.T.stages[r.n - 1] || "")}`}</span><span class="muted small">${r.at ? day(r.at) : "before Nov 17"}</span><span class="recl-st ${r.st}">${L[r.st]}</span><span class="muted small">${esc(r.prog)}</span></div>`).join("")}</div>`;
+}
 function recBox(s) {
-  const mine = ((meta && meta.recs) || []).filter(r => r.hub === s.id && !r.done).slice(-3).reverse();
-  const list = mine.length ? `<span class="muted small">Showing now: ${mine.map(r => esc(r.mod ? (REC_MODS[r.mod] ? REC_MODS[r.mod].name : r.mod) + (r.stage ? " · " + r.stage : " (whole module)") : r.title || r.page || r.pack)).join(", ")}</span>` : "";
-  if (!s._recOpen) return `<div class="row" style="margin:8px 0 0;gap:8px;align-items:center"><button type="button" class="ib" data-act="recOpen">⭐ Recommend a module</button>${list}</div>`;
+  if (!s._recOpen) return `<div class="row" style="margin:8px 0 0;gap:8px;align-items:center"><button type="button" class="ib" data-act="recOpen">⭐ Recommend a module</button></div>${recList(s)}`;
   return `<form id="recForm" class="recf" onsubmit="return false"><b>⭐ Recommend a module</b><select name="mod">${Object.entries(REC_MODS).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("")}</select><select name="stage"><option value="0">⭐ The whole module</option>${REC_MODS.prs.stages.map((t, i) => `<option value="${i + 1}">${i + 1}. ${esc(t)}</option>`).join("")}</select><input name="why" placeholder="Why (optional, they see it): e.g. said “she work”" maxlength="120"><button type="button" class="primary" data-act="recGo">Recommend</button><button type="button" data-act="recOpen">Cancel</button><span class="muted small" style="flex-basis:100%">They see it on My coaching under “Noa recommends”, and in Practice that stage gets a ⭐.</span></form>`;
 }
 let barMode = "time"; try { barMode = localStorage.getItem("cs-hub-lbar") === "pack" ? "pack" : "time"; } catch (e) {}
@@ -1228,6 +1256,7 @@ document.addEventListener("click", e => {
     meta.recs = (meta.recs || []).concat({ id: uid(), hub: s.id, name: s.name, mod, stage: st || 0, title: st ? T.stages[st - 1] : "The whole module", why, from: "Noa", date: today() }).slice(-120); saveMeta(); publish(s, true);
     if (s.uid) (async () => { try { const d = await getDoc(doc(db, "users", s.uid, "data", "ncs-modrec")); let v = {}; try { v = d.exists() ? JSON.parse(d.data().json || "{}") || {} : {}; } catch (e2) {} v[mod] = st || "all"; await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() });
       const tr = doc(db, "users", tUid, "data", "t-recs"), td = await getDoc(tr); const m = td.exists() ? JSON.parse(td.data().json || "{}") || {} : {}; m[s.uid] = Object.assign({}, m[s.uid], { [mod]: { at: Date.now(), n: st || "all" } }); await setDoc(tr, { json: JSON.stringify(m), deleted: false, at: serverTimestamp() }); } catch (e2) { console.warn(e2); } })();
+    if (recData[s.id] && recData[s.id] !== "loading") { recData[s.id].modrec[mod] = st || "all"; recAtAll = recAtAll || {}; recAtAll[s.uid] = Object.assign({}, recAtAll[s.uid], { [mod]: { at: Date.now(), n: st || "all" } }); }
     s._recOpen = false; renderDetail(); toast("⭐ Recommended to " + s.name.split(" ")[0] + ": " + T.name + (st ? " · stage " + st : " (whole module)")); return; }
   if (act === "pinOpen") { s._pinOpen = true; renderDetail(); const i = document.querySelector("#pinForm input"); if (i) i.focus(); return; }
   if (act === "pinDone") { const x = (s.pins || []).find(x => x.id === id); if (x) x.done = today(); save(s); renderDetail(); return; }
