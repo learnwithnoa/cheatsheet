@@ -965,6 +965,8 @@ html.cs-out-guess body>*:not(#authGate):not(script){visibility:hidden}
 .lp-scr-pet{position:relative}.lp-miki{position:relative;display:block;width:86px}.lp-miki .lp-pet{width:86px;height:auto;display:block;image-rendering:pixelated}
 .lp-miki.bd-shiny::after{content:"✦";position:absolute;top:2px;left:-2px;color:#F9D25C;font-size:16px;text-shadow:0 0 6px rgba(249,210,92,.8)}.lp-miki.bd-shiny::before{content:"✦";position:absolute;bottom:10px;right:-6px;color:#7CC4FF;font-size:13px;text-shadow:0 0 6px rgba(124,196,255,.8)}
 .lp-price a,.lp-faq a{color:var(--lp-royal);font-weight:700}
+.lp-price a{white-space:nowrap}
+@media (min-width:900px){.lp-prog .lp-price{min-height:2.9em}}  /* both cards keep a 2-line price, so their buttons line up */
 .lp-shot b{display:block;font-size:15.5px}.lp-shot span{display:block;font-size:13.5px;line-height:1.45;color:var(--lp-muted);margin-top:2px}
 .lp-q{flex:none;width:82%;scroll-snap-align:start;margin:0;border-radius:22px;padding:18px 16px;display:flex;flex-direction:column;gap:12px}
 .lp-who{display:flex;align-items:center;gap:12px}.lp-who img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;border:2.5px solid #fff;box-shadow:0 0 0 2px var(--c)}
@@ -4738,7 +4740,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-fb46a3c5a7bf.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124185101"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124192137"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
