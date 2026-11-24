@@ -89,20 +89,96 @@
     if(m==="sent") return `${langSw()}${LOGO}
       <h2 id="agTitle">${L("Thanks! 🙌","¡Gracias! 🙌")}</h2><p>${L("Noa got your request. He’ll email you as soon as you’re in (usually within a day). Then come back and sign in with Google using <b>the same email</b>.","Noa recibió tu solicitud. Te escribirá apenas estés dentro (normalmente en menos de un día). Luego vuelve e inicia sesión con Google usando <b>el mismo correo</b>.")}</p>
       <button type="button" class="ag-btn ag-alt" data-signin>${G}<span>${L("I’m approved: continue with Google","Ya me aprobaron: continuar con Google")}</span></button>`;
-    return `${langSw()}${LOGO}
-      <h2 id="agTitle">${L("Learn English with Noa","Aprende inglés con Noa")}</h2>
-      <p class="ag-what">${L("Hibi is Noa’s all-in-one English space: practice grammar and vocabulary, save every new word and see your progress grow, with a real coach behind it.","Hibi es el espacio de inglés de Noa, todo en uno: practica gramática y vocabulario, guarda cada palabra nueva y mira cómo crece tu progreso, con un coach real detrás.")}</p>
-      <div class="ag-book"><b>${L("Interested in 1:1 classes?","¿Te interesan las clases 1:1?")}</b>
-        <a class="ag-btn ag-go" href="${BOOK_FORM}" target="_blank" rel="noopener">📅 ${L("Book your free kickoff","Agenda tu kickoff gratis")}</a>
-        <span>${L("A relaxed 30-minute chat to see where you are. No cost, no commitment.","Una conversación relajada de 30 minutos para ver en qué nivel estás. Sin costo y sin compromiso.")}</span></div>
-      <p class="ag-club">🌼 ${L("Curious about <b>Noa’s English Club</b>? Live conversation classes every week, with a free 2-week trial.","¿Te llama la atención <b>Noa’s English Club</b>? Clases de conversación en vivo cada semana, con 2 semanas de prueba gratis.")} <button type="button" class="ag-link ag-inl" data-agjoin>${L("Ask to join →","Pide unirte →")}</button></p>
-      <div class="ag-div"><span>${L("Already a student or member?","¿Ya eres alumno o del club?")}</span></div>
-      <button type="button" class="ag-btn" data-signin>${G}<span>${L("Continue with Google","Continuar con Google")}</span></button>
+    return landing(); }
+  /* Nov 24 2026: the signed-out page is a real landing page (option D, "Noa first"): hibi.cl is the only link in Noa's bios, so it sells
+     the classes first (who Noa is, the free kickoff, the club), shows Hibi, real student quotes, then sign-in and "ask for access".
+     Same buttons as before: data-signin, data-agjoin (access form with "joining the club" picked), #agNew + reqForm, the EN/ES switch. */
+  const IMG=n=>new URL("img/lp/"+n+".jpg",document.baseURI).href;
+  const IG="https://instagram.com/learnwithnoa";
+  function landing(){
+    const quote=(img,name,sub,q,tr,c)=>`<figure class="lp-q lp-glass" style="--c:${c}"><figcaption class="lp-who"><img src="${IMG(img)}" alt="" loading="lazy" width="56" height="56"><span><b>${name}</b><small>${sub}</small></span></figcaption><blockquote>${q}</blockquote>${tr?`<p class="lp-tr">${tr}</p>`:""}</figure>`;
+    const feat=(e,c,t,d)=>`<div class="lp-shot lp-glass" style="--c:${c}"><div class="lp-scr" aria-hidden="true">${e}</div><b>${t}</b><span>${d}</span></div>`;
+    const faq=(q,a)=>`<details class="lp-faq lp-glass"><summary>${q}</summary><p>${a}</p></details>`;
+    let th=""; try{ th=localStorage.getItem("ncs-theme")||""; }catch(e){}
+    const dark=th?!["light","unicorn","sepia"].includes(th):!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);
+    return `<div class="lp${dark?" lp-dark":""}">
+    <span class="lp-blob" style="left:-120px;top:40px;background:#60A5FA"></span><span class="lp-blob" style="right:-140px;top:560px;background:#5EEAD4"></span><span class="lp-blob" style="left:-150px;top:1700px;background:#FBBF24"></span>
+    <header class="lp-top"><span class="lp-logo">Hibi<small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar")}</button></header>
+    <main class="lp-main">
+    <section class="lp-hero">
+      <div class="lp-hero-pic"><div class="lp-face"><img src="${IMG("noa")}" alt="${L("Noa at his desk","Noa en su escritorio")}" width="240" height="240"><span class="lp-bubble lp-glass" aria-hidden="true">hi! 👋</span></div></div>
+      <div class="lp-hero-txt">
+      <h1 id="agTitle">${L(`Speak English without <span class="lp-ul">freezing.</span>`,`Habla inglés sin <span class="lp-ul">congelarte.</span>`)}</h1>
+      <p class="lp-lede">${L("I’m Noa, an English coach from Florida living in Santiago. 1:1 classes, a conversation club, and Hibi, my own app to practice a little every day.","Soy Noa, coach de inglés de Florida y vivo en Santiago. Clases 1:1, un club de conversación y Hibi, mi propia app para practicar un poco cada día.")}</p>
+      <a class="lp-btn lp-amber" href="${BOOK_FORM}" target="_blank" rel="noopener">${L("Book a free 30-minute kickoff","Agenda tu kickoff gratis de 30 minutos")}</a>
+      <p class="lp-small">${L("For 1:1 classes. On Zoom, no cost, no commitment.","Para clases 1:1. Por Zoom, sin costo y sin compromiso.")}</p>
+      <p class="lp-proof"><span class="lp-faces" aria-hidden="true"><img src="${IMG("mel")}" alt=""><img src="${IMG("kiki")}" alt=""><img src="${IMG("gia")}" alt=""><img src="${IMG("lau")}" alt=""></span>${L("Students in Chile and abroad","Estudiantes en Chile y otros países")}</p>
+      </div>
+    </section>
+    <div class="lp-stats lp-glass"><div><b>2014</b><span>${L("teaching since","enseñando desde")}</span></div><div><b>4</b><span>${L("club classes a week","clases del club por semana")}</span></div><div><b>6.0</b><span>${L("Melissa’s IELTS (needed 4.5)","IELTS de Melissa (necesitaba 4.5)")}</span></div></div>
+
+    <section class="lp-sec"><h2>${L("Sound familiar?","¿Te suena?")}</h2>
+      <div class="lp-pains">
+        <div class="lp-pain lp-glass"><i aria-hidden="true">😶</i><span>${L("You understand everything, but when it’s your turn to talk, nothing comes out.","Entiendes todo, pero cuando te toca hablar, no te sale nada.")}</span></div>
+        <div class="lp-pain lp-glass"><i aria-hidden="true">📝</i><span>${L("Years of grammar classes, and you still translate in your head.","Años de clases de gramática, y todavía traduces en tu cabeza.")}</span></div>
+        <div class="lp-pain lp-glass"><i aria-hidden="true">⏰</i><span>${L("An interview, an exam or a trip is coming, and you need it now.","Se viene una entrevista, un examen o un viaje, y lo necesitas ya.")}</span></div>
+      </div>
+      <div class="lp-fix"><b>${L("That’s what we fix.","Eso es lo que arreglamos.")}</b>${L("Lots of speaking, the grammar you actually need, and a little practice every day on Hibi so it sticks. I’m AuDHD myself, so if your brain works a little differently too, you’re in good company.","Mucha conversación, la gramática que de verdad necesitas y un poco de práctica cada día en Hibi para que se quede. Yo soy AuDHD, así que si tu cerebro funciona un poco distinto, estás en buena compañía.")}</div>
+    </section>
+
+    <section class="lp-sec"><h2>${L("Pick your way in","Elige cómo empezar")}</h2>
+      <div class="lp-progs">
+      <div class="lp-prog lp-glass" style="--c:var(--lp-orange);--g:linear-gradient(90deg,#FBBF24,#F97316)"><span class="lp-tag">${L("1:1 COACHING","COACHING 1:1")}</span><h3>${L("Classes built around you","Clases hechas para ti")}</h3>
+        <p class="lp-for">${L("For a goal (a job interview, a move abroad, IELTS or TOEFL) or just to speak with more fluency and confidence. Beginners welcome.","Para una meta (una entrevista de trabajo, irte a vivir afuera, el IELTS o el TOEFL) o simplemente para hablar con más fluidez y seguridad. Desde nivel principiante.")}</p>
+        <ul><li>${L("45-minute classes on Zoom, all recorded","Clases de 45 minutos por Zoom, todas grabadas")}</li><li>${L("Test prep for IELTS, TOEFL and other exams","Preparación para IELTS, TOEFL y otros exámenes")}</li><li>${L("A recap with exercises on Hibi after every class","Un resumen con ejercicios en Hibi después de cada clase")}</li><li>${L("A progress report every 3 weeks","Un reporte de progreso cada 3 semanas")}</li></ul>
+        <a class="lp-btn lp-amber" href="${BOOK_FORM}" target="_blank" rel="noopener">${L("Book a free kickoff","Agenda tu kickoff gratis")}</a>
+        <p class="lp-price">${L("From $100.000 CLP / US$110 a month · 15% off your first pack","Desde $100.000 CLP / US$110 al mes · 15% de descuento en tu primer pack")}</p></div>
+      <div class="lp-prog lp-glass" style="--c:var(--lp-teal);--g:linear-gradient(90deg,#34D399,#0D9488)"><span class="lp-tag">NOA’S ENGLISH CLUB</span><h3>${L("Speak more, every week","Habla más, cada semana")}</h3>
+        <p class="lp-for">${L("Live conversation classes on Zoom with people at your level (B1 to C1). Chile time.","Clases de conversación en vivo por Zoom con gente de tu nivel (B1 a C1). Hora de Chile.")}</p>
+        <div class="lp-wk"><span class="d">${L("MON","LUN")}</span><span>🧠 Deep Dive</span><span class="t">8:00 pm</span><span class="d">${L("WED","MIÉ")}</span><span>🃏 Wildcard</span><span class="t">8:00 pm</span><span class="d">${L("THU","JUE")}</span><span>💬 Word Up</span><span class="t">8:00 pm</span><span class="d">${L("FRI","VIE")}</span><span>😎 Free Talk</span><span class="t">2:30 pm</span></div>
+        <button type="button" class="lp-btn lp-green" data-agjoin>${L("Try the club free for 2 weeks","Prueba el club gratis por 2 semanas")}</button>
+        <p class="lp-price">${L("Ask to join, Noa opens your account and your 2 free weeks start.","Pide unirte, Noa abre tu cuenta y empiezan tus 2 semanas gratis.")}</p></div>
+      </div>
+    </section>
+
+    <section class="lp-sec"><h2>${L("And between classes: Hibi","Y entre clases: Hibi")}</h2><p class="lp-sub">${L("Included for every student and club member.","Incluido para cada estudiante y miembro del club.")}</p>
+      <div class="lp-show">
+        ${feat("📒","#3B82F6",L("My notebook","Mi cuaderno"),L("Save any word from class. Hibi fills in the meaning and turns them into flashcards.","Guarda cualquier palabra de la clase. Hibi completa el significado y la convierte en flashcards."))}
+        ${feat("🧩","#14B8A6",L("Grammar in stages","Gramática por etapas"),L("Short rounds that start easy and get harder, explained in English and Spanish.","Rondas cortas que empiezan fácil y se ponen más difíciles, explicadas en inglés y español."))}
+        ${feat("🎓","#F59E0B",L("Your classes","Tus clases"),L("Recaps, homework and recordings, all in one place.","Resúmenes, tareas y grabaciones, todo en un solo lugar."))}
+        ${feat("🐾","#A78BFA",L("A study buddy","Un compañero de estudio"),L("Practice and it grows, earns toys and decorates its room.","Practica y crece, gana juguetes y decora su pieza."))}
+      </div>
+    </section>
+
+    <section class="lp-sec"><h2>${L("Don’t take my word for it","No me creas a mí")}</h2>
+      <div class="lp-quotes">
+        ${quote("mel","Melissa",L("IELTS: needed 4.5 → got 6.0","IELTS: necesitaba 4.5 → sacó 6.0"),"Gracias por tanto, no he parado de llorar, estoy más feliz que la cresta.",L("“Thank you for everything, I haven’t stopped crying, I’m so happy.”",""),"var(--lp-orange)")}
+        ${quote("kiki","Kiki",L("1:1 classes","Clases 1:1"),"Lo que más valoro de las clases con Noa es su paciencia y tolerancia… He tenido muuuchos profes de inglés pero Noa el mejor, totalmente recomendable!",L("“What I value most is his patience… I’ve had so many English teachers, but Noa is the best.”",""),"var(--lp-pink)")}
+        ${quote("gia","Giacomo","Noa’s English Club","I’ve been able to improve my fluency and have long conversations.",L("","“He podido mejorar mi fluidez y tener conversaciones largas.”"),"var(--lp-royal)")}
+        ${quote("lau","Laura",L("Now hosts Free Talk Friday","Hoy dirige Free Talk Friday"),"One day, I made up my mind… I think that I pushed the on button.",L("","“Un día me decidí… creo que apreté el botón de encendido.”"),"var(--lp-teal)")}
+      </div>
+    </section>
+
+    <section class="lp-sec lp-faqs"><h2>${L("Questions","Preguntas")}</h2>
+      ${faq(L("How much do classes cost?","¿Cuánto cuestan las clases?"),L("1:1 plans start at $100.000 CLP or US$110 a month, and you get 15% off your first class pack. The club starts with 2 free weeks.","Los planes 1:1 parten en $100.000 CLP o US$110 al mes, y tienes 15% de descuento en tu primer pack de clases. El club empieza con 2 semanas gratis."))}
+      ${faq(L("Do I need a good level to start?","¿Necesito un buen nivel para empezar?"),L("No. 1:1 classes work for every level, beginners included. The club is best from B1 (you can hold a simple conversation).","No. Las clases 1:1 sirven para todos los niveles, también principiante. El club es ideal desde B1 (puedes mantener una conversación simple)."))}
+      ${faq(L("What happens in the kickoff?","¿Qué pasa en el kickoff?"),L("30 minutes on Zoom. We talk about what you want English for, I hear where you are, and you decide if it’s for you.","30 minutos por Zoom. Conversamos sobre para qué quieres el inglés, escucho en qué nivel estás y tú decides si es para ti."))}
+      ${faq(L("What’s Hibi, and can I sign up myself?","¿Qué es Hibi y puedo registrarme yo?"),L("Hibi is Noa’s study app, included for his students and club members. It’s invite-only for now: ask for an account below and Noa opens it, usually the same day.","Hibi es la app de estudio de Noa, incluida para sus estudiantes y miembros del club. Por ahora es solo por invitación: pide una cuenta más abajo y Noa la abre, normalmente el mismo día."))}
+    </section>
+
+    <section class="lp-end lp-glass"><h2>${L("Your first step is free","Tu primer paso es gratis")}</h2><p>${L("30 minutes on Zoom. Bring your goal, I’ll bring the plan.","30 minutos por Zoom. Tú traes tu meta, yo traigo el plan.")}</p>
+      <a class="lp-btn lp-amber" href="${BOOK_FORM}" target="_blank" rel="noopener">${L("Book a free kickoff","Agenda tu kickoff gratis")}</a></section>
+
+    <section class="lp-in lp-glass"><h2>${L("Already a student?","¿Ya eres estudiante?")}</h2><p>${L("Sign in with Google and pick up where you left off.","Entra con Google y sigue donde quedaste.")}</p>
+      <button type="button" class="ag-btn lp-g" data-signin>${G}<span>${L("Continue with Google","Continuar con Google")}</span></button>
       <p class="ag-msg" id="agMsg" role="alert" hidden></p>
       <details class="ag-new" id="agNew"><summary>${L("New here? Ask Noa for access","¿Eres nuevo? Pide acceso a Noa")}</summary>
-      <p>${L("Noa will email you when you’re in, and then you sign in with Google.","Noa te escribirá cuando estés dentro, y luego inicias sesión con Google.")}</p>
+      <p>${L("Noa will email you when you’re in, and then you sign in with Google.","Noa te escribirá cuando estés dentro, y luego entras con Google.")}</p>
       ${reqForm("",false)}</details>
-      <p class="ag-small">${L("Hibi only uses your name and email to save your progress. Noa never sees your password.","Hibi solo usa tu nombre y correo para guardar tu progreso. Noa nunca ve tu contraseña.")}</p>`; }
+      <p class="ag-small">${L("Hibi only uses your name and email to save your progress. Noa never sees your password.","Hibi solo usa tu nombre y correo para guardar tu progreso. Noa nunca ve tu contraseña.")}</p></section>
+    </main>
+    <footer class="lp-foot">Hibi <span lang="ja">日々</span> · ${L("made by Noa","hecho por Noa")} · <a href="${IG}" target="_blank" rel="noopener">@learnwithnoa</a></footer>
+    </div>`; }
   function reqForm(em,signed){ return `<form class="ag-form" data-agreq>
       <label>${L("Your name","Tu nombre")}<input name="name" required maxlength="80" autocomplete="name"></label>
       <label>${L("Your email","Tu correo")} <small>${L("(the Google account you’ll sign in with)","(la cuenta de Google con la que entrarás)")}</small><input name="email" type="email" required maxlength="120" autocomplete="email" value="${esc(em)}" ${signed?"readonly":""}></label>
@@ -117,7 +193,7 @@
   function show(m){
     if(window.__csPreview) return;
     if(!gate){ gate=document.createElement("div"); gate.id="authGate"; gate.setAttribute("role","dialog"); gate.setAttribute("aria-modal","true"); gate.setAttribute("aria-labelledby","agTitle"); document.body.appendChild(gate); }
-    if(mode!==m||!gate.innerHTML){ mode=m; gate.innerHTML=`<div class="ag-card">${card(m)}</div>`; }
+    if(mode!==m||!gate.innerHTML){ mode=m; const lp=!["pending","retry","sent"].includes(m); gate.classList.toggle("ag-lp",lp); gate.innerHTML=lp?card(m):`<div class="ag-card">${card(m)}</div>`; }
     gate.hidden=false; document.documentElement.classList.add("ag-lock");
     [...document.body.children].forEach(el=>{ if(el!==gate&&!el.matches("script")) el.inert=true; });
   }

@@ -415,3 +415,11 @@ if '2026-1124-recs' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1124-landing' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1124-landing", date:"November 24, 2026", title:"A new front page for hibi.cl 🏡", items:[
+    ["👋","For people who aren't in Hibi yet","hibi.cl now opens with a real page about Noa, his 1:1 classes and the club, what Hibi is, and what students say. Share the link with friends who want to learn with Noa!"],
+    ["🔑","Signing in is the same","If you ever sign out, tap Student sign in at the top (or Continue with Google at the bottom)."]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

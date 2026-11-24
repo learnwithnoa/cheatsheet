@@ -33,9 +33,13 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
 - `world.json` — Home's 🌍 "Around the world today" (3 pieces a day, newest first, last 14 days; fields k celebrate|space|good, emoji, title, text, word, mean, tr, es, q, link, src, kind read|watch).
   Written each morning by Claude's scheduled task "Around the world (daily)" (commits world.json); if today is missing at 10:15 Chile, `.github/workflows/world-fallback.yml` runs `tools/world_fallback.py` (holiday + NASA + `tools/world_facts.json`).
   Reactions 💛🤯😂 go through the pay helper (/api/world-reacts, /api/world-react → worldReacts/{day}); Noa can hide a piece for everyone.
-- Signed-out window (`src/scripts/012-…`, card()): hibi.cl is the only link in Noa's bios (Nov 24 2026), so it speaks to newcomers first:
-  what Hibi is, "Book your free kickoff" (BOOK_FORM = Noa's Google Form), the club line ("Ask to join" opens the access form with "joining"), then Google sign-in.
-  EN/ES switch at the top right (cs-gate-lang), one language at a time; keep both texts in sync when editing.
+- Signed-out landing page (`src/scripts/012-…`, landing(); styles `.lp-*` in style.css; photos in `img/lp/`): hibi.cl is the only link in Noa's bios (Nov 24 2026).
+  Noa chose layout "D · Noa first": his photo + "Speak English without freezing", kickoff button (BOOK_FORM = Noa's Google Form), stats, "Sound familiar?",
+  1:1 coaching + club cards (prices: from $100.000 CLP / US$110 a month, 15% off the first pack; club "Try free for 2 weeks" = data-agjoin → access form with
+  "joining", Noa approves by hand, his choice), Hibi features, real student quotes (Melissa, Kiki, Giacomo, Laura, all OK'd for Instagram), FAQ, then
+  sign-in + "Ask Noa for access" (#agNew). Light/dark follows the visitor's own Hibi theme if set on that device, else their system setting (.lp-dark).
+  EN/ES switch at the top (cs-gate-lang), one language at a time; keep both texts in sync. Pending / retry / sent states still use the small card.
+  Later, when Hibi becomes a self-study product, Noa wants a "Hibi first" page instead (mockup v3: app preview, features, then programs).
 - `pod/` — podcast MP3s; `.github/workflows/podcast-audio.yml` converts episodes queued in `pod/queue.txt`.
 
 ## Build

@@ -5171,6 +5171,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1124-landing", date:"November 24, 2026", title:"A new front page for hibi.cl 🏡", items:[
+    ["👋","For people who aren't in Hibi yet","hibi.cl now opens with a real page about Noa, his 1:1 classes and the club, what Hibi is, and what students say. Share the link with friends who want to learn with Noa!"],
+    ["🔑","Signing in is the same","If you ever sign out, tap Student sign in at the top (or Continue with Google at the bottom)."]
+  ]},
   {id:"2026-1124-recs", date:"November 24, 2026", title:"Find what Noa recommends ⭐", items:[
     ["⭐","Noa recommends for you","Everything Noa recommends to you now shows at the top of Practice, with how far you got and an Open button.","quiz"],
     ["🔔","Messages that take you there","When Noa's message is about a module, tap it in your 🔔 (or Open it in Messages from Noa) and it takes you straight to it.","quiz"],
