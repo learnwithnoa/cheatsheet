@@ -897,7 +897,7 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp.lp-dark{--lp-bg:#0A1424;--lp-bg2:#1A1540;--lp-glass:rgba(22,34,62,.66);--lp-glass2:rgba(22,34,62,.42);--lp-line:rgba(143,176,255,.17);--lp-ink:#E8EFFA;--lp-muted:#A8B9D1;--lp-royal:#8FB0FF;--lp-sky:#60A5FA;--lp-teal:#5EEAD4;--lp-orange:#FB923C;--lp-pink:#F472B6;--lp-dot:rgba(255,255,255,.07);--lp-shadow:0 10px 30px rgba(0,0,0,.28)}
 #authGate.ag-lp{display:block;place-items:normal;padding:0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;overscroll-behavior:contain}
 #authGate.ag-lp>.lp{min-height:100vh;min-height:100dvh}
-.lp{position:relative;min-height:100%;overflow:hidden;color:var(--lp-ink);font-family:var(--body);text-align:left;background:radial-gradient(var(--lp-dot) 1.3px,transparent 1.6px) 0 0/20px 20px,linear-gradient(170deg,var(--lp-bg) 0%,var(--lp-bg) 45%,var(--lp-bg2) 100%)}
+.lp{position:relative;min-height:100%;overflow:clip;color:var(--lp-ink);font-family:var(--body);text-align:left;background:radial-gradient(var(--lp-dot) 1.3px,transparent 1.6px) 0 0/20px 20px,linear-gradient(170deg,var(--lp-bg) 0%,var(--lp-bg) 45%,var(--lp-bg2) 100%)}
 .lp-blob{position:absolute;width:320px;height:320px;border-radius:50%;filter:blur(64px);opacity:.5;pointer-events:none}
 .lp-dark .lp-blob{opacity:.3}
 .lp-faq summary::before{content:none}
@@ -919,7 +919,8 @@ html.cs-out-guess body>*:not(#authGate):not(script){visibility:hidden}
 .lp-hero{padding:26px 0 0;text-align:center}
 .lp-face{position:relative;width:200px;height:200px;margin:0 auto 18px;border-radius:50%;padding:5px;background:linear-gradient(135deg,var(--lp-sky),var(--lp-teal));box-shadow:var(--lp-shadow)}
 .lp-face img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 25%;display:block}
-.lp-bubble{position:absolute;right:-14px;top:12px;font:700 13px var(--body);padding:7px 12px;border-radius:16px 16px 16px 4px;color:var(--lp-ink)}
+.lp-bubble{position:absolute;z-index:1;right:4px;top:6px;font:800 18px var(--body);padding:9px 16px;border-radius:20px 20px 20px 6px;color:var(--lp-ink);box-shadow:0 8px 22px rgba(15,35,65,.22)}
+@media (min-width:900px){.lp-bubble{font-size:22px;padding:11px 20px;right:18px;top:14px}}
 .lp h1{font:800 34px/1.06 var(--display);letter-spacing:-.7px;margin:0 0 14px;color:var(--lp-ink);text-wrap:balance}
 .lp-ul{background:linear-gradient(90deg,var(--lp-sky),var(--lp-teal)) 0 92%/100% 8px no-repeat}
 .lp-lede{font-size:16.5px;line-height:1.55;color:var(--lp-muted);margin:0 auto 20px;max-width:38ch}
@@ -961,6 +962,9 @@ html.cs-out-guess body>*:not(#authGate):not(script){visibility:hidden}
 .lp-shot{flex:none;width:72%;scroll-snap-align:start;border-radius:20px;padding:14px}
 .lp-scr{height:130px;border-radius:14px;margin-bottom:12px;display:grid;place-items:center;font-size:46px;border:1px solid var(--lp-line);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 35%,transparent),color-mix(in srgb,var(--c) 8%,transparent))}
 .lp-dark .lp-scr{border-color:rgba(255,255,255,.18);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 45%,#fff),color-mix(in srgb,var(--c) 18%,#fff))}
+.lp-scr-pet{position:relative}.lp-miki{position:relative;display:block;width:86px}.lp-miki .lp-pet{width:86px;height:auto;display:block;image-rendering:pixelated}
+.lp-miki.bd-shiny::after{content:"✦";position:absolute;top:2px;left:-2px;color:#F9D25C;font-size:16px;text-shadow:0 0 6px rgba(249,210,92,.8)}.lp-miki.bd-shiny::before{content:"✦";position:absolute;bottom:10px;right:-6px;color:#7CC4FF;font-size:13px;text-shadow:0 0 6px rgba(124,196,255,.8)}
+.lp-price a,.lp-faq a{color:var(--lp-royal);font-weight:700}
 .lp-shot b{display:block;font-size:15.5px}.lp-shot span{display:block;font-size:13.5px;line-height:1.45;color:var(--lp-muted);margin-top:2px}
 .lp-q{flex:none;width:82%;scroll-snap-align:start;margin:0;border-radius:22px;padding:18px 16px;display:flex;flex-direction:column;gap:12px}
 .lp-who{display:flex;align-items:center;gap:12px}.lp-who img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;border:2.5px solid #fff;box-shadow:0 0 0 2px var(--c)}
@@ -3808,7 +3812,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-d414096227f6.js"></script>
+<script src="js/h-30ab5dc1f8b1.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -4734,7 +4738,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-fb46a3c5a7bf.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124184343"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124185101"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
