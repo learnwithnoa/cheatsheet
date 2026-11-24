@@ -62,7 +62,8 @@
 /* Hibi is invite-only: people ask for access (name + email, no Google yet), Noa approves, then they sign in with Google.
    Signed in but not approved yet → a "waiting for Noa" screen. Approved = access/{email} exists (or a teacher). */
 (function(){
-  if(window.__csPreview||window.__csGuest) return;
+  const unguess=()=>{ const d=document.documentElement; if(d.classList.contains("cs-out-guess")){ d.classList.remove("cs-out-guess"); d.style.background=""; } };
+  if(window.__csPreview||window.__csGuest){ unguess(); return; }
   const G='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
   /* the "Agenda tu Kickoff Session gratuita" Google Form (Nov 24 2026: so hibi.cl can be the only link in Noa's bios) */
   const BOOK_FORM="https://docs.google.com/forms/d/e/1FAIpQLSeCViQyPVfaAkFKJMKQ7NeCdHHDpIJU7-i5FAOT7WmqyrnXtw/viewform";
@@ -95,15 +96,19 @@
      Same buttons as before: data-signin, data-agjoin (access form with "joining the club" picked), #agNew + reqForm, the EN/ES switch. */
   const IMG=n=>new URL("img/lp/"+n+".jpg",document.baseURI).href;
   const IG="https://instagram.com/learnwithnoa";
+  /* light by default (Noa, Nov 24 2026); dark only if this device already chose a dark Hibi theme, or the visitor taps 🌙 */
+  function lpDark(){ let th=""; try{ th=localStorage.getItem("ncs-theme")||""; }catch(e){} return !!th&&!["light","unicorn","sepia"].includes(th); }
+  document.addEventListener("click",e=>{ if(!e.target.closest("[data-lpmode]")||!gate) return; const t=lpDark()?"light":"dark";
+    try{ localStorage.setItem("ncs-theme",t); }catch(er){} document.documentElement.setAttribute("data-theme",t);
+    const st=gate.scrollTop, det=gate.querySelector("#agNew"), op=det&&det.open; const cur=mode; mode=""; show(cur); gate.scrollTop=st; const d2=gate.querySelector("#agNew"); if(d2&&op) d2.open=true; });
   function landing(){
     const quote=(img,name,sub,story,q,c)=>`<figure class="lp-q lp-glass" style="--c:${c}"><figcaption class="lp-who"><img src="${IMG(img)}" alt="" loading="lazy" width="56" height="56"><span><b>${name}</b><small>${sub}</small></span></figcaption><p class="lp-story">${story}</p><blockquote>${q}</blockquote></figure>`;
     const feat=(e,c,t,d)=>`<div class="lp-shot lp-glass" style="--c:${c}"><div class="lp-scr" aria-hidden="true">${e}</div><b>${t}</b><span>${d}</span></div>`;
     const faq=(q,a)=>`<details class="lp-faq lp-glass"><summary>${q}</summary><p>${a}</p></details>`;
-    let th=""; try{ th=localStorage.getItem("ncs-theme")||""; }catch(e){}
-    const dark=th?!["light","unicorn","sepia"].includes(th):!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);
+    const dark=lpDark();
     return `<div class="lp${dark?" lp-dark":""}">
     <span class="lp-blob" style="left:-120px;top:40px;background:#60A5FA"></span><span class="lp-blob" style="right:-140px;top:560px;background:#5EEAD4"></span><span class="lp-blob" style="left:-150px;top:1700px;background:#FBBF24"></span>
-    <header class="lp-top"><span class="lp-logo">Hibi<small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar")}</button></header>
+    <header class="lp-top"><span class="lp-logo">Hibi<small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-mode" data-lpmode aria-label="${dark?L("Switch to light mode","Cambiar a modo claro"):L("Switch to dark mode","Cambiar a modo oscuro")}" title="${dark?L("Light mode","Modo claro"):L("Dark mode","Modo oscuro")}">${dark?"☀️":"🌙"}</button><button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar")}</button></header>
     <main class="lp-main">
     <section class="lp-hero">
       <div class="lp-hero-pic"><div class="lp-face"><img src="${IMG("noa")}" alt="${L("Noa at his desk","Noa en su escritorio")}" width="240" height="240"><span class="lp-bubble lp-glass" aria-hidden="true">hi! 👋</span></div></div>
@@ -210,7 +215,7 @@
     [...document.body.children].forEach(el=>{ if(el!==gate&&!el.matches("script")) el.inert=true; });
   }
   function hide(){
-    if(gate) gate.hidden=true; document.documentElement.classList.remove("ag-lock");
+    unguess(); if(gate) gate.hidden=true; document.documentElement.classList.remove("ag-lock");
     [...document.body.children].forEach(el=>{ if(el!==gate) el.inert=false; });
   }
   /* approved? (access/{email}); if the database can't say (e.g. rules not set up yet), let them in */
@@ -238,6 +243,7 @@
     if(cached){ gw(uid).res(true); return; }
     show("retry"); gw(uid).res(false); }
   const on=s=>{ if(s) check(); else show(mode==="sent"?"sent":"out"); };
+  if(document.documentElement.classList.contains("cs-out-guess")&&window.__csAuth==null){ const go=()=>{ if(window.__csAuth==null&&!mode) show("out"); }; if(document.body) go(); else document.addEventListener("DOMContentLoaded",go); }
   document.addEventListener("click",e=>{ if(e.target.closest("[data-agretry]")) location.reload(); });
   window.addEventListener("cs-auth",e=>on(!!(e.detail&&e.detail.signedIn)));
   if(window.__csAuth!=null) on(window.__csAuth);

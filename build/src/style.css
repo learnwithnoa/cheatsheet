@@ -798,6 +798,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp-logo{font:800 22px var(--display);background:linear-gradient(90deg,var(--lp-royal),var(--lp-teal));-webkit-background-clip:text;background-clip:text;color:transparent}
 .lp-logo small{font:500 13px var(--body);margin-left:5px;-webkit-text-fill-color:var(--lp-muted)}
 .lp-sp{flex:1}
+html.cs-out-guess body>*:not(#authGate):not(script){visibility:hidden}
+.lp-mode{all:unset;box-sizing:border-box;cursor:pointer;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;font-size:17px;border:1px solid var(--lp-line);background:var(--lp-glass2)}
+.lp-mode:focus-visible{outline:3px solid var(--lp-sky);outline-offset:2px}
 .lp .ag-lang{position:static;border-color:var(--lp-line);background:var(--lp-glass2)}
 .lp .ag-lang button{color:var(--lp-muted)}.lp .ag-lang button[aria-pressed="true"]{background:var(--lp-ink);color:var(--lp-bg)}
 .lp-pill{all:unset;box-sizing:border-box;cursor:pointer;font:700 13.5px var(--body);padding:8px 14px;border-radius:999px;white-space:nowrap}

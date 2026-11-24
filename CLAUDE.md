@@ -37,7 +37,7 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
   Noa chose layout "D · Noa first": his photo + "Speak English without freezing", kickoff button (BOOK_FORM = Noa's Google Form), a facts row about Noa (10+ years, TEFL, AuDHD), "Sound familiar?",
   1:1 coaching + club cards (prices: from $100.000 CLP / US$110 a month, 15% off the first pack; club $35.000 CLP / US$35 a month after the trial; club "Try free for 2 weeks" = data-agjoin → access form with
   "joining", Noa approves by hand, his choice), Hibi features, real student quotes (Melissa, Kiki, Giacomo, Laura, all OK'd for Instagram), FAQ, then
-  sign-in + "Ask Noa for access" (#agNew). Light/dark follows the visitor's own Hibi theme if set on that device, else their system setting (.lp-dark).
+  sign-in + "Ask Noa for access" (#agNew). Light by default (Noa's choice); dark only if that device chose a dark Hibi theme (ncs-theme) or the visitor taps 🌙/☀️ in the top bar (saves ncs-theme). No flash of Hibi first: 002-theme-early adds html.cs-out-guess when nobody signed in on the device (no ncs-sync-uid), CSS hides the app, 012 shows the landing at once and unguess() removes it if they turn out signed in.
   EN/ES switch at the top (cs-gate-lang), one language at a time; keep both texts in sync. Pending / retry / sent states still use the small card.
   Later, when Hibi becomes a self-study product, Noa wants a "Hibi first" page instead (mockup v3: app preview, features, then programs).
 - `pod/` — podcast MP3s; `.github/workflows/podcast-audio.yml` converts episodes queued in `pod/queue.txt`.

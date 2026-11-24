@@ -97,7 +97,12 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
   const b=document.createElement("base"); b.target="_top"; document.head.appendChild(b); })();
 </script>
 <title>Hibi 日々</title>
-<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft"){t="sepia";localStorage.setItem("ncs-theme",t);}}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
+<script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft"){t="sepia";localStorage.setItem("ncs-theme",t);}}catch(e){}document.documentElement.setAttribute("data-theme",t);
+/* Nov 24 2026: nobody has signed in on this device (no ncs-sync-uid) → probably a visitor: hide Hibi until we know, so the landing page shows
+   straight away instead of Hibi flashing first. 012 shows the landing page right away and removes the class if they turn out to be signed in. */
+try{var q=location.search||"";if(!localStorage.getItem("ncs-sync-uid")&&!/[?&](guest|preview|tb)=/.test(q)&&!sessionStorage.getItem("cs-guest")&&window.top===window){var d=document.documentElement;d.classList.add("cs-out-guess");var lt=localStorage.getItem("ncs-theme");d.style.background=(lt&&["light","unicorn","sepia"].indexOf(lt)<0)?"#0A1424":"#EEF5FC";}}catch(e){}
+})();
+</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -902,6 +907,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp-logo{font:800 22px var(--display);background:linear-gradient(90deg,var(--lp-royal),var(--lp-teal));-webkit-background-clip:text;background-clip:text;color:transparent}
 .lp-logo small{font:500 13px var(--body);margin-left:5px;-webkit-text-fill-color:var(--lp-muted)}
 .lp-sp{flex:1}
+html.cs-out-guess body>*:not(#authGate):not(script){visibility:hidden}
+.lp-mode{all:unset;box-sizing:border-box;cursor:pointer;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;font-size:17px;border:1px solid var(--lp-line);background:var(--lp-glass2)}
+.lp-mode:focus-visible{outline:3px solid var(--lp-sky);outline-offset:2px}
 .lp .ag-lang{position:static;border-color:var(--lp-line);background:var(--lp-glass2)}
 .lp .ag-lang button{color:var(--lp-muted)}.lp .ag-lang button[aria-pressed="true"]{background:var(--lp-ink);color:var(--lp-bg)}
 .lp-pill{all:unset;box-sizing:border-box;cursor:pointer;font:700 13.5px var(--body);padding:8px 14px;border-radius:999px;white-space:nowrap}
@@ -3797,7 +3805,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-845d930df595.js"></script>
+<script src="js/h-a934167e87bb.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -4723,7 +4731,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-fb46a3c5a7bf.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124183006"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124183308"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
