@@ -807,7 +807,7 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp-hero{padding:26px 0 0;text-align:center}
 .lp-face{position:relative;width:200px;height:200px;margin:0 auto 18px;border-radius:50%;padding:5px;background:linear-gradient(135deg,var(--lp-sky),var(--lp-teal));box-shadow:var(--lp-shadow)}
 .lp-face img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 25%;display:block}
-.lp-bubble{position:absolute;right:-30px;top:12px;font:700 13px var(--body);padding:7px 12px;border-radius:16px 16px 16px 4px;color:var(--lp-ink)}
+.lp-bubble{position:absolute;right:-14px;top:12px;font:700 13px var(--body);padding:7px 12px;border-radius:16px 16px 16px 4px;color:var(--lp-ink)}
 .lp h1{font:800 34px/1.06 var(--display);letter-spacing:-.7px;margin:0 0 14px;color:var(--lp-ink);text-wrap:balance}
 .lp-ul{background:linear-gradient(90deg,var(--lp-sky),var(--lp-teal)) 0 92%/100% 8px no-repeat}
 .lp-lede{font-size:16.5px;line-height:1.55;color:var(--lp-muted);margin:0 auto 20px;max-width:38ch}
@@ -819,7 +819,7 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp-proof{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 0;font-size:13.5px;color:var(--lp-muted)}
 .lp-faces{display:flex}.lp-faces img{width:34px;height:34px;border-radius:50%;border:2.5px solid #fff;margin-left:-10px;object-fit:cover}.lp-faces img:first-child{margin-left:0}
 .lp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:26px 0 0;padding:14px 8px;border-radius:20px;text-align:center}
-.lp-stats b{display:block;font:800 22px var(--display);background:linear-gradient(90deg,var(--lp-royal),var(--lp-teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lp-stats b{display:block;font:800 20px var(--display);background:linear-gradient(90deg,var(--lp-royal),var(--lp-teal));-webkit-background-clip:text;background-clip:text;color:transparent}
 .lp-stats span{display:block;font-size:12px;line-height:1.3;color:var(--lp-muted)}
 .lp-sec{padding:40px 0 0}
 .lp h2{font:800 26px/1.12 var(--display);letter-spacing:-.5px;margin:0 0 12px;color:var(--lp-ink)}

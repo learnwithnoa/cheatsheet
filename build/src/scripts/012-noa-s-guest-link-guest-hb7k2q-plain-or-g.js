@@ -115,7 +115,7 @@
       <p class="lp-proof"><span class="lp-faces" aria-hidden="true"><img src="${IMG("mel")}" alt=""><img src="${IMG("kiki")}" alt=""><img src="${IMG("gia")}" alt=""><img src="${IMG("lau")}" alt=""></span>${L("Students in Chile and abroad","Estudiantes en Chile y otros países")}</p>
       </div>
     </section>
-    <div class="lp-stats lp-glass"><div><b>2014</b><span>${L("teaching since","enseñando desde")}</span></div><div><b>4</b><span>${L("club classes a week","clases del club por semana")}</span></div><div><b>6.0</b><span>${L("Melissa’s IELTS (needed 4.5)","IELTS de Melissa (necesitaba 4.5)")}</span></div></div>
+    <div class="lp-stats lp-glass" aria-label="${L("About Noa","Sobre Noa")}"><div><b>10+ ${L("years","años")}</b><span>${L("coaching English, since 2014","como coach de inglés, desde 2014")}</span></div><div><b>TEFL</b><span>${L("certified coach","coach certificado")}</span></div><div><b>AuDHD</b><span>${L("neurodivergent-friendly classes","clases amigables con la neurodivergencia")}</span></div></div>
 
     <section class="lp-sec"><h2>${L("Sound familiar?","¿Te suena?")}</h2>
       <div class="lp-pains">
@@ -123,7 +123,7 @@
         <div class="lp-pain lp-glass"><i aria-hidden="true">📝</i><span>${L("Years of grammar classes, and you still translate in your head.","Años de clases de gramática, y todavía traduces en tu cabeza.")}</span></div>
         <div class="lp-pain lp-glass"><i aria-hidden="true">⏰</i><span>${L("An interview, an exam or a trip is coming, and you need it now.","Se viene una entrevista, un examen o un viaje, y lo necesitas ya.")}</span></div>
       </div>
-      <div class="lp-fix"><b>${L("That’s what we fix.","Eso es lo que arreglamos.")}</b>${L("Lots of speaking, the grammar you actually need, and a little practice every day on Hibi so it sticks. I’m AuDHD myself, so if your brain works a little differently too, you’re in good company.","Mucha conversación, la gramática que de verdad necesitas y un poco de práctica cada día en Hibi para que se quede. Yo soy AuDHD, así que si tu cerebro funciona un poco distinto, estás en buena compañía.")}</div>
+      <div class="lp-fix"><b>${L("That’s what we fix.","Eso es lo que arreglamos.")}</b>${L("Lots of speaking, the grammar you actually need, and a little practice every day on Hibi so it sticks. And if your brain works a little differently, mine does too: we’ll find the way that works for you.","Mucha conversación, la gramática que de verdad necesitas y un poco de práctica cada día en Hibi para que se quede. Y si tu cerebro funciona un poco distinto, el mío también: vamos a encontrar la forma que funcione para ti.")}</div>
     </section>
 
     <section class="lp-sec"><h2>${L("Pick your way in","Elige cómo empezar")}</h2>
