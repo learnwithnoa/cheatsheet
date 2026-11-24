@@ -1792,9 +1792,13 @@ body:not([data-auth="in"]) .when-in{display:none!important}
 
 .wcard .wn{font-size:14px;color:var(--ink);background:color-mix(in srgb,var(--green) 9%,var(--surface));border-radius:8px;padding:4px 8px;margin-top:5px;display:inline-block}
 .fc-note{display:block;margin-top:8px;font-size:14px;color:var(--muted)}
-.tt-row{display:flex;justify-content:flex-end;margin-top:10px}
-.tt-love{position:relative;font:800 14px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.tt-love:hover{border-color:#E0A100}
+/* Nov 24 2026: the "I like this" pill sits at the bottom of the card, lined up with Word of the day's button, instead of floating under the text */
+.today-thought{display:flex;flex-direction:column}
+.today-thought .tt{position:relative;padding-left:30px}
+.today-thought .tt::before{content:"\201C";position:absolute;left:0;top:-6px;font:800 44px/1 Georgia,serif;color:color-mix(in srgb,#F5B800 70%,var(--ink));opacity:.55}
+.tt-row{display:flex;justify-content:flex-start;margin-top:auto;padding-top:14px}
+.tt-love{position:relative;font:800 14px var(--body);color:var(--ink);background:color-mix(in srgb,#F5B800 10%,var(--surface));border:1.5px solid color-mix(in srgb,#E0A100 45%,var(--line));border-radius:999px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s,border-color .15s}
+.tt-love:hover{border-color:#E0A100;background:color-mix(in srgb,#F5B800 16%,var(--surface))}
 .tt-love[aria-pressed="true"]{background:color-mix(in srgb,#F5B800 18%,var(--surface));border-color:#E0A100}
 .tt-love .tt-ico{display:inline-block}
 .tt-love.pop .tt-ico{animation:ttPop .6s ease-out}
@@ -4587,7 +4591,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-cb905080dc26.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124083316"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124083934"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
