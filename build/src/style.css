@@ -763,6 +763,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .wcard .wpr{font:600 13.5px var(--mono,ui-monospace,monospace);letter-spacing:.02em;color:var(--muted);margin:1px 0 2px}
 
 /* step79 */
+.ag-book{width:100%;box-sizing:border-box;margin-top:6px;padding:14px 16px;border-radius:16px;background:color-mix(in srgb,#F5B800 10%,var(--surface));border:1.5px solid color-mix(in srgb,#E0A100 40%,var(--line));display:flex;flex-direction:column;gap:6px;align-items:center}
+.ag-book>b{font-size:16px}.ag-book>span{font-size:14px;color:var(--muted);line-height:1.45}
+.ag-btn.ag-go{background:linear-gradient(180deg,#FFC94A,#F5A623);color:#2B1B00;border-color:#E0A100;margin-top:4px;text-decoration:none}
 .ag-new{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;text-align:left}
 .ag-new>summary{cursor:pointer;font-weight:800;color:var(--accent,#5b8def);list-style:none;text-align:center;padding:4px 0}
 .ag-new>summary::-webkit-details-marker{display:none}

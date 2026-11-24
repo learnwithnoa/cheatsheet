@@ -867,6 +867,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .wcard .wpr{font:600 13.5px var(--mono,ui-monospace,monospace);letter-spacing:.02em;color:var(--muted);margin:1px 0 2px}
 
 /* step79 */
+.ag-book{width:100%;box-sizing:border-box;margin-top:6px;padding:14px 16px;border-radius:16px;background:color-mix(in srgb,#F5B800 10%,var(--surface));border:1.5px solid color-mix(in srgb,#E0A100 40%,var(--line));display:flex;flex-direction:column;gap:6px;align-items:center}
+.ag-book>b{font-size:16px}.ag-book>span{font-size:14px;color:var(--muted);line-height:1.45}
+.ag-btn.ag-go{background:linear-gradient(180deg,#FFC94A,#F5A623);color:#2B1B00;border-color:#E0A100;margin-top:4px;text-decoration:none}
 .ag-new{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;text-align:left}
 .ag-new>summary{cursor:pointer;font-weight:800;color:var(--accent,#5b8def);list-style:none;text-align:center;padding:4px 0}
 .ag-new>summary::-webkit-details-marker{display:none}
@@ -3667,7 +3670,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-8158be1dba6e.js"></script>
+<script src="js/h-e95ffed16a66.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -4591,7 +4594,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-1edc5b1dbe4e.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124094153"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124100034"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
