@@ -105,6 +105,17 @@ td.act{white-space:nowrap;text-align:right}
 .cl-pay{font-size:13px;line-height:1.35;min-width:170px}.cl-pay b{font-weight:800}.cl-pay .muted{font-size:12px}
 .cl-pay.ok b{color:var(--green,#16A34A)}.cl-pay.warn b{color:#D97706}.cl-pay.bad b{color:#DC2626}
 .cl-flag{display:block;margin-top:3px;font-size:12px;font-weight:700;color:#D97706}
+.cl-nm{all:unset;cursor:pointer;font-weight:800;color:var(--ink);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--ink) 30%,transparent);text-underline-offset:3px}
+.cl-nm:hover{color:var(--royal)}.cl-nm:focus-visible{outline:2px solid var(--royal);outline-offset:2px;border-radius:4px}
+/* Nov 24 2026: the right side of Hibi members before anyone is picked */
+.ov-k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.ov-k div{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.ov-k b{font-size:22px;line-height:1.1}.ov-k span{font-size:12.5px;color:var(--muted)}
+.ov-sec{margin-top:12px}.ov-sec h4{margin:0 0 6px;font-size:14px}
+.ov-ps{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ov-p{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;flex-direction:column;padding:7px 11px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);font-size:13px;line-height:1.3}
+.ov-p:hover{border-color:var(--royal)}.ov-p .muted{font-size:11.5px}
+@media (max-width:600px){.ov-k{grid-template-columns:repeat(2,1fr)}}
 .cl-sel{font:700 13.5px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
 .cl-n{margin-left:auto}
 .club-t{width:100%;border-collapse:collapse;font-size:14px}.club-t th{text-align:left;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--line)}
@@ -475,7 +486,7 @@ async function load() {
     $("summary").textContent = students.length + (students.length === 1 ? " member has" : " members have") + " signed in · " + totalW + " words · " + totalN + " class notes saved.";
     $("loadedAt").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     renderList(); renderLinks(); renderClub(); renderRecs(); renderNews(); renderTips(); renderIdeas(); renderUsage(); syncPark(); renderTabs();
-    if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); }
+    if (current) { const s = students.find(x => x.uid === current); if (s) renderDetail(s); else renderOverview(); } else renderOverview();
   } catch (e) {
     console.warn(e);
     $("summary").textContent = "";
@@ -503,7 +514,38 @@ $("q").oninput = renderList;
 try { $("tSortSel").value = localStorage.getItem("cs-t-sort") || "az"; $("tKind").value = localStorage.getItem("cs-t-kind") || "all"; } catch (e) {}
 $("tSortSel").onchange = () => { try { localStorage.setItem("cs-t-sort", $("tSortSel").value); } catch (e) {} renderList(); };
 $("tKind").onchange = () => { try { localStorage.setItem("cs-t-kind", $("tKind").value); } catch (e) {} renderList(); };
-$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; current = b.dataset.uid; renderList(); renderDetail(students.find(s => s.uid === current)); $("detail").scrollTop = 0; if (innerWidth < 860) $("detail").scrollIntoView({ behavior: "smooth" }); else alignDetail(); };
+$("list").onclick = e => { const b = e.target.closest("[data-uid]"); if (!b) return; openMember(b.dataset.uid); };
+/* Nov 24 2026: open someone's profile from anywhere (the list, Club members, 💡 Recommended…). On a computer the page scrolls so their name
+   sits near the top of the screen and the profile next to it is in view, instead of opening below the fold. */
+function openMember(uid) {
+  const s = students.find(x => x.uid === uid); if (!s) return;
+  current = uid; if (mTab !== "students") { mTab = "students"; try { sessionStorage.setItem("cs-m-tab", mTab); } catch (er) {} renderTabs(); }
+  renderList(); renderDetail(s); $("detail").scrollTop = 0;
+  if (innerWidth < 860) { $("detail").scrollIntoView({ behavior: "smooth" }); return; }
+  alignDetail();
+  requestAnimationFrame(() => { const row = $("list").querySelector(`[data-uid="${CSS.escape(uid)}"]`); if (!row) return;
+    const top = row.getBoundingClientRect().top, want = 84;
+    if (top > innerHeight * 0.3 || top < want) window.scrollBy({ top: top - want, behavior: "smooth" }); });
+}
+/* the right side before anyone is picked: a quick look at everyone instead of an empty space */
+function renderOverview() {
+  const d = $("detail"); if (!d || current) return; d.style.marginTop = "";
+  const now = Date.now(), wk = now - 7 * 864e5, mo = now - 30 * 864e5;
+  const by = k => students.filter(s => roleType(s.role) === k).length;
+  const active = students.filter(s => s.lastSeen > wk).sort((a, b) => b.lastSeen - a.lastSeen);
+  const fresh = students.filter(s => s.firstSeen > mo).sort((a, b) => b.firstSeen - a.firstSeen);
+  const quiet = students.filter(s => s.lastSeen && s.lastSeen < now - 14 * 864e5 && roleType(s.role) !== "hibi").sort((a, b) => b.lastSeen - a.lastSeen);
+  const words = students.slice().sort((a, b) => b.words.length - a.words.length).filter(s => s.words.length).slice(0, 5);
+  const chip = (s, t) => `<button type="button" class="ov-p" data-ovuid="${esc(s.uid)}"><b>${esc(s.name)}</b><span class="muted">${t}</span></button>`;
+  const sec = (h, list, t, empty) => `<div class="ov-sec"><h4>${h} <span class="muted">${list.length}</span></h4>${list.length ? `<div class="ov-ps">${list.slice(0, 6).map(s => chip(s, t(s))).join("")}${list.length > 6 ? `<span class="muted small">+${list.length - 6} more</span>` : ""}</div>` : `<p class="muted small">${empty}</p>`}</div>`;
+  d.innerHTML = `<h3 style="margin:0 0 4px">👥 Everyone at a glance</h3><p class="muted small" style="margin:0 0 12px">Pick someone on the left (or below) to see their words, notes and settings.</p>
+    <div class="ov-k"><div><b>${by("club") + by("both")}</b><span>🌼 in the club</span></div><div><b>${by("private") + by("both")}</b><span>🌳 private</span></div><div><b>${by("hibi")}</b><span>📘 Hibi only</span></div><div><b>${active.length}</b><span>active this week</span></div></div>
+    ${sec("🟢 Active this week", active, s => "seen " + ago(s.lastSeen), "Nobody yet this week.")}
+    ${sec("🎉 New in the last 30 days", fresh, s => "joined " + ago(s.firstSeen), "No new members this month.")}
+    ${sec("💤 Quiet for 2+ weeks", quiet, s => "last seen " + ago(s.lastSeen), "Everyone’s been around lately.")}
+    ${sec("📚 Most words saved", words, s => s.words.length + " words", "No words yet.")}`;
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-ovuid]"); if (b) openMember(b.dataset.ovuid); });
 /* desktop: the details open right next to the name you clicked (top aligned with it), not at the top of the page */
 function alignDetail() { const d = $("detail"), row = $("list").querySelector(`[data-uid="${current}"]`); if (!d || !row || innerWidth < 861) { if (d) d.style.marginTop = ""; return; }
   d.style.marginTop = "0px"; const off = Math.round(row.getBoundingClientRect().top - d.getBoundingClientRect().top); d.style.marginTop = Math.max(0, off) + "px"; }
@@ -643,11 +685,11 @@ function renderClub() {
       <select class="cl-sel" data-clfs aria-label="Filter by status"><option value="">${stF ? "All statuses" : "Status…"}</option>${CST.filter(([k]) => cnt(k)).map(([k, l]) => `<option value="${k}" ${stF === k ? "selected" : ""}>${l} (${cnt(k)})</option>`).join("")}</select>
       <span class="muted small cl-n">${shown.length} shown</span></div>
     <div style="overflow-x:auto"><table class="club-t"><thead><tr><th>Name</th><th title="Their membership on Hibi right now (Mercado Pago or PayPal). Only people with a Hibi account that matches the list (same email, or the exact same name) can see the Switch to Hibi card.">💳 Hibi payment</th><th>Plan</th><th>Joined</th><th title="The last day their Skool membership covers. Taken from the Skool export; change it if you know the real date. If they haven't started paying on Hibi by then, the nightly check removes their club access the next morning (monthly and yearly alike).">Skool ends</th><th title="What Hibi charges them each month (Mercado Pago in pesos, or US$ on PayPal). Grey = taken from their Skool price; type to change it.">Hibi price</th><th>On Hibi</th><th>Status</th></tr></thead><tbody>${shown.map(m => { const i = C.members.indexOf(m), h = hib(m);
-      return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td>${(() => { const p = pay(m); return `<div class="cl-pay ${p.cls || ""}">${p.html}${p.flag ? `<span class="cl-flag">${p.flag}</span>` : ""}</div>`; })()}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${(!(Number(m.price) > 0) && !(((hubMeta && hubMeta.clubPrices) || {})[String(m.email || "").toLowerCase()])) || m.status === "free" || m.status === "direct" ? `<span class="muted small">stays (${m.status === "direct" ? "pays you directly" : "free"})</span>` : `<input type="date" class="cl-end" data-clend="${esc(m.name)}" value="${esc(skoolEndOf(m) || "")}" aria-label="Skool end date for ${esc(m.name)}"${m.end ? ' style="font-weight:700"' : ""}>`}</td><td class="nw">${(() => { const em = String(m.email || (h && h.email) || "").toLowerCase(), ov = ((hubMeta && hubMeta.clubPrices) || {})[em];
+      return `<tr><td>${h ? `<button type="button" class="cl-nm" data-rcuid="${esc(h.uid)}" title="Open ${esc(m.name)}’s profile in Hibi members">${esc(m.name)}</button>` : `<b>${esc(m.name)}</b>`}${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td>${(() => { const p = pay(m); return `<div class="cl-pay ${p.cls || ""}">${p.html}${p.flag ? `<span class="cl-flag">${p.flag}</span>` : ""}</div>`; })()}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${(!(Number(m.price) > 0) && !(((hubMeta && hubMeta.clubPrices) || {})[String(m.email || "").toLowerCase()])) || m.status === "free" || m.status === "direct" ? `<span class="muted small">stays (${m.status === "direct" ? "pays you directly" : "free"})</span>` : `<input type="date" class="cl-end" data-clend="${esc(m.name)}" value="${esc(skoolEndOf(m) || "")}" aria-label="Skool end date for ${esc(m.name)}"${m.end ? ' style="font-weight:700"' : ""}>`}</td><td class="nw">${(() => { const em = String(m.email || (h && h.email) || "").toLowerCase(), ov = ((hubMeta && hubMeta.clubPrices) || {})[em];
         const der = m.price && m.per !== "year" ? "$" + (m.price * 1000).toLocaleString("es-CL") + (m.price ? " · US$" + m.price : "") : "$35.000";
         const fmt = o => typeof o === "number" ? "$" + o.toLocaleString("es-CL") : o.clp ? "$" + Number(o.clp).toLocaleString("es-CL") + (o.usd ? " · US$" + o.usd : "") : "US$" + o.usd;
         return em ? `<input class="cl-price" data-clprice="${esc(em)}" value="${ov ? esc(fmt(ov)) : ""}" placeholder="${esc(der)}" aria-label="Hibi price for ${esc(m.name)}">` : `<span class="muted small" title="Needs their email or Hibi account">—</span>`; })()}</td><td class="nw">${h ? `✓ <span class="muted small">${h.lastSeen ? ago(h.lastSeen) : ""}</span>` : `<span class="muted">—</span>`}</td>
-        <td><div class="cl-stcell"><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select>${m.status === "leaving" ? `<button type="button" class="cl-arch" data-clarch="${i}" title="Take them off this list and out of the club. They keep their Hibi account, words and notes.">📦 Archive</button>` : ""}</div></td></tr>`; }).join("")}</tbody></table></div>${(C.archived || []).length ? `<details class="cl-archd"><summary class="muted small">📦 Archived (${C.archived.length})</summary><ul class="muted small">${C.archived.map(a => `<li>${esc(a.name)}${a.at ? " · " + esc(a.at) : ""}</li>`).join("")}</ul></details>` : ""}` : ""}`;
+        <td><div class="cl-stcell"><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select>${["leaving", "watch", "ask"].includes(m.status) ? `<button type="button" class="cl-arch" data-clarch="${i}" title="Take them off this list and out of the club. They keep their Hibi account, words and notes.">📦 Archive</button>` : ""}</div></td></tr>`; }).join("")}</tbody></table></div>${(C.archived || []).length ? `<details class="cl-archd"><summary class="muted small">📦 Archived (${C.archived.length})</summary><ul class="muted small">${C.archived.map(a => `<li>${esc(a.name)}${a.at ? " · " + esc(a.at) : ""}</li>`).join("")}</ul></details>` : ""}` : ""}`;
 }
 /* 💳 Hibi payment: each matched member's users/{uid}/data/membership (what the pay helper writes; same as clubMoney() on Private students) */
 const nnName = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
@@ -756,7 +798,7 @@ function renderRecs() {
 }
 document.addEventListener("input", e => { if (e.target.id !== "rcQ") return; rcQ = e.target.value; const pos = e.target.selectionStart; renderRecs(); const i = $("rcQ"); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch (er) {} } });
 document.addEventListener("change", e => { if (e.target.id === "rcMod") { rcMod = e.target.value; renderRecs(); } else if (e.target.id === "rcSt") { rcSt = e.target.value; renderRecs(); } });
-document.addEventListener("click", e => { const b = e.target.closest("[data-rcuid]"); if (!b) return; current = b.dataset.rcuid; mTab = "students"; try { sessionStorage.setItem("cs-m-tab", mTab); } catch (er) {} renderTabs(); renderList(); renderDetail(students.find(s => s.uid === current)); alignDetail(); $("detail").scrollIntoView({ behavior: "smooth" }); });
+document.addEventListener("click", e => { const b = e.target.closest("[data-rcuid]"); if (!b) return; e.preventDefault(); openMember(b.dataset.rcuid); });
 /* sections as tabs, so the page isn't one long scroll */
 let mTab = null; try { mTab = sessionStorage.getItem("cs-m-tab"); } catch (e) {}
 /* from the 🔔 on Home ("Assign them →"): open Hibi members, showing only the ones not assigned yet */

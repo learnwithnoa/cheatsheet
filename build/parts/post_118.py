@@ -405,3 +405,13 @@ if '2026-1124-tidy-room' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1124-recs' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1124-recs", date:"November 24, 2026", title:"Find what Noa recommends ⭐", items:[
+    ["⭐","Noa recommends for you","Everything Noa recommends to you now shows at the top of Practice, with how far you got and an Open button.","quiz"],
+    ["🔔","Messages that take you there","When Noa's message is about a module, tap it in your 🔔 (or Open it in Messages from Noa) and it takes you straight to it.","quiz"],
+    ["🗂️","Easier to spot","Module cards and the Verb tenses folder show Noa's recommendation on its own line.","quiz"],
+    ["🎧","Music button","The music button shows the headphones, and the little bars only while music is playing.","notes"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

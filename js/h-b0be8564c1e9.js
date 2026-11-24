@@ -1185,6 +1185,10 @@ function todays5(){
     const em=["🎉","✨","💛","🎊","⭐"];
     for(let i=0;i<14;i++){ const s=document.createElement("span"); s.className="kd-conf"; s.textContent=em[i%em.length]; s.style.left=(6+Math.random()*88)+"%"; s.style.animationDelay=(Math.random()*.5)+"s"; s.style.setProperty("--r",(Math.random()*80-40)+"deg"); el.appendChild(s); setTimeout(()=>s.remove(),2600); }
   }
+  /* Nov 24 2026: messages lead somewhere. A message's own link (m.go), or the module it recommends ("Try the “Past simple” module") */
+  function kdGoOf(m){ if(!m) return ""; if(m.go) return String(m.go); const q=String(m.text||"").match(/[“"]([^”"]+)[”"]/); if(q&&window.__modPathByName) return window.__modPathByName(q[1]); return ""; }
+  function kdGoTo(g){ if(!g) return; if(String(g).includes("/")) location.hash="#"+g; else if(window.csGo) window.csGo(g); }
+  window.__kdGoOf=kdGoOf; window.__kdGoTo=kdGoTo;
   function paintLink(){ const n=(LS.get("ncs-kudos",[])||[]).length, a=document.getElementById("kdLink"); if(a){ a.hidden=!n; a.textContent="💌 Messages from Noa ("+n+")"; } }
   window.csShowKudos=function(list,done){
     list=(list||[]).filter(m=>m&&m.text);
@@ -1207,7 +1211,8 @@ function todays5(){
   document.addEventListener("click",e=>{
     if(!e.target.closest("#kdLink")) return;
     const hist=LS.get("ncs-kudos",[])||[];
-    csDialog('<h3 style="margin-top:0">💌 Messages from Noa</h3>'+(hist.length?hist.map(m=>'<div class="kd-item"><div class="kd-date">'+fmt(m.at)+'</div><div>'+esc(m.text).replace(/\n/g,"<br>")+'</div></div>').join(""):'<p>No messages yet.</p>'));
+    const dl=csDialog('<h3 style="margin-top:0">💌 Messages from Noa</h3>'+(hist.length?hist.map((m,i)=>'<div class="kd-item"><div class="kd-date">'+fmt(m.at)+'</div><div>'+esc(m.text).replace(/\n/g,"<br>")+'</div>'+(kdGoOf(m)?'<button type="button" class="pill-btn pill-green kd-open" data-kdgi="'+i+'">Open it →</button>':"")+'</div>').join(""):'<p>No messages yet.</p>'));
+    dl.el.addEventListener("click",ev=>{ const b=ev.target.closest("[data-kdgi]"); if(!b) return; const m=hist[+b.dataset.kdgi]; dl.close(); kdGoTo(kdGoOf(m)); });
   });
   paintLink();
 })();
@@ -3490,7 +3495,12 @@ Since I joined the company, I ___ two promotions. (get)|have got/have gotten/'ve
       '<div class="pr-gsize" role="group" aria-label="Goal size"><span class="muted">Goal:</span>'+[3,5,8].map(n=>'<button type="button" class="pr-gs" data-wkgoal="'+n+'" aria-pressed="'+(GOAL===n)+'">'+GOALS[n].k+' · '+n+'</button>').join("")+'</div>'+
       '<p class="pr-streak">'+(sk.n>=1?"🔥 <b>"+sk.n+(sk.n===1?" week":" weeks")+"</b> in a row. ":"")+((sk.best|0)>=4?"Your buddy has the 🔥 campfire.":"Do your goal 4 weeks in a row to unlock a 🔥 <b>campfire</b> for your buddy.")+'</p>'+
       '<p class="esb">Meta semanal: termina '+GOAL+' rondas esta semana. Elige el tamaño de tu meta: más rondas, más premio.</p>';
-    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.filter(st=>!st.adv).length*3; const pp=ps(id); ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(!t&&(pp.r||pp.tod||pp.pause)?" · started":"")+((pp.last||todT(pp.tod))?' · <span class="pr-when">practiced '+relD(pp.last||todT(pp.tod))+'</span>':"")+(r?' · <span class="pr-rec">'+(r==="all"?"⭐ Noa recommends this module":"Noa recommends stage "+r)+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
+    view.querySelectorAll("[data-modtile]").forEach(ts=>{ const id=ts.dataset.modtile, md=MODS[id], t=totalStars(id), r=rec()[id], tot=md.stages.filter(st=>!st.adv).length*3; const pp=ps(id); ts.querySelector(".pr-sub").innerHTML=(testedOut(id)?"🎓 ":"")+t+" / "+tot+" ★"+(!t&&(pp.r||pp.tod||pp.pause)?" · started":"")+((pp.last||todT(pp.tod))?' · <span class="pr-when">practiced '+relD(pp.last||todT(pp.tod))+'</span>':"")+(r?'<span class="pr-rec pr-recl">⭐ Noa recommends '+(r==="all"?"this module":"stage "+r)+'</span>':""); ts.querySelector(".pr-bar i").style.width=Math.round(t/tot*100)+"%"; });
+    /* Nov 24 2026: everything Noa recommended, in one place at the top of Practice (Belén couldn't find hers inside the Verb tenses folder) */
+    const rb=$("prRecs"); if(rb){ const R=rec(), ids=Object.keys(R).filter(id=>MODS[id]);
+      rb.hidden=!ids.length;
+      if(ids.length) rb.innerHTML='<div class="pr-recs-top"><b>⭐ Noa recommends for you</b><span class="muted">'+ids.length+(ids.length===1?" module":" modules")+'</span></div><ul class="pr-recs-l">'+ids.map(id=>{ const md=MODS[id], r=R[id], t=totalStars(id), tot=md.stages.filter(st=>!st.adv).length*3, st=r!=="all"?md.stages.find(x=>String(x.n)===String(r)):null, sg=st?(ps(id).s||{})[st.n]|0:0;
+        return '<li><a class="pr-recs-a" href="'+esc(hashFor(id))+'"><span class="pr-recs-n"><b>'+esc(md.name)+'</b><small>'+(st?"Stage "+st.n+" · "+esc(st.t)+" · "+(sg?"★".repeat(sg)+" done":"not started"):t+" / "+tot+" ★ · whole module")+'</small></span><span class="pr-recs-go">Open →</span></a></li>'; }).join("")+'</ul>'; }
     const sc=$("prShortCount"); if(sc){ sc.textContent=Math.min(w.n,GOAL)+"/"+GOAL; sc.parentElement.classList.toggle("done",!!w.got); }
     const tm=$("prMisTile"); if(tm){ const n=misList().length; tm.querySelector(".pr-sub").textContent=n?n+(n===1?" question to review":" questions to review"):"Nothing to review yet"; }
   }
@@ -3505,6 +3515,8 @@ Since I joined the company, I ___ two promotions. (get)|have got/have gotten/'ve
   function hashFor(c){ if(!c) return "#quiz"; if(c==="vset") c="vocab"; const p=par(c), me=c==="ps"?mslug(M):PSLUG[c]; return "#quiz/"+(p&&PSLUG[p]?PSLUG[p]+"/":"")+(me||""); }
   window.__prHash=()=>hashFor(cur);
   window.__prModFull=()=>MODS[M];   /* 🖨️ print (062-print-module.js) reads the current module's stages and test */
+  /* Nov 24 2026: where a module lives, by its name (messages from Noa that recommend a module open it) */
+  window.__modPathByName=nm=>{ const id=Object.keys(MODS).find(k=>MODS[k].name.toLowerCase()===String(nm||"").trim().toLowerCase()); return id?hashFor(id).slice(1):""; };
   window.__prMod=()=>({id:M,name:MODS[M].name,stages:MODS[M].stages.map(st=>({n:st.n,t:st.t,adv:!!st.adv})),path:hashFor("ps").slice(1)});
   window.__csDeep=window.__csDeep||{}; window.__csDeep.quiz={hash:()=>hashFor(cur),open:p=>window.__prOpenPath(p)};
   function syncUrl(){ try{ if(view.hidden) return; const h=hashFor(cur); if(location.hash!==h) history.replaceState(Object.assign({},history.state||{cs:1,v:"quiz"},{pp:cur,m:M}),"",h); }catch(e){} }
@@ -5159,6 +5171,12 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1124-recs", date:"November 24, 2026", title:"Find what Noa recommends ⭐", items:[
+    ["⭐","Noa recommends for you","Everything Noa recommends to you now shows at the top of Practice, with how far you got and an Open button.","quiz"],
+    ["🔔","Messages that take you there","When Noa's message is about a module, tap it in your 🔔 (or Open it in Messages from Noa) and it takes you straight to it.","quiz"],
+    ["🗂️","Easier to spot","Module cards and the Verb tenses folder show Noa's recommendation on its own line.","quiz"],
+    ["🎧","Music button","The music button shows the headphones, and the little bars only while music is playing.","notes"]
+  ]},
   {id:"2026-1124-tidy-room", date:"November 24, 2026", title:"A tidier buddy room 🏠", items:[
     ["✨","Tidy up puts every toy in its place","Floor toys go on the floor, the banner, clock and map go on the wall, and the bell, plane and rocket hang or fly up high, spread around the whole room instead of piled next to your buddy.","notes"],
     ["🧸","A cleaner Toys list","Every toy you can win is listed now, grouped by how you get it, with a count of how many are in the room."]

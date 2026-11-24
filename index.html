@@ -687,8 +687,9 @@ html .qa{top:calc(env(safe-area-inset-top,0px) + var(--hdr-h,61px) + var(--va-h,
 .sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 #musicBtn .mu-ico{display:inline-flex;color:#2F8CF0}
 #musicBtn .eq{display:none}
-#musicBtn.used .mu-ico{display:none}
-#musicBtn.used .eq{display:inline-flex}
+/* Nov 24 2026: the bars show only while music plays; otherwise everyone sees the headphones */
+#musicBtn.on .mu-ico{display:none}
+#musicBtn.on .eq{display:inline-flex}
 #musicBtn{padding-inline:11px}
 html[data-theme="unicorn"] #musicBtn .eq i:nth-child(1){background:#FF5FA2}
 html[data-theme="unicorn"] #musicBtn .eq i:nth-child(2){background:#FFC93C}
@@ -1298,6 +1299,7 @@ nav.side .navbtn[data-go="members"]{--nc:#FF7EB6;--nc2:#C2255C}
 
 .clb-kdli{display:flex;align-items:stretch;gap:4px}
 .clb-kdli .clb-i{flex:1;min-width:0}
+.clb-kdgo{display:block;margin-top:4px;font-size:12.5px;font-weight:800;color:var(--green,#16A34A)}
 .clb-kdx{flex:none;width:30px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:700 13px var(--body);cursor:pointer}
 .clb-kdx:hover{background:var(--surface-2);color:var(--ink)}
 /* the footer link "Messages from Noa" is gone: the notes live in the 🔔 now ("See all" still opens the full list through it) */
@@ -2034,6 +2036,15 @@ html.cs-calm .park-treat{animation:none}
 .pr-bar,.ps-bar{display:block;height:6px;border-radius:9px;background:var(--surface-2);overflow:hidden;margin-top:6px}
 .pr-bar i,.ps-bar i{display:block;height:100%;width:0;background:var(--green);border-radius:9px;transition:width .3s}
 .pr-rec{color:#E0A100;font-weight:700}
+/* Nov 24 2026: "Noa recommends" on its own line in a module tile, and the "Noa recommends for you" card at the top of Practice */
+.pr-recl{display:block;margin-top:5px;font-size:12.5px;line-height:1.3}
+.pr-recs{margin:12px 0;padding:14px 16px;border:1.5px solid color-mix(in srgb,#E0A100 45%,var(--line));background:color-mix(in srgb,#F5B800 8%,var(--surface))}
+.pr-recs-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}.pr-recs-top b{font-size:15.5px}.pr-recs-top .muted{font-size:13px}
+.pr-recs-l{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pr-recs-a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.pr-recs-a:hover{border-color:#E0A100}.pr-recs-n{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.pr-recs-n small{color:var(--muted);font-size:12.5px}
+.pr-recs-go{font-weight:800;font-size:13px;color:color-mix(in srgb,#D99A00 75%,var(--ink));white-space:nowrap}
+.kd-open{margin-top:8px;font-size:13px;padding:6px 14px}
 :root[data-theme="light"] .pr-rec,:root[data-theme="sepia"] .pr-rec{color:#A46A00}
 .pr-goal{max-width:620px}
 .pr-goal-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
@@ -3691,7 +3702,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
 <script src="js/h-5d9218c6c0f4.js"></script>
-<script src="js/h-638b7aabb2b9.js"></script>
+<script src="js/h-fc76e74bce05.js"></script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
   <p class="lede">Write a word or sentence in Spanish <i>or</i> English and tap <b>Translate here</b>. It figures out the language for you, and shows you how to say the English part. You can also open it in Google Translate or DeepL.</p>
@@ -4392,6 +4403,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">Pick what you want to practice today. Every round you finish helps your buddy and your weekly goal.</p>
   <p class="esb">Elige qué quieres practicar hoy.</p>
   <div class="card pr-goal" id="prGoal"></div>
+  <div class="card pr-recs" id="prRecs" hidden></div>
   <div class="pr-big"><button class="pr-bigbtn pb-words" type="button" data-pr="words"><span class="pr-ico" aria-hidden="true">📚</span><b>Your words</b><span>Practice the words you saved: flashcards, sentences and pronunciation</span><span class="esb">Mis palabras: las que tú guardaste</span></button><button class="pr-bigbtn pb-gram" type="button" data-pr="gram"><span class="pr-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step-by-step modules with stars and rewards</span><span class="esb">Gramática</span></button><button class="pr-bigbtn pb-pron" type="button" data-pr="pron"><span class="pr-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and sound more natural, starting with -ed endings</span><span class="esb">Pronunciación</span></button><button class="pr-bigbtn pb-vocab" type="button" data-pr="vocab"><span class="pr-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>New words picked by Noa: phrasal verbs, work, travel and more</span><span class="esb">Paquetes de palabras nuevas de Noa</span></button><button class="pr-bigbtn pb-esp" type="button" data-pr="esp"><span class="pr-ico" aria-hidden="true">🎯</span><b>English for Specific Purposes</b><span>The English you need for one real situation, starting with job interviews</span><span class="esb">Inglés para situaciones específicas, como entrevistas de trabajo</span></button></div>
   <button class="pr-lvlbtn" type="button" data-pr="level"><span aria-hidden="true">📊</span> <b>My English level</b> <span id="prLvlNow"></span><span class="pr-lvl-go">Take the 5-minute level check or choose it →</span></button></div>
 <div class="pr-panel" data-pp="pron" hidden><button class="pr-back" type="button" data-prback><span aria-hidden="true">←</span> <span class="pr-back-t">All practice</span></button><h1><em>Pronunciation</em></h1><p class="lede">Hear it, choose it, then say it out loud. More sounds are on the way!</p><p class="esb">Pronunciación: escucha, elige y dilo en voz alta.</p><div class="pr-tiles"><button class="pr-tile" type="button" data-pr="ps" id="prEdTile" data-modtile="ed"><span class="pr-ico" aria-hidden="true">🔊</span><b>-ed endings</b> <span class="pr-newb">NEW</span><span class="pr-sub">0 / 21 ★</span><span class="pr-bar" aria-hidden="true"><i></i></span></button></div></div>
@@ -4540,6 +4552,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
       <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>), with flashcards and a quiz.</div></li>
       <li><span class="wl-ico" aria-hidden="true">👔</span><div><b>English for Specific Purposes:</b> the English for one real situation, starting with <b>job interviews</b>: 8 stages plus a <b>🎤 Practice interview</b> where you write your answers and Hibi checks your English (not the content).</div></li>
+      <li><span class="wl-ico" aria-hidden="true">⭐</span><div><b>Noa recommends for you:</b> when Noa recommends a module or a stage, it shows at the top of Practice with an <b>Open →</b> button. His message about it in your 🔔 opens it too.</div></li>
       <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> pick 3, 5 or 8 rounds a week (bigger goal, bigger reward for your buddy). Lessons, job interview practice and saying phrases out loud count too, and 4 weeks in a row unlock a 🔥 campfire. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
     </ul>
   </div>
@@ -4602,10 +4615,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-1edc5b1dbe4e.js"></script>
+<script src="js/h-b0be8564c1e9.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124132022"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124135122"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -4951,7 +4964,10 @@ document.addEventListener("click",e=>{
     const rest=()=>[...pan.children].filter(el=>el!==box&&!el.matches(".pr-back,h1,.lede"));
     function open(on){ box.hidden=!on; rest().forEach(el=>{ if(on){ if(!el.hidden){ el.dataset.fhid="1"; el.hidden=true; } } else if(el.dataset.fhid){ el.hidden=false; delete el.dataset.fhid; } }); try{ on?sessionStorage.setItem(KEY,"tenses"):sessionStorage.removeItem(KEY); }catch(e){} }
     function sum(){ let s=0,t=0; tiles.forEach(x=>{ const m=(x.querySelector(".pr-sub")||{}).textContent||""; const r=m.match(/(\d+)\s*\/\s*(\d+)/); if(r){ s+=+r[1]; t+=+r[2]; } });
-      const sb=f.querySelector("[data-fsub]"), bar=f.querySelector("[data-fbar]"); if(sb) sb.textContent=t?s+" / "+t+" ★":tiles.length+" modules"; if(bar) bar.style.width=t?Math.round(s/t*100)+"%":"0%"; }
+      const sb=f.querySelector("[data-fsub]"), bar=f.querySelector("[data-fbar]"); if(sb) sb.textContent=t?s+" / "+t+" ★":tiles.length+" modules"; if(bar) bar.style.width=t?Math.round(s/t*100)+"%":"0%"; 
+      /* Nov 24 2026: show on the folder which module inside it Noa recommends */
+      const rn=tiles.filter(x=>x.querySelector(".pr-rec")).map(x=>(x.querySelector("b")||{}).textContent||""); let rl=f.querySelector(".pr-frec");
+      if(rn.length){ if(!rl){ rl=document.createElement("span"); rl.className="pr-rec pr-recl pr-frec"; f.querySelector(".pr-bar").before(rl); } const tx="⭐ Noa recommends: "+rn.join(", "); if(rl.textContent!==tx) rl.textContent=tx; } else if(rl) rl.remove(); }
     sum(); new MutationObserver(sum).observe(fg,{subtree:true,characterData:true,childList:true});
     pan.addEventListener("click",e=>{ if(e.target.closest("[data-gfolder]")){ e.preventDefault(); open(true); window.scrollTo(0,0); } else if(e.target.closest("[data-gfback]")){ e.preventDefault(); open(false); } });
     let k=""; try{ k=sessionStorage.getItem(KEY)||""; }catch(e){} if(k) open(true);

@@ -17,7 +17,10 @@
     const rest=()=>[...pan.children].filter(el=>el!==box&&!el.matches(".pr-back,h1,.lede"));
     function open(on){ box.hidden=!on; rest().forEach(el=>{ if(on){ if(!el.hidden){ el.dataset.fhid="1"; el.hidden=true; } } else if(el.dataset.fhid){ el.hidden=false; delete el.dataset.fhid; } }); try{ on?sessionStorage.setItem(KEY,"tenses"):sessionStorage.removeItem(KEY); }catch(e){} }
     function sum(){ let s=0,t=0; tiles.forEach(x=>{ const m=(x.querySelector(".pr-sub")||{}).textContent||""; const r=m.match(/(\d+)\s*\/\s*(\d+)/); if(r){ s+=+r[1]; t+=+r[2]; } });
-      const sb=f.querySelector("[data-fsub]"), bar=f.querySelector("[data-fbar]"); if(sb) sb.textContent=t?s+" / "+t+" ★":tiles.length+" modules"; if(bar) bar.style.width=t?Math.round(s/t*100)+"%":"0%"; }
+      const sb=f.querySelector("[data-fsub]"), bar=f.querySelector("[data-fbar]"); if(sb) sb.textContent=t?s+" / "+t+" ★":tiles.length+" modules"; if(bar) bar.style.width=t?Math.round(s/t*100)+"%":"0%"; 
+      /* Nov 24 2026: show on the folder which module inside it Noa recommends */
+      const rn=tiles.filter(x=>x.querySelector(".pr-rec")).map(x=>(x.querySelector("b")||{}).textContent||""); let rl=f.querySelector(".pr-frec");
+      if(rn.length){ if(!rl){ rl=document.createElement("span"); rl.className="pr-rec pr-recl pr-frec"; f.querySelector(".pr-bar").before(rl); } const tx="⭐ Noa recommends: "+rn.join(", "); if(rl.textContent!==tx) rl.textContent=tx; } else if(rl) rl.remove(); }
     sum(); new MutationObserver(sum).observe(fg,{subtree:true,characterData:true,childList:true});
     pan.addEventListener("click",e=>{ if(e.target.closest("[data-gfolder]")){ e.preventDefault(); open(true); window.scrollTo(0,0); } else if(e.target.closest("[data-gfback]")){ e.preventDefault(); open(false); } });
     let k=""; try{ k=sessionStorage.getItem(KEY)||""; }catch(e){} if(k) open(true);
