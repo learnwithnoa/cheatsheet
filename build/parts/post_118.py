@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=70',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=71',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -394,6 +394,14 @@ s=open(p,encoding="utf-8").read()
 if '2026-1123-fill-retry' not in s:
     s=s.replace(a,a+'''  {id:"2026-1123-fill-retry", date:"November 23, 2026", title:"Auto-fill tries again ✨", items:[
     ["✨","If a word didn't get its details","Sometimes the AI helper can't connect for a moment. Now Hibi tells you clearly when that happens, and words that are still missing something fill in by themselves the next time you open Hibi.","words"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1124-tidy-room' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1124-tidy-room", date:"November 24, 2026", title:"A tidier buddy room 🏠", items:[
+    ["✨","Tidy up puts every toy in its place","Floor toys go on the floor, the banner, clock and map go on the wall, and the bell, plane and rocket hang or fly up high, spread around the whole room instead of piled next to your buddy.","notes"],
+    ["🧸","A cleaner Toys list","Every toy you can win is listed now, grouped by how you get it, with a count of how many are in the room."]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

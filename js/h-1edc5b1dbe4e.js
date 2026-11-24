@@ -5159,6 +5159,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1124-tidy-room", date:"November 24, 2026", title:"A tidier buddy room 🏠", items:[
+    ["✨","Tidy up puts every toy in its place","Floor toys go on the floor, the banner, clock and map go on the wall, and the bell, plane and rocket hang or fly up high, spread around the whole room instead of piled next to your buddy.","notes"],
+    ["🧸","A cleaner Toys list","Every toy you can win is listed now, grouped by how you get it, with a count of how many are in the room."]
+  ]},
   {id:"2026-1123-fill-retry", date:"November 23, 2026", title:"Auto-fill tries again ✨", items:[
     ["✨","If a word didn't get its details","Sometimes the AI helper can't connect for a moment. Now Hibi tells you clearly when that happens, and words that are still missing something fill in by themselves the next time you open Hibi.","words"]
   ]},

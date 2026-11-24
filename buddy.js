@@ -424,25 +424,28 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       R(X0, Y0, RW, RH, "var(--bd-sky)"); R(X0, 20, RW, 6, "var(--bd-grass)"); R(X0, 20, RW, 1, "var(--bd-grass2)");
       [[-10, -9], [42, -12], [24, -6]].forEach(([x, y]) => { R(x, y, 6, 2, "color-mix(in srgb,var(--bd-sky) 40%,#fff)"); R(x + 1, y - 1, 3, 1, "color-mix(in srgb,var(--bd-sky) 40%,#fff)"); });
     }
-    const T = { house: [27, 20, ["...rr...", "..rrrr..", ".rrrrrr.", "rrrrrrrr", ".wwwwww.", ".wbwwdw.", ".wwwwdw.", ".wwwwdw."], { r: "#D9534F", w: "#F4F1EA", b: "#7EC8F2", d: "#8A5A2B" }], gkey: [29, 24, ["yyy.....", "y.y.....", "yyyyyyyy", "......y.", "......yy"], { y: "#E8B931" }], skate: [15, 24, [".rrrrrrr.", "rRRRRRRRr", ".k.....k."], { r: "#E5533D", R: "#F5C842", k: "#2E2E3A" }], mug: [9, 23, [".s.s..", "s.s...", "wwwww.", "wkkkww", "wwwww.w", "wwwwww.", ".www.."], { w: "#F4F1EA", k: "#6B4226", s: "#C9D3E0" }], bell: [12, 1, ["...k...", "...k...", "..yyy..", ".ywyyy.", ".yyyyy.", "yyyyyyy", "...o..."], { k: "#8A6A3A", y: "#E8B931", w: "#FFF3A0", o: "#B8860B" }], globe: [3, 1, ["...w...", "..bbb..", ".bggbb.", "bbgbbgb", "bgggbbb", ".bbggb.", "..bbb..", "...k...", "..kkk.."], { b: "#4A90E2", g: "#58C26B", k: "#8A6A3A", w: "#FFF3A0" }], hourglass: [30, 1, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [3, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [31, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
-      plant: [34, 14, ["g.g.", ".gg.", "gggg", ".gg.", "oooo", ".oo."], { g: "#3BA776", o: "#C0673A" }], lamp: [1, 11, ["yyyy", "yyyy", ".kk.", ".k..", ".k..", ".k..", ".k..", "kkk."], { y: "#F9D25C", k: "#4A3A2A" }],
-      trophy: [28, 19, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }],
-      dbanner: [36, 3, ["k....", "krrrr", "krwrr", "krrrr", "k.rr.", "k....", "k....", "k...."], { k: "#5A4632", r: "#C2306F", w: "#F5C842" }],
-      sword: [24, 18, ["....w", "...s.", "..s..", "hs...", ".h..."], { w: "#FFFFFF", s: "#C9A26B", h: "#7A5A3A" }],
-      shield: [20, 20, ["bbbbb", "bybyb", "bbybb", ".bbb.", "..b.."], { b: "#3B6FD9", y: "#F5C842" }],
-      clock: [6, 10, ["r....r", ".rrrr.", "rwwkwr", "rwwkwr", "rwkkwr", "rwwwwr", ".rrrr."], { r: "#E5533D", w: "#FFFFFF", k: "#2E2E3A" }],
-      tmap: [6, 17, ["pppppp", "prppbp", "pprpxp", "pppppp"], { p: "#EED9A4", r: "#B8860B", b: "#6FB6F2", x: "#E5533D" }],
-      camera: [28, 9, [".kk...", "ssssss", "ssbbss", "sbwbbs", "ssbbss"], { s: "#A7B0C0", b: "#6FB6F2", w: "#FFFFFF", k: "#2E2E3A" }],
-      phones: [28, 14, [".kkkk.", "k....k", "pp..pp", "pp..pp"], { k: "#2E2E3A", p: "#9B6BFF" }],
-      plane: [19, 0, ["ww.....", ".wwww..", "..wwwww", ".ggw...", "gg....."], { w: "#FFFFFF", g: "#C9D3E0" }],
-      medal: [25, 0, ["b...b", ".b.b.", ".yyy.", "yyoyy", ".yyy."], { b: "#3B6FD9", y: "#F5C842", o: "#E8B931" }],
-      scope: [36, 20, ["..by", ".bb.", "bb..", ".k..", "k.k."], { b: "#3B6FD9", y: "#F5C842", k: "#5A4632" }],
-      campfire: [37, 10, [".r.", "ryr", "ryr", "kkk"], { r: "#E5533D", y: "#F5C842", k: "#7A5A3A" }],
-      compass: [0, 0, [".yy.", "yrwy", "ywby", ".yy."], { y: "#E8B931", r: "#E5533D", w: "#FFFFFF", b: "#3B6FD9" }],
-      magnifier: [12, 21, [".gg...", "gccgkk", ".gg..."], { g: "#C9A26B", c: "#CDEFFF", k: "#5A4632" }],
-      cball: [23, 21, [".pp.", "pwpp", "pppp", ".pp.", "kkkk"], { p: "#9B6BFF", w: "#E9DDFF", k: "#7A5A3A" }],
-      rocket: [0, 4, [".w.", "www", "wbw", "www", "rwr", ".o."], { w: "#F4F1EA", b: "#6FB6F2", r: "#E5533D", o: "#F5C842" }],
-      armour: [-6, 12, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
+    const T = { house: [-6, 17, ["...rr...", "..rrrr..", ".rrrrrr.", "rrrrrrrr", ".wwwwww.", ".wbwwdw.", ".wwwwdw.", ".wwwwdw."], { r: "#D9534F", w: "#F4F1EA", b: "#7EC8F2", d: "#8A5A2B" }], gkey: [31, 9, ["yyy.....", "y.y.....", "yyyyyyyy", "......y.", "......yy"], { y: "#E8B931" }], skate: [33, 24, [".rrrrrrr.", "rRRRRRRRr", ".k.....k."], { r: "#E5533D", R: "#F5C842", k: "#2E2E3A" }], mug: [-6, 14, [".s.s..", "s.s...", "wwwww.", "wkkkww", "wwwww.w", "wwwwww.", ".www.."], { w: "#F4F1EA", k: "#6B4226", s: "#C9D3E0" }], bell: [17, -6, ["...k...", "...k...", "..yyy..", ".ywyyy.", ".yyyyy.", "yyyyyyy", "...o..."], { k: "#8A6A3A", y: "#E8B931", w: "#FFF3A0", o: "#B8860B" }], globe: [30, 13, ["...w...", "..bbb..", ".bggbb.", "bbgbbgb", "bgggbbb", ".bbggb.", "..bbb..", "...k...", "..kkk.."], { b: "#4A90E2", g: "#58C26B", k: "#8A6A3A", w: "#FFF3A0" }], hourglass: [3, -6, ["....w....", ".yyyyyyy.", "..vcccv..", "...vsv...", "w...s...w", "...vcv...", "..vsssv..", ".yyyyyyy.", "....w...."], { y: "#E8B931", v: "#9B6BFF", c: "#CDEFFF", s: "#FF8AD8", w: "#FFF3A0" }], ball: [8, 21, [".rr.", "rwrr", "rrwr", ".rr."], { r: "#E5533D", w: "#FFFFFF" }], book: [3, 22, ["bbbbb", "bwwwb", "bbbbb"], { b: "#3B6FD9", w: "#FFFFFF" }],
+      plant: [7, 15, ["g.g.", ".gg.", "gggg", ".gg.", "oooo", ".oo."], { g: "#3BA776", o: "#C0673A" }], lamp: [1, 13, ["yyyy", "yyyy", ".kk.", ".k..", ".k..", ".k..", ".k..", "kkk."], { y: "#F9D25C", k: "#4A3A2A" }],
+      trophy: [30, 20, ["yyyyy", "yyyyy", ".yyy.", "..y..", ".kkk."], { y: "#F5C842", k: "#7A5A3A" }],
+      dbanner: [-5, -5, ["k....", "krrrr", "krwrr", "krrrr", "k.rr.", "k....", "k....", "k...."], { k: "#5A4632", r: "#C2306F", w: "#F5C842" }],
+      sword: [40, 14, ["....w", "...s.", "..s..", "hs...", ".h..."], { w: "#FFFFFF", s: "#C9A26B", h: "#7A5A3A" }],
+      shield: [42, 21, ["bbbbb", "bybyb", "bbybb", ".bbb.", "..b.."], { b: "#3B6FD9", y: "#F5C842" }],
+      clock: [33, 2, ["r....r", ".rrrr.", "rwwkwr", "rwwkwr", "rwkkwr", "rwwwwr", ".rrrr."], { r: "#E5533D", w: "#FFFFFF", k: "#2E2E3A" }],
+      tmap: [-5, 9, ["pppppp", "prppbp", "pprpxp", "pppppp"], { p: "#EED9A4", r: "#B8860B", b: "#6FB6F2", x: "#E5533D" }],
+      camera: [-3, 20, [".kk...", "ssssss", "ssbbss", "sbwbbs", "ssbbss"], { s: "#A7B0C0", b: "#6FB6F2", w: "#FFFFFF", k: "#2E2E3A" }],
+      phones: [2, 12, [".kkkk.", "k....k", "pp..pp", "pp..pp"], { k: "#2E2E3A", p: "#9B6BFF" }],
+      plane: [25, -4, ["ww.....", ".wwww..", "..wwwww", ".ggw...", "gg....."], { w: "#FFFFFF", g: "#C9D3E0" }],
+      medal: [34, -5, ["b...b", ".b.b.", ".yyy.", "yyoyy", ".yyy."], { b: "#3B6FD9", y: "#F5C842", o: "#E8B931" }],
+      scope: [43, 17, ["..by", ".bb.", "bb..", ".k..", "k.k."], { b: "#3B6FD9", y: "#F5C842", k: "#5A4632" }],
+      campfire: [39, 21, [".r.", "ryr", "ryr", "kkk"], { r: "#E5533D", y: "#F5C842", k: "#7A5A3A" }],
+      compass: [-5, 4, [".yy.", "yrwy", "ywby", ".yy."], { y: "#E8B931", r: "#E5533D", w: "#FFFFFF", b: "#3B6FD9" }],
+      magnifier: [9, 19, [".gg...", "gccgkk", ".gg..."], { g: "#C9A26B", c: "#CDEFFF", k: "#5A4632" }],
+      cball: [35, 20, [".pp.", "pwpp", "pppp", ".pp.", "kkkk"], { p: "#9B6BFF", w: "#E9DDFF", k: "#7A5A3A" }],
+      rocket: [42, -6, [".w.", "www", "wbw", "www", "rwr", ".o."], { w: "#F4F1EA", b: "#6FB6F2", r: "#E5533D", o: "#F5C842" }],
+      armour: [36, 15, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
+    /* drawn back to front (by where the toy sits on the floor), so nearer toys cover the ones behind them */
+    const atOf = t => (S.tp && S.tp[t]) || [T[t][0], T[t][1]];
+    toys = toys.filter(t => T[t]).sort((a, b) => (atOf(a)[1] + T[a][2].length) - (atOf(b)[1] + T[b][2].length));
     toys.forEach(t => { const d = T[t]; if (!d) return; const at = (S.tp && S.tp[t]) || [d[0], d[1]]; r += `<g class="bd-toy" data-toyg="${t}"><rect x="${at[0] - .5}" y="${at[1] - .5}" width="${d[2][0].length + 1}" height="${d[2].length + 1}" fill="transparent"/>`; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(at[0] + dx, at[1] + dy, 1, 1, d[3][ch]); })); r += `</g>`; });
     return r;
   }
@@ -639,8 +642,14 @@ html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-music .ms-dis
 .bd-toy{cursor:grab}.bd-toy.dragging{cursor:grabbing;opacity:.85}
 .bd-moving .bd-stage-svg{cursor:crosshair;outline:2px dashed var(--green,#2E8B57);outline-offset:-2px}
 .bd-movehint{margin:0 0 8px;text-align:center}
-.bd-toyh{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:4px 0 2px}
-.bd-toyg{margin:8px 0 4px;color:var(--muted)}
+.bd-toysec{margin:12px 0 10px;padding:10px 12px 8px;border:1px solid var(--line,#ddd);border-radius:14px;background:color-mix(in srgb,var(--ink,#222) 3%,transparent)}
+.bd-toyh{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:0}
+.bd-toyt{font:800 14px var(--body,sans-serif);color:var(--ink,#222)}
+.bd-acts{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;padding-bottom:10px;border-bottom:1px dashed var(--line,#ddd)}
+.bd-act{all:unset;box-sizing:border-box;cursor:pointer;font:700 12px var(--body,sans-serif);padding:4px 10px;border-radius:999px;border:1.5px solid var(--line,#ddd);color:var(--muted,#666);display:inline-flex;align-items:center;gap:4px;transition:border-color .15s,color .15s}
+.bd-act:hover{border-color:var(--green,#2E8B57);color:var(--ink,#222)}.bd-act:focus-visible{outline:3px solid var(--bright,#5BD38E)}
+.bd-toyg{margin:10px 0 5px;color:var(--muted);font-weight:700}
+.bd-how{margin:10px 0 2px}.bd-how summary{cursor:pointer;font:700 12.5px var(--body,sans-serif);color:var(--muted,#777)}.bd-how p{margin-top:4px}
 .bd-topr{display:flex;align-items:center;gap:2px}.bd-set-ico{font-size:18px;padding:4px 7px}
 .bd-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .bd-name input{font:800 17px var(--body,sans-serif);color:var(--ink,#222);background:transparent;border:1.5px dashed var(--line,#ddd);border-radius:10px;padding:5px 9px;width:12ch;min-width:0}
@@ -939,7 +948,8 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     o.connect(g); out.connect(lp).connect(sac.destination); o.start(t0); o.stop(t0 + dur + .05);
   }
   function animalSound(a, force, owner) {
-    if (!sndOn() || (!force && Math.random() > .25)) return;
+    /* force: true = always (feeding, turning sounds on); a number = that chance (petting / tapping: 0.7, Noa Nov 24 2026); nothing = 1 in 4 */
+    if (!sndOn() || (force !== true && Math.random() > (typeof force === "number" ? force : .25))) return;
     const sq = SQUEAK[owner === undefined ? myUid() : owner]; PITCH = sq && sq.a === a ? sq.x : 1;
     try {
       if (!sac) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; sac = new AC(); }
@@ -971,7 +981,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     return false;
   }
   function petIt() {
-    hop(); fx(["💛", "🩷", "💛"]); animalSound(animal(), true);
+    hop(); fx(["💛", "🩷", "💛"]); animalSound(animal(), .7);
     if (!S.pd || S.pd[0] !== today()) S.pd = [today(), 0];
     if (S.pd[1] < 5) { S.pd[1]++; addFP(1); }
     refreshPanel(document.activeElement && document.activeElement.dataset && document.activeElement.dataset.m === "pet" ? '[data-m="pet"]' : null, ["💛", "🩷", "💛"]);
@@ -1138,9 +1148,12 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     } else if (sec === "room") {
       const n = (S.gd || []).length, toys = ITEMS.filter(i => i.slot === "toy");
       body = `${slotRow("room", "Background")}
-      <div class="bd-toyh"><span class="bd-small" style="font-weight:700">Toys</span><span class="bd-row" style="gap:6px"><button class="bd-link" type="button" data-m="toyreset" title="Put every toy back in its own spot">✨ Tidy up</button>${toys.some(t => isOpen(t) && !(S.toyOff || []).includes(t.id)) ? `<button class="bd-link" type="button" data-m="toysaway">📦 Put all away</button>` : ""}${(S.toyOff || []).length ? `<button class="bd-link" type="button" data-m="toysout">🧸 Bring all out</button>` : ""}</span></div>
-      ${[["📚 From learning words", t => t.l != null], ["🧩 From grammar modules", t => !!t.m], ["⚔️ From duels", t => t.dp != null || t.dw != null]].map(([h, f]) => { const g = toys.filter(f); return g.length ? `<div class="bd-small bd-toyg">${h}</div><div class="bd-row">${g.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${atW(t)}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${needTxt(t)}</small></span>`).join("")}</div>` : ""; }).join("")}
-      <p class="bd-small">Tap a toy to put it away or bring it back. New toys show up in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). Grammar toys come from finishing a module in Practice, and from passing its ⭐ Advanced stage.</p>
+      /* Nov 24 2026: Toys as their own tidy card; the three bulk buttons as one small row of quiet pills; the how-it-works text folds away */
+      ${(() => { const open = toys.filter(t => isOpen(t)), out = open.filter(t => !(S.toyOff || []).includes(t.id)).length;
+        return `<div class="bd-toysec"><div class="bd-toyh"><span class="bd-toyt">Toys</span>${open.length ? `<span class="bd-small" style="margin:0">${out} of ${open.length} in the room</span>` : ""}</div>
+      ${open.length ? `<div class="bd-acts"><button class="bd-act" type="button" data-m="toyreset" title="Put every toy in its own spot around the room">✨ Tidy up</button>${out ? `<button class="bd-act" type="button" data-m="toysaway">📦 Put all away</button>` : ""}${out < open.length ? `<button class="bd-act" type="button" data-m="toysout">🧸 Bring all out</button>` : ""}</div>` : ""}
+      ${[["📚 From learning words", t => t.l != null], ["🧩 From grammar modules", t => !!t.m], ["⭐ From Advanced stages", t => !!t.ma], ["🔥 From weekly goals", t => t.wk != null], ["⚔️ From duels", t => t.dp != null || t.dw != null]].map(([h, f]) => { const g = toys.filter(f); return g.length ? `<div class="bd-small bd-toyg">${h}</div><div class="bd-row">${g.map(t => isOpen(t) ? `<button type="button" class="bd-chip" data-toy="${t.id}" aria-pressed="${!(S.toyOff || []).includes(t.id)}" title="${(S.toyOff || []).includes(t.id) ? "Hidden · tap to put it back in the room" : "In the room · tap to put it away"}">${t.ico} ${esc(t.name)}</button>` : `<span class="bd-chip locked" title="Unlocks ${atW(t)}${lockTxt(t)}">🔒 ${esc(t.name)} <small>· ${needTxt(t)}</small></span>`).join("")}</div>` : ""; }).join("")}
+      <details class="bd-how"><summary>How do I get more toys?</summary><p class="bd-small">Tap a toy to put it away or bring it back. New toys show up in the room by themselves: they unlock as you <b>learn</b> words in flashcards (tap <b>✓ I knew it</b> 3 times on a word). Grammar toys come from finishing a module in Practice, and from passing its ⭐ Advanced stage.</p></details></div>`; })()}
       <p class="bd-small" style="margin:0 0 8px">🌱 <b>Study garden:</b> ${n ? `${n} ${n === 1 ? "flower" : "flowers"}. ` : ""}A new flower grows on every day you study. Missed days don't matter, your flowers stay.${n > 38 ? ` (Showing your newest 38.)` : ""}</p>`;
     } else if (sec === "buddy") {
       body = `${animalGrid(animal(), S.c | 0)}${swatches(animal(), S.c | 0)}<p class="bd-small">Each buddy has its own friendship level. Your treats, words and unlocks are shared by all of them.</p>`;
@@ -1243,7 +1256,12 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (ty) { const id = ty.dataset.toy, off = new Set(S.toyOff || []); off.has(id) ? off.delete(id) : off.add(id); S.toyOff = [...off]; save(); renderModal(); const f = modal.querySelector(`[data-toy="${id}"]`); if (f) f.focus(); return; }
     const zb = e.target.closest("[data-zoom]");
     if (zb) { zoom = Math.max(0, Math.min(ZW.length - 1, zoom + +zb.dataset.zoom)); try { localStorage.setItem("cs-bd-zoom", zoom); } catch (er) {} const sc = modal.scrollTop; renderModal(); modal.scrollTop = sc; const f = modal.querySelector(`[data-zoom="${zb.dataset.zoom}"]`); if (f && !f.disabled) f.focus(); return; }
-    if (m && m.dataset.m === "toyreset") { S.tp = null; moving = null; save(); renderModal(); toastMsg("✨ All tidy: every toy is back in its spot"); return; }
+    /* tidy: every toy goes back to its own spot (floor toys on the floor, wall and flying toys up high, spread around the room);
+       with lots of toys, zoom out one step so they all fit in the picture */
+    if (m && m.dataset.m === "toyreset") { S.tp = null; moving = null; save();
+      const nOut = ITEMS.filter(i => i.slot === "toy" && isOpen(i) && !(S.toyOff || []).includes(i.id)).length;
+      if (nOut > 6 && zoom < 2) { zoom = 2; try { localStorage.setItem("cs-bd-zoom", zoom); } catch (er) {} }
+      renderModal(); toastMsg("✨ All tidy: every toy is back in its spot"); return; }
     if (m && m.dataset.m === "toysaway") { S.toyOff = ITEMS.filter(i => i.slot === "toy").map(i => i.id); moving = null; save(); renderModal(); return; }
     if (m && m.dataset.m === "toysout") { S.toyOff = []; moving = null; save(); renderModal(); return; }
     if (e.target.closest("#bdStage")) {
@@ -1616,7 +1634,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const dm = e.target.closest("[data-pdm]"); if (dm) { e.preventDefault(); e.stopPropagation(); if (window.__clubDM) window.__clubDM(dm.dataset.pdm, dm.dataset.first); return; }
     const dz = e.target.closest("[data-duel]"); if (dz) { e.preventDefault(); e.stopPropagation(); duelDialog(dz.dataset.duel, dz.dataset.first); return; }
     if (pb && e.target.closest("[data-feed]")) { e.preventDefault(); e.stopPropagation(); clearTimeout(pb._it); pb._it = setTimeout(() => pb.classList.remove("show-info"), 4000); feedOther(pb); ["🍪", "💛", "🍪"].forEach((ch, i) => setTimeout(() => parkFx(pb, ch), i * 130)); return; }
-    if (pb && pb.dataset.a) animalSound(pb.dataset.a, true, pb.classList.contains("me") ? myUid() : (pb.dataset.uid || ""));
+    if (pb && pb.dataset.a) animalSound(pb.dataset.a, .7, pb.classList.contains("me") ? myUid() : (pb.dataset.uid || ""));
     if (pb && !pb.classList.contains("me") && pb.dataset.uid) sendLove(pb);
     if (pb) {
       document.querySelectorAll(".park-b.show-info").forEach(x => { if (x !== pb) x.classList.remove("show-info"); });
