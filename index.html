@@ -956,7 +956,9 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp-who b{display:block;font-size:15.5px}.lp-who small{display:block;font-size:12.5px;line-height:1.3;color:var(--lp-muted)}
 .lp-q blockquote{margin:0;font-size:16px;line-height:1.45;font-weight:600}
 .lp-q blockquote::before{content:"“";display:block;font:800 44px/.6 var(--display);color:var(--c);margin:10px 0 2px}
-.lp-tr{margin:-4px 0 0;font-size:13px;line-height:1.4;color:var(--lp-muted)}
+.lp-story{margin:0;font-size:13.5px;line-height:1.45;color:var(--lp-muted)}
+.lp-q blockquote{font-size:15px}
+.lp-faq p b{color:var(--lp-ink)}
 .lp-faq{border-radius:16px;padding:0 14px;margin-top:8px}
 .lp-faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px;padding:14px 0;font-weight:700}
 .lp-faq summary::-webkit-details-marker{display:none}
@@ -3795,7 +3797,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-f9d491603b0e.js"></script>
+<script src="js/h-845d930df595.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -4721,7 +4723,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-fb46a3c5a7bf.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124182652"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124183006"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
