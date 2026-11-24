@@ -91,7 +91,7 @@
       <button type="button" class="ag-btn ag-alt" data-signin>${G}<span>${L("I’m approved: continue with Google","Ya me aprobaron: continuar con Google")}</span></button>`;
     return `${langSw()}${LOGO}
       <h2 id="agTitle">${L("Learn English with Noa","Aprende inglés con Noa")}</h2>
-      <p class="ag-what">${L("Hibi is Noa’s all-in-one English space: practice grammar and vocabulary, save every new word, play with your study buddy and see your progress grow, with a real coach behind it.","Hibi es el espacio de inglés de Noa, todo en uno: practica gramática y vocabulario, guarda cada palabra nueva, juega con tu mascota de estudio y mira cómo crece tu progreso, con un coach real detrás.")}</p>
+      <p class="ag-what">${L("Hibi is Noa’s all-in-one English space: practice grammar and vocabulary, save every new word and see your progress grow, with a real coach behind it.","Hibi es el espacio de inglés de Noa, todo en uno: practica gramática y vocabulario, guarda cada palabra nueva y mira cómo crece tu progreso, con un coach real detrás.")}</p>
       <div class="ag-book"><b>${L("Interested in 1:1 classes?","¿Te interesan las clases 1:1?")}</b>
         <a class="ag-btn ag-go" href="${BOOK_FORM}" target="_blank" rel="noopener">📅 ${L("Book your free kickoff","Agenda tu kickoff gratis")}</a>
         <span>${L("A relaxed 30-minute chat to see where you are. No cost, no commitment.","Una conversación relajada de 30 minutos para ver en qué nivel estás. Sin costo y sin compromiso.")}</span></div>
