@@ -629,7 +629,7 @@ document.getElementById("wSelBtn").addEventListener("click",()=>{ wSel=!wSel; re
 document.getElementById("wSelDone").addEventListener("click",()=>{ wSel=false; renderWords(); });
 document.getElementById("wSelNone").addEventListener("click",()=>{ fcPick=[]; savePick(); });
 document.getElementById("wSelAll").addEventListener("click",()=>{ const q=norm(wSearch.value.trim()); const ids=allWords().filter(x=>x.w&&!x.sample&&(!q||[x.w,x.m,x.e].some(s=>norm(s||"").includes(q)))).map(x=>x.id); fcPick=Array.from(new Set(fcPick.concat(ids))); savePick(); });
-document.getElementById("wSelGo").addEventListener("click",()=>{ wSel=false; renderWords(); fcSetMode("pick"); go("quiz"); });
+document.getElementById("wSelGo").addEventListener("click",()=>{ wSel=false; renderWords(); fcSetMode("pick"); go("quiz"); setTimeout(()=>{ try{ window.__prOpenPath&&window.__prOpenPath(["my-words","flashcards"]); }catch(_){} },0); });
 (function(){
   const b=document.getElementById("ttLove"); if(!b) return;
   const day=()=>{ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
@@ -982,7 +982,7 @@ function todays5(){
   }
   box.addEventListener("click",e=>{
     const c=e.target.closest("[data-rv]"); if(c){ c.setAttribute("aria-expanded",c.getAttribute("aria-expanded")==="true"?"false":"true"); return; }
-    if(e.target.closest("#rvGo")){ if(typeof fcSetMode==="function") fcSetMode("today"); go("quiz"); }
+    if(e.target.closest("#rvGo")){ if(typeof fcSetMode==="function") fcSetMode("today"); go("quiz"); setTimeout(()=>{ try{ window.__prOpenPath&&window.__prOpenPath(["my-words","flashcards"]); }catch(_){} },0); }
   });
   paint();
   window.addEventListener("storage",paint);
