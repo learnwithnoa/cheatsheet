@@ -59,6 +59,7 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py club-ideas   members' ideas for future classes (most 👍 first; skips ones marked done)
   HUB_PASSWORD=... python3 hubsync.py club-yt   newest videos in the club's YouTube playlist (refreshed every hour by the pay helper)
   HUB_PASSWORD=... python3 hubsync.py trials [days]   free 2-week club trials ("new": started/ended/joined in the last [days], default 2)
+  HUB_PASSWORD=... python3 hubsync.py pay-events [hours]   club payments on Hibi in the last [hours] (default 24): started paying, payment failed, cancelled, back
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
       "notes":"1-2 friendly lines about the class","vocab":[{"w":"word","tr":"Spanish meaning","ex":"example from class"}],"phrases":["useful phrase", ...]}'
@@ -1054,6 +1055,21 @@ def main():
             when = max(t.get("start") or 0, t.get("ended") or 0, t.get("joined") or 0)
             out.append({"name": t.get("name"), "email": t.get("email"), "status": t.get("status"), "started": datetime.datetime.fromtimestamp((t.get("start") or 0) / 1000).strftime("%Y-%m-%d"),
                         "ends": t.get("until"), "new": when >= since})
+        print(json.dumps(out, ensure_ascii=False)); return
+    if cmd == "pay-events":
+        # [pay-events [hours]] club payments on Hibi in the last [hours] (default 24), newest first, from the pay helper's t-pays list:
+        # kind start = started paying (first payment set up), back = a failed payment went through, failed = payment failed (grace), cancel = cancelled
+        hours = float(a[1]) if len(a) > 1 else 24
+        since = (datetime.datetime.now().timestamp() - hours * 3600) * 1000
+        out = []
+        for x in get_doc(tok, tu, "t-pays") or []:
+            if (x.get("at") or 0) < since:
+                continue
+            amt = x.get("amount")
+            out.append({"name": x.get("name"), "email": x.get("email"), "kind": x.get("kind"),
+                        "amount": (("US$" + str(amt)) if x.get("currency") == "USD" else ("$" + f"{int(amt):,}".replace(",", "."))) + "/" + (x.get("per") or "month") if amt else None,
+                        "via": {"mp": "Mercado Pago", "paypal": "PayPal"}.get(x.get("provider") or "", x.get("provider")), "until": x.get("until"),
+                        "when": datetime.datetime.fromtimestamp(x["at"] / 1000).strftime("%Y-%m-%d %H:%M")})
         print(json.dumps(out, ensure_ascii=False)); return
     if cmd == "skool-ends":
         # Skool members moving to Hibi (Noa cancelled Skool renewals on Nov 16, 2026): each one's Skool end date, the day the pay helper's

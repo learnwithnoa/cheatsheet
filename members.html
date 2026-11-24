@@ -101,6 +101,10 @@ td.act{white-space:nowrap;text-align:right}
 .cl-hr{display:flex;align-items:center;gap:10px}
 .cl-stats{display:flex;flex-wrap:wrap;gap:6px 18px;margin:6px 0 2px;font-size:14px;color:var(--muted)}.cl-stats b{color:var(--ink);font-size:15px}
 .cl-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 10px}
+/* Nov 24 2026: 💳 Hibi payment column (from each member's users/{uid}/data/membership) */
+.cl-pay{font-size:13px;line-height:1.35;min-width:170px}.cl-pay b{font-weight:800}.cl-pay .muted{font-size:12px}
+.cl-pay.ok b{color:var(--green,#16A34A)}.cl-pay.warn b{color:#D97706}.cl-pay.bad b{color:#DC2626}
+.cl-flag{display:block;margin-top:3px;font-size:12px;font-weight:700;color:#D97706}
 .cl-sel{font:700 13.5px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
 .cl-n{margin-left:auto}
 .club-t{width:100%;border-collapse:collapse;font-size:14px}.club-t th{text-align:left;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--line)}
@@ -622,23 +626,59 @@ function renderClub() {
   const box = $("clubBox"); const C = hubMeta && hubMeta.club; if (!box || !C || !Array.isArray(C.members) || !C.members.length) { if (box) box.hidden = true; return; }
   box.hidden = false;
   const ms = C.members.slice().sort((a, b) => (a.name || "").localeCompare(b.name || "", "es", { sensitivity: "base" }));
-  const byEmail = {}; students.forEach(x => { if (x.email) byEmail[x.email.toLowerCase()] = x; });
-  const hib = m => (m.email && byEmail[String(m.email).toLowerCase()]) || students.find(x => norm(x.name) === norm(m.name)) || null;
+  /* matched like the pay helper does: the email on the list first, then the exact name (accents, case and extra spaces ignored) */
+  const byEmail = {}; students.forEach(x => { if (x.email) byEmail[x.email.toLowerCase().trim()] = x; });
+  const hibE = m => (m.email && byEmail[String(m.email).toLowerCase().trim()]) || null;
+  const hib = m => hibE(m) || (nnName(m.name) ? students.find(x => nnName(x.name) === nnName(m.name)) : null) || null;
+  { const need = ms.map(hib).filter(st => st && !(st.uid in clubPay)); clubPayLoaded = !need.length; if (need.length) loadClubPay(need); }
+  const pay = m => payInfo(m, hib(m), hibE(m));
   const cnt = k => ms.filter(m => (m.status || "paying") === k).length;
-  const shown = clubF === "all" ? ms : clubF === "hibi" ? ms.filter(hib) : ms.filter(m => (m.status || "paying") === clubF);
+  const shown = clubF === "all" ? ms : clubF === "hibi" ? ms.filter(hib) : clubF === "notsw" ? ms.filter(m => pay(m).k === "todo") : ms.filter(m => (m.status || "paying") === clubF);
   const price = m => m.price ? `US$${m.price}/${m.per === "year" ? "yr" : "mo"}` : "";
-  const onH = ms.filter(hib).length, stF = clubF !== "all" && clubF !== "hibi" ? clubF : "";
+  const onH = ms.filter(hib).length, stF = clubF !== "all" && clubF !== "hibi" && clubF !== "notsw" ? clubF : "";
+  const nPay = ms.filter(m => ["paying", "grace", "canceling"].includes(pay(m).k)).length, nTodo = ms.filter(m => pay(m).k === "todo").length, nFlag = ms.filter(m => pay(m).flag).length, nLapsed = ms.filter(m => pay(m).k === "lapsed").length;
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">🌼 Club members <span class="news-n" style="background:#C98A0C">${ms.length}</span></h2><div class="cl-hr">${C.asOf ? `<span class="muted small">Skool export · ${esc(C.asOf)}</span>` : ""}<button type="button" id="clubTog">${clubOpen ? "Hide list" : "Show list"}</button></div></div>
-    <div class="cl-stats"><span><b>${cnt("paying")}</b> paying</span><span><b>${onH}</b> on Hibi</span>${cnt("leaving") ? `<span><b>${cnt("leaving")}</b> not moving over</span>` : ""}</div>
-    ${clubOpen ? `<div class="cl-filters"><button type="button" class="seg" data-clf="all" aria-pressed="${clubF === "all"}">Everyone</button><button type="button" class="seg" data-clf="hibi" aria-pressed="${clubF === "hibi"}">On Hibi</button>
+    <div class="cl-stats">${clubPayLoaded ? `<span><b>${nPay}</b> paying on Hibi</span><span><b>${nTodo}</b> still to switch</span>${nLapsed ? `<span><b>${nLapsed}</b> didn’t switch (access paused)</span>` : ""}${nFlag ? `<span style="color:#D97706"><b style="color:#D97706">${nFlag}</b> to check (email)</span>` : ""}` : `<span class="muted">Checking Hibi payments…</span>`}<span><b>${cnt("paying")}</b> paying on Skool's list</span><span><b>${onH}</b> on Hibi</span>${cnt("leaving") ? `<span><b>${cnt("leaving")}</b> not moving over</span>` : ""}</div>
+    ${clubOpen ? `<div class="cl-filters"><button type="button" class="seg" data-clf="all" aria-pressed="${clubF === "all"}">Everyone</button><button type="button" class="seg" data-clf="hibi" aria-pressed="${clubF === "hibi"}">On Hibi</button><button type="button" class="seg" data-clf="notsw" aria-pressed="${clubF === "notsw"}">⏳ Not switched yet${clubPayLoaded ? ` (${nTodo})` : ""}</button>
       <select class="cl-sel" data-clfs aria-label="Filter by status"><option value="">${stF ? "All statuses" : "Status…"}</option>${CST.filter(([k]) => cnt(k)).map(([k, l]) => `<option value="${k}" ${stF === k ? "selected" : ""}>${l} (${cnt(k)})</option>`).join("")}</select>
       <span class="muted small cl-n">${shown.length} shown</span></div>
-    <div style="overflow-x:auto"><table class="club-t"><thead><tr><th>Name</th><th>Plan</th><th>Joined</th><th title="The last day their Skool membership covers. Taken from the Skool export; change it if you know the real date. If they haven't started paying on Hibi by then, the nightly check removes their club access the next morning (monthly and yearly alike).">Skool ends</th><th title="What Hibi charges them each month (Mercado Pago in pesos, or US$ on PayPal). Grey = taken from their Skool price; type to change it.">Hibi price</th><th>On Hibi</th><th>Status</th></tr></thead><tbody>${shown.map(m => { const i = C.members.indexOf(m), h = hib(m);
-      return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${(!(Number(m.price) > 0) && !(((hubMeta && hubMeta.clubPrices) || {})[String(m.email || "").toLowerCase()])) || m.status === "free" || m.status === "direct" ? `<span class="muted small">stays (${m.status === "direct" ? "pays you directly" : "free"})</span>` : `<input type="date" class="cl-end" data-clend="${esc(m.name)}" value="${esc(skoolEndOf(m) || "")}" aria-label="Skool end date for ${esc(m.name)}"${m.end ? ' style="font-weight:700"' : ""}>`}</td><td class="nw">${(() => { const em = String(m.email || (h && h.email) || "").toLowerCase(), ov = ((hubMeta && hubMeta.clubPrices) || {})[em];
+    <div style="overflow-x:auto"><table class="club-t"><thead><tr><th>Name</th><th title="Their membership on Hibi right now (Mercado Pago or PayPal). Only people with a Hibi account that matches the list (same email, or the exact same name) can see the Switch to Hibi card.">💳 Hibi payment</th><th>Plan</th><th>Joined</th><th title="The last day their Skool membership covers. Taken from the Skool export; change it if you know the real date. If they haven't started paying on Hibi by then, the nightly check removes their club access the next morning (monthly and yearly alike).">Skool ends</th><th title="What Hibi charges them each month (Mercado Pago in pesos, or US$ on PayPal). Grey = taken from their Skool price; type to change it.">Hibi price</th><th>On Hibi</th><th>Status</th></tr></thead><tbody>${shown.map(m => { const i = C.members.indexOf(m), h = hib(m);
+      return `<tr><td><b>${esc(m.name)}</b>${m.note ? `<div class="muted small">${esc(m.note)}</div>` : ""}</td><td>${(() => { const p = pay(m); return `<div class="cl-pay ${p.cls || ""}">${p.html}${p.flag ? `<span class="cl-flag">${p.flag}</span>` : ""}</div>`; })()}</td><td class="nw">${esc(price(m))}</td><td class="nw">${esc(m.joined || "")}</td><td class="nw">${(!(Number(m.price) > 0) && !(((hubMeta && hubMeta.clubPrices) || {})[String(m.email || "").toLowerCase()])) || m.status === "free" || m.status === "direct" ? `<span class="muted small">stays (${m.status === "direct" ? "pays you directly" : "free"})</span>` : `<input type="date" class="cl-end" data-clend="${esc(m.name)}" value="${esc(skoolEndOf(m) || "")}" aria-label="Skool end date for ${esc(m.name)}"${m.end ? ' style="font-weight:700"' : ""}>`}</td><td class="nw">${(() => { const em = String(m.email || (h && h.email) || "").toLowerCase(), ov = ((hubMeta && hubMeta.clubPrices) || {})[em];
         const der = m.price && m.per !== "year" ? "$" + (m.price * 1000).toLocaleString("es-CL") + (m.price ? " · US$" + m.price : "") : "$35.000";
         const fmt = o => typeof o === "number" ? "$" + o.toLocaleString("es-CL") : o.clp ? "$" + Number(o.clp).toLocaleString("es-CL") + (o.usd ? " · US$" + o.usd : "") : "US$" + o.usd;
         return em ? `<input class="cl-price" data-clprice="${esc(em)}" value="${ov ? esc(fmt(ov)) : ""}" placeholder="${esc(der)}" aria-label="Hibi price for ${esc(m.name)}">` : `<span class="muted small" title="Needs their email or Hibi account">—</span>`; })()}</td><td class="nw">${h ? `✓ <span class="muted small">${h.lastSeen ? ago(h.lastSeen) : ""}</span>` : `<span class="muted">—</span>`}</td>
         <td><div class="cl-stcell"><select data-clst="${i}">${CST.map(([k, l]) => `<option value="${k}" ${(m.status || "paying") === k ? "selected" : ""}>${l}</option>`).join("")}</select>${m.status === "leaving" ? `<button type="button" class="cl-arch" data-clarch="${i}" title="Take them off this list and out of the club. They keep their Hibi account, words and notes.">📦 Archive</button>` : ""}</div></td></tr>`; }).join("")}</tbody></table></div>${(C.archived || []).length ? `<details class="cl-archd"><summary class="muted small">📦 Archived (${C.archived.length})</summary><ul class="muted small">${C.archived.map(a => `<li>${esc(a.name)}${a.at ? " · " + esc(a.at) : ""}</li>`).join("")}</ul></details>` : ""}` : ""}`;
+}
+/* 💳 Hibi payment: each matched member's users/{uid}/data/membership (what the pay helper writes; same as clubMoney() on Private students) */
+const nnName = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+let clubPay = {}, clubPayLoaded = false, clubPayBusy = false;
+async function loadClubPay(list) {
+  if (clubPayBusy) return; clubPayBusy = true;
+  await Promise.all(list.map(async st => { try { const d = await getDoc(doc(db, "users", st.uid, "data", "membership")); clubPay[st.uid] = d.exists() && !d.data().deleted ? JSON.parse(d.data().json || "null") : null; } catch (e) { clubPay[st.uid] = undefined; } }));
+  clubPayBusy = false; renderClub();
+}
+function payInfo(m, h, hE) {
+  const fd = d => { try { return new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" }); } catch (e) { return d; } };
+  const amt = p => p.amount ? (p.currency === "USD" ? "US$" + p.amount : "$" + Number(p.amount).toLocaleString("es-CL")) + "/" + (p.kind === "y" ? "year" : "month") : "";
+  const via = p => p.provider === "paypal" ? "PayPal" : p.provider === "mp" ? "Mercado Pago" : p.card || "";
+  const free = m.status === "free" || m.status === "direct" || (!(Number(m.price) > 0) && !(((hubMeta && hubMeta.clubPrices) || {})[String(m.email || "").toLowerCase()]));
+  let flag = "";
+  if (!h) flag = m.email ? `⚠️ No Hibi account found with ${esc(m.email)}` : "⚠️ No Hibi account found (no email on the list)";
+  else if (!hE) flag = `⚠️ Matched by name only: their Hibi email is ${esc(h.email || "?")}${m.email ? `, the list has ${esc(m.email)}` : ""}. Reminders and the access check use the list email.`;
+  const p = h ? clubPay[h.uid] : null;
+  if (h && !(h.uid in clubPay)) return { k: "", html: `<span class="muted">…</span>`, flag };
+  if (h && clubPay[h.uid] === undefined) return { k: "", html: `<span class="muted">couldn’t check</span>`, flag };
+  if (p && p.status === "active") return { k: "paying", cls: "ok", html: `<b>✅ Paying</b> <span class="muted">${esc(via(p))}</span><br>${esc(amt(p))}${p.paidThrough ? ` <span class="muted">· next ${esc(fd(p.paidThrough))}</span>` : ""}`, flag };
+  if (p && p.status === "grace") return { k: "grace", cls: "warn", html: `<b>⚠️ Payment failed</b><br><span class="muted">${esc(via(p))}${p.graceUntil ? ` · trying until ${esc(fd(p.graceUntil))}` : ""}</span>`, flag };
+  if (p && p.status === "canceling") return { k: "canceling", cls: "warn", html: `<b>🚪 Cancelled</b><br><span class="muted">still in until ${esc(fd(p.paidThrough || ""))}</span>`, flag };
+  if (p && p.status === "trial") return { k: "trial", html: `<b>🧪 Free trial</b>${p.trialUntil ? `<br><span class="muted">until ${esc(fd(p.trialUntil))}</span>` : ""}`, flag };
+  if (p && p.status === "pending") return { k: "todo", cls: "warn", html: `<b>⏳ Payment started</b><br><span class="muted">not confirmed yet</span>`, flag };
+  if (free) return { k: "free", html: `<span class="muted">— ${m.status === "direct" ? "pays you directly" : "free"}</span>`, flag: "" };   /* free / pays-directly members never need the Switch card */
+  if (m.status === "leaving") return { k: "leaving", html: `<span class="muted">— not moving over</span>`, flag: "" };
+  const end = skoolEndOf(m), t0 = new Date(); t0.setHours(12, 0, 0, 0);
+  const days = end ? Math.round((new Date(end + "T12:00:00") - t0) / 864e5) : null;
+  if (days != null && days < 0) return { k: "lapsed", cls: "bad", html: `<b>🔒 Didn’t switch</b><br><span class="muted">Skool ended ${esc(fd(end))}, club access paused</span>`, flag };   /* the nightly check removed them the morning after */
+  return { k: "todo", cls: days != null && days <= 3 ? "bad" : "warn", html: `<b>⏳ Not switched yet</b><br><span class="muted">${days == null ? "no Skool end date" : days > 1 ? `${days} days left (Skool ends ${esc(fd(end))})` : days === 1 ? `1 day left (Skool ends ${esc(fd(end))})` : "Skool ends today"}</span>`, flag };
 }
 /* Skool end date (same rule as the pay helper): Noa's own date (m.end) or the Skool export's renewal date, moved forward to the first one on or after Nov 16, 2026 (the day he cancelled Skool renewals) */
 function skoolEndOf(m) {

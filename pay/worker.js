@@ -187,6 +187,7 @@ async function removeClub(env, uid) {
 // billing/{uid} is private (only this helper can read it); users/{uid}/data/membership is what the member sees
 async function getBill(env, uid) { return plain(await fs(env, "GET", `billing/${uid}`)) || {}; }
 async function saveBill(env, uid, b) {
+  let prev = {}; try { prev = await getBill(env, uid); } catch (e) {}
   await patch(env, `billing/${uid}`, { ...b, updated: new Date().toISOString() });
   const all = await getBill(env, uid);
   await setJ(env, uid, "membership", {
@@ -194,6 +195,25 @@ async function saveBill(env, uid, b) {
     paidThrough: all.paidThrough || null, graceUntil: all.graceUntil || null, card: all.card || null, provider: all.provider || null,
     trialUntil: all.trialUntil || null, trialUsed: !!all.trialUsed, trialLen: all.trialLen || null, updated: new Date().toISOString(),
   });
+  try { await payEvent(env, uid, prev, all); } catch (e) { console.log("pay event", e.message); }   // never let a notice break billing
+}
+// Nov 24 2026: Noa's 🔔 and the nightly email show when a member starts paying on Hibi, when a payment fails and when someone cancels.
+// The list is users/{Noa}/data/t-pays (newest first, last 100): {uid, name, email, kind: start|failed|cancel|back, amount, currency, provider, per, at}
+const PAYING = ["active", "grace", "canceling"];
+async function payEvent(env, uid, prev, all) {
+  const was = prev.status || "none", now = all.status || "none";
+  if (was === now || uid === TEACHER) return;
+  let kind = null;
+  if (now === "active" && was === "grace") kind = "back";                                  // a failed payment went through after all
+  else if (now === "active" && !PAYING.includes(was)) kind = "start";                     // first payment set up (also after a trial or a cancellation)
+  else if (now === "grace") kind = "failed";
+  else if ((now === "canceling" || now === "cancelled") && PAYING.includes(was)) kind = "cancel";
+  if (!kind) return;
+  const u = plain(await fs(env, "GET", `users/${uid}`)) || {};
+  const ev = { uid, name: u.name || all.name || "", email: normEmail(u.email || all.email || ""), kind, amount: all.amount || null, currency: all.currency || "CLP",
+    provider: all.provider || null, per: all.kind === "y" ? "year" : "month", until: now === "canceling" ? (all.paidThrough || null) : now === "grace" ? (all.graceUntil || null) : null, at: Date.now() };
+  const cur = (await getJ(env, TEACHER, "t-pays")) || [];
+  await setJ(env, TEACHER, "t-pays", [ev].concat(cur).slice(0, 100));
 }
 
 // the member's monthly price: a legacy price Noa set (t-hubmeta.clubPrices, by email) or the standard one
