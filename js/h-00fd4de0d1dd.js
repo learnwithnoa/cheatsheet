@@ -70,36 +70,50 @@
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const OKK=u=>"cs-ok-"+u;
   let gate=null, mode="";
+  /* Nov 24 2026: hibi.cl is now the only link in Noa's bios, so the sign-in window speaks to newcomers first (what Hibi is, book a kickoff,
+     the club), then to students. EN / ES switch at the top right: everything shows in one language at a time (remembered on this device). */
+  let LANG="en"; try{ LANG=localStorage.getItem("cs-gate-lang")||"en"; }catch(e){}
+  const L=(en,es)=>LANG==="es"?es:en;
+  const langSw=()=>`<div class="ag-lang" role="group" aria-label="Language / Idioma"><button type="button" data-aglang="en" aria-pressed="${LANG==="en"}">EN</button><button type="button" data-aglang="es" aria-pressed="${LANG==="es"}">ES</button></div>`;
+  const LOGO=`<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>`;
   function card(m){ const F=window.__csFire, em=F&&F.email?F.email():"";
-    if(m==="pending") return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
-      <h2 id="agTitle">Almost there!</h2>
-      <p>You’re signed in as <b>${esc(em)}</b>, but Noa hasn’t opened Hibi for this email yet.</p>
+    if(m==="pending") return `${langSw()}${LOGO}
+      <h2 id="agTitle">${L("Almost there!","¡Ya casi!")}</h2>
+      <p>${L(`You’re signed in as <b>${esc(em)}</b>, but Noa hasn’t opened Hibi for this email yet.`,`Iniciaste sesión como <b>${esc(em)}</b>, pero Noa aún no ha abierto Hibi para este correo.`)}</p>
       ${reqForm(em,true)}
-      <button type="button" class="ag-link" data-agout>Use another Google account</button>`;
-    if(m==="retry") return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
-      <h2 id="agTitle">Hmm, Hibi couldn’t connect</h2><p>Check your internet connection and try again.</p>
-      <button type="button" class="ag-btn" data-agretry>Try again</button>
-      <button type="button" class="ag-link" data-agout>Use another Google account</button>`;
-    if(m==="sent") return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
-      <h2 id="agTitle">Thanks! 🙌</h2><p>Noa got your request. He’ll email you as soon as you’re in (usually within a day). Then come back and sign in with Google using <b>the same email</b>.</p>
-      <button type="button" class="ag-btn ag-alt" data-signin>${G}<span>I’m approved: continue with Google</span></button>`;
-    return `<div class="ag-logo" aria-hidden="true">Hibi <small lang="ja">日々</small></div>
-      <h2 id="agTitle">Hibi is for Noa’s students</h2>
-      <p><b>Already a student or club member?</b> Just sign in with the Google account Noa added.</p>
-      <button type="button" class="ag-btn" data-signin>${G}<span>Continue with Google</span></button>
+      <button type="button" class="ag-link" data-agout>${L("Use another Google account","Usar otra cuenta de Google")}</button>`;
+    if(m==="retry") return `${langSw()}${LOGO}
+      <h2 id="agTitle">${L("Hmm, Hibi couldn’t connect","Hmm, Hibi no pudo conectarse")}</h2><p>${L("Check your internet connection and try again.","Revisa tu conexión a internet e inténtalo de nuevo.")}</p>
+      <button type="button" class="ag-btn" data-agretry>${L("Try again","Intentar de nuevo")}</button>
+      <button type="button" class="ag-link" data-agout>${L("Use another Google account","Usar otra cuenta de Google")}</button>`;
+    if(m==="sent") return `${langSw()}${LOGO}
+      <h2 id="agTitle">${L("Thanks! 🙌","¡Gracias! 🙌")}</h2><p>${L("Noa got your request. He’ll email you as soon as you’re in (usually within a day). Then come back and sign in with Google using <b>the same email</b>.","Noa recibió tu solicitud. Te escribirá apenas estés dentro (normalmente en menos de un día). Luego vuelve e inicia sesión con Google usando <b>el mismo correo</b>.")}</p>
+      <button type="button" class="ag-btn ag-alt" data-signin>${G}<span>${L("I’m approved: continue with Google","Ya me aprobaron: continuar con Google")}</span></button>`;
+    return `${langSw()}${LOGO}
+      <h2 id="agTitle">${L("Learn English with Noa","Aprende inglés con Noa")}</h2>
+      <p class="ag-what">${L("Hibi is Noa’s all-in-one English space: practice grammar and vocabulary, save every new word, play with your study buddy and see your progress grow, with a real coach behind it.","Hibi es el espacio de inglés de Noa, todo en uno: practica gramática y vocabulario, guarda cada palabra nueva, juega con tu mascota de estudio y mira cómo crece tu progreso, con un coach real detrás.")}</p>
+      <div class="ag-book"><b>${L("Interested in 1:1 classes?","¿Te interesan las clases 1:1?")}</b>
+        <a class="ag-btn ag-go" href="${BOOK_FORM}" target="_blank" rel="noopener">📅 ${L("Book your free kickoff","Agenda tu kickoff gratis")}</a>
+        <span>${L("A relaxed 30-minute chat to see where you are. No cost, no commitment.","Una conversación relajada de 30 minutos para ver en qué nivel estás. Sin costo y sin compromiso.")}</span></div>
+      <p class="ag-club">🌼 ${L("Curious about <b>Noa’s English Club</b>? Live conversation classes every week, with a free 2-week trial.","¿Te llama la atención <b>Noa’s English Club</b>? Clases de conversación en vivo cada semana, con 2 semanas de prueba gratis.")} <button type="button" class="ag-link ag-inl" data-agjoin>${L("Ask to join →","Pide unirte →")}</button></p>
+      <div class="ag-div"><span>${L("Already a student or member?","¿Ya eres alumno o del club?")}</span></div>
+      <button type="button" class="ag-btn" data-signin>${G}<span>${L("Continue with Google","Continuar con Google")}</span></button>
       <p class="ag-msg" id="agMsg" role="alert" hidden></p>
-      <div class="ag-book"><b>Want private English classes with Noa?</b><span>Start with a free kickoff session: a relaxed chat to see where you are and what you need.</span>
-      <a class="ag-btn ag-go" href="${BOOK_FORM}" target="_blank" rel="noopener">📅 Book your free kickoff</a></div>
-      <details class="ag-new"><summary>New here? Ask Noa for access</summary>
-      <p>Noa will email you when you’re in, and then you sign in with Google.</p>
+      <details class="ag-new" id="agNew"><summary>${L("New here? Ask Noa for access","¿Eres nuevo? Pide acceso a Noa")}</summary>
+      <p>${L("Noa will email you when you’re in, and then you sign in with Google.","Noa te escribirá cuando estés dentro, y luego inicias sesión con Google.")}</p>
       ${reqForm("",false)}</details>
-      <p class="ag-small">Hibi only uses your name and email to save your progress. Noa never sees your password.</p>`; }
+      <p class="ag-small">${L("Hibi only uses your name and email to save your progress. Noa never sees your password.","Hibi solo usa tu nombre y correo para guardar tu progreso. Noa nunca ve tu contraseña.")}</p>`; }
   function reqForm(em,signed){ return `<form class="ag-form" data-agreq>
-      <label>Your name<input name="name" required maxlength="80" autocomplete="name"></label>
-      <label>Your email <small>(the Google account you’ll sign in with)</small><input name="email" type="email" required maxlength="120" autocomplete="email" value="${esc(em)}" ${signed?"readonly":""}></label>
-      <label>I’m…<select name="who" required><option value="" disabled selected>Choose one</option><option value="club">In Noa’s English Club</option><option value="private">Taking private classes with Noa</option><option value="joining">Interested in joining</option><option value="other">Other</option></select></label>
-      <label>Anything to add? <small>(optional)</small><textarea name="msg" rows="2" maxlength="500"></textarea></label>
-      <button type="submit" class="ag-btn ag-send">Ask for access</button><p class="ag-fmsg" role="status"></p></form>`; }
+      <label>${L("Your name","Tu nombre")}<input name="name" required maxlength="80" autocomplete="name"></label>
+      <label>${L("Your email","Tu correo")} <small>${L("(the Google account you’ll sign in with)","(la cuenta de Google con la que entrarás)")}</small><input name="email" type="email" required maxlength="120" autocomplete="email" value="${esc(em)}" ${signed?"readonly":""}></label>
+      <label>${L("I’m…","Soy…")}<select name="who" required><option value="" disabled selected>${L("Choose one","Elige una opción")}</option><option value="club">${L("In Noa’s English Club","Del Noa’s English Club")}</option><option value="private">${L("Taking private classes with Noa","Alumno de clases privadas con Noa")}</option><option value="joining">${L("Interested in joining the club","Me interesa unirme al club")}</option><option value="other">${L("Other","Otro")}</option></select></label>
+      <label>${L("Anything to add?","¿Algo más?")} <small>${L("(optional)","(opcional)")}</small><textarea name="msg" rows="2" maxlength="500"></textarea></label>
+      <button type="submit" class="ag-btn ag-send">${L("Ask for access","Pedir acceso")}</button><p class="ag-fmsg" role="status"></p></form>`; }
+  /* EN / ES */
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-aglang]"); if(!b||!gate) return; LANG=b.dataset.aglang; try{ localStorage.setItem("cs-gate-lang",LANG); }catch(er){}
+    const det=gate.querySelector("#agNew"), op=det&&det.open; const cur=mode; mode=""; show(cur); const d2=gate.querySelector("#agNew"); if(d2&&op) d2.open=true; });
+  /* "Ask to join →": open the access form with "Interested in joining the club" already picked */
+  document.addEventListener("click",e=>{ if(!e.target.closest("[data-agjoin]")||!gate) return; const d=gate.querySelector("#agNew"); if(!d) return; d.open=true; const sel=d.querySelector('select[name="who"]'); if(sel) sel.value="joining"; d.scrollIntoView({behavior:"smooth",block:"start"}); const n=d.querySelector('input[name="name"]'); if(n) setTimeout(()=>n.focus({preventScroll:true}),350); });
   function show(m){
     if(window.__csPreview) return;
     if(!gate){ gate=document.createElement("div"); gate.id="authGate"; gate.setAttribute("role","dialog"); gate.setAttribute("aria-modal","true"); gate.setAttribute("aria-labelledby","agTitle"); document.body.appendChild(gate); }
@@ -141,12 +155,12 @@
   if(window.__csAuth!=null) on(window.__csAuth);
   document.addEventListener("submit",async e=>{ const f=e.target.closest("[data-agreq]"); if(!f) return; e.preventDefault(); const F=window.__csFire, msg=f.querySelector(".ag-fmsg"), btn=f.querySelector("button");
     const d={name:f.name.value.trim(),email:f.email.value.trim().toLowerCase(),who:f.who.value,msg:f.msg.value.trim()};
-    if(!d.name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){ msg.textContent="Please add your name and a valid email."; return; }
-    if(!F||!F.base){ msg.textContent="Hibi is still loading. Try again in a moment."; return; }
-    const ALREADY="You already asked with this email 🙌 Noa will email you as soon as you’re in, so there’s no need to send it again. / Ya enviaste tu solicitud con este correo: Noa te escribirá apenas estés dentro.";
+    if(!d.name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){ msg.textContent=L("Please add your name and a valid email.","Agrega tu nombre y un correo válido."); return; }
+    if(!F||!F.base){ msg.textContent=L("Hibi is still loading. Try again in a moment.","Hibi todavía está cargando. Inténtalo en un momento."); return; }
+    const ALREADY=L("You already asked with this email 🙌 Noa will email you as soon as you’re in, so there’s no need to send it again.","Ya enviaste tu solicitud con este correo 🙌 Noa te escribirá apenas estés dentro, así que no hace falta enviarla de nuevo.");
     let asked=[]; try{ asked=JSON.parse(localStorage.getItem("cs-areq")||"[]")||[]; }catch(er){}
     if(asked.includes(d.email)){ msg.textContent=ALREADY; return; }
-    btn.disabled=true; msg.textContent="Sending…";
+    btn.disabled=true; msg.textContent=L("Sending…","Enviando…");
     const S=v=>({stringValue:String(v)}), body=JSON.stringify({fields:{name:S(d.name),email:S(d.email),who:S(d.who),msg:S(d.msg),at:{integerValue:String(Date.now())}}});
     const remember=()=>{ try{ localStorage.setItem("cs-areq",JSON.stringify(asked.concat(d.email).slice(-5))); }catch(er){} };
     try{ /* one request per email: the email is the document id, so asking twice is refused by the database */
@@ -154,7 +168,7 @@
       if(r.status===409){ remember(); btn.disabled=false; msg.textContent=ALREADY; return; }
       if(!r.ok) r=await fetch(F.base+"/accessRequests?key="+encodeURIComponent(F.key||""),{method:"POST",headers:{"Content-Type":"application/json"},body});
       if(!r.ok) throw new Error(r.status); }
-    catch(er){ btn.disabled=false; msg.textContent="That didn’t go through. Try again, or message Noa on Instagram (@learnwithnoa)."; return; }
+    catch(er){ btn.disabled=false; msg.textContent=L("That didn’t go through. Try again, or message Noa on Instagram (@learnwithnoa).","No se pudo enviar. Inténtalo de nuevo o escríbele a Noa por Instagram (@learnwithnoa)."); return; }
     remember();
     if(REQ_HOOK) fetch(REQ_HOOK,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(Object.assign({_subject:"🙋 Hibi access request: "+d.name},d))}).catch(()=>{});
     mode=""; show("sent"); });
