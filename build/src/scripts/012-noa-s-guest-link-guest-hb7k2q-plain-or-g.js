@@ -146,7 +146,7 @@
       <p class="lp-proof"><span class="lp-faces" aria-hidden="true"><img src="${IMG("mel")}" alt=""><img src="${IMG("kiki")}" alt=""><img src="${IMG("gia")}" alt=""><img src="${IMG("lau")}" alt=""></span>${L("Students in Chile and abroad","Estudiantes en Chile y otros países")}</p>
       </div>
     </section>
-    <div class="lp-stats lp-glass" aria-label="${L("About Noa","Sobre Noa")}"><div><b>10+ ${L("years","años")}</b><span>${L("coaching English, since 2014","como coach de inglés, desde 2014")}</span></div><div><b>TEFL</b><span>${L("certified coach","coach certificado")}</span></div><div><b>AuDHD</b><span>${L("neurodivergent-friendly classes","clases amigables con la neurodivergencia")}</span></div></div>
+    <div class="lp-stats lp-glass" aria-label="${L("About Noa","Sobre Noa")}"><div><b>12+ ${L("years","años")}</b><span>${L("coaching English, since 2014","como coach de inglés, desde 2014")}</span></div><div><b>TEFL</b><span>${L("certified coach","coach certificado")}</span></div><div><b>AuDHD</b><span>${L("neurodivergent-friendly classes","clases amigables con la neurodivergencia")}</span></div></div>
 
     <section class="lp-sec"><h2>${L("Sound familiar?","¿Te suena?")}</h2>
       <div class="lp-pains">
