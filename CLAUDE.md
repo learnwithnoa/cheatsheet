@@ -30,6 +30,9 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
 - `world.json` — Home's 🌍 "Around the world today" (3 pieces a day, newest first, last 14 days; fields k celebrate|space|good, emoji, title, text, word, mean, tr, es, q, link, src, kind read|watch).
   Written each morning by Claude's scheduled task "Around the world (daily)" (commits world.json); if today is missing at 10:15 Chile, `.github/workflows/world-fallback.yml` runs `tools/world_fallback.py` (holiday + NASA + `tools/world_facts.json`).
   Reactions 💛🤯😂 go through the pay helper (/api/world-reacts, /api/world-react → worldReacts/{day}); Noa can hide a piece for everyone.
+- Signed-out window (`src/scripts/012-…`, card()): hibi.cl is the only link in Noa's bios (Nov 24 2026), so it speaks to newcomers first:
+  what Hibi is, "Book your free kickoff" (BOOK_FORM = Noa's Google Form), the club line ("Ask to join" opens the access form with "joining"), then Google sign-in.
+  EN/ES switch at the top right (cs-gate-lang), one language at a time; keep both texts in sync when editing.
 - `pod/` — podcast MP3s; `.github/workflows/podcast-audio.yml` converts episodes queued in `pod/queue.txt`.
 
 ## Build
