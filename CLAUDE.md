@@ -35,7 +35,7 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
   Reactions 💛🤯😂 go through the pay helper (/api/world-reacts, /api/world-react → worldReacts/{day}); Noa can hide a piece for everyone.
 - Signed-out landing page (`src/scripts/012-…`, landing(); styles `.lp-*` in style.css; photos in `img/lp/`): hibi.cl is the only link in Noa's bios (Nov 24 2026).
   Noa chose layout "D · Noa first": his photo + "Speak English without freezing", kickoff button (BOOK_FORM = Noa's Google Form), a facts row about Noa (10+ years, TEFL, AuDHD), "Sound familiar?",
-  1:1 coaching + club cards (prices: from $100.000 CLP / US$110 a month, 15% off the first pack; club "Try free for 2 weeks" = data-agjoin → access form with
+  1:1 coaching + club cards (prices: from $100.000 CLP / US$110 a month, 15% off the first pack; club $35.000 CLP / US$35 a month after the trial; club "Try free for 2 weeks" = data-agjoin → access form with
   "joining", Noa approves by hand, his choice), Hibi features, real student quotes (Melissa, Kiki, Giacomo, Laura, all OK'd for Instagram), FAQ, then
   sign-in + "Ask Noa for access" (#agNew). Light/dark follows the visitor's own Hibi theme if set on that device, else their system setting (.lp-dark).
   EN/ES switch at the top (cs-gate-lang), one language at a time; keep both texts in sync. Pending / retry / sent states still use the small card.

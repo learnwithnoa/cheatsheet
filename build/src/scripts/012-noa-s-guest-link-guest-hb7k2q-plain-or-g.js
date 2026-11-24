@@ -130,14 +130,15 @@
       <div class="lp-progs">
       <div class="lp-prog lp-glass" style="--c:var(--lp-orange);--g:linear-gradient(90deg,#FBBF24,#F97316)"><span class="lp-tag">${L("1:1 COACHING","COACHING 1:1")}</span><h3>${L("Classes built around you","Clases hechas para ti")}</h3>
         <p class="lp-for">${L("For a goal (a job interview, a move abroad, IELTS or TOEFL) or just to speak with more fluency and confidence. Beginners welcome.","Para una meta (una entrevista de trabajo, irte a vivir afuera, el IELTS o el TOEFL) o simplemente para hablar con más fluidez y seguridad. Desde nivel principiante.")}</p>
-        <ul><li>${L("45-minute classes on Zoom, all recorded","Clases de 45 minutos por Zoom, todas grabadas")}</li><li>${L("Test prep for IELTS, TOEFL and other exams","Preparación para IELTS, TOEFL y otros exámenes")}</li><li>${L("A recap with exercises on Hibi after every class","Un resumen con ejercicios en Hibi después de cada clase")}</li><li>${L("A progress report every 3 weeks","Un reporte de progreso cada 3 semanas")}</li></ul>
+        <ul><li>${L("45-minute classes on Zoom, all recorded","Clases de 45 minutos por Zoom, todas grabadas")}</li><li>${L("Test prep for IELTS, TOEFL and other exams","Preparación para IELTS, TOEFL y otros exámenes")}</li><li>${L("A recap with exercises on Hibi after every class","Un resumen con ejercicios en Hibi después de cada clase")}</li><li>${L("A progress report every 3 weeks","Un reporte de progreso cada 3 semanas")}</li><li>${L("Your own class times, Monday to Friday","Tus propios horarios, de lunes a viernes")}</li></ul>
         <a class="lp-btn lp-amber" href="${BOOK_FORM}" target="_blank" rel="noopener">${L("Book a free kickoff","Agenda tu kickoff gratis")}</a>
         <p class="lp-price">${L("From $100.000 CLP / US$110 a month · 15% off your first pack","Desde $100.000 CLP / US$110 al mes · 15% de descuento en tu primer pack")}</p></div>
       <div class="lp-prog lp-glass" style="--c:var(--lp-teal);--g:linear-gradient(90deg,#34D399,#0D9488)"><span class="lp-tag">NOA’S ENGLISH CLUB</span><h3>${L("Speak more, every week","Habla más, cada semana")}</h3>
         <p class="lp-for">${L("Live conversation classes on Zoom with people at your level (B1 to C1). Chile time.","Clases de conversación en vivo por Zoom con gente de tu nivel (B1 a C1). Hora de Chile.")}</p>
+        <ul><li>${L("4 live classes a week, with breakout rooms so everyone talks","4 clases en vivo por semana, con breakout rooms para que todos hablen")}</li><li>${L("Every class recorded, in the club Library on Hibi","Cada clase grabada, en la Biblioteca del club en Hibi")}</li><li>${L("The new words from each class, ready to save in your notebook","Las palabras nuevas de cada clase, listas para guardar en tu cuaderno")}</li></ul>
         <div class="lp-wk"><span class="d">${L("MON","LUN")}</span><span>🧠 Deep Dive</span><span class="t">8:00 pm</span><span class="d">${L("WED","MIÉ")}</span><span>🃏 Wildcard</span><span class="t">8:00 pm</span><span class="d">${L("THU","JUE")}</span><span>💬 Word Up</span><span class="t">8:00 pm</span><span class="d">${L("FRI","VIE")}</span><span>😎 Free Talk</span><span class="t">2:30 pm</span></div>
         <button type="button" class="lp-btn lp-green" data-agjoin>${L("Try the club free for 2 weeks","Prueba el club gratis por 2 semanas")}</button>
-        <p class="lp-price">${L("Ask to join, Noa opens your account and your 2 free weeks start.","Pide unirte, Noa abre tu cuenta y empiezan tus 2 semanas gratis.")}</p></div>
+        <p class="lp-price">${L("Then $35.000 CLP / US$35 a month · cancel anytime","Después $35.000 CLP / US$35 al mes · cancelas cuando quieras")}</p></div>
       </div>
     </section>
 
@@ -146,7 +147,7 @@
         ${feat("📒","#3B82F6",L("My words","Mis palabras"),L("Save any word from class. Hibi fills in the meaning and turns them into flashcards.","Guarda cualquier palabra de la clase. Hibi completa el significado y la convierte en flashcards."))}
         ${feat("🧩","#14B8A6",L("Grammar in stages","Gramática por etapas"),L("Short rounds that start easy and get harder, explained in English and Spanish.","Rondas cortas que empiezan fácil y se ponen más difíciles, explicadas en inglés y español."))}
         ${feat("🎓","#F59E0B",L("Your classes","Tus clases"),L("Recaps, homework and recordings, all in one place.","Resúmenes, tareas y grabaciones, todo en un solo lugar."))}
-        ${feat("🐾","#A78BFA",L("A study buddy","Un compañero de estudio"),L("Practice and it grows, earns toys and decorates its room.","Practica y crece, gana juguetes y decora su pieza."))}
+        ${feat("🐣","#A78BFA",L("A study buddy","Un compañero de estudio"),L("Practice and it grows, earns toys and decorates its room.","Practica y crece, gana juguetes y decora su pieza."))}
       </div>
     </section>
 

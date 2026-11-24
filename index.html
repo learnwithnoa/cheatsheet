@@ -933,9 +933,10 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp-fix{margin-top:12px;padding:16px;border-radius:18px;border:1px solid var(--lp-line);font-size:15.5px;line-height:1.5;background:linear-gradient(135deg,color-mix(in srgb,var(--lp-sky) 18%,transparent),color-mix(in srgb,var(--lp-teal) 14%,transparent))}
 .lp-fix b{display:block;font-size:17px;margin-bottom:4px}
 .lp-progs{display:grid;gap:14px}
-.lp-prog{position:relative;overflow:hidden;border-radius:22px;padding:20px 16px 18px}
+.lp-prog{position:relative;overflow:hidden;border-radius:22px;padding:20px 16px 18px;display:flex;flex-direction:column}
+.lp-prog>.lp-btn{margin-top:auto}
 .lp-prog::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:var(--g)}
-.lp-tag{display:inline-block;font:700 12px var(--mono);padding:4px 10px;border-radius:999px;margin-bottom:8px;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}
+.lp-tag{align-self:flex-start;display:inline-block;font:700 12px var(--mono);padding:4px 10px;border-radius:999px;margin-bottom:8px;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}
 .lp h3{font:800 21px var(--display);margin:0 0 4px;color:var(--lp-ink)}
 .lp-for{margin:0 0 12px;font-size:14.5px;line-height:1.5;color:var(--lp-muted)}
 .lp-prog ul{list-style:none;margin:0 0 16px;padding:0}
@@ -948,6 +949,7 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
 .lp-show::-webkit-scrollbar,.lp-quotes::-webkit-scrollbar{display:none}
 .lp-shot{flex:none;width:72%;scroll-snap-align:start;border-radius:20px;padding:14px}
 .lp-scr{height:130px;border-radius:14px;margin-bottom:12px;display:grid;place-items:center;font-size:46px;border:1px solid var(--lp-line);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 35%,transparent),color-mix(in srgb,var(--c) 8%,transparent))}
+.lp-dark .lp-scr{border-color:rgba(255,255,255,.18);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 45%,#fff),color-mix(in srgb,var(--c) 18%,#fff))}
 .lp-shot b{display:block;font-size:15.5px}.lp-shot span{display:block;font-size:13.5px;line-height:1.45;color:var(--lp-muted);margin-top:2px}
 .lp-q{flex:none;width:82%;scroll-snap-align:start;margin:0;border-radius:22px;padding:18px 16px;display:flex;flex-direction:column;gap:12px}
 .lp-who{display:flex;align-items:center;gap:12px}.lp-who img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;border:2.5px solid #fff;box-shadow:0 0 0 2px var(--c)}
@@ -980,7 +982,7 @@ html.np-mode dialog,html.np-mode .toast{display:none!important}
   .lp-stats{max-width:720px;margin:44px auto 0}
   .lp-sec{padding-top:64px}.lp h2{font-size:32px}
   .lp-pains{grid-template-columns:repeat(3,1fr)}
-  .lp-progs{grid-template-columns:1fr 1fr;align-items:start}
+  .lp-progs{grid-template-columns:1fr 1fr;align-items:stretch}
   .lp-show,.lp-quotes{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;margin:0;padding:4px 0 0}
   .lp-shot,.lp-q{width:auto}
   .lp-faqs,.lp-end,.lp-in{max-width:720px;margin-left:auto;margin-right:auto}
@@ -3793,7 +3795,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-ebb3aff2417e.js"></script>
+<script src="js/h-f9d491603b0e.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -4719,7 +4721,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-fb46a3c5a7bf.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124182307"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124182652"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
