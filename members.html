@@ -104,6 +104,14 @@ td.act{white-space:nowrap;text-align:right}
 .cl-sel{font:700 13.5px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
 .cl-n{margin-left:auto}
 .club-t{width:100%;border-collapse:collapse;font-size:14px}.club-t th{text-align:left;font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--line)}
+/* Nov 24 2026: Practice tips show what each student already has recommended */
+.tip-recs{display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:1px 9px;border-radius:999px;border:1px solid color-mix(in srgb,#E0A100 45%,var(--line));background:color-mix(in srgb,#F5B800 10%,var(--surface));font:700 11.5px var(--body);color:var(--ink);cursor:pointer;vertical-align:1px}
+.tip-recs[aria-expanded="true"]{background:color-mix(in srgb,#F5B800 20%,var(--surface))}
+.tip-has{display:block;margin-top:3px;font-size:12.5px;font-weight:700;color:color-mix(in srgb,#E0A100 75%,var(--ink))}
+.tip-reclist{margin:6px 0 2px 34px;padding:8px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:13px}
+.tip-reclist div{display:flex;gap:8px;flex-wrap:wrap;padding:3px 0}.tip-reclist div+div{border-top:1px dashed var(--line)}
+li.tip-cov{opacity:.55}
+.built-more{margin:6px 0 0;background:none;border:0;padding:4px 0;font:700 13px var(--body);color:var(--c-blue,#5B8CFF);cursor:pointer}
 .tip-n{display:inline-block;margin-left:4px;padding:1px 8px;border-radius:999px;font:700 11.5px var(--body);background:color-mix(in srgb,#7348D8 16%,var(--surface));color:var(--ink)}.tip-n.hi{background:color-mix(in srgb,#E5533D 18%,var(--surface))}
 .cl-stcell{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.cl-arch{background:none;border:1.5px solid var(--line);border-radius:999px;padding:3px 9px;font:700 12px var(--body);color:var(--muted);cursor:pointer}.cl-arch:hover{color:var(--ink);border-color:var(--ink)}.cl-archd{margin-top:8px}.cl-archd summary{cursor:pointer}
 .club-t td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}.club-t .nw{white-space:nowrap}
@@ -725,25 +733,44 @@ function renderTabs() {
 /* Hibi asks for this when Noa comes back to Hibi members from the menu: start again on the first tab */
 window.__mFirstTab = () => { mTab = null; try { sessionStorage.removeItem("cs-m-tab"); } catch (e) {} try { renderTabs(); } catch (e) {} };
 document.addEventListener("click", e => { const b = e.target.closest("[data-mtab]"); if (!b) return; mTab = b.dataset.mtab; try { sessionStorage.setItem("cs-m-tab", mTab); } catch (er) {} renderTabs(); });
+let tipOpen = "", builtAll = false;
+document.addEventListener("click", e => { const b = e.target.closest("[data-tiprecs]"); if (b) { tipOpen = tipOpen === b.dataset.tiprecs ? "" : b.dataset.tiprecs; renderTips(); return; }
+  if (e.target.closest("[data-builtmore]")) { builtAll = !builtAll; renderIdeas(); } });
 function renderTips() {
   /* most useful first: how many times it came up × how much it gets in the way (imp 1–3), then the newest */
   const score = r => (r.count || 1) * (r.imp || 2);
-  const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-40).sort((a, b) => score(b) - score(a) || (b.last || b.date || "").localeCompare(a.last || a.date || "")).slice(0, 12);
+  /* Nov 24 2026: what each student already has recommended. A tip already covered (whole module, or that same stage) sinks to the bottom and can't be recommended again */
+  let RR = []; try { RR = recRows(); } catch (e) {}
+  const day = t => new Date(t).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  const recsOf = s => s ? RR.filter(x => x.s.uid === s.uid) : [];
+  const has = r => { const s = tipStudent(r); return s && r.mod ? recsOf(s).find(x => x.mod === r.mod) : null; };
+  const covered = r => { const h = has(r); return !!h && (h.n === "all" || (r.stage && +h.n === +r.stage)); };
+  const box = $("tips"); const recs = ((hubMeta && hubMeta.recs) || []).filter(r => !r.done).slice(-40).sort((a, b) => score(b) - score(a) || (b.last || b.date || "").localeCompare(a.last || a.date || "")).slice(0, 12).sort((a, b) => covered(a) - covered(b));
   box.hidden = !recs.length; if (!recs.length) return;
   const unseen = recs.filter(r => !r.seen).length;
+  const L = { done: "✓ done", go: "started", no: "not started" };
+  const recLine = x => `<div><b>${esc(x.T.name)}</b><span>${x.n === "all" ? "⭐ whole module" : `stage ${x.n} · ${esc(x.T.stages[x.n - 1] || "")}`}</span><span class="muted">${x.at ? day(x.at) : x.approx ? "by " + day(x.approx) : "before Nov 17"} · ${L[x.st]} · ${esc(x.prog)}</span></div>`;
+  const hasLine = (r, h) => { if (!h) return ""; const when = h.at ? " (" + day(h.at) + ")" : "";
+    if (h.n === "all") return `<span class="tip-has">⭐ Whole module already recommended${when} · ${esc(h.prog)}</span>`;
+    if (r.stage && +h.n === +r.stage) return `<span class="tip-has">⭐ This stage is already recommended${when} · ${esc(h.prog)}</span>`;
+    return `<span class="tip-has">⭐ Stage ${h.n} of this module is recommended${when}. Recommending this one replaces it.</span>`; };
   box.innerHTML = `<div class="news-top"><h2 style="margin:0">💡 Practice tips ${unseen ? `<span class="news-n" style="background:#7348D8">${unseen} new</span>` : `<span class="news-c">${recs.length}</span>`}</h2>${unseen ? `<button type="button" class="kd-btn" data-tipseen="1">Mark all as seen</button>` : ""}</div>
-    <p class="muted" style="margin:4px 0 8px">From your classes (the nightly wrap-up adds these every night): mistakes that keep coming up, and what could help. The ones that come up most and matter most are at the top, so you can pick just one or two per student. <b>⭐ Recommend it</b> shows it to the student under “Noa recommends”.</p>
+    <p class="muted" style="margin:4px 0 8px">From your classes (the nightly wrap-up adds these every night): mistakes that keep coming up, and what could help. The ones that come up most and matter most are at the top, so you can pick just one or two per student. <b>⭐ Recommend it</b> shows it to the student under “Noa recommends”. Tap <b>💡 recommended</b> next to a name to see what they already have; tips that are already covered sit at the bottom.</p>
     <ul class="news-list">${recs.map(r => { const s = tipStudent(r); const what = r.mod ? `${MODT[r.mod] ? MODT[r.mod].name : r.mod}${r.stage ? " · stage " + r.stage : ""}${r.title ? ": " + r.title : ""}` : r.pack ? `Word pack: ${PACK_T[r.pack] || r.pack}` : (PAGE_T[r.page] || r.title || r.page);
-      return `<li${r.seen ? ' class="seen"' : ""}><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b> → ${esc(what)} ${(r.count || 1) > 1 ? `<span class="tip-n" title="Came up in ${r.count} classes">came up ${r.count}×</span>` : ""}${r.imp === 3 ? `<span class="tip-n hi" title="Gets in the way of being understood">important</span>` : ""}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span></span>
-        ${s ? (r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}" title="Sends them a note on Hibi with a link to it">⭐ Recommend it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
-        <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}" title="Hide it (you can undo)">✕ Dismiss</button></div></li>`; }).join("")}</ul>`;
+      const mine = recsOf(s), h = has(r), cov = covered(r), open = s && tipOpen === s.uid + "|" + r.id;
+      return `<li class="${[r.seen ? "seen" : "", cov ? "tip-cov" : ""].join(" ").trim()}"><div class="news-row" style="padding:6px 10px;gap:10px;flex-wrap:wrap"><span class="ni">💡</span><span style="flex:1;min-width:200px"><b>${esc(r.name || (s && s.name) || "")}</b>${mine.length ? `<button type="button" class="tip-recs" data-tiprecs="${esc(s.uid + "|" + r.id)}" aria-expanded="${!!open}" title="What ${esc((s.name || "").split(" ")[0])} already has recommended">💡 ${mine.length} recommended ${open ? "▴" : "▾"}</button>` : ""} → ${esc(what)} ${(r.count || 1) > 1 ? `<span class="tip-n" title="Came up in ${r.count} classes">came up ${r.count}×</span>` : ""}${r.imp === 3 ? `<span class="tip-n hi" title="Gets in the way of being understood">important</span>` : ""}<br><span class="muted" style="font-size:13px">${esc(r.why || "")}${r.from ? " · " + esc(r.from) : ""}</span>${hasLine(r, h)}</span>
+        ${s ? (cov ? `<button type="button" class="kd-btn" disabled title="Already in their Noa recommends">✓ Already in their list</button>` : r.mod && r.stage ? `<button type="button" class="kd-btn" data-tiprec="${esc(r.id)}">⭐ Recommend it</button>` : `<button type="button" class="kd-btn" data-tipmsg="${esc(r.id)}" title="Sends them a note on Hibi with a link to it">⭐ Recommend it</button>`) : `<span class="muted" style="font-size:12.5px">not on Hibi yet</span>`}
+        <button type="button" class="kd-btn" data-tipdone="${esc(r.id)}" title="Hide it (you can undo)">✕ Dismiss</button></div>${open ? `<div class="tip-reclist">${mine.map(recLine).join("")}</div>` : ""}</li>`; }).join("")}</ul>`;
 }
 /* ideas for NEW grammar modules / word packs, collected by the nightly wrap-up from what keeps coming up in classes */
 function renderIdeas() {
   const box = $("ideas"), ideas = (hubMeta && hubMeta.ideas) || [];
   const all = ideas.filter(x => x.status !== "no" && x.status !== "done");
-  const built = ideas.filter(x => x.status === "done").sort((a, b) => (b.built || "").localeCompare(a.built || "")).slice(0, 12);
-  box.hidden = !all.length && !built.length; if (box.hidden) return;
+  /* Nov 24 2026: ✅ Built shows what was built in the last 30 days (at most 5); the rest behind "Show older" */
+  const builtAllL = ideas.filter(x => x.status === "done").sort((a, b) => (b.built || "").localeCompare(a.built || ""));
+  const recentB = builtAllL.filter(x => Date.now() - (Date.parse((x.built || "") + "T12:00:00") || 0) < 30 * 864e5).slice(0, 5);
+  const built = builtAll ? builtAllL : recentB, olderN = builtAllL.length - recentB.length;
+  box.hidden = !all.length && !builtAllL.length; if (box.hidden) return;
   const ls = all.slice().sort((a, b) => (a.status === "yes") - (b.status === "yes") || (b.count || 1) - (a.count || 1) || (b.last || "").localeCompare(a.last || ""));
   const seenAt = (hubMeta && hubMeta.ideasSeen) || 0, isNew = x => x.status !== "yes" && (Date.parse(x.last || x.first || "") || Date.now()) > seenAt;
   const nNew = all.filter(isNew).length;
@@ -757,9 +784,9 @@ function renderIdeas() {
     ${ls.length ? `<ul class="news-list">${ls.map(x => `<li${isNew(x) ? "" : ' class="seen"'}><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${ico(x)}</span>
       <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${kindT(x)} · came up ${x.count || 1}×</span>${x.why ? `<br><span style="font-size:13.5px">${esc(x.why)}</span>` : ""}${(x.examples || []).length ? `<br><span class="muted" style="font-size:13px">“${x.examples.slice(-2).map(esc).join("” · “")}”</span>` : ""}${(x.students || []).length ? `<br><span class="muted" style="font-size:12.5px">${x.students.map(esc).join(", ")}</span>` : ""}</span>
       ${x.status === "yes" ? `<span class="kc k-teal" style="color:var(--c-teal)" title="Asked${x.asked ? " on " + esc(fmt(day(x.asked))) : ""}">🗓 Planned for ${esc(fmt(planFor(x)))}</span><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="new">Undo</button>` : `<button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="yes">🛠 Build it</button><button type="button" class="kd-btn" data-idea="${esc(x.id)}" data-st="no">✕ Not now</button>`}</div></li>`).join("")}</ul>` : `<p class="muted" style="margin:0 0 8px">Nothing new to decide right now.</p>`}
-    ${built.length ? `<h3 style="margin:14px 0 6px;font-size:15px">✅ Built</h3><ul class="news-list">${built.map(x => `<li class="seen"><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${ico(x)}</span>
+    ${builtAllL.length ? `<h3 style="margin:14px 0 6px;font-size:15px">✅ Built <span class="news-c">${builtAllL.length}</span></h3>${built.length ? "" : `<p class="muted" style="margin:0">Nothing built in the last 30 days.</p>`}<ul class="news-list">${built.map(x => `<li class="seen"><div class="news-row" style="padding:8px 10px;gap:10px;flex-wrap:wrap"><span class="ni">${ico(x)}</span>
       <span style="flex:1;min-width:220px"><b>${esc(x.title)}</b> <span class="muted small">· ${kindT(x)} · built ${esc(fmt(day(x.built)))}</span>${x.builtNote ? `<br><span style="font-size:13.5px">${esc(x.builtNote)}</span>` : ""}</span>
-      ${/^https:\/\/hibi\.cl\//.test(x.link || "") ? `<a class="kd-btn" style="text-decoration:none" href="${esc(x.link)}" target="_blank" rel="noopener">Open →</a>` : ""}</div></li>`).join("")}</ul>` : ""}`;
+      ${/^https:\/\/hibi\.cl\//.test(x.link || "") ? `<a class="kd-btn" style="text-decoration:none" href="${esc(x.link)}" target="_blank" rel="noopener">Open →</a>` : ""}</div></li>`).join("")}</ul>${olderN > 0 ? `<button type="button" class="built-more" data-builtmore="1">${builtAll ? "▴ Show only the last 30 days" : `▾ Show older (${olderN})`}</button>` : ""}` : ""}`;
 }
 document.addEventListener("click", async e => { const b = e.target.closest("[data-idea]"); if (!b) return;
   try { const m = await getDoc(doc(db, "users", tUid, "data", "t-hubmeta")); if (m.exists()) hubMeta = JSON.parse(m.data().json || "{}") || {}; } catch (er) {}
