@@ -8,7 +8,8 @@
   function show(){
     if(seen()||window.__csViewAsMode||window.__csPreview) return;
     if(!localStorage.getItem("ncs-welcomed")){ mark(); return; }   /* new here: nothing was renamed for them */
-    if(busy()||document.hidden){ if(++tries<60) setTimeout(show,3000); return; }
+    /* Nov 24 2026: on a slow phone the part of Hibi that draws pop-ups (csDialog) can still be loading: wait for it instead of crashing */
+    if(busy()||document.hidden||typeof window.csDialog!=="function"){ if(++tries<60) setTimeout(show,3000); return; }
     mark();
     const d=window.csDialog(`<div class="nb-intro"><h3>📒 Meet <em>My notebook</em></h3>
       <p style="margin:0">Your <b>words</b> and your <b>class notes</b> are now together in one place: <b>My notebook</b> in the menu (it used to be <b>My words</b> and <b>My class notes</b>).</p>

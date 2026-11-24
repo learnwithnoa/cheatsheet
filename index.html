@@ -4719,7 +4719,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-fb46a3c5a7bf.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261124175127"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261124182110"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -5104,7 +5104,8 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-wkgoal]")
   function show(){
     if(seen()||window.__csViewAsMode||window.__csPreview) return;
     if(!localStorage.getItem("ncs-welcomed")){ mark(); return; }   /* new here: nothing was renamed for them */
-    if(busy()||document.hidden){ if(++tries<60) setTimeout(show,3000); return; }
+    /* Nov 24 2026: on a slow phone the part of Hibi that draws pop-ups (csDialog) can still be loading: wait for it instead of crashing */
+    if(busy()||document.hidden||typeof window.csDialog!=="function"){ if(++tries<60) setTimeout(show,3000); return; }
     mark();
     const d=window.csDialog(`<div class="nb-intro"><h3>📒 Meet <em>My notebook</em></h3>
       <p style="margin:0">Your <b>words</b> and your <b>class notes</b> are now together in one place: <b>My notebook</b> in the menu (it used to be <b>My words</b> and <b>My class notes</b>).</p>
