@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-24",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🇻🇳",
+          "title": "Vietnam's very first Culture Day!",
+          "text": "Today Vietnam celebrates Culture Day for the first time ever. It's a brand-new public holiday, so people get a paid day off to enjoy music, art, heritage and traditions. A whole day to love your own culture — not a bad idea!",
+          "word": "heritage",
+          "mean": "traditions, places and things from the past that a country keeps and is proud of",
+          "tr": "patrimonio",
+          "es": "¡Hoy Vietnam celebra por primera vez el Día de la Cultura, un nuevo feriado para disfrutar su arte y tradiciones!",
+          "q": "If your country had a Culture Day, how would you spend it, and what tradition would you share with a visitor?",
+          "link": "https://www.timeanddate.com/news/calendar/vietnam-adds-public-holiday-culture-day",
+          "src": "Time and Date",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "☄️",
+          "title": "A space telescope found its first comet",
+          "text": "Europe's Euclid telescope was built to map galaxies, not to catch fast objects. But a scientist's software spotted a moving streak, and it was a comet! 'Comet Euclid' is about 1.3 billion km away, between Jupiter and Saturn.",
+          "word": "spotted",
+          "mean": "saw or noticed something, often something hard to see",
+          "tr": "detectó / divisó",
+          "es": "El telescopio Euclid encontró su primer cometa, ¡aunque no fue diseñado para eso!",
+          "q": "What is something you found by accident while you were looking for something else?",
+          "link": "https://www.space.com/astronomy/comets/euclid-discovers-its-1st-comet-space-photo-of-the-day-for-nov-16-2026",
+          "src": "Space.com",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🍲",
+          "title": "A chef who cooks 100 meals every Tuesday",
+          "text": "Every Tuesday since 2021, Toronto chef Maddy Goldberg goes to a food bank and cooks 100 hot meals from whatever ingredients were donated. No menu, no plan — just creativity! Last week it was red lentil fritters.",
+          "word": "donated",
+          "mean": "given for free to help others",
+          "tr": "donados",
+          "es": "Una chef de Toronto cocina 100 comidas gratis cada martes con lo que donan a un banco de alimentos.",
+          "q": "If you had to cook a meal from random ingredients in your kitchen right now, what would you make?",
+          "link": "https://www.goodgoodgood.co/articles/toronto-chef-food-bank-maddy-goldberg",
+          "src": "Good Good Good",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-23",
       "by": "claude",
       "items": [
