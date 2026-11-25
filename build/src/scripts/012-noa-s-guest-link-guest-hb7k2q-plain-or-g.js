@@ -129,7 +129,7 @@
     const st=gate.scrollTop, det=gate.querySelector("#agNew"), op=det&&det.open; const cur=mode; mode=""; show(cur); gate.scrollTop=st; const d2=gate.querySelector("#agNew"); if(d2&&op) d2.open=true; });
   function landing(){
     const quote=(img,name,sub,story,q,c)=>`<figure class="lp-q lp-glass" style="--c:${c}"><figcaption class="lp-who"><img src="${IMG(img)}" alt="" loading="lazy" width="56" height="56"><span><b>${name}</b><small>${sub}</small></span></figcaption><p class="lp-story">${story}</p><blockquote>${q}</blockquote></figure>`;
-    const feat=(e,c,t,d)=>`<div class="lp-shot lp-glass" style="--c:${c}">${e.startsWith("<")?`<button type="button" class="lp-scr lp-scr-pet" data-lppet aria-label="${L("Pet Miki","Acariciar a Miki")}">${e}</button>`:`<div class="lp-scr" aria-hidden="true">${e}</div>`}<b>${t}</b><span>${d}</span></div>`;
+    const feat=(e,c,t,d)=>`<div class="lp-shot lp-glass" style="--c:${c}">${e.startsWith("<")?`<button type="button" class="lp-scr lp-scr-pet" data-lppet aria-label="${L("Pet Miki","Acariciar a Miki")}">${e}</button>`:`<div class="lp-scr" aria-hidden="true"><span class="lp-emo">${e}</span></div>`}<b>${t}</b><span>${d}</span></div>`;
     const faq=(q,a)=>`<details class="lp-faq lp-glass"><summary>${q}</summary><p>${a}</p></details>`;
     const dark=lpDark();
     return `<div class="lp${dark?" lp-dark":""}">
