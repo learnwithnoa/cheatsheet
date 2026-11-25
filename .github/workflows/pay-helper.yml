@@ -50,6 +50,7 @@ jobs:
           sleep 8; echo "health: $(curl -s https://hibi-pay.learnwithnoa.workers.dev/api/health)" >> /tmp/log.txt
           echo "check: $(curl -s -X POST https://hibi-pay.learnwithnoa.workers.dev/api/flow-callback)" >> /tmp/log.txt   # runs the payment check once
           echo "youtube: $(curl -s https://hibi-pay.learnwithnoa.workers.dev/api/ytfeed)" >> /tmp/log.txt   # reads the club playlist once
+          echo "pending sign-ups: $(curl -s https://hibi-pay.learnwithnoa.workers.dev/api/pending-sweep)" >> /tmp/log.txt
           echo "manual trials: $(curl -s https://hibi-pay.learnwithnoa.workers.dev/api/manual-trials)" >> /tmp/log.txt
           echo "skool move reminders: $(curl -s https://hibi-pay.learnwithnoa.workers.dev/api/move-notify)" >> /tmp/log.txt
           cp /tmp/log.txt deploy-log.txt

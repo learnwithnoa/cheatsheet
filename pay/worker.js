@@ -548,6 +548,14 @@ async function mpFinalize(env, id, sub) {
   return uid;
 }
 // a sign-up that was approved at Mercado Pago / PayPal but whose return page never reached Hibi (tab closed, phone app…)
+// Nov 25 2026: someone who paid on Mercado Pago / PayPal but never came back to Hibi stayed "not switched" until they opened Hibi again
+// (Giacomo). Every hour (and on each deploy) finish every pending sign-up the payment service already approved.
+async function pendingSweep(env) {
+  const r = await fs(env, "GET", "billing?pageSize=300"); let saved = 0, waiting = 0;
+  for (const d of (r && r.documents) || []) { const b = plain(d) || {}; if (!b.mpPending && !b.ppPending) continue;
+    const uid = d.name.split("/").pop(); try { if (await pendingSync(env, uid, b)) saved++; else waiting++; } catch (e) { waiting++; } }
+  return { saved, waiting };   // counts only: the deploy log is public
+}
 async function pendingSync(env, uid, b) {
   if (["active", "grace", "canceling"].includes(b.status) && (b.mpId || b.ppSubId || b.subscriptionId)) return null;
   try {
@@ -922,6 +930,7 @@ export default {
         case "/api/health": return json(await health(env), 200, req);
         case "/api/ytfeed": return json(await ytFeed(env), 200, req);
         case "/api/move-notify": return json(await skoolMoveNotify(env), 200, req);   // sends due Skool-move reminders now (each only once, 10:00–20:59 Chile; counts only)
+        case "/api/pending-sweep": return json(await pendingSweep(env), 200, req);
         case "/api/manual-trials": return json(await manualTrials(env), 200, req);   // only counts, no names (the deploy log is public)   // refreshes the club playlist list now (public videos only, no personal data)
         case "/api/subscribe": return await subscribe(env, req, url);
         case "/api/card-return": return await cardReturn(env, req, url);
@@ -965,5 +974,5 @@ export default {
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env).catch((e) => console.log("unread mail", e.message)).then(() => skoolMoveNotify(env)).catch((e) => console.log("move notify", e.message))), ytFeed(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env).catch((e) => console.log("unread mail", e.message)).then(() => pendingSweep(env)).catch((e) => console.log("pending sweep", e.message)).then(() => skoolMoveNotify(env)).catch((e) => console.log("move notify", e.message))), ytFeed(env)])); },
 };
