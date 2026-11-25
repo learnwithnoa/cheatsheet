@@ -1426,7 +1426,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   rawWords = (() => { try { return localStorage.getItem("ncs-words"); } catch (e) { return null; } })();
   if (S.on === true) { const c = counts(); if (c.words > (S.mw | 0)) { rawWords = null; } }
   visible();
-  if (S.on === undefined) setTimeout(() => { if (S.on === undefined && !document.documentElement.classList.contains("cs-calm")) say("Something's inside this egg… 🥚", `<button class="bd-b go" type="button" data-bd="adopt">Take a look</button><button class="bd-b" type="button" data-bd="later">Later</button>`, 9000); }, 4000);
+  if (S.on === undefined) setTimeout(() => { if (S.on === undefined && !document.documentElement.classList.contains("cs-calm") && ![...document.querySelectorAll(".cs-dlg")].some(x => !x.hidden && x.getClientRects().length)) say("Something's inside this egg… 🥚", `<button class="bd-b go" type="button" data-bd="adopt">Take a look</button><button class="bd-b" type="button" data-bd="later">Later</button>`, 9000); }, 4000);
   else if (S.on === true) {
     if (S.hi !== today()) { S.hi = today(); addFP(2); }
     const gapDays = S.vAt ? (Date.now() - S.vAt) / 864e5 : 0; S.vAt = Date.now(); save();

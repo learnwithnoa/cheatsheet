@@ -5,7 +5,7 @@
   const T={students:document.getElementById("stFrame"),members:document.getElementById("mbFrame")};
   const sec=k=>document.getElementById("v-"+k);
   function load(k,bg){ const box=T[k]; if(!box||box.dataset.on) return; const sc=sec(k); if(sc.hidden&&bg!==true) return;
-    if(!ok()){ if(!sc.hidden&&window.__csTeacher===false&&window.csGo) window.csGo("notes"); return; }
+    if(!ok()){ if(!sc.hidden&&window.__csTeacher===false) notMine(); return; }
     box.dataset.on="1"; box.innerHTML=`<iframe src="${box.id==="stFrame"?(()=>{ let v="overview"; try{ v=localStorage.getItem("cs-hub-view")||"overview"; }catch(er){} if(!["overview","students","money"].includes(v)) v="overview"; return box.dataset.src.split("#")[0]+"#"+(PEND.students||v); })():(PEND.members?box.dataset.src.split("#")[0]+"#"+PEND.members:box.dataset.src)}" title="${box.dataset.ttl}" scrolling="no" allow="clipboard-write"></iframe>`; }
   ["students","members"].forEach(k=>{ const sc=sec(k); if(sc) new MutationObserver(()=>load(k)).observe(sc,{attributes:true,attributeFilter:["hidden"]}); });
   const bgAll=()=>{ if(window.__csTeacher===true){ load("students",true); setTimeout(()=>load("members",true),1500); } };
@@ -23,7 +23,10 @@
   function watch(k){ const f=T[k]&&T[k].querySelector("iframe"); if(!f||f.dataset.watch) return; f.dataset.watch="1";
     const hook=()=>{ try{ if(PEND[k]){ const h="#"+PEND[k]; delete PEND[k]; if(f.contentWindow.location.hash!==h) f.contentWindow.location.hash=h; } f.contentWindow.addEventListener("hashchange",()=>window.__csSyncUrl&&window.__csSyncUrl(k)); window.__csSyncUrl&&window.__csSyncUrl(k); }catch(e){} };
     f.addEventListener("load",hook); try{ if(f.contentDocument&&f.contentDocument.readyState==="complete"&&f.contentWindow.location.href!=="about:blank") hook(); }catch(e){} }
-  setInterval(()=>{ watch("students"); watch("members"); },700);
+  /* Nov 25 2026 (sweep): a student who opens #students or #members by link goes back Home once we know they aren't Noa */
+  const notMine=()=>{ if(window.__csTeacher!==false||window.__csViewAsMode||window.__csPreview) return; if(["students","members"].some(k=>{ const sc=sec(k); return sc&&!sc.hidden; })){ if(window.csGo) window.csGo("notes"); else location.replace("#notes"); } };
+  document.addEventListener("cs-teacher",notMine);
+  setInterval(()=>{ watch("students"); watch("members"); notMine(); },700);
   function openTab(k,hash){ const b=document.querySelector(`.navbtn[data-go="${k}"]`); if(b) b.click(); load(k); const f=T[k]&&T[k].querySelector("iframe");
     if(f&&hash){ try{ if(f.contentWindow.location.hash!==hash) f.contentWindow.location.hash=hash; }catch(er){ f.src=T[k].dataset.src.split("#")[0]+hash; } } }
   /* links on Home to the teacher pages (notifications…) open the tabs instead */

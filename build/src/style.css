@@ -83,6 +83,10 @@ main{min-width:0;padding-bottom:60px}
 .warn{border-left-color:var(--red);background:var(--red-soft)}
 ul.clean{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+.tbl-wrap.tbl-more{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 46px),rgba(0,0,0,.25));mask-image:linear-gradient(90deg,#000 calc(100% - 46px),rgba(0,0,0,.25))}
+@media (max-width:700px){#buddy{transition:opacity .25s ease}html.cs-scrolling #buddy:not(:has(.bd-bub:not([hidden]))){opacity:.12;pointer-events:none}}
+.tbl-hint{text-align:right;font:700 12px var(--mono);color:var(--royal);margin:0 4px 6px}
+@media (max-width:480px){.tbl-wrap td{padding:8px 9px}.tbl-wrap th{padding-left:9px;padding-right:9px}.tbl-wrap .rowbtn.save{padding:3px 6px}}
 table{border-collapse:collapse;width:100%;font-size:15px}
 th{font:700 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);position:sticky;top:0}
 td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -94,7 +98,7 @@ tr:last-child td{border-bottom:0}
 /* tenses */
 .conj{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;margin-bottom:16px}
 .field{display:flex;flex-direction:column;gap:4px}
-.field label{font:700 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.field label{font:700 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 input[type=text],input[type=search],select,textarea{font:600 16px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;min-width:0}
 input:focus,select:focus,textarea:focus{border-color:var(--bright);outline:none;box-shadow:0 0 0 3px var(--sky)}
 #verbIn{width:170px}
@@ -399,7 +403,7 @@ p.copy-help.dismissible{background:var(--surface-2);border:1px solid var(--line)
 
 /* feedback */
 .fb-form{display:flex;flex-direction:column;gap:16px;max-width:760px}
-.fb-label{font:700 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.fb-label{font:700 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .fb-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .fb-row select,.fb-row input{width:100%}
 @media (max-width:560px){.fb-row{grid-template-columns:minmax(0,1fr)}}
@@ -1841,7 +1845,7 @@ html.cs-calm .park-b svg{animation:none}
 .park-b .pw{font:700 10.5px var(--body);color:#1F2A44;background:rgba(255,255,255,.62);border-radius:999px;padding:1px 7px;margin-top:2px;white-space:nowrap}
 .park-tip{position:absolute;transform:translateX(-50%);z-index:3;pointer-events:none;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;font:700 12.5px var(--body);white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.18);animation:parkTip 2.6s ease forwards}
 @keyframes parkTip{0%{opacity:0;transform:translate(-50%,6px)}10%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
-@media (max-width:640px){.park-b .po{display:block;font-size:9.5px;padding:0 5px}.park-b .pw{font-size:9.5px}.park-b .pn{font-size:11px}}
+@media (max-width:640px){.park-b .po{display:block;font-size:10.5px;padding:0 5px}.park-b .pw{font-size:10.5px}.park-b .pn{font-size:11.5px}}
 
 .nb-week{margin-bottom:14px}
 .nb-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
@@ -1947,6 +1951,9 @@ html.cs-beginner label .esb.esb-in::before{content:"· "}
 html.cs-beginner .tag .esb.esb-in,html.cs-beginner .td-tag2 .esb.esb-in{display:inline;margin-left:6px;font-size:10.5px}
 .lvl-chip{display:inline-block;vertical-align:middle;margin-left:10px;font:800 12px var(--mono);letter-spacing:.04em;padding:3px 8px;border-radius:8px;color:#fff;background:#3BA776;-webkit-text-fill-color:#fff}
 .lvl-a2{background:#2F8FD9}.lvl-b1{background:#8E5CD9}.lvl-b2{background:#D9527F}
+/* Nov 25 2026 (sweep): coaching.css also has a .lvl-chip (level-check buttons, pale background) that made the A1/B1 badges next to lesson titles white-on-white in light mode */
+:is(h1,h2)>.lvl-chip{border:0;font:800 12px var(--mono);padding:3px 8px;border-radius:8px;color:#fff;-webkit-text-fill-color:#fff;background:#3BA776;cursor:default}
+:is(h1,h2)>.lvl-chip.lvl-a2{background:#2F8FD9}:is(h1,h2)>.lvl-chip.lvl-b1{background:#8E5CD9}:is(h1,h2)>.lvl-chip.lvl-b2{background:#D9527F}
 .nav-lvl{display:none}
 html.cs-beginner .nav-lvl{display:inline-block;margin-left:6px;font:800 9.5px var(--mono);padding:1px 5px;border-radius:5px;color:#fff;vertical-align:1px}
 .is-es{display:none}
@@ -1964,7 +1971,7 @@ html.cs-beginner .is-es{display:inline-block;margin-top:8px;font:700 12.5px var(
 .park-b .pb-flip{display:block;transition:transform .25s}
 .park-b .pb-flip.left{transform:scaleX(-1)}
 .park-b svg{width:calc(64px * var(--z,1));height:calc(70px * var(--z,1))}
-.park-b .pn{font-size:calc(12.5px * max(.72,min(var(--z,1),1.2)));padding:1px 7px}
+.park-b .pn{font-size:calc(12.5px * max(.88,min(var(--z,1),1.2)));padding:1px 7px}
 .park-b.walking svg{animation:parkWalk .45s steps(2) infinite}
 @keyframes parkWalk{50%{transform:translateY(-3px)}}
 .park-b.p-yawn svg{animation:pYawn 1.6s steps(4) 1;transform-origin:50% 100%}
@@ -2165,7 +2172,7 @@ html.cs-calm .park-b .pb-aura,html.cs-calm .park-b .pb-aura i{animation:none}
 .tr-say{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}
 .tr-say-l{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .tr-say-p{font-weight:700;font-size:17px;letter-spacing:.02em}
-.opt{font-weight:400;color:var(--muted);font-size:.9em}
+.opt{font-weight:400;color:var(--muted);font-size:.95em}
 .fc-tok{cursor:pointer;border-radius:4px;transition:background .12s}
 .fc-tok:hover{background:color-mix(in srgb,var(--bright) 22%,transparent)}
 .fc-tok.on{background:var(--bright);color:#fff}

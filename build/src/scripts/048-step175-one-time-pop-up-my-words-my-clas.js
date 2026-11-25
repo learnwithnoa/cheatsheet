@@ -3,7 +3,7 @@
 (function(){ const K="ncs-nb-intro";
   const seen=()=>{ if(window.__csGuest||(window.__csViewAsMode&&window.__csViewAsMode.sample)) return true; /* previews: nothing to migrate */ try{ return !!localStorage.getItem(K); }catch(e){ return true; } };
   const mark=()=>{ try{ localStorage.setItem(K,JSON.stringify(1)); window.__csOnSet&&window.__csOnSet(K); }catch(e){} };
-  const busy=()=>[...document.querySelectorAll('.cs-dlg,.bd-modal,#whatsnew,#welcome')].some(x=>!x.hidden&&x.getClientRects().length)||(window.__csBusy&&window.__csBusy());
+  const busy=()=>[...document.querySelectorAll('.cs-dlg,.bd-modal,#whatsnew,#welcome')].some(x=>!x.hidden&&x.getClientRects().length)||(window.__csBusy&&window.__csBusy())||!!document.querySelector('#bdBub:not([hidden]) [data-bd="adopt"]');  /* Nov 25 2026: never on top of the buddy's egg bubble */
   let tries=0;
   function show(){
     if(seen()||window.__csViewAsMode||window.__csPreview) return;

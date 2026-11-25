@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=72',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=73',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -430,6 +430,15 @@ if '2026-1125-wordorder' not in s:
     ["🧱","Word order and object pronouns","A new module in <b>Practice → Grammar</b> (A2 to B1): <i>It's raining</i> (not <i>Is raining</i>), <i>I saw him</i> (not <i>I him saw</i>), <i>give it to me</i>, <i>explain it to me</i>. A short lesson, 6 stages, an ⭐ Advanced bonus and a test, all with Spanish help.","quiz"],
     ["🐶","Pets and animals","A new word pack in <b>Practice → Word packs</b>: <i>fur</i> (not hair!), <i>paw</i>, <i>leash</i>, <i>vet</i>, <i>groomer</i>, <i>adopt</i> and more, for talking about your dog or cat.","quiz"],
     ["🧩","Two new toys","Finish the word order module for 🧱 <b>building blocks</b> for your study buddy, and pass its Advanced stage for a 🧩 <b>puzzle piece</b>.",""]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1125-sweep' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1125-sweep", date:"November 25, 2026", title:"Small fixes all over Hibi 🧹", items:[
+    ["📊","Wide tables on your phone","tables that don't fit on the screen now show <b>Swipe the table →</b>, so you know there's more to the right."],
+    ["🐾","Your buddy steps aside","on your phone, your study buddy fades while you scroll so it never covers what you're reading."],
+    ["🔤","Easier to read","the level badges next to each lesson (A1, B1…) are clear again in light mode, and small labels are a bit bigger."]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

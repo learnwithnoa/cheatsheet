@@ -5334,6 +5334,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1125-sweep", date:"November 25, 2026", title:"Small fixes all over Hibi 🧹", items:[
+    ["📊","Wide tables on your phone","tables that don't fit on the screen now show <b>Swipe the table →</b>, so you know there's more to the right."],
+    ["🐾","Your buddy steps aside","on your phone, your study buddy fades while you scroll so it never covers what you're reading."],
+    ["🔤","Easier to read","the level badges next to each lesson (A1, B1…) are clear again in light mode, and small labels are a bit bigger."]
+  ]},
   {id:"2026-1125-wordorder", date:"November 25, 2026", title:"New: word order, and pets and animals", items:[
     ["🧱","Word order and object pronouns","A new module in <b>Practice → Grammar</b> (A2 to B1): <i>It's raining</i> (not <i>Is raining</i>), <i>I saw him</i> (not <i>I him saw</i>), <i>give it to me</i>, <i>explain it to me</i>. A short lesson, 6 stages, an ⭐ Advanced bonus and a test, all with Spanish help.","quiz"],
     ["🐶","Pets and animals","A new word pack in <b>Practice → Word packs</b>: <i>fur</i> (not hair!), <i>paw</i>, <i>leash</i>, <i>vet</i>, <i>groomer</i>, <i>adopt</i> and more, for talking about your dog or cat.","quiz"],
@@ -5587,7 +5592,7 @@ const CHANGELOG=[
     ["🙋","I’m going","tap it on each class of the week, and see who else is coming. Polls 📊 are on the wall too.","club"],
     ["✍️","Weekly challenge","answer Noa’s short challenge each week for 5 🍪 for your buddy. Noa picks a favourite ⭐.","club"],
     ["🏅","Profiles, streaks and badges","tap anyone’s name to see their buddy, level and badges. Come to classes weeks in a row to build your streak 🔥.","club"],
-    ["🎬","After class","recordings, words you can save to My words with one tap, and useful phrases, on each week’s post.","club"]
+    ["🎬","After class","recordings, words you can save to My notebook with one tap, and useful phrases, on each week’s post.","club"]
   ]},
   {id:"2026-reports", date:"November 9, 2026", title:"Progress reports on My coaching 📈", quiet:true, items:[
     ["📈","Your progress reports","private students: your every-3-weeks progress report now lives in <b>My coaching → Progress reports</b>. Read it, open your class recordings, or print it.","coaching"]
@@ -5612,7 +5617,7 @@ const CHANGELOG=[
     ["🔆","High contrast","stronger text and borders, with any theme. Turn it on in <b>Settings</b>. If your phone or computer already uses <i>Increase contrast</i>, it turns on by itself."]
   ]},
   {id:"2026-lookup", date:"November 6, 2026", title:"Look up any word 🔎", items:[
-    ["🔎","Look up any word","<b>double-click</b> a word, or select a few words for phrases like <i>figure out</i> (on your phone, <b>press and hold</b>), anywhere on the site to see what it means, in English and Spanish, and save it to My words."],
+    ["🔎","Look up any word","<b>double-click</b> a word, or select a few words for phrases like <i>figure out</i> (on your phone, <b>press and hold</b>), anywhere on the site to see what it means, in English and Spanish, and save it to My notebook."],
     ["🐾","Fun mouse cursors","on a computer, choose a paw, pencil, star or a big cursor in <b>Settings</b>."]
   ]},
   {id:"2026-interviews", date:"November 6, 2026", title:"Job interviews and feeding friends 🍪", items:[
@@ -5662,7 +5667,7 @@ const CHANGELOG=[
     ["📓","Practice this","in your weekly summaries, past simple corrections now have a <b>Practice this</b> button.","notebook"]
   ]},
   {id:"2026-findwords", date:"November 5, 2026", title:"Find words, park treats and a colorful menu 🍪", items:[
-    ["✨","Find words in any saved note","in <b>My class notes</b>, tap <b>✨ Find words</b> on a saved note to see new words and expressions you can add to My words.","classnotes"],
+    ["✨","Find words in any saved note","in <b>My notebook → Class notes</b>, tap <b>✨ Find words</b> on a saved note to see new words and expressions you can add to My notebook.","classnotes"],
     ["🍪","Treats in the park","sometimes a treat is hiding in the <b>Buddy park</b>. If you see one, tap it to pick it up! It doesn't happen every day.","park"],
     ["🎨","A colorful menu","each part of the menu now has its own color, so it's easier to find what you need."]
   ]},
@@ -5732,7 +5737,7 @@ const CHANGELOG=[
     ["🌈","A third look","tap the theme button at the top (next to Music) to switch between dark, light and a bright rainbow <b>Unicorn</b> mode.",null]
   ]},
   {id:"2026-today", date:"October 29, 2026", title:"Something new every day ☀️", items:[
-    ["📖","Word of the day","a useful word or expression on your Home page every day, with an example. Tap <b>+ Save to My words</b> to keep it.","notes"],
+    ["📖","Word of the day","a useful word or expression on your Home page every day, with an example. Tap <b>+ Save to My notebook</b> to keep it.","notes"],
     ["🌱","Thought for today","a short daily reminder about patience, progress and learning at your own pace.","notes"],
     ["⇄","Translator, pinned","it now sits in the green menu with Home, My class notes and My words.","translate"]
   ]},
