@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-25",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🏮",
+          "title": "Thousands of wishes float over Chiang Mai",
+          "text": "Tonight is the last night of Yi Peng, a lantern festival in northern Thailand. People release thousands of glowing paper lanterns into the sky, carrying their wishes and letting go of bad luck. The sky looks like it's full of golden stars!",
+          "word": "letting go of",
+          "mean": "stopping holding on to something, so it can leave",
+          "tr": "soltar / dejar ir",
+          "es": "¡En Chiang Mai, Tailandia, miles de linternas suben al cielo con deseos durante el festival Yi Peng!",
+          "q": "If you could send one wish up into the sky on a lantern, what would you wish for?",
+          "link": "https://www.timeout.com/chiang-mai/yi-peng-lantern-festival",
+          "src": "Time Out",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🌑",
+          "title": "An eclipse on an asteroid!",
+          "text": "Europe's Hera probe took a photo of the double asteroid Didymos and saw something cool: the shadow of its small moon, Dimorphos, on its surface. It's a tiny solar eclipse in space! Hera is arriving at the asteroids right about now.",
+          "word": "shadow",
+          "mean": "the dark shape made when something blocks the light",
+          "tr": "sombra",
+          "es": "La sonda Hera fotografió la sombra de una pequeña luna sobre un asteroide: ¡un eclipse en miniatura!",
+          "q": "If you could visit any place in space for one day, where would you go and what would you do there?",
+          "link": "https://www.space.com/astronomy/asteroids/double-asteroid-solar-eclipse-caught-on-camera-space-photo-of-the-day-for-nov-24-2026",
+          "src": "Space.com",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🎸",
+          "title": "Old guitars become a café for birds",
+          "text": "Rob Burke, a retired math teacher in Canada, asked people for broken instruments. He got six guitars, a violin and parts of a drum set, and turned them into bird feeders. He calls his bird visitors the \"Peck and Play Orchestra\"!",
+          "word": "broken",
+          "mean": "damaged, not working anymore",
+          "tr": "roto / rota",
+          "es": "Un profesor jubilado en Canadá convirtió guitarras rotas en comederos para pájaros.",
+          "q": "What old or broken thing at home could you turn into something new and useful?",
+          "link": "https://www.goodnewsnetwork.org/retired-teacher-turns-retired-musical-instruments-into-bird-feeders-look/",
+          "src": "Good News Network",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-24",
       "by": "claude",
       "items": [
