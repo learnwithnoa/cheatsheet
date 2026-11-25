@@ -901,20 +901,9 @@ button.lp-scr:hover .lp-miki{transform:scale(1.06)}
 .lp-faqs .lp-faq:nth-of-type(5n+1){--fc:#3B82F6}.lp-faqs .lp-faq:nth-of-type(5n+2){--fc:#0D9488}.lp-faqs .lp-faq:nth-of-type(5n+3){--fc:#F97316}.lp-faqs .lp-faq:nth-of-type(5n+4){--fc:#8B5CF6}.lp-faqs .lp-faq:nth-of-type(5n+5){--fc:#DB2777}
 .lp-dark .lp-faqs .lp-faq:nth-of-type(5n+1){--fc:#8FB0FF}.lp-dark .lp-faqs .lp-faq:nth-of-type(5n+2){--fc:#5EEAD4}.lp-dark .lp-faqs .lp-faq:nth-of-type(5n+3){--fc:#FB923C}.lp-dark .lp-faqs .lp-faq:nth-of-type(5n+4){--fc:#C4B5FD}.lp-dark .lp-faqs .lp-faq:nth-of-type(5n+5){--fc:#F472B6}
 @media (prefers-reduced-motion:reduce){.lp-shot:hover,.lp-shot:hover .lp-emo,.lp-q:hover .lp-who img{transform:none}}
-.lp-float{position:absolute;inset:-26px;pointer-events:none;z-index:0}
-.lp-face>img{position:relative;z-index:0}
-.lp-float i{position:absolute;font-style:normal;animation:lpFloat 6s ease-in-out infinite}
-.lp-float .b1,.lp-float .b2,.lp-float .b3{border-radius:50%;background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.95),rgba(255,255,255,.25) 35%,color-mix(in srgb,var(--lp-sky) 35%,transparent) 70%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 4px 12px rgba(59,130,246,.18)}
-.lp-float .b1{width:34px;height:34px;left:-4px;bottom:24px}.lp-float .b2{width:18px;height:18px;left:22px;top:6px;animation-delay:-2s}.lp-float .b3{width:24px;height:24px;right:-6px;bottom:-2px;animation-delay:-4s}
-.lp-float .s1,.lp-float .s2,.lp-float .s3{color:#F9D25C;text-shadow:0 0 8px rgba(249,210,92,.8);animation:lpTw 2.2s ease-in-out infinite}
-.lp-float .s1{font-size:20px;left:4px;top:42%}.lp-float .s2{font-size:15px;right:10px;top:30%;color:#5EEAD4;text-shadow:0 0 8px rgba(94,234,212,.8);animation-delay:-.7s}.lp-float .s3{font-size:17px;right:38px;bottom:4px;animation-delay:-1.4s}
-@keyframes lpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .lp-ig{margin:10px 0 0;font-size:13.5px}.lp-ig a{display:inline-flex;align-items:center;gap:7px;color:var(--lp-muted);text-decoration:none;padding:5px 12px 5px 6px;border-radius:999px;border:1px solid var(--lp-line);background:var(--lp-glass2);transition:transform .2s ease}
 .lp-ig a:hover{transform:translateY(-2px);color:var(--lp-ink)}.lp-ig b{color:var(--lp-ink)}
 .lp-ig-ico{width:20px;height:20px;border-radius:6px;background:radial-gradient(circle at 30% 110%,#FDD95C 0 18%,#F9603D 40%,#D6297F 62%,#6C3CE0 90%)}
-.lp-next{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--lp-muted)}.lp-next b{color:var(--lp-ink)}.lp-tz{font-size:12.5px}
-.lp-live{color:#EF4444;animation:lpTw 1.4s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){.lp-float i,.lp-live{animation:none}}
 .lp-pk{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;padding:max(12px,env(safe-area-inset-top,0px)) 12px 12px;background:rgba(6,12,24,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:lpFade .2s ease}
 @keyframes lpFade{from{opacity:0}to{opacity:1}}
 .lp-pk-bar{display:flex;align-items:center;gap:6px;width:100%;max-width:720px;padding:8px 10px;border-radius:16px 16px 0 0;background:#fff;color:#0F2341;font:700 15px var(--body)}
