@@ -551,10 +551,18 @@ async function mpFinalize(env, id, sub) {
 // Nov 25 2026: someone who paid on Mercado Pago / PayPal but never came back to Hibi stayed "not switched" until they opened Hibi again
 // (Giacomo). Every hour (and on each deploy) finish every pending sign-up the payment service already approved.
 async function pendingSweep(env) {
-  const r = await fs(env, "GET", "billing?pageSize=300"); let saved = 0, waiting = 0;
+  const r = await fs(env, "GET", "billing?pageSize=300"); let saved = 0, waiting = 0; const states = {};
   for (const d of (r && r.documents) || []) { const b = plain(d) || {}; if (!b.mpPending && !b.ppPending) continue;
-    const uid = d.name.split("/").pop(); try { if (await pendingSync(env, uid, b)) saved++; else waiting++; } catch (e) { waiting++; } }
-  return { saved, waiting };   // counts only: the deploy log is public
+    const uid = d.name.split("/").pop(); try { if (await pendingSync(env, uid, b)) saved++; else { waiting++;
+      if (b.mpPending) { const sub = await mp(env, "GET", `/preapproval/${b.mpPending}`).catch(() => null); const k = "mp:" + ((sub && sub.status) || "?") + (b.status ? "/" + b.status : ""); states[k] = (states[k] || 0) + 1;
+        if (!sub || sub.status !== "authorized") { const alt = await mpFindAuthorized(env, uid).catch(() => null); if (alt && await mpFinalize(env, alt.id, alt)) { saved++; waiting--; states.fixedOther = (states.fixedOther || 0) + 1; } } }
+      else { const k = "pp" + (b.status ? "/" + b.status : ""); states[k] = (states[k] || 0) + 1; } } } catch (e) { waiting++; states.err = (states.err || 0) + 1; } }
+  return { saved, waiting, states };   // counts only: the deploy log is public
+}
+// a member can start Mercado Pago twice (e.g. two tabs): the one they actually approved may not be the last one Hibi saved
+async function mpFindAuthorized(env, uid) {
+  const r = await mp(env, "GET", `/preapproval/search?external_reference=${encodeURIComponent(uid)}&status=authorized`);
+  return ((r && r.results) || []).sort((a, b) => String(b.date_created).localeCompare(String(a.date_created)))[0] || null;
 }
 async function pendingSync(env, uid, b) {
   if (["active", "grace", "canceling"].includes(b.status) && (b.mpId || b.ppSubId || b.subscriptionId)) return null;
