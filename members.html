@@ -235,6 +235,7 @@ details>summary::marker{content:""}
 details>summary::before{content:"▸";display:inline-block;flex:none;color:var(--muted,#8a93ad);margin-right:.45em;transition:transform .15s;font-weight:700}
 details[open]>summary::before{transform:rotate(90deg)}
 details.mcol>summary::before{content:"▸"}
+.own-s{margin-top:6px;padding:5px 8px;border-radius:8px;font-size:13.5px;line-height:1.4;color:var(--ink);background:color-mix(in srgb,#22C55E 13%,transparent);border-left:3px solid #22C55E}
 </style>
 <link rel="stylesheet" href="comfort.css?v=22">
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
@@ -1046,7 +1047,7 @@ function renderDetail(s) {
   const wRow = w => editW === w.id ?
     `<tr class="ed"><td><input id="ew" value="${esc(w.w)}"></td><td><input id="em" value="${esc(w.m)}"></td><td><input id="ee" value="${esc(w.e)}"></td><td><input id="enn" value="${esc(w.n || "")}"></td><td class="d">${fmtDate(w.t)}</td>
       <td class="act"><button class="ib" data-wsave="${esc(w.id)}" type="button">Save</button><button class="ib" data-wcancel type="button">Cancel</button></td></tr>` :
-    `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}</td><td>${esc(w.n || "")}</td><td class="d">${fmtDate(w.t)}${w.by === "teacher" ? `<div class="by">added by you</div>` : ""}</td>
+    `<tr><td>${esc(w.w)}</td><td>${esc(w.m)}</td><td>${esc(w.e)}${w.own ? `<div class="own-s" title="A sentence they wrote themselves (✍️ My own sentence in their notebook)">✍️ ${esc(w.own)}</div>` : ""}</td><td>${esc(w.n || "")}</td><td class="d">${fmtDate(w.t)}${w.by === "teacher" ? `<div class="by">added by you</div>` : ""}</td>
       <td class="act"><button class="ib" data-wedit="${esc(w.id)}" type="button">Edit</button><button class="ib del" data-wdel="${esc(w.id)}" type="button">Delete</button></td></tr>`;
   const nCard = n => editN === n.id ?
     `<div class="note ed"><div class="when">${fmtLong(n.t)}</div><textarea id="en">${esc(n.text)}</textarea>
