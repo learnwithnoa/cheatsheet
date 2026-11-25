@@ -134,7 +134,7 @@
     const dark=lpDark();
     return `<div class="lp${dark?" lp-dark":""}">
     <span class="lp-blob" style="left:-120px;top:40px;background:#60A5FA"></span><span class="lp-blob" style="right:-140px;top:560px;background:#5EEAD4"></span><span class="lp-blob" style="left:-150px;top:1700px;background:#FBBF24"></span>
-    <header class="lp-top"><span class="lp-logo">Hibi<small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-mode" data-lpmode aria-label="${dark?L("Switch to light mode","Cambiar a modo claro"):L("Switch to dark mode","Cambiar a modo oscuro")}" title="${dark?L("Light mode","Modo claro"):L("Dark mode","Modo oscuro")}">${dark?"☀️":"🌙"}</button><button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar")}</button></header>
+    <header class="lp-top"><span class="lp-logo">Hibi<small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-mode" data-lpmode aria-label="${dark?L("Switch to light mode","Cambiar a modo claro"):L("Switch to dark mode","Cambiar a modo oscuro")}" title="${dark?L("Light mode","Modo claro"):L("Dark mode","Modo oscuro")}">${dark?"☀️":"🌙"}</button><button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar a Hibi")}</button></header>
     <main class="lp-main">
     <section class="lp-hero">
       <div class="lp-hero-pic"><div class="lp-face"><img src="${IMG("noa")}" alt="${L("Noa at his desk","Noa en su escritorio")}" width="240" height="240"><span class="lp-bubble lp-glass" aria-hidden="true">hi! 👋</span></div></div>
