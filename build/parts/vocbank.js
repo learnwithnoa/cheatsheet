@@ -78,6 +78,26 @@ make|to create or build something|Did you [make] a mistake?|do,done,making
 do|to complete a task or an activity|I have to [do] my homework.|make,made,doing
 hear|sounds come to your ears (no effort)|Can you [hear] me? The connection is bad.|listen,listening,listened
 listen|to pay attention to sounds|I love to [listen] to podcasts.|hear,heard,listening
+`},
+ {id:"pets", ico:"🐶", t:"Pets and animals", sub:"fur, paw, leash, vet, groomer…", w:`
+pet|an animal you keep at home|We can't have a [pet/~dog/~cat] in our apartment. It's not allowed.|pets,petting,fur
+puppy|a baby dog|Our dog had six [puppies/~pups/~babies] last week!|kittens,puppy,puppys
+kitten|a baby cat|My cat had four [kittens/~babies] this morning.|puppies,kitten,kittys
+fur|the soft hair on an animal's body (for people, we say hair)|Look at that dog, he looks great with his fluffy [fur].|furry,feathers,scales
+paw|an animal's foot, like a dog's or a cat's|"Good boy! Give me your [paw]," I said to my dog.|tail,fur,bark
+tail|the long part at the back of an animal's body|My dog wags his [tail] when he's happy.|paw,fur,leash
+bark|to make the loud sound a dog makes|Our neighbor's dog [barks] all night.|meows,purrs,barking
+purr|to make the soft sound a happy cat makes|My cat [purrs] when I pet her.|barks,purr,purring
+feed|to give food to an animal|Can you [feed] the cat while I'm on vacation?|food,fed,feeding
+leash|a long strap you use to walk a dog|In the park, dogs must be on a [leash/lead].|collar,paw,bowl
+collar|a band that an animal wears around its neck|My dog wears a red [collar] around his neck.|muzzle,bowl,tail
+muzzle|a cover over a dog's mouth so it can't bite|He bites, so he has to wear a [muzzle] over his mouth.|collar,leash,fur
+vet|an animal doctor|My dog is sick, so I'm taking him to the [vet/~veterinarian/~vet's].|veterinary,groom,collar
+groomer|a person who washes a pet and cuts its fur|Every month, I take my dog to the [groomer/~groomer's/~dog groomer] for a bath and a haircut.|grooming,groom,leash
+adopt|to take an animal from a shelter and give it a home|We [adopted/~got/~rescued] our cat from an animal shelter.|adapted,adopt,adoption
+shelter|a place that takes care of animals with no home|There are many dogs at the [shelter] waiting for a family.|shelf,cage,collar
+neuter|to do an operation so a male animal can't make babies|The vet [neutered/~castrated/~fixed] our male cat last week.|spayed,neutral,neutering
+spay|to do an operation so a female animal can't have babies|We had our female dog [spayed/~fixed/~neutered] so she can't have puppies.|sprayed,spay,spaying
 `}
 ];
 VOC_SETS.forEach(set=>{

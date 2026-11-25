@@ -512,4 +512,58 @@ fut: {
       ex: [["I’ll text you when I arrive.", "Te escribo cuando llegue."], ["As soon as she gets here, we’ll start.", "Apenas llegue, empezamos."]] }
   ]
 }
+,
+wo: {
+  name: { en: "Word order and object pronouns", es: "Orden de las palabras y pronombres de objeto" },
+  basics: [
+    { h: { en: "What it is", es: "Qué es" },
+      p: { en: "In Spanish you can move words around (<i>lo vi ayer</i>, <i>es importante</i>). English is strict: <b>subject + verb + object</b>, always a subject, and pronouns like <b>him, her, them</b> go <b>after</b> the verb.",
+           es: "En español puedes mover las palabras (<i>lo vi ayer</i>, <i>es importante</i>). El inglés es estricto: <b>sujeto + verbo + objeto</b>, siempre con sujeto, y los pronombres como <b>him, her, them</b> van <b>después</b> del verbo." } },
+    { h: { en: "1. Subject + verb + object", es: "1. Sujeto + verbo + objeto" }, stage: 1, key: true,
+      p: { en: "The subject goes first, then the verb, then the object. <b>Very much</b> and <b>well</b> go after the object.", es: "Primero el sujeto, después el verbo y después el objeto. <b>Very much</b> y <b>well</b> van después del objeto." },
+      ex: [["I drink coffee every morning.", "Tomo café todas las mañanas."], ["I like my job very much.", "Me gusta mucho mi trabajo."], ["She speaks English well.", "Ella habla bien inglés."]] },
+    { h: { en: "2. Never drop the subject: it and there", es: "2. Nunca omitas el sujeto: it y there" }, stage: 2, key: true,
+      p: { en: "Weather, time, distance, opinions: <b>it</b>. Something exists (hay): <b>there is / there are</b>.", es: "Clima, hora, distancia, opiniones: <b>it</b>. Algo existe (hay): <b>there is / there are</b>." },
+      ex: [["It’s raining.", "Está lloviendo."], ["It’s important to practice.", "Es importante practicar."], ["There’s a café near my house.", "Hay un café cerca de mi casa."]] },
+    { h: { en: "3. Object pronouns", es: "3. Pronombres de objeto" }, stage: 3, key: true,
+      table: [
+        [{ en: "subject", es: "sujeto" }, "I · you · he · she · it · we · they", "<b>I</b> see Ana."],
+        [{ en: "object", es: "objeto" }, "me · you · him · her · it · us · them", "Ana sees <b>me</b>."]
+      ] },
+    { h: { en: "4. Where the pronoun goes", es: "4. Dónde va el pronombre" }, stage: 4,
+      p: { en: "<b>After</b> the verb, never before it like in Spanish (<i>lo vi</i>).", es: "<b>Después</b> del verbo, nunca antes como en español (<i>lo vi</i>)." },
+      ex: [["I saw him yesterday.", "Lo vi ayer."], ["Can you help me?", "¿Me puedes ayudar?"], ["Where did you buy it?", "¿Dónde lo compraste?"]] },
+    { h: { en: "5. Two objects", es: "5. Dos objetos" }, stage: 5,
+      p: { en: "<b>give + person + thing</b> (give her the book) or <b>give + thing + to + person</b> (give it to her). With <b>it / them</b>, use <b>to</b>. <b>explain</b> and <b>say</b> always need <b>to</b>.", es: "<b>give + persona + cosa</b> (give her the book) o <b>give + cosa + to + persona</b> (give it to her). Con <b>it / them</b>, usa <b>to</b>. <b>explain</b> y <b>say</b> siempre llevan <b>to</b>." },
+      ex: [["I sent her an email.", "Le mandé un correo."], ["Give it to me, please.", "Dámelo, por favor."], ["Can you explain it to me?", "¿Me lo puedes explicar?"]] },
+    { h: { en: "Common mistakes", es: "Errores comunes" },
+      mis: [
+        ["Is raining.", "It’s raining.", { en: "English always needs a subject.", es: "En inglés siempre necesitas un sujeto." }],
+        ["I him saw.", "I saw him.", { en: "The pronoun goes after the verb.", es: "El pronombre va después del verbo." }],
+        ["I like very much my job.", "I like my job very much.", { en: "very much goes after the object.", es: "very much va después del objeto." }],
+        ["Has a café near my house.", "There’s a café near my house.", { en: "hay = there is / there are.", es: "hay = there is / there are." }],
+        ["Can you explain me this?", "Can you explain this to me?", { en: "explain something to someone.", es: "explain algo to alguien." }]
+      ] },
+    { h: { en: "Quick check", es: "Prueba rápida" }, quiz: [
+        ["___ cold today. (it / be)", "It’s", { en: "Never drop the subject.", es: "Nunca omitas el sujeto." }],
+        ["Pedro? I saw ___ yesterday. (he)", "him", { en: "he → him.", es: "he → him." }],
+        ["That’s mine! Give it ___ me.", "to", { en: "give it to me.", es: "give it to me." }]
+      ] }
+  ],
+  adv: [
+    { h: { en: "Phrasal verbs: the pronoun goes in the middle", es: "Phrasal verbs: el pronombre va al medio" },
+      p: { en: "With a noun, both are fine: <i>turn off the light / turn the light off</i>. With a pronoun, only the middle: <b>turn it off</b> (not <i>turn off it</i>).",
+           es: "Con un sustantivo sirven los dos: <i>turn off the light / turn the light off</i>. Con un pronombre, solo al medio: <b>turn it off</b> (no <i>turn off it</i>)." },
+      ex: [["It’s too loud. Can you turn it down?", "Está muy fuerte. ¿Lo puedes bajar?"], ["I don’t know this word. I’ll look it up.", "No conozco esta palabra. La voy a buscar."]] },
+    { h: { en: "it as an empty object", es: "it como objeto vacío" },
+      p: { en: "<b>find it + adjective + to…</b>, <b>make it clear that…</b>, <b>I’d appreciate it if…</b>", es: "<b>find it + adjetivo + to…</b>, <b>make it clear that…</b>, <b>I’d appreciate it if…</b>" },
+      ex: [["I find it hard to wake up early.", "Me cuesta levantarme temprano."], ["I’d appreciate it if you could call me back.", "Te agradecería si me pudieras llamar de vuelta."]] },
+    { h: { en: "Prepositions at the end of questions", es: "Preposiciones al final de las preguntas" },
+      p: { en: "In everyday English the preposition goes at the end: <b>Who did you go with?</b> <b>What are you talking about?</b>", es: "En el inglés de todos los días la preposición va al final: <b>Who did you go with?</b> <b>What are you talking about?</b>" },
+      ex: [["Who did you go to the party with?", "¿Con quién fuiste a la fiesta?"], ["Where are you from?", "¿De dónde eres?"]] },
+    { h: { en: "Never, rarely, not only + question order", es: "Never, rarely, not only + orden de pregunta" },
+      p: { en: "At the start of a sentence (formal or for emphasis), these words use question order.", es: "Al comienzo de una oración (formal o para dar énfasis), estas palabras usan el orden de pregunta." },
+      ex: [["Never have I seen such a beautiful place.", "Nunca he visto un lugar tan lindo."], ["Rarely do I drink coffee after 6.", "Casi nunca tomo café después de las 6."]] }
+  ]
+}
 });

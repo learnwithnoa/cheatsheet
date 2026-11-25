@@ -1098,6 +1098,7 @@ function todays5(){
 ⟦include:parts/coubank.js⟧
 ⟦include:parts/iqbank.js⟧
 ⟦include:parts/futbank.js⟧
+⟦include:parts/wobank.js⟧
 ⟦include:parts/thbank.js⟧
 ⟦include:parts/intbank.js⟧
 /* ---------- Practice home page, grammar modules, My mistakes, weekly goal ---------- */
@@ -1116,6 +1117,7 @@ function todays5(){
     cou:{id:"cou",name:"Could vs was able to",lname:"“could vs was able to”",the:"",stages:COU_STAGES,test:COU_TEST,toy:"🔑 Golden key",toyName:"Golden key",ico:"💪"},
     iq:{id:"iq",name:"Indirect questions",lname:"indirect questions",the:"",stages:IQ_STAGES,test:IQ_TEST,toy:"🧭 Compass",toyName:"Compass",ico:"❓"},
     fut:{id:"fut",name:"Talking about the future",lname:"future",the:"the ",stages:FUT_STAGES,test:FUT_TEST,toy:"🔮 Crystal ball",toyName:"Crystal ball",ico:"🔮"},
+    wo:{id:"wo",name:"Word order and object pronouns",lname:"word order and object pronouns",the:"",stages:WO_STAGES,test:WO_TEST,toy:"🧱 Building blocks",toyName:"Building blocks",ico:"🧱"},
     ed:{id:"ed",name:"-ed endings",lname:"-ed endings",stages:ED_STAGES,test:ED_TEST,toy:"🔔 Little bell",toyName:"Little bell",ico:"🔊"},
     /* English for Specific Purposes (Nov 21 2026): same stages engine, no buddy toy, lives in its own Practice section */
     int:{id:"int",name:"Job interviews",lname:"job interview English",the:"",stages:INT_STAGES,test:INT_TEST,esp:true,noToy:true,ico:"👔"}

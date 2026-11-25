@@ -266,6 +266,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "bell", name: "Little bell", ico: "🔔", slot: "toy", m: "ed", mt: "-ed endings" },
     { id: "compass", name: "Compass", ico: "🧭", slot: "toy", m: "iq", mt: "Indirect questions" },
     { id: "cball", name: "Crystal ball", ico: "🔮", slot: "toy", m: "fut", mt: "Talking about the future" },
+    { id: "blocks", name: "Building blocks", ico: "🧱", slot: "toy", m: "wo", mt: "Word order and object pronouns" },
     /* weekly goal: done 4 weeks in a row */
     { id: "campfire", name: "Campfire", ico: "🔥", slot: "toy", wk: 4 },
     /* grammar modules: pass the ⭐ Advanced stage (every new module with an Advanced stage gets one: id, pixel art in T below) */
@@ -278,6 +279,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     { id: "scope", name: "Telescope", ico: "🔭", slot: "toy", ma: "ed", mt: "-ed endings" },
     { id: "magnifier", name: "Detective's magnifying glass", ico: "🔍", slot: "toy", ma: "iq", mt: "Indirect questions" },
     { id: "rocket", name: "Rocket", ico: "🚀", slot: "toy", ma: "fut", mt: "Talking about the future" },
+    { id: "puzzle", name: "Puzzle piece", ico: "🧩", slot: "toy", ma: "wo", mt: "Word order and object pronouns" },
     /* duels (any Hibi member): fighting gear */
     { id: "dbanner", name: "Duel banner", ico: "🚩", slot: "toy", dp: 1 },
     { id: "sword", name: "Wooden sword", ico: "🗡️", slot: "toy", dw: 1 },
@@ -441,6 +443,8 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       compass: [-5, 4, [".yy.", "yrwy", "ywby", ".yy."], { y: "#E8B931", r: "#E5533D", w: "#FFFFFF", b: "#3B6FD9" }],
       magnifier: [9, 19, [".gg...", "gccgkk", ".gg..."], { g: "#C9A26B", c: "#CDEFFF", k: "#5A4632" }],
       cball: [35, 20, [".pp.", "pwpp", "pppp", ".pp.", "kkkk"], { p: "#9B6BFF", w: "#E9DDFF", k: "#7A5A3A" }],
+      blocks: [22, 22, ["rrgg..", "rrgg..", "bbbyyy", "bbbyyy"], { r: "#E5533D", g: "#58C26B", b: "#3B6FD9", y: "#F5C842" }],
+      puzzle: [1, 4, [".g..g.", "gggggg", "ggggg.", "gggggg", ".g..g."], { g: "#3BA776" }],
       rocket: [42, -6, [".w.", "www", "wbw", "www", "rwr", ".o."], { w: "#F4F1EA", b: "#6FB6F2", r: "#E5533D", o: "#F5C842" }],
       armour: [36, 15, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
     /* drawn back to front (by where the toy sits on the floor), so nearer toys cover the ones behind them */
@@ -836,7 +840,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     return pick(opts)();
   }
   /* ---------- greetings: different every visit and a bit smart (welcome back, club days, Noa's recommendation, weekly goal…) ---------- */
-  const MODN = { ps: "Past simple", pp: "Present perfect", prs: "Present simple", ing: "Verb + -ing", th: "There is / there are", cou: "Could vs was able to", iq: "Indirect questions", fut: "Talking about the future", ed: "-ed endings", int: "Job interviews" };
+  const MODN = { ps: "Past simple", pp: "Present perfect", prs: "Present simple", ing: "Verb + -ing", th: "There is / there are", cou: "Could vs was able to", iq: "Indirect questions", fut: "Talking about the future", wo: "Word order and object pronouns", ed: "-ed endings", int: "Job interviews" };
   const lsj = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
   function greetLine(gapDays) {
     const fn = friendName(), N = fn ? " " + esc(fn) : "", pick = a => a[Math.floor(Math.random() * a.length)];

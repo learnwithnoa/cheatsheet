@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=71',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=72',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -420,6 +420,16 @@ if '2026-1124-landing' not in s:
     s=s.replace(a,a+'''  {id:"2026-1124-landing", date:"November 24, 2026", title:"A new front page for hibi.cl 🏡", items:[
     ["👋","For people who aren't in Hibi yet","hibi.cl now opens with a real page about Noa, his 1:1 classes and the club, what Hibi is, and what students say. Share the link with friends who want to learn with Noa!"],
     ["🔑","Signing in is the same","If you ever sign out, tap Student sign in at the top (or Continue with Google at the bottom)."]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+# Nov 25: word order module + pets word pack (from Noa's Ideas to build)
+s=open(p,encoding="utf-8").read()
+if '2026-1125-wordorder' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1125-wordorder", date:"November 25, 2026", title:"New: word order, and pets and animals", items:[
+    ["🧱","Word order and object pronouns","A new module in <b>Practice → Grammar</b> (A2 to B1): <i>It's raining</i> (not <i>Is raining</i>), <i>I saw him</i> (not <i>I him saw</i>), <i>give it to me</i>, <i>explain it to me</i>. A short lesson, 6 stages, an ⭐ Advanced bonus and a test, all with Spanish help.","quiz"],
+    ["🐶","Pets and animals","A new word pack in <b>Practice → Word packs</b>: <i>fur</i> (not hair!), <i>paw</i>, <i>leash</i>, <i>vet</i>, <i>groomer</i>, <i>adopt</i> and more, for talking about your dog or cat.","quiz"],
+    ["🧩","Two new toys","Finish the word order module for 🧱 <b>building blocks</b> for your study buddy, and pass its Advanced stage for a 🧩 <b>puzzle piece</b>.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
