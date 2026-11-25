@@ -137,7 +137,7 @@
     <header class="lp-top"><span class="lp-logo">Hibi<small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-mode" data-lpmode aria-label="${dark?L("Switch to light mode","Cambiar a modo claro"):L("Switch to dark mode","Cambiar a modo oscuro")}" title="${dark?L("Light mode","Modo claro"):L("Dark mode","Modo oscuro")}">${dark?"☀️":"🌙"}</button><button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar a Hibi")}</button></header>
     <main class="lp-main">
     <section class="lp-hero">
-      <div class="lp-hero-pic"><div class="lp-face"><img src="${IMG("noa")}" alt="${L("Noa at his desk","Noa en su escritorio")}" width="240" height="240"><span class="lp-bubble lp-glass" aria-hidden="true">hi! 👋</span></div></div>
+      <div class="lp-hero-pic"><div class="lp-face"><span class="lp-float" aria-hidden="true"><i class="s1">✦</i><i class="s2">✦</i><i class="s3">✧</i></span><img src="${IMG("noa")}" alt="${L("Noa at his desk","Noa en su escritorio")}" width="240" height="240"><span class="lp-bubble lp-glass" aria-hidden="true">hi! 👋</span></div></div>
       <div class="lp-hero-txt">
       <h1 id="agTitle">${L(`Speak English without <span class="lp-ul">freezing.</span>`,`Habla inglés sin <span class="lp-ul">congelarte.</span>`)}</h1>
       <p class="lp-lede">${L("I’m Noa, an English coach from Florida living in Santiago. 1:1 classes, a conversation club, and Hibi, my own app to practice a little every day.","Soy Noa, coach de inglés de Florida y vivo en Santiago. Clases 1:1, un club de conversación y Hibi, mi propia app para practicar un poco cada día.")}</p>
