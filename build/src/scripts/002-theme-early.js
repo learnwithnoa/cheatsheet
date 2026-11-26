@@ -2,4 +2,7 @@
 /* Nov 24 2026: nobody has signed in on this device (no ncs-sync-uid) → probably a visitor: hide Hibi until we know, so the landing page shows
    straight away instead of Hibi flashing first. 012 shows the landing page right away and removes the class if they turn out to be signed in. */
 try{var q=location.search||"";if(!localStorage.getItem("ncs-sync-uid")&&!/[?&](guest|preview|tb)=/.test(q)&&!sessionStorage.getItem("cs-guest")&&window.top===window){var d=document.documentElement;d.classList.add("cs-out-guess");var lt=localStorage.getItem("ncs-theme");d.style.background=(lt&&["light","unicorn","sepia"].indexOf(lt)<0)?"#0A1424":"#EEF5FC";}}catch(e){}
+
+/* Nov 26 2026: the Tech Grunge redesign, Noa only for now (065-redesign.js, parts/redesign.css). cs-rd is set on this device by Noa's 🧪 switch. */
+try{if(localStorage.getItem("cs-rd")==="1"&&!/[?&]tb=/.test(location.search||"")){var R=document.documentElement;R.classList.add("rd");var rt=localStorage.getItem("cs-rd-theme")||"light";R.setAttribute("data-rdt",rt);var pp=localStorage.getItem("ncs-pop")||"";try{pp=JSON.parse(pp);}catch(e){}var PC={yellow:"#F2D21B",fuchsia:"#FF3EA5",lime:"#C6FF00",blue:"#7D96FF",orange:"#FF7A2F",mint:"#5CE0B0"};R.style.setProperty("--pop",PC[pp]||PC.yellow);var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&display=swap";document.head.appendChild(l);}}catch(e){}
 })();

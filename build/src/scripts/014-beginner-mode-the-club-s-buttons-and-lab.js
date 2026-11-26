@@ -23,6 +23,9 @@
   const fd=iso=>{ const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}); };
   function sched(f,wd){ return ((f&&f.info&&f.info.schedule)||[]).find(s=>s.wd===wd)||null; }
   function weekDates(week){ const [y,m,d]=week.split("-").map(Number); return i=>{ const x=new Date(y,m-1,d+i); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }; }
+  /* Nov 26 2026: the redesigned Home (065-redesign.js) reads the club's next class + this week's post from here */
+  window.__csClubNext=function(){ try{ const f=feed(); if(!f) return null; const ps=posts(f); if(!ps[0]) return null; const now=Date.now(); const c=classesOf(f,ps[0]).find(x=>now<=x.end.getTime());
+    return {next:c?{start:c.start,end:c.end,name:c.name||"",title:c.title||"",zoom:c.zoom||""}:null,post:{title:ps[0].title||"",week:ps[0].week}}; }catch(e){ return null; } };
   function classesOf(f,p){
     const at=weekDates(p.week);
     return (p.classes||[]).map((c,i)=>{ const wd=c.wd!=null?c.wd:Math.max(0,WD.indexOf(String(c.day||"").slice(0,3))); const s=sched(f,wd)||{}; const date=c.date||at((wd+6)%7); const start=chileAt(date,c.time||s.time||"20:00"); const end=new Date(start.getTime()+((c.dur||s.dur||90)*60000));
