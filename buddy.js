@@ -393,6 +393,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   const lumOf = c => { const [r, g, b] = hexRGB(c); return (0.299 * r + 0.587 * g + 0.114 * b) / 255; };
   const darker = (c, f) => rgbHex(hexRGB(c).map(v => v * f));
   const lighter = (c, f) => rgbHex(hexRGB(c).map(v => v + (255 - v) * f));
+  const RD = () => document.documentElement.classList.contains("rd");
   const SOFT_A = ["max", "miki", "capybara", "axolotl"]; /* Noa: these looked too dark / too dithered */
   function styleA(px, soft) {
     if (!px.length || px.some(p => !/^#/.test(String(p[2])))) return px;
@@ -401,10 +402,10 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     return px.map(([x, y, c]) => {
       const L = lumOf(c); if (L < 0.2 || L > 0.94) return [x, y, c];
       const t = 0.72 * (y - y0) / h + 0.28 * (x - x0) / w, chk = (x + y) % 2 === 0;
-      if (soft) { if (t > 0.84 && chk) return [x, y, darker(c, 0.84)]; if (t < 0.18 && chk && L < 0.88) return [x, y, lighter(c, 0.25)]; return [x, y, c]; }
-      if (t > 0.74) return [x, y, darker(c, chk ? 0.7 : 0.82)];
-      if (t > 0.52 && chk) return [x, y, darker(c, 0.8)];
-      if (t < 0.2 && chk && L < 0.88) return [x, y, lighter(c, 0.32)];
+      /* one middle-ground recipe for every buddy (Noa, Nov 26 2026) */
+      if (t > 0.78) return [x, y, darker(c, chk ? 0.76 : 0.9)];
+      if (t > 0.58 && chk) return [x, y, darker(c, 0.88)];
+      if (t < 0.2 && chk && L < 0.88) return [x, y, lighter(c, 0.28)];
       return [x, y, c];
     });
   }
@@ -472,10 +473,12 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
       puzzle: [1, 4, [".g..g.", "gggggg", "ggggg.", "gggggg", ".g..g."], { g: "#3BA776" }],
       rocket: [42, -6, [".w.", "www", "wbw", "www", "rwr", ".o."], { w: "#F4F1EA", b: "#6FB6F2", r: "#E5533D", o: "#F5C842" }],
       armour: [36, 15, [".sss.", "sSsSs", ".sss.", "sssss", ".s.s.", ".s.s.", "kkkkk"], { s: "#C3CCD6", S: "#7D8894", k: "#5A4632" }] };
+    /* redesign: the room gets the same dithered shading as the buddies (checkered shadow on the floor and low on the walls) */
+    if (RD()) r += `<defs><pattern id="rdDith" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#000" opacity=".2"/><rect x="1" y="1" width="1" height="1" fill="#000" opacity=".2"/></pattern><pattern id="rdDith2" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#000" opacity=".14"/><rect x="2" y="2" width="1" height="1" fill="#000" opacity=".14"/></pattern><pattern id="rdLite" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#fff" opacity=".35"/><rect x="2" y="2" width="1" height="1" fill="#fff" opacity=".35"/></pattern></defs><rect x="${X0}" y="21" width="${RW}" height="5" fill="url(#rdDith)"/><rect x="${X0}" y="15" width="${RW}" height="4" fill="url(#rdDith2)"/>`;
     /* drawn back to front (by where the toy sits on the floor), so nearer toys cover the ones behind them */
     const atOf = t => (S.tp && S.tp[t]) || [T[t][0], T[t][1]];
     toys = toys.filter(t => T[t]).sort((a, b) => (atOf(a)[1] + T[a][2].length) - (atOf(b)[1] + T[b][2].length));
-    toys.forEach(t => { const d = T[t]; if (!d) return; const at = (S.tp && S.tp[t]) || [d[0], d[1]]; r += `<g class="bd-toy" data-toyg="${t}"><rect x="${at[0] - .5}" y="${at[1] - .5}" width="${d[2][0].length + 1}" height="${d[2].length + 1}" fill="transparent"/>`; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) R(at[0] + dx, at[1] + dy, 1, 1, d[3][ch]); })); r += `</g>`; });
+    toys.forEach(t => { const d = T[t]; if (!d) return; const at = (S.tp && S.tp[t]) || [d[0], d[1]]; r += `<g class="bd-toy" data-toyg="${t}"><rect x="${at[0] - .5}" y="${at[1] - .5}" width="${d[2][0].length + 1}" height="${d[2].length + 1}" fill="transparent"/>`; const tp = []; d[2].forEach((row, dy) => [...row].forEach((ch, dx) => { if (d[3][ch]) tp.push([at[0] + dx, at[1] + dy, d[3][ch]]); })); (RD() ? styleA(tp) : tp).forEach(([x, y, c]) => R(x, y, 1, 1, c)); r += `</g>`; });
     return r;
   }
   function gardenSVG() {
@@ -517,7 +520,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     if (gphoto) return { html: img(gphoto), kind: "img" }; /* buddy chosen but no buddy yet (egg not hatched): their Google photo */
     return { html: ini, kind: "ini" };
   };
-  if (window.__bdRender) { window.csBuddyArt = { svg: petSVG, sprites: SP, palFor: (a, c) => Object.assign({}, SP[a].p, ((SP[a].colors[c | 0] || SP[a].colors[0])[1])), LV: [0, 20, 50, 100, 170, 260, 380, 530, 720, 950] }; return; }
+  if (window.__bdRender) { window.csBuddyArt = { svg: petSVG, room: (id, toys) => roomSVG(id, toys || []), toys: () => ITEMS.filter(i => i.slot === "toy").map(i => i.id), sprites: SP, palFor: (a, c) => Object.assign({}, SP[a].p, ((SP[a].colors[c | 0] || SP[a].colors[0])[1])), LV: [0, 20, 50, 100, 170, 260, 380, 530, 720, 950] }; return; }
   /* ---------- styles ---------- */
   const css = `
 .bd{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:14;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
