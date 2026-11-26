@@ -78,6 +78,15 @@ English for Specific Purposes (Practice → 🎯, `#quiz/specific-purposes`, pan
 (`src/scripts/061-practice-interview.js`, AI checks only the English, answers in `ncs-intv`). Noa doesn't want interview prep as a word pack.
 New grammar module: any number of core stages (about 4–8) plus an `adv:true` stage last; register it like Talking about the future (`fut`) — copy every place `fut` appears: grep `fut` / `FUT_` in `build/src` (bank include next to `⟦include:parts/futbank.js⟧`, MODS in `016-main-app.js`, the tile in `views/v-quiz.html` with its one-line example in `<span class="pr-desc">` (e.g. "I went, did you…?"), ORDER, the name lists), plus members.html/private-students.html MODT and hubsync docs; `build/old/steps/step184.py` shows how fut was added. Give it a buddy toy (`buddy.js` ITEMS with `m:`) and, if it has a ⭐ Advanced stage, a second one (`ma:`), each with pixel art in `T`; test with `node build/test/bd_t.js member`.
 
+## Redesign in progress (Tech Grunge, Nov 26 2026)
+
+- Noa chose a "Tech Grunge" redesign (paper + grain, Saira + Space Mono, square corners, dithered pixel icons, a pop color). Mockups: Claude Design canvas "Hibi — design directions".
+- It is live but **only behind Noa's 🧪 switch** in the top bar (`#rdBtn`, shown only to Noa). The switch sets `cs-rd=1` on that device → `html.rd` (002-theme-early). Members see today's Hibi.
+- Code: `build/src/scripts/065-redesign.js` (switch, look menu, the combo Home `#rdHome`), `build/parts/redesign.css` (everything scoped to `html.rd`). Club next class for Home: `window.__csClubNext` (014).
+- Themes inside the redesign: `cs-rd-theme` light | night | unicorn (device only; night uses Hibi's dark theme underneath). Pop color: `ncs-pop` (synced) yellow | fuchsia | lime | blue | orange | mint.
+- Simple mode drops tilts/grain/stickers; print drops grain and dark blocks. Test: `node build/test/rd_t.js` and `node build/test/rdlp_t.js` (landing).
+- Still to do before launching to members: the theme + pop color in Settings, the remaining inner pages' layouts, the buddies' new look (Noa picks A or B on the canvas), app icon, emails, the tour and What's new.
+
 ## Practice questions (build/parts/*bank.js)
 
 - Line format: `sentence with ___ (hint) | right answers separated by / | 3 wrong options | why | Spanish`.
