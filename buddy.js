@@ -342,7 +342,10 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   const W = 20, H = 22, OX = 2, OY = 5;
   function spriteGrid(id, pal, blink) {
     const d = SP[id], g = [];
-    d.r.forEach((row, y) => {
+    /* redesign: Max, Miki and Don Capi get little legs (bottom rows), like the other buddies */
+    const LEGS = { max: { 13: "...obbbb", 14: "...obbo.", 15: "...oooo." }, miki: { 14: "....obo.", 15: "....ooo." }, capybara: { 14: "..obbo..", 15: "..oooo.." } };
+    const legs = document.documentElement.classList.contains("rd") ? LEGS[id] : null;
+    d.r.forEach((row, y) => { if (legs && legs[y]) row = legs[y];
       let full = row.length === 16 ? row : row + row.split("").reverse().join("");
       if (d.over && d.over[y]) full = [...full].map((c, x) => d.over[y][x] && d.over[y][x] !== "." ? d.over[y][x] : c).join("");
       g.push([...full]);
@@ -381,7 +384,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
     }
     if (head && head.px) stamp(px, head.px, anc.hat[0], anc.hat[1] - head.px.length + 1, AP);
     if (anc.keep && head && head.px) g.forEach((row, y) => row.forEach((ch, x) => { if (anc.keep.includes(ch)) px.push([x + OX, y + OY, pal[ch]]); }));
-    return (opts.styleA != null ? opts.styleA : document.documentElement.classList.contains("rd")) ? styleA(px) : px;
+    return (opts.styleA != null ? opts.styleA : document.documentElement.classList.contains("rd")) ? styleA(px, SOFT_A.includes(id)) : px;
   }
   /* Nov 26 2026, redesign "style A": same pixel art and colors, shaded with a 2-tone dither (light from the top-left,
      checkered shadow toward the bottom-right). Outlines, eyes and white highlights stay as they are. */
@@ -390,13 +393,15 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   const lumOf = c => { const [r, g, b] = hexRGB(c); return (0.299 * r + 0.587 * g + 0.114 * b) / 255; };
   const darker = (c, f) => rgbHex(hexRGB(c).map(v => v * f));
   const lighter = (c, f) => rgbHex(hexRGB(c).map(v => v + (255 - v) * f));
-  function styleA(px) {
+  const SOFT_A = ["max", "miki", "capybara", "axolotl"]; /* Noa: these looked too dark / too dithered */
+  function styleA(px, soft) {
     if (!px.length || px.some(p => !/^#/.test(String(p[2])))) return px;
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; px.forEach(([x, y]) => { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); });
     const w = Math.max(1, x1 - x0), h = Math.max(1, y1 - y0);
     return px.map(([x, y, c]) => {
       const L = lumOf(c); if (L < 0.2 || L > 0.94) return [x, y, c];
       const t = 0.72 * (y - y0) / h + 0.28 * (x - x0) / w, chk = (x + y) % 2 === 0;
+      if (soft) { if (t > 0.84 && chk) return [x, y, darker(c, 0.84)]; if (t < 0.18 && chk && L < 0.88) return [x, y, lighter(c, 0.25)]; return [x, y, c]; }
       if (t > 0.74) return [x, y, darker(c, chk ? 0.7 : 0.82)];
       if (t > 0.52 && chk) return [x, y, darker(c, 0.8)];
       if (t < 0.2 && chk && L < 0.88) return [x, y, lighter(c, 0.32)];

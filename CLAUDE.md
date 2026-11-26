@@ -88,6 +88,8 @@ New grammar module: any number of core stages (about 4–8) plus an `adv:true` s
 - Code: `build/src/scripts/065-redesign.js` (switch, look menu, the combo Home `#rdHome`), `build/parts/redesign.css` (everything scoped to `html.rd`). Club next class for Home: `window.__csClubNext` (014).
 - Themes inside the redesign: `cs-rd-theme` light | night | unicorn (device only; night uses Hibi's dark theme underneath). Pop color: `ncs-pop` (synced) yellow | fuchsia | lime | blue | orange | mint.
 - Simple mode drops tilts/grain/stickers; print drops grain and dark blocks. Test: `node build/test/rd_t.js` and `node build/test/rdlp_t.js` (landing).
+- Done in the redesign (Nov 26 2026): logo option A (HIBI on a pop block + 日々 + DAY BY DAY), buddies in "style A" (`styleA()` in buddy.js: dithered shading, softer for max/miki/capybara/axolotl; Max, Miki and Don Capi get legs, rd only), pocket pet shell colors (`ncs-tama`), own pixel glyph per main page, Simple mode trims Home to name + next class + I'm stuck.
+- New default app icon for 3.0 (ink tile, yellow 日々, ■ HIBI) is ready in `img/icon3/` but NOT wired yet: at launch point `manifest.webmanifest` icons, `apple-touch-icon` (comfort_early.html) and the favicon at those files (buddy.js still swaps in the member's buddy when they have one).
 - Still to do before launching to members: the theme + pop color in Settings, the remaining inner pages' layouts, the buddies' new look (Noa picks A or B on the canvas), app icon, emails, the tour and What's new.
 
 ## Practice questions (build/parts/*bank.js)

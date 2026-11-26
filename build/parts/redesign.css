@@ -662,3 +662,26 @@ html.rd .wlm-seg button{border-radius:0!important;font:700 12px var(--mono)!impo
 html.rd .wlm-seg button[aria-pressed="true"]{background:var(--ink)!important;color:var(--bg)!important}
 html.rd .wl-opt{border-radius:0!important;box-shadow:3px 3px 0 var(--rule)!important}
 html.rd .wlm-tog{border-radius:0!important}
+/* ===== Simple mode in the redesign: only the essentials ===== */
+/* Home: name, next class ticket, the stamps (where to go) and "I'm stuck". Nothing else. */
+html.rd.cs-simple #rdHome :is(.rdh-meta,.rdh-dots,.rdh-tr,.rdh-note,.rdh-logw,.rdh-lab,.rdh-top>.rdh-k){display:none!important}
+html.rd.cs-simple #v-notes>:not(#rdHome){display:none!important}
+html.rd.cs-simple #rdHome .rdh-title{font-size:clamp(44px,8vw,64px)}
+html.rd.cs-simple #rdHome .rdh-st{min-height:96px}
+html.rd.cs-simple #rdHome .rdh-st b{font-size:17px}
+/* Practice: no timer card or extra intro lines */
+html.rd.cs-simple #prHub>.lede~.lede,html.rd.cs-simple #prHub>.esb,html.rd.cs-simple #prTimer,html.rd.cs-simple #prHub .pr-lvlbtn{display:none!important}
+html.rd.cs-simple .pr-tile::after{display:none}
+/* My notebook: save a word + the list; the extra tools stay out of the way */
+html.rd.cs-simple #v-words :is(#aiClean,#aiAuto,.w-goflash,.wown-add),html.rd.cs-simple #v-words .lede{display:none!important}
+/* Club: this week + next class; welcome checklist, birthdays and catch-up cards hide */
+html.rd.cs-simple #v-club :is(.cl-welc,.cl-bdays,.cl-bdcard,.cl-bsoon,.cl-catch,.cl-chal,.cl-igtop){display:none!important}
+/* everywhere: no grain, no tilts, no little pixel glyphs, bigger tap targets */
+html.rd.cs-simple .view>h1::after,html.rd.cs-simple .view h1::after{display:none!important}
+html.rd.cs-simple .note.dismissible{display:none!important}
+html.rd.cs-simple .ps-opt{min-height:60px;font-size:20px}
+/* logo: option A (Noa, Nov 26 2026) — HIBI on a pop-color block, 日々, DAY BY DAY */
+html.rd .brand .brand-row>span{display:inline-block;font:300 30px/.8 var(--display)!important;letter-spacing:.06em;text-transform:uppercase;background:var(--pop)!important;color:var(--pop-ink,#1A1A1A)!important;-webkit-text-fill-color:currentColor!important;padding:.08em .1em .02em;margin-right:6px}
+html.rd .brand .kj{font:400 18px var(--display)!important;color:var(--ink)!important;-webkit-text-fill-color:currentColor!important}
+html.rd[data-rdt="unicorn"] .brand .brand-row>span{background:linear-gradient(100deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF)!important;color:#2A1A33!important}
+@media (max-width:600px){html.rd .brand .brand-row>span{font-size:24px}html.rd .brand small{display:none}}
