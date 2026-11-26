@@ -112,7 +112,7 @@
     if(v&&v.recap&&v.recap.summary) return {k:"LATEST CLASS RECAP ✉",x:String(v.recap.summary).split(/(?<=[.!?])\s/)[0],go:"coaching"};
     return null;
   }
-  const ART_DAY='<svg class="rdh-art rdh-blob" viewBox="0 0 120 120" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpA" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="3" height="3" fill="var(--hl1)"/><rect width="1" height="1" fill="#1A1A1A"/><rect x="2" y="1" width="1" height="1" fill="var(--hl2)"/><rect x="1" y="2" width="1" height="1" fill="#FFB800"/></pattern></defs><path d="M52 6c14 0 18 14 30 12 14-2 18 14 10 24 10 8 6 24-8 24 4 14-12 24-24 16-10 12-30 8-30-6-14 2-24-12-14-24-12-10-4-28 12-26 2-12 12-20 24-20z" fill="url(#rdpA)" stroke="#1A1A1A" stroke-width="1.5"/><path d="M44 40h20v6h8v14h-6v8H48v-6h-8V46h4z" fill="var(--hl2)"/></svg><svg class="rdh-art rdh-stairs" viewBox="0 0 24 14" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 2h4v2h2V0h4v4h2v2h4V2h2v4h2v4h-4v2h-4v2h-2v-4H8v2H4v-2H0z" fill="var(--hl3)"/></svg>';
+  const ART_DAY='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpS" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#1A1A1A"/><rect x="1" y="1" width="1" height="1" fill="#1A1A1A"/><rect x="1" width="1" height="1" fill="#888"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpS)" stroke="var(--pop)" stroke-width="2.5"/></svg>';
   const ART_NIGHT='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpN" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ECECE4"/><rect x="1" y="1" width="1" height="1" fill="#6E6E6E"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpN)" stroke="var(--hl1)" stroke-width="2.5"/></svg><svg class="rdh-art rdh-stairs" viewBox="0 0 120 120" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpNr" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#FF3B2F"/><rect x="1" y="1" width="1" height="1" fill="#7A1A14"/></pattern></defs><path d="M52 6c14 0 18 14 30 12 14-2 18 14 10 24 10 8 6 24-8 24 4 14-12 24-24 16-10 12-30 8-30-6-14 2-24-12-14-24-12-10-4-28 12-26 2-12 12-20 24-20z" fill="url(#rdpNr)"/></svg>';
   let lastHTML="";
   function paint(){
@@ -183,6 +183,10 @@
     return true;
   }
   (function waitTama(n){ if(tama()||n>60) return; setTimeout(()=>waitTama(n+1),500); })(0);
+
+  /* a posterize filter: Buddy park scenes, rooms, toys and the buddy in its settings get flat print colors (+ a dot screen in CSS) */
+  if(!document.getElementById("rdFx")){ const f=document.createElement("div"); f.id="rdFx"; f.setAttribute("aria-hidden","true"); f.style.cssText="position:absolute;width:0;height:0;overflow:hidden";
+    f.innerHTML='<svg width="0" height="0"><filter id="rdPoster" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="discrete" tableValues="0 .22 .45 .7 .9 1"/><feFuncG type="discrete" tableValues="0 .22 .45 .7 .9 1"/><feFuncB type="discrete" tableValues="0 .22 .45 .7 .9 1"/></feComponentTransfer></filter></svg>'; document.body.appendChild(f); }
 
   /* Settings → Look & feel: theme + pop color dots */
   function lookBox(){

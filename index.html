@@ -3502,7 +3502,7 @@ html.rd[data-rdt="unicorn"]{
 /* paper + grain */
 html.rd body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px}
 html.rd body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;background-image:var(--grain);opacity:.17}
-html.rd[data-rdt="night"] body::after{opacity:.5}
+html.rd[data-rdt="night"] body::after{opacity:.22}
 html.rd ::selection{background:var(--pop);color:var(--pop-ink)}
 html.rd a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
 html.rd :focus-visible{outline:3px solid var(--pop);outline-offset:2px;border-radius:0}
@@ -3556,7 +3556,8 @@ html.rd #v-notes>.rd-arr{display:flex;justify-content:flex-end;margin:0 0 8px}
 .rdh-blob{right:-46px;top:-6px;width:clamp(170px,26vw,260px)}
 .rdh-stairs{left:-34px;top:470px;width:120px}
 html.rd[data-rdt="night"] .rdh-stairs{left:-60px;top:430px;width:170px}
-.rdh-hl{background:var(--hl1);color:#1A1A1A;padding:0 .06em;margin-left:-.06em}
+.rdh-hl{background:linear-gradient(var(--hl1),var(--hl1)) 0 .12em/100% .8em no-repeat;color:#1A1A1A;padding:0 .06em;margin-left:-.06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+html.rd[data-rdt="night"] .rdh-hl{color:#0F0F10}
 .rdh-tkw{flex:3 1 330px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .rdh-dots{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:2px 8px 0}
 .rdh-dots span{font:400 10px var(--mono);margin-right:4px}
@@ -3798,6 +3799,51 @@ html.rd .rd-hide{display:none!important}
 .rdt-grid button{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .rdt-grid button i{font:400 10px var(--mono);font-style:normal;border:1px solid currentColor;padding:1px 5px;flex:none}
 @media (max-width:600px){html.rd .rd-tama{transform:scale(.78);transform-origin:bottom right}}
+
+/* ===== Nov 26 (2): fixes after Noa's review ===== */
+.rdh-name{margin-top:6px}
+.rdt-title{line-height:1.05}
+html.rd[data-rdt="night"] .rdh-blob{right:-40px}
+/* popups dim the page in neutral black, never navy */
+html.rd #qaBackdrop,html.rd #wnBackdrop,html.rd #wlBackdrop,html.rd .bd-back,html.rd [class*="backdrop"]{background-color:rgba(15,15,16,.55)!important}
+html.rd #parkArea{background-color:var(--bg)!important}
+/* the pocket pet: screen smaller, all three buttons inside */
+html.rd .rd-tama{width:132px;padding:16px 10px 14px;gap:8px}
+html.rd .rdtm-scr{width:70px;height:60px;border-width:4px}
+html.rd .rd-tama #bdPet{width:50px!important;height:50px!important}
+html.rd .rdtm-btns{gap:5px}
+html.rd .rdtm-btns button{width:27px;height:27px;font-size:7px}
+/* buddy settings window in the new look */
+html.rd .bd-modal{border-radius:0!important;background:var(--bg)!important;background-image:var(--grain)!important;border:1px solid var(--rule)!important;box-shadow:6px 8px 0 rgba(0,0,0,.28)!important;font-family:var(--body);color:var(--ink)!important}
+html.rd .bd-modal h2,html.rd .bd-modal h3,html.rd .bd-modal .bd-name{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:.01em}
+html.rd .bd-modal .bd-small,html.rd .bd-modal .bd-lv,html.rd .bd-modal .bd-prog,html.rd .bd-modal .bd-ic-sub,html.rd .bd-modal .bd-how{font-family:var(--mono)}
+html.rd .bd-modal button,html.rd .bd-modal .bd-tile,html.rd .bd-modal .bd-chip,html.rd .bd-modal .bd-animal,html.rd .bd-modal .bd-act,html.rd .bd-modal .bd-sw{border-radius:0!important;box-shadow:none!important}
+html.rd .bd-modal .bd-tile,html.rd .bd-modal .bd-animal,html.rd .bd-modal .bd-act,html.rd .bd-modal .bd-chip{border:1px dashed var(--rule)!important;background:var(--surface)!important}
+html.rd .bd-modal [aria-pressed="true"],html.rd .bd-modal [aria-checked="true"],html.rd .bd-modal .on{border-style:solid!important;outline:3px solid var(--pop);outline-offset:-1px}
+html.rd .bd-modal .bd-b.go,html.rd .bd-modal .bd-b{border-radius:0!important;font:700 12px var(--mono);text-transform:uppercase;background:var(--ink)!important;color:var(--bg)!important;background-image:none!important}
+html.rd .bd-modal .bd-bar{border-radius:0!important;background:var(--surface-2)!important;border:1px solid var(--rule)}
+html.rd .bd-modal .bd-bar>*{border-radius:0!important;background:repeating-linear-gradient(90deg,var(--pop) 0 6px,transparent 6px 8px)!important}
+/* the buddy at full colour (settings, park): flat print colours + a dot screen = the "A" look */
+html.rd .bd-modal .bd-svg,html.rd .bd-stage-svg,html.rd .park-scene svg,html.rd .ms-scene svg{filter:url(#rdPoster) contrast(1.06)}
+html.rd .bd-stage-wrap,html.rd .park-scene,html.rd .ms-scene{position:relative;border:1px solid var(--rule);border-radius:0!important}
+html.rd .bd-stage-wrap::after,html.rd .park-scene::after,html.rd .ms-scene::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(26,26,26,.22) .7px,transparent .9px);background-size:4px 4px;mix-blend-mode:multiply}
+html.rd .rd-tama .bd-svg{filter:none}
+/* unicorn: everything goes rainbow */
+html.rd[data-rdt="unicorn"]{--hl1:#FFD36B!important;--hl2:#FF8AD8!important;--hl3:#8FD3FF!important;--rainbow:linear-gradient(100deg,#FF9AD5,#FFD36B 25%,#B8F5A0 50%,#8FD3FF 75%,#C5A3FF)}
+html.rd[data-rdt="unicorn"] .rdh-ticket,html.rd[data-rdt="unicorn"] #v-coaching .ch-top>.ch-tint:first-child{background:var(--rainbow)!important;color:#2A1A33}
+html.rd[data-rdt="unicorn"] .rdh-hl{background:linear-gradient(100deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF) 0 .12em/100% .8em no-repeat}
+html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+1)::after{background:#FF9AD5}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+2)::after{background:#FFD36B}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+3)::after{background:#B8F5A0}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+4)::after{background:#8FD3FF}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+5)::after{background:#C5A3FF}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n)::after{background:#FF8A5B}
+html.rd[data-rdt="unicorn"] .card{border-top:5px solid transparent!important;border-image:linear-gradient(90deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF) 1!important;border-image-slice:1}
+html.rd[data-rdt="unicorn"] .view h2::before{background:var(--rainbow)}
+html.rd[data-rdt="unicorn"] .view>h1::after{background:linear-gradient(90deg,#FF9AD5 33%,#FFD36B 33% 66%,#8FD3FF 66%);box-shadow:.42em -.42em 0 #B8F5A0}
+html.rd[data-rdt="unicorn"] .rdh-note{background:linear-gradient(160deg,#E9D7FF,#D7ECFF)}
+html.rd[data-rdt="unicorn"] .rd-tama{background-color:#C5A3FF}
+html.rd[data-rdt="unicorn"] .rdh-log .new{background:var(--rainbow)}
+html.rd[data-rdt="unicorn"] body::after{opacity:.1}
+html.rd #parkArea{position:relative;border:1px solid var(--rule);border-radius:0!important}
+html.rd #parkArea::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;background-image:radial-gradient(rgba(26,26,26,.2) .7px,transparent .9px);background-size:4px 4px;mix-blend-mode:multiply}
+html.rd #parkArea svg{filter:url(#rdPoster)}
+html.rd.cs-simple #parkArea::after,html.rd.cs-simple .bd-stage-wrap::after,html.rd.cs-simple .park-scene::after,html.rd.cs-simple .ms-scene::after{display:none}
 
 </style>
 
@@ -5140,7 +5186,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-bc007ff19e1a.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126085511"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126092058"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -5658,7 +5704,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
 (function(){ let t=0; const d=document.documentElement;
   addEventListener("scroll",()=>{ if(innerWidth>700) return; d.classList.add("cs-scrolling"); clearTimeout(t); t=setTimeout(()=>d.classList.remove("cs-scrolling"),900); },{passive:true});
 })();
-</script><script src="js/h-ba93cedbb032.js"></script>
+</script><script src="js/h-8633d72c1625.js"></script>
 <script type="module" src="m-ffe4d3e591e2.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */
