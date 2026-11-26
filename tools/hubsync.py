@@ -88,7 +88,8 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py del-report <student-id> <report-id>
   HUB_PASSWORD=... python3 hubsync.py add-lesson <student-id> @/tmp/lesson.json   class recap / study guide hosted on Hibi with interactive
       exercises (see LESSON below). Prints the link for the email. Same id (or same kind+date+title) again = replaces it.
-  HUB_PASSWORD=... python3 hubsync.py club-rec-set <rec id or YYYY-MM-DD> '{"summary":"…","diff":6,"diffWhy":"…"}'
+  HUB_PASSWORD=... python3 hubsync.py club-rec-set <rec id or YYYY-MM-DD> '{"summary":"…","diff":6,"diffWhy":"…","vocab":[{"w":"word","tr":"Spanish","ex":"example from class"}]}'
+      vocab = "📚 Words from this class" on that recording, from the transcript/chat (use it when there was no live board; a live board's words are used otherwise).
       Updates a Library recording. diff = difficulty 1-10 for club members (1 ≈ A2+, 4 ≈ B1, 6 ≈ B1+/B2, 8 ≈ B2, 10 ≈ C1),
       judged from the topic, vocabulary, speed and abstractness. club-add-rec and club-add-episode also take "diff" and "diffWhy".
   HUB_PASSWORD=... python3 hubsync.py set-map <student-id> @/tmp/map.json   the student's English Map on My coaching (see MAP below).
@@ -1025,6 +1026,9 @@ def main():
             if "summary" in d: x["summary"] = str(d["summary"] or "")[:500]
             if "topic" in d: x["topic"] = _txt(d["topic"], 120)
             if d.get("diff"): x["diff"] = max(1, min(10, int(d["diff"]))); x["diffWhy"] = _txt(d.get("diffWhy"), 160)
+            if "vocab" in d:  # "Words from this class" from the chat/transcript/recording (no live board needed); [] removes them
+                x["vocab"] = [{k: _txt(v.get(k), n) for k, n in (("w", 120), ("tr", 200), ("ex", 300)) if v.get(k)} for v in (d.get("vocab") or []) if isinstance(v, dict) and _txt(v.get("w"), 120)][:40]
+                if not x["vocab"]: x.pop("vocab")
         http("PATCH", f"{BASE}/clubStats/_recordings", {"fields": {"uid": {"stringValue": "_recordings"}, "json": {"stringValue": json.dumps({"list": lst}, ensure_ascii=False)}}}, token=tok)
         print(json.dumps({"ok": True, "updated": len(hit)})); return
     if cmd in ("club-episodes", "club-add-episode", "club-del-episode"):

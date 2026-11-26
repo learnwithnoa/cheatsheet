@@ -44,7 +44,7 @@
       ${(p.classes||[]).length?`<div class="cl-classes">${classesOf(f,p).map(c=>clsCard(c,now,cur?p.week:"")).join("")}</div>`:""}${p.closing?`<p class="cl-closing">${esc(p.closing)}</p>`:""}${recapHTML(p)}${chalHTML(p,cur)}</article>`;
   }
   /* after class: recordings, notes, words and phrases (added by Noa's nightly helper) */
-  function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=r.vocab||[], ph=r.phrases||[]; if(!recs.length&&!voc.length&&!ph.length&&!r.notes) return "";
+  function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=(r.vocab||[]).concat(x.vocab||[]), ph=r.phrases||[]; if(!recs.length&&!voc.length&&!ph.length&&!r.notes) return "";
     return `<div class="cl-recap"><h3>🎬 ${L("After class","Después de clase")}</h3>${recs.length?`<div class="cl-recs">${recs.map(x=>`<a class="cl-rec" href="${esc(x.url)}" target="_blank" rel="noopener"><span>▶</span><b>${esc(x.title||L("Recording","Grabación"))}</b>${x.wd!=null?`<small>${WD[x.wd]}</small>`:""}</a>`).join("")}</div>`:""}
       ${r.notes?`<p class="cl-rnote">${esc(r.notes)}</p>`:""}
       ${voc.length?`<h4>📚 ${L("Words from class","Palabras de la clase")}</h4><ul class="cl-voc">${voc.map((v,i)=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></li>`).join("")}</ul>`:""}
@@ -138,18 +138,18 @@
       const id="yt_"+r.id; if(out.some(o=>o.x.url===r.url)) return;
       const rwd=r.wd!=null?+r.wd:wd; let psum="";
       for(let k=out.length-1;k>=0;k--){ const o=out[k]; if(!String(o.id).startsWith("yt_")&&o.week===wk&&+o.x.wd===rwd&&!/youtu\.?be/.test(String(o.x.url||""))){ psum=psum||o.x.summary||""; out.splice(k,1); } }
-      out.push({id,week:wk,p:p||{recap:{},title:""},x:{url:r.url,title:r.name||s.name,summary:r.summary||psum||"",wd:r.wd!=null?r.wd:wd,rid:r.id,diff:r.diff,diffWhy:r.diffWhy},c:{name:r.name||(pc&&pc.name)||s.name||"",title:r.topic||(pc&&pc.title)||"",ico:s.ico||(pc&&pc.ico)||"🎬",teaser:pc&&pc.teaser,date:r.date},date:r.date}); });
+      out.push({id,week:wk,p:p||{recap:{},title:""},x:{url:r.url,title:r.name||s.name,summary:r.summary||psum||"",wd:r.wd!=null?r.wd:wd,rid:r.id,diff:r.diff,diffWhy:r.diffWhy,vocab:r.vocab},c:{name:r.name||(pc&&pc.name)||s.name||"",title:r.topic||(pc&&pc.title)||"",ico:s.ico||(pc&&pc.ico)||"🎬",teaser:pc&&pc.teaser,date:r.date},date:r.date}); });
     return out.sort((a,b)=>b.date.localeCompare(a.date)); }
   /* difficulty 1-10 for club material (1 ≈ A2+, 10 ≈ C1) */
   const DLV=n=>n<=2?"A2+":n<=4?"B1":n<=6?"B1+":n<=8?"B2":n<=9?"B2+":"C1";
   function diffHTML(o){ const n=+(o&&o.diff)||0; if(!n) return ""; return `<span class="cl-diff" title="${esc((o.diffWhy?o.diffWhy+" · ":"")+L("Difficulty for club members: 1 is about A2+, 10 is about C1","Dificultad para el club: 1 es como A2+, 10 es como C1"))}"><span class="cl-dbar" aria-hidden="true">${Array.from({length:10},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span><b>${n}/10</b><small>${DLV(n)}</small><span class="sr">${L("Difficulty","Dificultad")} ${n} ${L("of","de")} 10</span></span>`; }
   const ytId=u=>{ const m=String(u||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m?m[1]:""; };
-  function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=r.vocab||[], ph=r.phrases||[];
+  function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=(r.vocab||[]).concat(x.vocab||[]), ph=r.phrases||[];
     const name=c.name||x.title||L("Class","Clase"), topic=c.title&&c.name?c.title:"", q=[name,topic,x.title,x.summary,c.teaser,it.p.title,voc.map(v=>v.w).join(" ")].join(" ").toLowerCase();
     return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}" data-cls="${esc(c.name||"")}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
       <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span>${ytId(x.url)?"":`<a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">${L("Open the recording","Abrir la grabación")}<span class="cl-ext" aria-hidden="true">↗</span></a>`}${planBtn(it.date,x.wd)}<button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
         ${diffHTML(x)}${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:`<p class="cl-planintro" data-pintro="${esc(it.date)}"></p>`}
-        ${x.wd!=null?`<div class="cl-bwords" data-bw="${esc(it.week)}|${+x.wd}"></div>`:""}
+        ${x.vocab&&x.vocab.length&&window.__clVocCards?`<div class="cl-bwords">${window.__clVocCards(x.vocab,`📚 ${L("Words from this class","Palabras de esta clase")}`)}</div>`:x.wd!=null?`<div class="cl-bwords" data-bw="${esc(it.week)}|${+x.wd}"></div>`:""}
         ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
   let RFOCUS=null;
   /* ---------- 🎧 the weekly club podcast (episodes stored in clubStats/_podcast: Noa adds, members listen) ---------- */
