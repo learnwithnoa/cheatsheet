@@ -17,8 +17,19 @@ export function packStats(s, p) {
   const per = p.unit === "credits" ? (pri ? 4 : 3) : 1;
   return { done: cl.length, used, size, left, first, per, classesLeft: left == null ? null : Math.floor(Math.max(0, left) / per), pri };
 }
+/* Pack length in weeks (program rules: Básico 4, Intermedio 10, Intensivo 16; "plazo de N semanas" in the label wins). */
+export const PACK_WEEKS = { 12: 4, 36: 10, 72: 16 };
+export function packWeeks(p) { const m = /(\d+)\s*(semanas|weeks)/i.exec(p.label || ""); return m ? +m[1] : PACK_WEEKS[p.size] || 0; }
+/* Noa's rule (Nov 26 2026): the pack's clock starts at its first class, or 7 days after the payment if there's no class in that week.
+   Payment date = p.created (set when the pack is added). Older packs without it keep only a typed deadline. */
+export function packStart(p, first) {
+  if (!p.created) return "";
+  const wk = addDays(p.created, 7);
+  return first && first < wk ? first : wk;
+}
 export function deadline(p, first) {
   if (p.deadlineISO) return p.deadlineISO;
+  if (!p.deadline) { const w = packWeeks(p), st = w && p.unit !== "classes" ? packStart(p, first) : ""; return st ? addDays(st, w * 7) : ""; }
   const m = /(\d{1,2})\s+(?:de\s+)?([a-záéíóú]+)/i.exec(p.deadline || ""); if (!m || !MES[m[2].toLowerCase()]) return "";
   const base = first || p.created || today(); const y = +base.slice(0, 4); const mo = MES[m[2].toLowerCase()];
   let iso = y + "-" + String(mo).padStart(2, "0") + "-" + String(+m[1]).padStart(2, "0");

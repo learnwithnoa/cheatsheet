@@ -424,7 +424,7 @@ html.emb body{background:transparent}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp, initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ, BOTH_DEFAULT } from "./hubview.js?v=18";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, packStart, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ, BOTH_DEFAULT } from "./hubview.js?v=19";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -1095,7 +1095,7 @@ function tPacks(s) {
       <span class="row"><select data-paid="${p.id}" aria-label="Paid">${[["full", "✅ Paid"], ["half", "½ paid (2nd installment pending)"], ["pending", "⏳ Not paid yet"], ["n/a", "n/a"]].map(([k, l]) => `<option value="${k}" ${p.paid === k ? "selected" : ""}>${l}</option>`).join("")}</select>
       <button class="ib" data-act="archPack" data-id="${p.id}">${p.archived ? "Mark current" : "Archive"}</button><button class="ib del" data-act="delPack" data-id="${p.id}">✕</button></span></div>
       ${st.size ? `<div class="pbar"><i style="width:${pct}%"></i></div>` : ""}
-      <div class="muted small">${st.size ? `${st.used}/${st.size} ${p.unit} used · ` : ""}${pl(st.done, "class")} (#1–#${st.done})${st.first ? " · started " + fmtShort(st.first) : ""}${dl ? " · ends " + fmtD(dl) : ""}${p.price ? " · " + esc(p.price) : ""}</div></div>`;
+      <div class="muted small">${st.size ? `${st.used}/${st.size} ${p.unit} used · ` : ""}${pl(st.done, "class")} (#1–#${st.done})${st.first ? " · first class " + fmtShort(st.first) : ""}${!p.deadlineISO && !p.deadline && dl && packStart(p, st.first) ? " · weeks count from " + fmtShort(packStart(p, st.first)) + (!st.first || packStart(p, st.first) !== st.first ? " (7 days after payment)" : "") : ""}${dl ? " · ends " + fmtD(dl) : ""}${p.price ? " · " + esc(p.price) : ""}</div></div>`;
   }).join("");
   const pays = s.payments.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "")).map(p => `<tr><td class="d">${p.date ? fmtD(p.date) : (p.year || "")}</td><td>${esc(p.what)}</td><td style="color:var(--c-green);font-weight:800">${p.est ? "≈" : ""}${esc(p.amount || "")}</td><td>${esc(p.method || "")}</td><td class="act"><button class="ib del" data-act="delPay" data-id="${p.id}">✕</button></td></tr>`).join("");
   const isNew = !s.packs.length;
@@ -1103,7 +1103,7 @@ function tPacks(s) {
     <form class="frm tint k-green" id="addPack" autocomplete="off">
       <div class="fld w2"><label>Pack</label><select name="kind"><option value="12">Pack Básico · 12 créditos</option><option value="36" selected>Pack Intermedio · 36 créditos</option><option value="72">Pack Intensivo · 72 créditos</option><option value="trueque">Trueque (no credits)</option><option value="custom">Other…</option></select></div>
       <div class="fld"><label>Price</label><input name="price" placeholder="auto"></div>
-      <div class="fld"><label>Ends on</label><input type="date" name="deadline"></div>
+      <div class="fld"><label>Ends on</label><input type="date" name="deadline" title="Leave empty: the pack's weeks start at its first class, or 7 days after the payment if there's no class that week"><small class="muted">empty = automatic</small></div>
       <div class="fld"><label>Paid</label><select name="paid"><option value="full">Paid</option><option value="half">½ paid</option><option value="pending">Not yet</option></select></div>
       <div class="row"><button class="primary" type="submit">＋ New pack</button></div>
       <label class="w6 small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="first" ${isNew ? "checked" : ""}> First pack for a new student: 15% off${" "}(and a first Básico counts every class as standard hours)</label>

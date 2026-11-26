@@ -15,6 +15,8 @@ Noa (he/him, spelled "Noa") is an English coach in Chile. He isn't a developer: 
 - `js/h-<hash>.js`, `m-<hash>.js` — generated too (`build/parts/post_zzz_split.py`): the big scripts of index.html, split out so phones keep
   unchanged parts cached (sw.js serves them cache-first). To find code on the built site, search `index.html` **and** `js/*.js` `m-*.js`.
 - `tools/hubsync.py` — Noa's helper for reading/changing Hibi's data (students, classes, club). See "Data" below.
+  Pack end dates (Noa, Nov 26 2026): a typed "Ends on" wins; if empty, the pack's weeks (Básico 4, Intermedio 10, Intensivo 16, or "N semanas" in the label)
+  start at its first class, or 7 days after the payment (pack.created) if there's no class that week; ends = start + N weeks (same weekday). `deadline()` in hubview.js / hubsync.py.
   New private students: `hubsync.py add-student '<json>'` (same as Private students → Add student + Add pack; private only, approves their sign-in, never adds the club).
 - `pay/` — the pay helper (Cloudflare Worker for Flow club subscriptions; deployed by `.github/workflows/pay-helper.yml`,
   result in `pay/deploy-log.txt`). Its keys are GitHub Actions secrets, never in files. Club payments on Hibi are live since Nov 16, 2026 (`PAY_LIVE`, set in `build/src/scripts/034-step135-club-payments-flow-through-the-h.js`; v2.0).

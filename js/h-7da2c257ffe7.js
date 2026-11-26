@@ -7,7 +7,7 @@
   if(g&&window.__csViewAsMode){ try{ sessionStorage.removeItem(K); }catch(e){} g=null; }  /* "View as" a real student = their real data, never the guest samples */
   /* Nov 20 2026: a sample private student (not in the club), so Noa can show a new student what Hibi looks like for them (kickoff).
      Used by the guest link ?guest=hb7k2q&as=private and by View as → Generic → Private student. */
-  window.__csSampleView=()=>import(new URL("hubview.js?v=18",document.baseURI).href).then(m=>m.makeView(sampleHub(),{}));
+  window.__csSampleView=()=>import(new URL("hubview.js?v=19",document.baseURI).href).then(m=>m.makeView(sampleHub(),{}));
   function sampleHub(){
     const D=n=>{ const d=new Date(); d.setDate(d.getDate()+n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
     const hub={ id:"sample", name:"Alex Sample", cefr:"B1", schedule:"Tuesdays and Thursdays, 7:00 PM", objective:"Feel confident speaking English in work meetings", kind:"pack",

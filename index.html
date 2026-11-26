@@ -4289,7 +4289,7 @@ html.rd .top [aria-pressed="true"].cs-btn,html.rd .tmr-chip.on,html.rd [data-tmm
 </section>
 <script src="js/h-467e29122fba.js"></script>
 
-<script src="js/h-c2f058cabe62.js"></script>
+<script src="js/h-369d12968419.js"></script>
 
 <script>
 /* the student's English level, for level-adapted feedback: Noa's private-student level, or the club level Noa set from class recordings */
@@ -4321,7 +4321,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-144b3701f65e.js"></script>
+<script src="js/h-7da2c257ffe7.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -5247,7 +5247,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-e8dc2c5ee2f4.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126114530"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126171604"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -5766,7 +5766,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
   addEventListener("scroll",()=>{ if(innerWidth>700) return; d.classList.add("cs-scrolling"); clearTimeout(t); t=setTimeout(()=>d.classList.remove("cs-scrolling"),900); },{passive:true});
 })();
 </script><script src="js/h-92e2bb06921b.js"></script>
-<script type="module" src="m-ffe4d3e591e2.js"></script>
+<script type="module" src="m-a6c21352eaa8.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */
 (function(){

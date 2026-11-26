@@ -261,9 +261,30 @@ def pack_stats(s, p):
             "classesLeft": None if left is None else max(0, left) // per, "pri": pri}
 
 
+PACK_WEEKS = {12: 4, 36: 10, 72: 16}
+
+
+def pack_weeks(p):
+    import re
+    m = re.search(r"(\d+)\s*(semanas|weeks)", p.get("label") or "", re.I)
+    return int(m.group(1)) if m else PACK_WEEKS.get(p.get("size"), 0)
+
+
+def pack_start(p, first):
+    # Noa's rule (Nov 26 2026): the clock starts at the pack's first class, or 7 days after payment (p["created"]) if no class that week
+    if not p.get("created"):
+        return ""
+    wk = (datetime.date.fromisoformat(p["created"][:10]) + datetime.timedelta(days=7)).isoformat()
+    return first if first and first < wk else wk
+
+
 def deadline(p, first):
     if p.get("deadlineISO"):
         return p["deadlineISO"]
+    if not p.get("deadline"):
+        w = pack_weeks(p)
+        st = pack_start(p, first) if w and p.get("unit") != "classes" else ""
+        return (datetime.date.fromisoformat(st) + datetime.timedelta(days=w * 7)).isoformat() if st else ""
     import re
     m = re.search(r"(\d{1,2})\s+(?:de\s+)?([a-záéíóú]+)", (p.get("deadline") or "").lower())
     if not m or m.group(2) not in MES:
