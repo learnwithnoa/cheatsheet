@@ -5,6 +5,9 @@
   if (!/[?&]embed=1/.test(location.search) || window.top === window.self) return;
   const P = window.parent, FR = window.frameElement, root = document.documentElement;
   root.classList.add("emb"); window.__psEmbed = true;
+  /* Nov 26 2026: the "Saved ✓" note sat on top of the "+ New student" button; put it in the row, just before the button */
+  const moveSaving = () => { const sv = document.getElementById("saving"), b = document.getElementById("addStu"); if (sv && b && sv.nextSibling !== b) { b.parentNode.insertBefore(sv, b); sv.style.cssText = "align-self:center;margin-right:10px;pointer-events:none"; } };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", moveSaving); else moveSaving();
   const ID = /members\.html/.test(location.pathname) ? "members" : "students";
   const st = document.createElement("style");
   st.textContent = [

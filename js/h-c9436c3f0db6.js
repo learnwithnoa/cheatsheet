@@ -141,6 +141,11 @@
     if(html===lastHTML) return; const keep=document.activeElement&&document.activeElement.id==="rdTrIn"; if(keep) return; lastHTML=html; box.innerHTML=html;
   }
   /* the card you jump to lights up for a moment so you can see where you landed */
+  /* pocket pet shell color (Settings in the buddy's home), synced like the pop color */
+  const TAMA={pink:"#FF6FB5",lime:"#B8E62E",yellow:"#F2D21B",orange:"#FF8A3D",mint:"#5CE0B0",purple:"#A98BFF",black:"#2A2A2E",white:"#F2F0E8"};
+  function applyTama(){ let k=""; try{ k=(localStorage.getItem("ncs-tama")||"").replace(/"/g,""); }catch(e){} if(TAMA[k]) root.style.setProperty("--tama",TAMA[k]); else root.style.removeProperty("--tama"); root.toggleAttribute("data-tama-dark",k==="black"); }
+  applyTama(); setTimeout(applyTama,2500); window.addEventListener("storage",e=>{ if(e.key==="ncs-tama") applyTama(); });
+  document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-tamac]"); if(!b) return; try{ localStorage.setItem("ncs-tama",JSON.stringify(b.dataset.tamac)); }catch(er){} applyTama(); b.parentElement.querySelectorAll("[data-tamac]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); });
   function glow(el){ el.classList.remove("rd-glow"); void el.offsetWidth; el.classList.add("rd-glow"); setTimeout(()=>el.classList.remove("rd-glow"),2200); }
   document.addEventListener("click",e=>{
     const t=e.target.closest&&e.target.closest("#rdHome [data-rdgo],#rdHome [data-rdscroll],#rdHome [data-rdsheet],#rdHome [data-rdlove],#rdHome [data-rdpop]"); if(!t) return; e.preventDefault();

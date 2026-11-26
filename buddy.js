@@ -495,7 +495,7 @@ frog:{name:"Kero",species:"Frog",sub:"ribbit-ready",
   if (window.__bdRender) { window.csBuddyArt = { svg: petSVG, sprites: SP, palFor: (a, c) => Object.assign({}, SP[a].p, ((SP[a].colors[c | 0] || SP[a].colors[0])[1])), LV: [0, 20, 50, 100, 170, 260, 380, 530, 720, 950] }; return; }
   /* ---------- styles ---------- */
   const css = `
-.bd.at-menu{right:auto!important;bottom:auto!important;flex-direction:row-reverse;align-items:flex-start}.bd.at-menu .bd-bub{max-width:230px}.bd{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:14;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
+.bd{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:14;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
 .bd[hidden]{display:none}
 html.cs-focus .bd,html.cs-focus .bd-mini{display:none!important}
 @media print{.bd,.bd-mini,.bd-modal,.bd-back{display:none!important}}
@@ -1026,29 +1026,10 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
   }
   function setMin(v) { S.min = !!v; save(); hideBub(); visible(); if (!v) { petBtn.focus(); hop(); } else mini.focus(); }
 
-  const SPOTS = ["br", "bl", "mr", "ml", "tr", "menu"];
-  /* Nov 26 2026: on a computer the buddy can also sit under the left menu (drop it on the menu); it follows the end of the menu, so it moves down when menus open. On a phone it goes to the bottom-left instead. */
-  const sideMenu = () => { const sd = document.querySelector(".side"); return sd && innerWidth > 900 && sd.getBoundingClientRect().width > 120 ? sd : null; };
-  function menuPos() {
-    if (!root.classList.contains("at-menu")) return;
-    const sd = sideMenu(); if (!sd) { root.classList.remove("at-menu"); root.classList.add("at-bl"); return; }
-    const r = sd.getBoundingClientRect(); let end = r.top;
-    [...sd.children].forEach(c => { if (c.offsetParent) end = Math.max(end, c.getBoundingClientRect().bottom); });
-    const top = Math.max(r.top + 8, end + 14); /* right under the last menu item (scroll the menu to reach it when the menu is long) */
-    root.style.left = (r.left + r.width / 2 - ((document.getElementById("rdTama") || petBtn).offsetWidth || 120) / 2) + "px"; root.style.top = top + "px";
-  }
-  let menuTimer = null;
-  function setSpot(k, keep) {
-    SPOTS.forEach(x => root.classList.remove("at-" + x)); root.style.left = ""; root.style.top = "";
-    if (k === "menu" && !sideMenu()) root.classList.add("at-bl");
-    else if (k && k !== "br") root.classList.add("at-" + k);
-    clearInterval(menuTimer);
-    if (k === "menu") { menuPos(); menuTimer = setInterval(menuPos, 400); }
-    if (!keep) try { localStorage.setItem("cs-bd-spot", k || "br"); } catch (e) {}
-  }
-  window.addEventListener("resize", () => { try { if (localStorage.getItem("cs-bd-spot") === "menu") setSpot("menu", true); } catch (e) {} });
-  document.addEventListener("scroll", () => menuPos(), true);
-  try { const k = localStorage.getItem("cs-bd-spot"); if (SPOTS.includes(k)) setSpot(k, true); } catch (e) {}
+  const SPOTS = ["br", "bl", "mr", "ml", "tr"];
+  /* Nov 26 2026: the "under the menu" spot was removed (Noa didn't like it); anyone parked there goes back to the bottom-right */
+  function setSpot(k, keep) { SPOTS.forEach(x => root.classList.remove("at-" + x)); root.classList.remove("at-menu"); root.style.left = ""; root.style.top = ""; if (k && k !== "br" && SPOTS.includes(k)) root.classList.add("at-" + k); if (!keep) try { localStorage.setItem("cs-bd-spot", SPOTS.includes(k) ? k : "br"); } catch (e) {} }
+  try { const k = localStorage.getItem("cs-bd-spot"); if (k === "menu") setSpot("br"); else if (SPOTS.includes(k)) setSpot(k, true); } catch (e) {}
   let drag = null, justDragged = false;
   petBtn.style.touchAction = "none";
   petBtn.addEventListener("pointerdown", e => { if (e.button) return; drag = { x: e.clientX, y: e.clientY, on: false, id: e.pointerId }; });
@@ -1062,7 +1043,6 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (!drag) return; const d = drag; drag = null; if (!d.on) return;
     justDragged = true; setTimeout(() => justDragged = false, 50);
     root.classList.remove("dragging"); root.style.removeProperty("--dx"); root.style.removeProperty("--dy");
-    const sd = sideMenu(); if (sd) { const r = sd.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right) { setSpot("menu"); hop(); return; } }
     const left = e.clientX < innerWidth / 2, mid = e.clientY < innerHeight * .62;
     setSpot(!left && e.clientY < innerHeight * .28 ? "tr" : (mid ? "m" : "b") + (left ? "l" : "r")); hop();
   };
@@ -1202,6 +1182,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       const se = season();
       body = `<label class="bd-row bd-set"><input type="checkbox" id="bdSnd" ${S.snd !== false ? "checked" : ""}> 🔊 Buddy sounds <span class="bd-small" style="margin:0">(sometimes, when you tap a buddy)</span></label>
       <label class="bd-row bd-set"><input type="checkbox" id="bdSeas" ${S.seas !== false ? "checked" : ""}> 🗓️ Seasonal outfits${se ? ` <span class="bd-small" style="margin:0">(now: ${se.ico} ${esc(se.name)})</span>` : ` <span class="bd-small" style="margin:0">(Halloween, Christmas, Fiestas Patrias and more)</span>`}</label>
+      ${document.documentElement.classList.contains("rd") ? (() => { let cur = ""; try { cur = (localStorage.getItem("ncs-tama") || "").replace(/"/g, ""); } catch (e) {}
+        const C = [["", "Classic", ""], ["pink", "Pink", "#FF6FB5"], ["lime", "Lime", "#B8E62E"], ["yellow", "Yellow", "#F2D21B"], ["orange", "Orange", "#FF8A3D"], ["mint", "Mint", "#5CE0B0"], ["purple", "Purple", "#A98BFF"], ["black", "Black", "#2A2A2E"], ["white", "White", "#F2F0E8"]];
+        return `<div class="bd-row bd-set bd-tamac"><span>🥚 Pocket pet color</span><span class="bd-tamasw">${C.map(([k, n, c]) => `<button type="button" data-tamac="${k}" aria-pressed="${cur === k}" title="${n}" aria-label="${n}" style="--c:${c || "var(--hl3)"}"></button>`).join("")}</span></div>`; })() : ""}
       <p class="bd-small">Tip: you can drag your buddy to another spot on the screen.</p>
       <button class="bd-link" type="button" data-m="hide" style="margin-top:6px">Hide my buddy</button>`;
     }
