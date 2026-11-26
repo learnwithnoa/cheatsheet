@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-26",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🦃",
+          "title": "Happy Thanksgiving, USA!",
+          "text": "Today is Thanksgiving in the United States, always on the fourth Thursday of November. Families get together, say what they're grateful for and eat a big dinner. Over 90% of Americans have turkey, and many watch the Macy's parade or football!",
+          "word": "grateful",
+          "mean": "feeling thankful for something good in your life",
+          "tr": "agradecido / agradecida",
+          "es": "¡Hoy es Acción de Gracias en EE. UU.: familia, gratitud y mucho pavo!",
+          "q": "What are three things you feel grateful for this year, and why?",
+          "link": "https://www.almanac.com/thanksgiving",
+          "src": "The Old Farmer's Almanac",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🥔",
+          "title": "Moon potatoes? Scientists grew them!",
+          "text": "Scientists at Oregon State University grew potatoes in fake Moon soil. Pure Moon soil didn't work well, but when they mixed in compost made by worms, the plants grew almost like on Earth. Future astronauts may enjoy lunar fries!",
+          "word": "mixed in",
+          "mean": "added something and combined it with something else",
+          "tr": "mezclaron / agregaron",
+          "es": "Científicos cultivaron papas en tierra lunar simulada: ¡quizás los astronautas coman papas en la Luna!",
+          "q": "If you lived on the Moon for a year, which food from home would you miss the most?",
+          "link": "https://www.sci.news/biology/moon-potatoes-15211.html",
+          "src": "Sci.News",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🎬",
+          "title": "The Avengers speak Lakota!",
+          "text": "The original Avengers actors came back to record the movie in Lakota, a Native American language with only about 2,000 speakers today. The project took over 15 months and 62 Lakota speakers helped. Now kids can enjoy superheroes in their own language!",
+          "word": "took over",
+          "mean": "needed more than (a period of time)",
+          "tr": "tomó más de",
+          "es": "¡Los actores de Los Vengadores doblaron la película al lakota para ayudar a mantener viva esa lengua!",
+          "q": "Which movie would you love to watch dubbed in another language, and which language would you choose?",
+          "link": "https://www.goodgoodgood.co/articles/avengers-doomsday-native-american-lakota-dub",
+          "src": "Good Good Good",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-25",
       "by": "claude",
       "items": [
