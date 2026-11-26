@@ -4111,6 +4111,8 @@ html.rd.rd .rd-look button[data-rdt]{background:transparent!important;color:var(
 html.rd.rd .rd-look button[data-rdt][aria-checked="true"]{background:var(--ink)!important;color:var(--bg)!important}
 html.rd.rd .rd-look .rdh-dot{border:1px solid var(--ink)!important;border-radius:50%!important}
 html.rd.rd .rd-look .rdh-dot[aria-checked="true"]{outline:3px solid var(--ink);outline-offset:2px}
+/* avatars: always square (photos too), everywhere — club members, wall, messages, profile */
+html.rd .cs-av,html.rd .cs-av img,html.rd .cl-mav img,html.rd [class*="avatar"] img,html.rd img[class*="avatar"],html.rd .cs-av canvas{border-radius:0!important}
 
 </style>
 
@@ -5453,7 +5455,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-81deaf1329a7.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126184729"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126185905"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

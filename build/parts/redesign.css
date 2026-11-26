@@ -639,3 +639,5 @@ html.rd.rd .rd-look button[data-rdt]{background:transparent!important;color:var(
 html.rd.rd .rd-look button[data-rdt][aria-checked="true"]{background:var(--ink)!important;color:var(--bg)!important}
 html.rd.rd .rd-look .rdh-dot{border:1px solid var(--ink)!important;border-radius:50%!important}
 html.rd.rd .rd-look .rdh-dot[aria-checked="true"]{outline:3px solid var(--ink);outline-offset:2px}
+/* avatars: always square (photos too), everywhere — club members, wall, messages, profile */
+html.rd .cs-av,html.rd .cs-av img,html.rd .cl-mav img,html.rd [class*="avatar"] img,html.rd img[class*="avatar"],html.rd .cs-av canvas{border-radius:0!important}
