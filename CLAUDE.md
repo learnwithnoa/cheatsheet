@@ -129,6 +129,9 @@ Pages updates about a minute after the push. End commit messages with the attrib
   Simple mode (`src/scripts/051-step179-simple-mode.js`): per member in `users/{uid}/data/ncs-simple` {on, by:"noa"|"noa-off"|"me", asked}; Noa switches it in Hibi members (member detail); the member is asked once to keep it.
   Noa's 🔔 (src/scripts/006-…, accounts() in build/cloud.js) skips removed accounts; roles.clubEnded (set by the pay helper's removeClub) shows someone as "left the club", not "not linked yet".
   Removing someone: Hibi members → member → 🚫 Remove from Hibi deletes access/{email} and park/{uid} and lists them in t-hubmeta.removed {uid:{email,name,at}} (hidden from the members lists; "Let back in" undoes it; access-sync skips them).
+  Past students (Nov 26 2026): Private students → status "📦 Archived · past student" (status inactive). They stay linked (role hub + private:false + hibiOnly:true, club unchanged)
+  and keep My coaching: classes, recaps, guides, reports, map, words; makeView (hubview.js) / past_view (hubsync.py) drop packs, payments, schedule, next class, booking, map check-ins
+  and add the "💛 Want to come back?" card (💬 Write to Noa = data-joindm="back"). Nothing is deleted: Active again brings everything back. Never unlink a past student (that deletes their My coaching).
   Recommendation dates: `users/{Noa}/data/t-recs` ({uid:{mod:{at,n}}}), shown in Hibi members → 💡 Recommended. Ask Noa before adding uncertain payments or deleting data. Never invent data.
 
 ## Ideas to build (daily builder)
