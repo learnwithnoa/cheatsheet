@@ -11,7 +11,9 @@
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   const noa=()=>window.__csTeacher===true&&!window.__csPreview&&!window.__csViewAsMode;
   const pop=()=>{ const id=get("ncs-pop","yellow"); return POPS.find(p=>p[0]===id)||POPS[0]; };
-  function applyPop(){ const p=pop(); root.style.setProperty("--pop",p[2]); root.style.setProperty("--pop-ink",p[3]); }
+  function applyPop(){ const p=pop(); root.style.setProperty("--pop",p[2]); root.style.setProperty("--pop-ink",p[3]);
+    /* two extra colors that always go with the pop color (the lime tape, the fuchsia marker, the blue pixels) */
+    root.style.setProperty("--hl1",p[0]==="lime"?"#F2D21B":"#C6FF00"); root.style.setProperty("--hl2",p[0]==="fuchsia"?"#7D96FF":"#FF3EA5"); root.style.setProperty("--hl3",p[0]==="blue"?"#5CE0B0":"#4F73FF"); }
   const rdt=()=>{ const t=get("cs-rd-theme","light"); return RDT.some(x=>x[0]===t)?t:"light"; };
   function setRdt(t){ set("cs-rd-theme",t); root.setAttribute("data-rdt",t); if(typeof window.csSetTheme==="function") window.csSetTheme(t==="night"?"dark":"light"); paintBtn(); }
   function paintBtn(){ if(!RD) return; const t=RDT.find(x=>x[0]===rdt()); const i=document.getElementById("themeIcon"), x=document.getElementById("themeTxt"); if(i) i.textContent=t[1]; if(x) x.textContent=t[2]; }
@@ -103,12 +105,15 @@
     return L.slice(0,5);
   }
   function note(){
+    const tt=document.getElementById("ttText"); if(tt&&tt.textContent.trim()){ const lv=document.getElementById("ttLove"), lt=document.getElementById("ttLoveTxt");
+      return {k:"THOUGHT FOR TODAY ✶",x:tt.textContent.trim(),love:lv?{on:lv.getAttribute("aria-pressed")==="true",txt:(lt&&lt.textContent.trim())||"I like this"}:null}; }
     const v=window.__csHubView;
     try{ const n=window.__csCoachNews&&window.__csCoachNews.list(); if(n&&n[0]) return {k:"NOTE FROM NOA ✉",x:String(n[0].t||"").replace(/<[^>]+>/g,""),go:"coaching"}; }catch(e){}
     if(v&&v.recap&&v.recap.summary) return {k:"LATEST CLASS RECAP ✉",x:String(v.recap.summary).split(/(?<=[.!?])\s/)[0],go:"coaching"};
-    const tt=document.getElementById("ttText"); if(tt&&tt.textContent.trim()) return {k:"THOUGHT FOR TODAY ✶",x:tt.textContent.trim(),scroll:"todayBox"};
     return null;
   }
+  const ART_DAY='<svg class="rdh-art rdh-blob" viewBox="0 0 120 120" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpA" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="3" height="3" fill="var(--hl1)"/><rect width="1" height="1" fill="#1A1A1A"/><rect x="2" y="1" width="1" height="1" fill="var(--hl2)"/><rect x="1" y="2" width="1" height="1" fill="#FFB800"/></pattern></defs><path d="M52 6c14 0 18 14 30 12 14-2 18 14 10 24 10 8 6 24-8 24 4 14-12 24-24 16-10 12-30 8-30-6-14 2-24-12-14-24-12-10-4-28 12-26 2-12 12-20 24-20z" fill="url(#rdpA)" stroke="#1A1A1A" stroke-width="1.5"/><path d="M44 40h20v6h8v14h-6v8H48v-6h-8V46h4z" fill="var(--hl2)"/></svg><svg class="rdh-art rdh-stairs" viewBox="0 0 24 14" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 2h4v2h2V0h4v4h2v2h4V2h2v4h2v4h-4v2h-4v2h-2v-4H8v2H4v-2H0z" fill="var(--hl3)"/></svg>';
+  const ART_NIGHT='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpN" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ECECE4"/><rect x="1" y="1" width="1" height="1" fill="#6E6E6E"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpN)" stroke="var(--hl1)" stroke-width="2.5"/></svg><svg class="rdh-art rdh-stairs" viewBox="0 0 120 120" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpNr" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#FF3B2F"/><rect x="1" y="1" width="1" height="1" fill="#7A1A14"/></pattern></defs><path d="M52 6c14 0 18 14 30 12 14-2 18 14 10 24 10 8 6 24-8 24 4 14-12 24-24 16-10 12-30 8-30-6-14 2-24-12-14-24-12-10-4-28 12-26 2-12 12-20 24-20z" fill="url(#rdpNr)"/></svg>';
   let lastHTML="";
   function paint(){
     const view=document.getElementById("v-notes"); if(!view) return;
@@ -116,34 +121,84 @@
       const arr=document.getElementById("hmArrange"); if(arr){ const w=document.createElement("div"); w.className="rd-arr"; box.after(w); w.appendChild(arr); } }
     const now=new Date(), nm=firstName(), N=nextClass(), lines=logLines(), nt=note();
     const role=window.__csHubView?"PRIVATE 1:1":vis("navClub")?"CLUB":"STUDENT";
-    const st=[["coaching","My coaching",vis("navCoaching")],["club","Club",vis("navClub")],["words","My notebook",1],["quiz","Practice",1],["sheet","Cheat sheet",1],["park","Buddy park",1]].filter(x=>x[2]);
+    const st=[["coaching","My coaching",vis("navCoaching")],["club","Club",vis("navClub")],["words","My notebook",1],["quiz","Practice",1],["sheet","Grammar notes",1],["park","Buddy park",1]].filter(x=>x[2]);
     let ticket="";
     if(N.first){ const f=N.first, today=f.d.toDateString()===now.toDateString(), live=Date.now()>=f.d.getTime()-10*60000;
       ticket=`<section class="rdh-ticket" aria-label="Next class"><span class="rdh-tape" aria-hidden="true"></span><div class="rdh-tk"><span class="rdh-k"><span>001 / ${live?"● LIVE NOW":"NEXT CLASS"}${today&&!live?" · TODAY":""}</span><span>${esc(f.k)}</span></span><span class="rdh-when">${DOW[f.d.getDay()]} ${hm(f.d)}</span><span class="rdh-k"><span>${esc(f.what)}</span></span></div>${f.zoom?`<a class="rdh-join" href="${esc(f.zoom)}" target="_blank" rel="noopener">${BARS}<span>JOIN→</span></a>`:`<button type="button" class="rdh-join" data-rdgo="${f.go}" style="all:unset;cursor:pointer;width:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px">${BARS}<span style="font:700 13px var(--mono);border:1px solid currentColor;padding:7px 10px">OPEN→</span></button>`}</section>`; }
     else if(N.book){ ticket=`<section class="rdh-ticket" aria-label="Book a class"><span class="rdh-tape" aria-hidden="true"></span><div class="rdh-tk"><span class="rdh-k"><span>001 / NEXT CLASS</span><span>W/ NOA</span></span><span class="rdh-when small">BOOK YOUR NEXT CLASS</span><span class="rdh-k"><span>WHENEVER IT SUITS YOU</span></span></div><a class="rdh-join" href="${esc(N.book)}" target="_blank" rel="noopener">${BARS}<span>BOOK→</span></a></section>`; }
-    const html=`${DEFS}${STAR}
+    const dots=`<div class="rdh-dots" role="radiogroup" aria-label="Pop color"><span>POP COLOR</span>${POPS.map(p=>`<button type="button" class="rdh-dot" role="radio" data-rdpop="${p[0]}" aria-checked="${p[0]===pop()[0]}" aria-label="${p[1]}" title="${p[1]}" style="background:${p[2]}"></button>`).join("")}</div>`;
+    const html=`${DEFS}${rdt()==="night"?ART_NIGHT:ART_DAY}
       <div class="rdh-top"><p class="rdh-blurb">Hibi — not just an app, but a daily habit. English you actually use: words you saved, classes you took, mistakes you made on purpose.</p></div>
       <div><div class="rdh-meta"><b>${role}</b><span>--EN--</span><span>--ES--</span><span>${dd(now)}</span></div>
-      <div class="rdh-title">HIBI<small>日々</small></div>${nm?`<div class="rdh-name" aria-label="${esc(nm)}">${[...nm.toUpperCase()].slice(0,10).map(c=>`<span aria-hidden="true">${esc(c)}</span>`).join("")}</div>`:""}</div>
-      <div class="rdh-row">${ticket}<div class="rdh-side"><form class="rdh-tr" data-rdtr="1" role="search"><span class="p" aria-hidden="true">&gt;</span><label class="sr" for="rdTrIn">Translator</label><input type="text" id="rdTrIn" placeholder="translate a word or phrase_" autocomplete="off"><button type="submit">EN⇄ES</button></form>
-      ${nt?`<a href="#" class="rdh-note" data-rd${nt.go?"go":"scroll"}="${nt.go||nt.scroll}"><span class="rdh-tape" aria-hidden="true"></span><b>${esc(nt.k)}</b><span>${esc(nt.x.length>120?nt.x.slice(0,118)+"…":nt.x)}</span></a>`:""}</div></div>
+      <div class="rdh-title"><span class="rdh-hl">HIBI</span><small>日々</small></div>${nm?`<div class="rdh-name" aria-label="${esc(nm)}">${[...nm.toUpperCase()].slice(0,10).map(c=>`<span aria-hidden="true">${esc(c)}</span>`).join("")}</div>`:""}</div>
+      <div class="rdh-row"><div class="rdh-tkw">${ticket}${dots}</div><div class="rdh-side"><form class="rdh-tr" data-rdtr="1" role="search"><span class="p" aria-hidden="true">&gt;</span><label class="sr" for="rdTrIn">Translator</label><input type="text" id="rdTrIn" placeholder="translate a word or phrase_" autocomplete="off"><button type="submit">EN⇄ES</button></form>
+      ${nt?`<div class="rdh-note"><span class="rdh-tape" aria-hidden="true"></span><b>${esc(nt.k)}</b><span>${esc(nt.x.length>160?nt.x.slice(0,158)+"…":nt.x)}</span>${nt.love?`<button type="button" class="rdh-love" data-rdlove="1" aria-pressed="${nt.love.on}"><span aria-hidden="true">💛</span> ${esc(nt.love.txt)}</button>`:nt.go?`<button type="button" class="rdh-love" data-rdgo="${nt.go}">OPEN →</button>`:""}</div>`:""}</div></div>
       <div class="rdh-stw"><div class="rdh-lab"><span>Stamps ··· where to?</span><span>002—00${st.length+1}</span></div>
-      <div class="rdh-stamps">${st.map((x,i)=>`<button type="button" class="rdh-st${x[0]==="sheet"?" dark":""}" data-rd${x[0]==="sheet"?"sheet":"go"}="${x[0]}"><svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${ICO[x[0]]}</svg><span><i>${String(i+2).padStart(3,"0")}</i><b>${x[1]}</b></span></button>`).join("")}</div></div>
+      <div class="rdh-stamps">${st.map((x,i)=>`<button type="button" class="rdh-st${x[0]==="sheet"?" dark":""}" data-rd${x[0]==="sheet"?"sheet":"go"}="${x[0]}"${x[0]==="sheet"?' aria-haspopup="dialog"':""}><svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${ICO[x[0]]}</svg><span><i>${String(i+2).padStart(3,"0")}</i><b>${x[1]}</b></span></button>`).join("")}</div></div>
       <div class="rdh-bot"><div class="rdh-logw"><div class="rdh-lab"><span>Today.log</span><span>${dd(now)} ▮</span></div><div class="rdh-log">${lines.map(l=>`<button type="button" data-rd${l.go?"go":"scroll"}="${l.go||l.scroll}"><span class="t">${esc(l.t)}</span><span class="x">${esc(l.x)}</span>${l.isNew?'<span class="new">NEW</span>':'<span class="ar" aria-hidden="true">→</span>'}</button>`).join("")}</div></div>
       <button type="button" class="rdh-stuck" data-rdgo="stuck"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M50 2 58 20 78 8 74 28 98 30 80 44 96 62 72 60 66 78 50 64 34 78 28 60 4 62 20 44 2 30 26 28 22 8 42 20z" fill="#D9442B" stroke="#1A1A1A" stroke-width=".8"/></svg><span><i>HELP</i>I'M<br>STUCK!</span></button></div>`;
+    if(!document.getElementById("rdMore")){ const m=document.createElement("div"); m.id="rdMore"; m.className="rdh-lab rd-more"; m.innerHTML="<span>More for today</span><span>Word · review · club · notes</span>"; const a=box.nextElementSibling&&box.nextElementSibling.classList.contains("rd-arr")?box.nextElementSibling:box; a.after(m); }
     if(html===lastHTML) return; const keep=document.activeElement&&document.activeElement.id==="rdTrIn"; if(keep) return; lastHTML=html; box.innerHTML=html;
   }
   document.addEventListener("click",e=>{
-    const t=e.target.closest&&e.target.closest("#rdHome [data-rdgo],#rdHome [data-rdscroll],#rdHome [data-rdsheet]"); if(!t) return; e.preventDefault();
+    const t=e.target.closest&&e.target.closest("#rdHome [data-rdgo],#rdHome [data-rdscroll],#rdHome [data-rdsheet],#rdHome [data-rdlove],#rdHome [data-rdpop]"); if(!t) return; e.preventDefault();
+    if(t.dataset.rdlove){ const lv=document.getElementById("ttLove"); if(lv){ lv.click(); setTimeout(tick,60); } return; }
+    if(t.dataset.rdpop){ set("ncs-pop",JSON.stringify(t.dataset.rdpop)); applyPop(); lastHTML=""; tick(); return; }
     if(t.dataset.rdgo){ go(t.dataset.rdgo); return; }
     if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); } return; }
-    if(t.dataset.rdsheet){ const g=document.querySelector(".side .ng-start"); if(g){ g.scrollIntoView({behavior:"smooth",block:"start"}); const b=g.querySelector(".navbtn"); if(b) setTimeout(()=>b.focus({preventScroll:true}),400); } }
+    if(t.dataset.rdsheet){ openTopics(t); }
   });
   document.addEventListener("submit",e=>{
     const f=e.target.closest&&e.target.closest("[data-rdtr]"); if(!f) return; e.preventDefault();
     const q=(document.getElementById("rdTrIn")||{}).value||""; go("translate");
     setTimeout(()=>{ const i=document.getElementById("trIn"), b=document.getElementById("trBtn"); if(i){ i.value=q; i.dispatchEvent(new Event("input",{bubbles:true})); if(q.trim()&&b) b.click(); i.focus(); } },120);
   });
+  /* "Grammar notes" stamp: a sheet with every topic from the side menu, grouped */
+  function openTopics(from){
+    let sh=document.getElementById("rdTopics"); if(sh) sh.remove();
+    const groups=[...document.querySelectorAll(".side .navgroup")].filter(g=>!g.classList.contains("mine")&&g.querySelector("[data-go]"));
+    sh=document.createElement("div"); sh.id="rdTopics"; sh.className="rd-topics"; sh.setAttribute("role","dialog"); sh.setAttribute("aria-modal","true"); sh.setAttribute("aria-label","Grammar notes and topics");
+    sh.innerHTML=`<div class="rdt-in"><div class="rdt-head"><div><div class="rdh-k"><span>GRAMMAR NOTES · EVERY TOPIC</span></div><div class="rdt-title">Grammar <span class="rdh-hl">notes</span></div><p>Short explanations with examples. Pick a topic.</p></div><button type="button" class="rdt-x" aria-label="Close">✕</button></div>
+      ${groups.map((g,gi)=>{ const h=g.querySelector("h4"); const name=h?h.textContent.replace(/\d+\s*[▸▾▼▶]?\s*$/,"").replace(/^[\/\s★⭐]+/,"").trim():"Topics";
+        const bs=[...g.querySelectorAll("[data-go]")].filter(b=>!b.hidden);
+        return `<section><div class="rdh-lab"><span>${String(gi+1).padStart(2,"0")} / ${esc(name)}</span><span>${bs.length}</span></div><div class="rdt-grid">${bs.map(b=>`${(()=>{ const t=b.textContent.replace(/\s+/g," ").trim(); const m=t.match(/^(.*?)\s*((?:A1|A2|B1|B2|C1|C2)(?:[–-](?:A1|A2|B1|B2|C1|C2))?)$/); return `<button type="button" data-rdtopic="${esc(b.dataset.go)}"><span>${esc(m?m[1]:t)}</span>${m?`<i>${esc(m[2])}</i>`:""}</button>`; })()}`).join("")}</div></section>`; }).join("")}</div>`;
+    document.body.appendChild(sh); document.documentElement.classList.add("rd-lock");
+    const close=()=>{ sh.remove(); document.documentElement.classList.remove("rd-lock"); if(from) from.focus(); };
+    sh.addEventListener("click",e=>{ if(e.target===sh||e.target.closest(".rdt-x")) { close(); return; } const b=e.target.closest("[data-rdtopic]"); if(b){ close(); go(b.dataset.rdtopic); } });
+    sh.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
+    const f=sh.querySelector(".rdt-x"); if(f) f.focus();
+  }
+
+  /* the floating study buddy lives in a little pocket-pet device (pet / feed / settings) */
+  function tama(){
+    const root=document.getElementById("buddy"), pet=document.getElementById("bdPet"); if(!root||!pet) return false;
+    if(document.getElementById("rdTama")) return true;
+    const w=document.createElement("div"); w.id="rdTama"; w.className="rd-tama";
+    w.innerHTML='<div class="rdtm-scr"></div><div class="rdtm-btns"><button type="button" data-tm="pet" aria-label="Pet your buddy">PET</button><button type="button" data-tm="feed" aria-label="Feed your buddy">FEED</button><button type="button" data-tm="set" aria-label="Buddy settings">⚙</button></div>';
+    pet.parentNode.insertBefore(w,pet); w.querySelector(".rdtm-scr").appendChild(pet);
+    w.addEventListener("click",e=>{ const b=e.target.closest("[data-tm]"); if(!b||!window.csBuddy) return; e.stopPropagation();
+      if(b.dataset.tm==="pet"){ if(window.csBuddy.pet) window.csBuddy.pet(); else pet.click(); }
+      else if(b.dataset.tm==="feed"){ if(window.csBuddy.feed) window.csBuddy.feed(); }
+      else if(window.csBuddy.open) window.csBuddy.open(); });
+    return true;
+  }
+  (function waitTama(n){ if(tama()||n>60) return; setTimeout(()=>waitTama(n+1),500); })(0);
+
+  /* Settings → Look & feel: theme + pop color dots */
+  function lookBox(){
+    const P=document.getElementById("csPanel"); if(!P) return;
+    const sec=[...P.querySelectorAll(".cs-sec")].find(s=>{ const h=s.querySelector(":scope > h4"); return h&&/look/i.test(h.textContent); })||P.querySelector(".cs-sec"); if(!sec) return;
+    let b=document.getElementById("rdLook");
+    const html=`<b>Theme</b><div class="rdl-row" role="radiogroup" aria-label="Theme">${RDT.map(t=>`<button type="button" role="radio" data-rdt="${t[0]}" aria-checked="${t[0]===rdt()}">${t[1]} ${t[2]}</button>`).join("")}</div><b>Pop color</b><small>Your highlight color. Saved to your account.</small><div class="rdl-row" role="radiogroup" aria-label="Pop color">${POPS.map(p=>`<button type="button" class="rdh-dot big" role="radio" data-pop="${p[0]}" aria-checked="${p[0]===pop()[0]}" aria-label="${p[1]}" title="${p[1]}" style="background:${p[2]}"></button>`).join("")}</div>`;
+    if(!b){ b=document.createElement("div"); b.id="rdLook"; b.className="rd-look"; const h=sec.querySelector(":scope > h4"); (h||sec.firstChild)&&(h?h.after(b):sec.prepend(b));
+      b.addEventListener("click",e=>{ const x=e.target.closest("[data-rdt],[data-pop]"); if(!x) return; if(x.dataset.rdt) setRdt(x.dataset.rdt); else { set("ncs-pop",JSON.stringify(x.dataset.pop)); applyPop(); } lastHTML=""; tick(); b.innerHTML=""; lookBox(); }); }
+    if(b.innerHTML!==html) b.innerHTML=html;
+    /* hide the old 5-theme picker inside Settings while the redesign is on */
+    const old=[...P.querySelectorAll("button")].find(x=>!b.contains(x)&&/Sepia/.test(x.textContent));
+    if(old){ const g=old.parentElement; if(g&&!g.classList.contains("rd-hide")){ g.classList.add("rd-hide"); const lab=g.previousElementSibling; if(lab&&lab.textContent.length<40&&!lab.contains(b)&&lab!==b) lab.classList.add("rd-hide"); } }
+  }
+  setInterval(lookBox,1500);
+
   const tick=()=>{ try{ paint(); }catch(e){ if(window.console) console.warn("rdHome",e); } };
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",tick); else tick();
   window.addEventListener("cs-auth",()=>setTimeout(tick,300)); setInterval(tick,8000); setTimeout(tick,1500); setTimeout(tick,4000);

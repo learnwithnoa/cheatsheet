@@ -2,7 +2,7 @@
    Everything here is scoped to html.rd so members keep today's Hibi until Noa launches it.
    Themes inside the redesign: data-rdt = light (default) | night | unicorn. --pop = the member's pop color (ncs-pop). */
 html.rd{
-  --pop:#F2D21B; --pop-ink:#1A1A1A; --alert:#D9442B;
+  --pop:#F2D21B; --pop-ink:#1A1A1A; --alert:#D9442B; --hl1:#C6FF00; --hl2:#FF3EA5; --hl3:#4F73FF;
   --bg:#E8E6DF; --surface:#F3F1EA; --surface-2:#ECEAE3; --line:#B9B5AA; --rule:#1A1A1A;
   --ink:#1A1A1A; --muted:#55524A;
   --royal:#1A1A1A; --bright:#2F5FD0; --sky:#DCD9CF; --green:#2E8A4A; --green-soft:#D7EBD9; --red:#C2413A; --red-soft:#F4DCD7;
@@ -16,7 +16,7 @@ html.rd{
   color-scheme:light;
 }
 html.rd[data-rdt="night"]{
-  --bg:#121212; --surface:#1C1C1C; --surface-2:#181818; --line:#3A3A38; --rule:#ECECE4;
+  --bg:#0F0F10; --surface:#18181A; --surface-2:#141416; --line:#3A3A38; --rule:#ECECE4;
   --ink:#ECECE4; --muted:#ABA9A0;
   --royal:#ECECE4; --bright:#8FB3E8; --sky:#2A2A28; --green:#6FD08C; --green-soft:#1D3324; --red:#FF7A6E; --red-soft:#3A1E1B;
   --gloss:linear-gradient(#ECECE4,#ECECE4); --gloss-text:linear-gradient(#ECECE4,#ECECE4);
@@ -57,8 +57,7 @@ html.rd .navgroup h4{font:700 10px var(--mono);letter-spacing:.08em;text-transfo
 html.rd .navgroup h4::before{content:"/ ";opacity:.6}
 
 /* square corners everywhere (photos, avatars and little dots stay round) */
-html.rd body *:not(img):not(svg):not(svg *):not(video):not(iframe):not([class*="avatar"]):not([class^="av-"]):not(.av):not([class*="dot"]):not(.g-ico):not([class*="buddy"]):not([class*="bd-"]):not([class*="pet"]):not([role="switch"]):not([class*="tgl"]):not([class*="toggle"]){border-radius:0!important}
-html.rd #homeClub>*{background:var(--surface)!important;border:1px dashed var(--rule)!important;box-shadow:var(--shadow)!important}
+html.rd body *:not(img):not(svg):not(svg *):not(video):not(iframe):not([class*="avatar"]):not([class^="av-"]):not(.av):not([class*="dot"]):not(.g-ico):not([class*="buddy"]):not([class*="bd-"]):not([class*="pet"]):not([role="switch"]):not([class*="tgl"]):not([class*="toggle"]):not([class*="tama"]):not(.rd-tama *){border-radius:0!important}
 /* headings, cards, chips, tags, buttons, inputs */
 html.rd .view h1{font:300 clamp(34px,6vw,56px)/1 var(--display);letter-spacing:.01em;text-transform:uppercase}
 html.rd .view h1 em{background:none;color:var(--ink);-webkit-text-fill-color:currentColor;font-style:normal;box-shadow:inset 0 -.42em 0 var(--pop)}
@@ -84,7 +83,18 @@ html.rd .count{font-family:var(--mono)}
 html.rd #rdHome{display:flex;flex-direction:column;gap:18px;margin:0 0 26px;position:relative}
 html.rd #v-notes>h1,html.rd #v-notes>.hm-lede{display:none}
 html.rd #v-notes>.rd-arr{display:flex;justify-content:flex-end;margin:0 0 8px}
-.rdh-star{position:absolute;right:-30px;top:-10px;width:clamp(140px,22vw,230px);height:auto;pointer-events:none;z-index:0}
+.rdh-art{position:absolute;pointer-events:none;z-index:0;height:auto}
+.rdh-blob{right:-46px;top:-6px;width:clamp(170px,26vw,260px)}
+.rdh-stairs{left:-34px;top:470px;width:120px}
+html.rd[data-rdt="night"] .rdh-stairs{left:-60px;top:430px;width:170px}
+.rdh-hl{background:var(--hl1);color:#1A1A1A;padding:0 .06em;margin-left:-.06em}
+.rdh-tkw{flex:3 1 330px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.rdh-dots{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:2px 8px 0}
+.rdh-dots span{font:400 10px var(--mono);margin-right:4px}
+.rdh-dot{width:24px;height:24px;border-radius:50%!important;border:2px solid var(--rule);padding:0;cursor:pointer;box-shadow:1px 2px 0 rgba(26,26,26,.25)}
+.rdh-dot.big{width:36px;height:36px}
+.rdh-dot[aria-checked="true"]{outline:3px solid var(--rule);outline-offset:2px}
+.rdh-dot:focus-visible{outline:3px solid var(--hl3);outline-offset:2px}
 .rdh-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;position:relative;z-index:1}
 .rdh-blurb{margin:0;font:400 8.5px/1.4 var(--mono);text-transform:uppercase;text-align:justify;max-width:230px}
 .rdh-meta{font:400 10.5px var(--mono);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -93,7 +103,7 @@ html.rd #v-notes>.rd-arr{display:flex;justify-content:flex-end;margin:0 0 8px}
 .rdh-title small{font:400 .4em var(--mono);letter-spacing:0;vertical-align:.9em;margin-left:.2em}
 .rdh-name{font:300 clamp(34px,5vw,48px)/1 var(--display);display:flex;justify-content:space-between;max-width:min(330px,80%);text-transform:uppercase;position:relative;z-index:1}
 .rdh-row{display:flex;flex-wrap:wrap;gap:18px;align-items:stretch;position:relative;z-index:1}
-.rdh-ticket{flex:3 1 330px;position:relative;display:flex;background:var(--pop);color:var(--pop-ink);min-height:150px;transform:rotate(-1.2deg);box-shadow:3px 4px 0 rgba(26,26,26,.2);margin:4px 8px 0}
+.rdh-ticket{position:relative;display:flex;background:var(--pop);color:var(--pop-ink);min-height:150px;transform:rotate(-1.2deg);box-shadow:3px 4px 0 rgba(26,26,26,.2);margin:4px 8px 0}
 .rdh-ticket::before,.rdh-ticket::after{content:"";position:absolute;top:50%;margin-top:-10px;width:20px;height:20px;border-radius:50%;background:var(--bg)}
 .rdh-ticket::before{left:-10px}.rdh-ticket::after{right:-10px}
 .rdh-tape{position:absolute;width:64px;height:17px;top:-9px;left:24%;transform:rotate(-4deg);background:rgba(143,179,232,.8);z-index:2}
@@ -125,11 +135,55 @@ html.rd .rdh-note,html.rd .rdh-note *{color:#1A1A1A}
 .rdh-st i{font:400 9px var(--mono);font-style:normal;display:block}
 .rdh-st b{font:500 14px/1.1 var(--body);text-transform:uppercase}
 .rdh-st.dark{background:var(--ink);color:var(--bg)}
+.rdh-st{position:relative}
+.rdh-st::after{content:"";position:absolute;top:8px;right:8px;width:10px;height:10px;background:var(--hl1);border:1px solid #1A1A1A}
+.rdh-st:nth-child(4n+2)::after{background:var(--hl2)}.rdh-st:nth-child(4n+3)::after{background:var(--hl3)}.rdh-st:nth-child(4n)::after{background:var(--pop)}
+.rdh-st:hover{background:var(--hl2);color:#1A1A1A}
+.rdh-love{all:unset;cursor:pointer;align-self:flex-start;margin-top:6px;font:700 12px var(--mono);border:1px solid #1A1A1A;padding:7px 10px;color:#1A1A1A;min-height:20px}
+.rdh-love[aria-pressed="true"]{background:#1A1A1A;color:#F3F1EA}
+.rdh-love:focus-visible{outline:3px solid var(--hl2)}
+.rd-more{margin:6px 0 14px}
+html.rd #v-notes .today-thought{display:none}
+html.rd #todayBox{grid-template-columns:1fr!important}
+/* a little colored pixel cluster after every page title, and colored squares on section titles */
+html.rd .view>h1::after{content:"";display:inline-block;width:.42em;height:.42em;margin-left:.18em;vertical-align:.12em;background:linear-gradient(90deg,var(--hl2) 50%,var(--hl3) 50%);box-shadow:.42em -.42em 0 var(--hl1)}
+html.rd .view h2::before{content:"";display:inline-block;width:12px;height:12px;margin-right:10px;background:var(--hl2);border:1px solid var(--rule);vertical-align:1px}
+html.rd .view h2:nth-of-type(3n+2)::before{background:var(--hl3)}html.rd .view h2:nth-of-type(3n)::before{background:var(--hl1)}
+html.rd .card:nth-of-type(3n+1){border-top:4px solid var(--hl2)}html.rd .card:nth-of-type(3n+2){border-top:4px solid var(--hl3)}html.rd .card:nth-of-type(3n){border-top:4px solid var(--hl1)}
+/* Grammar notes sheet */
+html.rd-lock,html.rd-lock body{overflow:hidden}
+.rd-topics{position:fixed;inset:0;z-index:2147483050;background:rgba(15,15,16,.55);display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:4vh 14px}
+.rdt-in{width:min(860px,100%);background:var(--bg);color:var(--ink);border:1px solid var(--rule);box-shadow:6px 8px 0 rgba(0,0,0,.3);padding:20px 22px 26px;display:flex;flex-direction:column;gap:18px;background-image:var(--grain)}
+.rdt-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.rdt-title{font:300 clamp(36px,6vw,54px)/1 var(--display);text-transform:uppercase;margin-top:4px}
+.rdt-head p{margin:6px 0 0;font:400 12px var(--mono);text-transform:uppercase}
+.rdt-x{all:unset;cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--rule);font:700 16px var(--mono)}
+.rdt-x:hover{background:var(--hl2);color:#1A1A1A}
+.rdt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.rdt-grid button{all:unset;cursor:pointer;box-sizing:border-box;min-height:44px;padding:10px 12px;border:1px dashed var(--rule);background:var(--surface);font:500 15px var(--body);color:var(--ink)}
+.rdt-grid button:hover,.rdt-grid button:focus-visible{background:var(--pop);color:var(--pop-ink);border-style:solid}
+/* the pocket-pet device around the floating buddy */
+.rd-tama{display:none}
+html.rd .rd-tama{display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:auto;width:112px;padding:14px 10px 12px;border-radius:50% 50% 46% 46% / 40% 40% 60% 60%!important;background-color:var(--hl3);background-image:radial-gradient(rgba(255,255,255,.28) .8px,transparent 1px);background-size:5px 5px;border:2px solid #1A1A1A;box-shadow:inset -6px -8px 0 rgba(0,0,0,.22),3px 4px 0 rgba(26,26,26,.25)}
+html.rd .rdtm-scr{width:80px;height:72px;background:#B9C9A2;border:4px solid #1A1A1A;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box}
+html.rd .rd-tama #bdPet{width:62px!important;height:62px!important;filter:grayscale(1) contrast(1.9) brightness(.95);mix-blend-mode:multiply;background:none!important;border:0!important;box-shadow:none!important}
+html.rd .rdtm-btns{display:flex;gap:5px}
+html.rd .rdtm-btns button{width:28px;height:28px;border-radius:50%!important;border:2px solid #1A1A1A;background:var(--pop);color:#1A1A1A;font:700 7.5px var(--mono);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+html.rd .rdtm-btns button[data-tm="set"]{font-size:12px}
+html.rd .rdtm-btns button:hover{background:var(--hl2)}
+html.rd .rdtm-btns button:focus-visible{outline:3px solid var(--hl1);outline-offset:1px}
+/* Settings: look box */
+.rd-look{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px;font-family:var(--mono)}
+.rd-look b{font:700 11px var(--mono);text-transform:uppercase}
+.rd-look small{font-size:11px;color:var(--muted)}
+.rdl-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.rdl-row button[data-rdt]{font:400 12px var(--mono);border:1px solid var(--rule);background:transparent;color:var(--ink);padding:8px 11px;min-height:40px;cursor:pointer}
+.rdl-row button[data-rdt][aria-checked="true"]{background:var(--ink);color:var(--bg)}
 .rdh-log a,.rdh-log button{all:unset;cursor:pointer;display:flex;gap:12px;align-items:center;min-height:46px;border-bottom:1px dotted var(--rule);width:100%;box-sizing:border-box;color:var(--ink)}
 .rdh-log a:hover,.rdh-log button:hover{background:var(--surface-2)}
 .rdh-log .t{font:400 10px var(--mono);width:74px;flex:none;text-transform:uppercase}
 .rdh-log .x{flex:1;font:400 16.5px/1.3 var(--body)}
-.rdh-log .new{font:700 9px var(--mono);background:var(--alert);color:#fff;padding:2px 6px}
+.rdh-log .new{font:700 9px var(--mono);background:var(--hl2);color:#1A1A1A;padding:2px 6px}
 .rdh-log .ar{font:400 13px var(--mono)}
 .rdh-bot{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;position:relative;z-index:1}
 .rdh-bot .rdh-logw{flex:3 1 320px;min-width:0}
@@ -188,7 +242,7 @@ html.rd #rdBtn{background:var(--pop);color:var(--pop-ink)}
 /* ===== simple mode: no tilts, no grain, no stickers, bigger text ===== */
 html.rd.cs-simple body::after{display:none}
 html.rd.cs-simple .rdh-ticket,html.rd.cs-simple .rdh-note,html.rd.cs-simple .rdh-st,html.rd.cs-simple .rdh-stuck{transform:none!important}
-html.rd.cs-simple .rdh-tape,html.rd.cs-simple .rdh-star,html.rd.cs-simple .rdh-blurb{display:none}
+html.rd.cs-simple .rdh-tape,html.rd.cs-simple .rdh-art,html.rd.cs-simple .rdh-blurb{display:none}
 html.rd.cs-simple .rdh-stuck{width:auto;height:auto;margin:0;background:var(--alert);padding:14px 20px}
 html.rd.cs-simple .rdh-stuck svg{display:none}
 html.rd.cs-simple .rdh-stuck span{position:static;flex-direction:row;gap:8px}
@@ -270,3 +324,8 @@ html.rd.cs-simple .lp *{transform:none!important}
 html.rd .lp-logo{white-space:nowrap}
 @media print{html.rd .lp::before{display:none}}
 html.rd .top .theme-btn,html.rd .top .music-btn,html.rd .top .auth-btn,html.rd #rdBtn{border-radius:0!important}
+
+html.rd .rd-hide{display:none!important}
+.rdt-grid button{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rdt-grid button i{font:400 10px var(--mono);font-style:normal;border:1px solid currentColor;padding:1px 5px;flex:none}
+@media (max-width:600px){html.rd .rd-tama{transform:scale(.78);transform-origin:bottom right}}

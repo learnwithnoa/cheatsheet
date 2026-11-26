@@ -1,0 +1,51 @@
+/* generated from build/parts/redesign.css tokens + page rules (edit both together) */
+html.rd{
+  --pop:#F2D21B; --pop-ink:#1A1A1A; --alert:#D9442B; --hl1:#C6FF00; --hl2:#FF3EA5; --hl3:#4F73FF;
+  --bg:#E8E6DF; --surface:#F3F1EA; --surface-2:#ECEAE3; --line:#B9B5AA; --rule:#1A1A1A;
+  --ink:#1A1A1A; --muted:#55524A;
+  --royal:#1A1A1A; --bright:#2F5FD0; --sky:#DCD9CF; --green:#2E8A4A; --green-soft:#D7EBD9; --red:#C2413A; --red-soft:#F4DCD7;
+  --gloss:linear-gradient(#1A1A1A,#1A1A1A);
+  --gloss-text:linear-gradient(#1A1A1A,#1A1A1A);
+  --display:"Saira","Lexend",system-ui,sans-serif;
+  --body:"Saira","Lexend",system-ui,sans-serif;
+  --mono:"Space Mono",ui-monospace,Menlo,monospace;
+  --shadow:3px 4px 0 rgba(26,26,26,.14);
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme:light;
+}
+html.rd[data-rdt="night"]{
+  --bg:#0F0F10; --surface:#18181A; --surface-2:#141416; --line:#3A3A38; --rule:#ECECE4;
+  --ink:#ECECE4; --muted:#ABA9A0;
+  --royal:#ECECE4; --bright:#8FB3E8; --sky:#2A2A28; --green:#6FD08C; --green-soft:#1D3324; --red:#FF7A6E; --red-soft:#3A1E1B;
+  --gloss:linear-gradient(#ECECE4,#ECECE4); --gloss-text:linear-gradient(#ECECE4,#ECECE4);
+  --shadow:3px 4px 0 rgba(0,0,0,.5);
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme:dark;
+}
+html.rd[data-rdt="unicorn"]{
+  --bg:#F2E4EE; --surface:#FBF2F8; --surface-2:#F6EAF2; --line:#D4B6CB; --rule:#2A1A33;
+  --ink:#2A1A33; --muted:#6A5470; --royal:#2A1A33; --bright:#8A4FD0; --sky:#EBD6E6;
+}
+
+/* Nov 26 2026: the Tech Grunge redesign on Noa's own pages (members.html, private-students.html). Loaded by rd.js only when Noa's 🧪 switch is on. */
+html.rd body{background:var(--bg)!important;color:var(--ink);font-family:var(--body)}
+html.rd body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;background-image:var(--grain);opacity:.17}
+html.rd[data-rdt="night"] body::after{opacity:.45}
+html.rd body *:not(img):not(svg):not(svg *):not([class*="avatar"]):not([class*="dot"]):not([role="switch"]):not([class*="tgl"]):not([class*="toggle"]){border-radius:0!important}
+html.rd h1,html.rd h2{font-family:var(--display);font-weight:300;text-transform:uppercase;letter-spacing:.01em}
+html.rd h1{font-size:clamp(30px,5vw,48px)}
+html.rd h2{border-bottom:1px solid var(--rule);padding-bottom:4px}
+html.rd h2::before{content:"";display:inline-block;width:11px;height:11px;margin-right:9px;background:var(--hl2);border:1px solid var(--rule);vertical-align:1px}
+html.rd h3,html.rd h4{font-family:var(--display);font-weight:600}
+html.rd .card,html.rd [class*="card"]{background:var(--surface)!important;border:1px dashed var(--rule)!important;box-shadow:var(--shadow)!important}
+html.rd button,html.rd .btn,html.rd [class*="pill"]{font-family:var(--mono)}
+html.rd input,html.rd select,html.rd textarea{border-radius:0!important;border:1px solid var(--rule)!important;background:var(--surface)!important;color:var(--ink)!important;font-family:var(--body)}
+html.rd input:focus,html.rd select:focus,html.rd textarea:focus{box-shadow:0 0 0 3px var(--pop)!important}
+html.rd table{border-collapse:collapse}
+html.rd th{font:700 10.5px var(--mono);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--rule)!important;background:transparent!important}
+html.rd td{border-bottom:1px dotted var(--line)!important}
+html.rd tr:hover td{background:var(--surface-2)}
+html.rd [aria-pressed="true"],html.rd [aria-selected="true"],html.rd .on,html.rd .active{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--rule)!important}
+html.rd :focus-visible{outline:3px solid var(--pop)!important;outline-offset:2px}
+html.rd a{color:var(--ink)}
+@media print{html.rd body::after{display:none}}
