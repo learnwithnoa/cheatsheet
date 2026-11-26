@@ -685,3 +685,41 @@ html.rd .brand .brand-row>span{display:inline-block;font:300 30px/.8 var(--displ
 html.rd .brand .kj{font:400 18px var(--display)!important;color:var(--ink)!important;-webkit-text-fill-color:currentColor!important}
 html.rd[data-rdt="unicorn"] .brand .brand-row>span{background:linear-gradient(100deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF)!important;color:#2A1A33!important}
 @media (max-width:600px){html.rd .brand .brand-row>span{font-size:24px}html.rd .brand small{display:none}}
+/* ===== contrast sweep (Nov 26 2026): every check below came out under 4.5:1 in at least one look ===== */
+html.rd #hdrWord,html.rd #hdrWord .theme-txt{color:var(--ink)!important}
+html.rd #tenseBoard .time-label{color:var(--bg)!important;background:var(--ink)!important}
+html.rd .lvl-chip{color:#1A1A1A!important;border-radius:0!important;font-family:var(--mono)!important}
+html.rd .pr-newb,html.rd .badge.new{background:var(--pop)!important;color:var(--pop-ink)!important;border-radius:0!important;border:1px solid var(--ink)}
+html.rd .pr-lvl-go,html.rd .pr-back-t{color:var(--ink)!important}
+html.rd .rowbtn.save,html.rd .hb-pp-btn{color:var(--ink)!important;border-color:var(--ink)!important}
+html.rd #vocArea s{color:var(--muted)!important;opacity:1}
+html.rd #v-club :is(.cl-good,.cl-good>*,.cl-tile){background:var(--surface)!important;border-radius:0!important;border-color:var(--rule)!important}
+html.rd #v-club .hb-pay-btn{border-radius:0!important;border:1px solid var(--ink)!important;box-shadow:4px 4px 0 var(--ink)!important}
+html.rd[data-rdt="night"] #v-club .hb-pay-btn{box-shadow:4px 4px 0 var(--pop)!important}
+/* study music + study timer panels */
+html.rd :is(#musicPanel,#tmPanel) h2,html.rd :is(#musicPanel,#tmPanel) h3,html.rd :is(#musicPanel,#tmPanel) .cs-title{font-family:var(--display)!important;font-weight:400!important;text-transform:uppercase}
+html.rd #musicPanel .ms-cap,html.rd #musicPanel [class*="play"]{background:var(--ink)!important;color:var(--bg)!important;border-radius:0!important;background-image:none!important;font-family:var(--mono)!important;text-transform:uppercase}
+html.rd #musicPanel .chip,html.rd #tmPanel button:not(.qa-x):not([class*="close"]){border-radius:0!important;font-family:var(--mono)!important;box-shadow:none!important}
+html.rd #musicPanel .chip[aria-pressed="true"],html.rd #tmPanel button[aria-pressed="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+html.rd #tmPanel #csTGo{background:var(--ink)!important;background-image:none!important;color:var(--bg)!important;box-shadow:3px 3px 0 var(--pop)!important;text-transform:uppercase}
+html.rd #tmPanel #csTGo:hover,html.rd #musicPanel .chip:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+html.rd #bdStage,html.rd .bd-stage{border-radius:0!important}
+/* ===== landing page, round 2 (preview with hibi.cl/?rd=1 in a private window) ===== */
+html.rd .lp-logo .lp-lw{margin-right:6px;display:inline-block;background:var(--pop);color:#1A1A1A;padding:.08em .1em .02em;line-height:.8;font:300 26px/.8 var(--display);letter-spacing:.06em;text-transform:uppercase}
+html.rd .lp-hero .lp-btn:first-of-type,html.rd .lp-end .lp-btn:first-of-type{position:relative;transform:rotate(-1.2deg);border-radius:0!important;padding-left:30px!important;padding-right:30px!important}
+html.rd .lp-hero .lp-btn:first-of-type::before,html.rd .lp-hero .lp-btn:first-of-type::after,html.rd .lp-end .lp-btn:first-of-type::before,html.rd .lp-end .lp-btn:first-of-type::after{content:"";position:absolute;top:50%;margin-top:-8px;width:16px;height:16px;border-radius:50%;background:var(--bg)}
+html.rd .lp-hero .lp-btn:first-of-type::before,html.rd .lp-end .lp-btn:first-of-type::before{left:-8px}
+html.rd .lp-hero .lp-btn:first-of-type::after,html.rd .lp-end .lp-btn:first-of-type::after{right:-8px}
+html.rd .lp-fix{transform:rotate(-.8deg);position:relative;background:#C9DBF4!important;color:#1A1A1A!important;border:0!important;box-shadow:4px 6px 0 rgba(0,0,0,.18)!important;border-radius:0!important}
+html.rd .lp-fix::before{content:"";position:absolute;top:-10px;left:42%;width:90px;height:20px;background:rgba(229,83,61,.55);transform:rotate(-3deg)}
+html.rd .lp-fix *{color:#1A1A1A!important}
+html.rd .lp-sec>h2{counter-increment:lps}
+html.rd .lp-main{counter-reset:lps}
+html.rd .lp-sec>h2::before{content:counter(lps,decimal-leading-zero) " / ";font:400 .42em var(--mono);vertical-align:.5em;color:var(--muted);letter-spacing:.06em}
+html.rd .lp-end{position:relative}
+html.rd .lp-end::after{content:"FREE";position:absolute;right:-26px;top:-30px;width:96px;height:96px;display:grid;place-items:center;font:800 20px var(--display);color:#1A1A1A;background:var(--hl1);clip-path:polygon(50% 0,61% 22%,85% 10%,78% 35%,100% 50%,78% 65%,85% 90%,61% 78%,50% 100%,39% 78%,15% 90%,22% 65%,0 50%,22% 35%,15% 10%,39% 22%);transform:rotate(12deg)}
+html.rd.cs-simple .lp-end::after,html.rd.cs-calm .lp-end::after{display:none}
+@media (max-width:600px){html.rd .lp-end::after{right:-6px;top:-38px;width:76px;height:76px;font-size:16px}}
+html.rd[data-rdt="night"] .lp-fix{background:#2A3550!important}
+html.rd[data-rdt="night"] .lp-fix *{color:#ECECE4!important}
+@media (max-width:600px){html.rd .lp-top .lp-logo small{display:none}html.rd .lp-top .lp-in{font-size:10px!important;padding:8px 8px!important;white-space:nowrap}html.rd .lp-top{gap:6px}html.rd .lp-logo .lp-lw{font-size:22px}}

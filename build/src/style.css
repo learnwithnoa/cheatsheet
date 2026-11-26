@@ -2297,4 +2297,5 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .wlm-pops{display:flex;gap:8px;flex-wrap:wrap}.wlm-pops .wlm-dot{width:30px;height:30px;border-radius:50%;border:1px solid var(--ink,#1A1A1A);padding:0;cursor:pointer}
 .wlm-pops .wlm-dot[aria-pressed="true"]{outline:3px solid var(--ink,#1A1A1A);outline-offset:2px}
 @media (max-width:600px){.wl-card{display:grid;grid-template-columns:30px 1fr;column-gap:10px;align-items:start;padding:10px 12px}.wl-card .wl-ico{grid-row:span 2;margin:2px 0 0}.wl-cards{gap:8px}}
+.lp-logo .lp-lw{font:inherit}
 ⟦include:parts/redesign.css⟧

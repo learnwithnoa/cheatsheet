@@ -103,7 +103,8 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 try{var q=location.search||"";if(!localStorage.getItem("ncs-sync-uid")&&!/[?&](guest|preview|tb)=/.test(q)&&!sessionStorage.getItem("cs-guest")&&window.top===window){var d=document.documentElement;d.classList.add("cs-out-guess");var lt=localStorage.getItem("ncs-theme");d.style.background=(lt&&["light","unicorn","sepia"].indexOf(lt)<0)?"#0A1424":"#EEF5FC";}}catch(e){}
 
 /* Nov 26 2026: the Tech Grunge redesign, Noa only for now (065-redesign.js, parts/redesign.css). cs-rd is set on this device by Noa's 🧪 switch. */
-try{if(localStorage.getItem("cs-rd")==="1"&&!/[?&]tb=/.test(location.search||"")){var R=document.documentElement;R.classList.add("rd");var rt=localStorage.getItem("cs-rd-theme")||"light";R.setAttribute("data-rdt",rt);var pp=localStorage.getItem("ncs-pop")||"";try{pp=JSON.parse(pp);}catch(e){}var PC={yellow:"#F2D21B",fuchsia:"#FF3EA5",lime:"#C6FF00",blue:"#7D96FF",orange:"#FF7A2F",mint:"#5CE0B0"};R.style.setProperty("--pop",PC[pp]||PC.yellow);var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&display=swap";document.head.appendChild(l);}}catch(e){}
+/* ?rd=1 previews the redesign for this one visit without saving anything (e.g. the signed-out landing page in a private window) */
+try{if((localStorage.getItem("cs-rd")==="1"||/[?&]rd=1(&|$)/.test(location.search||""))&&!/[?&]tb=/.test(location.search||"")){var R=document.documentElement;R.classList.add("rd");var rt=localStorage.getItem("cs-rd-theme")||"light";R.setAttribute("data-rdt",rt);var pp=localStorage.getItem("ncs-pop")||"";try{pp=JSON.parse(pp);}catch(e){}var PC={yellow:"#F2D21B",fuchsia:"#FF3EA5",lime:"#C6FF00",blue:"#7D96FF",orange:"#FF7A2F",mint:"#5CE0B0"};R.style.setProperty("--pop",PC[pp]||PC.yellow);var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&display=swap";document.head.appendChild(l);}}catch(e){}
 })();
 </script>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -3480,6 +3481,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 .wlm-pops{display:flex;gap:8px;flex-wrap:wrap}.wlm-pops .wlm-dot{width:30px;height:30px;border-radius:50%;border:1px solid var(--ink,#1A1A1A);padding:0;cursor:pointer}
 .wlm-pops .wlm-dot[aria-pressed="true"]{outline:3px solid var(--ink,#1A1A1A);outline-offset:2px}
 @media (max-width:600px){.wl-card{display:grid;grid-template-columns:30px 1fr;column-gap:10px;align-items:start;padding:10px 12px}.wl-card .wl-ico{grid-row:span 2;margin:2px 0 0}.wl-cards{gap:8px}}
+.lp-logo .lp-lw{font:inherit}
 /* ===== Nov 26 2026: Tech Grunge redesign (Noa only for now: html.rd, switched by the 🧪 button in the top bar, 065-redesign.js).
    Everything here is scoped to html.rd so members keep today's Hibi until Noa launches it.
    Themes inside the redesign: data-rdt = light (default) | night | unicorn. --pop = the member's pop color (ncs-pop). */
@@ -4167,6 +4169,44 @@ html.rd .brand .brand-row>span{display:inline-block;font:300 30px/.8 var(--displ
 html.rd .brand .kj{font:400 18px var(--display)!important;color:var(--ink)!important;-webkit-text-fill-color:currentColor!important}
 html.rd[data-rdt="unicorn"] .brand .brand-row>span{background:linear-gradient(100deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF)!important;color:#2A1A33!important}
 @media (max-width:600px){html.rd .brand .brand-row>span{font-size:24px}html.rd .brand small{display:none}}
+/* ===== contrast sweep (Nov 26 2026): every check below came out under 4.5:1 in at least one look ===== */
+html.rd #hdrWord,html.rd #hdrWord .theme-txt{color:var(--ink)!important}
+html.rd #tenseBoard .time-label{color:var(--bg)!important;background:var(--ink)!important}
+html.rd .lvl-chip{color:#1A1A1A!important;border-radius:0!important;font-family:var(--mono)!important}
+html.rd .pr-newb,html.rd .badge.new{background:var(--pop)!important;color:var(--pop-ink)!important;border-radius:0!important;border:1px solid var(--ink)}
+html.rd .pr-lvl-go,html.rd .pr-back-t{color:var(--ink)!important}
+html.rd .rowbtn.save,html.rd .hb-pp-btn{color:var(--ink)!important;border-color:var(--ink)!important}
+html.rd #vocArea s{color:var(--muted)!important;opacity:1}
+html.rd #v-club :is(.cl-good,.cl-good>*,.cl-tile){background:var(--surface)!important;border-radius:0!important;border-color:var(--rule)!important}
+html.rd #v-club .hb-pay-btn{border-radius:0!important;border:1px solid var(--ink)!important;box-shadow:4px 4px 0 var(--ink)!important}
+html.rd[data-rdt="night"] #v-club .hb-pay-btn{box-shadow:4px 4px 0 var(--pop)!important}
+/* study music + study timer panels */
+html.rd :is(#musicPanel,#tmPanel) h2,html.rd :is(#musicPanel,#tmPanel) h3,html.rd :is(#musicPanel,#tmPanel) .cs-title{font-family:var(--display)!important;font-weight:400!important;text-transform:uppercase}
+html.rd #musicPanel .ms-cap,html.rd #musicPanel [class*="play"]{background:var(--ink)!important;color:var(--bg)!important;border-radius:0!important;background-image:none!important;font-family:var(--mono)!important;text-transform:uppercase}
+html.rd #musicPanel .chip,html.rd #tmPanel button:not(.qa-x):not([class*="close"]){border-radius:0!important;font-family:var(--mono)!important;box-shadow:none!important}
+html.rd #musicPanel .chip[aria-pressed="true"],html.rd #tmPanel button[aria-pressed="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+html.rd #tmPanel #csTGo{background:var(--ink)!important;background-image:none!important;color:var(--bg)!important;box-shadow:3px 3px 0 var(--pop)!important;text-transform:uppercase}
+html.rd #tmPanel #csTGo:hover,html.rd #musicPanel .chip:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+html.rd #bdStage,html.rd .bd-stage{border-radius:0!important}
+/* ===== landing page, round 2 (preview with hibi.cl/?rd=1 in a private window) ===== */
+html.rd .lp-logo .lp-lw{margin-right:6px;display:inline-block;background:var(--pop);color:#1A1A1A;padding:.08em .1em .02em;line-height:.8;font:300 26px/.8 var(--display);letter-spacing:.06em;text-transform:uppercase}
+html.rd .lp-hero .lp-btn:first-of-type,html.rd .lp-end .lp-btn:first-of-type{position:relative;transform:rotate(-1.2deg);border-radius:0!important;padding-left:30px!important;padding-right:30px!important}
+html.rd .lp-hero .lp-btn:first-of-type::before,html.rd .lp-hero .lp-btn:first-of-type::after,html.rd .lp-end .lp-btn:first-of-type::before,html.rd .lp-end .lp-btn:first-of-type::after{content:"";position:absolute;top:50%;margin-top:-8px;width:16px;height:16px;border-radius:50%;background:var(--bg)}
+html.rd .lp-hero .lp-btn:first-of-type::before,html.rd .lp-end .lp-btn:first-of-type::before{left:-8px}
+html.rd .lp-hero .lp-btn:first-of-type::after,html.rd .lp-end .lp-btn:first-of-type::after{right:-8px}
+html.rd .lp-fix{transform:rotate(-.8deg);position:relative;background:#C9DBF4!important;color:#1A1A1A!important;border:0!important;box-shadow:4px 6px 0 rgba(0,0,0,.18)!important;border-radius:0!important}
+html.rd .lp-fix::before{content:"";position:absolute;top:-10px;left:42%;width:90px;height:20px;background:rgba(229,83,61,.55);transform:rotate(-3deg)}
+html.rd .lp-fix *{color:#1A1A1A!important}
+html.rd .lp-sec>h2{counter-increment:lps}
+html.rd .lp-main{counter-reset:lps}
+html.rd .lp-sec>h2::before{content:counter(lps,decimal-leading-zero) " / ";font:400 .42em var(--mono);vertical-align:.5em;color:var(--muted);letter-spacing:.06em}
+html.rd .lp-end{position:relative}
+html.rd .lp-end::after{content:"FREE";position:absolute;right:-26px;top:-30px;width:96px;height:96px;display:grid;place-items:center;font:800 20px var(--display);color:#1A1A1A;background:var(--hl1);clip-path:polygon(50% 0,61% 22%,85% 10%,78% 35%,100% 50%,78% 65%,85% 90%,61% 78%,50% 100%,39% 78%,15% 90%,22% 65%,0 50%,22% 35%,15% 10%,39% 22%);transform:rotate(12deg)}
+html.rd.cs-simple .lp-end::after,html.rd.cs-calm .lp-end::after{display:none}
+@media (max-width:600px){html.rd .lp-end::after{right:-6px;top:-38px;width:76px;height:76px;font-size:16px}}
+html.rd[data-rdt="night"] .lp-fix{background:#2A3550!important}
+html.rd[data-rdt="night"] .lp-fix *{color:#ECECE4!important}
+@media (max-width:600px){html.rd .lp-top .lp-logo small{display:none}html.rd .lp-top .lp-in{font-size:10px!important;padding:8px 8px!important;white-space:nowrap}html.rd .lp-top{gap:6px}html.rd .lp-logo .lp-lw{font-size:22px}}
 
 </style>
 
@@ -4583,7 +4623,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-46a8e806b8cf.js"></script>
+<script src="js/h-7c1a84436c5d.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -5496,7 +5536,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-5790ac5bb866.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126193209"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126201511"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
