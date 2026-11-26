@@ -123,6 +123,12 @@ else {
 }
 const sb=document.getElementById("twSay");
 if(typeof canSpeak!=="undefined" && canSpeak){ sb.addEventListener("click",()=>{ if(cur) say(cur[0]+". "+(cur[2]||""),sb); }); } else sb.hidden=true;
-document.getElementById("twSave").addEventListener("click",()=>{ if(cur) addWord(cur[0],cur[1],cur[2]); });
+/* Nov 26 2026: the button says when today's word is already in My notebook */
+const svb=document.getElementById("twSave");
+function savedMark(){ let has=false; try{ const n=x=>String(x||"").toLowerCase().replace(/[^a-z0-9' ]/g,"").trim(); const ws=JSON.parse(localStorage.getItem("ncs-words")||"[]"); has=!!(cur&&Array.isArray(ws)&&ws.some(x=>x&&n(x.w)===n(cur[0]))); }catch(e){}
+  svb.classList.toggle("is-saved",has); svb.textContent=has?"✓ Saved to My notebook":"+ Save to My notebook"; svb.setAttribute("aria-pressed",has?"true":"false"); }
+svb.addEventListener("click",()=>{ if(cur&&!svb.classList.contains("is-saved")) addWord(cur[0],cur[1],cur[2]); setTimeout(savedMark,50); });
+savedMark(); setTimeout(savedMark,1500); setTimeout(savedMark,5000); setInterval(savedMark,15000);
+window.addEventListener("storage",e=>{ if(e.key==="ncs-words") savedMark(); });
 })();
 

@@ -2285,4 +2285,6 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .wcard[data-pk],.vs-item[data-pk]{box-shadow:inset 4px 0 0 var(--pk),var(--shadow,none)}
 .vs-item-top .pos{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:1px 6px;margin-left:8px;vertical-align:2px}
 .vs-item-top b+.pos{margin-right:auto}
+/* word of the day already in My notebook */
+#twSave.is-saved{background:var(--surface)!important;color:var(--green)!important;border:1.5px solid var(--green)!important;box-shadow:none!important}
 ⟦include:parts/redesign.css⟧

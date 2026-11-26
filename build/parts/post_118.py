@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=73',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=74',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -439,6 +439,15 @@ if '2026-1125-sweep' not in s:
     ["📊","Wide tables on your phone","tables that don't fit on the screen now show <b>Swipe the table →</b>, so you know there's more to the right."],
     ["🐾","Your buddy steps aside","on your phone, your study buddy fades while you scroll so it never covers what you're reading."],
     ["🔤","Easier to read","the level badges next to each lesson (A1, B1…) are clear again in light mode, and small labels are a bit bigger."]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1126-small' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1126-small", date:"November 26, 2026", title:"Little things on Home", items:[
+    ["🎬","Club recordings from Home","in <b>This week in the club</b> on Home, every class that already happened has a <b>🎬 Recording</b> button when its video is up.","notes"],
+    ["✅","Word of the day: already saved?","if today's word is already in My notebook, the button now says <b>✓ Saved to My notebook</b>.","notes"],
+    ["🌐","A simpler Translator","the page-wide 🔊 Listen button is gone from the Translator. You can still hear each translation with its own 🔊 button.","translate"]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

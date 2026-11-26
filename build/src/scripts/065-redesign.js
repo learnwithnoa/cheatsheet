@@ -61,7 +61,7 @@
   /* the normal theme button opens the redesign's look menu instead of the old 5 themes */
   const tb=document.getElementById("themeBtn");
   if(tb){ tb.addEventListener("click",e=>{ e.stopImmediatePropagation(); e.preventDefault(); if(menu){ closeMenu(); return; } openMenu(tb); },true); }
-  new MutationObserver(paintBtn).observe(root,{attributes:true,attributeFilter:["data-theme"]}); paintBtn();
+  let fixes=0; new MutationObserver(()=>{ paintBtn(); /* while the redesign is on, its own theme wins (the synced Hibi theme can arrive later and bring back the old navy) */ if(RD&&root.getAttribute("data-theme")!==want()&&fixes<20){ fixes++; setTimeout(sync,0); } }).observe(root,{attributes:true,attributeFilter:["data-theme"]}); paintBtn();
   window.addEventListener("storage",e=>{ if(e.key==="ncs-pop") applyPop(); });
   setInterval(applyPop,5000); /* picks up the synced pop color after sign-in */
 
@@ -99,9 +99,9 @@
     try{ const n=window.__csCoachNews&&window.__csCoachNews.list(); (n||[]).slice(0,2).forEach(x=>L.push({t:x.d?dd(new Date(x.d+"T12:00:00")):"COACHING",x:String(x.t||"").replace(/<[^>]+>/g,""),go:"coaching",isNew:true})); }catch(e){}
     const tw=document.getElementById("twWord"); if(tw&&tw.textContent.trim()) L.push({t:"WORD",x:"Word of the day: "+tw.textContent.trim(),scroll:"todayBox"});
     const rv=document.getElementById("rvList"); if(vis("rvBox")&&rv&&rv.children.length) L.push({t:"NOTEBOOK",x:rv.children.length+" "+(rv.children.length===1?"word":"words")+" to review",scroll:"rvBox"});
-    const c=typeof window.__csClubNext==="function"?window.__csClubNext():null; if(c&&c.post&&c.post.title&&vis("navClub")) L.push({t:"CLUB",x:"This week: "+c.post.title,go:"club"});
+    const c=typeof window.__csClubNext==="function"?window.__csClubNext():null; if(c&&c.post&&c.post.title&&vis("navClub")) L.push({t:"CLUB",x:"This week: "+c.post.title,go:"club:week"});
     if(vis("awBox")) L.push({t:"WORLD",x:"Around the world today",scroll:"awBox"});
-    L.push({t:"BUDDY",x:"Say hi to your study buddy",go:"park"});
+    L.push({t:"BUDDY",x:"Say hi to your study buddy",go:"buddy"});
     return L.slice(0,5);
   }
   function note(){
@@ -113,7 +113,7 @@
     return null;
   }
   const ART_DAY='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpS" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#1A1A1A"/><rect x="1" y="1" width="1" height="1" fill="#1A1A1A"/><rect x="1" width="1" height="1" fill="#888"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpS)" stroke="var(--pop)" stroke-width="2.5"/></svg>';
-  const ART_NIGHT='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpN" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ECECE4"/><rect x="1" y="1" width="1" height="1" fill="#6E6E6E"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpN)" stroke="var(--hl1)" stroke-width="2.5"/></svg><svg class="rdh-art rdh-stairs" viewBox="0 0 120 120" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpNr" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#FF3B2F"/><rect x="1" y="1" width="1" height="1" fill="#7A1A14"/></pattern></defs><path d="M52 6c14 0 18 14 30 12 14-2 18 14 10 24 10 8 6 24-8 24 4 14-12 24-24 16-10 12-30 8-30-6-14 2-24-12-14-24-12-10-4-28 12-26 2-12 12-20 24-20z" fill="url(#rdpNr)"/></svg>';
+  const ART_NIGHT='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpN" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ECECE4"/><rect x="1" y="1" width="1" height="1" fill="#6E6E6E"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpN)" stroke="var(--hl1)" stroke-width="2.5"/></svg>';
   let lastHTML="";
   function paint(){
     const view=document.getElementById("v-notes"); if(!view) return;
@@ -140,12 +140,16 @@
     if(!document.getElementById("rdMore")){ const m=document.createElement("div"); m.id="rdMore"; m.className="rdh-lab rd-more"; m.innerHTML="<span>More for today</span><span>Word · review · club · notes</span>"; const a=box.nextElementSibling&&box.nextElementSibling.classList.contains("rd-arr")?box.nextElementSibling:box; a.after(m); }
     if(html===lastHTML) return; const keep=document.activeElement&&document.activeElement.id==="rdTrIn"; if(keep) return; lastHTML=html; box.innerHTML=html;
   }
+  /* the card you jump to lights up for a moment so you can see where you landed */
+  function glow(el){ el.classList.remove("rd-glow"); void el.offsetWidth; el.classList.add("rd-glow"); setTimeout(()=>el.classList.remove("rd-glow"),2200); }
   document.addEventListener("click",e=>{
     const t=e.target.closest&&e.target.closest("#rdHome [data-rdgo],#rdHome [data-rdscroll],#rdHome [data-rdsheet],#rdHome [data-rdlove],#rdHome [data-rdpop]"); if(!t) return; e.preventDefault();
     if(t.dataset.rdlove){ const lv=document.getElementById("ttLove"); if(lv){ lv.click(); setTimeout(tick,60); } return; }
     if(t.dataset.rdpop){ set("ncs-pop",JSON.stringify(t.dataset.rdpop)); applyPop(); lastHTML=""; tick(); return; }
+    if(t.dataset.rdgo==="buddy"){ if(window.csBuddy&&window.csBuddy.open) window.csBuddy.open(); else go("park"); return; }
+    if(t.dataset.rdgo==="club:week"){ go("club"); setTimeout(()=>{ if(window.__clubTab) window.__clubTab("week"); setTimeout(()=>{ const v=document.getElementById("v-club"); const el=v&&([...v.querySelectorAll(".cl-next,.cl-sec,h2")].find(x=>x.offsetParent)); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); } },200); },150); return; }
     if(t.dataset.rdgo){ go(t.dataset.rdgo); return; }
-    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); } return; }
+    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); } return; }
     if(t.dataset.rdsheet){ openTopics(t); }
   });
   document.addEventListener("submit",e=>{

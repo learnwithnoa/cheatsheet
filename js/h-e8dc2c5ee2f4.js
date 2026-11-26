@@ -749,7 +749,13 @@ else {
 }
 const sb=document.getElementById("twSay");
 if(typeof canSpeak!=="undefined" && canSpeak){ sb.addEventListener("click",()=>{ if(cur) say(cur[0]+". "+(cur[2]||""),sb); }); } else sb.hidden=true;
-document.getElementById("twSave").addEventListener("click",()=>{ if(cur) addWord(cur[0],cur[1],cur[2]); });
+/* Nov 26 2026: the button says when today's word is already in My notebook */
+const svb=document.getElementById("twSave");
+function savedMark(){ let has=false; try{ const n=x=>String(x||"").toLowerCase().replace(/[^a-z0-9' ]/g,"").trim(); const ws=JSON.parse(localStorage.getItem("ncs-words")||"[]"); has=!!(cur&&Array.isArray(ws)&&ws.some(x=>x&&n(x.w)===n(cur[0]))); }catch(e){}
+  svb.classList.toggle("is-saved",has); svb.textContent=has?"✓ Saved to My notebook":"+ Save to My notebook"; svb.setAttribute("aria-pressed",has?"true":"false"); }
+svb.addEventListener("click",()=>{ if(cur&&!svb.classList.contains("is-saved")) addWord(cur[0],cur[1],cur[2]); setTimeout(savedMark,50); });
+savedMark(); setTimeout(savedMark,1500); setTimeout(savedMark,5000); setInterval(savedMark,15000);
+window.addEventListener("storage",e=>{ if(e.key==="ncs-words") savedMark(); });
 })();
 
 (function(){ const s=document.getElementById("wSort"); if(!s) return; s.value=wSortMode; s.addEventListener("change",()=>{ wSortMode=s.value; try{ localStorage.setItem("cs-wsort",wSortMode); }catch(e){} renderWords(); }); })();
@@ -5334,6 +5340,11 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1126-small", date:"November 26, 2026", title:"Little things on Home", items:[
+    ["🎬","Club recordings from Home","in <b>This week in the club</b> on Home, every class that already happened has a <b>🎬 Recording</b> button when its video is up.","notes"],
+    ["✅","Word of the day: already saved?","if today's word is already in My notebook, the button now says <b>✓ Saved to My notebook</b>.","notes"],
+    ["🌐","A simpler Translator","the page-wide 🔊 Listen button is gone from the Translator. You can still hear each translation with its own 🔊 button.","translate"]
+  ]},
   {id:"2026-1125-sweep", date:"November 25, 2026", title:"Small fixes all over Hibi 🧹", items:[
     ["📊","Wide tables on your phone","tables that don't fit on the screen now show <b>Swipe the table →</b>, so you know there's more to the right."],
     ["🐾","Your buddy steps aside","on your phone, your study buddy fades while you scroll so it never covers what you're reading."],

@@ -82,7 +82,7 @@ html.lb-lock .lk-box,html.lb-lock .lk-chip{z-index:10060!important}
 <script src="ios-sound.js?v=2"></script>
 <link rel="stylesheet" href="comfort.css?v=22">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(s.focus)r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
-<script src="comfort.js?v=32" defer></script>
+<script src="comfort.js?v=33" defer></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1D4ED8">
@@ -2824,7 +2824,8 @@ html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-th
 .hc-list{display:flex;flex-direction:column;gap:4px;font-size:14px}
 .hc-list div{display:flex;gap:8px;align-items:baseline}
 .hc-list .d{font:700 11.5px var(--mono);letter-spacing:.02em;color:var(--muted);flex:none;width:100px;white-space:nowrap;text-transform:uppercase}
-.hc-list .past{opacity:.55}
+.hc-list .past>span{opacity:.55}
+.hc-rec{margin-left:auto;flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:2px 10px;font:700 12px var(--mono,monospace);cursor:pointer;white-space:nowrap}.hc-rec:hover{border-color:#E5533D;color:#E5533D}
 .hc-go{all:unset;cursor:pointer;font:800 14px var(--body);color:#B86E00}
 html:not([data-theme="light"]):not([data-theme="sepia"]):not([data-theme="unicorn"]) .hc-go{color:#F5C46B}
 .hc-go:hover{text-decoration:underline}
@@ -3467,10 +3468,12 @@ html.cs-calm .cs-rxpal button{transition:none}
 .wcard[data-pk],.vs-item[data-pk]{box-shadow:inset 4px 0 0 var(--pk),var(--shadow,none)}
 .vs-item-top .pos{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:1px 6px;margin-left:8px;vertical-align:2px}
 .vs-item-top b+.pos{margin-right:auto}
+/* word of the day already in My notebook */
+#twSave.is-saved{background:var(--surface)!important;color:var(--green)!important;border:1.5px solid var(--green)!important;box-shadow:none!important}
 /* ===== Nov 26 2026: Tech Grunge redesign (Noa only for now: html.rd, switched by the 🧪 button in the top bar, 065-redesign.js).
    Everything here is scoped to html.rd so members keep today's Hibi until Noa launches it.
    Themes inside the redesign: data-rdt = light (default) | night | unicorn. --pop = the member's pop color (ncs-pop). */
-html.rd{
+html.rd:not(#_rd){
   --pop:#F2D21B; --pop-ink:#1A1A1A; --alert:#D9442B; --hl1:#C6FF00; --hl2:#FF3EA5; --hl3:#4F73FF;
   --bg:#E8E6DF; --surface:#F3F1EA; --surface-2:#ECEAE3; --line:#B9B5AA; --rule:#1A1A1A;
   --ink:#1A1A1A; --muted:#55524A;
@@ -3484,7 +3487,7 @@ html.rd{
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
   color-scheme:light;
 }
-html.rd[data-rdt="night"]{
+html.rd:not(#_rd)[data-rdt="night"]{
   --bg:#0F0F10; --surface:#18181A; --surface-2:#141416; --line:#3A3A38; --rule:#ECECE4;
   --ink:#ECECE4; --muted:#ABA9A0;
   --royal:#ECECE4; --bright:#8FB3E8; --sky:#2A2A28; --green:#6FD08C; --green-soft:#1D3324; --red:#FF7A6E; --red-soft:#3A1E1B;
@@ -3493,7 +3496,7 @@ html.rd[data-rdt="night"]{
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
   color-scheme:dark;
 }
-html.rd[data-rdt="unicorn"]{
+html.rd:not(#_rd)[data-rdt="unicorn"]{
   --bg:#F2E4EE; --surface:#FBF2F8; --surface-2:#F6EAF2; --line:#D4B6CB; --rule:#2A1A33;
   --ink:#2A1A33; --muted:#6A5470; --royal:#2A1A33; --bright:#8A4FD0; --sky:#EBD6E6;
 }
@@ -3510,7 +3513,7 @@ html.rd :focus-visible{outline:3px solid var(--pop);outline-offset:2px;border-ra
 /* top bar */
 html.rd .top{background:var(--bg);border-bottom:1px solid var(--rule)}
 html.rd body::before{background:var(--bg)}
-html.rd .brand small{display:none}
+html.rd .brand small{display:inline-block;font:400 10px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);-webkit-text-fill-color:currentColor;background:none;margin-left:6px}
 html.rd .brand span{font:300 26px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;background:none;color:var(--ink);-webkit-text-fill-color:currentColor}
 html.rd .theme-btn{border-radius:0;border:1px solid var(--rule);background:transparent;font:700 13px var(--mono);box-shadow:none}
 html.rd .theme-btn:hover{background:var(--pop);color:var(--pop-ink)}
@@ -3529,7 +3532,8 @@ html.rd .navgroup h4::before{content:"/ ";opacity:.6}
 html.rd body *:not(img):not(svg):not(svg *):not(video):not(iframe):not([class*="avatar"]):not([class^="av-"]):not(.av):not([class*="dot"]):not(.g-ico):not([class*="buddy"]):not([class*="bd-"]):not([class*="pet"]):not([role="switch"]):not([class*="tgl"]):not([class*="toggle"]):not([class*="tama"]):not(.rd-tama *){border-radius:0!important}
 /* headings, cards, chips, tags, buttons, inputs */
 html.rd .view h1{font:300 clamp(34px,6vw,56px)/1 var(--display);letter-spacing:.01em;text-transform:uppercase}
-html.rd .view h1 em{background:none;color:var(--ink);-webkit-text-fill-color:currentColor;font-style:normal;box-shadow:inset 0 -.42em 0 var(--pop)}
+html.rd .view h1 em{background:linear-gradient(var(--pop),var(--pop)) 0 .55em/100% .32em no-repeat;color:var(--ink);-webkit-text-fill-color:currentColor;font-style:normal;box-shadow:none;padding:0 .04em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+html.rd .view h1{margin-bottom:.35em}
 html.rd .view h2{font:500 22px var(--display);text-transform:uppercase;letter-spacing:.02em;border-bottom:1px solid var(--rule);padding-bottom:4px}
 html.rd .view h3{font-family:var(--display);font-weight:600}
 html.rd .lede{font-family:var(--mono);font-size:12px;line-height:1.55;text-transform:uppercase;color:var(--muted)}
@@ -3554,9 +3558,7 @@ html.rd #v-notes>h1,html.rd #v-notes>.hm-lede{display:none}
 html.rd #v-notes>.rd-arr{display:flex;justify-content:flex-end;margin:0 0 8px}
 .rdh-art{position:absolute;pointer-events:none;z-index:0;height:auto}
 .rdh-blob{right:-46px;top:-6px;width:clamp(170px,26vw,260px)}
-.rdh-stairs{left:-34px;top:470px;width:120px}
-html.rd[data-rdt="night"] .rdh-stairs{left:-60px;top:430px;width:170px}
-.rdh-hl{background:linear-gradient(var(--hl1),var(--hl1)) 0 .12em/100% .8em no-repeat;color:#1A1A1A;padding:0 .06em;margin-left:-.06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.rdh-hl{display:inline-block;line-height:.8;padding:.05em .07em .02em;background:var(--hl1);color:#1A1A1A;margin-left:-.07em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 html.rd[data-rdt="night"] .rdh-hl{color:#0F0F10}
 .rdh-tkw{flex:3 1 330px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .rdh-dots{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:2px 8px 0}
@@ -3569,7 +3571,7 @@ html.rd[data-rdt="night"] .rdh-hl{color:#0F0F10}
 .rdh-blurb{margin:0;font:400 8.5px/1.4 var(--mono);text-transform:uppercase;text-align:justify;max-width:230px}
 .rdh-meta{font:400 10.5px var(--mono);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .rdh-meta b{border:1px solid var(--rule);padding:1px 6px;font-weight:400}
-.rdh-title{font:300 clamp(54px,9vw,84px)/.95 var(--display);letter-spacing:.02em;margin:6px 0 0;position:relative;z-index:1}
+.rdh-title{font:300 clamp(54px,9vw,84px)/1.02 var(--display);letter-spacing:.02em;margin:14px 0 6px;position:relative;z-index:1}
 .rdh-title small{font:400 .4em var(--mono);letter-spacing:0;vertical-align:.9em;margin-left:.2em}
 .rdh-name{font:300 clamp(34px,5vw,48px)/1 var(--display);display:flex;justify-content:space-between;max-width:min(330px,80%);text-transform:uppercase;position:relative;z-index:1}
 .rdh-row{display:flex;flex-wrap:wrap;gap:18px;align-items:stretch;position:relative;z-index:1}
@@ -3831,7 +3833,7 @@ html.rd .rd-tama .bd-svg{filter:none}
 /* unicorn: everything goes rainbow */
 html.rd[data-rdt="unicorn"]{--hl1:#FFD36B!important;--hl2:#FF8AD8!important;--hl3:#8FD3FF!important;--rainbow:linear-gradient(100deg,#FF9AD5,#FFD36B 25%,#B8F5A0 50%,#8FD3FF 75%,#C5A3FF)}
 html.rd[data-rdt="unicorn"] .rdh-ticket,html.rd[data-rdt="unicorn"] #v-coaching .ch-top>.ch-tint:first-child{background:var(--rainbow)!important;color:#2A1A33}
-html.rd[data-rdt="unicorn"] .rdh-hl{background:linear-gradient(100deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF) 0 .12em/100% .8em no-repeat}
+html.rd[data-rdt="unicorn"] .rdh-hl{background:linear-gradient(100deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF)}
 html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+1)::after{background:#FF9AD5}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+2)::after{background:#FFD36B}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+3)::after{background:#B8F5A0}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+4)::after{background:#8FD3FF}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n+5)::after{background:#C5A3FF}html.rd[data-rdt="unicorn"] .rdh-st:nth-child(6n)::after{background:#FF8A5B}
 html.rd[data-rdt="unicorn"] .card{border-top:5px solid transparent!important;border-image:linear-gradient(90deg,#FF9AD5,#FFD36B,#B8F5A0,#8FD3FF,#C5A3FF) 1!important;border-image-slice:1}
 html.rd[data-rdt="unicorn"] .view h2::before{background:var(--rainbow)}
@@ -3844,6 +3846,65 @@ html.rd #parkArea{position:relative;border:1px solid var(--rule);border-radius:0
 html.rd #parkArea::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;background-image:radial-gradient(rgba(26,26,26,.2) .7px,transparent .9px);background-size:4px 4px;mix-blend-mode:multiply}
 html.rd #parkArea svg{filter:url(#rdPoster)}
 html.rd.cs-simple #parkArea::after,html.rd.cs-simple .bd-stage-wrap::after,html.rd.cs-simple .park-scene::after,html.rd.cs-simple .ms-scene::after{display:none}
+
+/* ===== round 3 (Nov 26 2026) ===== */
+/* the card you jump to from TODAY.LOG lights up for a moment */
+@keyframes rdGlow{0%{box-shadow:0 0 0 0 var(--pop),var(--shadow)}25%{box-shadow:0 0 0 6px var(--pop),var(--shadow)}100%{box-shadow:0 0 0 0 transparent,var(--shadow)}}
+html.rd .rd-glow{animation:rdGlow 2s ease-out 1;outline:2px solid var(--pop);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){html.rd .rd-glow{animation:none}}
+/* part of speech colors stay (noun red, verb orange…), not the pop color */
+html.rd .wcard[data-pk],html.rd .vs-item[data-pk],html.rd .card[data-pk]{border-left:6px solid var(--pk)!important;border-top:1px dashed var(--rule)!important;box-shadow:var(--shadow)}
+html.rd .pos[data-pk]{border-radius:0!important;border:1px solid var(--pk)!important}
+html.rd .cl-pvc{border-top:5px solid var(--pc)!important}
+/* word of the day saved */
+html.rd #twSave.is-saved{background:transparent!important;color:var(--ink)!important;border:1px solid var(--ink)!important}
+html.rd #twSave.is-saved::first-letter{color:var(--green)}
+/* club: the next class is a ticket, like Home */
+html.rd #v-club .cl-next{position:relative;background:var(--pop)!important;color:var(--pop-ink)!important;border:0!important;border-radius:0!important;box-shadow:3px 4px 0 rgba(26,26,26,.2)!important;transform:rotate(-.8deg);margin:6px 10px 14px;padding:14px 22px;border-right:0!important}
+html.rd #v-club .cl-next::before,html.rd #v-club .cl-next::after{content:"";position:absolute;top:50%;margin-top:-10px;width:20px;height:20px;border-radius:50%;background:var(--bg)}
+html.rd #v-club .cl-next::before{left:-10px}html.rd #v-club .cl-next::after{right:-10px}
+html.rd #v-club .cl-next *{color:inherit!important}
+html.rd #v-club .cl-next .cl-next-k{font:400 11px var(--mono);letter-spacing:.08em;border-bottom:2px dashed currentColor;padding-bottom:6px}
+html.rd #v-club .cl-next h3{font:300 clamp(22px,4vw,32px)/1.05 var(--display);text-transform:uppercase;margin:0}
+html.rd #v-club .cl-next .cl-next-b span{font:400 12px var(--mono)}
+html.rd #v-club .cl-next .cl-join{background:var(--ink)!important;color:var(--bg)!important;border-radius:0!important;border:0!important}
+html.rd #v-club .cl-next .cl-rsvp button{border-radius:0!important;border:1px solid currentColor!important;background:transparent!important}
+html.rd[data-rdt="unicorn"] #v-club .cl-next{background:var(--rainbow)!important;color:#2A1A33!important}
+html.rd.cs-simple #v-club .cl-next{transform:none}
+/* Home club card: recording buttons */
+html.rd .hc-rec{border-radius:0;font:400 11px var(--mono);border:1px solid var(--rule);background:transparent}
+html.rd .hc-rec:hover{background:var(--pop);color:var(--pop-ink);border-color:var(--rule)}
+/* pocket pet: taller, egg shaped (narrow top, round bottom), like the first mockup */
+html.rd .rd-tama{width:118px;min-height:150px;box-sizing:border-box;padding:26px 12px 16px;gap:10px;justify-content:flex-start;border-radius:50% 50% 50% 50% / 62% 62% 38% 38%!important}
+html.rd .rdtm-scr{width:68px;height:58px;border-width:4px;box-shadow:0 0 0 3px rgba(255,255,255,.35)}
+html.rd .rdtm-btns{gap:6px;align-items:flex-start}
+html.rd .rdtm-btns button:nth-child(2){transform:translateY(5px)}
+html.rd .rdtm-btns button{width:26px;height:26px;font-size:7px}
+@media (max-width:600px){html.rd .rd-tama{transform:scale(.8);transform-origin:bottom right}}
+/* buddy parked under the left menu (drop it on the menu) */
+html.rd .bd.at-menu .rd-tama{transform:rotate(-3deg)}
+/* phone menu chips, header buttons: ink lines, not the old group greens / round pills */
+@media (max-width:900px){html.rd .side .navbtn{border-color:var(--rule)!important}}
+html.rd #hdrWord{background:var(--pop)!important;color:var(--pop-ink)!important;border:1px solid var(--rule)!important}
+html.rd .top .search-toggle,html.rd .top .theme-btn:not(.auth-btn),html.rd .top .tm-btn{border-radius:0!important;border:1px solid var(--rule)!important;background:transparent!important;box-shadow:none!important}
+/* the buddy's speech bubble */
+html.rd .bd-bub{border-radius:0!important;border:1px solid var(--rule)!important;background:var(--surface)!important;color:var(--ink)!important;box-shadow:var(--shadow)!important;font-family:var(--body)}
+html.rd .bd-bub .bd-b{border-radius:0!important;background:transparent!important;color:var(--ink)!important;border:1px solid var(--rule)!important;font:700 12px var(--mono)!important;text-transform:uppercase;box-shadow:none!important;text-shadow:none!important}
+html.rd .bd-bub .bd-b:first-of-type{background:var(--ink)!important;color:var(--bg)!important}
+html.rd .bd-bub .bd-b:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+@media (max-width:600px){html.rd .rd-tama{transform:scale(.64)!important}}
+/* Practice: tiles read like numbered index cards */
+html.rd .pr-tiles{counter-reset:prt}
+html.rd .pr-tile{counter-increment:prt;position:relative;border-radius:0!important}
+html.rd .pr-tile::after{content:counter(prt,decimal-leading-zero);position:absolute;top:10px;right:12px;font:400 10px var(--mono);letter-spacing:.08em;color:var(--muted)}
+html.rd .pr-tile h3,html.rd .pr-tile b:first-of-type{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:.02em}
+html.rd .pr-desc,html.rd .pr-sub{font-family:var(--mono);font-size:12px;line-height:1.5}
+html.rd .pr-tile:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+html.rd .pr-tile:hover *{color:inherit!important}
+html.rd .pr-bar{border-radius:0!important}
+html.rd .pr-back{border-radius:0!important;font:700 12px var(--mono);text-transform:uppercase}
+html.rd.rd #musicBtn,html.rd.rd #clBell{border-radius:0!important;border:1px solid var(--rule)!important;background:transparent!important;box-shadow:none!important}
+html.rd .top [aria-pressed="true"].cs-btn,html.rd .tmr-chip.on,html.rd [data-tmmin].on{border-radius:0}
 
 </style>
 
@@ -4269,7 +4330,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">This week's classes and Zoom links, the community wall, recordings, the calendar and everyone in the club.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-7d8d05cc5c66.js"></script>
+<script src="js/h-63e54a8d7826.js"></script>
 <script src="js/h-fc76e74bce05.js"></script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
@@ -5046,7 +5107,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=73" defer></script>
+<script src="buddy.js?v=74" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -5183,10 +5244,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-bc007ff19e1a.js"></script>
+<script src="js/h-e8dc2c5ee2f4.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126092058"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126114530"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -5704,7 +5765,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
 (function(){ let t=0; const d=document.documentElement;
   addEventListener("scroll",()=>{ if(innerWidth>700) return; d.classList.add("cs-scrolling"); clearTimeout(t); t=setTimeout(()=>d.classList.remove("cs-scrolling"),900); },{passive:true});
 })();
-</script><script src="js/h-8633d72c1625.js"></script>
+</script><script src="js/h-92e2bb06921b.js"></script>
 <script type="module" src="m-ffe4d3e591e2.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */
