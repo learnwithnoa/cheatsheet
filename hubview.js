@@ -111,7 +111,7 @@ export function makeView(s, meta) {
     const st = packStats(s, p);
     return { id: p.id, label: p.label, size: p.size || null, unit: p.unit, used: st.used, done: st.done, left: st.left, deadline: deadline(p, st.first), paid: p.paid, current: !p.archived && !wasPast, color: p.color || "" };
   });
-  return {
+  const v = {
     v: 1, name: s.name, level: s.cefr || s.level || "", schedule: s.schedule || "", objective: s.objective || "", kind: s.kind || "pack",
     /* Nov 23 2026: a past student (Archived): My coaching keeps their history, drops next class / pack, and shows "Miss our classes?" */
     past: wasPast ? { book: BOOK_URL } : null,
@@ -130,6 +130,10 @@ export function makeView(s, meta) {
     words: (s.words || []).map((w, i) => ({ w: w.w, tr: w.tr || "", ex: w.ex || "", i })),
     updated: Date.now()
   };
+  /* Nov 26 2026: a past student sees their history only: no packs, payments, schedule or English Map check-ins
+     (all still saved on Noa's side; marking them Active again brings it all back). Same as past_view() in hubsync.py. */
+  if (wasPast) { Object.assign(v, { packs: [], payments: [], schedule: "", book: "" }); if (v.map) { const m = Object.assign({}, v.map); delete m.reviews; delete m.reviewed; v.map = m; } }
+  return v;
 }
 
 /* ---------- linking Hibi accounts to hub students ---------- */

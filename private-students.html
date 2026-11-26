@@ -424,7 +424,7 @@ html.emb body{background:transparent}
 <script type="module">
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, serverTimestamp, initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
-import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, packStart, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ, BOTH_DEFAULT } from "./hubview.js?v=19";
+import { COUNTS, STD_PRICE, today, addDays, days, packStats, deadline, packStart, curPack, lastClass, makeView, matchAccounts, roleFor, normName, resFor, resKeys, RES_ALL, fabLevel, tzReminders, tzOffset, NOA_TZ, BOTH_DEFAULT } from "./hubview.js?v=20";
 const TEACHER = "learnwithnoa@gmail.com";
 const app = initializeApp({
   apiKey: "AIzaSyAPhkFh-6mMzlILQh_-RVq6aJJ2o2Q7Raw",
@@ -1034,7 +1034,7 @@ function renderDetail() {
   box.innerHTML = `<div class="dh"><span class="av${avSync(s)}" style="--av:${avc(s)};width:44px;height:44px;font-size:16px${avIn(s).st}">${avIn(s).html}</span><h2><span class="nm-wrap">${esc(s.name)}${en ? `<sup class="eng-pill ${en.k}" title="Engagement: ${en.lvl} (${esc(en.parts.join(" · "))})">${en.k === "k-green" ? "🔥" : en.k === "k-amber" ? "🙂" : "💤"} ${en.lvl}</sup>` : ""}</span></h2>
     ${(() => { const LV = ["A1", "A2", "A2-B1", "B1", "B1-B2", "B2", "B2-C1", "C1", "C2"], fromLevel = String(s.level || "").toUpperCase().replace(/[–—]/g, "-").replace(/\s+/g, ""), cur = s.cefr || (LV.includes(fromLevel) ? fromLevel : "");
       return `<label class="cefr-pick" title="Their English level (tap to change). Hibi grades their practice for it, and it shows in the Buddy park"><span class="cp-k">Level</span><b>${cur || "Set…"}</b><span class="cp-car" aria-hidden="true">▾</span><select data-f="cefr" aria-label="English level">${(cur ? [] : [""]).concat(LV).map(l => `<option value="${l}" ${cur === l ? "selected" : ""}>${l || "Set level…"}</option>`).join("")}</select></label>`; })()}
-    ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Archived" }, cur = ST[s.status] ? s.status : "active";
+    ${(() => { const ST = { active: "🟢 Active", paused: "⏸ Paused", inactive: "📦 Archived · past student" }, cur = ST[s.status] ? s.status : "active";
       return `<label class="cefr-pick st-pick st-${cur}" title="Status (tap to change)"><b>${ST[cur]}</b><span class="cp-car" aria-hidden="true">▾</span><select id="stStatus" aria-label="Status">${Object.keys(ST).map(k => `<option value="${k}" ${cur === k ? "selected" : ""}>${ST[k]}</option>`).join("")}</select></label>`; })()}</div>
     <p class="dsub">${[s.level, s.schedule].filter(Boolean).map(esc).join(" · ")}${s.tz && s.tz !== NOA_TZ ? (() => { const d = (tzOffset(s.tz, Date.now()) - tzOffset(NOA_TZ, Date.now())) / 60; return `<br>🌍 ${esc(s.country || s.tz.split("/").pop().replace(/_/g, " "))} · ${d === 0 ? "same time as you" : Math.abs(d) + "h " + (d > 0 ? "ahead of" : "behind") + " Chile"}`; })() : ""}</p>
     ${(() => { const n = nextClassAt(s); return n ? `<div class="nxcls">📅 Next class: ${esc(fmtNext(n))}</div>` : ""; })()}
@@ -1324,7 +1324,11 @@ document.addEventListener("change", e => {
     /* one level per person: the Hibi members page uses the same one */
     const ru = s.uid || (roles[s.id] && roles[s.id].uid); if (ru) setDoc(doc(db, "roles", ru), { lv: String(t.value || "").replace("-", "–"), at: serverTimestamp() }, { merge: true }).then(() => { if (rolesByUid[ru]) rolesByUid[ru].lv = String(t.value || "").replace("-", "–"); }).catch(e => console.warn("level sync", e));
     return; }
-  if (t.id === "stStatus") { s.status = t.value; save(s, false, "Status → " + t.value); renderAll(); return; }
+  if (t.id === "stStatus") { s.status = t.value; save(s, false, "Status → " + t.value); renderAll();
+    /* Nov 26 2026: Archived = past student (keeps My coaching, history only); Active/Paused again = private student again. Their Hibi role follows. */
+    const ru = s.uid || (roles[s.id] && roles[s.id].uid); if (ru) { const past = t.value === "inactive", patch = past ? { private: false, hibiOnly: true, hub: s.id } : { private: true, hibiOnly: false, hub: s.id };
+      setDoc(doc(db, "roles", ru), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }).then(() => { if (rolesByUid[ru]) Object.assign(rolesByUid[ru], patch); }).catch(e => console.warn("role sync", e)); }
+    return; }
   if (t.dataset.paid) { s.packs.find(p => p.id === t.dataset.paid).paid = t.value; save(s, false, "Payment status → " + t.value); refresh(); return; }
   if (t.dataset.reskey) { const k = t.dataset.reskey, cur = new Set(resKeys(s)); if (t.checked) cur.add(k); else cur.delete(k); s.res = RES_ALL(s).map(r => r.k).filter(x => cur.has(x)); delete s.resHide; save(s, false, (t.checked ? "Showing " : "Hiding ") + k); renderDetail(); return; }
   if (t.dataset.f === "alwaysStdSel") { s.alwaysStd = t.value === "1"; save(s, false, s.alwaysStd ? "Always standard hours" : "Hours by time of day"); renderDetail(); return; }

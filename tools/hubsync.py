@@ -377,7 +377,7 @@ def make_view(s, meta=None):
         st = pack_stats(s, p)
         packs.append({"id": p["id"], "label": p.get("label", ""), "size": p.get("size"), "unit": p.get("unit"), "used": st["used"], "done": st["done"],
                       "left": st["left"], "deadline": deadline(p, st["first"]), "paid": p.get("paid"), "current": not p.get("archived"), "color": p.get("color", "")})
-    return {"v": 1, "name": s["name"], "level": s.get("cefr") or s.get("level", ""), "schedule": s.get("schedule", ""), "objective": s.get("objective", ""), "kind": s.get("kind", "pack"),
+    v = {"v": 1, "name": s["name"], "level": s.get("cefr") or s.get("level", ""), "schedule": s.get("schedule", ""), "objective": s.get("objective", ""), "kind": s.get("kind", "pack"),
             "packs": packs,
             "classes": [{k: c.get(k, "" if k != "credits" else None) for k in ("date", "dateText", "topics", "homework", "att", "hour", "credits", "pack")}
                         for c in s.get("classes", []) if c.get("kind") != "note"],
@@ -394,6 +394,19 @@ def make_view(s, meta=None):
                       for r in (s.get("zrecs") or []) if r.get("url") and (not r.get("until") or r["until"] >= datetime.date.today().isoformat())][-8:],
             "tips": [{"title": r.get("title", ""), "mod": r.get("mod", ""), "stage": r.get("stage"), "page": r.get("page", ""), "pack": r.get("pack", ""), "why": r.get("why", ""), "date": r.get("date", "")} for r in tips],
             "updated": int(datetime.datetime.now().timestamp() * 1000)}
+    return past_view(v, s)
+
+
+def past_view(v, s):
+    """Past student (Archived on Private students): My coaching keeps their classes, recaps, guides, reports, map and words;
+    drops next class / Zoom / booking / pack / payments / check-ins (all still saved on Noa's side), and shows "Want to come back?".
+    Same as makeView in hubview.js."""
+    if s.get("status") not in ("inactive", "past"):
+        return v
+    v.update({"past": {"book": BOOK_URL}, "packs": [], "payments": [], "due": None, "next": "", "nextZoom": "", "book": "", "schedule": ""})
+    if v.get("map"):
+        v["map"] = {k: x for k, x in v["map"].items() if k not in ("reviews", "reviewed")}
+    return v
 
 
 SITE = "https://hibi.cl/"

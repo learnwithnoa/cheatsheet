@@ -5340,6 +5340,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1126-past", date:"November 26, 2026", title:"Your coaching history stays with you", items:[
+    ["🎓","After your classes end","if you stop your private classes with Noa, <b>My coaching</b> stays: your class history, recaps, study guides, progress reports, English Map and words are all still there. Want to start again? Tap <b>💬 Write to Noa</b>.","coaching"]
+  ]},
   {id:"2026-1126-small", date:"November 26, 2026", title:"Little things on Home", items:[
     ["🎬","Club recordings from Home","in <b>This week in the club</b> on Home, every class that already happened has a <b>🎬 Recording</b> button when its video is up.","notes"],
     ["✅","Word of the day: already saved?","if today's word is already in My notebook, the button now says <b>✓ Saved to My notebook</b>.","notes"],

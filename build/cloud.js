@@ -5,7 +5,7 @@
 import { initializeApp, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut,
   getFirestore, collection, getDocs, getDoc, doc, setDoc as _setDoc, deleteDoc as _deleteDoc, serverTimestamp,
   initializeAppCheck, ReCaptchaEnterpriseProvider, getAI, GoogleAIBackend, AgentPlatformBackend, getGenerativeModel } from "./fb.js?v=12.19.0d";
-import { makeView, tzReminders } from "./hubview.js?v=19";
+import { makeView, tzReminders } from "./hubview.js?v=20";
 window.__csTzRem = tzReminders;
 /* Noa's "View as": nothing is ever written anywhere (not to the student's account, not to Noa's) */
 let vaToastAt = 0;

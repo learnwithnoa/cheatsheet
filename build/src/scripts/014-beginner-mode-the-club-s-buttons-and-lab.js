@@ -105,7 +105,7 @@
     if(window.__csGuest){ e.preventDefault(); window.toast("This is a preview: sign in to message Noa."); return; }
     const uid=window.__csFire&&window.__csFire.uid&&window.__csFire.uid(); if(!uid||window.__csGuest||typeof window.__clubDM!=="function") return; e.preventDefault();
     window.__clubDM("J8D2tjQmBaaA2QN730tSfSrjfm73","Noa");   /* Noa's account */
-    if(!ask) setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value=j.dataset.joindm==="stay"?"Hi Noa! 👋 I’m enjoying my free trial and I’d like to stay in the club. How do I join?":"Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
+    if(!ask) setTimeout(()=>{ const ta=document.querySelector("#clDm textarea"); if(ta&&!ta.value.trim()){ ta.value=j.dataset.joindm==="back"?"Hi Noa! 👋 I’d like to start my classes with you again. When could we talk about it?":j.dataset.joindm==="stay"?"Hi Noa! 👋 I’m enjoying my free trial and I’d like to stay in the club. How do I join?":"Hi Noa! 👋 I’m interested in joining Noa’s English Club. Can you tell me how it works?"; ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } },700); });
   function locked(){ loadSample(); document.querySelectorAll("#v-club .cl-igtop").forEach(x=>x.hidden=true);
     const lede=document.querySelector("#v-club .lede"); if(lede) lede.hidden=true;
     const now=Date.now(), p=PUB&&PUB.post, f2=PUB?{info:PUB.info||{}}:null;

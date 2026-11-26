@@ -451,3 +451,10 @@ if '2026-1126-small' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1126-past' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1126-past", date:"November 26, 2026", title:"Your coaching history stays with you", items:[
+    ["🎓","After your classes end","if you stop your private classes with Noa, <b>My coaching</b> stays: your class history, recaps, study guides, progress reports, English Map and words are all still there. Want to start again? Tap <b>💬 Write to Noa</b>.","coaching"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

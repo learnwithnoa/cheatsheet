@@ -659,7 +659,7 @@ document.addEventListener("click", async e => {
     hubMeta = Object.assign({}, hubMeta || {}, { dismissed: ((hubMeta && hubMeta.dismissed) || []).concat(uid) }); saveTPref("t-hubmeta", hubMeta); renderLinks(); toast("Okay, " + st.name.split(" ")[0] + " is club only"); return; }
   const sel = document.querySelector(`[data-lkfor="${uid}"]`); if (!sel || !sel.value) { toast("Pick who this is first"); return; }
   const hubId = sel.value, h = hubList.find(x => x.id === hubId);
-  const { roleFor } = await import("./hubview.js?v=19");
+  const { roleFor } = await import("./hubview.js?v=20");
   if (h && st.email && ![h.email].concat(h.emails || []).some(x => (x || "").toLowerCase() === st.email.toLowerCase())) { if (!h.email) h.email = st.email; else h.emails = (h.emails || []).concat(st.email); }
   await saveRole(st, roleFor(hubId, st.role)); await linkHub(st, hubId, ""); renderLinks();
 });
@@ -994,7 +994,7 @@ async function saveRole(s, patch) {
   try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved"); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
-const roleType = r => (r.hibiOnly || r.clubEnded) && !r.hub && !r.private && r.club !== true ? "hibi" : (r.private || r.hub) ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : r.club === true ? "club" : "none");   /* linked to a private student (hub) = private, + club = both */   /* "none": signed up, not in the club yet (pick Club to give access) */
+const roleType = r => (r.hibiOnly || r.clubEnded) && !r.private && r.club !== true ? "hibi" : (r.private || (r.hub && !r.hibiOnly)) ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : r.club === true ? "club" : "none");   /* hub + hibiOnly = a past student (still linked so they keep My coaching) */   /* linked to a private student (hub) = private, + club = both */   /* "none": signed up, not in the club yet (pick Club to give access) */
 let hubList = [];
 async function loadHubList() { if (!tUid) return; try { const ds = await getDocs(collection(db, "users", tUid, "data")); hubList = []; ds.forEach(x => { if (!x.id.startsWith("t-hub-")) return; const v = x.data(); if (v.deleted) return; try { const j = JSON.parse(v.json); hubList.push(j); } catch (e) {} }); hubList.sort((a, b) => a.name.localeCompare(b.name)); } catch (e) { console.warn("hub list", e); } }
 const norm = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g, "");
@@ -1019,9 +1019,19 @@ async function clubOff(s) {
     if (!s.role.hub) await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: "null", deleted: true, at: serverTimestamp() });
   } catch (e) { console.warn("clubOff", e); }
 }
+/* past student: their coaching record goes to Archived (status inactive) and their My coaching shows the past-student version */
+async function toPast(s, hubId) {
+  try {
+    const h = hubList.find(x => x.id === hubId); if (!h) return;
+    h.status = "inactive"; h.uid = s.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + h.id), { json: JSON.stringify(h), deleted: false, at: serverTimestamp() });
+    const { makeView } = await import("./hubview.js?v=20");
+    await setDoc(doc(db, "users", s.uid, "data", "hub-view"), { json: JSON.stringify(makeView(h, hubMeta || {})), deleted: false, at: serverTimestamp() });
+    toast("🎓 " + s.name.split(" ")[0] + " is a past student: My coaching keeps their history");
+  } catch (e) { console.warn("toPast", e); }
+}
 async function linkHub(s, hubId, oldId) {
   try {
-    const { makeView } = await import("./hubview.js?v=19");
+    const { makeView } = await import("./hubview.js?v=20");
     if (oldId && oldId !== hubId) { const o = hubList.find(h => h.id === oldId); if (o) { delete o.uid; await setDoc(doc(db, "users", tUid, "data", "t-hub-" + o.id), { json: JSON.stringify(o), deleted: false, at: serverTimestamp() }); } }
     const inClub = !!(s.role && s.role.club !== false);   /* Club or Both: give club access right away (don't wait for the next sync) */
     if (inClub) await clubOn(s);
@@ -1242,7 +1252,9 @@ $("detail").addEventListener("click", e => {
   else if ("wcancel" in d) { editW = null; renderDetail(s); }
   else if (d.wsave) { const id = d.wsave, w = $("ew").value.trim(), m = $("em").value.trim(), ex = $("ee").value.trim(), nn = $("enn").value.trim(); if (!w) return; editW = null;
     guarded(s, "ncs-words", list => list.map(x => { if (!(x && x.id === id)) return x; const y = { ...x, w, m, e: ex }; if (nn) y.n = nn; else delete y.n; return y; }), "Word updated"); }
-  else if (d.role === "hibi") { const old = s.role.hub; saveRole(s, { club: false, private: false, hub: "", hibiOnly: true }).then(() => old ? linkHub(s, "", old) : null).then(() => clubOff(s)); }
+  /* Nov 26 2026: a private student who stops classes stays linked as a past student (Archived): they keep My coaching (history, recaps, reports, words), nothing is deleted */
+  else if (d.role === "hibi") { const old = s.role.hub; saveRole(s, { club: false, private: false, hibiOnly: true }).then(() => clubOff(s)).then(() => old ? toPast(s, old) : linkHub(s, "", "")); }
+  else if (d.role === "club" && s.role.hub) { const old = s.role.hub; saveRole(s, { club: true, private: false, hibiOnly: true }).then(() => clubOn(s)).then(() => toPast(s, old)); }
   else if (d.role) { const ty = d.role; const patch = { club: ty !== "private", private: ty !== "club", hibiOnly: false }; if (ty === "club") patch.hub = ""; else if (!s.role.hub) { const g = guessHub(s); if (g) patch.hub = g; } saveRole(s, patch).then(() => linkHub(s, patch.hub === undefined ? s.role.hub : patch.hub, ty === "club" ? s.role.hub : "")); }
   else if (d.wdel) confirmTwice(t, () => guarded(s, "ncs-words", list => list.filter(x => !(x && x.id === d.wdel)), "Word deleted"));
   else if (d.nedit) { editN = d.nedit; renderDetail(s); const i = $("en"); if (i) i.focus(); }
