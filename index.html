@@ -3903,6 +3903,19 @@ html.rd .pr-bar{border-radius:0!important}
 html.rd .pr-back{border-radius:0!important;font:700 12px var(--mono);text-transform:uppercase}
 html.rd.rd #musicBtn,html.rd.rd #clBell{border-radius:0!important;border:1px solid var(--rule)!important;background:transparent!important;box-shadow:none!important}
 html.rd .top [aria-pressed="true"].cs-btn,html.rd .tmr-chip.on,html.rd [data-tmmin].on{border-radius:0}
+/* top bar: one style for every icon button — squares (the avatar too), hover = pop color + a little hard shadow lift */
+html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#searchToggle):not(.lp-x){border-radius:0!important;border:1px solid var(--rule)!important;box-shadow:none!important;transition:transform .12s,box-shadow .12s,background-color .12s}
+html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#hdrWord):not(#searchToggle){background:var(--surface)!important}
+html.rd.rd .top .auth-btn,html.rd.rd .top .auth-btn img,html.rd.rd .top .auth-btn canvas,html.rd.rd .top .auth-btn>*:not(.st-dot):not([class*="dot"]){border-radius:0!important}
+html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#_a):not(#_b):hover,html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#_a):not(#_b):focus-visible{background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-2px,-2px);box-shadow:2px 2px 0 var(--ink)!important}
+html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#_a):not(#_b):active{transform:none;box-shadow:none!important}
+@media (prefers-reduced-motion:reduce){html.rd.rd .top :is(button,.theme-btn,.cs-btn):hover{transform:none}}
+/* buddy home: the settings gear and the close button, clearly visible */
+html.rd .bd-modal .bd-x{border-radius:0!important;color:var(--ink)!important;border:1px solid var(--rule);background:var(--surface);opacity:1}
+html.rd .bd-modal .bd-set-ico{font-size:0!important;width:34px;height:34px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;padding:0!important}
+html.rd .bd-modal .bd-set-ico::before{content:"\2699\FE0E";font-size:20px;color:var(--ink);line-height:1}
+html.rd .bd-modal .bd-set-ico:hover::before{color:var(--pop-ink)}
+html.rd .bd-modal .bd-x:hover{background:var(--pop);color:var(--pop-ink)!important;filter:none}
 
 </style>
 
@@ -5245,7 +5258,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-e8dc2c5ee2f4.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126175356"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126175610"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
