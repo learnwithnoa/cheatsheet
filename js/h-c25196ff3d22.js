@@ -45,7 +45,7 @@
       ${(p.classes||[]).length?`<div class="cl-classes">${classesOf(f,p).map(c=>clsCard(c,now,cur?p.week:"")).join("")}</div>`:""}${p.closing?`<p class="cl-closing">${esc(p.closing)}</p>`:""}${recapHTML(p)}${chalHTML(p,cur)}</article>`;
   }
   /* after class: recordings, notes, words and phrases (added by Noa's nightly helper) */
-  function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=(r.vocab||[]).concat(x.vocab||[]), ph=r.phrases||[]; if(!recs.length&&!voc.length&&!ph.length&&!r.notes) return "";
+  function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=r.vocab||[], ph=r.phrases||[]; if(!recs.length&&!voc.length&&!ph.length&&!r.notes) return "";
     return `<div class="cl-recap"><h3>🎬 ${L("After class","Después de clase")}</h3>${recs.length?`<div class="cl-recs">${recs.map(x=>`<a class="cl-rec" href="${esc(x.url)}" target="_blank" rel="noopener"><span>▶</span><b>${esc(x.title||L("Recording","Grabación"))}</b>${x.wd!=null?`<small>${WD[x.wd]}</small>`:""}</a>`).join("")}</div>`:""}
       ${r.notes?`<p class="cl-rnote">${esc(r.notes)}</p>`:""}
       ${voc.length?`<h4>📚 ${L("Words from class","Palabras de la clase")}</h4><ul class="cl-voc">${voc.map((v,i)=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></li>`).join("")}</ul>`:""}
