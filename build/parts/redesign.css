@@ -412,8 +412,6 @@ html.rd .rdtm-btns button{width:26px;height:26px;font-size:7px}
 /* buddy parked under the left menu (drop it on the menu) */
 html.rd .bd.at-menu .rd-tama{transform:rotate(-3deg)}
 /* phone menu chips, header buttons: ink lines, not the old group greens / round pills */
-@media (max-width:900px){html.rd .side .navbtn{border-color:var(--rule)!important}}
-html.rd #hdrWord{background:var(--pop)!important;color:var(--pop-ink)!important;border:1px solid var(--rule)!important}
 html.rd .top .search-toggle,html.rd .top .theme-btn:not(.auth-btn),html.rd .top .tm-btn{border-radius:0!important;border:1px solid var(--rule)!important;background:transparent!important;box-shadow:none!important}
 /* the buddy's speech bubble */
 html.rd .bd-bub{border-radius:0!important;border:1px solid var(--rule)!important;background:var(--surface)!important;color:var(--ink)!important;box-shadow:var(--shadow)!important;font-family:var(--body)}
