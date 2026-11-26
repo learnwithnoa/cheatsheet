@@ -4113,6 +4113,11 @@ html.rd.rd .rd-look .rdh-dot{border:1px solid var(--ink)!important;border-radius
 html.rd.rd .rd-look .rdh-dot[aria-checked="true"]{outline:3px solid var(--ink);outline-offset:2px}
 /* avatars: always square (photos too), everywhere — club members, wall, messages, profile */
 html.rd .cs-av,html.rd .cs-av img,html.rd .cl-mav img,html.rd [class*="avatar"] img,html.rd img[class*="avatar"],html.rd .cs-av canvas{border-radius:0!important}
+/* plain text-link buttons (e.g. "Hide my buddy") were showing the browser's default grey button */
+html.rd .bd-link{all:unset;cursor:pointer;display:inline-block;font:700 12px var(--mono)!important;text-transform:uppercase;letter-spacing:.04em;color:var(--ink)!important;border:1px solid var(--rule)!important;padding:8px 12px!important;background:transparent!important;box-shadow:2px 2px 0 var(--rule)}
+html.rd .bd-link:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+html.rd .bd-link:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
+html.rd button:not([class]):not([id]){border-radius:0;font-family:var(--mono)}
 
 </style>
 
@@ -5455,7 +5460,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-81deaf1329a7.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126185905"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126190131"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
