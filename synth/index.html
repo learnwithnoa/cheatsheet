@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Hand Synth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --violet: #b48cff; --bg: #000; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: #fff; font-family: Inter, system-ui, sans-serif; overflow: hidden; }
+  #app { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 12px; }
+  #stage { position: relative; width: min(100%, 560px); aspect-ratio: 4 / 5; max-height: 62vh; border-radius: 6px; overflow: hidden; background: #111; }
+  #cam { width: 100%; height: 100%; display: block; }
+  #caption { text-align: center; font-size: 14px; line-height: 1.35; color: #eee; max-width: 560px; }
+  #wave { width: min(100%, 560px); height: 18vh; display: block; }
+  #controls { display: flex; gap: 8px; }
+  button { font-family: Silkscreen, monospace; font-size: 13px; background: #161616; color: #fff; border: 1px solid #333; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  button:hover { border-color: var(--violet); }
+  #overlay { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px; text-align: center; z-index: 10; }
+  #overlay h1 { font-family: Silkscreen, monospace; font-weight: 400; font-size: 34px; color: var(--violet); }
+  #overlay p { max-width: 420px; color: #bbb; font-size: 15px; line-height: 1.5; }
+  #overlay ul { list-style: none; color: #ddd; font-size: 14px; line-height: 1.8; }
+  #overlay b { color: var(--violet); font-weight: 600; }
+  #start { font-size: 18px; padding: 14px 32px; background: var(--violet); color: #000; border: 0; }
+  #status { color: #888; font-size: 13px; min-height: 1em; }
+</style>
+</head>
+<body>
+<div id="overlay">
+  <h1>Hand Synth</h1>
+  <p>Make music with your hands. Your camera stays on your device, nothing is uploaded.</p>
+  <ul>
+    <li><b>Right hand</b> · touch your thumb to a finger to play a chord</li>
+    <li><b>Left hand</b> · open/close the pinch to sweep the filter</li>
+    <li>Raise your left hand for more resonance</li>
+  </ul>
+  <button id="start">Start</button>
+  <div id="status"></div>
+</div>
+
+<div id="app">
+  <div id="stage"><canvas id="cam"></canvas></div>
+  <div id="caption">Learning to make music in the browser with my hands<br>(as music was intended to be made)</div>
+  <canvas id="wave"></canvas>
+  <div id="controls">
+    <button id="preset">Sound: Pad</button>
+    <button id="mute">Mute</button>
+  </div>
+</div>
+<video id="video" playsinline muted style="display:none"></video>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<script type="module">
+import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
+
+const $ = (id) => document.getElementById(id);
+const video = $("video"), cam = $("cam"), ctx = cam.getContext("2d");
+const wave = $("wave"), wctx = wave.getContext("2d");
+const statusEl = $("status");
+
+const CHORDS = [
+  { name: "Fm7",    finger: 8,  notes: ["F2", "F3", "Ab3", "C4", "Eb4"] },
+  { name: "D♭maj7", finger: 12, notes: ["Db2", "Db3", "F3", "Ab3", "C4"] },
+  { name: "E♭7",    finger: 16, notes: ["Eb2", "Eb3", "G3", "Bb3", "Db4"] },
+  { name: "Cm7",    finger: 20, notes: ["C2", "C3", "Eb3", "G3", "Bb3"] },
+];
+const PRESETS = [
+  { name: "Pad",   osc: { type: "fatsawtooth", count: 3, spread: 30 }, env: { attack: 0.25, decay: 0.3, sustain: 0.8, release: 1.8 } },
+  { name: "Keys",  osc: { type: "fattriangle", count: 2, spread: 12 }, env: { attack: 0.01, decay: 0.6, sustain: 0.4, release: 1.2 } },
+  { name: "Pluck", osc: { type: "fatsquare",   count: 2, spread: 18 }, env: { attack: 0.005, decay: 0.35, sustain: 0.05, release: 0.8 } },
+];
+let presetIdx = 0;
+let synth, filter, waveform, master;
+
+function buildAudio() {
+  master = new Tone.Volume(-8).toDestination();
+  const reverb = new Tone.Reverb({ decay: 4, wet: 0.35 }).connect(master);
+  const chorus = new Tone.Chorus(2.5, 3, 0.4).connect(reverb).start();
+  filter = new Tone.Filter({ type: "lowpass", frequency: 1200, Q: 2, rolloff: -24 }).connect(chorus);
+  waveform = new Tone.Waveform(1024);
+  master.connect(waveform);
+  synth = new Tone.PolySynth(Tone.Synth, { maxPolyphony: 12 }).connect(filter);
+  applyPreset();
+}
+function applyPreset() {
+  const p = PRESETS[presetIdx];
+  synth.releaseAll();
+  synth.set({ oscillator: p.osc, envelope: p.env, volume: -10 });
+  $("preset").textContent = "Sound: " + p.name;
+}
+
+let landmarker;
+async function initVision() {
+  const fileset = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+  const opts = (delegate) => ({
+    baseOptions: {
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+      delegate,
+    },
+    runningMode: "VIDEO",
+    numHands: 2,
+    minHandDetectionConfidence: 0.6,
+    minTrackingConfidence: 0.5,
+  });
+  try { landmarker = await HandLandmarker.createFromOptions(fileset, opts("GPU")); }
+  catch { landmarker = await HandLandmarker.createFromOptions(fileset, opts("CPU")); }
+}
+
+async function initCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "user", width: { ideal: 960 }, height: { ideal: 720 } }, audio: false,
+  });
+  video.srcObject = stream;
+  await video.play();
+}
+
+let activeChord = -1;
+let cutoff = 1200, targetCutoff = 1200, q = 2;
+let lastVideoTime = -1, results = null;
+
+function sizeCanvases() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  for (const c of [cam, wave]) {
+    const r = c.getBoundingClientRect();
+    c.width = Math.round(r.width * dpr);
+    c.height = Math.round(r.height * dpr);
+  }
+}
+window.addEventListener("resize", sizeCanvases);
+
+let cover = { ox: 0, oy: 0, dw: 1, dh: 1 };
+function computeCover() {
+  const W = cam.width, H = cam.height, vw = video.videoWidth || 4, vh = video.videoHeight || 3;
+  const s = Math.max(W / vw, H / vh);
+  cover = { dw: vw * s, dh: vh * s, ox: (W - vw * s) / 2, oy: (H - vh * s) / 2 };
+}
+const P = (lm) => ({ x: cam.width - (cover.ox + lm.x * cover.dw), y: cover.oy + lm.y * cover.dh });
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+
+function pixelText(text, x, y, size, color, align = "center") {
+  ctx.font = `${size}px Silkscreen, monospace`;
+  ctx.textAlign = align;
+  ctx.textBaseline = "middle";
+  ctx.lineWidth = Math.max(2, size / 5);
+  ctx.strokeStyle = "rgba(0,0,0,0.6)";
+  ctx.strokeText(text, x, y);
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+}
+
+const pinched = [false, false, false, false];
+
+function handleChordHand(pts, s) {
+  const size = dist(pts[0], pts[9]);
+  const thumb = pts[4];
+  let best = -1, bestD = Infinity;
+  CHORDS.forEach((c, i) => {
+    const d = dist(thumb, pts[c.finger]) / size;
+    if (pinched[i]) { if (d > 0.42) pinched[i] = false; }
+    else if (d < 0.28) pinched[i] = true;
+    if (pinched[i] && d < bestD) { bestD = d; best = i; }
+  });
+  CHORDS.forEach((c, i) => {
+    const tip = pts[c.finger];
+    const on = i === best;
+    pixelText(c.name, tip.x, tip.y - 22 * s, (on ? 20 : 12) * s, on ? "#c9a8ff" : "rgba(255,255,255,0.55)");
+  });
+  if (best !== activeChord) {
+    if (activeChord >= 0) synth.triggerRelease(CHORDS[activeChord].notes, Tone.now());
+    if (best >= 0) synth.triggerAttack(CHORDS[best].notes, Tone.now() + 0.01, 0.7);
+    activeChord = best;
+  }
+  if (best >= 0) {
+    const tip = pts[CHORDS[best].finger];
+    const mx = (tip.x + thumb.x) / 2, my = (tip.y + thumb.y) / 2;
+    ctx.fillStyle = "#b48cff";
+    ctx.shadowColor = "#b48cff"; ctx.shadowBlur = 18 * s;
+    ctx.beginPath(); ctx.arc(mx, my, 7 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+  pixelText("CHORDS", pts[0].x, pts[0].y + 26 * s, 13 * s, "#c9a8ff");
+}
+
+function handleFilterHand(pts, s) {
+  const size = dist(pts[0], pts[9]);
+  const a = pts[4], b = pts[8];
+  const open = Math.min(Math.max((dist(a, b) / size - 0.15) / 1.2, 0), 1);
+  targetCutoff = 120 * Math.pow(8000 / 120, open);
+  const h = 1 - Math.min(Math.max(pts[0].y / cam.height, 0), 1);
+  q = 0.7 + h * 11;
+  ctx.strokeStyle = "rgba(255,255,255,0.8)";
+  ctx.lineWidth = 2 * s;
+  ctx.setLineDash([4 * s, 4 * s]);
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  ctx.setLineDash([]);
+  pixelText(`${Math.round(cutoff)} Hz`, (a.x + b.x) / 2 - 10 * s, (a.y + b.y) / 2, 14 * s, "#c9a8ff", "right");
+  pixelText(`Q ${q.toFixed(1)}`, (a.x + b.x) / 2 - 10 * s, (a.y + b.y) / 2 + 18 * s, 10 * s, "rgba(255,255,255,0.7)", "right");
+  pixelText("FILTER", pts[0].x, pts[0].y + 26 * s, 13 * s, "#c9a8ff");
+}
+
+function drawSkeleton(pts, s) {
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  for (const p of pts) { ctx.beginPath(); ctx.arc(p.x, p.y, 2.2 * s, 0, Math.PI * 2); ctx.fill(); }
+}
+
+function drawWave() {
+  const W = wave.width, H = wave.height;
+  wctx.clearRect(0, 0, W, H);
+  wctx.strokeStyle = "rgba(255,255,255,0.12)";
+  wctx.lineWidth = 1;
+  wctx.beginPath(); wctx.moveTo(0, H / 2); wctx.lineTo(W, H / 2); wctx.stroke();
+  if (!waveform) return;
+  const v = waveform.getValue();
+  wctx.strokeStyle = "#eee";
+  wctx.lineWidth = 1.6 * (window.devicePixelRatio || 1);
+  wctx.beginPath();
+  const step = 4, gain = 2.2;
+  for (let i = 0; i < v.length; i += step) {
+    let avg = 0; for (let k = 0; k < step; k++) avg += v[i + k] || 0; avg /= step;
+    const x = (i / v.length) * W;
+    const y = H / 2 - Math.max(-1, Math.min(1, avg * gain)) * (H / 2 - 4);
+    i === 0 ? wctx.moveTo(x, y) : wctx.lineTo(x, y);
+  }
+  wctx.stroke();
+}
+
+function loop() {
+  const W = cam.width, H = cam.height;
+  const s = W / 520;
+  computeCover();
+  if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
+    lastVideoTime = video.currentTime;
+    results = landmarker.detectForVideo(video, performance.now());
+  }
+  ctx.save();
+  ctx.translate(W, 0); ctx.scale(-1, 1);
+  ctx.drawImage(video, cover.ox, cover.oy, cover.dw, cover.dh);
+  ctx.restore();
+
+  let chordHand = null, filterHand = null;
+  if (results && results.landmarks) {
+    for (const lms of results.landmarks) {
+      const pts = lms.map(P);
+      drawSkeleton(pts, s);
+      if (pts[0].x > W / 2) { if (!chordHand) chordHand = pts; else filterHand = filterHand || pts; }
+      else { if (!filterHand) filterHand = pts; else chordHand = chordHand || pts; }
+    }
+  }
+  if (filterHand) handleFilterHand(filterHand, s);
+  if (chordHand) handleChordHand(chordHand, s);
+  else if (activeChord >= 0) { synth.triggerRelease(CHORDS[activeChord].notes, Tone.now()); activeChord = -1; pinched.fill(false); }
+
+  cutoff += (targetCutoff - cutoff) * 0.25;
+  filter.frequency.rampTo(cutoff, 0.05);
+  filter.Q.rampTo(q, 0.1);
+
+  if (!results || !results.landmarks || results.landmarks.length === 0) {
+    pixelText("show me your hands ✋", W / 2, H - 28 * s, 14 * s, "rgba(255,255,255,0.85)");
+  }
+  drawWave();
+  requestAnimationFrame(loop);
+}
+
+$("start").addEventListener("click", async () => {
+  const btn = $("start");
+  btn.disabled = true;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    statusEl.textContent = "This viewer can't use the camera. Open this page in Chrome or Safari from a real web address (https).";
+    btn.disabled = false;
+    return;
+  }
+  try {
+    statusEl.textContent = "Starting audio…";
+    await Tone.start();
+    buildAudio();
+    statusEl.textContent = "Asking for your camera…";
+    await initCamera();
+    statusEl.textContent = "Loading hand tracking (a few seconds)…";
+    await initVision();
+    $("overlay").style.display = "none";
+    sizeCanvases();
+    requestAnimationFrame(loop);
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false;
+    statusEl.textContent = (err && err.name === "NotAllowedError")
+      ? "Camera access was blocked. Allow it in your browser settings and try again."
+      : "Something went wrong: " + (err && err.message ? err.message : err);
+  }
+});
+
+$("preset").addEventListener("click", () => { presetIdx = (presetIdx + 1) % PRESETS.length; applyPreset(); });
+$("mute").addEventListener("click", () => {
+  master.mute = !master.mute;
+  $("mute").textContent = master.mute ? "Unmute" : "Mute";
+});
+</script>
+</body>
+</html>
