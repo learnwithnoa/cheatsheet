@@ -293,15 +293,14 @@
 
   <div class="wl-step" data-step="0">
     <h2 id="wlTitle">Welcome to your <em>Cheat Sheet</em> 👋</h2>
-    <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. It does three jobs:</p>
-    <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">📚</span><div><b>A quick reference while you speak.</b> Verb tenses, irregular verbs, grammar and phrases for when you're stuck, all short and clear. Keep it open next to Zoom during class.</div></li>
-      <li><span class="wl-ico wl-green" aria-hidden="true">📝</span><div><b>Your own English notebook.</b> Save the new words and class notes that matter to <i>you</i>.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>A place to practice.</b> Grammar step by step, vocabulary sets and flashcards with your own words.</div></li>
-    </ul>
-    <p class="esb">Tu compañero de inglés: referencia rápida, cuaderno personal y práctica.</p>
-    <div class="wl-hibi"><b lang="ja">日々</b><div><b>Why “Hibi”?</b> <i>Hibi</i> (日々) is Japanese for <b>“day by day”</b>. That's how a language grows: a few new words, one class note, one short practice round, every day. Small steps, done daily, add up.</div></div>
-    <p class="wl-tip">🔎 <b>Tip:</b> <b>double-click</b> any word on Hibi (on your phone, <b>press and hold</b>) to see what it means and save it to <b>My notebook</b>. Select a few words to look up a phrase.</p>
+    <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. Three things it does:</p>
+    <div class="wl-cards">
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">📚</span><b>Look things up</b><span>Grammar, verbs and phrases, short and clear. Keep it open in class.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">📝</span><b>Save your words</b><span>Your own notebook, with meanings and examples added for you.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎯</span><b>Practice</b><span>Short rounds, a few minutes a day.</span></div>
+    </div>
+    <p class="wl-calm">🐢 <b>No rush.</b> There's a lot here, and you don't need it all today. Look around, try one thing, come back tomorrow. <i>Hibi</i> (日々) means <b>“day by day”</b>.</p>
+    <p class="esb">Tu compañero de inglés. Sin apuro: explora de a poco, día a día.</p>
   </div>
 
   <div class="wl-step" data-step="1" hidden>
@@ -315,78 +314,66 @@
 
   <div class="wl-step" data-step="1b" hidden>
     <h2>Make it <em>yours</em> ✨</h2>
-    <p class="wl-lede">Pick what feels good. You can change all of this later in <b>Settings</b> (your picture, top right).</p>
-    <div class="wlm-row"><b class="wlm-l">Colors</b><div class="wlm-seg" id="wlmTheme" role="group" aria-label="Colors"><button type="button" data-wlth="dark">☾ Dark</button><button type="button" data-wlth="light">☀ Light</button><button type="button" data-wlth="sepia">📖 Sepia</button><button type="button" data-wlth="midnight">🌑 Midnight</button><button type="button" data-wlth="unicorn">🦄 Unicorn</button></div></div>
+    <p class="wl-lede">Pick what feels good. You can change it all later in <b>Settings</b>.</p>
+    <div class="wlm-row"><b class="wlm-l">Colors</b><div class="wlm-seg" id="wlmTheme" role="group" aria-label="Colors"></div></div>
+    <div class="wlm-row" id="wlmPopRow" hidden><b class="wlm-l">Pop color</b><div class="wlm-seg wlm-pops" id="wlmPop" role="group" aria-label="Pop color"></div></div>
     <div class="wlm-row"><b class="wlm-l">Text size</b><div class="wlm-seg" id="wlmSize" role="group" aria-label="Text size"><button type="button" data-wlsz="1">Aa Normal</button><button type="button" data-wlsz="1.2" style="font-size:1.1em">Aa Bigger</button><button type="button" data-wlsz="1.35" style="font-size:1.2em">Aa Biggest</button></div></div>
-    <label class="wlm-tog"><input type="checkbox" id="wlmSimple"><span><b>🧩 Simple mode</b><small>Just the main pages, with big buttons. Everything else is under ☰ More. Good if Hibi feels like a lot.</small></span></label>
-    <label class="wlm-tog"><input type="checkbox" id="wlmCalm"><span><b>🌙 Calm mode</b><small>No animations, softer colors and fewer pop-ups.</small></span></label>
+    <label class="wlm-tog"><input type="checkbox" id="wlmSimple"><span><b>🧩 Simple mode</b><small>Just the main pages, with big buttons. Good if Hibi feels like a lot.</small></span></label>
+    <label class="wlm-tog"><input type="checkbox" id="wlmCalm"><span><b>🌙 Calm mode</b><small>No animations, softer colors, fewer pop-ups.</small></span></label>
   </div>
 
   <div class="wl-step" data-step="2" hidden>
-    <h2><em>My notebook</em>: the heart of it 💛</h2>
-    <p class="wl-lede">The words you save are the most important part of the Cheat Sheet. Everything else builds on them.</p>
-    <ul class="wl-list">
-      <li><span class="wl-ico wl-green" aria-hidden="true">+</span><div><b>Save every new word</b> from class with the green <b>+ word</b> button. It's on every page. Just the word is enough: Hibi adds the Spanish, a simple meaning, the word type, how to say it and an example. Choose which ones with <b>⚙️ Auto-fill</b> in <b>My notebook</b>.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">📋</span><div><b>Got a list?</b> Paste it in <b>My notebook</b> and it's organized for you, with meanings and examples.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🔢</span><div><b>Every word has a number</b> (like <b>#65</b>). Want Noa to check a word? Just tell him its number. Type it in the search box to find it fast. The color shows the type of word: 🔴 noun, 🟠 verb, 🟡 phrasal verb, 🟢 adjective, 🩵 adverb, 🟣 expression.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Make Home yours:</b> tap <b>✏️ Arrange</b> at the top of Home to move sections up or down, or hide the ones you don't need.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🌍</span><div><b>Around the world today</b> on Home: three little good-news pieces every day (a celebration, space or tech, and good news), each with a word to learn and reactions everyone can see. Tap a title to open the full story.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">✏️</span><div><b>Class notes</b> live in <b>My notebook</b> too: write them during class, ✨ Hibi finds the new words for you, and <b>📓 Summaries</b> sum up each week.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🃏</span><div><b>Practice them with flashcards.</b> The ones you miss come back sooner, so you spend your time on the hard ones.</div></li>
-    </ul>
+    <h2><em>My notebook</em> 💛</h2>
+    <p class="wl-lede">The heart of Hibi: the words that matter to <i>you</i>.</p>
+    <div class="wl-cards">
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">+</span><b>Save a word</b><span>Tap <b>+ Word</b> on any page. Just the word is enough.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🔎</span><b>Double-click</b><span>Any word on Hibi (press and hold on a phone) to see it and save it.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">✏️</span><b>Class notes</b><span>Write in class; Hibi finds the new words.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🃏</span><b>Flashcards</b><span>The ones you miss come back sooner.</span></div>
+    </div>
   </div>
 
   <div class="wl-step" data-step="3" hidden>
     <h2>Time to <em>practice</em> 🎯</h2>
-    <p class="wl-lede">Open <b>Practice</b> in the menu. You'll find five parts:</p>
-    <ul class="wl-list">
-      <li><span class="wl-ico wl-green" aria-hidden="true">📚</span><div><b>Your words:</b> flashcards, writing sentences and saying words out loud. Tick words in <b>My notebook</b> to practice just those.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🧩</span><div><b>Grammar:</b> modules like <b>word order and object pronouns</b>, <b>there is / there are</b>, <b>could vs was able to</b> and <b>indirect questions</b>, plus a <b>Verb tenses</b> folder (present simple, past simple, present perfect, talking about the future), in stages from easy to harder. <b>🔁 Irregular verbs</b> has flashcards, a quiz, a writing drill and a review of the ones you missed. Each one starts with a short <b>📖 Learn it first</b> lesson (basics and advanced, in English or Spanish) and ends with a bonus <b>⭐ Advanced</b> stage for B2–C1. Get 7/10 to open the next stage and earn up to ⭐⭐⭐. Already good at it? Take the <b>test out</b> exam. Like paper? <b>🖨️ Print or save as PDF</b> (top right of a module) gives you the whole lesson, every stage and the answers.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🗣️</span><div><b>Pronunciation:</b> hear the difference and choose, starting with <b>-ed endings</b> (worked, played, wanted).</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🗂️</span><div><b>Word packs:</b> useful word sets by Noa (phrasal verbs, work, travel, everyday expressions, confusing word pairs like <i>fun / funny</i>, pets and animals), with flashcards and a quiz.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">👔</span><div><b>English for Specific Purposes:</b> the English for one real situation, starting with <b>job interviews</b>: 8 stages plus a <b>🎤 Practice interview</b> where you write your answers and Hibi checks your English (not the content).</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⭐</span><div><b>Noa recommends for you:</b> when Noa recommends a module or a stage, it shows at the top of Practice with an <b>Open →</b> button. His message about it in your 🔔 opens it too.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🎯</span><div><b>Weekly goal:</b> pick 3, 5 or 8 rounds a week (bigger goal, bigger reward for your buddy). Lessons, job interview practice and saying phrases out loud count too, and 4 weeks in a row unlock a 🔥 campfire. Questions you miss go to <b>My mistakes</b> so you can try them again.</div></li>
-    </ul>
+    <p class="wl-lede">Open <b>Practice</b> in the menu and pick anything. Short rounds count.</p>
+    <div class="wl-cards">
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step by step, easy to harder. 7/10 opens the next stage.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>Travel, work, phrasal verbs and more.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and choose.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎯</span><b>Weekly goal</b><span>3, 5 or 8 rounds a week. Your buddy gets treats.</span></div>
+    </div>
   </div>
 
   <div class="wl-step" data-step="4" hidden>
-    <h2>Your <em>classes</em>, all in one place 🎓</h2>
-    <p class="wl-lede">Depending on how you study with Noa, you'll see one or both of these in the menu:</p>
-    <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🎓</span><div><b>My coaching</b> (private classes): your <b>English Map</b> (where you are, your superpower, 3 focus areas and the route to your goal), class recaps with exercises Hibi checks for you, the new words from each class (save them with one tap), your progress reports and what Noa recommends you practice. It all stays here even after your classes end.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Noa's English Club</b>: this week's classes and Zoom links, the <b>Community</b> wall (photos, polls and ideas for classes), the <b>Library</b> with class recordings, class materials and the weekly podcast 🎧, a <b>Calendar</b>, and <b>Messages</b> to chat with other members (tap the 🔔 at the top, then <b>💬 Messages</b>). Little notes from Noa show up in the 🔔 too. To react to a message someone sends you, tap ☺ next to it (or double-tap it for a ❤️). If a message waits unread for 12 hours, Hibi sends you one short email (you can turn that off in Settings). Paying for the club now happens right here on Hibi, at the top of the Club page. Not in the club yet? Try it <b>free for 2 weeks</b> from the Club page, no card needed (Noa’s private students get a free month).</div></li>
-      <li><span class="wl-ico" aria-hidden="true">📸</span><div><b>Club Instagram group:</b> reminders and chats between classes. The button is always at the top of the Club page.</div></li>
-    </ul>
+    <h2>Your <em>classes</em> 🎓</h2>
+    <p class="wl-lede">You'll see one or both in the menu:</p>
+    <div class="wl-cards">
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎓</span><b>My coaching</b><span>Private classes: your English Map, class recaps, new words and progress reports.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">💬</span><b>The Club</b><span>This week's classes, the wall, recordings and the calendar. Try it free for 2 weeks.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🔔</span><b>Messages</b><span>Notes from Noa and chats with the club, under the 🔔 at the top.</span></div>
+    </div>
   </div>
 
   <div class="wl-step" data-step="5" hidden>
     <h2>Your <em>study buddy</em> 🐾</h2>
-    <div class="wl-bdprev"><div class="wl-bdimg" id="wlBdImg"><span></span><i>✦</i><i>✦</i><i>✦</i></div><div><b>Meet Miki</b>, Noa's buddy, with her crown and sparkles. Yours starts as an egg 🥚: <b>tap the egg in the bottom-right corner</b> of any page to hatch it.</div></div>
-    <ul class="wl-list">
-      <li><span class="wl-ico" aria-hidden="true">🍪</span><div><b>Earn treats by studying:</b> saving words, flashcard rounds, grammar rounds, writing sentences and more. Then <b>feed</b> your buddy (up to 5 a day).</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💛</span><div><b>Friendship levels:</b> feeding, petting and visiting raise its level. Each level unlocks a new trick, and in the <b>Buddy park</b> it starts to glow: silver, gold and rainbow.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">👕</span><div><b>Clothes, colors and toys</b> unlock as you save and learn words. Finish grammar modules (and their ⭐ Advanced stages) for special toys.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">✋</span><div><b>Move it anywhere:</b> drag your buddy around the screen, and tap it to pet it, feed it or dress it up.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🌳</span><div><b>Buddy park:</b> see the buddies of everyone who's been on Hibi lately and send them love. It never gets sick or sad if you're away, it just naps.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⚔️</span><div><b>Duels</b> (everyone on Hibi): challenge someone in the park to a friendly 7-day duel. Winners get treats and prizes, including clothes your buddy can wear. While you have a duel, <b>⚔️ Your duels</b> sits at the top of Home (tap it to see the score), the 🔔 tells you about new challenges, lead changes and results, and your past duels are in <b>📜 Your duels</b> in the park.</div></li>
-    </ul>
+    <div class="wl-bdprev"><div class="wl-bdimg" id="wlBdImg"><span></span><i>✦</i><i>✦</i><i>✦</i></div><div><b>Meet Miki</b>, Noa's buddy. Yours starts as an egg 🥚: <b>tap it in the corner</b> of any page to hatch it.</div></div>
+    <div class="wl-cards">
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🍪</span><b>Treats</b><span>Earn them by studying, then feed your buddy.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">👕</span><b>Clothes & toys</b><span>Unlock as you learn.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">🌳</span><b>Buddy park</b><span>Visit everyone's buddies and send love.</span></div>
+    </div>
     <div class="note-actions wl-adopt" id="wlAdoptRow"><button class="pill-btn pill-green" type="button" data-wladopt>🐾 Choose my buddy</button></div>
   </div>
 
   <div class="wl-step" data-step="6" hidden>
-    <h2>Make it <em>yours</em> ⚙️</h2>
-    <ul class="wl-list">
-      <li class="when-in"><span class="wl-ico wl-green" aria-hidden="true">☁</span><div><b>You're signed in.</b> Your words, notes, progress and buddy save to your Google account and follow you to every device.</div></li>
-      <li class="when-in"><span class="wl-ico" aria-hidden="true">🙂</span><div><b>Profile</b> (your photo, top right): pick your photo (your Google one, your own, or your buddy), and jump to your words and your club profile. The button turns <b>yellow</b> while it saves and <b>green</b> when everything is saved.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⚙</span><div><b>Settings</b> (tap your photo, top right, then <b>⚙ Settings</b>): themes, bigger text, easier fonts, bionic reading, calm mode and more. Too much on the screen? Turn on <b>🧩 Simple mode</b>: just the main pages with bigger buttons (everything else is under <b>☰ More</b>). You can also turn on the <b>🏛️ Daily Stoic</b>: one short idea a day at the top of Home.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">⏱</span><div><b>Study timer</b> (⏱ at the top): focus for 25 minutes, then take a short break.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🎵</span><div><b>Music</b> (🎧 at the top): lo-fi, piano, rain or calm noise while you study.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">🔊</span><div><b>Listen</b> (next to a page title): Hibi reads the page out loud. Select some text first to hear just that part.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">★</span><div><b>Star</b> (next to a page title): adds that page to the <b>★ Starred</b> list in the menu, so it's one click away.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">📲</span><div><b>Install it</b> on your phone like an app, and press <kbd>/</kbd> on a computer to search everything.</div></li>
-      <li><span class="wl-ico" aria-hidden="true">💬</span><div><b>Something missing?</b> Use “Tell Noa” at the bottom of any page.</div></li>
-    </ul>
+    <h2>You're <em>ready</em> ✨</h2>
+    <div class="wl-cards">
+      <div class="wl-card when-in"><span class="wl-ico" aria-hidden="true">☁</span><b>Saved for you</b><span>Your words and buddy follow you to every device.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">⚙</span><b>Settings</b><span>Tap your photo (top right): themes, text size, Simple mode.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">⏱</span><b>Timer & music</b><span>Focus for 25 minutes with lo-fi or rain.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">💬</span><b>Tell Noa</b><span>Something missing? The link is at the bottom of every page.</span></div>
+    </div>
+    <p class="wl-calm">🐢 <b>Take your time.</b> Explore a little each day; nothing here expires. You can open this tour again anytime from <b>How this page works</b> at the bottom.</p>
   </div>
 
   <div class="wl-nav">

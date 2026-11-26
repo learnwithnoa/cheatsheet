@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=76',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=77',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -455,6 +455,13 @@ s=open(p,encoding="utf-8").read()
 if '2026-1126-past' not in s:
     s=s.replace(a,a+'''  {id:"2026-1126-past", date:"November 26, 2026", title:"Your coaching history stays with you", items:[
     ["🎓","After your classes end","if you stop your private classes with Noa, <b>My coaching</b> stays: your class history, recaps, study guides, progress reports, English Map and words are all still there. Want to start again? Tap <b>💬 Write to Noa</b>.","coaching"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1126-tour' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1126-tour", date:"November 26, 2026", title:"A shorter welcome tour", items:[
+    ["🐢","Less to read","<b>How this page works</b> is now a few short cards per step instead of long lists. Take your time: there's a lot to explore, one thing a day is perfect.",""]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

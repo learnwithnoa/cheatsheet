@@ -5340,6 +5340,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1126-tour", date:"November 26, 2026", title:"A shorter welcome tour", items:[
+    ["🐢","Less to read","<b>How this page works</b> is now a few short cards per step instead of long lists. Take your time: there's a lot to explore, one thing a day is perfect.",""]
+  ]},
   {id:"2026-1126-past", date:"November 26, 2026", title:"Your coaching history stays with you", items:[
     ["🎓","After your classes end","if you stop your private classes with Noa, <b>My coaching</b> stays: your class history, recaps, study guides, progress reports, English Map and words are all still there. Want to start again? Tap <b>💬 Write to Noa</b>.","coaching"]
   ]},

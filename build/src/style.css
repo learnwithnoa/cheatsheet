@@ -2287,4 +2287,14 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 .vs-item-top b+.pos{margin-right:auto}
 /* word of the day already in My notebook */
 #twSave.is-saved{background:var(--surface)!important;color:var(--green)!important;border:1.5px solid var(--green)!important;box-shadow:none!important}
+/* welcome tour as short cards (Nov 26 2026) */
+.wl-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.wl-card{display:flex;flex-direction:column;gap:4px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);min-width:0}
+.wl-card .wl-ico{font-size:22px;line-height:1;margin-bottom:4px;width:auto;height:auto;background:none!important}
+.wl-card b{font-size:15px}
+.wl-card span:last-child{font-size:13.5px;color:var(--muted);line-height:1.4}
+.wl-calm{margin:14px 0 4px;padding:10px 12px;border-radius:12px;background:var(--surface-2);font-size:14px;line-height:1.45}
+.wlm-pops{display:flex;gap:8px;flex-wrap:wrap}.wlm-pops .wlm-dot{width:30px;height:30px;border-radius:50%;border:1px solid var(--ink,#1A1A1A);padding:0;cursor:pointer}
+.wlm-pops .wlm-dot[aria-pressed="true"]{outline:3px solid var(--ink,#1A1A1A);outline-offset:2px}
+@media (max-width:600px){.wl-card{display:grid;grid-template-columns:30px 1fr;column-gap:10px;align-items:start;padding:10px 12px}.wl-card .wl-ico{grid-row:span 2;margin:2px 0 0}.wl-cards{gap:8px}}
 ⟦include:parts/redesign.css⟧
