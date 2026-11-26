@@ -3903,12 +3903,12 @@ html.rd .pr-back{border-radius:0!important;font:700 12px var(--mono);text-transf
 html.rd.rd #musicBtn,html.rd.rd #clBell{border-radius:0!important;border:1px solid var(--rule)!important;background:transparent!important;box-shadow:none!important}
 html.rd .top [aria-pressed="true"].cs-btn,html.rd .tmr-chip.on,html.rd [data-tmmin].on{border-radius:0}
 /* top bar: one style for every icon button — squares (the avatar too), hover = pop color + a little hard shadow lift */
-html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#searchToggle):not(.lp-x){border-radius:0!important;border:1px solid var(--rule)!important;box-shadow:none!important;transition:transform .12s,box-shadow .12s,background-color .12s}
-html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#hdrWord):not(#searchToggle){background:var(--surface)!important}
+html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn){border-radius:0!important;border:1px solid var(--rule)!important;box-shadow:none!important;transition:transform .12s,box-shadow .12s,background-color .12s}
+html.rd.rd .top :is(#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn){background:var(--surface)!important}
 html.rd.rd .top .auth-btn,html.rd.rd .top .auth-btn img,html.rd.rd .top .auth-btn canvas,html.rd.rd .top .auth-btn>*:not(.st-dot):not([class*="dot"]){border-radius:0!important}
-html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#_a):not(#_b):hover,html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#_a):not(#_b):focus-visible{background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-2px,-2px);box-shadow:2px 2px 0 var(--ink)!important}
-html.rd.rd .top :is(button,.theme-btn,.cs-btn):not(.brand):not(#_a):not(#_b):active{transform:none;box-shadow:none!important}
-@media (prefers-reduced-motion:reduce){html.rd.rd .top :is(button,.theme-btn,.cs-btn):hover{transform:none}}
+html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn):not(#_a):hover,html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn):not(#_a):focus-visible{background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-2px,-2px);box-shadow:2px 2px 0 var(--ink)!important}
+html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn):not(#_a):active{transform:none;box-shadow:none!important}
+@media (prefers-reduced-motion:reduce){html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn):hover{transform:none}}
 /* buddy home: the settings gear and the close button, clearly visible */
 html.rd .bd-modal .bd-x{border-radius:0!important;color:var(--ink)!important;border:1px solid var(--rule);background:var(--surface);opacity:1}
 html.rd .bd-modal .bd-set-ico{font-size:0!important;width:34px;height:34px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;padding:0!important}
@@ -4087,6 +4087,30 @@ html.rd #v-club .cl-cal{border-radius:0!important}
 html.rd #v-club .cl-mcard{border-radius:0!important;box-shadow:3px 3px 0 var(--rule)!important}
 html.rd #v-club .cl-mcard:hover{box-shadow:5px 5px 0 var(--pop)!important;transform:translate(-1px,-1px)}
 html.rd #v-club .cl-board b:last-child,html.rd #v-club .cl-board [class*="pts"]{font-family:var(--mono)}
+/* tips (dismissible notes) everywhere: paper card with a pop stripe, not green */
+html.rd .note.dismissible,html.rd .view>.note{border-radius:0!important;background:var(--surface)!important;color:var(--ink)!important;border:1px dashed var(--rule)!important;border-left:6px solid var(--pop)!important;box-shadow:none!important}
+html.rd .note.dismissible b,html.rd .note.dismissible strong{color:var(--ink)!important}
+/* buddy buttons outside the buddy window (park "Adopt a buddy", etc.) */
+html.rd .bd-b,html.rd .bd-b.go{border-radius:0!important;background:var(--ink)!important;color:var(--bg)!important;font:700 12px var(--mono)!important;text-transform:uppercase;box-shadow:3px 3px 0 var(--pop)!important;background-image:none!important;border:0!important}
+html.rd .bd-b:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+html.rd #v-park .park-empty,html.rd #v-park [class*="empty"]{border-radius:0!important}
+/* profile / settings panel tabs (white text on paper was unreadable) */
+html.rd .pt-tabs{gap:0;border-bottom:2px solid var(--ink)}
+html.rd .pt-tabs [role="tab"]{border-radius:0!important;border:1px solid var(--rule)!important;border-bottom:0!important;margin-right:-1px;background:var(--surface-2)!important;color:var(--ink)!important;font:700 12px var(--mono)!important;text-transform:uppercase;box-shadow:none!important}
+html.rd .pt-tabs [role="tab"][aria-selected="true"]{background:var(--ink)!important;color:var(--bg)!important}
+html.rd .pt-tabs [role="tab"]:not([aria-selected="true"]):hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+
+/* Settings → Look & feel: the swatches lost their colors to the old panel button style */
+html.rd.rd .rd-look [data-pop="yellow"],html.rd.rd #rdHome [data-rdpop="yellow"]{background:#F2D21B!important}
+html.rd.rd .rd-look [data-pop="fuchsia"],html.rd.rd #rdHome [data-rdpop="fuchsia"]{background:#FF3EA5!important}
+html.rd.rd .rd-look [data-pop="lime"],html.rd.rd #rdHome [data-rdpop="lime"]{background:#C6FF00!important}
+html.rd.rd .rd-look [data-pop="blue"],html.rd.rd #rdHome [data-rdpop="blue"]{background:#7D96FF!important}
+html.rd.rd .rd-look [data-pop="orange"],html.rd.rd #rdHome [data-rdpop="orange"]{background:#FF7A2F!important}
+html.rd.rd .rd-look [data-pop="mint"],html.rd.rd #rdHome [data-rdpop="mint"]{background:#5CE0B0!important}
+html.rd.rd .rd-look button[data-rdt]{background:transparent!important;color:var(--ink)!important;border:1px solid var(--rule)!important;border-radius:0!important}
+html.rd.rd .rd-look button[data-rdt][aria-checked="true"]{background:var(--ink)!important;color:var(--bg)!important}
+html.rd.rd .rd-look .rdh-dot{border:1px solid var(--ink)!important;border-radius:50%!important}
+html.rd.rd .rd-look .rdh-dot[aria-checked="true"]{outline:3px solid var(--ink);outline-offset:2px}
 
 </style>
 
@@ -5429,7 +5453,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-81deaf1329a7.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261126184404"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261126184729"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
