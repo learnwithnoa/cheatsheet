@@ -4229,7 +4229,7 @@ html.rd .bd.rd-peek:not(.rd-out) .rd-tama:hover{transform:rotate(-4deg)}
 @media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art:hover{transform:none}html.rd #rdHome .rdh-art:hover rect{animation:none}}
 
 /* pocket pet: smaller buddy so it doesn't touch the screen's edges */
-html.rd .rd-tama #bdPet{width:40px!important;height:40px!important}
+html.rd .rdtm-scr{width:60px;height:56px;border-width:3px}
 html.rd .rdtm-scr{display:grid;place-items:center}
 /* see-through shell (Buddy settings → See-through shell, ncs-tama-clear), like the clear 90s consoles: tinted plastic + the parts inside */
 html.rd[data-tama-clear] .rd-tama{background-color:color-mix(in srgb,var(--tama,var(--hl3)) 58%,transparent)!important;
@@ -5580,7 +5580,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-5790ac5bb866.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127090635"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127090958"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

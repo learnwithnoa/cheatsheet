@@ -745,7 +745,7 @@ html.rd .bd.rd-peek:not(.rd-out) .rd-tama:hover{transform:rotate(-4deg)}
 @media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art:hover{transform:none}html.rd #rdHome .rdh-art:hover rect{animation:none}}
 
 /* pocket pet: smaller buddy so it doesn't touch the screen's edges */
-html.rd .rd-tama #bdPet{width:40px!important;height:40px!important}
+html.rd .rdtm-scr{width:60px;height:56px;border-width:3px}
 html.rd .rdtm-scr{display:grid;place-items:center}
 /* see-through shell (Buddy settings → See-through shell, ncs-tama-clear), like the clear 90s consoles: tinted plastic + the parts inside */
 html.rd[data-tama-clear] .rd-tama{background-color:color-mix(in srgb,var(--tama,var(--hl3)) 58%,transparent)!important;
