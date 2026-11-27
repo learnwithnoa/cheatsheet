@@ -13,7 +13,24 @@
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   const noa=()=>window.__csTeacher===true&&!window.__csPreview&&!window.__csViewAsMode;
   const pop=()=>{ const id=get("ncs-pop","yellow"); return POPS.find(p=>p[0]===id)||POPS[0]; };
-  function applyPop(){ const p=pop(); root.style.setProperty("--pop",p[2]); root.style.setProperty("--pop-ink",p[3]);
+
+  /* Cursors in the redesign (Nov 27 2026): pixel-style, in your pop color; over anything clickable they flip to ink.
+     Normal = the computer's own; Big / Paw / Star are redrawn here; Pencil is hidden in the redesign (code kept in comfort.css). */
+  function rdCursors(popHex){
+    if(!RD) return; const P=popHex||"#F2D21B", K="#1A1A1A";
+    const u=(svg,x,y)=>`url("data:image/svg+xml,${encodeURIComponent(svg)}") ${x} ${y}`;
+    const arrow=(f,st,w)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${w}" viewBox="0 0 24 24" shape-rendering="crispEdges"><path d="M2 1h2v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v2h-5v1h1v2h1v2h1v2h-2v1h-2v-2h-1v-2h-1v-2h-1v1h-1v1h-1v1h-2z" fill="${f}" stroke="${st}" stroke-width="1.6" paint-order="stroke"/></svg>`;
+    const paw=(f,st)=>`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 17 17" shape-rendering="crispEdges"><g fill="${f}" stroke="${st}" stroke-width=".9" paint-order="stroke"><path d="M5 9h7v1h1v3h-1v1h-2v1h-3v-1h-2v-1h-1v-3h1z"/><rect x="1.5" y="5.5" width="2.5" height="3"/><rect x="5" y="2" width="2.5" height="3.5"/><rect x="9.5" y="2" width="2.5" height="3.5"/><rect x="13" y="5.5" width="2.5" height="3"/></g></svg>`;
+    const star=(f,st)=>`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34"><path d="M17 2C18.6 13 21 15.4 32 17 21 18.6 18.6 21 17 32 15.4 21 13 18.6 2 17 13 15.4 15.4 13 17 2Z" fill="${f}" stroke="${st}" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
+    const CL=':is(a,button,label,summary,select,[role=button],[data-go],[data-tok],.park-b,.bd-pet,.flashcard,.rdh-art)';
+    const rule=(k,n,h,x,y)=>`html.rd.cs-cur-${k},html.rd.cs-cur-${k} *{cursor:${u(n,x,y)},auto!important}html.rd.cs-cur-${k} ${CL},html.rd.cs-cur-${k} ${CL} *{cursor:${u(h,x,y)},pointer!important}`;
+    const css=rule("big",arrow(P,K,40),arrow(K,P,40),3,2)+rule("paw",paw(P,K),paw(K,P),8,8)+rule("star",star(P,K),star(K,P),17,17)
+      +'html.rd.cs-cur-pencil,html.rd.cs-cur-pencil *{cursor:auto!important}html.rd.cs-cur-pencil '+CL+'{cursor:pointer!important}'
+      +'html.rd [class*="cs-cur-"] :is(input[type=text],input[type=search],input:not([type]),textarea,[contenteditable=true]),html.rd[class*="cs-cur-"] :is(input[type=text],input[type=search],input:not([type]),textarea,[contenteditable=true]){cursor:text!important}'
+      +'html.rd [data-cscur="pencil"]{display:none!important}';
+    let st=document.getElementById("rdCur"); if(!st){ st=document.createElement("style"); st.id="rdCur"; document.head.appendChild(st); } if(st.textContent!==css) st.textContent=css;
+  }
+  function applyPop(){ const p=pop(); root.style.setProperty("--pop",p[2]); root.style.setProperty("--pop-ink",p[3]); try{ rdCursors(p[2]); }catch(e){}
     /* two extra colors that always go with the pop color (the lime tape, the fuchsia marker, the blue pixels) */
     root.style.setProperty("--hl1",p[0]==="lime"?"#F2D21B":"#C6FF00"); root.style.setProperty("--hl2",p[0]==="fuchsia"?"#7D96FF":"#FF3EA5"); root.style.setProperty("--hl3",p[0]==="blue"?"#5CE0B0":"#4F73FF"); }
   /* no theme picked yet: follow the device (dark mode on the phone/computer → Night), Nov 27 2026 */

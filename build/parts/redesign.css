@@ -64,7 +64,7 @@ html.rd .navgroup h4::before{content:"/ ";opacity:.6}
 html.rd body *:not(img):not(svg):not(svg *):not(video):not(iframe):not([class*="avatar"]):not([class^="av-"]):not(.av):not([class*="dot"]):not(.g-ico):not([class*="buddy"]):not([class*="bd-"]):not([class*="pet"]):not([role="switch"]):not([class*="tgl"]):not([class*="toggle"]):not([class*="tama"]):not(.rd-tama *){border-radius:0!important}
 /* headings, cards, chips, tags, buttons, inputs */
 html.rd .view h1{font:300 clamp(34px,6vw,56px)/1 var(--display);letter-spacing:.01em;text-transform:uppercase}
-html.rd .view h1 em{background:linear-gradient(var(--pop),var(--pop)) 0 .55em/100% .32em no-repeat;color:var(--ink);-webkit-text-fill-color:currentColor;font-style:normal;box-shadow:none;padding:0 .04em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+html.rd .view h1 em{background:linear-gradient(var(--pop),var(--pop)) 0 .78em/100% .26em no-repeat;color:var(--ink);-webkit-text-fill-color:currentColor;font-style:normal;box-shadow:none;padding:0 .04em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 html.rd .view h1{margin-bottom:.35em}
 html.rd .view h2{font:500 22px var(--display);text-transform:uppercase;letter-spacing:.02em;border-bottom:1px solid var(--rule);padding-bottom:4px}
 html.rd .view h3{font-family:var(--display);font-weight:600}
@@ -523,7 +523,7 @@ html.rd .vs-card .swap:hover,html.rd .vs-top .swap:hover{background:var(--pop)!i
 /* ===== pop-up windows (Meet My notebook, tips, confirms…) ===== */
 html.rd .cs-dlg{border-radius:0!important;border:1px solid var(--ink)!important;border-top:6px solid var(--ink)!important;box-shadow:8px 8px 0 rgba(0,0,0,.3)!important;background:var(--surface)!important}
 html.rd .cs-dlg h2,html.rd .cs-dlg h3{font:400 24px/1.1 var(--display)!important;text-transform:uppercase;letter-spacing:.01em}
-html.rd .cs-dlg h2 em,html.rd .cs-dlg h3 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 100%/100% .34em no-repeat;padding-bottom:.06em}
+html.rd .cs-dlg h2 em,html.rd .cs-dlg h3 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 .78em/100% .26em no-repeat}
 html.rd .cs-dlg .swap,html.rd .cs-dlg button:not(.cs-x):not([class*="close"]){border-radius:0!important;font:700 12px var(--mono)!important;text-transform:uppercase;letter-spacing:.04em}
 html.rd .cs-dlg .swap{border:1px solid var(--rule)!important;background:transparent!important}
 html.rd .cs-dlg .swap:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
@@ -627,10 +627,10 @@ html.rd .bd-b,html.rd .bd-b.go{border-radius:0!important;background:var(--ink)!i
 html.rd .bd-b:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
 html.rd #v-park .park-empty,html.rd #v-park [class*="empty"]{border-radius:0!important}
 /* profile / settings panel tabs (white text on paper was unreadable) */
-html.rd .pt-tabs{gap:0;border-bottom:2px solid var(--ink)}
-html.rd .pt-tabs [role="tab"]{border-radius:0!important;border:1px solid var(--rule)!important;border-bottom:0!important;margin-right:-1px;background:var(--surface-2)!important;color:var(--ink)!important;font:700 12px var(--mono)!important;text-transform:uppercase;box-shadow:none!important}
-html.rd .pt-tabs [role="tab"][aria-selected="true"]{background:var(--ink)!important;color:var(--bg)!important}
-html.rd .pt-tabs [role="tab"]:not([aria-selected="true"]):hover{background:var(--pop)!important;color:var(--pop-ink)!important}
+html.rd :is(.pt-tabs,.nm-tabs){gap:0;border-bottom:2px solid var(--ink)}
+html.rd :is(.pt-tabs,.nm-tabs) :is([role="tab"],button:not(.nm-x)){border-radius:0!important;border:1px solid var(--rule)!important;border-bottom:0!important;margin-right:-1px;background:var(--surface-2)!important;color:var(--ink)!important;font:700 12px var(--mono)!important;text-transform:uppercase;box-shadow:none!important}
+html.rd :is(.pt-tabs,.nm-tabs) :is([role="tab"][aria-selected="true"],button.nm-on){background:var(--ink)!important;color:var(--bg)!important}
+html.rd :is(.pt-tabs,.nm-tabs) :is([role="tab"],button:not(.nm-x)):not([aria-selected="true"]):not(.nm-on):hover{background:var(--pop)!important;color:var(--pop-ink)!important}
 
 /* Settings → Look & feel: the swatches lost their colors to the old panel button style */
 html.rd.rd .rd-look [data-pop="yellow"],html.rd.rd #rdHome [data-rdpop="yellow"]{background:#F2D21B!important}
@@ -654,7 +654,7 @@ html.rd button:not([class]):not([id]){border-radius:0;font-family:var(--mono)}
 /* welcome tour in the redesign */
 html.rd .welcome{border-radius:0!important;border:1px solid var(--ink)!important;border-top:6px solid var(--ink)!important;box-shadow:8px 8px 0 rgba(0,0,0,.3)!important;background:var(--surface)!important}
 html.rd .welcome h2{font:400 clamp(26px,4vw,34px)/1.05 var(--display)!important;text-transform:uppercase}
-html.rd .welcome h2 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 .6em/100% .32em no-repeat;color:var(--ink)!important;-webkit-text-fill-color:currentColor}
+html.rd .welcome h2 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 .78em/100% .26em no-repeat;color:var(--ink)!important;-webkit-text-fill-color:currentColor}
 html.rd .wl-card{border-radius:0;border:1px solid var(--rule);box-shadow:3px 3px 0 var(--rule);background:var(--bg)}
 html.rd .wl-card:nth-child(1){border-top:5px solid var(--hl1)}html.rd .wl-card:nth-child(2){border-top:5px solid var(--hl2)}html.rd .wl-card:nth-child(3){border-top:5px solid var(--hl3)}html.rd .wl-card:nth-child(4){border-top:5px solid var(--pop)}
 html.rd .wl-card b{font:400 18px/1.1 var(--display);text-transform:uppercase}
@@ -858,3 +858,27 @@ html.rd .rd-cbar{padding:9px max(var(--cpad,18px),16px)!important}
 html.rd #homeClub .hc-h{position:absolute;top:6px;right:54px;margin:0!important;padding:0!important;z-index:2;gap:8px}html.rd #homeClub .hc-h .hc-go{padding:4px 10px}
 html.rd .bd-zoom button{width:34px!important;height:34px!important;border-radius:0!important;background:var(--surface)!important;border:1px solid var(--rule)!important;color:var(--ink)!important;font:700 17px var(--mono)!important}html.rd .bd-zoom button:hover:not(:disabled){background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--rule)}
 html.rd #todayBox > .card,html.rd #todayBox .td-card{padding-top:2px!important;margin-top:0!important}html.rd #todayBox .td-top{margin:0 0 2px!important;padding:0!important;min-height:0!important}html.rd #todayBox > .rd-cbar + *{margin-top:0!important}
+/* Nov 27 2026 (Noa): every pop-up from the top bar looks the same (the Profile look): ink border, hard shadow, square, same size, scrolls inside */
+html.rd :is(#authPanel,#csPanel,#musicPanel,#tmPanel,#clBellPanel,#clDm,#tNotif .tn-box){border:1.5px solid var(--rule)!important;border-radius:0!important;box-shadow:4px 5px 0 color-mix(in srgb,var(--rule) 22%,transparent)!important;background:var(--surface)!important;background-image:none!important;
+ width:min(400px,calc(100vw - 16px))!important;max-width:calc(100vw - 16px)!important;height:min(640px,calc(100dvh - 84px))!important;max-height:calc(100dvh - 84px)!important;overflow-y:auto!important;overscroll-behavior:contain;box-sizing:border-box}
+html.rd[data-rdt="night"] :is(#authPanel,#csPanel,#musicPanel,#tmPanel,#clBellPanel,#clDm,#tNotif .tn-box){box-shadow:4px 5px 0 rgba(0,0,0,.55)!important}
+html.rd :is(#authPanel,#csPanel,#musicPanel,#tmPanel,#clBellPanel,#clDm,#tNotif .tn-box) :is(.qa-x,.nm-x,.tn-x,#authClose,[aria-label="Close"]){border-radius:0!important}
+/* Settings in the redesign (Nov 27 2026): the font choice does nothing here (the redesign has its own fonts), so it's hidden (code kept);
+   pop color lives in Settings and the theme menu, not on Home */
+html.rd #csFonts,html.rd #csFontDesc{display:none!important}
+html.rd .rdh-dots{display:none!important}
+/* More space really adds room everywhere */
+html.rd.cs-space body{word-spacing:.1em;letter-spacing:.02em}
+html.rd.cs-space main :is(p,li,dd,dt,td,th,label,small,.muted,blockquote,figcaption,span:not([class*="ico"]):not(.rd-catsq)){line-height:1.85!important}
+html.rd.cs-space main :is(h1,h2,h3,h4){line-height:1.3!important;margin-bottom:.6em!important}
+html.rd.cs-space main :is(p,li){margin-bottom:.7em!important}
+html.rd.cs-space main :is(.card,.wcard,.vs-item,.aw-it,.cl-pvc):not([data-rdcat]):not([data-rdcat] *){padding:26px!important}
+html.rd.cs-space main :is(.card,[data-rdcat]) + :is(.card,[data-rdcat]){margin-top:30px!important}
+html.rd.cs-space main section.view > * + *{margin-top:22px}
+html.rd.cs-space .rdh-log li,html.rd.cs-space .rdh-log a{padding-top:16px!important;padding-bottom:16px!important}
+html.rd.cs-space .side :is(a,button){padding-top:10px!important;padding-bottom:10px!important}
+html.rd.cs-space :is(button,.btn,.pill-btn){padding-top:max(10px,.7em)}
+/* a top-bar pop-up is open: the buddy and its bubbles step behind it */
+html.rd:has(:is(#authPanel,#csPanel,#musicPanel,#tmPanel,#clBellPanel,#clDm):not([hidden])) .bd,html.rd:has(#tNotif .tn-box) .bd{z-index:1!important}
+/* selected theme in Settings: clearly readable in every theme */
+html.rd .rd-look [aria-checked="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
