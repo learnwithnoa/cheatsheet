@@ -736,17 +736,13 @@ html.rd .bd.rd-peek:not(.rd-out) .rd-tama{transform:rotate(-10deg)}
 html.rd .bd.rd-peek.rd-peek-l:not(.rd-out) .rd-tama{transform:rotate(10deg)}
 html.rd .bd.rd-peek:not(.rd-out) .rd-tama:hover{transform:rotate(-4deg)}
 @media (prefers-reduced-motion:reduce){html.rd .bd.rd-peek{transition:none}}
-/* Home: the neon star does one spin + twinkle when the mouse touches it (desktop). A one-shot animation, so it never
-   flickers when the turning star slides out from under the mouse (Nov 27 2026, Noa's video). */
+/* Home: the neon star turns with the mouse (065); it twinkles while the mouse is on it */
 @media (hover:hover){
- html.rd #rdHome .rdh-art{pointer-events:bounding-box;cursor:pointer}
- html.rd #rdHome .rdh-art.rd-spin{animation:rdStarSpin 1.1s cubic-bezier(.25,.8,.3,1)}
- html.rd #rdHome .rdh-art.rd-spin rect{animation:rdTwinkle .35s steps(2) 3}
- html.rd #rdHome .rdh-art.rd-spin rect:nth-child(3n){animation-delay:.12s}
+ html.rd #rdHome .rdh-art.rd-hot rect{animation:rdTwinkle .9s steps(2) infinite}
+ html.rd #rdHome .rdh-art.rd-hot rect:nth-child(3n){animation-delay:.3s}
 }
-@keyframes rdStarSpin{0%{transform:rotate(0) scale(1)}35%{transform:rotate(150deg) scale(1.12)}75%{transform:rotate(345deg) scale(1.04)}100%{transform:rotate(360deg) scale(1)}}
 @keyframes rdTwinkle{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
-@media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art.rd-spin,html.rd #rdHome .rdh-art.rd-spin rect{animation:none}}
+@media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art.rd-hot rect{animation:none}}
 
 /* pocket pet: smaller buddy so it doesn't touch the screen's edges */
 html.rd .rdtm-scr{width:60px;height:56px;border-width:3px}

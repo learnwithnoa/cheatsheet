@@ -192,9 +192,21 @@
       else if(window.csBuddy.open) window.csBuddy.open(); });
     return true;
   }
-  /* the Home star: one spin when the mouse comes onto it; ignores the mouse until the spin is over */
-  document.addEventListener("mouseover",e=>{ const a=e.target.closest&&e.target.closest("#rdHome .rdh-art"); if(!a||a.classList.contains("rd-spin")) return;
-    a.classList.add("rd-spin"); a.addEventListener("animationend",function f(ev){ if(ev.target!==a) return; a.removeEventListener("animationend",f); setTimeout(()=>a.classList.remove("rd-spin"),250); }); });
+  /* the Home star follows the mouse (Nov 27 2026, Noa): while the mouse is over it, it turns with the mouse around its middle,
+     clockwise or counterclockwise. The "over it" area is a fixed circle, so the turning star never slips away from the mouse. */
+  (function(){ if(!matchMedia("(hover:hover)").matches||matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+    let rot=0, want=0, last=null, raf=0, hot=false;
+    const star=()=>document.querySelector("#rdHome .rdh-art");
+    const tick=()=>{ raf=0; const a=star(); if(!a) return; if(!hot) want*=0.96; rot+=(want-rot)*0.18; a.style.transform=`rotate(${rot.toFixed(2)}deg)`; a.classList.toggle("rd-hot",hot);
+      if(Math.abs(want-rot)>.05||(!hot&&Math.abs(want)>.05)) raf=requestAnimationFrame(tick); else if(!hot){ rot=want=0; a.style.transform=""; } };
+    const go=()=>{ if(!raf) raf=requestAnimationFrame(tick); };
+    document.addEventListener("mousemove",e=>{ const a=star(); if(!a||!a.getClientRects().length){ hot=false; return; }
+      const prev=a.style.transform; a.style.transform=""; const r=a.getBoundingClientRect(); a.style.transform=prev;
+      const cx=r.left+r.width/2, cy=r.top+r.height/2, dx=e.clientX-cx, dy=e.clientY-cy, inside=Math.hypot(dx,dy)<r.width*0.46;
+      if(!inside){ if(hot){ hot=false; last=null; go(); } return; }
+      const ang=Math.atan2(dy,dx)*180/Math.PI; if(!hot){ hot=true; last=ang; want=rot; return; }
+      let d=ang-last; if(d>180) d-=360; if(d<-180) d+=360; last=ang; if(Math.hypot(dx,dy)>12) want+=d; go(); },{passive:true});
+  })();
   (function waitTama(n){ if(tama()){ peek(); return; } if(n>60) return; setTimeout(()=>waitTama(n+1),500); })(0);
   /* Nov 27 2026 (Noa): on narrower windows the pocket pet hides behind the screen edge and only peeks out.
      Hover (or tap) slides it out; a click while it's out keeps it there until you click somewhere else. */
