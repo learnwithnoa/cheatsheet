@@ -124,7 +124,7 @@
     d.addEventListener("click",ev=>{ const zb=ev.target.closest("[data-pkz]"); if(zb) setZ(z+(+zb.dataset.pkz)*.25); else if(ev.target.closest("[data-pkx]")||ev.target===d) close(); });
     img.addEventListener("dblclick",()=>setZ(z>1?1:2));
     document.addEventListener("keydown",key); gate.appendChild(d); d.querySelector("[data-pkx]").focus(); });
-  document.addEventListener("click",e=>{ if(!e.target.closest("[data-lpmode]")||!gate) return; const t=lpDark()?"light":"dark";
+  document.addEventListener("click",e=>{ if(!e.target.closest("[data-lpmode]")||!gate) return; window.__lpSwap=lpDark()?"sun":"moon"; const t=lpDark()?"light":"dark";
     try{ localStorage.setItem("ncs-theme",t); }catch(er){} document.documentElement.setAttribute("data-theme",t);
     const st=gate.scrollTop, det=gate.querySelector("#agNew"), op=det&&det.open; const cur=mode; mode=""; show(cur); gate.scrollTop=st; const d2=gate.querySelector("#agNew"); if(d2&&op) d2.open=true; });
   function landing(){
@@ -134,7 +134,11 @@
     const dark=lpDark();
     return `<div class="lp${dark?" lp-dark":""}">
     <span class="lp-blob" style="left:-120px;top:40px;background:#60A5FA"></span><span class="lp-blob" style="right:-140px;top:560px;background:#5EEAD4"></span><span class="lp-blob" style="left:-150px;top:1700px;background:#FBBF24"></span>
-    <header class="lp-top"><span class="lp-logo"><b class="lp-lw">Hibi</b><small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-mode" data-lpmode aria-label="${dark?L("Switch to light mode","Cambiar a modo claro"):L("Switch to dark mode","Cambiar a modo oscuro")}" title="${dark?L("Light mode","Modo claro"):L("Dark mode","Modo oscuro")}">${dark?"☀️":"🌙"}</button><button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar a Hibi")}</button></header>
+    <header class="lp-top"><span class="lp-logo"><b class="lp-lw">Hibi</b><small lang="ja">日々</small></span><span class="lp-sp"></span>${langSw()}<button type="button" class="lp-mode" data-lpmode aria-label="${dark?L("Switch to light mode","Cambiar a modo claro"):L("Switch to dark mode","Cambiar a modo oscuro")}" title="${dark?L("Light mode","Modo claro"):L("Dark mode","Modo oscuro")}">${(()=>{ /* line icons that swap with a little roll: the old one sinks out, the new one drops in (Nov 27 2026, Noa) */
+      const I={sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path class="lp-rays" d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>',
+               moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.6A8.3 8.3 0 0 1 9.4 4a8.3 8.3 0 1 0 10.6 10.6z"/></svg>'};
+      const from=window.__lpSwap; window.__lpSwap=""; const now=dark?"sun":"moon";
+      return (from&&from!==now?`<span class="lp-mi lp-mi-out" aria-hidden="true">${I[from]}</span>`:"")+`<span class="lp-mi${from&&from!==now?" lp-mi-in":""}" aria-hidden="true">${I[now]}</span>`; })()}</button><button type="button" class="lp-pill lp-go" data-signin>${L("Student sign in","Entrar a Hibi")}</button></header>
     <main class="lp-main">
     <section class="lp-hero">
       <div class="lp-hero-pic"><div class="lp-face"><span class="lp-float" aria-hidden="true"><i class="s1">✦</i><i class="s2">✦</i><i class="s3">✧</i></span><img src="${IMG("noa")}" alt="${L("Noa at his desk","Noa en su escritorio")}" width="240" height="240"><span class="lp-bubble lp-glass" aria-hidden="true">hi! 👋</span></div></div>

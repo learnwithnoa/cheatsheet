@@ -3512,6 +3512,10 @@ html.rd:not(#_rd)[data-rdt="night"]{
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
   color-scheme:dark;
 }
+html.rd:not(#_rd)[data-rdt="sepia"]{
+  --bg:#EADCBF; --surface:#F5EAD2; --surface-2:#EFE2C6; --line:#C4AE87; --rule:#3A2916;
+  --ink:#3A2916; --muted:#6B5639; --royal:#3A2916; --bright:#8A4F1E; --sky:#E2D0AC; --green:#3F7A3A; --red:#B23A2A;
+}
 html.rd:not(#_rd)[data-rdt="unicorn"]{
   --bg:#F2E4EE; --surface:#FBF2F8; --surface-2:#F6EAF2; --line:#D4B6CB; --rule:#2A1A33;
   --ink:#2A1A33; --muted:#6A5470; --royal:#2A1A33; --bright:#8A4FD0; --sky:#EBD6E6;
@@ -4259,7 +4263,24 @@ html.rd[data-tama-clear] .rdtm-btns button{opacity:1!important;-webkit-backdrop-
 /* 🔔 window tabs (Notifications | Messages): the mono font is wider, so a bit smaller and no cut-off */
 html.rd .nm-tabs{min-width:0;overflow:hidden}
 html.rd .nm-tabs button{font:700 12.5px var(--mono)!important;letter-spacing:-.02em;padding:7px 8px!important;white-space:nowrap;min-width:0;flex:1 1 auto}
+/* Sepia theme (Nov 27 2026): warm old paper, ink in brown */
+html.rd[data-rdt="sepia"] body::after{opacity:.22}
+html.rd[data-rdt="sepia"] .rd-tama{background-color:var(--tama,#C98B4A)}
+html.rd[data-rdt="sepia"]{--hl1:#D8B640!important;--hl2:#D9653B!important;--hl3:#4F7A8C!important}
+html.rd[data-rdt="sepia"] .rdh-note{background:#E6CD98}
 
+
+/* landing light/dark switch: line icons that roll (Nov 27 2026) */
+.lp-mode{position:relative;overflow:hidden;color:var(--lp-ink,currentColor)}
+.lp-mode .lp-mi{grid-area:1/1;display:grid;place-items:center;width:20px;height:20px}
+.lp-mode .lp-mi svg{width:20px;height:20px;display:block}
+.lp-mode .lp-mi-in{animation:lpMiIn .55s cubic-bezier(.2,.9,.3,1.25) both}
+.lp-mode .lp-mi-in .lp-rays{stroke-dasharray:3;stroke-dashoffset:3;animation:lpRays .4s .3s ease-out forwards}
+.lp-mode .lp-mi-out{animation:lpMiOut .38s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes lpMiIn{0%{transform:translateY(-130%) rotate(-90deg) scale(.6);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+@keyframes lpMiOut{to{transform:translateY(130%) rotate(90deg) scale(.6);opacity:0}}
+@keyframes lpRays{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.lp-mode .lp-mi-in,.lp-mode .lp-mi-out,.lp-mode .lp-mi-in .lp-rays{animation:none}.lp-mode .lp-mi-out{display:none}}
 </style>
 
 <header class="top">
@@ -4675,7 +4696,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-7c1a84436c5d.js"></script>
+<script src="js/h-7ad994ba645c.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -5588,7 +5609,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-2944271848be.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127093147"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127093950"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -6081,7 +6102,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
 (function(){ let t=0; const d=document.documentElement;
   addEventListener("scroll",()=>{ if(innerWidth>700) return; d.classList.add("cs-scrolling"); clearTimeout(t); t=setTimeout(()=>d.classList.remove("cs-scrolling"),900); },{passive:true});
 })();
-</script><script src="js/h-e7a5a8984879.js"></script>
+</script><script src="js/h-39c727de7ff6.js"></script>
 <script type="module" src="m-8f6d7ea1a751.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */

@@ -24,6 +24,10 @@ html.rd:not(#_rd)[data-rdt="night"]{
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
   color-scheme:dark;
 }
+html.rd:not(#_rd)[data-rdt="sepia"]{
+  --bg:#EADCBF; --surface:#F5EAD2; --surface-2:#EFE2C6; --line:#C4AE87; --rule:#3A2916;
+  --ink:#3A2916; --muted:#6B5639; --royal:#3A2916; --bright:#8A4F1E; --sky:#E2D0AC; --green:#3F7A3A; --red:#B23A2A;
+}
 html.rd:not(#_rd)[data-rdt="unicorn"]{
   --bg:#F2E4EE; --surface:#FBF2F8; --surface-2:#F6EAF2; --line:#D4B6CB; --rule:#2A1A33;
   --ink:#2A1A33; --muted:#6A5470; --royal:#2A1A33; --bright:#8A4FD0; --sky:#EBD6E6;
@@ -771,3 +775,8 @@ html.rd[data-tama-clear] .rdtm-btns button{opacity:1!important;-webkit-backdrop-
 /* 🔔 window tabs (Notifications | Messages): the mono font is wider, so a bit smaller and no cut-off */
 html.rd .nm-tabs{min-width:0;overflow:hidden}
 html.rd .nm-tabs button{font:700 12.5px var(--mono)!important;letter-spacing:-.02em;padding:7px 8px!important;white-space:nowrap;min-width:0;flex:1 1 auto}
+/* Sepia theme (Nov 27 2026): warm old paper, ink in brown */
+html.rd[data-rdt="sepia"] body::after{opacity:.22}
+html.rd[data-rdt="sepia"] .rd-tama{background-color:var(--tama,#C98B4A)}
+html.rd[data-rdt="sepia"]{--hl1:#D8B640!important;--hl2:#D9653B!important;--hl3:#4F7A8C!important}
+html.rd[data-rdt="sepia"] .rdh-note{background:#E6CD98}

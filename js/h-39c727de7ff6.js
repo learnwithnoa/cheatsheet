@@ -5,7 +5,7 @@
 (function(){
   const root=document.documentElement, RD=root.classList.contains("rd");
   const POPS=[["yellow","Yellow","#F2D21B","#1A1A1A"],["fuchsia","Fuchsia","#FF3EA5","#1A1A1A"],["lime","Lime","#C6FF00","#1A1A1A"],["blue","Blue","#7D96FF","#1A1A1A"],["orange","Orange","#FF7A2F","#1A1A1A"],["mint","Mint","#5CE0B0","#1A1A1A"]];
-  const RDT=[["light","☀","Light"],["night","☾","Night"],["unicorn","🦄","Unicorn"]];
+  const RDT=[["light","☀","Light"],["sepia","📖","Sepia"],["night","☾","Night"],["unicorn","🦄","Unicorn"]];
   const get=(k,d)=>{ try{ const v=localStorage.getItem(k); if(v==null) return d; try{ const j=JSON.parse(v); return typeof j==="string"?j:v; }catch(e){ return v; } }catch(e){ return d; } };
   const set=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);

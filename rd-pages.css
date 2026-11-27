@@ -22,6 +22,10 @@ html.rd[data-rdt="night"]{
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
   color-scheme:dark;
 }
+html.rd[data-rdt="sepia"]{
+  --bg:#EADCBF; --surface:#F5EAD2; --surface-2:#EFE2C6; --line:#C4AE87; --rule:#3A2916;
+  --ink:#3A2916; --muted:#6B5639; --royal:#3A2916; --bright:#8A4F1E; --sky:#E2D0AC; --green:#3F7A3A; --red:#B23A2A;
+}
 html.rd[data-rdt="unicorn"]{
   --bg:#F2E4EE; --surface:#FBF2F8; --surface-2:#F6EAF2; --line:#D4B6CB; --rule:#2A1A33;
   --ink:#2A1A33; --muted:#6A5470; --royal:#2A1A33; --bright:#8A4FD0; --sky:#EBD6E6;

@@ -2299,3 +2299,15 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 @media (max-width:600px){.wl-card{display:grid;grid-template-columns:30px 1fr;column-gap:10px;align-items:start;padding:10px 12px}.wl-card .wl-ico{grid-row:span 2;margin:2px 0 0}.wl-cards{gap:8px}}
 .lp-logo .lp-lw{font:inherit}
 ⟦include:parts/redesign.css⟧
+
+/* landing light/dark switch: line icons that roll (Nov 27 2026) */
+.lp-mode{position:relative;overflow:hidden;color:var(--lp-ink,currentColor)}
+.lp-mode .lp-mi{grid-area:1/1;display:grid;place-items:center;width:20px;height:20px}
+.lp-mode .lp-mi svg{width:20px;height:20px;display:block}
+.lp-mode .lp-mi-in{animation:lpMiIn .55s cubic-bezier(.2,.9,.3,1.25) both}
+.lp-mode .lp-mi-in .lp-rays{stroke-dasharray:3;stroke-dashoffset:3;animation:lpRays .4s .3s ease-out forwards}
+.lp-mode .lp-mi-out{animation:lpMiOut .38s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes lpMiIn{0%{transform:translateY(-130%) rotate(-90deg) scale(.6);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+@keyframes lpMiOut{to{transform:translateY(130%) rotate(90deg) scale(.6);opacity:0}}
+@keyframes lpRays{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.lp-mode .lp-mi-in,.lp-mode .lp-mi-out,.lp-mode .lp-mi-in .lp-rays{animation:none}.lp-mode .lp-mi-out{display:none}}
