@@ -191,7 +191,23 @@
       else if(window.csBuddy.open) window.csBuddy.open(); });
     return true;
   }
-  (function waitTama(n){ if(tama()||n>60) return; setTimeout(()=>waitTama(n+1),500); })(0);
+  (function waitTama(n){ if(tama()){ peek(); return; } if(n>60) return; setTimeout(()=>waitTama(n+1),500); })(0);
+  /* Nov 27 2026 (Noa): on narrower windows the pocket pet hides behind the screen edge and only peeks out.
+     Hover (or tap) slides it out; a click while it's out keeps it there until you click somewhere else. */
+  function peek(){
+    const root=document.getElementById("buddy"), w=document.getElementById("rdTama"); if(!root||!w) return;
+    const narrow=()=>innerWidth<1500;
+    const left=()=>root.classList.contains("at-ml")||root.classList.contains("at-bl");
+    const upd=()=>{ root.style.setProperty("--tw",(w.offsetWidth||140)+"px"); const on=narrow()&&!document.documentElement.classList.contains("cs-simple"); root.classList.toggle("rd-peek",on); root.classList.toggle("rd-peek-l",on&&left()); if(!on) root.classList.remove("rd-out","rd-pin"); };
+    upd(); addEventListener("resize",upd); new MutationObserver(upd).observe(root,{attributes:true,attributeFilter:["class"]});
+    const out=v=>{ if(root.classList.contains("rd-out")!==v) root.classList.toggle("rd-out",v); };
+    w.addEventListener("mouseenter",()=>{ if(root.classList.contains("rd-peek")) out(true); });
+    root.addEventListener("mouseleave",()=>{ if(!root.classList.contains("rd-pin")) out(false); });
+    w.addEventListener("click",e=>{ if(!root.classList.contains("rd-peek")) return;
+      if(!root.classList.contains("rd-out")){ e.preventDefault(); e.stopPropagation(); out(true); root.classList.add("rd-pin"); return; }
+      root.classList.add("rd-pin"); },true);
+    document.addEventListener("pointerdown",e=>{ if(root.classList.contains("rd-pin")&&!root.contains(e.target)&&!e.target.closest(".bd-modal")){ root.classList.remove("rd-pin"); out(false); } });
+  }
 
   /* a posterize filter: Buddy park scenes, rooms, toys and the buddy in its settings get flat print colors (+ a dot screen in CSS) */
   if(!document.getElementById("rdFx")){ const f=document.createElement("div"); f.id="rdFx"; f.setAttribute("aria-hidden","true"); f.style.cssText="position:absolute;width:0;height:0;overflow:hidden";

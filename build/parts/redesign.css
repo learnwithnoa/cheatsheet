@@ -723,3 +723,23 @@ html.rd.cs-simple .lp-end::after,html.rd.cs-calm .lp-end::after{display:none}
 html.rd[data-rdt="night"] .lp-fix{background:#2A3550!important}
 html.rd[data-rdt="night"] .lp-fix *{color:#ECECE4!important}
 @media (max-width:600px){html.rd .lp-top .lp-logo small{display:none}html.rd .lp-top .lp-in{font-size:10px!important;padding:8px 8px!important;white-space:nowrap}html.rd .lp-top{gap:6px}html.rd .lp-logo .lp-lw{font-size:22px}}
+
+/* pocket pet peeking from the edge on narrower windows (065 peek()) */
+html.rd .bd.rd-peek{transition:transform .4s cubic-bezier(.2,.9,.3,1.15)}
+html.rd .bd.rd-peek:not(.rd-out){transform:translateX(calc(var(--tw,140px) - 38px + 18px))}
+html.rd .bd.rd-peek.rd-peek-l:not(.rd-out){transform:translateX(calc(-1 * var(--tw,140px) + 38px - 18px))}
+html.rd .bd.rd-peek:not(.rd-out) .bd-bub{opacity:0;pointer-events:none}
+html.rd .bd.rd-peek:not(.rd-out) .rd-tama{transform:rotate(-10deg)}
+html.rd .bd.rd-peek.rd-peek-l:not(.rd-out) .rd-tama{transform:rotate(10deg)}
+html.rd .bd.rd-peek:not(.rd-out) .rd-tama:hover{transform:rotate(-4deg)}
+@media (prefers-reduced-motion:reduce){html.rd .bd.rd-peek{transition:none}}
+/* Home: the neon star wiggles and spins a little on hover (desktop) */
+@media (hover:hover){
+ html.rd #rdHome .rdh-art{pointer-events:auto;transition:transform .7s cubic-bezier(.3,1.6,.5,1);cursor:pointer}
+ html.rd #rdHome .rdh-art:hover{transform:rotate(28deg) scale(1.12)}
+ html.rd #rdHome .rdh-art:hover rect{animation:rdTwinkle .9s steps(2) infinite}
+ html.rd #rdHome .rdh-art:hover rect:nth-child(3n){animation-delay:.3s}
+ html.rd #rdHome .rdh-art:hover rect:nth-child(4n){animation-delay:.6s}
+}
+@keyframes rdTwinkle{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art:hover{transform:none}html.rd #rdHome .rdh-art:hover rect{animation:none}}
