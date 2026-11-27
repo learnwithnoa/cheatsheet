@@ -484,6 +484,7 @@ function renderWords(){
     if(x.id===editingId) return '<form class="card wcard-edit" data-editform="'+x.id+'" autocomplete="off">'+
       '<div class="field"><label for="ed-w">English word / expression</label><input id="ed-w" type="text" value="'+esc(x.w)+'" spellcheck="false"></div>'+
       '<div class="field"><label for="ed-m">Spanish translation</label><input id="ed-m" type="text" value="'+esc(x.m||"")+'"></div>'+
+      '<div class="field wide"><label for="ed-def">English meaning</label><input id="ed-def" type="text" value="'+esc(x.def||"")+'" placeholder="Leave empty and Hibi writes it for you"></div>'+
       '<div class="field wide"><label for="ed-e">Example sentence</label><input id="ed-e" type="text" value="'+esc(x.e||"")+'"></div>'+
       '<div class="field"><label for="ed-pr">🗣️ How to say it</label><input id="ed-pr" type="text" value="'+esc(x.pr||"")+'" placeholder="e.g. LEV-er-ij"></div>'+
       '<div class="field wide"><label for="ed-own">✍️ My own sentence</label><input id="ed-own" type="text" value="'+esc(x.own||"")+'" placeholder="Write a sentence of your own with this word"></div>'+
@@ -522,7 +523,16 @@ wList.addEventListener("submit",e=>{
   const f=e.target.closest("[data-editform]"); if(!f) return; e.preventDefault();
   const x=words.find(y=>y.id===f.dataset.editform); if(!x) return;
   const nw=document.getElementById("ed-w").value.trim(); if(!nw){ document.getElementById("ed-w").focus(); return; }
-  x.w=nw; x.m=document.getElementById("ed-m").value.trim(); x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; } { const ov=document.getElementById("ed-own").value.trim().slice(0,300); if(ov) x.own=ov; else delete x.own; } { const pi=document.getElementById("ed-pr"); if(pi){ const pv=pi.value.trim().slice(0,60); if(pv) x.pr=pv; else { delete x.pr; x.prTried=1; } } }
+  /* Nov 27 2026 (Juan Manuel): changing the word or its Spanish translation (e.g. a word with several meanings) refreshes the English meaning and part of speech
+     so they match the new sense, unless the student edited the English meaning by hand */
+  const oldW=x.w, oldM=x.m||"", oldDef=x.def||"", oldPr=x.pr||""; const dIn=document.getElementById("ed-def"); const newDef=dIn?dIn.value.trim().slice(0,140):oldDef;
+  x.w=nw; x.m=document.getElementById("ed-m").value.trim();
+  let reFill=false;
+  if(newDef!==oldDef){ if(newDef) x.def=newDef; else { delete x.def; reFill=true; } }
+  else if(norm(nw)!==norm(oldW)||x.m!==oldM){ delete x.def; delete x.pos; reFill=true; }
+  if(norm(nw)!==norm(oldW)){ delete x.pr; delete x.prTried; reFill=true; }
+  if(reFill){ delete x.ai; setTimeout(()=>{ try{ (window.queueEnrich||queueEnrich)([x.id]); }catch(e){} },0); }
+  x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; } { const ov=document.getElementById("ed-own").value.trim().slice(0,300); if(ov) x.own=ov; else delete x.own; } { const pi=document.getElementById("ed-pr"); if(pi){ const pv=pi.value.trim().slice(0,60); if(pv&&!(norm(nw)!==norm(oldW)&&pv===oldPr)) x.pr=pv; else if(norm(nw)!==norm(oldW)){ delete x.pr; delete x.prTried; } else { delete x.pr; x.prTried=1; } } }
   LS.set("ncs-words",words); editingId=null; renderWords(); toast("Changes saved");
 });
 wList.addEventListener("keydown",e=>{ if(e.key==="Escape" && editingId){ editingId=null; renderWords(); } });
@@ -4284,7 +4294,7 @@ async function enrichBatch(list,fs){
   const items=list.map(x=>({id:x.id,word:x.w,spanish:x.m||"",example:x.e||"",short:isShort(x)}));
   const p="You help a Spanish-speaking learner of English (from Chile) build their vocabulary list. For EACH item return:\n"+
     (want("pos")?"- pos: the part of speech, one of: "+POS_LIST.join(", ")+"\n":"- pos: always an empty string\n")+
-    (want("def")?"- def: a very short, simple English meaning (max 10 words, no quotes)\n":"- def: always an empty string\n")+
+    (want("def")?"- def: a very short, simple English meaning (max 10 words, no quotes). If \"spanish\" is not empty, give the meaning that matches that Spanish translation (many words have several meanings)\n":"- def: always an empty string\n")+
     (want("m")?"- es: a natural Spanish translation ONLY if \"spanish\" is empty, otherwise an empty string\n":"- es: always an empty string\n")+
     (!want("e")?"- ex: always an empty string (the student writes their own examples)\n":"- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n")+
     (want("pr")?"- pr: ONLY if \"short\" is true, "+PR_RULE+". If \"short\" is false: an empty string\n":"- pr: always an empty string\n")+
@@ -5340,6 +5350,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1127-wordedit", date:"November 27, 2026", title:"Editing a word updates its meaning", items:[
+    ["✏️","Fix a word, the meaning follows","in <b>My notebook</b>, if you change a word or its Spanish translation, Hibi rewrites the English meaning so it matches (great for words with more than one meaning). You can also edit the English meaning yourself.","words"]
+  ]},
   {id:"2026-1127-zoom", date:"November 27, 2026", title:"Easier zoom in your buddy's home", items:[
     ["🔍","Zoom buttons moved","the <b>+</b> and <b>−</b> buttons now sit next to the room (under it on phones), so they're easy to see.","buddy"]
   ]},

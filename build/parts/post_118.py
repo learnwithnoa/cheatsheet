@@ -486,3 +486,10 @@ if '2026-1127-zoom' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1127-wordedit' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1127-wordedit", date:"November 27, 2026", title:"Editing a word updates its meaning", items:[
+    ["✏️","Fix a word, the meaning follows","in <b>My notebook</b>, if you change a word or its Spanish translation, Hibi rewrites the English meaning so it matches (great for words with more than one meaning). You can also edit the English meaning yourself.","words"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
