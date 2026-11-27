@@ -7,7 +7,7 @@
   const CARDS=[["dzBox","duels","Duels"],["tStoic","stoic","Stoic"],["homeClub","club","Club"],["todayBox","word","Word"],["awBox","world","World"],["rvBox","review","Review"]];
   const CAT_OF={dzBox:"duels",tStoic:"stoic","club:week":"club",club:"club",homeClub:"club",todayBox:"word",awBox:"world",rvBox:"review",park:"buddy",buddy:"buddy"};
   const POPS=[["yellow","Yellow","#F2D21B","#1A1A1A"],["fuchsia","Fuchsia","#FF3EA5","#1A1A1A"],["lime","Lime","#C6FF00","#1A1A1A"],["blue","Blue","#7D96FF","#1A1A1A"],["orange","Orange","#FF7A2F","#1A1A1A"],["mint","Mint","#5CE0B0","#1A1A1A"]];
-  const RDT=[["light","☀","Light"],["sepia","📖","Sepia"],["night","☾","Night"],["unicorn","🦄","Unicorn"]];
+  const RDT=[["light","☀","Light"],["night","☾","Night"],["sepia","📖","Sepia"],["unicorn","🦄","Unicorn"]];
   const get=(k,d)=>{ try{ const v=localStorage.getItem(k); if(v==null) return d; try{ const j=JSON.parse(v); return typeof j==="string"?j:v; }catch(e){ return v; } }catch(e){ return d; } };
   const set=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
   const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
@@ -16,7 +16,10 @@
   function applyPop(){ const p=pop(); root.style.setProperty("--pop",p[2]); root.style.setProperty("--pop-ink",p[3]);
     /* two extra colors that always go with the pop color (the lime tape, the fuchsia marker, the blue pixels) */
     root.style.setProperty("--hl1",p[0]==="lime"?"#F2D21B":"#C6FF00"); root.style.setProperty("--hl2",p[0]==="fuchsia"?"#7D96FF":"#FF3EA5"); root.style.setProperty("--hl3",p[0]==="blue"?"#5CE0B0":"#4F73FF"); }
-  const rdt=()=>{ const t=get("cs-rd-theme","light"); return RDT.some(x=>x[0]===t)?t:"light"; };
+  /* no theme picked yet: follow the device (dark mode on the phone/computer → Night), Nov 27 2026 */
+  const sysT=()=>window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"night":"light";
+  const rdt=()=>{ const t=get("cs-rd-theme",""); return RDT.some(x=>x[0]===t)?t:sysT(); };
+  if(RD&&window.matchMedia) try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ if(get("cs-rd-theme","")) return; root.setAttribute("data-rdt",rdt()); try{ paintBtn(); }catch(e){} }); }catch(e){}
   function setRdt(t){ set("cs-rd-theme",t); root.setAttribute("data-rdt",t); if(typeof window.csSetTheme==="function") window.csSetTheme(t==="night"?"dark":"light"); paintBtn(); }
   function paintBtn(){ if(!RD) return; const t=RDT.find(x=>x[0]===rdt()); const i=document.getElementById("themeIcon"), x=document.getElementById("themeTxt"); if(i) i.textContent=t[1]; if(x) x.textContent=t[2]; }
 
@@ -164,12 +167,18 @@
     vis.forEach(([el,c])=>{ if(el.dataset.rdcat!==c[1]) el.dataset.rdcat=c[1]; });
     vis.sort((a,b)=>a[0].getBoundingClientRect().top-b[0].getBoundingClientRect().top);
     const l=document.querySelector("#rdMore .rd-more-l"); if(l){ const h=vis.map(([,c])=>`<span><i class="rd-catsq" data-cat="${c[1]}" aria-hidden="true"></i>${c[2]}</span>`).join(" · "); if(l.innerHTML!==h) l.innerHTML=h; }
-    const rv=document.getElementById("rvBox"); if(rv&&!rv.dataset.rdfold){ rv.dataset.rdfold="1"; rv.classList.add("rd-fold");
-      const top=rv.querySelector(".td-top"); if(top){ top.setAttribute("role","button"); top.tabIndex=0; top.setAttribute("aria-expanded","false");
-        const tg=()=>{ rv.classList.toggle("rd-fold"); top.setAttribute("aria-expanded",String(!rv.classList.contains("rd-fold"))); };
-        top.addEventListener("click",tg); top.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tg(); } });
-        new MutationObserver(()=>top.setAttribute("aria-expanded",String(!rv.classList.contains("rd-fold")))).observe(rv,{attributes:true,attributeFilter:["class"]}); } }
-    if(rv){ const n=(document.getElementById("rvList")||{children:[]}).children.length, tt=rv.querySelector(".td-top"); if(tt) tt.dataset.n=n?String(n):""; }
+    /* every card: the same header strip with a fold/unfold button in the same spot (Nov 27 2026, Noa). Remembered per kind (ncs-rdfold);
+       Words to review starts folded. */
+    let st={}; try{ st=JSON.parse(localStorage.getItem("ncs-rdfold")||"{}")||{}; }catch(e){}
+    vis.forEach(([el,c])=>{ if(el.querySelector(":scope > .rd-cbar")) return;
+      const own=c[1]==="club"&&el.querySelector(".hc-h b"); const nm=own?own.firstChild.textContent.replace(/^[^A-Za-z]+/,"").trim():{duels:"Your duels",stoic:"Daily Stoic",club:"This week in the club",word:"Word of the day",world:"Around the world today",review:"Words to review"}[c[1]]||c[2];
+      const bar=document.createElement("button"); bar.type="button"; bar.className="rd-cbar"; bar.innerHTML=`<i class="rd-catsq" data-cat="${c[1]}" aria-hidden="true"></i><span class="rd-cbar-t">${nm}</span><span class="rd-cbar-n"></span><span class="rd-cbar-x" aria-hidden="true"></span>`;
+      const cs=getComputedStyle(el); el.style.setProperty("--cpad",cs.paddingLeft); el.style.setProperty("--cpadt",cs.paddingTop);
+      el.prepend(bar); const fold=(c[1] in st)?!!st[c[1]]:c[1]==="review"; el.classList.toggle("rd-fold",fold); bar.setAttribute("aria-expanded",String(!fold));
+      bar.addEventListener("click",()=>{ const f=!el.classList.contains("rd-fold"); el.classList.toggle("rd-fold",f); bar.setAttribute("aria-expanded",String(!f)); let s2={}; try{ s2=JSON.parse(localStorage.getItem("ncs-rdfold")||"{}")||{}; }catch(e){} s2[c[1]]=f?1:0; try{ localStorage.setItem("ncs-rdfold",JSON.stringify(s2)); }catch(e){} });
+      new MutationObserver(()=>bar.setAttribute("aria-expanded",String(!el.classList.contains("rd-fold")))).observe(el,{attributes:true,attributeFilter:["class"]}); });
+    const rv=document.getElementById("rvBox");
+    if(rv){ const n=(document.getElementById("rvList")||{children:[]}).children.length, b=rv.querySelector(":scope > .rd-cbar .rd-cbar-n"); if(b) b.textContent=n?String(n):""; }
   }
   if(RD){ setInterval(()=>{ if(document.getElementById("rdMore")) moreCards(); },1500); }
   /* the card you jump to lights up for a moment so you can see where you landed */
@@ -187,7 +196,7 @@
     if(t.dataset.rdgo==="buddy"){ if(window.csBuddy&&window.csBuddy.open) window.csBuddy.open(); else go("park"); return; }
     if(t.dataset.rdgo==="club:week"){ go("club"); setTimeout(()=>{ if(window.__clubTab) window.__clubTab("week"); setTimeout(()=>{ const v=document.getElementById("v-club"); const el=v&&([...v.querySelectorAll(".cl-next,.cl-sec,h2")].find(x=>x.offsetParent)); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); } },200); },150); return; }
     if(t.dataset.rdgo){ go(t.dataset.rdgo); return; }
-    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ if(el.id==="rvBox") el.classList.remove("rd-fold"); el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); /* parts above can change height while scrolling: land again on the card */ [500,900].forEach(ms=>setTimeout(()=>{ const t=el.getBoundingClientRect().top; if(Math.abs(t-96)>16) scrollBy({top:t-96,behavior:"smooth"}); },ms)); } return; }
+    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ el.classList.remove("rd-fold"); el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); /* parts above can change height while scrolling: land again on the card */ [500,900].forEach(ms=>setTimeout(()=>{ const t=el.getBoundingClientRect().top; if(Math.abs(t-96)>16) scrollBy({top:t-96,behavior:"smooth"}); },ms)); } return; }
     if(t.dataset.rdsheet){ openTopics(t); }
   });
   document.addEventListener("submit",e=>{

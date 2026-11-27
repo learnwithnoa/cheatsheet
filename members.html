@@ -238,7 +238,7 @@ details.mcol>summary::before{content:"▸"}
 .own-s{margin-top:6px;padding:5px 8px;border-radius:8px;font-size:13.5px;line-height:1.4;color:var(--ink);background:color-mix(in srgb,#22C55E 13%,transparent);border-left:3px solid #22C55E}
 </style>
 <link rel="stylesheet" href="comfort.css?v=22">
-<script src="rd.js?v=4"></script>
+<script src="rd.js?v=5"></script>
 <script>(function(){var t="dark";try{t=localStorage.getItem("ncs-theme")||"dark";if(t==="soft")t="sepia";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("ncs-comfort")||"{}"),r=document.documentElement;if(s.size)r.style.setProperty("--cs-zoom",s.size);if(s.calm)r.classList.add("cs-calm");if(s.space)r.classList.add("cs-space");if(localStorage.getItem("cs-tfocus")==="1")r.classList.add("cs-focus");if(s.inshort===false)r.classList.add("cs-no-inshort");if(s.read===false)r.classList.add("cs-no-read");if(s.font&&s.font!=="default")r.classList.add("cs-font-"+s.font);}catch(e){}})();</script>
@@ -908,10 +908,49 @@ function renderNews() {
 let kdOpen = null;
 const kdSent = () => { try { return JSON.parse(localStorage.getItem("cs-kudos-sent") || "{}"); } catch (e) { return {}; } };
 function kdText(e) {
-  const f = e.s.name.split(" ")[0];
-  if (e.kind === "welcome") return `Welcome to Hibi, ${f}! 🎉 I'm so happy you're here. After each class, save your new words and notes here, and they'll be waiting for you on any device. See you in class! – Noa`;
-  if (e.mk === "n") return `Kudos, ${f}! 📝 ${e.m} class notes saved. Going back to your notes is what makes things stick. Proud of you! – Noa`;
-  return `Congrats, ${f}! 📚 You just reached ${e.m} words in Hibi. That's real progress, and I can hear it in class. Keep going! – Noa`;
+  /* Nov 27 2026 (Noa): a different message each time, fitted to what they did and how big it is. Same event = same text
+     (picked by its id), so reopening the box doesn't shuffle it. Noa's voice: warm, a bit playful, never cheesy. */
+  const f = e.s.name.split(" ")[0], m = e.m, id = String(e.eid || e.s.uid || f);
+  let h = 0; for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const pick = a => a[h % a.length];
+  if (e.kind === "welcome") return pick([
+    `Welcome to Hibi, ${f}! 🎉 This is your English home between classes: save new words and notes here and they'll follow you to any device. See you in class! – Noa`,
+    `${f}, you made it! ✨ Hibi is where everything from our classes lives now: your words, your notes, a bit of practice every day. Poke around, nothing breaks. – Noa`,
+    `Hi ${f}! 👋 So happy to see you on Hibi. Little tip: after each class, save 2 or 3 new words here. Future you will thank you. – Noa`,
+    `Welcome aboard, ${f}! 🚀 Hibi is your English notebook that never gets lost. Start small: one word today is a win. – Noa`]);
+  if (e.mk === "n") {
+    const lines = m >= 50 ? [
+      `${f}, ${m} class notes?! 📝 That's not a notebook anymore, that's a library. This is exactly how English sticks. Proud of you! – Noa`,
+      `${m} notes saved, ${f}. 🏛️ Most people never look back at their class notes. You built an archive. Seriously impressive. – Noa`]
+      : m >= 20 ? [
+      `Kudos, ${f}! 📝 ${m} class notes saved. Going back to them is what turns "I learned it" into "I can use it". Keep it up! – Noa`,
+      `${m} notes, ${f}! ✨ You're doing the boring-but-magic part: reviewing. That's where the real progress hides. – Noa`]
+      : [
+      `Nice, ${f}! 📝 ${m} class notes saved already. Give them a quick look before our next class and watch what happens. 😉 – Noa`,
+      `${f}, ${m} notes and counting! ✨ Small habit, big difference. Proud of you. – Noa`];
+    return pick(lines);
+  }
+  const lines = m >= 500 ? [
+    `${f}… ${m} words. 🤯 That's a whole dictionary with your name on it. I hear it in class every time. Huge. – Noa`,
+    `${m} words saved, ${f}! 🏆 At this point you're not learning English, you're collecting it. So proud of you. – Noa`,
+    `Okay ${f}, ${m} words is officially showing off. 😎 Keep going, it's working. – Noa`]
+    : m >= 200 ? [
+    `${f}, ${m} words! 📚 That's a lot of English you can now actually use. Pick 3 to sneak into our next class? – Noa`,
+    `Wow, ${m} words in Hibi, ${f}! 🔥 You can feel the difference, right? Because I can. – Noa`,
+    `${m} words, ${f}! ✨ Your notebook is getting seriously good. Don't forget to review the old ones too. – Noa`]
+    : m >= 100 ? [
+    `${f}, you hit ${m} words! 💯 Triple digits. That's real progress, and it shows when you speak. – Noa`,
+    `${m} words saved, ${f}! 🎉 A hundred little wins. Keep stacking them. – Noa`,
+    `Look at you, ${f}: ${m} words! 📚 Time to start using them on purpose. I'll be listening in class. 😉 – Noa`]
+    : m >= 50 ? [
+    `${f}, ${m} words already! 📚 You're building a real habit here. Keep it going! – Noa`,
+    `${m} words, ${f}! ✨ Halfway to 100. Try using two of them this week and tell me how it went. – Noa`,
+    `Nice one, ${f}! 🙌 ${m} words saved. Every one of them is something you won't have to google next time. – Noa`]
+    : [
+    `${f}, your first ${m} words! 🌱 Great start. Little by little, that's the whole secret. – Noa`,
+    `${m} words saved, ${f}! ✨ The notebook is officially alive. Keep feeding it. 😄 – Noa`,
+    `Yay, ${f}! 📚 ${m} words in Hibi. Starting is the hardest part, and you already did it. – Noa`];
+  return pick(lines);
 }
 function composer(id, text) {
   return `<div class="kd-comp"><label class="muted" for="kdTa" style="font-size:13px">It pops up in their Hibi the next time they open it (signed in). Edit it if you like:</label>

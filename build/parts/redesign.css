@@ -830,14 +830,29 @@ html.rd .rd-catsq[data-cat="duels"]{background:var(--cat-duels)}html.rd .rd-cats
 html.rd .rd-catsq[data-cat="word"],html.rd .rd-catsq[data-cat="review"]{background:var(--cat-word)}html.rd .rd-catsq[data-cat="world"]{background:var(--cat-world)}html.rd .rd-catsq[data-cat="buddy"]{background:var(--cat-buddy)}
 html.rd .rd-catsq[data-cat=""]{display:none}
 html.rd .rd-more-l span{white-space:nowrap}
-/* Words to review: folded until you open it */
-html.rd #rvBox .td-top{cursor:pointer;display:flex;align-items:center;gap:8px}
-html.rd #rvBox .td-top::after{content:attr(data-n) " ▾";margin-left:auto;font:700 12px var(--mono);transition:transform .2s}
-html.rd #rvBox:not(.rd-fold) .td-top::after{content:"▴"}
-html.rd #rvBox .td-top:hover .td-tag{background:var(--pop)!important;color:var(--pop-ink)!important}
-html.rd #rvBox.rd-fold > :not(.td-top){display:none!important}
-html.rd #rvBox.rd-fold{padding-bottom:14px}
+/* More for today: same header strip + fold button on every card (065 moreCards) */
+html.rd #v-notes [data-rdcat]{position:relative}
+html.rd .rd-cbar{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:8px;width:calc(100% + 2*var(--cpad,18px));margin:calc(-1*var(--cpadt,16px)) calc(-1*var(--cpad,18px)) 12px;padding:9px var(--cpad,18px);
+ border-bottom:1px dashed var(--rule);font:700 11.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink);min-height:40px}
+html.rd .rd-cbar .rd-catsq{margin:0}
+html.rd .rd-cbar-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.rd .rd-cbar-n:not(:empty){padding:2px 6px;background:var(--cat,var(--pop));color:#1A1A1A;border:1px solid var(--rule)}
+html.rd .rd-cbar-x{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--rule);background:var(--surface);transition:transform .15s,background-color .15s,box-shadow .15s}
+html.rd .rd-cbar-x::before{content:"▴";font-size:13px}
+html.rd .rd-fold .rd-cbar-x::before{content:"▾"}
+html.rd .rd-cbar:hover .rd-cbar-x,html.rd .rd-cbar:focus-visible .rd-cbar-x{background:var(--pop);color:var(--pop-ink);transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--rule)}
+html.rd .rd-cbar:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+html.rd #v-notes [data-rdcat].rd-fold > :not(.rd-cbar){display:none!important}
+html.rd #v-notes [data-rdcat].rd-fold{padding-bottom:0!important}
+html.rd #v-notes [data-rdcat].rd-fold > .rd-cbar{margin-bottom:0;border-bottom:0}
 html.rd #rdHome .rdh-title{pointer-events:none}html.rd #rdHome .rdh-title :is(a,button){pointer-events:auto}
 html.rd #v-notes [data-rdcat] h2::before{background:var(--cat)!important}
 html.rd .hc-join{background:var(--pop)!important;background-image:none!important;color:var(--pop-ink)!important;border:1px solid var(--rule)!important;border-radius:0!important;font-family:var(--mono)!important;text-transform:uppercase;font-size:12.5px!important}
 html.rd #rdHome .rdh-art,html.rd #rdHome .rdh-art *{outline:none!important}html.rd #rdHome .rdh-art{-webkit-user-select:none;user-select:none}
+html.rd .rd-cbar{grid-column:1/-1;flex:0 0 auto}
+/* the strip names the card, so the cards' own duplicate titles step aside */
+html.rd #rvBox > .td-top,html.rd #todayBox .td-tag,html.rd #awBox h2,html.rd #homeClub .hc-h > b{display:none!important}
+html.rd #homeClub .hc-h{justify-content:flex-end;min-height:0}
+html.rd #v-notes [data-rdcat] .card{border:0!important;box-shadow:none!important;background:transparent!important;border-image:none!important}
+html.rd .rd-cbar{padding:9px max(var(--cpad,18px),16px)!important}
+html.rd #homeClub .hc-h{position:absolute;top:6px;right:54px;margin:0!important;padding:0!important;z-index:2;gap:8px}html.rd #homeClub .hc-h .hc-go{padding:4px 10px}
