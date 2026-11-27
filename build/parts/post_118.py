@@ -493,3 +493,11 @@ if '2026-1127-wordedit' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1127-senses' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1127-senses", date:"November 27, 2026", title:"Words with more than one meaning", items:[
+    ["🔀","Other meanings","editing a word in <b>My notebook</b>? Tap <b>🔀 Other meanings</b> to see its other common uses. Swap to the one you meant, or save it as a new word.","words"],
+    ["💡","Easy to mix up","new words now warn you about look-alikes Spanish speakers often confuse, like <i>catch on</i> and <i>catch up</i>.","words"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

@@ -4388,6 +4388,13 @@ html.rd .wl-step[data-step="0"] .wl-cards{grid-template-columns:repeat(2,1fr)!im
 
 /* tour cards that only fit the old or the new design (Nov 27 2026) */
 html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{display:none!important}
+/* Nov 27 2026: 💡 Easy to mix up (word cards) + 🔀 Other meanings (edit form) */
+.wmix{margin-top:6px;font-size:.92em;line-height:1.35;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,#f5c542 16%,transparent);color:var(--ink)}
+.w-senses-f .swap{margin-top:2px}
+.w-senses{display:grid;gap:8px;margin-top:8px}
+.w-sense{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface-2);line-height:1.4}
+.w-sense .m{margin-top:2px}.w-sense .ex{margin-top:4px;font-style:italic;opacity:.9}
+.w-sense .note-actions{margin-top:8px;flex-wrap:wrap;gap:6px}
 </style>
 
 <header class="top">
@@ -5714,10 +5721,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-9779c2f2397d.js"></script>
+<script src="js/h-9aad2822ee48.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127134757"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127140105"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

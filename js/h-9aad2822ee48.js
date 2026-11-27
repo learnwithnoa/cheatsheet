@@ -485,6 +485,7 @@ function renderWords(){
       '<div class="field"><label for="ed-w">English word / expression</label><input id="ed-w" type="text" value="'+esc(x.w)+'" spellcheck="false"></div>'+
       '<div class="field"><label for="ed-m">Spanish translation</label><input id="ed-m" type="text" value="'+esc(x.m||"")+'"></div>'+
       '<div class="field wide"><label for="ed-def">English meaning</label><input id="ed-def" type="text" value="'+esc(x.def||"")+'" placeholder="Leave empty and Hibi writes it for you"></div>'+
+      (window.csBeginnerOn&&window.csBeginnerOn()?'':'<div class="field wide w-senses-f"><button class="swap" type="button" data-senses="'+x.id+'">🔀 Other meanings</button><div id="ed-senses" aria-live="polite">'+(window.__wSensesOpen===x.id&&Array.isArray(x.senses)?sensesHTML(x):'')+'</div></div>')+
       '<div class="field wide"><label for="ed-e">Example sentence</label><input id="ed-e" type="text" value="'+esc(x.e||"")+'"></div>'+
       '<div class="field"><label for="ed-pr">🗣️ How to say it</label><input id="ed-pr" type="text" value="'+esc(x.pr||"")+'" placeholder="e.g. LEV-er-ij"></div>'+
       '<div class="field wide"><label for="ed-own">✍️ My own sentence</label><input id="ed-own" type="text" value="'+esc(x.own||"")+'" placeholder="Write a sentence of your own with this word"></div>'+
@@ -493,7 +494,7 @@ function renderWords(){
     const isNew = x.sample || isPending(x);
     const picked=wSel&&fcPick.includes(x.id);
     return '<article class="card wcard'+(picked?' picked':'')+'">'+'<span class="w-lead">'+(x.sample?'':'<label class="w-chkw" title="Pick for flashcards"><input type="checkbox" class="w-chk" data-wpick="'+x.id+'" aria-label="Pick '+esc(x.w)+' for flashcards"'+(picked?' checked':'')+'></label>')+sayBtn(x.w.replace(/\(.*?\)/g,""))+'</span>'+
-      '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.pr?'<div class="wpr" title="How to say it (CAPITALS = the strong part)"><span aria-hidden="true">🗣️</span> '+esc(x.pr)+'</div>':'')+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.own?'<div class="wown">✍️ '+esc(x.own)+'</div>':(x.sample?'':'<button class="wown-add" type="button" data-ownw="'+x.id+'">✍️ Write my own sentence</button>'))+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
+      '<div><div class="w">'+esc(x.w)+(x.pos?' <span class="pos">'+esc(x.pos)+'</span>':'')+'</div>'+(x.pr?'<div class="wpr" title="How to say it (CAPITALS = the strong part)"><span aria-hidden="true">🗣️</span> '+esc(x.pr)+'</div>':'')+(x.m?'<div class="m">'+esc(x.m)+'</div>':'')+(x.def?'<div class="wdef">'+esc(x.def)+'</div>':'')+(x.e?'<div class="ex">'+esc(x.e)+'</div>':'')+(x.mix&&x.mix.w&&!(window.csBeginnerOn&&window.csBeginnerOn())?'<div class="wmix">💡 <b>Easy to mix up:</b> '+esc(x.mix.w)+(x.mix.es?' = '+esc(x.mix.es):'')+'</div>':'')+(x.own?'<div class="wown">✍️ '+esc(x.own)+'</div>':(x.sample?'':'<button class="wown-add" type="button" data-ownw="'+x.id+'">✍️ Write my own sentence</button>'))+(x.n?'<div class="wn">📝 '+esc(x.n)+'</div>':'')+
       '<div class="meta">'+(x.sample?'<span class="badge ex">example</span>':'<span class="badge wnum" title="Word number (in the order you added them)">#'+nums.get(x.id)+'</span>')+''+(x.imp?'<span class="badge ex">imported</span>':'')+'<span class="badge date">'+fmtDate(x.t)+'</span></div></div>'+
       (x.sample?'<span></span>':'<div class="wbtns"><button class="del edit" type="button" data-edit="'+x.id+'" aria-label="Edit '+esc(x.w)+'">Edit</button><button class="del" type="button" data-del="'+x.id+'" aria-label="Delete '+esc(x.w)+'">Delete</button></div>')+'</article>';
   }).join("")+(wLeft>0?'<div class="w-more"><button class="pill-btn" type="button" id="wMore">Show more words <small>('+wLeft+' more)</small></button></div>':"");
@@ -501,6 +502,19 @@ function renderWords(){
 }
 window.__wRender=renderWords;
 function isPending(x){ return !x.imp && x.t>lastCopy; }
+function sensesHTML(x){
+  const L=x.senses||[]; if(!L.length) return '<p class="muted small">“'+esc(x.w)+'” has just one common meaning. 👍</p>';
+  return '<div class="w-senses">'+L.map((s,i)=>'<div class="w-sense"><div><b>'+esc(s.def)+'</b>'+(s.pos?' <span class="pos">'+esc(s.pos)+'</span>':'')+'</div>'+(s.es?'<div class="m">'+esc(s.es)+'</div>':'')+(s.ex?'<div class="ex">'+esc(s.ex)+'</div>':'')+
+    '<div class="note-actions"><button class="swap" type="button" data-sense-use="'+i+'">Use this meaning</button><button class="swap" type="button" data-sense-new="'+i+'">Save as a new word</button></div></div>').join("")+'</div>';
+}
+async function showSenses(id){
+  const x=words.find(y=>y.id===id), box=document.getElementById("ed-senses"); if(!x||!box) return;
+  window.__wSensesOpen=id;   /* keeps the panel open if the list re-renders (e.g. a sync) */
+  if(Array.isArray(x.senses)){ box.innerHTML=sensesHTML(x); return; }
+  box.innerHTML='<p class="muted small">Looking up other meanings…</p>';
+  try{ x.senses=await window.__wSenses(Object.assign({},x,{w:(document.getElementById("ed-w")||{}).value||x.w,m:(document.getElementById("ed-m")||{}).value||x.m})); LS.set("ncs-words",words); const b=document.getElementById("ed-senses"); if(b) b.innerHTML=sensesHTML(x); }
+  catch(e){ const b=document.getElementById("ed-senses"); if(b) b.innerHTML='<p class="muted small">Couldn’t look that up right now. Try again in a moment.</p>'; }
+}
 function addWord(w,m,e,n){
   w=(w||"").trim(); m=(m||"").trim(); e=(e||"").trim(); n=(n||"").trim();
   if(!w) return false;
@@ -530,7 +544,9 @@ wList.addEventListener("submit",e=>{
   let reFill=false;
   if(newDef!==oldDef){ if(newDef) x.def=newDef; else { delete x.def; reFill=true; } }
   else if(norm(nw)!==norm(oldW)||x.m!==oldM){ delete x.def; delete x.pos; reFill=true; }
-  if(norm(nw)!==norm(oldW)){ delete x.pr; delete x.prTried; reFill=true; }
+  if(norm(nw)!==norm(oldW)){ delete x.pr; delete x.prTried; delete x.mix; delete x.senses; reFill=true; }
+  else if(x.m!==oldM) delete x.senses;
+  if(f.dataset.pos){ x.pos=f.dataset.pos; }   /* picked one of the 🔀 Other meanings */
   if(reFill){ delete x.ai; setTimeout(()=>{ try{ (window.queueEnrich||queueEnrich)([x.id]); }catch(e){} },0); }
   x.e=document.getElementById("ed-e").value.trim(); { const nv=document.getElementById("ed-n").value.trim(); if(nv) x.n=nv; else delete x.n; } { const ov=document.getElementById("ed-own").value.trim().slice(0,300); if(ov) x.own=ov; else delete x.own; } { const pi=document.getElementById("ed-pr"); if(pi){ const pv=pi.value.trim().slice(0,60); if(pv&&!(norm(nw)!==norm(oldW)&&pv===oldPr)) x.pr=pv; else if(norm(nw)!==norm(oldW)){ delete x.pr; delete x.prTried; } else { delete x.pr; x.prTried=1; } } }
   LS.set("ncs-words",words); editingId=null; renderWords(); toast("Changes saved");
@@ -541,6 +557,14 @@ wList.addEventListener("click",e=>{
   const pc=e.target.closest("[data-wpick]");
   if(pc){ const id=pc.dataset.wpick; fcPick=fcPick.includes(id)?fcPick.filter(i=>i!==id):fcPick.concat(id); savePick(); return; }
   const s=e.target.closest("[data-say]"); if(s){ say(s.dataset.say,s); return; }
+  /* 🔀 Other meanings (edit form): look up once, then "Use this meaning" fills the form or "Save as a new word" adds a second card */
+  const sb=e.target.closest("[data-senses]"); if(sb){ showSenses(sb.dataset.senses); return; }
+  const su=e.target.closest("[data-sense-use]"); if(su){ const x=words.find(y=>y.id===editingId), sn=x&&x.senses&&x.senses[+su.dataset.senseUse]; if(!sn) return;
+    const set=(id,v)=>{ const i=document.getElementById(id); if(i) i.value=v||""; }; set("ed-m",sn.es); set("ed-def",sn.def); set("ed-e",sn.ex);
+    const f=su.closest("[data-editform]"); if(f&&sn.pos) f.dataset.pos=sn.pos; toast("Meaning swapped: tap Save changes"); return; }
+  const sw=e.target.closest("[data-sense-new]"); if(sw){ const x=words.find(y=>y.id===editingId), sn=x&&x.senses&&x.senses[+sw.dataset.senseNew]; if(!sn) return;
+    words.push(Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),w:x.w,m:sn.es,def:sn.def,e:sn.ex,t:Date.now(),ai:1},sn.pos?{pos:sn.pos}:{},x.pr?{pr:x.pr}:{}));
+    LS.set("ncs-words",words); sw.disabled=true; sw.textContent="✓ Saved as a new word"; toast("Saved as a new word"); return; }
   const ow=e.target.closest("[data-ownw]"); if(ow){ editingId=ow.dataset.ownw; renderWords(); const i=document.getElementById("ed-own"); if(i){ i.focus(); i.scrollIntoView({block:"center",behavior:"smooth"}); } return; }
   const ed=e.target.closest("[data-edit]"); if(ed){ editingId=ed.dataset.edit; renderWords(); const i=document.getElementById("ed-w"); if(i){ i.focus(); } return; }
   if(e.target.closest("[data-cancel]")){ editingId=null; renderWords(); return; }
@@ -4298,7 +4322,8 @@ async function enrichBatch(list,fs){
     (want("m")?"- es: a natural Spanish translation ONLY if \"spanish\" is empty, otherwise an empty string\n":"- es: always an empty string\n")+
     (!want("e")?"- ex: always an empty string (the student writes their own examples)\n":"- ex: an example sentence using the word ONLY if \"example\" is empty, otherwise an empty string. "+exampleRule()+"\n")+
     (want("pr")?"- pr: ONLY if \"short\" is true, "+PR_RULE+". If \"short\" is false: an empty string\n":"- pr: always an empty string\n")+
-    "Use American English. Never change the student's word. Reply with ONLY a JSON array like [{\"id\":\"...\",\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\",\"pr\":\"...\"}].\n\nITEMS:\n"+JSON.stringify(items);
+    (want("def")?"- mix: ONLY when Spanish speakers very often confuse this word with a similar-looking English word or expression (e.g. catch on / catch up, borrow / lend, embarrassed / pregnant): {\"w\":\"the look-alike\",\"es\":\"its Spanish meaning, 2-5 words\"}. Otherwise null. Most words get null.\n":"- mix: always null\n")+
+    "Use American English. Never change the student's word. Reply with ONLY a JSON array like [{\"id\":\"...\",\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\",\"pr\":\"...\",\"mix\":null}].\n\nITEMS:\n"+JSON.stringify(items);
   const r=await window.__csSample(p);
   const arr=aiJSON(r&&r.text); if(!Array.isArray(arr)) throw new Error("The AI's answer didn't make sense");
   let n=0;
@@ -4308,10 +4333,20 @@ async function enrichBatch(list,fs){
     if(want("m")&&!x.m&&a.es) x.m=String(a.es).trim().slice(0,140);
     if(want("e")&&!x.e&&a.ex){ x.e=String(a.ex).trim().slice(0,220); x.aiEx=1; }
     if(want("pr")&&isShort(x)&&!x.pr){ const v=String(a.pr||"").replace(/[\/\[\]]/g,"").trim().slice(0,60); if(v) x.pr=v; else x.prTried=1; }
+    if(want("def")){ const mx=a.mix&&typeof a.mix==="object"&&a.mix.w?{w:String(a.mix.w).trim().slice(0,40),es:String(a.mix.es||"").trim().slice(0,60)}:null; if(mx&&norm(mx.w)!==norm(x.w)) x.mix=mx; else delete x.mix; }
     if(!(fs.length===1&&fs[0]==="pr")) x.ai=1; n++; });
   saveWordsNow();
   return n;
 }
+/* Nov 27 2026: 🔀 Other meanings (in a word's edit form): the other common meanings of a word, looked up once and kept on the word (x.senses) */
+window.__wSenses=async function(x){
+  if(!aiOK()) throw new Error("no AI");
+  const p="A Spanish-speaking learner of English (from Chile) saved this word in their vocabulary list:\n"+JSON.stringify({word:x.w,spanish:x.m||"",meaning:x.def||""})+
+    "\nList the OTHER common meanings or uses of exactly this word or expression (a different meaning, or the same word as another part of speech), NOT the one that matches their Spanish translation. Max 3, the most useful first; skip rare or technical ones. For each: pos (one of: "+POS_LIST.join(", ")+"), def (a very short, simple English meaning, max 10 words), es (natural Spanish translation, 1-5 words), ex (a natural example sentence, "+(csBeginner()?"A2 level, 4 to 8 words":"B1 to B2 level, 8 to 15 words")+"). If the word really has only one common meaning, return an empty list. Use American English. Reply with ONLY a JSON array like [{\"pos\":\"...\",\"def\":\"...\",\"es\":\"...\",\"ex\":\"...\"}].";
+  const r=await window.__csSample(p);
+  const arr=aiJSON(r&&r.text); if(!Array.isArray(arr)) throw new Error("The AI's answer didn't make sense");
+  return arr.filter(s=>s&&s.def).slice(0,3).map(s=>({pos:cleanPos(s.pos),def:String(s.def).trim().slice(0,140),es:String(s.es||"").trim().slice(0,140),ex:String(s.ex||"").trim().slice(0,220)}));
+};
 /* auto-fill follows the student's ⚙️ Auto-fill choices (Nov 20 2026) */
 const needsInfo=x=>x&&x.w&&!x.sample&&!x.ai&&missF(x,fillF());
 let enrQ=new Set(), enrT=null, enrBusy=false;
@@ -5350,6 +5385,10 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1127-senses", date:"November 27, 2026", title:"Words with more than one meaning", items:[
+    ["🔀","Other meanings","editing a word in <b>My notebook</b>? Tap <b>🔀 Other meanings</b> to see its other common uses. Swap to the one you meant, or save it as a new word.","words"],
+    ["💡","Easy to mix up","new words now warn you about look-alikes Spanish speakers often confuse, like <i>catch on</i> and <i>catch up</i>.","words"]
+  ]},
   {id:"2026-1127-wordedit", date:"November 27, 2026", title:"Editing a word updates its meaning", items:[
     ["✏️","Fix a word, the meaning follows","in <b>My notebook</b>, if you change a word or its Spanish translation, Hibi rewrites the English meaning so it matches (great for words with more than one meaning). You can also edit the English meaning yourself.","words"]
   ]},

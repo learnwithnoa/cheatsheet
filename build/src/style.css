@@ -2314,3 +2314,10 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 
 /* tour cards that only fit the old or the new design (Nov 27 2026) */
 html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{display:none!important}
+/* Nov 27 2026: 💡 Easy to mix up (word cards) + 🔀 Other meanings (edit form) */
+.wmix{margin-top:6px;font-size:.92em;line-height:1.35;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,#f5c542 16%,transparent);color:var(--ink)}
+.w-senses-f .swap{margin-top:2px}
+.w-senses{display:grid;gap:8px;margin-top:8px}
+.w-sense{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface-2);line-height:1.4}
+.w-sense .m{margin-top:2px}.w-sense .ex{margin-top:4px;font-style:italic;opacity:.9}
+.w-sense .note-actions{margin-top:8px;flex-wrap:wrap;gap:6px}
