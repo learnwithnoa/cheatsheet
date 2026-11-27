@@ -1,0 +1,28 @@
+Penguin buddy: DRAFT for Hibi 3.0 (Noa, Nov 27 2026). Add it to buddy.js only when the redesign launches.
+Format like the other animals in buddy.js (8-wide half rows, mirrored, 16 rows).
+Palette: o outline #14161C, b body #353B4C, d dark #262A36, w belly #F4F2EC, l belly shade #D9D4C6, k eyes #111111, h eye shine #FFFFFF,
+y beak #F59A2E, f feet #F08A2A, p blush #F2A0B0.
+r: ["........",
+".....ooo",
+"....obbb",
+"...obbbb",
+"..obbbww",
+"..obbwkw",
+"..obbwkh",
+"..obpwww",
+"..obbwyy",
+"..obbbwy",
+".obbbbww",
+"obdobwww",
+"obdobwww",
+".oo.obww",
+"....oobl",
+"...ffooo"]
+colors (name, overrides): ("Classic",{}),
+ ("Humboldt (from Chile!)",{'b':'#2E3240','p':'#F28C8C','l':'#C9C3B5'}),
+ ("Fairy blue",{'b':'#4F7FC9','d':'#3A62A3','o':'#1C2840'}),
+ ("Emperor",{'b':'#4A5164','y':'#F6B93B','p':'#F8D46A','l':'#F3E6B5'}),
+ ("Chocolate",{'b':'#6B4430','d':'#4E3020','o':'#2A1A10'}),
+ ("Lavender dream",{'b':'#B9A2E8','d':'#9479CF','o':'#3B2D5C'})
+Humboldt: rows 10 (and the 2 side pixels of row 11) of the belly use the body color = the chest band.
+Name ideas (Noa picks): see the chat of Nov 27 2026.
