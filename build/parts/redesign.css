@@ -523,7 +523,7 @@ html.rd .vs-card .swap:hover,html.rd .vs-top .swap:hover{background:var(--pop)!i
 /* ===== pop-up windows (Meet My notebook, tips, confirms…) ===== */
 html.rd .cs-dlg{border-radius:0!important;border:1px solid var(--ink)!important;border-top:6px solid var(--ink)!important;box-shadow:8px 8px 0 rgba(0,0,0,.3)!important;background:var(--surface)!important}
 html.rd .cs-dlg h2,html.rd .cs-dlg h3{font:400 24px/1.1 var(--display)!important;text-transform:uppercase;letter-spacing:.01em}
-html.rd .cs-dlg h2 em,html.rd .cs-dlg h3 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 .6em/100% .32em no-repeat}
+html.rd .cs-dlg h2 em,html.rd .cs-dlg h3 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 100%/100% .34em no-repeat;padding-bottom:.06em}
 html.rd .cs-dlg .swap,html.rd .cs-dlg button:not(.cs-x):not([class*="close"]){border-radius:0!important;font:700 12px var(--mono)!important;text-transform:uppercase;letter-spacing:.04em}
 html.rd .cs-dlg .swap{border:1px solid var(--rule)!important;background:transparent!important}
 html.rd .cs-dlg .swap:hover{background:var(--pop)!important;color:var(--pop-ink)!important}

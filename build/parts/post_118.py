@@ -479,3 +479,10 @@ if '2026-1127-park' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1127-zoom' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1127-zoom", date:"November 27, 2026", title:"Easier zoom in your buddy's home", items:[
+    ["🔍","Zoom buttons moved","the <b>+</b> and <b>−</b> buttons now sit next to the room (under it on phones), so they're easy to see.","buddy"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

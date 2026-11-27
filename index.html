@@ -4011,7 +4011,7 @@ html.rd .vs-card .swap:hover,html.rd .vs-top .swap:hover{background:var(--pop)!i
 /* ===== pop-up windows (Meet My notebook, tips, confirms…) ===== */
 html.rd .cs-dlg{border-radius:0!important;border:1px solid var(--ink)!important;border-top:6px solid var(--ink)!important;box-shadow:8px 8px 0 rgba(0,0,0,.3)!important;background:var(--surface)!important}
 html.rd .cs-dlg h2,html.rd .cs-dlg h3{font:400 24px/1.1 var(--display)!important;text-transform:uppercase;letter-spacing:.01em}
-html.rd .cs-dlg h2 em,html.rd .cs-dlg h3 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 .6em/100% .32em no-repeat}
+html.rd .cs-dlg h2 em,html.rd .cs-dlg h3 em{font-style:normal;background:linear-gradient(var(--pop),var(--pop)) 0 100%/100% .34em no-repeat;padding-bottom:.06em}
 html.rd .cs-dlg .swap,html.rd .cs-dlg button:not(.cs-x):not([class*="close"]){border-radius:0!important;font:700 12px var(--mono)!important;text-transform:uppercase;letter-spacing:.04em}
 html.rd .cs-dlg .swap{border:1px solid var(--rule)!important;background:transparent!important}
 html.rd .cs-dlg .swap:hover{background:var(--pop)!important;color:var(--pop-ink)!important}
@@ -5684,10 +5684,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-6ef0c57648c6.js"></script>
+<script src="js/h-cb83c1b0570b.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127113925"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127114505"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -6180,7 +6180,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
 (function(){ let t=0; const d=document.documentElement;
   addEventListener("scroll",()=>{ if(innerWidth>700) return; d.classList.add("cs-scrolling"); clearTimeout(t); t=setTimeout(()=>d.classList.remove("cs-scrolling"),900); },{passive:true});
 })();
-</script><script src="js/h-1a7759ce48db.js"></script>
+</script><script src="js/h-ee6a27726306.js"></script>
 <script type="module" src="m-8f6d7ea1a751.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */

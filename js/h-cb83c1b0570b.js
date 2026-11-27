@@ -5340,6 +5340,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1127-zoom", date:"November 27, 2026", title:"Easier zoom in your buddy's home", items:[
+    ["🔍","Zoom buttons moved","the <b>+</b> and <b>−</b> buttons now sit next to the room (under it on phones), so they're easy to see.","buddy"]
+  ]},
   {id:"2026-1127-park", date:"November 27, 2026", title:"Who's in the Buddy park", items:[
     ["🌳","The park's regulars","the <b>Buddy park</b> now shows the buddies of club members and Noa's private students. If you take a break, your buddy rests at home and comes back to the park when you do.","park"]
   ]},

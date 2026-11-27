@@ -180,7 +180,10 @@
     const rv=document.getElementById("rvBox");
     if(rv){ const n=(document.getElementById("rvList")||{children:[]}).children.length, b=rv.querySelector(":scope > .rd-cbar .rd-cbar-n"); if(b) b.textContent=n?String(n):""; }
   }
-  if(RD){ setInterval(()=>{ if(document.getElementById("rdMore")) moreCards(); },1500); }
+  if(RD){ setInterval(()=>{ if(document.getElementById("rdMore")) moreCards(); },1500);
+    /* a card that redraws itself (e.g. Around the world → Yesterday) loses its strip: put it back in the same frame, so nothing jumps */
+    let mq=0; const mo=new MutationObserver(()=>{ if(mq) return; mq=1; queueMicrotask(()=>{ mq=0; if(document.getElementById("rdMore")) moreCards(); }); });
+    const watch=()=>{ const v=document.getElementById("v-notes"); if(v){ mo.observe(v,{childList:true,subtree:true}); } else setTimeout(watch,500); }; watch(); }
   /* the card you jump to lights up for a moment so you can see where you landed */
   /* pocket pet shell color (Settings in the buddy's home), synced like the pop color */
   const TAMA={pink:"#FF6FB5",lime:"#B8E62E",yellow:"#F2D21B",orange:"#FF8A3D",mint:"#5CE0B0",purple:"#A98BFF",black:"#2A2A2E",white:"#F2F0E8"};
