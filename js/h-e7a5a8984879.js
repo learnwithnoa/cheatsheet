@@ -192,6 +192,9 @@
       else if(window.csBuddy.open) window.csBuddy.open(); });
     return true;
   }
+  /* the Home star: one spin when the mouse comes onto it; ignores the mouse until the spin is over */
+  document.addEventListener("mouseover",e=>{ const a=e.target.closest&&e.target.closest("#rdHome .rdh-art"); if(!a||a.classList.contains("rd-spin")) return;
+    a.classList.add("rd-spin"); a.addEventListener("animationend",function f(ev){ if(ev.target!==a) return; a.removeEventListener("animationend",f); setTimeout(()=>a.classList.remove("rd-spin"),250); }); });
   (function waitTama(n){ if(tama()){ peek(); return; } if(n>60) return; setTimeout(()=>waitTama(n+1),500); })(0);
   /* Nov 27 2026 (Noa): on narrower windows the pocket pet hides behind the screen edge and only peeks out.
      Hover (or tap) slides it out; a click while it's out keeps it there until you click somewhere else. */

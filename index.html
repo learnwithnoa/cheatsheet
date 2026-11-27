@@ -3915,12 +3915,12 @@ html.rd .pr-back{border-radius:0!important;font:700 12px var(--mono);text-transf
 html.rd.rd #musicBtn,html.rd.rd #clBell{border-radius:0!important;border:1px solid var(--rule)!important;background:transparent!important;box-shadow:none!important}
 html.rd .top [aria-pressed="true"].cs-btn,html.rd .tmr-chip.on,html.rd [data-tmmin].on{border-radius:0}
 /* top bar: one style for every icon button — squares (the avatar too), hover = pop color + a little hard shadow lift */
-html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif){border-radius:0!important;border:1px solid var(--rule)!important;box-shadow:none!important;transition:transform .12s,box-shadow .12s,background-color .12s}
-html.rd.rd .top :is(#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif){background:var(--surface)!important}
+html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif .tn-bell){border-radius:0!important;border:1px solid var(--rule)!important;box-shadow:none!important;transition:transform .12s,box-shadow .12s,background-color .12s}
+html.rd.rd .top :is(#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif .tn-bell){background:var(--surface)!important}
 html.rd.rd .top .auth-btn,html.rd.rd .top .auth-btn img,html.rd.rd .top .auth-btn canvas,html.rd.rd .top .auth-btn>*:not(.st-dot):not([class*="dot"]){border-radius:0!important}
-html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif):not(#_a):hover,html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif):not(#_a):focus-visible{background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-2px,-2px);box-shadow:2px 2px 0 var(--ink)!important}
-html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif):not(#_a):active{transform:none;box-shadow:none!important}
-@media (prefers-reduced-motion:reduce){html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif):hover{transform:none}}
+html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif .tn-bell):not(#_a):hover,html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif .tn-bell):not(#_a):focus-visible{background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-2px,-2px);box-shadow:2px 2px 0 var(--ink)!important}
+html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif .tn-bell):not(#_a):active{transform:none;box-shadow:none!important}
+@media (prefers-reduced-motion:reduce){html.rd.rd .top :is(#hdrWord,#musicBtn,#themeBtn,#clBell,#tmBtn,#csBtn,#dmTopBtn,#authBtn,#rdBtn,#vaHdr,#tNotif .tn-bell):hover{transform:none}}
 /* buddy home: the settings gear and the close button, clearly visible */
 html.rd .bd-modal .bd-x{border-radius:0!important;color:var(--ink)!important;border:1px solid var(--rule);background:var(--surface);opacity:1}
 html.rd .bd-modal .bd-set-ico{font-size:0!important;width:34px;height:34px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;padding:0!important}
@@ -4216,16 +4216,17 @@ html.rd .bd.rd-peek:not(.rd-out) .rd-tama{transform:rotate(-10deg)}
 html.rd .bd.rd-peek.rd-peek-l:not(.rd-out) .rd-tama{transform:rotate(10deg)}
 html.rd .bd.rd-peek:not(.rd-out) .rd-tama:hover{transform:rotate(-4deg)}
 @media (prefers-reduced-motion:reduce){html.rd .bd.rd-peek{transition:none}}
-/* Home: the neon star wiggles and spins a little on hover (desktop) */
+/* Home: the neon star does one spin + twinkle when the mouse touches it (desktop). A one-shot animation, so it never
+   flickers when the turning star slides out from under the mouse (Nov 27 2026, Noa's video). */
 @media (hover:hover){
- html.rd #rdHome .rdh-art{pointer-events:auto;transition:transform .7s cubic-bezier(.3,1.6,.5,1);cursor:pointer}
- html.rd #rdHome .rdh-art:hover{transform:rotate(28deg) scale(1.12)}
- html.rd #rdHome .rdh-art:hover rect{animation:rdTwinkle .9s steps(2) infinite}
- html.rd #rdHome .rdh-art:hover rect:nth-child(3n){animation-delay:.3s}
- html.rd #rdHome .rdh-art:hover rect:nth-child(4n){animation-delay:.6s}
+ html.rd #rdHome .rdh-art{pointer-events:bounding-box;cursor:pointer}
+ html.rd #rdHome .rdh-art.rd-spin{animation:rdStarSpin 1.1s cubic-bezier(.25,.8,.3,1)}
+ html.rd #rdHome .rdh-art.rd-spin rect{animation:rdTwinkle .35s steps(2) 3}
+ html.rd #rdHome .rdh-art.rd-spin rect:nth-child(3n){animation-delay:.12s}
 }
+@keyframes rdStarSpin{0%{transform:rotate(0) scale(1)}35%{transform:rotate(150deg) scale(1.12)}75%{transform:rotate(345deg) scale(1.04)}100%{transform:rotate(360deg) scale(1)}}
 @keyframes rdTwinkle{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
-@media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art:hover{transform:none}html.rd #rdHome .rdh-art:hover rect{animation:none}}
+@media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art.rd-spin,html.rd #rdHome .rdh-art.rd-spin rect{animation:none}}
 
 /* pocket pet: smaller buddy so it doesn't touch the screen's edges */
 html.rd .rdtm-scr{width:60px;height:56px;border-width:3px}
@@ -4251,6 +4252,9 @@ html.rd[data-tama-clear] .rd-tama::before{content:"";position:absolute;inset:8% 
 html.rd[data-tama-clear][data-rdt="night"] .rd-tama::before{opacity:.5;filter:invert(1)}
 /* see-through shell: the buttons stay solid (only the shell is clear) */
 html.rd[data-tama-clear] .rdtm-btns button{opacity:1!important;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* 🔔 window tabs (Notifications | Messages): the mono font is wider, so a bit smaller and no cut-off */
+html.rd .nm-tabs{min-width:0;overflow:hidden}
+html.rd .nm-tabs button{font:700 12.5px var(--mono)!important;letter-spacing:-.02em;padding:7px 8px!important;white-space:nowrap;min-width:0;flex:1 1 auto}
 
 </style>
 
@@ -5580,7 +5584,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-5790ac5bb866.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127091858"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127092843"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -6073,7 +6077,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
 (function(){ let t=0; const d=document.documentElement;
   addEventListener("scroll",()=>{ if(innerWidth>700) return; d.classList.add("cs-scrolling"); clearTimeout(t); t=setTimeout(()=>d.classList.remove("cs-scrolling"),900); },{passive:true});
 })();
-</script><script src="js/h-d089913f9e6c.js"></script>
+</script><script src="js/h-e7a5a8984879.js"></script>
 <script type="module" src="m-8f6d7ea1a751.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */
