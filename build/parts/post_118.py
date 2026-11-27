@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=79',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=80',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -469,6 +469,13 @@ s=open(p,encoding="utf-8").read()
 if '2026-1127-words' not in s:
     s=s.replace(a,a+'''  {id:"2026-1127-words", date:"November 27, 2026", title:"Clearer word cards", items:[
     ["🔤","Spanish and meaning, apart","in <b>Words from this class</b>, the Spanish translation (with a small <b>ES</b> tag) and the English meaning now look different, so they're easy to tell apart.","club"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1127-park' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1127-park", date:"November 27, 2026", title:"Who's in the Buddy park", items:[
+    ["🌳","The park's regulars","the <b>Buddy park</b> now shows the buddies of club members and Noa's private students. If you take a break, your buddy rests at home and comes back to the park when you do.","park"]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

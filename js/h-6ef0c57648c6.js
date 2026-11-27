@@ -5340,6 +5340,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1127-park", date:"November 27, 2026", title:"Who's in the Buddy park", items:[
+    ["🌳","The park's regulars","the <b>Buddy park</b> now shows the buddies of club members and Noa's private students. If you take a break, your buddy rests at home and comes back to the park when you do.","park"]
+  ]},
   {id:"2026-1127-words", date:"November 27, 2026", title:"Clearer word cards", items:[
     ["🔤","Spanish and meaning, apart","in <b>Words from this class</b>, the Spanish translation (with a small <b>ES</b> tag) and the English meaning now look different, so they're easy to tell apart.","club"]
   ]},

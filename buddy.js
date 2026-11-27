@@ -1527,7 +1527,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (!P) { msg("Opening the park gates… 🌳"); setTimeout(renderPark, 1500); return; }
     /* guest previews (kickoff and sample-club links): a few sample buddies instead of "sign in" (Nov 22 2026 sweep) */
     const guest = !P.signedIn() && !!window.__csGuest;
-    if (!P.signedIn() && !guest) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of everyone who uses Hibi: all roaming around together.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
+    if (!P.signedIn() && !guest) { msg(`<b>Sign in to visit the park 🌳</b><p class="bd-small">The park shows the study buddies of the club and Noa's private students, all roaming around together.</p><button class="bd-b go" type="button" data-park="signin">Sign in with Google</button>`); return; }
     parkBusy = true; msg("Opening the park gates… 🌳");
     let list = [];
     if (guest) { const ks = Object.keys(SP), nm = ["Alex", "Sam", "Fran", "Javi", "Caro", "Nico"];
@@ -1539,7 +1539,10 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     const mine = list.find(x => x.me);
     /* Nov 23 2026: buddies of people who haven't used Hibi in 30 days rest at home (past students, people on a break); they come back the day their owner does */
     const AWAY = 30 * 864e5, atMs = x => x.at && typeof x.at.toMillis === "function" ? x.at.toMillis() : (typeof x.at === "number" ? x.at : 0);
-    list = list.filter(x => !x.me && x.on && SP[x.a] && !(x.role && x.role.hidden) && (guest || !atMs(x) || Date.now() - atMs(x) < AWAY));
+    /* Nov 27 2026 (Noa): only active people's buddies roam the park: club members and active private students. Past students, Hibi-only people and people who left the club
+       rest at home (they're back as soon as they rejoin). Noa's own switch per person in Hibi members: role.park "show" (always) / "hide" (never). */
+    const inPark = r => { r = r || {}; if (r.park === "show") return true; if (r.park === "hide" || r.hidden) return false; return r.club === true || (!r.hibiOnly && (r.private === true || !!r.hub)); };
+    list = list.filter(x => !x.me && x.on && SP[x.a] && (guest || inPark(x.role)) && (guest || !atMs(x) || Date.now() - atMs(x) < AWAY));
     if (S.on === true && S.a) list.push({ me: true, words: counts().words, a: S.a, c: S.c | 0, n: S.n, head: S.head, face: S.face, neck: S.neck, lvl: level(), role: mine ? mine.role : {}, first: "" });
     if (!list.length) { msg(`The park is empty right now. <b>Adopt a buddy</b> to be the first one here! 🥚<br><button class="bd-b go" type="button" data-park="adopt" style="margin-top:10px">Adopt a buddy</button>`); return; }
     /* everyone roams the whole park: start spread out, each one where there's the most room */

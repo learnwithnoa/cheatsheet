@@ -287,7 +287,7 @@ details.mcol>summary::before{content:"▸"}
         <div id="pendBox" class="pend" hidden></div>
         <input type="search" id="q" placeholder="Search by name or email…" aria-label="Search members">
         <div class="row" style="margin:-2px 0 10px;gap:6px"><label class="muted" for="tSortSel" style="font-size:13px">Sort:</label><select id="tSortSel" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="az">Name A → Z</option><option value="za">Name Z → A</option><option value="seen">Last seen</option><option value="new">Newest members</option><option value="words">Most words</option></select>
-        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option><option value="hibi">📘 Hibi only</option><option value="none">⚪ Not assigned yet</option></select></div>
+        <select id="tKind" style="font:700 13.5px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:5px 10px"><option value="all">Everyone</option><option value="club">🌼 Club</option><option value="private">🌳 Private</option><option value="both">🌼🌳 Both</option><option value="hibi">📘 Hibi only</option><option value="none">⚪ Not assigned yet</option><option value="inpark">🌳 In the Buddy park</option><option value="outpark">🏠 Not in the park</option></select></div>
         <div class="row" style="margin-bottom:10px"><button type="button" id="reload">↻ Refresh</button><span class="muted" id="loadedAt" style="font-size:13px"></span></div>
         <div class="list" id="list"></div>
       </div>
@@ -503,12 +503,12 @@ $("reload").onclick = load;
 function renderList() {
   const q = $("q").value.trim().toLowerCase();
   const kind = $("tKind").value, srt = $("tSortSel").value;
-  const shown = students.filter(s => (!q || (s.name + " " + s.email).toLowerCase().includes(q)) && (kind === "all" || roleType(s.role) === kind));
+  const shown = students.filter(s => (!q || (s.name + " " + s.email).toLowerCase().includes(q)) && (kind === "all" || (kind === "inpark" ? inPark(s.role) : kind === "outpark" ? !inPark(s.role) : roleType(s.role) === kind)));
   const nm = (a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" });
   shown.sort(srt === "za" ? (a, b) => nm(b, a) : srt === "seen" ? (a, b) => b.lastSeen - a.lastSeen || nm(a, b) : srt === "new" ? (a, b) => b.firstSeen - a.firstSeen || nm(a, b) : srt === "words" ? (a, b) => b.words.length - a.words.length || nm(a, b) : nm);
   $("list").innerHTML = shown.length ? shown.map(s => `<button class="stu" type="button" data-uid="${esc(s.uid)}" aria-current="${s.uid === current}">
       <b>${esc(s.name)}</b><span class="em">${esc(s.email)}</span>
-      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both", hibi: s.role.clubEnded ? "📘 Hibi only · left the club" : "📘 Hibi only", none: "⚪ Not assigned yet: club or private?" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
+      <span class="meta">${{ club: "🌼 Club", private: "🌳 Private", both: "🌼🌳 Both", hibi: s.role.clubEnded ? "📘 Hibi only · left the club" : "📘 Hibi only", none: "⚪ Not assigned yet: club or private?" }[roleType(s.role)]}${s.role.hub ? " 🎓" : ""}${inPark(s.role) ? "" : " · 🏠 not in park"} · ${s.words.length} words · ${s.notes.length} notes · seen ${ago(s.lastSeen)}</span></button>`).join("")
     : `<p class="muted">${!students.length ? "No one has signed in yet." : q ? `No one matches “${esc(q)}”.` : `No one here right now: ${esc((($("tKind").selectedOptions || [])[0] || {}).textContent || "this filter")}.`}${students.length && (q || kind !== "all") ? ` <button type="button" class="seg" data-showall="1" style="margin-top:6px">Show everyone (${students.length})</button>` : ""}</p>`;
   const sa = $("list").querySelector("[data-showall]"); if (sa) sa.onclick = () => { $("q").value = ""; $("tKind").value = "all"; $("tKind").dispatchEvent(new Event("change")); renderList(); };
 }
@@ -994,6 +994,14 @@ async function saveRole(s, patch) {
   try { await setDoc(doc(db, "roles", s.uid), Object.assign({}, patch, { at: serverTimestamp() }), { merge: true }); s.role = Object.assign({}, s.role, patch); renderList(); renderDetail(s); toast("Saved"); }
   catch (e) { console.warn(e); toast(/permission/i.test(String(e && (e.code || e.message))) ? "Firebase said no: the park rule isn't in the Firestore rules yet." : "Couldn't save. Try again."); }
 }
+/* Nov 27 2026: who roams the Buddy park (same rule as inPark() in buddy.js) */
+function parkMode(r) { return r && r.park === "show" ? "show" : (r && (r.park === "hide" || r.hidden)) ? "hide" : "auto"; }
+function inParkAuto(r) { r = r || {}; return r.club === true || (!r.hibiOnly && (r.private === true || !!r.hub)); }
+function inPark(r) { return parkMode(r) === "show" ? true : parkMode(r) === "hide" ? false : inParkAuto(r); }
+function parkWhy(r) { r = r || {}; const m = parkMode(r);
+  if (m === "show") return "🌳 In the park (you set: always show)"; if (m === "hide") return "🏠 Not in the park (you set: never show)";
+  if (r.club === true) return "🌳 In the park: club member"; if (inParkAuto(r)) return "🌳 In the park: private student";
+  return "🏠 Not in the park: " + (r.clubEnded ? "left the club" : r.hub ? "past student" : r.hibiOnly ? "Hibi only" : "not a club member or private student"); };
 const roleType = r => (r.hibiOnly || r.clubEnded) && !r.private && r.club !== true ? "hibi" : (r.private || (r.hub && !r.hibiOnly)) ? (r.club === false ? "private" : "both") : (r.club === false ? "private" : r.club === true ? "club" : "none");   /* hub + hibiOnly = a past student (still linked so they keep My coaching) */   /* linked to a private student (hub) = private, + club = both */   /* "none": signed up, not in the club yet (pick Club to give access) */
 let hubList = [];
 async function loadHubList() { if (!tUid) return; try { const ds = await getDocs(collection(db, "users", tUid, "data")); hubList = []; ds.forEach(x => { if (!x.id.startsWith("t-hub-")) return; const v = x.data(); if (v.deleted) return; try { const j = JSON.parse(v.json); hubList.push(j); } catch (e) {} }); hubList.sort((a, b) => a.name.localeCompare(b.name)); } catch (e) { console.warn("hub list", e); } }
@@ -1082,7 +1090,8 @@ function renderDetail(s) {
       <div class="row" style="margin-top:8px">${(() => { const ty = roleType(s.role); return [["club", "🌼 Club member"], ["private", "🌳 Private student"], ["both", "🌼🌳 Both"], ["hibi", "📘 Hibi only"]].map(([k, l]) => `<button type="button" class="seg" data-role="${k}" aria-pressed="${ty === k}" ${k === "hibi" ? 'title="Not in the club and no private classes (for example a past student): they keep Hibi, their words and their notes"' : ""}>${l}</button>`).join(""); })()}</div>
       <div class="muted small" style="margin-top:6px">Club members sit in the middle of the park, private students at the edges.</div>
       ${roleType(s.role) !== "club" ? `<div style="margin-top:10px"><b>🎓 Their Coaching page</b><div class="row" style="margin-top:6px"><select id="hubLink" style="font:600 14px var(--body);color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px">${hubOpts(s)}</select></div><div class="muted small" style="margin-top:4px">${s.role.hub ? `They see “My coaching” in their Hibi menu: classes, packs, payments and word bank (read-only, no private notes).` : `Pick their profile so they can see “My coaching” in their Hibi.`}</div></div>` : ""}
-      <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="rHide" ${s.role.hidden ? "checked" : ""}> Hide their buddy from the park</label></div>
+      <div style="margin-top:10px"><b>Show in the park</b> <span class="muted small">${parkWhy(s.role)}</span><div class="row" style="margin-top:6px">${[["auto", "Automatic"], ["show", "Always show"], ["hide", "Never show"]].map(([k, l]) => `<button type="button" class="seg" data-pk="${k}" aria-pressed="${parkMode(s.role) === k}">${l}</button>`).join("")}</div>
+      <div class="muted small" style="margin-top:4px">Automatic: club members and active private students are in the park; past students, Hibi-only people and people who left the club rest at home.</div></div></div>
     ${practiceBox(s)}
     ${(() => { const u = usageSum(s.usage, 7), r = USE_L.filter(([k]) => u[k]).map(([k, l]) => l + ": " + u[k]); return `<div class="parkbox"><b>Last 7 days</b><div class="muted" style="margin-top:4px">${r.length ? r.join(" · ") : "No activity yet (counting started Nov 6, 2026)."}</div></div>`; })()}
     <details class="mcol" data-col="w"${COL.w ? " open" : ""}><summary><h2>Words <span class="muted" style="font-size:15px">(${words.length})</span></h2></summary>
@@ -1101,7 +1110,7 @@ function renderDetail(s) {
     try { await setDoc(doc(db, "users", s.uid, "data", "ncs-modrec"), { json: JSON.stringify(v), deleted: false, at: serverTimestamp() }); s.modrec = v; stampRec(s.uid, md, v[md] === n ? n : null); renderDetail(s); renderRecs(); renderTabs(); toast(v[md] === n ? "⭐ " + MODT[md].name + (n === "all" ? " (whole module)" : " stage " + n) + " recommended for " + s.name.split(" ")[0] + ". They'll see it next time they open the site." : "Recommendation removed"); }
     catch (e) { console.warn(e); toast("Couldn't save. Try again."); }
   });
-  const rh = $("rHide"); if (rh) rh.onchange = () => saveRole(s, { hidden: rh.checked });
+  document.querySelectorAll("[data-pk]").forEach(b => b.onclick = () => { const k = b.dataset.pk; Promise.resolve(saveRole(s, { park: k === "auto" ? "" : k, hidden: false })).then(() => { renderDetail(s); try { renderList(); } catch (e) {} }); });
   const rl = $("rLv"); if (rl) rl.onchange = async () => { await saveRole(s, { lv: rl.value });
     /* private students: the same level on their coaching page (one level per person) */
     const hid = s.role && s.role.hub; if (!hid || !tUid) return;
