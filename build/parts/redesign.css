@@ -728,7 +728,6 @@ html.rd[data-rdt="night"] .lp-fix *{color:#ECECE4!important}
 html.rd .bd.rd-peek{transition:transform .4s cubic-bezier(.2,.9,.3,1.15)}
 html.rd .bd.rd-peek:not(.rd-out){transform:translateX(calc(var(--tw,140px) - 38px + 18px))}
 html.rd .bd.rd-peek.rd-peek-l:not(.rd-out){transform:translateX(calc(-1 * var(--tw,140px) + 38px - 18px))}
-html.rd .bd.rd-peek:not(.rd-out) .bd-bub{opacity:0;pointer-events:none}
 html.rd .bd.rd-peek:not(.rd-out) .rd-tama{transform:rotate(-10deg)}
 html.rd .bd.rd-peek.rd-peek-l:not(.rd-out) .rd-tama{transform:rotate(10deg)}
 html.rd .bd.rd-peek:not(.rd-out) .rd-tama:hover{transform:rotate(-4deg)}
