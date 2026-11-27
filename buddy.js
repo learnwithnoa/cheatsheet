@@ -668,7 +668,7 @@ html.cs-calm .ms-scene *{animation:none!important}html.cs-calm .ms-music .ms-dis
 .ms-tip{font-size:12.5px;color:var(--muted,#667);padding:0 12px 8px;line-height:1.35;font-weight:600}
 .bd-stage-svg{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:default;touch-action:none}#bdStgPet{cursor:pointer}
 .bd-stage-wrap{position:relative;max-width:340px;margin:12px auto 10px}.bd-stage-wrap .bd-stage{margin:0}
-.bd-zoom{position:absolute;right:6px;top:6px;display:flex;flex-direction:column;gap:4px}
+.bd-zoom{position:absolute;left:calc(100% + 8px);top:0;display:flex;flex-direction:column;gap:6px}@media (max-width:560px){.bd-zoom{position:static;flex-direction:row;justify-content:flex-end;margin-top:6px}}
 .bd-zoom button{all:unset;box-sizing:border-box;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--surface,#fff) 85%,transparent);border:1px solid var(--line,#ddd);font:800 15px var(--body,sans-serif);color:var(--ink,#222)}
 .bd-zoom button:disabled{opacity:.35;cursor:default}
 .bd-toy{cursor:grab}.bd-toy.dragging{cursor:grabbing;opacity:.85}

@@ -4344,6 +4344,8 @@ html.rd #homeClub .hc-h{justify-content:flex-end;min-height:0}
 html.rd #v-notes [data-rdcat] .card{border:0!important;box-shadow:none!important;background:transparent!important;border-image:none!important}
 html.rd .rd-cbar{padding:9px max(var(--cpad,18px),16px)!important}
 html.rd #homeClub .hc-h{position:absolute;top:6px;right:54px;margin:0!important;padding:0!important;z-index:2;gap:8px}html.rd #homeClub .hc-h .hc-go{padding:4px 10px}
+html.rd .bd-zoom button{width:34px!important;height:34px!important;border-radius:0!important;background:var(--surface)!important;border:1px solid var(--rule)!important;color:var(--ink)!important;font:700 17px var(--mono)!important}html.rd .bd-zoom button:hover:not(:disabled){background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--rule)}
+html.rd #todayBox > .card,html.rd #todayBox .td-card{padding-top:2px!important;margin-top:0!important}html.rd #todayBox .td-top{margin:0 0 2px!important;padding:0!important;min-height:0!important}html.rd #todayBox > .rd-cbar + *{margin-top:0!important}
 
 
 /* landing light/dark switch: line icons that roll (Nov 27 2026) */
@@ -5558,7 +5560,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=80" defer></script>
+<script src="buddy.js?v=81" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -5685,7 +5687,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-6ef0c57648c6.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127113140"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127113925"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
