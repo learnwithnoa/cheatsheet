@@ -840,3 +840,4 @@ html.rd #rvBox.rd-fold{padding-bottom:14px}
 html.rd #rdHome .rdh-title{pointer-events:none}html.rd #rdHome .rdh-title :is(a,button){pointer-events:auto}
 html.rd #v-notes [data-rdcat] h2::before{background:var(--cat)!important}
 html.rd .hc-join{background:var(--pop)!important;background-image:none!important;color:var(--pop-ink)!important;border:1px solid var(--rule)!important;border-radius:0!important;font-family:var(--mono)!important;text-transform:uppercase;font-size:12.5px!important}
+html.rd #rdHome .rdh-art,html.rd #rdHome .rdh-art *{outline:none!important}html.rd #rdHome .rdh-art{-webkit-user-select:none;user-select:none}

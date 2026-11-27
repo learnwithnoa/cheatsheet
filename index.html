@@ -4328,6 +4328,7 @@ html.rd #rvBox.rd-fold{padding-bottom:14px}
 html.rd #rdHome .rdh-title{pointer-events:none}html.rd #rdHome .rdh-title :is(a,button){pointer-events:auto}
 html.rd #v-notes [data-rdcat] h2::before{background:var(--cat)!important}
 html.rd .hc-join{background:var(--pop)!important;background-image:none!important;color:var(--pop-ink)!important;border:1px solid var(--rule)!important;border-radius:0!important;font-family:var(--mono)!important;text-transform:uppercase;font-size:12.5px!important}
+html.rd #rdHome .rdh-art,html.rd #rdHome .rdh-art *{outline:none!important}html.rd #rdHome .rdh-art{-webkit-user-select:none;user-select:none}
 
 
 /* landing light/dark switch: line icons that roll (Nov 27 2026) */
@@ -5669,7 +5670,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-6ef0c57648c6.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127104705"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127112555"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
@@ -6162,7 +6163,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ppet]"); 
 (function(){ let t=0; const d=document.documentElement;
   addEventListener("scroll",()=>{ if(innerWidth>700) return; d.classList.add("cs-scrolling"); clearTimeout(t); t=setTimeout(()=>d.classList.remove("cs-scrolling"),900); },{passive:true});
 })();
-</script><script src="js/h-d3a8f05b3338.js"></script>
+</script><script src="js/h-3eb0e49d782f.js"></script>
 <script type="module" src="m-8f6d7ea1a751.js"></script>
 <script>
 /* live board: which cards get "+ My notebook" */
