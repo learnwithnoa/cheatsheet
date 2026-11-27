@@ -5340,6 +5340,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1127-words", date:"November 27, 2026", title:"Clearer word cards", items:[
+    ["🔤","Spanish and meaning, apart","in <b>Words from this class</b>, the Spanish translation (with a small <b>ES</b> tag) and the English meaning now look different, so they're easy to tell apart.","club"]
+  ]},
   {id:"2026-1126-tour", date:"November 26, 2026", title:"A shorter welcome tour", items:[
     ["🐢","Less to read","<b>How this page works</b> is now a few short cards per step instead of long lists. Take your time: there's a lot to explore, one thing a day is perfect.",""]
   ]},

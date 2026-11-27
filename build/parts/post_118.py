@@ -465,3 +465,10 @@ if '2026-1126-tour' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1127-words' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1127-words", date:"November 27, 2026", title:"Clearer word cards", items:[
+    ["🔤","Spanish and meaning, apart","in <b>Words from this class</b>, the Spanish translation (with a small <b>ES</b> tag) and the English meaning now look different, so they're easy to tell apart.","club"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

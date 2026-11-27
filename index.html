@@ -3417,6 +3417,10 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-star{all:unset;cursor:pointer;font-size:24px;line-height:1;color:color-mix(in srgb,var(--muted) 45%,transparent);transition:transform .1s}
 .cl-star.on{color:#F5B301}.cl-strow:hover .cl-star{color:#F5B301}.cl-strow .cl-star:hover~.cl-star{color:var(--line)}
 .cl-star:focus-visible{outline:2px solid var(--bright);border-radius:4px}.cl-star:active{transform:scale(.9)}
+/* word cards: Spanish and the English meaning look different (Nov 27 2026) */
+.cl-pvc i.cl-es{font-style:normal;font-weight:700;font-size:13.5px;color:var(--ink);-webkit-line-clamp:2}
+.cl-pvc i.cl-es::before{content:"ES";display:inline-block;font:700 9.5px/1 var(--mono,monospace);letter-spacing:.06em;padding:3px 4px;margin-right:6px;vertical-align:1px;border:1px solid currentColor;border-radius:4px;opacity:.7}
+.cl-pvc .cl-mean{font-size:13px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 /* Nov 20 2026: one "Students" menu item, two tabs inside */
 #navMembers{display:none!important}
 .adm-head{display:flex;margin:4px 0 14px}
@@ -4680,7 +4684,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">This week's classes and Zoom links, the community wall, recordings, the calendar and everyone in the club.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-c25196ff3d22.js"></script>
+<script src="js/h-87bba6d969db.js"></script>
 <script src="js/h-fc76e74bce05.js"></script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
@@ -5581,10 +5585,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-5790ac5bb866.js"></script>
+<script src="js/h-2944271848be.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127092843"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127093147"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

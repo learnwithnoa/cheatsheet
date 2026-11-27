@@ -567,3 +567,7 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-star{all:unset;cursor:pointer;font-size:24px;line-height:1;color:color-mix(in srgb,var(--muted) 45%,transparent);transition:transform .1s}
 .cl-star.on{color:#F5B301}.cl-strow:hover .cl-star{color:#F5B301}.cl-strow .cl-star:hover~.cl-star{color:var(--line)}
 .cl-star:focus-visible{outline:2px solid var(--bright);border-radius:4px}.cl-star:active{transform:scale(.9)}
+/* word cards: Spanish and the English meaning look different (Nov 27 2026) */
+.cl-pvc i.cl-es{font-style:normal;font-weight:700;font-size:13.5px;color:var(--ink);-webkit-line-clamp:2}
+.cl-pvc i.cl-es::before{content:"ES";display:inline-block;font:700 9.5px/1 var(--mono,monospace);letter-spacing:.06em;padding:3px 4px;margin-right:6px;vertical-align:1px;border:1px solid currentColor;border-radius:4px;opacity:.7}
+.cl-pvc .cl-mean{font-size:13px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
