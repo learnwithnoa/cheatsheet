@@ -4,6 +4,8 @@
    Styles: build/parts/redesign.css. Home gets the "combo" block (#rdHome) on top of the usual Home cards. */
 (function(){
   const root=document.documentElement, RD=root.classList.contains("rd");
+  const CARDS=[["dzBox","duels","Duels"],["tStoic","stoic","Stoic"],["homeClub","club","Club"],["todayBox","word","Word"],["awBox","world","World"],["rvBox","review","Review"]];
+  const CAT_OF={dzBox:"duels",tStoic:"stoic","club:week":"club",club:"club",homeClub:"club",todayBox:"word",awBox:"world",rvBox:"review",park:"buddy",buddy:"buddy"};
   const POPS=[["yellow","Yellow","#F2D21B","#1A1A1A"],["fuchsia","Fuchsia","#FF3EA5","#1A1A1A"],["lime","Lime","#C6FF00","#1A1A1A"],["blue","Blue","#7D96FF","#1A1A1A"],["orange","Orange","#FF7A2F","#1A1A1A"],["mint","Mint","#5CE0B0","#1A1A1A"]];
   const RDT=[["light","☀","Light"],["sepia","📖","Sepia"],["night","☾","Night"],["unicorn","🦄","Unicorn"]];
   const get=(k,d)=>{ try{ const v=localStorage.getItem(k); if(v==null) return d; try{ const j=JSON.parse(v); return typeof j==="string"?j:v; }catch(e){ return v; } }catch(e){ return d; } };
@@ -112,8 +114,22 @@
     if(v&&v.recap&&v.recap.summary) return {k:"LATEST CLASS RECAP ✉",x:String(v.recap.summary).split(/(?<=[.!?])\s/)[0],go:"coaching"};
     return null;
   }
-  const ART_DAY='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpS" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#1A1A1A"/><rect x="1" y="1" width="1" height="1" fill="#1A1A1A"/><rect x="1" width="1" height="1" fill="#888"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpS)" stroke="var(--pop)" stroke-width="2.5"/></svg>';
-  const ART_NIGHT='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpN" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ECECE4"/><rect x="1" y="1" width="1" height="1" fill="#6E6E6E"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpN)" stroke="var(--pop)" stroke-width="2.5"/></svg>';
+  /* The Home star (Nov 27 2026, Noa): click it to switch between 7 designs; the last one is remembered (ncs-rdstar).
+     Ink = currentColor (dark in light themes, light at night), accent = the pop color. */
+  const STARS=[
+    ["starburst",'<polygon points="50,3 57,33 82,12 66,38 97,44 66,52 84,80 58,62 50,97 42,62 16,80 34,52 3,44 34,38 18,12 43,33" fill="url(#rdpX)" stroke="var(--pop)" stroke-width="3.2" stroke-linejoin="miter"/>'],
+    ["sparkle",'<path d="M46 6C50 36 56 42 86 50 56 58 50 64 46 94 42 64 36 58 6 50 36 42 42 36 46 6Z" fill="url(#rdpX)" stroke="var(--pop)" stroke-width="3.2"/><path d="M84 6C85 15 87 17 95 18 87 19 85 21 84 30 83 21 81 19 73 18 81 17 83 15 84 6Z" fill="currentColor" stroke="var(--pop)" stroke-width="2"/>'],
+    ["sun",'<circle cx="50" cy="50" r="23" fill="url(#rdpD)" stroke="var(--pop)" stroke-width="3.5"/><path d="M50 4v12M50 84v12M4 50h12M84 50h12M17 17l8 8M75 75l8 8M17 83l8-8M75 25l8-8" stroke="currentColor" stroke-width="5"/>'],
+    ["planet",'<circle cx="50" cy="50" r="25" fill="url(#rdpL)" stroke="currentColor" stroke-width="2.5"/><ellipse cx="50" cy="52" rx="47" ry="11" fill="none" stroke="var(--pop)" stroke-width="4.5" transform="rotate(-18 50 52)"/><path d="M26 42a25 25 0 0 1 48 0" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="88" cy="14" r="2.6" fill="currentColor"/><circle cx="12" cy="86" r="1.8" fill="currentColor"/>'],
+    ["seal",'<circle cx="50" cy="50" r="44" fill="var(--pop)" stroke="currentColor" stroke-width="2.5"/><circle cx="50" cy="50" r="36" fill="none" stroke="var(--pop-ink,#1A1A1A)" stroke-width="1.3" stroke-dasharray="3 3"/><text x="50" y="62" text-anchor="middle" font-size="34" font-family="serif" font-weight="700" fill="var(--pop-ink,#1A1A1A)">日々</text><path id="rdSealArc" d="M15 50a35 35 0 0 1 70 0" fill="none"/><text font-size="7" font-family="monospace" font-weight="700" letter-spacing="2" fill="var(--pop-ink,#1A1A1A)"><textPath href="#rdSealArc" startOffset="50%" text-anchor="middle">DAY · BY · DAY</textPath></text>'],
+    ["spiral",'<path d="M50 50a3.5 3.5 0 0 1 7 0a7 7 0 0 1-14 0a10.5 10.5 0 0 1 21 0a14 14 0 0 1-28 0a17.5 17.5 0 0 1 35 0a21 21 0 0 1-42 0a24.5 24.5 0 0 1 49 0a28 28 0 0 1-56 0a31.5 31.5 0 0 1 63 0" fill="none" stroke="currentColor" stroke-width="3.6"/><circle cx="50" cy="50" r="45" fill="none" stroke="var(--pop)" stroke-width="2.6" stroke-dasharray="2 4.5"/>'],
+    ["flower",'<g fill="url(#rdpX)" stroke="var(--pop)" stroke-width="2.8"><ellipse cx="50" cy="20" rx="10" ry="17"/><ellipse cx="50" cy="80" rx="10" ry="17"/><ellipse cx="20" cy="50" rx="17" ry="10"/><ellipse cx="80" cy="50" rx="17" ry="10"/><ellipse cx="29" cy="29" rx="9" ry="15" transform="rotate(-45 29 29)"/><ellipse cx="71" cy="71" rx="9" ry="15" transform="rotate(-45 71 71)"/><ellipse cx="71" cy="29" rx="9" ry="15" transform="rotate(45 71 29)"/><ellipse cx="29" cy="71" rx="9" ry="15" transform="rotate(45 29 71)"/></g><circle cx="50" cy="50" r="12" fill="var(--pop)" stroke="currentColor" stroke-width="2.5"/><circle cx="45.5" cy="48" r="1.7" fill="currentColor"/><circle cx="54.5" cy="48" r="1.7" fill="currentColor"/><path d="M45 53q5 4 10 0" fill="none" stroke="currentColor" stroke-width="1.8"/>']];
+  const STAR_DEFS='<defs><pattern id="rdpX" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="2" height="2" fill="var(--bg)"/><rect width="1" height="1" fill="currentColor"/><rect x="1" y="1" width="1" height="1" fill="currentColor"/></pattern><pattern id="rdpD" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="var(--bg)"/><circle cx="2.5" cy="2.5" r="1.1" fill="currentColor"/></pattern><pattern id="rdpL" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--bg)"/><rect width="1.8" height="5" fill="currentColor"/></pattern></defs>';
+  const starIx=()=>{ let k=""; try{ k=(localStorage.getItem("ncs-rdstar")||"").replace(/"/g,""); }catch(e){} const i=STARS.findIndex(x=>x[0]===k); return i<0?0:i; };
+  const starSVG=()=>`<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" role="button" tabindex="-1" aria-label="Change the picture" data-rdstar="${STARS[starIx()][0]}">${STAR_DEFS}<g class="rdh-art-g">${STARS[starIx()][1]}</g></svg>`;
+  document.addEventListener("click",e=>{ const a=e.target.closest&&e.target.closest("#rdHome .rdh-art"); if(!a) return;
+    const n=(starIx()+1)%STARS.length; try{ localStorage.setItem("ncs-rdstar",JSON.stringify(STARS[n][0])); }catch(er){}
+    const g=a.querySelector(".rdh-art-g"); if(g){ g.innerHTML=STARS[n][1]; g.classList.remove("rd-swap"); void g.getBoundingClientRect(); g.classList.add("rd-swap"); } a.dataset.rdstar=STARS[n][0]; });
   let lastHTML="";
   function paint(){
     const view=document.getElementById("v-notes"); if(!view) return;
@@ -127,7 +143,7 @@
       ticket=`<section class="rdh-ticket" aria-label="Next class"><span class="rdh-tape" aria-hidden="true"></span><div class="rdh-tk"><span class="rdh-k"><span>001 / ${live?"● LIVE NOW":"NEXT CLASS"}${today&&!live?" · TODAY":""}</span><span>${esc(f.k)}</span></span><span class="rdh-when">${DOW[f.d.getDay()]} ${hm(f.d)}</span><span class="rdh-k"><span>${esc(f.what)}</span></span></div>${f.zoom?`<a class="rdh-join" href="${esc(f.zoom)}" target="_blank" rel="noopener">${BARS}<span>JOIN→</span></a>`:`<button type="button" class="rdh-join" data-rdgo="${f.go}" style="all:unset;cursor:pointer;width:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px">${BARS}<span style="font:700 13px var(--mono);border:1px solid currentColor;padding:7px 10px">OPEN→</span></button>`}</section>`; }
     else if(N.book){ ticket=`<section class="rdh-ticket" aria-label="Book a class"><span class="rdh-tape" aria-hidden="true"></span><div class="rdh-tk"><span class="rdh-k"><span>001 / NEXT CLASS</span><span>W/ NOA</span></span><span class="rdh-when small">BOOK YOUR NEXT CLASS</span><span class="rdh-k"><span>WHENEVER IT SUITS YOU</span></span></div><a class="rdh-join" href="${esc(N.book)}" target="_blank" rel="noopener">${BARS}<span>BOOK→</span></a></section>`; }
     const dots=`<div class="rdh-dots" role="radiogroup" aria-label="Pop color"><span>POP COLOR</span>${POPS.map(p=>`<button type="button" class="rdh-dot" role="radio" data-rdpop="${p[0]}" aria-checked="${p[0]===pop()[0]}" aria-label="${p[1]}" title="${p[1]}" style="background:${p[2]}"></button>`).join("")}</div>`;
-    const html=`${DEFS}${rdt()==="night"?ART_NIGHT:ART_DAY}
+    const html=`${DEFS}${starSVG()}
       <div class="rdh-top"><p class="rdh-blurb">Hibi — not just an app, but a daily habit. English you actually use: words you saved, classes you took, mistakes you made on purpose.</p></div>
       <div><div class="rdh-meta"><b>${role}</b><span>--EN--</span><span>--ES--</span><span>${dd(now)}</span></div>
       <div class="rdh-title"><span class="rdh-hl">HIBI</span><small>日々</small></div>${nm?`<div class="rdh-name" aria-label="${esc(nm)}">${[...nm.toUpperCase()].slice(0,10).map(c=>`<span aria-hidden="true">${esc(c)}</span>`).join("")}</div>`:""}</div>
@@ -135,11 +151,27 @@
       ${nt?`<div class="rdh-note"><span class="rdh-tape" aria-hidden="true"></span><b>${esc(nt.k)}</b><span>${esc(nt.x.length>160?nt.x.slice(0,158)+"…":nt.x)}</span>${nt.love?`<button type="button" class="rdh-love" data-rdlove="1" aria-pressed="${nt.love.on}"><span aria-hidden="true">💛</span> ${esc(nt.love.txt)}</button>`:nt.go?`<button type="button" class="rdh-love" data-rdgo="${nt.go}">OPEN →</button>`:""}</div>`:""}</div></div>
       <div class="rdh-stw"><div class="rdh-lab"><span>Stamps ··· where to?</span><span>002—00${st.length+1}</span></div>
       <div class="rdh-stamps">${st.map((x,i)=>`<button type="button" class="rdh-st${x[0]==="sheet"?" dark":""}" data-rd${x[0]==="sheet"?"sheet":"go"}="${x[0]}"${x[0]==="sheet"?' aria-haspopup="dialog"':""}><svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${ICO[x[0]]}</svg><span><i>${String(i+2).padStart(3,"0")}</i><b>${x[1]}${x[0]==="sheet"?'<em class="rdh-st-more" aria-hidden="true"> ▾</em>':""}</b></span></button>`).join("")}</div></div>
-      <div class="rdh-bot"><div class="rdh-logw"><div class="rdh-lab"><span>Today.log</span><span>${dd(now)} ▮</span></div><div class="rdh-log">${lines.map(l=>`<button type="button" data-rd${l.go?"go":"scroll"}="${l.go||l.scroll}"><span class="t">${esc(l.t)}</span><span class="x">${esc(l.x)}</span>${l.isNew?'<span class="new">NEW</span>':'<span class="ar" aria-hidden="true">→</span>'}</button>`).join("")}</div></div>
+      <div class="rdh-bot"><div class="rdh-logw"><div class="rdh-lab"><span>Today.log</span><span>${dd(now)} ▮</span></div><div class="rdh-log">${lines.map(l=>`<button type="button" data-rd${l.go?"go":"scroll"}="${l.go||l.scroll}"><span class="t"><i class="rd-catsq" data-cat="${esc(CAT_OF[l.scroll||l.go]||"")}" aria-hidden="true"></i>${esc(l.t)}</span><span class="x">${esc(l.x)}</span>${l.isNew?'<span class="new">NEW</span>':'<span class="ar" aria-hidden="true">→</span>'}</button>`).join("")}</div></div>
       <button type="button" class="rdh-stuck" data-rdgo="stuck"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M50 2 58 20 78 8 74 28 98 30 80 44 96 62 72 60 66 78 50 64 34 78 28 60 4 62 20 44 2 30 26 28 22 8 42 20z" fill="#D9442B" stroke="#1A1A1A" stroke-width=".8"/></svg><span><i>HELP</i>I'M<br>STUCK!</span></button></div>`;
-    if(!document.getElementById("rdMore")){ const m=document.createElement("div"); m.id="rdMore"; m.className="rdh-lab rd-more"; m.innerHTML="<span>More for today</span><span>Word · review · club · notes</span>"; const a=box.nextElementSibling&&box.nextElementSibling.classList.contains("rd-arr")?box.nextElementSibling:box; a.after(m); }
-    if(html===lastHTML) return; const keep=document.activeElement&&document.activeElement.id==="rdTrIn"; if(keep) return; lastHTML=html; box.innerHTML=html;
+    if(!document.getElementById("rdMore")){ const m=document.createElement("div"); m.id="rdMore"; m.className="rdh-lab rd-more"; m.innerHTML="<span>More for today</span><span class=\"rd-more-l\"></span>"; const a=box.nextElementSibling&&box.nextElementSibling.classList.contains("rd-arr")?box.nextElementSibling:box; a.after(m); }
+    moreCards();
+    if(html===lastHTML) return; const keep=document.activeElement&&document.activeElement.id==="rdTrIn"; if(keep) return; lastHTML=html; box.innerHTML=html; { const st=box.querySelector(".rdh-art"), r=window.__rdStarRot?window.__rdStarRot():0; if(st&&Math.abs(r)>.05) st.style.transform=`rotate(${r.toFixed(2)}deg)`; }
   }
+  /* Nov 27 2026 (Noa): the cards under "More for today" each have one color that means something, the same color as their
+     square in TODAY.LOG; the label lists the cards that are really there, in their order; Words to review starts folded. */
+  function moreCards(){
+    const vis=CARDS.map(c=>[document.getElementById(c[0]),c]).filter(([el])=>el&&!el.hidden&&el.getClientRects().length);
+    vis.forEach(([el,c])=>{ if(el.dataset.rdcat!==c[1]) el.dataset.rdcat=c[1]; });
+    vis.sort((a,b)=>a[0].getBoundingClientRect().top-b[0].getBoundingClientRect().top);
+    const l=document.querySelector("#rdMore .rd-more-l"); if(l){ const h=vis.map(([,c])=>`<span><i class="rd-catsq" data-cat="${c[1]}" aria-hidden="true"></i>${c[2]}</span>`).join(" · "); if(l.innerHTML!==h) l.innerHTML=h; }
+    const rv=document.getElementById("rvBox"); if(rv&&!rv.dataset.rdfold){ rv.dataset.rdfold="1"; rv.classList.add("rd-fold");
+      const top=rv.querySelector(".td-top"); if(top){ top.setAttribute("role","button"); top.tabIndex=0; top.setAttribute("aria-expanded","false");
+        const tg=()=>{ rv.classList.toggle("rd-fold"); top.setAttribute("aria-expanded",String(!rv.classList.contains("rd-fold"))); };
+        top.addEventListener("click",tg); top.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tg(); } });
+        new MutationObserver(()=>top.setAttribute("aria-expanded",String(!rv.classList.contains("rd-fold")))).observe(rv,{attributes:true,attributeFilter:["class"]}); } }
+    if(rv){ const n=(document.getElementById("rvList")||{children:[]}).children.length, tt=rv.querySelector(".td-top"); if(tt) tt.dataset.n=n?String(n):""; }
+  }
+  if(RD){ setInterval(()=>{ if(document.getElementById("rdMore")) moreCards(); },1500); }
   /* the card you jump to lights up for a moment so you can see where you landed */
   /* pocket pet shell color (Settings in the buddy's home), synced like the pop color */
   const TAMA={pink:"#FF6FB5",lime:"#B8E62E",yellow:"#F2D21B",orange:"#FF8A3D",mint:"#5CE0B0",purple:"#A98BFF",black:"#2A2A2E",white:"#F2F0E8"};
@@ -155,7 +187,7 @@
     if(t.dataset.rdgo==="buddy"){ if(window.csBuddy&&window.csBuddy.open) window.csBuddy.open(); else go("park"); return; }
     if(t.dataset.rdgo==="club:week"){ go("club"); setTimeout(()=>{ if(window.__clubTab) window.__clubTab("week"); setTimeout(()=>{ const v=document.getElementById("v-club"); const el=v&&([...v.querySelectorAll(".cl-next,.cl-sec,h2")].find(x=>x.offsetParent)); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); } },200); },150); return; }
     if(t.dataset.rdgo){ go(t.dataset.rdgo); return; }
-    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); /* parts above can change height while scrolling: land again on the card */ [500,900].forEach(ms=>setTimeout(()=>{ const t=el.getBoundingClientRect().top; if(Math.abs(t-96)>16) scrollBy({top:t-96,behavior:"smooth"}); },ms)); } return; }
+    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ if(el.id==="rvBox") el.classList.remove("rd-fold"); el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); /* parts above can change height while scrolling: land again on the card */ [500,900].forEach(ms=>setTimeout(()=>{ const t=el.getBoundingClientRect().top; if(Math.abs(t-96)>16) scrollBy({top:t-96,behavior:"smooth"}); },ms)); } return; }
     if(t.dataset.rdsheet){ openTopics(t); }
   });
   document.addEventListener("submit",e=>{
@@ -221,7 +253,7 @@
   /* the Home star follows the mouse (Nov 27 2026, Noa): while the mouse is over it, it turns with the mouse around its middle,
      clockwise or counterclockwise. The "over it" area is a fixed circle, so the turning star never slips away from the mouse. */
   (function(){ if(!matchMedia("(hover:hover)").matches||matchMedia("(prefers-reduced-motion:reduce)").matches) return;
-    let rot=0, want=0, last=null, raf=0, hot=false;
+    let rot=0, want=0, last=null, raf=0, hot=false; window.__rdStarRot=()=>rot;
     const star=()=>document.querySelector("#rdHome .rdh-art");
     const tick=()=>{ raf=0; const a=star(); if(!a) return; if(!hot) want*=0.96; rot+=(want-rot)*0.18; a.style.transform=`rotate(${rot.toFixed(2)}deg)`; a.classList.toggle("rd-hot",hot);
       if(Math.abs(want-rot)>.05||(!hot&&Math.abs(want)>.05)) raf=requestAnimationFrame(tick); else if(!hot){ rot=want=0; a.style.transform=""; } };

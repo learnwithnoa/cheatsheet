@@ -786,7 +786,7 @@ html.rd[data-rdt="sepia"] .rdh-note{background:#E6CD98}
 .rdt-read>.view.rd-lent{display:block!important;margin:0;padding:0;max-width:none}
 .rdt-read>.view.rd-lent>h1{font-size:clamp(28px,5vw,40px)}
 @media (max-width:600px){.rdt-full{padding:0 10px}.rdt-rt{display:none}.rdt-rhead{margin:-20px -14px 0;padding:10px 14px}}
-.rdh-st .rdh-st-more{font-style:normal;font-size:.85em;display:inline-block;transition:transform .2s}
+.rdh-st .rdh-st-more{font-style:normal;font-size:.85em;display:inline-block;margin-left:.25em;transition:transform .2s}
 .rdh-st:hover .rdh-st-more{transform:translateY(2px)}
 /* ticket: everything on the pop color uses the pop's own ink (links got the page ink in Night, unreadable on lime/yellow) */
 html.rd .rdh-ticket :is(a,.rdh-join,.rdh-join span,.rdh-tk,.rdh-tk *){color:var(--pop-ink)!important}
@@ -813,3 +813,30 @@ html.rd .rdh-ticket .rdh-join svg{color:var(--pop-ink)!important}
 }
 /* TODAY.LOG jumps: land with the whole card in view, below the top bar (it went a bit too far down) */
 html.rd :is(#v-notes [id],#todayBox,#rvBox,#awBox){scroll-margin-top:96px}
+/* Home star: 7 designs, click to switch (065 STARS) */
+html.rd #rdHome .rdh-art{color:var(--ink);pointer-events:bounding-box;cursor:pointer;overflow:visible;-webkit-tap-highlight-color:transparent}
+html.rd #rdHome .rdh-art-g{transform-origin:50% 50%;transform-box:view-box}
+html.rd #rdHome .rdh-art-g.rd-swap{animation:rdStarSwap .42s cubic-bezier(.3,1.6,.5,1)}
+@keyframes rdStarSwap{0%{transform:scale(.55);opacity:.2}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){html.rd #rdHome .rdh-art-g.rd-swap{animation:none}}
+html.rd.cs-simple #rdHome .rdh-art{display:none}
+/* "More for today" cards: one look for all, one color per kind (same as the square in TODAY.LOG). Nov 27 2026 */
+html.rd{--cat-duels:var(--alert);--cat-stoic:var(--hl3);--cat-club:var(--hl1);--cat-word:var(--hl2);--cat-review:var(--hl2);--cat-world:var(--pop);--cat-buddy:#5CE0B0}
+html.rd #v-notes [data-rdcat]{background:var(--surface)!important;background-image:none!important;border:1px dashed var(--rule)!important;border-top:5px solid var(--cat,var(--rule))!important;border-image:none!important;box-shadow:var(--shadow)!important;border-radius:0!important}
+html.rd #v-notes [data-rdcat="duels"]{--cat:var(--cat-duels)}html.rd #v-notes [data-rdcat="stoic"]{--cat:var(--cat-stoic)}html.rd #v-notes [data-rdcat="club"]{--cat:var(--cat-club)}
+html.rd #v-notes [data-rdcat="word"]{--cat:var(--cat-word)}html.rd #v-notes [data-rdcat="world"]{--cat:var(--cat-world)}html.rd #v-notes [data-rdcat="review"]{--cat:var(--cat-review)}
+html.rd .rd-catsq{display:inline-block;width:8px;height:8px;margin-right:6px;vertical-align:1px;border:1px solid var(--rule);background:var(--rule)}
+html.rd .rd-catsq[data-cat="duels"]{background:var(--cat-duels)}html.rd .rd-catsq[data-cat="stoic"]{background:var(--cat-stoic)}html.rd .rd-catsq[data-cat="club"]{background:var(--cat-club)}
+html.rd .rd-catsq[data-cat="word"],html.rd .rd-catsq[data-cat="review"]{background:var(--cat-word)}html.rd .rd-catsq[data-cat="world"]{background:var(--cat-world)}html.rd .rd-catsq[data-cat="buddy"]{background:var(--cat-buddy)}
+html.rd .rd-catsq[data-cat=""]{display:none}
+html.rd .rd-more-l span{white-space:nowrap}
+/* Words to review: folded until you open it */
+html.rd #rvBox .td-top{cursor:pointer;display:flex;align-items:center;gap:8px}
+html.rd #rvBox .td-top::after{content:attr(data-n) " ▾";margin-left:auto;font:700 12px var(--mono);transition:transform .2s}
+html.rd #rvBox:not(.rd-fold) .td-top::after{content:"▴"}
+html.rd #rvBox .td-top:hover .td-tag{background:var(--pop)!important;color:var(--pop-ink)!important}
+html.rd #rvBox.rd-fold > :not(.td-top){display:none!important}
+html.rd #rvBox.rd-fold{padding-bottom:14px}
+html.rd #rdHome .rdh-title{pointer-events:none}html.rd #rdHome .rdh-title :is(a,button){pointer-events:auto}
+html.rd #v-notes [data-rdcat] h2::before{background:var(--cat)!important}
+html.rd .hc-join{background:var(--pop)!important;background-image:none!important;color:var(--pop-ink)!important;border:1px solid var(--rule)!important;border-radius:0!important;font-family:var(--mono)!important;text-transform:uppercase;font-size:12.5px!important}
