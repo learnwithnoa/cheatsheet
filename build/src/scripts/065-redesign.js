@@ -143,8 +143,9 @@
   /* the card you jump to lights up for a moment so you can see where you landed */
   /* pocket pet shell color (Settings in the buddy's home), synced like the pop color */
   const TAMA={pink:"#FF6FB5",lime:"#B8E62E",yellow:"#F2D21B",orange:"#FF8A3D",mint:"#5CE0B0",purple:"#A98BFF",black:"#2A2A2E",white:"#F2F0E8"};
-  function applyTama(){ let k=""; try{ k=(localStorage.getItem("ncs-tama")||"").replace(/"/g,""); }catch(e){} if(TAMA[k]) root.style.setProperty("--tama",TAMA[k]); else root.style.removeProperty("--tama"); root.toggleAttribute("data-tama-dark",k==="black"); }
-  applyTama(); setTimeout(applyTama,2500); window.addEventListener("storage",e=>{ if(e.key==="ncs-tama") applyTama(); });
+  function applyTama(){ let k=""; try{ k=(localStorage.getItem("ncs-tama")||"").replace(/"/g,""); }catch(e){} if(TAMA[k]) root.style.setProperty("--tama",TAMA[k]); else root.style.removeProperty("--tama"); root.toggleAttribute("data-tama-dark",k==="black"); let c=""; try{ c=localStorage.getItem("ncs-tama-clear")||""; }catch(e){} root.toggleAttribute("data-tama-clear",/1/.test(c)); }
+  applyTama(); setTimeout(applyTama,2500); window.addEventListener("storage",e=>{ if(e.key==="ncs-tama"||e.key==="ncs-tama-clear") applyTama(); });
+  document.addEventListener("change",e=>{ const t=e.target; if(!t||!t.matches||!t.matches("[data-tamaclear]")) return; try{ localStorage.setItem("ncs-tama-clear",JSON.stringify(t.checked?"1":"")); }catch(er){} applyTama(); });
   document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-tamac]"); if(!b) return; try{ localStorage.setItem("ncs-tama",JSON.stringify(b.dataset.tamac)); }catch(er){} applyTama(); b.parentElement.querySelectorAll("[data-tamac]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); });
   function glow(el){ el.classList.remove("rd-glow"); void el.offsetWidth; el.classList.add("rd-glow"); setTimeout(()=>el.classList.remove("rd-glow"),2200); }
   document.addEventListener("click",e=>{
@@ -198,7 +199,8 @@
     const root=document.getElementById("buddy"), w=document.getElementById("rdTama"); if(!root||!w) return;
     const narrow=()=>innerWidth<1500;
     const left=()=>root.classList.contains("at-ml")||root.classList.contains("at-bl");
-    const upd=()=>{ root.style.setProperty("--tw",(w.offsetWidth||140)+"px"); const on=narrow()&&!document.documentElement.classList.contains("cs-simple"); root.classList.toggle("rd-peek",on); root.classList.toggle("rd-peek-l",on&&left()); if(!on) root.classList.remove("rd-out","rd-pin"); };
+    const upd=()=>{ root.style.setProperty("--tw",(w.offsetWidth||140)+"px"); const on=narrow()&&!document.documentElement.classList.contains("cs-simple"); const cl=root.classList, set=(c,v)=>{ if(cl.contains(c)!==v) cl.toggle(c,v); }; /* only touch the class when it really changes (the observer below would loop forever otherwise) */
+      set("rd-peek",on); set("rd-peek-l",on&&left()); if(!on){ set("rd-out",false); set("rd-pin",false); } };
     upd(); addEventListener("resize",upd); new MutationObserver(upd).observe(root,{attributes:true,attributeFilter:["class"]});
     const out=v=>{ if(root.classList.contains("rd-out")!==v) root.classList.toggle("rd-out",v); };
     w.addEventListener("mouseenter",()=>{ if(root.classList.contains("rd-peek")) out(true); });

@@ -1212,7 +1212,9 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
       <label class="bd-row bd-set"><input type="checkbox" id="bdSeas" ${S.seas !== false ? "checked" : ""}> 🗓️ Seasonal outfits${se ? ` <span class="bd-small" style="margin:0">(now: ${se.ico} ${esc(se.name)})</span>` : ` <span class="bd-small" style="margin:0">(Halloween, Christmas, Fiestas Patrias and more)</span>`}</label>
       ${document.documentElement.classList.contains("rd") ? (() => { let cur = ""; try { cur = (localStorage.getItem("ncs-tama") || "").replace(/"/g, ""); } catch (e) {}
         const C = [["", "Classic", ""], ["pink", "Pink", "#FF6FB5"], ["lime", "Lime", "#B8E62E"], ["yellow", "Yellow", "#F2D21B"], ["orange", "Orange", "#FF8A3D"], ["mint", "Mint", "#5CE0B0"], ["purple", "Purple", "#A98BFF"], ["black", "Black", "#2A2A2E"], ["white", "White", "#F2F0E8"]];
-        return `<div class="bd-row bd-set bd-tamac"><span>🥚 Pocket pet color</span><span class="bd-tamasw">${C.map(([k, n, c]) => `<button type="button" data-tamac="${k}" aria-pressed="${cur === k}" title="${n}" aria-label="${n}" style="--c:${c || "var(--hl3)"}"></button>`).join("")}</span></div>`; })() : ""}
+        let clr = false; try { clr = /1/.test(localStorage.getItem("ncs-tama-clear") || ""); } catch (e) {}
+        return `<div class="bd-row bd-set bd-tamac"><span>🥚 Pocket pet color</span><span class="bd-tamasw">${C.map(([k, n, c]) => `<button type="button" data-tamac="${k}" aria-pressed="${cur === k}" title="${n}" aria-label="${n}" style="--c:${c || "var(--hl3)"}"></button>`).join("")}</span></div>
+        <label class="bd-row bd-set bd-tamaclr"><span>🫧 See-through shell <small>(like the clear Game Boys)</small></span><input type="checkbox" data-tamaclear ${clr ? "checked" : ""}></label>`; })() : ""}
       <p class="bd-small">Tip: you can drag your buddy to another spot on the screen.</p>
       <button class="bd-link" type="button" data-m="hide" style="margin-top:6px">Hide my buddy</button>`;
     }
