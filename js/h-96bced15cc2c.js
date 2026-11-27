@@ -195,7 +195,7 @@
       bar.addEventListener("click",()=>{ const f=!el.classList.contains("rd-fold"); el.classList.toggle("rd-fold",f); bar.setAttribute("aria-expanded",String(!f)); let s2={}; try{ s2=JSON.parse(localStorage.getItem("ncs-rdfold")||"{}")||{}; }catch(e){} s2[c[1]]=f?1:0; try{ localStorage.setItem("ncs-rdfold",JSON.stringify(s2)); }catch(e){} });
       new MutationObserver(()=>bar.setAttribute("aria-expanded",String(!el.classList.contains("rd-fold")))).observe(el,{attributes:true,attributeFilter:["class"]}); });
     const rv=document.getElementById("rvBox");
-    if(rv){ const n=(document.getElementById("rvList")||{children:[]}).children.length, b=rv.querySelector(":scope > .rd-cbar .rd-cbar-n"); if(b) b.textContent=n?String(n):""; }
+    if(rv){ const n=(document.getElementById("rvList")||{children:[]}).children.length, b=rv.querySelector(":scope > .rd-cbar .rd-cbar-n"); if(b){ const t=n?String(n):""; if(b.textContent!==t) b.textContent=t; } }   /* only write when it changed: writing it every time re-triggered the watcher above and froze the page (Nov 27 2026) */
   }
   if(RD){ setInterval(()=>{ if(document.getElementById("rdMore")) moreCards(); },1500);
     /* a card that redraws itself (e.g. Around the world → Yesterday) loses its strip: put it back in the same frame, so nothing jumps */
