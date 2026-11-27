@@ -336,6 +336,33 @@ async function noaMessage(env, uid, name, text) {   // a Hibi message from Noa (
     at: I(now), ["r_" + TEACHER]: I(now) } });
   await fs(env, "POST", `dms/${tid}/msgs?documentId=${now.toString(36)}w${Math.random().toString(36).slice(2, 7)}`, { fields: { from: S(TEACHER), at: I(now), json: S(JSON.stringify({ text })) } });
 }
+
+// ---------- Hibi 3.0 email look (Tech Grunge, Nov 27 2026). Off until the redesign launches: flip MAIL_V3 to true then. ----------
+// Light paper look by default; mail apps that follow dark mode (Apple Mail, iOS, some Outlook) get the Night look.
+const MAIL_V3 = false;
+function mailFrame(innerHtml, cta, foot) {
+  const btn = cta ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:22px 0 6px"><tr><td class="hb-btn" style="background:#1A1A1A;border:2px solid #1A1A1A;box-shadow:4px 4px 0 #F2D21B">
+<a href="${cta.href}" style="display:inline-block;padding:12px 20px;font:700 14px/1 'Space Mono',Menlo,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase;color:#F3F1EA;text-decoration:none">${escH(cta.label)} &rarr;</a></td></tr></table>` : "";
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark">
+<style>
+@media (prefers-color-scheme: dark){ .hb-bg{background:#0F0F10!important} .hb-card{background:#1A1A1C!important;border-color:#ECECE4!important;border-top-color:#F2D21B!important} .hb-ink,.hb-ink p,.hb-ink b{color:#ECECE4!important}
+ .hb-mut{color:#A7A39A!important} .hb-rule{border-color:#3A3A3E!important} .hb-btn{background:#ECECE4!important;border-color:#ECECE4!important} .hb-btn a{color:#0F0F10!important} .hb-logo{color:#1A1A1A!important} }
+</style></head>
+<body style="margin:0;padding:0" class="hb-bg"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="hb-bg" style="background:#E8E6DF;padding:28px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:540px">
+<tr><td style="padding:0 0 14px">
+ <span class="hb-logo" style="display:inline-block;background:#F2D21B;color:#1A1A1A;font:400 26px/1 'Saira',Arial,Helvetica,sans-serif;letter-spacing:.02em;padding:5px 9px 4px">HIBI</span>
+ <span class="hb-ink" style="font:400 18px/1 'Hiragino Sans','Noto Sans JP',sans-serif;color:#1A1A1A;padding:0 8px">日々</span>
+ <span class="hb-mut" style="font:700 10px/1 'Space Mono',Menlo,Consolas,monospace;letter-spacing:.14em;color:#5B574E">DAY BY DAY</span>
+</td></tr>
+<tr><td class="hb-card hb-ink" style="background:#F3F1EA;border:1.5px solid #1A1A1A;border-top:5px solid #F2D21B;padding:26px 26px 22px;font:400 16px/1.6 'Saira',Arial,Helvetica,sans-serif;color:#1A1A1A">
+${innerHtml}
+${btn}
+</td></tr>
+<tr><td class="hb-mut" style="padding:14px 4px 0;font:400 12px/1.55 'Space Mono',Menlo,Consolas,monospace;color:#5B574E">${foot || ""}</td></tr>
+<tr><td class="hb-mut hb-rule" style="padding:12px 4px 0;font:700 10px/1 'Space Mono',Menlo,Consolas,monospace;letter-spacing:.12em;color:#8A867C;border-top:1px dashed #B9B5AA">HIBI.CL &middot; NOA'S ENGLISH COMPANION</td></tr>
+</table></td></tr></table></body></html>`;
+}
 function moveMail(text, last, endLong) {
   const paras = text.split(/\n\s*\n/).map((p) => `<p>${escH(p).replace(/"Switch to Hibi"/, "<b>Switch to Hibi</b>")}</p>`);
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#1f2937;max-width:520px">
@@ -345,7 +372,9 @@ ${paras.slice(-1).join("")}
 <p>Noa</p>
 <p style="color:#6b7280;font-size:13px">You're getting this because you're a member of Noa's English Club. This message is also waiting for you on Hibi (🔔 → 💬 Messages).</p>
 </div>`;
-  return { subject: last ? "Keep your spot in Noa's English Club 💛" : "Your club is moving to Hibi: switch by " + endLong + " 💛", html, text: text + `\n\nGo to the Club page: ${SITE}#club\n\nNoa` };
+  const html3 = mailFrame(paras.slice(0, -1).join("\n") + paras.slice(-1).join("") + "<p>Noa</p>", { href: SITE + "#club", label: "Go to the Club page" },
+    "You're getting this because you're a member of Noa's English Club. This message is also waiting for you on Hibi (🔔 → 💬 Messages).");
+  return { subject: last ? "Keep your spot in Noa's English Club 💛" : "Your club is moving to Hibi: switch by " + endLong + " 💛", html: MAIL_V3 ? html3 : html, text: text + `\n\nGo to the Club page: ${SITE}#club\n\nNoa` };
 }
 async function skoolMoveNotify(env, force) {
   const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {};
@@ -848,7 +877,9 @@ function unreadMailBody(first, froms) {
 <p style="color:#6b7280;font-size:13px">Tap the 🔔 at the top, then 💬 Messages. You get at most one of these emails a day. Don't want them? Turn them off in Hibi: your profile → Settings.</p>
 </div>`;
   const text = `Hi ${first}!\n\nYou have a new message from ${who} on Hibi.\nOpen it here: ${SITE} (tap the bell at the top, then Messages).\n\nYou get at most one of these emails a day. You can turn them off in Hibi: your profile → Settings.`;
-  return { subject: `💬 New message from ${who} on Hibi`, html, text };
+  const html3 = mailFrame(`<p style="margin:0 0 12px;font-size:22px;line-height:1.2"><b>Hi ${escH(first)}!</b> 👋</p><p style="margin:0">You have a new message from <b>${escH(who)}</b> on Hibi.</p>`,
+    { href: SITE + "#chat", label: "Open Hibi" }, "Tap the 🔔 at the top, then 💬 Messages. You get at most one of these emails a day. Don't want them? Turn them off in Hibi: your profile → Settings.");
+  return { subject: `💬 New message from ${who} on Hibi`, html: MAIL_V3 ? html3 : html, text };
 }
 async function mailLogFor(env) { const st = plain(await fs(env, "GET", "billingConfig/mailnotif")) || {}; let log = {}; try { log = JSON.parse(st.json || "{}") || {}; } catch (e) {} log.sent = log.sent || {}; log.done = log.done || {}; return log; }
 async function unreadMail(env) {
