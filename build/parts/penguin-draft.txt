@@ -25,4 +25,4 @@ colors (name, overrides): ("Classic",{}),
  ("Chocolate",{'b':'#6B4430','d':'#4E3020','o':'#2A1A10'}),
  ("Lavender dream",{'b':'#B9A2E8','d':'#9479CF','o':'#3B2D5C'})
 Humboldt: rows 10 (and the 2 side pixels of row 11) of the belly use the body color = the chest band.
-Name ideas (Noa picks): see the chat of Nov 27 2026.
+Name: Waddles (Noa, Nov 27 2026). Species: Penguin.
