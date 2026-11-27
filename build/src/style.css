@@ -2311,3 +2311,6 @@ nav.side .tr-ico{display:inline-flex;align-items:center;justify-content:center;h
 @keyframes lpMiOut{to{transform:translateY(130%) rotate(90deg) scale(.6);opacity:0}}
 @keyframes lpRays{to{stroke-dashoffset:0}}
 @media (prefers-reduced-motion:reduce){.lp-mode .lp-mi-in,.lp-mode .lp-mi-out,.lp-mode .lp-mi-in .lp-rays{animation:none}.lp-mode .lp-mi-out{display:none}}
+
+/* tour cards that only fit the old or the new design (Nov 27 2026) */
+html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{display:none!important}

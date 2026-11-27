@@ -4370,6 +4370,8 @@ html.rd.cs-space :is(button,.btn,.pill-btn){padding-top:max(10px,.7em)}
 html.rd:has(:is(#authPanel,#csPanel,#musicPanel,#tmPanel,#clBellPanel,#clDm):not([hidden])) .bd,html.rd:has(#tNotif .tn-box) .bd{z-index:1!important}
 /* selected theme in Settings: clearly readable in every theme */
 html.rd .rd-look [aria-checked="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+html.rd .wl-card span b{font:inherit!important;font-weight:700!important;text-transform:none!important;letter-spacing:0!important}
+html.rd .wl-step[data-step="0"] .wl-cards{grid-template-columns:repeat(2,1fr)!important}@media (min-width:760px){html.rd .wl-step[data-step="0"] .wl-cards{grid-template-columns:repeat(4,1fr)!important}}
 
 
 /* landing light/dark switch: line icons that roll (Nov 27 2026) */
@@ -4383,6 +4385,9 @@ html.rd .rd-look [aria-checked="true"]{background:var(--ink)!important;color:var
 @keyframes lpMiOut{to{transform:translateY(130%) rotate(90deg) scale(.6);opacity:0}}
 @keyframes lpRays{to{stroke-dashoffset:0}}
 @media (prefers-reduced-motion:reduce){.lp-mode .lp-mi-in,.lp-mode .lp-mi-out,.lp-mode .lp-mi-in .lp-rays{animation:none}.lp-mode .lp-mi-out{display:none}}
+
+/* tour cards that only fit the old or the new design (Nov 27 2026) */
+html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{display:none!important}
 </style>
 
 <header class="top">
@@ -5605,12 +5610,13 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="wl-top"><span class="wl-count" id="wlCount">1 of 4</span><button class="qa-x" type="button" id="wlSkip" aria-label="Close the tour">×</button></div>
 
   <div class="wl-step" data-step="0">
-    <h2 id="wlTitle">Welcome to <em>Hibi</em> <span lang="ja">日々</span> 👋</h2>
-    <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. Three things it does:</p>
+    <h2 id="wlTitle">Welcome to <em>Hibi</em> 👋</h2>
+    <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. Here's what it does:</p>
     <div class="wl-cards">
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">📚</span><b>Look things up</b><span>Grammar, verbs and phrases, short and clear. Keep it open in class.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">📝</span><b>Save your words</b><span>Your own notebook, with meanings and examples added for you.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎯</span><b>Practice</b><span>Short rounds, a few minutes a day.</span></div>
+      <div class="wl-card rd-only"><span class="wl-ico" aria-hidden="true">🏠</span><b>Your Home</b><span><b>Today.log</b> lists what's waiting for you today: tap a line to jump there. Fold any card with <b>▾</b>.</span></div>
     </div>
     <p class="wl-calm">🐢 <b>No rush.</b> There's a lot here, and you don't need it all today. Look around, try one thing, come back tomorrow. <i>Hibi</i> (日々) means <b>“day by day”</b>.</p>
     <p class="esb">Tu compañero de inglés. Sin apuro: explora de a poco, día a día.</p>
@@ -5682,7 +5688,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2>You're <em>ready</em> ✨</h2>
     <div class="wl-cards">
       <div class="wl-card when-in"><span class="wl-ico" aria-hidden="true">☁</span><b>Saved for you</b><span>Your words and buddy follow you to every device.</span></div>
-      <div class="wl-card"><span class="wl-ico" aria-hidden="true">⚙</span><b>Settings</b><span>Tap your photo (top right): themes, text size, Simple mode.</span></div>
+      <div class="wl-card rd-no"><span class="wl-ico" aria-hidden="true">⚙</span><b>Settings</b><span>Tap your photo (top right): themes, text size, Simple mode.</span></div><div class="wl-card rd-only"><span class="wl-ico" aria-hidden="true">⚙</span><b>Settings</b><span>Tap your photo (top right): theme, pop color, cursor, text size, Simple mode.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">⏱</span><b>Timer & music</b><span>Focus for 25 minutes with lo-fi or rain.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">💬</span><b>Tell Noa</b><span>Something missing? The link is at the bottom of every page.</span></div>
     </div>
@@ -5711,7 +5717,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <script src="js/h-cb83c1b0570b.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127115336"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261127120237"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

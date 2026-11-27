@@ -882,3 +882,5 @@ html.rd.cs-space :is(button,.btn,.pill-btn){padding-top:max(10px,.7em)}
 html.rd:has(:is(#authPanel,#csPanel,#musicPanel,#tmPanel,#clBellPanel,#clDm):not([hidden])) .bd,html.rd:has(#tNotif .tn-box) .bd{z-index:1!important}
 /* selected theme in Settings: clearly readable in every theme */
 html.rd .rd-look [aria-checked="true"]{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+html.rd .wl-card span b{font:inherit!important;font-weight:700!important;text-transform:none!important;letter-spacing:0!important}
+html.rd .wl-step[data-step="0"] .wl-cards{grid-template-columns:repeat(2,1fr)!important}@media (min-width:760px){html.rd .wl-step[data-step="0"] .wl-cards{grid-template-columns:repeat(4,1fr)!important}}
