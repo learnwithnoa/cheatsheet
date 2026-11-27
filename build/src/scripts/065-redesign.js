@@ -113,7 +113,7 @@
     return null;
   }
   const ART_DAY='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpS" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#1A1A1A"/><rect x="1" y="1" width="1" height="1" fill="#1A1A1A"/><rect x="1" width="1" height="1" fill="#888"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpS)" stroke="var(--pop)" stroke-width="2.5"/></svg>';
-  const ART_NIGHT='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpN" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ECECE4"/><rect x="1" y="1" width="1" height="1" fill="#6E6E6E"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpN)" stroke="var(--hl1)" stroke-width="2.5"/></svg>';
+  const ART_NIGHT='<svg class="rdh-art rdh-blob" viewBox="0 0 100 100" shape-rendering="crispEdges" aria-hidden="true"><defs><pattern id="rdpN" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ECECE4"/><rect x="1" y="1" width="1" height="1" fill="#6E6E6E"/></pattern></defs><path d="M50 4 56 38 88 14 64 44 98 52 62 58 84 92 52 66 44 98 40 62 8 84 34 54 2 40 38 40 20 10z" fill="url(#rdpN)" stroke="var(--pop)" stroke-width="2.5"/></svg>';
   let lastHTML="";
   function paint(){
     const view=document.getElementById("v-notes"); if(!view) return;
@@ -134,7 +134,7 @@
       <div class="rdh-row"><div class="rdh-tkw">${ticket}${dots}</div><div class="rdh-side"><form class="rdh-tr" data-rdtr="1" role="search"><span class="p" aria-hidden="true">&gt;</span><label class="sr" for="rdTrIn">Translator</label><input type="text" id="rdTrIn" placeholder="translate a word or phrase_" autocomplete="off"><button type="submit">EN⇄ES</button></form>
       ${nt?`<div class="rdh-note"><span class="rdh-tape" aria-hidden="true"></span><b>${esc(nt.k)}</b><span>${esc(nt.x.length>160?nt.x.slice(0,158)+"…":nt.x)}</span>${nt.love?`<button type="button" class="rdh-love" data-rdlove="1" aria-pressed="${nt.love.on}"><span aria-hidden="true">💛</span> ${esc(nt.love.txt)}</button>`:nt.go?`<button type="button" class="rdh-love" data-rdgo="${nt.go}">OPEN →</button>`:""}</div>`:""}</div></div>
       <div class="rdh-stw"><div class="rdh-lab"><span>Stamps ··· where to?</span><span>002—00${st.length+1}</span></div>
-      <div class="rdh-stamps">${st.map((x,i)=>`<button type="button" class="rdh-st${x[0]==="sheet"?" dark":""}" data-rd${x[0]==="sheet"?"sheet":"go"}="${x[0]}"${x[0]==="sheet"?' aria-haspopup="dialog"':""}><svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${ICO[x[0]]}</svg><span><i>${String(i+2).padStart(3,"0")}</i><b>${x[1]}</b></span></button>`).join("")}</div></div>
+      <div class="rdh-stamps">${st.map((x,i)=>`<button type="button" class="rdh-st${x[0]==="sheet"?" dark":""}" data-rd${x[0]==="sheet"?"sheet":"go"}="${x[0]}"${x[0]==="sheet"?' aria-haspopup="dialog"':""}><svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${ICO[x[0]]}</svg><span><i>${String(i+2).padStart(3,"0")}</i><b>${x[1]}${x[0]==="sheet"?'<em class="rdh-st-more" aria-hidden="true"> ▾</em>':""}</b></span></button>`).join("")}</div></div>
       <div class="rdh-bot"><div class="rdh-logw"><div class="rdh-lab"><span>Today.log</span><span>${dd(now)} ▮</span></div><div class="rdh-log">${lines.map(l=>`<button type="button" data-rd${l.go?"go":"scroll"}="${l.go||l.scroll}"><span class="t">${esc(l.t)}</span><span class="x">${esc(l.x)}</span>${l.isNew?'<span class="new">NEW</span>':'<span class="ar" aria-hidden="true">→</span>'}</button>`).join("")}</div></div>
       <button type="button" class="rdh-stuck" data-rdgo="stuck"><svg viewBox="0 0 100 80" aria-hidden="true"><path d="M50 2 58 20 78 8 74 28 98 30 80 44 96 62 72 60 66 78 50 64 34 78 28 60 4 62 20 44 2 30 26 28 22 8 42 20z" fill="#D9442B" stroke="#1A1A1A" stroke-width=".8"/></svg><span><i>HELP</i>I'M<br>STUCK!</span></button></div>`;
     if(!document.getElementById("rdMore")){ const m=document.createElement("div"); m.id="rdMore"; m.className="rdh-lab rd-more"; m.innerHTML="<span>More for today</span><span>Word · review · club · notes</span>"; const a=box.nextElementSibling&&box.nextElementSibling.classList.contains("rd-arr")?box.nextElementSibling:box; a.after(m); }
@@ -155,12 +155,12 @@
     if(t.dataset.rdgo==="buddy"){ if(window.csBuddy&&window.csBuddy.open) window.csBuddy.open(); else go("park"); return; }
     if(t.dataset.rdgo==="club:week"){ go("club"); setTimeout(()=>{ if(window.__clubTab) window.__clubTab("week"); setTimeout(()=>{ const v=document.getElementById("v-club"); const el=v&&([...v.querySelectorAll(".cl-next,.cl-sec,h2")].find(x=>x.offsetParent)); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); } },200); },150); return; }
     if(t.dataset.rdgo){ go(t.dataset.rdgo); return; }
-    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); } return; }
+    if(t.dataset.rdscroll){ const el=document.getElementById(t.dataset.rdscroll); if(el){ el.scrollIntoView({behavior:"smooth",block:"start"}); glow(el); /* parts above can change height while scrolling: land again on the card */ [500,900].forEach(ms=>setTimeout(()=>{ const t=el.getBoundingClientRect().top; if(Math.abs(t-96)>16) scrollBy({top:t-96,behavior:"smooth"}); },ms)); } return; }
     if(t.dataset.rdsheet){ openTopics(t); }
   });
   document.addEventListener("submit",e=>{
     const f=e.target.closest&&e.target.closest("[data-rdtr]"); if(!f) return; e.preventDefault();
-    const q=(document.getElementById("rdTrIn")||{}).value||""; go("translate");
+    const q=(document.getElementById("rdTrIn")||{}).value||""; if(openTranslator(q)) return; go("translate");
     setTimeout(()=>{ const i=document.getElementById("trIn"), b=document.getElementById("trBtn"); if(i){ i.value=q; i.dispatchEvent(new Event("input",{bubbles:true})); if(q.trim()&&b) b.click(); i.focus(); } },120);
   });
   /* "Grammar notes" stamp: a sheet with every topic from the side menu, grouped */
@@ -173,10 +173,36 @@
         const bs=[...g.querySelectorAll("[data-go]")].filter(b=>!b.hidden);
         return `<section><div class="rdh-lab"><span>${String(gi+1).padStart(2,"0")} / ${esc(name)}</span><span>${bs.length}</span></div><div class="rdt-grid">${bs.map(b=>`${(()=>{ const t=b.textContent.replace(/\s+/g," ").trim(); const m=t.match(/^(.*?)\s*((?:A1|A2|B1|B2|C1|C2)(?:[–-](?:A1|A2|B1|B2|C1|C2))?)$/); return `<button type="button" data-rdtopic="${esc(b.dataset.go)}"><span>${esc(m?m[1]:t)}</span>${m?`<i>${esc(m[2])}</i>`:""}</button>`; })()}`).join("")}</div></section>`; }).join("")}</div>`;
     document.body.appendChild(sh); document.documentElement.classList.add("rd-lock");
-    const close=()=>{ sh.remove(); document.documentElement.classList.remove("rd-lock"); if(from) from.focus(); };
-    sh.addEventListener("click",e=>{ if(e.target===sh||e.target.closest(".rdt-x")) { close(); return; } const b=e.target.closest("[data-rdtopic]"); if(b){ close(); go(b.dataset.rdtopic); } });
+    const list=sh.querySelector(".rdt-in").innerHTML; let lent=null;
+    const close=()=>{ if(lent) lent(); sh.remove(); document.documentElement.classList.remove("rd-lock"); if(from) from.focus(); };
+    sh.addEventListener("click",e=>{ if(e.target===sh||e.target.closest(".rdt-x")) { close(); return; }
+      if(e.target.closest("[data-rdtback]")){ if(lent) lent(); lent=null; sh.querySelector(".rdt-in").innerHTML=list; sh.scrollTop=0; const t=sh.querySelector(".rdt-x"); if(t) t.focus(); return; }
+      const full=e.target.closest("[data-rdtfull]"); if(full){ const id=full.dataset.rdtfull; close(); go(id); return; }
+      const b=e.target.closest("[data-rdtopic]"); if(b){ const id=b.dataset.rdtopic; lent=readIn(sh,id,b.querySelector("span")?b.querySelector("span").textContent:id,true); if(!lent){ close(); go(id); } } });
     sh.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
     const f=sh.querySelector(".rdt-x"); if(f) f.focus();
+  }
+  /* Nov 27 2026 (Noa): a topic (or the Translator) opens right inside the pop-up. The page itself is borrowed:
+     moved into the pop-up while it's open, then put back exactly where it was. "Full page ↗" goes to the real page. */
+  function readIn(sh,id,title,back){
+    const v=document.getElementById("v-"+id); if(!v) return null;
+    const home=document.createComment("rd-borrowed"), wasHidden=v.hidden; v.parentNode.insertBefore(home,v);
+    const box=sh.querySelector(".rdt-in");
+    box.innerHTML=`<div class="rdt-head rdt-rhead">${back?`<button type="button" class="rdt-back" data-rdtback>← All topics</button>`:"<span></span>"}<span class="rdt-rt">${esc(title)}</span><span class="rdt-acts"><button type="button" class="rdt-full" data-rdtfull="${esc(id)}">Full page ↗</button><button type="button" class="rdt-x" aria-label="Close">✕</button></span></div><div class="rdt-read"></div>`;
+    v.hidden=false; v.classList.add("rd-lent"); box.querySelector(".rdt-read").appendChild(v); sh.scrollTop=0;
+    const bk=box.querySelector("[data-rdtback]")||box.querySelector(".rdt-x"); if(bk) bk.focus();
+    return ()=>{ v.classList.remove("rd-lent"); v.hidden=wasHidden; if(home.parentNode){ home.parentNode.insertBefore(v,home); home.remove(); } };
+  }
+  function openTranslator(q){
+    let sh=document.getElementById("rdTopics"); if(sh) sh.remove();
+    sh=document.createElement("div"); sh.id="rdTopics"; sh.className="rd-topics"; sh.setAttribute("role","dialog"); sh.setAttribute("aria-modal","true"); sh.setAttribute("aria-label","Translator");
+    sh.innerHTML='<div class="rdt-in"></div>'; document.body.appendChild(sh); document.documentElement.classList.add("rd-lock");
+    const lent=readIn(sh,"translate","Translator",false); if(!lent){ sh.remove(); document.documentElement.classList.remove("rd-lock"); return false; }
+    const close=()=>{ lent(); sh.remove(); document.documentElement.classList.remove("rd-lock"); const i=document.getElementById("rdTrIn"); if(i) i.focus(); };
+    sh.addEventListener("click",e=>{ if(e.target===sh||e.target.closest(".rdt-x")){ close(); return; } const full=e.target.closest("[data-rdtfull]"); if(full){ const tq=(document.getElementById("trIn")||{}).value||""; close(); go("translate"); setTimeout(()=>{ const i=document.getElementById("trIn"); if(i&&tq&&!i.value) i.value=tq; },150); } });
+    sh.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
+    setTimeout(()=>{ const i=document.getElementById("trIn"), b=document.getElementById("trBtn"); if(i){ i.value=q; i.dispatchEvent(new Event("input",{bubbles:true})); if(q.trim()&&b) b.click(); i.focus(); } },60);
+    return true;
   }
 
   /* the floating study buddy lives in a little pocket-pet device (pet / feed / settings) */

@@ -776,3 +776,40 @@ html.rd[data-rdt="sepia"] body::after{opacity:.22}
 html.rd[data-rdt="sepia"] .rd-tama{background-color:var(--tama,#C98B4A)}
 html.rd[data-rdt="sepia"]{--hl1:#D8B640!important;--hl2:#D9653B!important;--hl3:#4F7A8C!important}
 html.rd[data-rdt="sepia"] .rdh-note{background:#E6CD98}
+
+/* a topic / the Translator read inside the pop-up (065 readIn) */
+.rdt-rhead{position:sticky;top:0;z-index:3;margin:-20px -22px 0;padding:12px 22px;background:var(--bg);border-bottom:1px solid var(--rule);align-items:center}
+.rdt-rt{flex:1;min-width:0;font:700 13px var(--mono);text-transform:uppercase;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rdt-acts{display:flex;gap:8px;align-items:center}
+.rdt-back,.rdt-full{all:unset;cursor:pointer;box-sizing:border-box;min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid var(--rule);font:700 12px var(--mono);text-transform:uppercase;letter-spacing:.03em;color:var(--ink);background:var(--surface);transition:transform .12s,box-shadow .12s,background .12s}
+.rdt-back:hover,.rdt-full:hover,.rdt-back:focus-visible,.rdt-full:focus-visible{background:var(--pop);color:var(--pop-ink,#1A1A1A);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--rule)}
+.rdt-read>.view.rd-lent{display:block!important;margin:0;padding:0;max-width:none}
+.rdt-read>.view.rd-lent>h1{font-size:clamp(28px,5vw,40px)}
+@media (max-width:600px){.rdt-full{padding:0 10px}.rdt-rt{display:none}.rdt-rhead{margin:-20px -14px 0;padding:10px 14px}}
+.rdh-st .rdh-st-more{font-style:normal;font-size:.85em;display:inline-block;transition:transform .2s}
+.rdh-st:hover .rdh-st-more{transform:translateY(2px)}
+/* ticket: everything on the pop color uses the pop's own ink (links got the page ink in Night, unreadable on lime/yellow) */
+html.rd .rdh-ticket :is(a,.rdh-join,.rdh-join span,.rdh-tk,.rdh-tk *){color:var(--pop-ink)!important}
+html.rd .rdh-ticket .rdh-join:hover span,html.rd .rdh-ticket .rdh-join:focus-visible span{background:var(--pop-ink)!important;color:var(--pop)!important}
+html.rd .rdh-ticket .rdh-join svg{color:var(--pop-ink)!important}
+/* Nov 27 2026 (Noa): everything you can click on Home reacts when the mouse is on it */
+@media (hover:hover){
+ html.rd :is(.hc-go,.hc-wall,.hc-rec,.hc-join,.hc-new a,.hc-list a,.hc-list button) {transition:transform .14s,box-shadow .14s,background-color .14s,color .14s,border-color .14s}
+ html.rd :is(.hc-go,.hc-wall,.hc-join):hover,html.rd :is(.hc-go,.hc-wall,.hc-join):focus-visible{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--rule)!important;background:var(--pop)!important;color:var(--pop-ink)!important;border-color:var(--rule)!important}
+ html.rd .hc-rec:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--rule)}
+ html.rd .aw-rx button{transition:transform .14s cubic-bezier(.3,1.6,.5,1),box-shadow .14s,background-color .14s}
+ html.rd .aw-rx button:hover,html.rd .aw-rx button:focus-visible{transform:translateY(-3px) scale(1.18);background:var(--pop)!important;box-shadow:2px 2px 0 var(--rule)}
+ html.rd .aw-x:hover,html.rd .aw-nav button:hover:not(:disabled){background:var(--pop)!important;color:var(--pop-ink)!important}
+}
+@media (hover:hover){
+ html.rd .rdh-dot{transition:transform .15s cubic-bezier(.3,1.6,.5,1)}
+ html.rd .rdh-dot:hover{transform:scale(1.25)}
+ html.rd .rdh-tr button[type="submit"],html.rd .rdh-love,html.rd #hmArrange,html.rd .aw-nav button,html.rd .aw-say{transition:transform .14s,box-shadow .14s,background-color .14s,color .14s}
+ html.rd .rdh-tr button[type="submit"]:hover,html.rd .rdh-love:hover,html.rd #hmArrange:hover,html.rd .aw-nav button:hover:not(:disabled){background:var(--pop)!important;color:var(--pop-ink)!important;transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--rule)!important}
+ html.rd .aw-say:hover{transform:scale(1.2)}
+ html.rd .aw-w{transition:background-color .12s}
+ html.rd .aw-w:hover{background:var(--pop);color:var(--pop-ink)}
+ html.rd .aw-it a:not(.aw-w):hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:var(--pop)}
+}
+/* TODAY.LOG jumps: land with the whole card in view, below the top bar (it went a bit too far down) */
+html.rd :is(#v-notes [id],#todayBox,#rvBox,#awBox){scroll-margin-top:96px}
