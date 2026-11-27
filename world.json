@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-27",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🌹",
+          "title": "Happy Lancashire Day, England!",
+          "text": "Today is Lancashire Day, a party for this county in the north of England. It remembers 27 November 1295, when Lancashire first sent people to Parliament. Town criers walk out and read a special proclamation out loud. Hear ye, hear ye!",
+          "word": "out loud",
+          "mean": "in a voice that other people can hear",
+          "tr": "en voz alta",
+          "es": "¡Hoy Lancashire, en el norte de Inglaterra, celebra su día con pregoneros por las calles!",
+          "q": "What makes your city or region special, and how would you celebrate its own day?",
+          "link": "https://en.wikipedia.org/wiki/Lancashire_Day",
+          "src": "Wikipedia",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "🌌",
+          "title": "Two giant black holes, way too early!",
+          "text": "The James Webb telescope found the oldest pair of quasars ever seen, from just 900 million years after the Big Bang. Each is powered by a huge black hole, and they're surprisingly close together. Its Hawaiian nickname is a real tongue-twister: Nāpōwawāʻenakaulua!",
+          "word": "surprisingly",
+          "mean": "in a way you didn't expect",
+          "tr": "sorprendentemente",
+          "es": "El telescopio Webb descubrió el par de cuásares más antiguo jamás visto, ¡con nombre hawaiano!",
+          "q": "What's the longest or hardest word you know in any language, and can you say it fast?",
+          "link": "https://www.space.com/astronomy/black-holes/astronomers-stunned-after-james-webb-space-telescope-discovers-the-earliest-pair-of-black-hole-powered-quasars",
+          "src": "Space.com",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🐕",
+          "title": "Rocker the coonhound wins Best in Show",
+          "text": "A black and tan coonhound called Rocker won Best in Show at the 2026 National Dog Show in Philadelphia, shown on TV on Thanksgiving. The judge loved his beautiful feet! His handler says Rocker loves people and all the commotion.",
+          "word": "commotion",
+          "mean": "a lot of noise, movement and excitement",
+          "tr": "alboroto / bullicio",
+          "es": "¡Rocker, un perro coonhound, ganó el premio al mejor perro del National Dog Show!",
+          "q": "If your pet (or a pet you'd love to have) won a prize, what would it win for?",
+          "link": "https://cbsnews.com/news/2026-national-dog-show-winner-rocker-coonhound",
+          "src": "CBS News",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-26",
       "by": "claude",
       "items": [
