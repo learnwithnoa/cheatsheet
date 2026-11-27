@@ -131,7 +131,7 @@
       return {k:"THOUGHT FOR TODAY ✶",x:tt.textContent.trim(),love:lv?{on:lv.getAttribute("aria-pressed")==="true",txt:(lt&&lt.textContent.trim())||"I like this"}:null}; }
     const v=window.__csHubView;
     try{ const n=window.__csCoachNews&&window.__csCoachNews.list(); if(n&&n[0]) return {k:"NOTE FROM NOA ✉",x:String(n[0].t||"").replace(/<[^>]+>/g,""),go:"coaching"}; }catch(e){}
-    if(v&&v.recap&&v.recap.summary) return {k:"LATEST CLASS RECAP ✉",x:String(v.recap.summary).split(/(?<=[.!?])\s/)[0],go:"coaching"};
+    if(v&&v.recap&&v.recap.summary) return {k:"LATEST CLASS RECAP ✉",x:(String(v.recap.summary).match(/^[\s\S]*?[.!?](?=\s|$)/)||[String(v.recap.summary)])[0],go:"coaching"};
     return null;
   }
   /* The Home star (Nov 27 2026, Noa): click it to switch between 7 designs; the last one is remembered (ncs-rdstar).

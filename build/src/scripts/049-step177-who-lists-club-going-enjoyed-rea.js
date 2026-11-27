@@ -55,7 +55,7 @@ document.addEventListener("click",async e=>{
     const mo=e.target.closest("[data-awmore]"); if(mo&&!e.target.closest("[data-aww]")){ mo.classList.toggle("open"); return; }
     const s=e.target.closest("[data-awsay]"); if(s){ const it=d.items[+s.dataset.awsay]; if(window.csSpeak) window.csSpeak(it.title+". "+it.text); return; }
     const w=e.target.closest("[data-aww]"); if(w){ const it=(d.items||[]).find(x=>new RegExp("^"+String(x.word||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"$","i").test(w.dataset.aww))||{}; const word=it.word||w.dataset.aww;
-      const ex=(String(it.text||"").split(/(?<=[.!?])\s+/).find(x=>new RegExp("\\b"+word+"\\b","i").test(x))||"");
+      const ex=(String(it.text||"").match(/[^.!?]+[.!?]*/g).map(x=>x.trim()).find(x=>new RegExp("\\b"+word+"\\b","i").test(x))||"");
       const dl=window.csDialog(`<div class="aw-wd"><h3>${esc(word)} <button type="button" class="aw-say" data-sayw aria-label="Hear it">🔊</button></h3><p>${esc(it.mean||"")}</p>${it.tr?`<p class="muted" lang="es">🇪🇸 ${esc(it.tr)}</p>`:""}${ex?`<p class="muted"><i>“${esc(ex)}”</i></p>`:""}<div class="note-actions"><button class="pill-btn pill-green" type="button" data-savew>+ Save to My notebook</button></div></div>`);
       dl.el.querySelector("[data-sayw]").onclick=()=>{ if(window.csSpeak) window.csSpeak(word); };
       dl.el.querySelector("[data-savew]").onclick=()=>{ let ok=false; try{ ok=window.csAddWord&&window.csAddWord(word,it.tr||"",ex); }catch(er){} dl.close(); if(window.toast) window.toast(ok?"Saved to My notebook ✓":"Already in My notebook"); };
