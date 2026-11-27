@@ -24,7 +24,10 @@
   function sched(f,wd){ return ((f&&f.info&&f.info.schedule)||[]).find(s=>s.wd===wd)||null; }
   function weekDates(week){ const [y,m,d]=week.split("-").map(Number); return i=>{ const x=new Date(y,m-1,d+i); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }; }
   /* Nov 26 2026: the redesigned Home (065-redesign.js) reads the club's next class + this week's post from here */
-  window.__csClubNext=function(){ try{ const f=feed(); if(!f) return null; const ps=posts(f); if(!ps[0]) return null; const now=Date.now(); const c=classesOf(f,ps[0]).find(x=>now<=x.end.getTime());
+  window.__csClubNext=function(){ try{ const f=feed(); if(!f) return null; const ps=posts(f); if(!ps[0]) return null; const now=Date.now(); let c=classesOf(f,ps[0]).find(x=>now<=x.end.getTime());
+    /* Nov 27 2026 (Noa): after the week's last class (Friday afternoon to Monday's new post) the Home ticket was empty: fall back to the club's weekly schedule */
+    if(!c){ const sch=(f.info&&f.info.schedule)||[]; for(let i=0;i<8&&!c;i++){ const iso=new Date(now+i*864e5).toLocaleDateString("en-CA",{timeZone:TZ}), wd=new Date(iso+"T12:00:00").getDay();
+      sch.filter(s=>s.wd===wd).forEach(s=>{ if(c) return; const start=chileAt(iso,s.time||"20:00"), end=new Date(start.getTime()+(s.dur||90)*60000); if(now<=end.getTime()) c={start,end,name:s.name||"",title:"",zoom:s.zoom||""}; }); } }
     return {next:c?{start:c.start,end:c.end,name:c.name||"",title:c.title||"",zoom:c.zoom||""}:null,post:{title:ps[0].title||"",week:ps[0].week}}; }catch(e){ return null; } };
   function classesOf(f,p){
     const at=weekDates(p.week);
