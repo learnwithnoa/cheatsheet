@@ -2321,3 +2321,4 @@ html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{dis
 .w-sense{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface-2);line-height:1.4}
 .w-sense .m{margin-top:2px}.w-sense .ex{margin-top:4px;font-style:italic;opacity:.9}
 .w-sense .note-actions{margin-top:8px;flex-wrap:wrap;gap:6px}
+#v-interview .linklike{color:var(--c-sky,#4F9DF0);font-weight:700;text-decoration:underline;text-underline-offset:2px}

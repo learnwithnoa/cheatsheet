@@ -870,7 +870,7 @@ fcShuffle();
   function paint(){
     G=groups();
     aiMsg.hidden=aiReady();
-    if(!G.length){ box.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Write them at the top of this page (during class too), and they\'ll show up here, grouped by week with a summary.</div>'; monthBtn.hidden=true; monthBox.innerHTML=""; return; }
+    if(!G.length){ box.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Write them in <b>✏️ Class notes</b> (during class too), and they\'ll show up here, grouped by week with a summary.</div>'; monthBtn.hidden=true; monthBox.innerHTML=""; return; }
     monthBtn.hidden=!aiReady();
     box.innerHTML=G.map(card).join("");
     const mk="m-30", ms=sums[mk];

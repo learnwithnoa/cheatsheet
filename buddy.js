@@ -826,7 +826,10 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     b.classList.remove("in"); void b.offsetWidth; b.classList.add("in");
     clearTimeout(stTimer); stTimer = setTimeout(() => { b.hidden = true; }, Math.min(ms || 4000, 6000));
   }
+  /* the top windows (+ Word, music, bell, timer, profile): the buddy keeps quiet while one is open */
+  const topOpen = () => ["qa", "musicPanel", "clBellPanel", "tmPanel", "authPanel"].some(id => { const e = document.getElementById(id); return e && !e.hidden && e.getClientRects().length && getComputedStyle(e).display !== "none"; });
   function say(html, acts, ms) {
+    if (modal.hidden && topOpen()) return;
     if (!modal.hidden && mode === "main") {
       /* inside the home menu the name/level card is already below the picture: only show what the buddy says, small, in a corner */
       if (html) { const t = document.createElement("div"); t.innerHTML = html; t.querySelectorAll(".bd-ic").forEach(x => x.remove()); const h = t.innerHTML.trim(); if (h) setTimeout(() => stageSay(h, ms), 0); }
@@ -837,6 +840,7 @@ html.cs-calm .bd-z{animation:none;opacity:.8}
     if (ms !== 0) bubTimer = setTimeout(() => { bub.hidden = true; }, ms || 5000);
   }
   function hideBub() { clearTimeout(bubTimer); bub.hidden = true; }
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#hdrWord,#musicBtn,#clBell,#tmBtn,#authBtn,#searchToggle")) hideBub(); }, true);
   const petsLeft = () => Math.max(0, 5 - (S.pd && S.pd[0] === today() ? S.pd[1] : 0));
   const gearBtn = () => `<button class="bd-gear" type="button" data-bd="open" aria-label="Open ${esc(nameOf())}'s home" title="${esc(nameOf())}'s home: wardrobe, room, progress">🏠</button>`;
   /* Feed + Pet on the left, tuck away on the right. Pass gear=true when the message has no name card (the gear lives next to the name). */

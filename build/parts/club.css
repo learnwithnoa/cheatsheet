@@ -571,3 +571,6 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-pvc i.cl-es{font-style:normal;font-weight:700;font-size:13.5px;color:var(--ink);-webkit-line-clamp:2}
 .cl-pvc i.cl-es::before{content:"ES";display:inline-block;font:700 9.5px/1 var(--mono,monospace);letter-spacing:.06em;padding:3px 4px;margin-right:6px;vertical-align:1px;border:1px solid currentColor;border-radius:4px;opacity:.7}
 .cl-pvc .cl-mean{font-size:13px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* phone: the tabs row scrolls sideways; a soft fade at the edge shows there's more (sweep Nov 28 2026) */
+@media (max-width:600px){ .cl-tabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);padding-right:28px} }

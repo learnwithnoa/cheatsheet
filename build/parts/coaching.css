@@ -378,3 +378,4 @@ button.ch-gl{border:1px solid transparent}
 a.em-rc:hover{border-color:var(--bright)}.em-rc span{font-size:20px}.em-rc small{font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.em-rc b{font-size:14.5px;font-weight:600;line-height:1.35}
 .em-foot p{margin:0 0 8px}.em-next{padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--bright) 9%,var(--surface))}
 .em-sign{text-align:right;font:700 17px var(--display);color:var(--bright);margin:4px 6px 20px}
+@media (max-width:600px){ .prt-btns{margin-left:0;width:100%} .prt-btns .prt-x{margin-left:auto} }

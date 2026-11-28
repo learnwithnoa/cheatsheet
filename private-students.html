@@ -676,7 +676,7 @@ function nextClassAt(s) {
 }
 const fmtNext = n => { if (!n) return ""; const d = new Date(n.t), td = new Date(); const dd = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(td.getFullYear(), td.getMonth(), td.getDate())) / 864e5);
   const day = dd === 0 ? "today" : dd === 1 ? "tomorrow" : d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-  return n.how === "guess" ? "next ~" + day : "next " + day + " " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }); };
+  return n.how === "guess" ? "~" + day : day + " " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }); };
 function packPrice(p) { const n = money(p.price); if (n) return n; return STD_PRICE[p.size] || 0; }
 function alertsFor(s) {
   const out = []; if (s.status !== "active") return out;
@@ -765,7 +765,7 @@ function renderRecent() {
   all.sort((a, b) => (b.c.date + (b.c.k || "99")).localeCompare(a.c.date + (a.c.k || "99")) || String(b.c.id || "").localeCompare(String(a.c.id || "")));
   const top = all.slice(0, 3); box.hidden = !top.length; if (!top.length) return;
   const dl = d => d === today() ? "Today" : d === addDays(today(), -1) ? "Yesterday" : new Date(d + "T12:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-  box.innerHTML = `<div class="nx-h"><h2><span class="kc">🕘</span> Recent classes</h2></div><ul class="nextc recent">${top.map(({ s, c }) => `<li data-open="${esc(s.id)}" title="Open ${esc(s.name)}'s page"><span class="t">${dl(c.date)}${c.t ? " · " + c.t : ""}</span><span><b>${esc(s.name)}</b>${attB(c.att && c.att !== "Present" ? c.att : "")}${c.cal ? `<span class="nx-note">from your calendar · gets logged tonight</span>` : ""}${c.topics ? `<span class="nx-note">${esc(c.topics)}${c.homework ? " · homework: " + esc(c.homework) : ""}</span>` : ""}</span></li>`).join("")}</ul>`;
+  box.innerHTML = `<div class="nx-h"><h2><span class="kc">🕘</span> Recent classes</h2></div><ul class="nextc recent">${top.map(({ s, c }) => `<li data-open="${esc(s.id)}" title="Open ${esc(s.name)}'s page"><span class="t">${dl(c.date)}${c.t ? " · " + c.t : ""}</span><span><b>${esc(s.name)}</b>${attB(c.att && c.att !== "Present" ? c.att : "")}${c.cal ? `<span class="nx-note">from your calendar · gets logged this afternoon or tonight</span>` : ""}${c.topics ? `<span class="nx-note">${esc(c.topics)}${c.homework ? " · homework: " + esc(c.homework) : ""}</span>` : ""}</span></li>`).join("")}</ul>`;
 }
 function renderAll() { renderStoic(); renderSummary(); renderKpis(); renderNext(); renderRecent(); renderAlerts(); renderMoney(); renderTrends(); renderFilters(); route(); }
 function renderSummary() {
@@ -954,7 +954,7 @@ function renderList() {
     const cls = st && st.size ? (st.left <= 0 ? "out" : st.classesLeft <= 1 ? "low" : "") : "";
     const bad = al.some(a => a.lvl === "bad"), warn = al.some(a => a.lvl === "warn");
     return `<button class="stu" data-s="${s.id}" aria-current="${cur === s.id}" style="--pc:${barMode === "time" ? tenColor(s)[0] : (p && p.color || "var(--line)")}" title="${barMode === "time" ? esc(tenColor(s)[1]) : ""}"><span class="av${avSync(s)}" style="--av:${avc(s)}${avIn(s).st}">${avIn(s).html}</span><span class="sb"><b>${esc(s.name)}${bad ? '<span class="badge bad">!</span>' : warn ? '<span class="badge warn">!</span>' : ""}${p && p.paid === "half" ? '<span class="badge half">½ paid</span>' : ""}${s.kind === "trueque" ? '<span class="badge tq">trueque</span>' : ""}</b>
-      <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lSort === "next" && nx[s.id] ? " · " + fmtNext(nx[s.id]) : lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
+      <span class="meta">${en ? `<span class="dot" style="background:var(--${{ "k-green": "c-green", "k-amber": "c-amber", "k-red": "c-red" }[en.k]})" title="Engagement: ${en.lvl}"></span>` : ""}${p && st && st.size ? `${st.used}/${st.size} ${p.unit} · ${pl(st.done, "class")}` : p ? pl(st.done, "class") : "no pack yet"}${lSort === "next" && nx[s.id] ? " · next " + fmtNext(nx[s.id]) : lastClass(s) ? " · last " + fmtShort(lastClass(s)) : ""}</span>
       ${st && st.size ? `<span class="bar"><i class="${cls}" style="width:${pct}%"></i></span>` : ""}</span></button>`;
   }).join("") || `<p class="muted">No students here.</p>`;
 }

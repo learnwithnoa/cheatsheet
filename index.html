@@ -2778,6 +2778,7 @@ button.ch-gl{border:1px solid transparent}
 a.em-rc:hover{border-color:var(--bright)}.em-rc span{font-size:20px}.em-rc small{font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.em-rc b{font-size:14.5px;font-weight:600;line-height:1.35}
 .em-foot p{margin:0 0 8px}.em-next{padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--bright) 9%,var(--surface))}
 .em-sign{text-align:right;font:700 17px var(--display);color:var(--bright);margin:4px 6px 20px}
+@media (max-width:600px){ .prt-btns{margin-left:0;width:100%} .prt-btns .prt-x{margin-left:auto} }
 .cl-wrap{--c1:#F0A63A;--c2:#5AB8FF;--c3:#B18CFF;--c4:#3DDC97;display:flex;flex-direction:column;gap:14px}
 html[data-theme="light"] .cl-wrap,html[data-theme="sepia"] .cl-wrap,html[data-theme="unicorn"] .cl-wrap{--c1:#B86E00;--c2:#1C6FD1;--c3:#7348D8;--c4:#12935C}
 .cl-tabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -3421,6 +3422,9 @@ html.cs-calm .cs-rxpal button{transition:none}
 .cl-pvc i.cl-es{font-style:normal;font-weight:700;font-size:13.5px;color:var(--ink);-webkit-line-clamp:2}
 .cl-pvc i.cl-es::before{content:"ES";display:inline-block;font:700 9.5px/1 var(--mono,monospace);letter-spacing:.06em;padding:3px 4px;margin-right:6px;vertical-align:1px;border:1px solid currentColor;border-radius:4px;opacity:.7}
 .cl-pvc .cl-mean{font-size:13px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* phone: the tabs row scrolls sideways; a soft fade at the edge shows there's more (sweep Nov 28 2026) */
+@media (max-width:600px){ .cl-tabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);padding-right:28px} }
 /* Nov 20 2026: one "Students" menu item, two tabs inside */
 #navMembers{display:none!important}
 .adm-head{display:flex;margin:4px 0 14px}
@@ -4395,6 +4399,7 @@ html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{dis
 .w-sense{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface-2);line-height:1.4}
 .w-sense .m{margin-top:2px}.w-sense .ex{margin-top:4px;font-style:italic;opacity:.9}
 .w-sense .note-actions{margin-top:8px;flex-wrap:wrap;gap:6px}
+#v-interview .linklike{color:var(--c-sky,#4F9DF0);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 </style>
 
 <header class="top">
@@ -4403,7 +4408,7 @@ html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{dis
     <div class="search" id="searchWrap" role="search">
       <label for="gSearch" class="sr">Search Hibi</label>
       <span class="search-ico" aria-hidden="true"></span>
-      <input id="gSearch" type="search" placeholder="Search everything… (try “since” or “make”)" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="gResults" aria-autocomplete="list">
+      <input id="gSearch" type="search" placeholder="Search everything… (try “since” or “make”)" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="gResults" aria-autocomplete="list"><script>/* phones: a shorter hint so it isn't cut off */ try{ if(matchMedia("(max-width:600px)").matches) document.getElementById("gSearch").placeholder="Search everything…"; }catch(e){}</script>
       <kbd class="search-kbd" aria-hidden="true">/</kbd>
       <div class="g-results" id="gResults" role="listbox" hidden></div>
     </div>
@@ -4776,9 +4781,9 @@ html:not(.rd) .wl-card.rd-only{display:none!important}html.rd .wl-card.rd-no{dis
   <p class="lede">Your private classes with Noa: your next class, homework, guides, class recaps, goals and your pack. Noa keeps it up to date after your classes.</p>
   <div class="ch-wrap" id="coachBox"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-3b6d553e2970.js"></script>
+<script src="js/h-5effebf64b2f.js"></script>
 
-<script src="js/h-4e7ca8624f6c.js"></script>
+<script src="js/h-5572b9013378.js"></script>
 
 <script>
 /* the student's English level, for level-adapted feedback: Noa's private-student level, or the club level Noa set from class recordings */
@@ -4819,7 +4824,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">This week's classes and Zoom links, the community wall, recordings, the calendar and everyone in the club.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-9aeb920ba9e8.js"></script>
+<script src="js/h-1f1081288da1.js"></script>
 <script src="js/h-fc76e74bce05.js"></script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
@@ -5478,6 +5483,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 <section class="view" id="v-interview" hidden>
   <h1>Job <em>interviews</em></h1>
   <p class="lede">The questions you'll almost always hear, how to start your answers, and phrases that give you a few seconds to think.</p>
+  <p class="muted"><a class="linklike" href="#quiz/specific-purposes">🎯 Practice it</a>: step-by-step rounds and a 🎤 practice interview where Hibi checks your English.</p>
   <div class="in-short"><span class="is-tag">In short</span><div><b>Answer</b> the question, give <b>one real example</b>, and <b>connect it</b> to the job. Short and specific beats long and perfect.</div></div>
   <h2>The classic questions</h2>
   <div class="grid">
@@ -5596,7 +5602,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
 </section>
 
 <footer><div class="foot-row"><button class="foot-link" type="button" data-welcome>How this page works</button><button class="foot-link" type="button" data-go="changelog">What's new</button><button class="foot-link" type="button" id="kdLink" hidden>💌 Messages from Noa</button><button class="foot-link" type="button" data-install>📲 Install the app</button><button class="foot-link" type="button" id="restoreTips">Show all hidden tips again</button><button class="foot-link" type="button" data-go="feedback">Something missing or broken? Tell Noa</button></div><div>Hibi <b class="kj" lang="ja">日々</b> · by Noa</div><div class="foot-v"><button type="button" class="foot-ver" data-go="changelog" title="What's new in this version">v2.0</button></div></footer>
-<script src="buddy.js?v=81" defer></script>
+<script src="buddy.js?v=82" defer></script>
   </main>
 </div>
 <button class="back-link" id="backLink" type="button" hidden><span aria-hidden="true">←</span> <span id="backTxt">Back</span></button>
@@ -5620,9 +5626,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
     <h2 id="wlTitle">Welcome to <em>Hibi</em> 👋</h2>
     <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. Here's what it does:</p>
     <div class="wl-cards">
-      <div class="wl-card"><span class="wl-ico" aria-hidden="true">📚</span><b>Look things up</b><span>Grammar, verbs and phrases, short and clear. Keep it open in class.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">📚</span><b>Look things up</b><span>Grammar, verbs and phrases, short and clear. Plus a <b>Translator</b> and <b>I'm stuck!</b> for when a word won't come. Keep it open in class.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">📝</span><b>Save your words</b><span>Your own notebook, with meanings and examples added for you.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎯</span><b>Practice</b><span>Short rounds, a few minutes a day.</span></div>
+      <div class="wl-card rd-no"><span class="wl-ico" aria-hidden="true">🏠</span><b>Your Home</b><span>A word of the day, a thought for today and three little news stories from around the world. <b>✏️ Arrange</b> puts the cards in your order.</span></div>
       <div class="wl-card rd-only"><span class="wl-ico" aria-hidden="true">🏠</span><b>Your Home</b><span><b>Today.log</b> lists what's waiting for you today: tap a line to jump there. Fold any card with <b>▾</b>.</span></div>
     </div>
     <p class="wl-calm">🐢 <b>No rush.</b> There's a lot here, and you don't need it all today. Look around, try one thing, come back tomorrow. <i>Hibi</i> (日々) means <b>“day by day”</b>.</p>
@@ -5666,6 +5673,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step by step, easy to harder. 7/10 opens the next stage.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>Travel, work, phrasal verbs and more.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and choose.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">👔</span><b>Job interviews</b><span>Step-by-step rounds and a 🎤 practice interview where Hibi checks your English.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎯</span><b>Weekly goal</b><span>3, 5 or 8 rounds a week. Your buddy gets treats.</span></div>
     </div>
   </div>
@@ -5721,10 +5729,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-92d7537bbc9a.js"></script>
+<script src="js/h-50318c6ae140.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261128105034"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261128111105"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");

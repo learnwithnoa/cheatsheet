@@ -1,7 +1,7 @@
 # after ext patches: buddy.js cache version + What's new entry for the two new modules
 import sys, re
 p=sys.argv[1]; s=open(p,encoding="utf-8").read()
-s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=81',s)
+s=re.sub(r'buddy\.js\?v=\d+','buddy.js?v=82',s)
 a='const CHANGELOG=[\n'
 assert s.count(a)==1
 if '2026-1113-mods' not in s:
@@ -505,6 +505,16 @@ s=open(p,encoding="utf-8").read()
 if '2026-1128-libwords' not in s:
     s=s.replace(a,a+'''  {id:"2026-1128-libwords", date:"November 28, 2026", title:"Word cards for Free Talk Friday", items:[
     ["📚","Words from this class","Free Talk Friday recordings in the club <b>Library</b> now come with swipeable word cards too, ready to save to My notebook.","club"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1128-sweep' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1128-sweep", date:"November 28, 2026", title:"Little fixes all around", items:[
+    ["🎧","The podcast remembers your place","stop the club podcast anytime and it picks up where you left off, even after closing Hibi. Going to another page doesn't stop it either.","club"],
+    ["🥚","A quieter buddy","your buddy doesn't talk over a window you've just opened (+ Word, music, the bell, the timer or your profile).",null],
+    ["👔","Job interviews, linked","the Job interviews page now points to the interview practice in Practice, and back.","interview"],
+    ["🗺️","A fuller tour","<b>How this page works</b> now shows Home, the Translator, I'm stuck! and job interview practice too.",null]
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)

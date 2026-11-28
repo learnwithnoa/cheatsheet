@@ -1004,7 +1004,7 @@ fcShuffle();
   function paint(){
     G=groups();
     aiMsg.hidden=aiReady();
-    if(!G.length){ box.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Write them at the top of this page (during class too), and they\'ll show up here, grouped by week with a summary.</div>'; monthBtn.hidden=true; monthBox.innerHTML=""; return; }
+    if(!G.length){ box.innerHTML='<div class="card empty-notes"><b>No class notes yet.</b><br>Write them in <b>✏️ Class notes</b> (during class too), and they\'ll show up here, grouped by week with a summary.</div>'; monthBtn.hidden=true; monthBox.innerHTML=""; return; }
     monthBtn.hidden=!aiReady();
     box.innerHTML=G.map(card).join("");
     const mk="m-30", ms=sums[mk];
@@ -5385,6 +5385,12 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1128-sweep", date:"November 28, 2026", title:"Little fixes all around", items:[
+    ["🎧","The podcast remembers your place","stop the club podcast anytime and it picks up where you left off, even after closing Hibi. Going to another page doesn't stop it either.","club"],
+    ["🥚","A quieter buddy","your buddy doesn't talk over a window you've just opened (+ Word, music, the bell, the timer or your profile).",null],
+    ["👔","Job interviews, linked","the Job interviews page now points to the interview practice in Practice, and back.","interview"],
+    ["🗺️","A fuller tour","<b>How this page works</b> now shows Home, the Translator, I'm stuck! and job interview practice too.",null]
+  ]},
   {id:"2026-1128-libwords", date:"November 28, 2026", title:"Word cards for Free Talk Friday", items:[
     ["📚","Words from this class","Free Talk Friday recordings in the club <b>Library</b> now come with swipeable word cards too, ready to save to My notebook.","club"]
   ]},

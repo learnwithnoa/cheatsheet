@@ -13,7 +13,7 @@
     <div class="search" id="searchWrap" role="search">
       <label for="gSearch" class="sr">Search Hibi</label>
       <span class="search-ico" aria-hidden="true"></span>
-      <input id="gSearch" type="search" placeholder="Search everything… (try “since” or “make”)" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="gResults" aria-autocomplete="list">
+      <input id="gSearch" type="search" placeholder="Search everything… (try “since” or “make”)" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="gResults" aria-autocomplete="list"><script>/* phones: a shorter hint so it isn't cut off */ try{ if(matchMedia("(max-width:600px)").matches) document.getElementById("gSearch").placeholder="Search everything…"; }catch(e){}</script>
       <kbd class="search-kbd" aria-hidden="true">/</kbd>
       <div class="g-results" id="gResults" role="listbox" hidden></div>
     </div>
@@ -295,9 +295,10 @@
     <h2 id="wlTitle">Welcome to <em>Hibi</em> 👋</h2>
     <p class="wl-lede">Your English companion from <b>Learn with Noa</b>. Here's what it does:</p>
     <div class="wl-cards">
-      <div class="wl-card"><span class="wl-ico" aria-hidden="true">📚</span><b>Look things up</b><span>Grammar, verbs and phrases, short and clear. Keep it open in class.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">📚</span><b>Look things up</b><span>Grammar, verbs and phrases, short and clear. Plus a <b>Translator</b> and <b>I'm stuck!</b> for when a word won't come. Keep it open in class.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">📝</span><b>Save your words</b><span>Your own notebook, with meanings and examples added for you.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎯</span><b>Practice</b><span>Short rounds, a few minutes a day.</span></div>
+      <div class="wl-card rd-no"><span class="wl-ico" aria-hidden="true">🏠</span><b>Your Home</b><span>A word of the day, a thought for today and three little news stories from around the world. <b>✏️ Arrange</b> puts the cards in your order.</span></div>
       <div class="wl-card rd-only"><span class="wl-ico" aria-hidden="true">🏠</span><b>Your Home</b><span><b>Today.log</b> lists what's waiting for you today: tap a line to jump there. Fold any card with <b>▾</b>.</span></div>
     </div>
     <p class="wl-calm">🐢 <b>No rush.</b> There's a lot here, and you don't need it all today. Look around, try one thing, come back tomorrow. <i>Hibi</i> (日々) means <b>“day by day”</b>.</p>
@@ -341,6 +342,7 @@
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🧩</span><b>Grammar</b><span>Step by step, easy to harder. 7/10 opens the next stage.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🗂️</span><b>Word packs</b><span>Travel, work, phrasal verbs and more.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🗣️</span><b>Pronunciation</b><span>Hear the difference and choose.</span></div>
+      <div class="wl-card"><span class="wl-ico" aria-hidden="true">👔</span><b>Job interviews</b><span>Step-by-step rounds and a 🎤 practice interview where Hibi checks your English.</span></div>
       <div class="wl-card"><span class="wl-ico" aria-hidden="true">🎯</span><b>Weekly goal</b><span>3, 5 or 8 rounds a week. Your buddy gets treats.</span></div>
     </div>
   </div>

@@ -9,7 +9,8 @@
   const L=(en,es)=>isBeg()?es:en; window.__clL=L;
   let tab=(()=>{ try{ return sessionStorage.getItem("cs-club-tab")||"week"; }catch(e){ return "week"; } })();
   window.__csDeep=window.__csDeep||{}; const CLS={wall:"community",recordings:"library"}, CLI={community:"wall",library:"recordings"};
-  window.__csDeep.club={hash:()=>"#club"+(tab&&tab!=="week"?"/"+(CLS[tab]||tab):""),open:p=>{ if(p[0]){ tab=CLI[p[0]]||p[0]; try{ sessionStorage.setItem("cs-club-tab",tab); }catch(e){} } setTimeout(()=>{ render(); },0); }};
+  window.__csDeep.club={hash:()=>"#club"+(tab&&tab!=="week"?"/"+(CLS[tab]||tab):""),open:p=>{ const nt=p[0]?(CLI[p[0]]||p[0]):null; if(document.querySelector("#v-club .cl-pplay.on")&&(!nt||nt===tab)) return;  /* never cut off a podcast that's playing */
+    if(nt){ tab=nt; try{ sessionStorage.setItem("cs-club-tab",tab); }catch(e){} } setTimeout(()=>{ render(); },0); }};
   const feed=()=>{ if(window.__csPreview&&window.__csPreview.kind==="private") return null; return window.__csClub||null; };
   const posts=f=>((f&&f.posts)||[]).filter(p=>p&&p.week).slice().sort((a,b)=>b.week.localeCompare(a.week));
   const seen=()=>{ try{ return localStorage.getItem(SEEN)||""; }catch(e){ return ""; } };
@@ -73,7 +74,7 @@
     hc.innerHTML=`<div class="hc-h"><b>🌼 This week in the club${isNew&&!window.__csPreview?'<span class="hc-new">NEW</span>':""}</b><button type="button" class="hc-go" data-go="club">Open →</button></div>
       <div class="hc-list">${(()=>{ const rl=recList(f); return cl.map(c=>{ const past=now>c.end.getTime(), r=past?rl.find(it=>it.week===p.week&&it.x&&it.x.wd===c.wd):null; return `<div class="${past?"past":""}"><span class="d">${c.ico} ${WD[c.wd]} ${esc(fmtT(c.start,TZ).replace(":00",""))}</span><span>${esc(c.name)}${c.title?`: ${esc(c.title)}`:""}</span>${r?`<button type="button" class="hc-rec" data-recgo="${esc(r.id)}" title="${L("Watch the recording","Ver la grabación")}">🎬 ${L("Recording","Grabación")}</button>`:""}</div>`; }).join(""); })()}</div>
       <button type="button" class="hc-wall" data-hcwall="1" hidden></button>${pod?`<button type="button" class="hc-wall" data-hcgo="recordings">🎧 ${L("This week's club podcast","El podcast de esta semana")}${pod.title?`: ${esc(pod.title)}`:""} →</button>`:""}${(()=>{ const r=[recList(f).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0]].filter(it=>it&&!watched().includes(it.id)&&Date.now()-new Date(it.date+"T12:00:00").getTime()<8*864e5)[0]; if(!r) return ""; const rd=new Date(r.date+"T12:00:00").toLocaleDateString(L("en-US","es-CL"),{month:"short",day:"numeric"}), rt=r.x&&r.x.title&&r.x.title!==r.c.name?r.x.title:"";
-      return `<button type="button" class="hc-wall" data-recgo="${esc(r.id)}">🎬 ${L("Recording of","Grabación de")} ${esc(r.c.name||rt||"")} ${L("on","del")} ${esc(rd)}${rt?`: ${esc(rt)}`:""} →</button>`; })()}
+      return `<button type="button" class="hc-wall" data-recgo="${esc(r.id)}">🎬 ${L("Watch","Ver")} ${esc(r.c.name||rt||"")}${rt&&r.c.name?`: ${esc(rt)}`:""} <span style="white-space:nowrap">(${esc(rd)})&nbsp;→</span></button>`; })()}
       ${next&&next.zoom&&now>=next.start.getTime()-10*60000?`<a class="cl-join" style="--k:#E5533D" href="${esc(next.zoom)}" target="_blank" rel="noopener">🎥 ${esc(next.name)} is live: join now</a>`:""}`;
   }
   /* not a club member: a locked page with what the club is, how to join, and this week's topics (no Zoom links) */
@@ -365,12 +366,23 @@
   document.addEventListener("cs-level",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden) render(); });
   /* data updates never wipe something half-typed: they wait until the text is sent or cleared */
   let pend=false; const typing=()=>[...box.querySelectorAll("textarea,input[type=text]")].some(x=>x.value.trim());
-  const soft=()=>{ if(typing()){ pend=true; nav(); return; } pend=false; render(); };
+  const soft=()=>{ if(typing()||(box.querySelector(".cl-pplay.on"))){ pend=true; nav(); return; } pend=false; render(); };
   document.addEventListener("cs-club",soft); box.addEventListener("focusout",()=>setTimeout(()=>{ if(pend&&!typing()) soft(); },200)); document.addEventListener("submit",()=>setTimeout(()=>{ if(pend&&!typing()) soft(); },1500)); document.addEventListener("cs-hubview",nav); window.addEventListener("cs-auth",()=>{ pubTried=false; setTimeout(soft,0); });
-  window.addEventListener("hashchange",()=>{ if(location.hash==="#club"){ tab="week"; setTimeout(render,0); } });
-  document.addEventListener("click",e=>{ if(e.target.closest('[data-go="club"]')) setTimeout(render,0); });
+  /* a podcast that's playing is never interrupted by coming back to the Club page */
+  const podOn=()=>!!box.querySelector(".cl-pplay.on");
+  window.addEventListener("hashchange",()=>{ if(location.hash==="#club"&&!podOn()){ tab="week"; setTimeout(render,0); } });
+  document.addEventListener("click",e=>{ if(e.target.closest('[data-go="club"]')&&!podOn()) setTimeout(render,0); });
+  /* remember where each person stopped in each episode (this device), and pick up from there */
+  const PPK="cs-podpos", ppGet=()=>{ try{ return JSON.parse(localStorage.getItem(PPK)||"{}")||{}; }catch(e){ return {}; } }, ppSet=o=>{ try{ localStorage.setItem(PPK,JSON.stringify(o)); }catch(e){} };
+  const ppId=au=>{ const pp=au.closest(".cl-pplay"); return (pp&&pp.dataset.drive)||String(au.getAttribute("src")||"").slice(-80); };
+  let ppLast=0;
+  document.addEventListener("timeupdate",e=>{ const au=e.target; if(!au||au.tagName!=="AUDIO"||!au.closest(".cl-pplay")||!au.duration) return; if(Date.now()-ppLast<4000) return; ppLast=Date.now(); const o=ppGet(), id=ppId(au), t=au.currentTime||0;
+    if(t>5&&t<au.duration-15) o[id]=Math.round(t); else delete o[id]; const ks=Object.keys(o); if(ks.length>20) delete o[ks[0]]; ppSet(o); },true);
+  document.addEventListener("pause",e=>{ const au=e.target; if(!au||au.tagName!=="AUDIO"||!au.closest(".cl-pplay")||!au.duration) return; const o=ppGet(), t=au.currentTime||0; if(t>5&&t<au.duration-15) o[ppId(au)]=Math.round(t); ppSet(o); },true);
+  document.addEventListener("ended",e=>{ const au=e.target; if(!au||au.tagName!=="AUDIO"||!au.closest(".cl-pplay")) return; const o=ppGet(); delete o[ppId(au)]; ppSet(o); },true);
+  document.addEventListener("loadedmetadata",e=>{ const au=e.target; if(!au||au.tagName!=="AUDIO"||!au.closest(".cl-pplay")||au.dataset.resumed) return; au.dataset.resumed="1"; const t=+ppGet()[ppId(au)]||0; if(t>5&&au.duration&&t<au.duration-15) au.currentTime=t; },true);
   /* keep "Live now" fresh, but never while someone is typing a comment */
-  setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing) render(); else home(); } },60000);
+  setInterval(()=>{ if(feed()&&!document.hidden){ const v=document.getElementById("v-club"), typing=[...box.querySelectorAll("textarea")].some(x=>x.value.trim())||box.contains(document.activeElement)&&document.activeElement.tagName==="TEXTAREA"; if(v&&!v.hidden&&tab==="week"&&!typing&&!podOn()) render(); else home(); } },60000);
   window.__clubTab=k=>{ tab=k; try{ sessionStorage.setItem("cs-club-tab",tab); }catch(er){} render(); };
   document.addEventListener("cs-club-plans",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,.cl-plan,iframe,audio,textarea:focus,input:focus")) render(); });
   const fmtPT=t=>!isFinite(t)?"–:––":Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
@@ -382,7 +394,7 @@
   document.addEventListener("click",e=>{ const m=e.target.closest(".cl-pplay [data-pmute]"); if(!m) return; e.preventDefault(); const pp=m.closest(".cl-pplay"), au=pp.querySelector("audio"); au.muted=!au.muted; m.textContent=au.muted?"🔇":"🔊"; });
   document.addEventListener("input",e=>{ const r=e.target.closest(".cl-pplay .cl-pbar"); if(!r) return; const au=r.closest(".cl-pplay").querySelector("audio"); if(au.duration) au.currentTime=r.value/1000*au.duration; });
   document.addEventListener("cs-club-pods",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,iframe,.cl-pplay.on,textarea:focus,input:focus")) render(); });
-  document.addEventListener("cs-club-recs",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,textarea:focus,input:focus")) render(); else home(); });
+  document.addEventListener("cs-club-recs",()=>{ const v=document.getElementById("v-club"); if(v&&!v.hidden&&(tab==="recordings"||tab==="week")&&!box.querySelector(".cl-ytf,.cl-pplay.on,textarea:focus,input:focus")) render(); else home(); });
   window.__clubFeed=feed;
   render();
 })();
