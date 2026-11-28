@@ -1,6 +1,54 @@
 {
   "days": [
     {
+      "date": "2026-11-28",
+      "by": "claude",
+      "items": [
+        {
+          "k": "celebrate",
+          "emoji": "🍞",
+          "title": "Happy French Toast Day!",
+          "text": "Today, November 28, people celebrate French toast: bread dipped in egg and milk, then fried. In France it's called pain perdu, \"lost bread\", because it saves old bread. Spain has torrijas, and the UK says eggy bread. Breakfast, anyone?",
+          "word": "dipped in",
+          "mean": "put quickly into a liquid and taken out again",
+          "tr": "remojado en / bañado en",
+          "es": "¡Hoy se celebra el pan francés, que en España se parece a las torrijas!",
+          "q": "What's your favourite breakfast, and how do you make it?",
+          "link": "https://www.smithsonianmag.com/smart-news/there-are-many-names-french-toast-ways-cook-it-180961221/",
+          "src": "Smithsonian",
+          "kind": "read"
+        },
+        {
+          "k": "space",
+          "emoji": "☄️",
+          "title": "A fireball as bright as the Moon!",
+          "text": "On November 25, more than 1,300 people in Michigan, Ontario and nearby saw a huge fireball in the evening sky. It was a space rock of about 55 kg, moving at 27 km per second. For a moment, it was almost as bright as the full Moon!",
+          "word": "For a moment",
+          "mean": "for a very short time",
+          "tr": "por un momento",
+          "es": "¡Más de 1.300 personas vieron una bola de fuego tan brillante como la Luna!",
+          "q": "What's the most amazing thing you've ever seen in the sky?",
+          "link": "https://starlust.org/space-weekly-recap-november-21-november-27-2026-key-stories-you-may-have-missed/",
+          "src": "Starlust",
+          "kind": "read"
+        },
+        {
+          "k": "good",
+          "emoji": "🎨",
+          "title": "Street art that makes drivers slow down",
+          "text": "Cities are painting colourful art on roads and crosswalks, and new studies say it helps. At painted crossings, drivers stop more often for people walking, and there are fewer crashes. Who knew a little paint could make streets happier and safer?",
+          "word": "crosswalks",
+          "mean": "marked places on a road where people can cross",
+          "tr": "pasos de cebra / pasos peatonales",
+          "es": "¡El arte pintado en las calles ayuda a que los conductores manejen con más cuidado!",
+          "q": "What would you paint on a street in your neighbourhood, and why?",
+          "link": "https://www.goodnewsnetwork.org/asphalt-artworks-seems-to-make-people-drive-more-safely-new-studies-find/",
+          "src": "Good News Network",
+          "kind": "read"
+        }
+      ]
+    },
+    {
       "date": "2026-11-27",
       "by": "claude",
       "items": [
