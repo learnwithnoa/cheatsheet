@@ -501,3 +501,10 @@ if '2026-1127-senses' not in s:
   ]},
 ''',1)
     open(p,"w",encoding="utf-8").write(s)
+s=open(p,encoding="utf-8").read()
+if '2026-1128-libwords' not in s:
+    s=s.replace(a,a+'''  {id:"2026-1128-libwords", date:"November 28, 2026", title:"Word cards for Free Talk Friday", items:[
+    ["📚","Words from this class","Free Talk Friday recordings in the club <b>Library</b> now come with swipeable word cards too, ready to save to My notebook.","club"]
+  ]},
+''',1)
+    open(p,"w",encoding="utf-8").write(s)

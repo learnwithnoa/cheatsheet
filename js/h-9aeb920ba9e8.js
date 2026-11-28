@@ -47,12 +47,12 @@
     return `<article class="cl-post">${head?`<div class="cl-meta">${L("Week of","Semana del")} ${esc(fd(p.week))}</div>`:""}${p.title?`<h2>${esc(p.title)}</h2>`:""}${p.intro?`<p class="cl-intro">${esc(p.intro)}</p>`:""}
       ${(p.classes||[]).length?`<div class="cl-classes">${classesOf(f,p).map(c=>clsCard(c,now,cur?p.week:"")).join("")}</div>`:""}${p.closing?`<p class="cl-closing">${esc(p.closing)}</p>`:""}${recapHTML(p)}${chalHTML(p,cur)}</article>`;
   }
-  /* after class: recordings, notes, words and phrases (added by Noa's nightly helper) */
-  function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=r.vocab||[], ph=r.phrases||[]; if(!recs.length&&!voc.length&&!ph.length&&!r.notes) return "";
+  /* after class: recordings, notes and words (added by Noa's nightly helper) */
+  function recapHTML(p){ const r=p.recap; if(!r) return ""; const recs=r.recordings||[], voc=r.vocab||[]; if(!recs.length&&!voc.length&&!r.notes) return "";
     return `<div class="cl-recap"><h3>🎬 ${L("After class","Después de clase")}</h3>${recs.length?`<div class="cl-recs">${recs.map(x=>`<a class="cl-rec" href="${esc(x.url)}" target="_blank" rel="noopener"><span>▶</span><b>${esc(x.title||L("Recording","Grabación"))}</b>${x.wd!=null?`<small>${WD[x.wd]}</small>`:""}</a>`).join("")}</div>`:""}
       ${r.notes?`<p class="cl-rnote">${esc(r.notes)}</p>`:""}
       ${voc.length?`<h4>📚 ${L("Words from class","Palabras de la clase")}</h4><ul class="cl-voc">${voc.map((v,i)=>`<li><span><b>${esc(v.w)}</b>${v.tr?` <i>· ${esc(v.tr)}</i>`:""}${v.ex?`<br><small>“${esc(v.ex)}”</small>`:""}</span><button type="button" class="cl-addw" data-clw="${esc(JSON.stringify({w:v.w,tr:v.tr||"",ex:v.ex||""}))}">＋ ${L("My notebook","Mi cuaderno")}</button></li>`).join("")}</ul>`:""}
-      ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}</div>`; }
+</div>`; }
   /* weekly challenge: Noa's prompt + members' answers (filled by the community script) */
   function chalHTML(p,cur){ const c=p.challenge; if(!c||!(c.title||c.prompt)) return "";
     return `<div class="cl-chal"><div class="cl-chal-h"><span class="cl-chal-ic" aria-hidden="true">✍️</span><div><div class="cl-meta">${L("Weekly challenge","Desafío semanal")}</div><h3>${esc(c.title||"")}</h3></div></div>${c.prompt?`<p>${esc(c.prompt)}</p>`:""}<div class="cl-chal-list" data-chal="${esc(p.id)}" data-cur="${cur?1:""}"></div></div>`; }
@@ -148,13 +148,14 @@
   const DLV=n=>n<=2?"A2+":n<=4?"B1":n<=6?"B1+":n<=8?"B2":n<=9?"B2+":"C1";
   function diffHTML(o){ const n=+(o&&o.diff)||0; if(!n) return ""; return `<span class="cl-diff" title="${esc((o.diffWhy?o.diffWhy+" · ":"")+L("Difficulty for club members: 1 is about A2+, 10 is about C1","Dificultad para el club: 1 es como A2+, 10 es como C1"))}"><span class="cl-dbar" aria-hidden="true">${Array.from({length:10},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span><b>${n}/10</b><small>${DLV(n)}</small><span class="sr">${L("Difficulty","Dificultad")} ${n} ${L("of","de")} 10</span></span>`; }
   const ytId=u=>{ const m=String(u||"").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m?m[1]:""; };
-  function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=(r.vocab||[]).concat(x.vocab||[]), ph=r.phrases||[];
+  function recCard(it,open){ const x=it.x, c=it.c, r=it.p.recap||{}, w=watched().includes(it.id), voc=(r.vocab||[]).concat(x.vocab||[]);
+    /* word cards: this recording's own words, or the week's after-class words when this class is the only one they came from (no "Useful phrases": Noa, Nov 28 2026) */
+    const rr=r.recordings||[], bv=(x.vocab&&x.vocab.length)?x.vocab:(r.vocab&&r.vocab.length&&rr.length===1&&x.wd!=null&&+rr[0].wd===+x.wd)?r.vocab:[];
     const name=c.name||x.title||L("Class","Clase"), topic=c.title&&c.name?c.title:"", q=[name,topic,x.title,x.summary,c.teaser,it.p.title,voc.map(v=>v.w).join(" ")].join(" ").toLowerCase();
     return `<details class="cl-rcard${w?" seen":""}" data-rid="${esc(it.id)}" data-q="${esc(q)}" data-cls="${esc(c.name||"")}"${open?" open":""}><summary><span class="cl-rico" aria-hidden="true">${esc(c.ico||"🎬")}</span><span class="cl-rt"><b>${esc(name)}${topic?`: ${esc(topic)}`:""}</b><small>${esc(fd(it.date))}${x.diff?` · ${L("Level","Nivel")} ${+x.diff}/10`:""}</small></span>${w?`<span class="cl-wtick" title="${L("Watched","Vista")}">✓</span>`:""}</summary>
       <div class="cl-rbody">${ytId(x.url)?`<button type="button" class="cl-yt" data-yt="${ytId(x.url)}" data-watched="${esc(it.id)}" aria-label="${L("Play the recording","Reproducir la grabación")}"><img src="https://i.ytimg.com/vi/${ytId(x.url)}/hqdefault.jpg" alt="" loading="lazy"><span class="cl-ytp" aria-hidden="true">▶</span></button>`:""}<div class="cl-ract"><span class="cl-recfav" data-recfav="rec_${esc(it.id)}"></span>${ytId(x.url)?"":`<a class="cl-watch" href="${esc(x.url)}" target="_blank" rel="noopener" data-watched="${esc(it.id)}">${L("Open the recording","Abrir la grabación")}<span class="cl-ext" aria-hidden="true">↗</span></a>`}${planBtn(it.date,x.wd)}<button type="button" class="cs-act" data-wtoggle="${esc(it.id)}" aria-pressed="${w}">${w?L("✓ Watched","✓ Vista"):L("Mark as watched","Marcar como vista")}</button>${x.rid&&isNoaNow()?`<button type="button" class="cs-act" data-recdel="${esc(x.rid)}">✕ Remove</button>`:""}</div>
         ${diffHTML(x)}${x.summary||c.teaser?`<p>${esc(x.summary||c.teaser)}</p>`:`<p class="cl-planintro" data-pintro="${esc(it.date)}"></p>`}
-        ${x.vocab&&x.vocab.length&&window.__clVocCards?`<div class="cl-bwords">${window.__clVocCards(x.vocab,`📚 ${L("Words from this class","Palabras de esta clase")}`)}</div>`:x.wd!=null?`<div class="cl-bwords" data-bw="${esc(it.week)}|${+x.wd}"></div>`:""}
-        ${ph.length?`<h4>💬 ${L("Useful phrases","Frases útiles")}</h4><div class="cl-phr">${ph.map(t=>`<span>${esc(t)}</span>`).join("")}</div>`:""}</div></details>`; }
+        ${bv.length&&window.__clVocCards?`<div class="cl-bwords">${window.__clVocCards(bv,`📚 ${L("Words from this class","Palabras de esta clase")}`)}</div>`:x.wd!=null?`<div class="cl-bwords" data-bw="${esc(it.week)}|${+x.wd}"></div>`:""}</div></details>`; }
   let RFOCUS=null;
   /* ---------- 🎧 the weekly club podcast (episodes stored in clubStats/_podcast: Noa adds, members listen) ---------- */
   const pods=()=>(window.__clubPods||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.at||0)-(a.at||0));
@@ -213,7 +214,7 @@
       <div class="cs-row"><span class="cs-msg" role="status"></span><button type="submit" class="cs-send">Add to the Library</button></div>
       <p class="cl-note">Upload the class to YouTube as <b>Unlisted</b>, then paste the link here. Members watch it inside Hibi.</p></form></details>`; }
   function recTab(f){ const list=recList(f), n=list.filter(x=>watched().includes(x.id)).length;
-    if(!list.length) return recAddHTML(f)+`<p class="cl-empty">${L("Class recordings will collect here: each one with its words and phrases. Free Talk Friday usually appears the day after class.","Aquí se juntan las grabaciones de las clases, cada una con sus palabras y frases. Free Talk Friday normalmente aparece el día después de la clase.")}</p>`;
+    if(!list.length) return recAddHTML(f)+`<p class="cl-empty">${L("Class recordings will collect here: each one with its words and expressions. Free Talk Friday usually appears the day after class.","Aquí se juntan las grabaciones de las clases, cada una con sus palabras y expresiones. Free Talk Friday normalmente aparece el día después de la clase.")}</p>`;
     const open=RFOCUS; RFOCUS=null;
     const sorted=list.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
     const names=[]; ((f.info||{}).schedule||[]).slice().sort((a,b)=>((a.wd+6)%7)-((b.wd+6)%7)).forEach(s=>{ if(s.name&&!names.some(x=>x.name===s.name)) names.push({name:s.name,ico:s.ico||""}); });

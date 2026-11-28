@@ -5385,6 +5385,9 @@ document.addEventListener("click",e=>{ if(e.target.closest("[data-welcome]")) op
 /* ---------------- what's new (changelog) ---------------- */
 // Add new entries at the TOP. The popup shows the newest entry once to returning students.
 const CHANGELOG=[
+  {id:"2026-1128-libwords", date:"November 28, 2026", title:"Word cards for Free Talk Friday", items:[
+    ["📚","Words from this class","Free Talk Friday recordings in the club <b>Library</b> now come with swipeable word cards too, ready to save to My notebook.","club"]
+  ]},
   {id:"2026-1127-senses", date:"November 27, 2026", title:"Words with more than one meaning", items:[
     ["🔀","Other meanings","editing a word in <b>My notebook</b>? Tap <b>🔀 Other meanings</b> to see its other common uses. Swap to the one you meant, or save it as a new word.","words"],
     ["💡","Easy to mix up","new words now warn you about look-alikes Spanish speakers often confuse, like <i>catch on</i> and <i>catch up</i>.","words"]

@@ -63,8 +63,8 @@ Usage:
   HUB_PASSWORD=... python3 hubsync.py pay-events [hours]   club payments on Hibi in the last [hours] (default 24): started paying, payment failed, cancelled, back
   HUB_PASSWORD=... python3 hubsync.py club-activity [hours]   new club wall posts/comments/photos (default: last 24 h) + anything members reported
   HUB_PASSWORD=... python3 hubsync.py club-recap <week-monday> '{"recordings":[{"wd":5,"title":"Free Talk Friday","url":"https://zoom.us/rec/share/...","summary":"2-3 lines on what we did"}],
-      "notes":"1-2 friendly lines about the class","vocab":[{"w":"word","tr":"Spanish meaning","ex":"example from class"}],"phrases":["useful phrase", ...]}'
-      after-class material on that week's club post ("After class": recordings, words members can save, phrases). Merges with what's there.
+      "notes":"1-2 friendly lines about the class","vocab":[{"w":"word or expression","tr":"Spanish meaning","ex":"example from class"}]}'
+      after-class material on that week's club post ("After class": recordings, words members can save). Merges with what's there. No phrases (Noa's rule).
   HUB_PASSWORD=... python3 hubsync.py club-attend <week-monday> '["Laura Porcile","Daniel Soto", ...]'   who came to club classes that week (Zoom names);
       builds streaks + badges on members' Hibi profiles. Prints names it couldn't match.
   HUB_PASSWORD=... python3 hubsync.py club-sync   give/remove club page access (new sign-ups who match the Skool roster, role changes)
@@ -641,12 +641,8 @@ def clean_recap(d, old=None):
         w = _txt(v.get("w"), 60)
         if w and w.lower() not in have:
             voc.append({"w": w, "tr": _txt(v.get("tr"), 80), "ex": _txt(v.get("ex"), 200)}); have.add(w.lower())
-    ph = list(old.get("phrases") or [])
-    for x in d.get("phrases") or []:
-        t = _txt(x, 80)
-        if t and t not in ph:
-            ph.append(t)
-    out = {"recordings": recs[-8:], "vocab": voc[-24:], "phrases": ph[-12:]}
+    # no "Useful phrases" (Noa, Nov 28 2026): words and expressions all go in vocab (word cards in the Library)
+    out = {"recordings": recs[-8:], "vocab": voc[-24:], "phrases": []}
     note = d.get("notes") if d.get("notes") is not None else old.get("notes")
     if note:
         out["notes"] = str(note).strip()[:600]

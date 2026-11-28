@@ -4810,7 +4810,7 @@ document.addEventListener("click",e=>{ if(e.target.closest("#hdrWord")){ const f
 document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!a||e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); e.stopPropagation(); try{ localStorage.setItem("eep-view","notes"); }catch(er){} history.replaceState(null,"",location.pathname); location.reload(); },true);
 </script>
 
-<script src="js/h-79978f31169e.js"></script>
+<script src="js/h-b85ffc9aaa62.js"></script>
 
 <script>document.addEventListener("click",e=>{ const b=e.target.closest("[data-vsetgo]"); if(!b) return; e.preventDefault(); if(typeof window.csVocSet==="function") window.csVocSet(b.dataset.vsetgo); });</script>
 
@@ -4819,7 +4819,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <p class="lede">This week's classes and Zoom links, the community wall, recordings, the calendar and everyone in the club.</p>
   <div class="cl-wrap" id="clubMain"><p class="muted">Loading…</p></div>
 </section>
-<script src="js/h-4b75fbac5fd8.js"></script>
+<script src="js/h-9aeb920ba9e8.js"></script>
 <script src="js/h-fc76e74bce05.js"></script>
 <section class="view" id="v-translate" hidden>
   <h1><em>Translator</em></h1>
@@ -5721,10 +5721,10 @@ document.addEventListener("click",e=>{ const a=e.target.closest("a.brand"); if(!
   <div class="note-actions"><button class="pill-btn pill-green" type="submit">Save word</button><span class="count">Enter saves · Esc closes</span></div>
 </form>
 
-<script src="js/h-9aad2822ee48.js"></script>
+<script src="js/h-92d7537bbc9a.js"></script>
 <script>
 /* ---- a newer Hibi is online: refresh quietly when it's safe, or offer a button ---- */
-(function(){ const BUILD="20261127164436"; let hiddenAt=0, shown=false;
+(function(){ const BUILD="20261128105034"; let hiddenAt=0, shown=false;
   const busy=()=>!!(window.__csBusy&&window.__csBusy());
   async function latest(){ try{ const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return null; const j=await r.json(); return j&&j.v||null; }catch(e){ return null; } }
   function offer(){ if(shown) return; shown=true; const b=document.createElement("div"); b.className="cs-upd"; b.setAttribute("role","status");
