@@ -947,6 +947,104 @@ async function ytFeed(env) {
     return { ok: true, playlist: xmlText(ft || "").slice(0, 80), videos: videos.length, newest: videos[0] ? videos[0].title.slice(0, 80) : "", bytes: x.length };
   } catch (e) { return { ok: false, why: String(e.message || e).slice(0, 120) }; }
 }
+// ---------- Noa's calendar → "Coming up" on his Private students page (every hour) ----------
+// Reads the calendar's secret iCal address (secret CAL_ICS), finds the private classes of the next 8 days
+// (by the student's email among the guests, or a "<First name> · Noa" title) and merges them into t-hubmeta.upcoming:
+// keeps the nightly's notes, moves a class that moved, drops one that's gone, never re-adds one Noa removed (upHidden).
+const CAL_TZ = "America/Santiago";
+function tzOff(ms, tz) {   // minutes the zone is ahead of UTC at that moment
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }).formatToParts(new Date(ms)).map((x) => [x.type, x.value]));
+  return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute, +p.second) - Math.floor(ms / 1000) * 1000) / 60000;
+}
+function localMs(y, mo, d, h, mi, tz) { const g = Date.UTC(y, mo - 1, d, h, mi); let t = g - tzOff(g, tz) * 60000; t = g - tzOff(t, tz) * 60000; return t; }
+function icsTime(v, params) {   // -> {ms, y,mo,d,h,mi, tz, allDay}
+  const m = String(v).match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/); if (!m) return null;
+  const [y, mo, d] = [+m[1], +m[2], +m[3]]; if (!m[4]) return { allDay: true, y, mo, d, h: 0, mi: 0, ms: Date.UTC(y, mo - 1, d) };
+  const h = +m[4], mi = +m[5];
+  if (m[7]) { const ms = Date.UTC(y, mo - 1, d, h, mi); const l = new Date(ms + tzOff(ms, CAL_TZ) * 60000); return { ms, y: l.getUTCFullYear(), mo: l.getUTCMonth() + 1, d: l.getUTCDate(), h: l.getUTCHours(), mi: l.getUTCMinutes(), tz: CAL_TZ }; }
+  const tz = (params.match(/TZID=([^;:]+)/) || [])[1] || CAL_TZ; let ms; try { ms = localMs(y, mo, d, h, mi, tz); } catch (e) { ms = localMs(y, mo, d, h, mi, CAL_TZ); }
+  return { ms, y, mo, d, h, mi, tz };
+}
+function parseIcs(txt) {
+  const lines = String(txt).replace(/\r\n[ \t]/g, "").replace(/\n[ \t]/g, "").split(/\r?\n/); const evs = []; let e = null;
+  for (const ln of lines) {
+    if (ln === "BEGIN:VEVENT") { e = { ex: [], at: [] }; continue; } if (ln === "END:VEVENT") { if (e) evs.push(e); e = null; continue; } if (!e) continue;
+    const i = ln.indexOf(":"); if (i < 0) continue; const head = ln.slice(0, i), val = ln.slice(i + 1), name = head.split(";")[0], params = head.slice(name.length);
+    if (name === "DTSTART") e.start = icsTime(val, params); else if (name === "DTEND") e.end = icsTime(val, params);
+    else if (name === "RRULE") e.rrule = Object.fromEntries(val.split(";").map((x) => x.split("=")));
+    else if (name === "EXDATE") val.split(",").forEach((v) => { const t = icsTime(v, params); if (t) e.ex.push(t.ms); });
+    else if (name === "RECURRENCE-ID") e.rid = icsTime(val, params);
+    else if (name === "SUMMARY") e.title = val.replace(/\\([,;\\])/g, "$1").replace(/\\n/gi, " ");
+    else if (name === "UID") e.uid = val; else if (name === "STATUS") e.status = val;
+    else if (name === "LOCATION") e.loc = val.replace(/\\([,;\\])/g, "$1");
+    else if (name === "ATTENDEE") { const m = val.match(/mailto:(.+)$/i); if (m && !/DECLINED/.test(params)) e.at.push(m[1].toLowerCase()); }
+  }
+  return evs;
+}
+function expandIcs(evs, from, to) {   // single events + weekly/daily series (with exceptions and moved ones) -> [{ms, end, title, at, loc}]
+  const out = [], over = {};
+  evs.filter((e) => e.rid && e.uid).forEach((e) => { (over[e.uid] = over[e.uid] || {})[e.rid.ms] = e; });
+  const push = (e, ms, durMs) => { if (ms >= from && ms <= to && e.status !== "CANCELLED") out.push({ ms, end: ms + durMs, title: e.title || "", at: e.at, loc: e.loc || "" }); };
+  for (const e of evs) {
+    if (!e.start || e.start.allDay || e.rid) continue; const dur = e.end ? Math.max(0, e.end.ms - e.start.ms) : 45 * 60000;
+    if (!e.rrule) { push(e, e.start.ms, dur); continue; }
+    const r = e.rrule, freq = r.FREQ, iv = +(r.INTERVAL || 1), until = r.UNTIL ? icsTime(r.UNTIL, "").ms : Infinity, count = r.COUNT ? +r.COUNT : Infinity;
+    if (freq !== "WEEKLY" && freq !== "DAILY") { push(e, e.start.ms, dur); continue; }
+    const DAYS = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 }, s0 = Date.UTC(e.start.y, e.start.mo - 1, e.start.d), wd0 = new Date(s0).getUTCDay();
+    const by = freq === "WEEKLY" ? (r.BYDAY ? r.BYDAY.split(",").map((x) => DAYS[x.slice(-2)]) : [wd0]) : null;
+    const wkStart = s0 - wd0 * 864e5; let n = 0;
+    const jump = count === Infinity ? Math.max(s0, Math.floor((from - 8 * 864e5) / 864e5) * 864e5) : s0;   // no COUNT: start near the window
+    for (let day = jump, k = 0; k < 1200; k++, day += 864e5) {
+      const dt = new Date(day), wd = dt.getUTCDay();
+      if (freq === "DAILY") { if (Math.round((day - s0) / 864e5) % iv) continue; }
+      else { if (!by.includes(wd)) continue; if (Math.floor((day - wkStart) / (7 * 864e5)) % iv) continue; }
+      const ms = localMs(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate(), e.start.h, e.start.mi, e.start.tz || CAL_TZ);
+      if (ms > until || n >= count) break; n++;
+      if (ms > to) break; if (e.ex.includes(ms)) continue;
+      const o = over[e.uid] && over[e.uid][ms]; if (o) { if (o.start && o.status !== "CANCELLED") push(o, o.start.ms, o.end ? o.end.ms - o.start.ms : dur); continue; }
+      push(e, ms, dur);
+    }
+  }
+  // moved occurrences whose original time is outside the series window still count on their new day
+  Object.values(over).forEach((m) => Object.values(m).forEach((o) => { if (o.start && !out.some((x) => x.ms === o.start.ms && x.title === o.title)) { const known = evs.some((e) => e.uid === o.uid && !e.rid); if (!known) push(o, o.start.ms, o.end ? o.end.ms - o.start.ms : 45 * 60000); } }));
+  return out;
+}
+async function calSync(env) {
+  if (!env.CAL_ICS) return { ok: false, why: "no calendar address (secret CAL_ICS)" };
+  const r = await fetch(env.CAL_ICS, { headers: { "user-agent": "hibi-pay" } }); if (!r.ok) return { ok: false, why: "calendar said " + r.status };
+  const txt = await r.text(); if (!/BEGIN:VCALENDAR/.test(txt)) return { ok: false, why: "not a calendar" };
+  const now = Date.now(), from = now - 2 * 3600e3, to = now + 8 * 864e5;
+  const inst = expandIcs(parseIcs(txt), from, to);
+  const meta = (await getJ(env, TEACHER, "t-hubmeta")) || {}; const ids = Array.isArray(meta.ids) ? meta.ids : [];
+  const studs = (await Promise.all(ids.map((id) => getJ(env, TEACHER, "t-hub-" + id).catch(() => null)))).filter((s) => s && s.id && s.status !== "inactive");
+  const first = (n) => String(n || "").trim().split(/\s+/)[0].toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const byMail = {}; studs.forEach((s) => String(s.email || "").toLowerCase().split(/[\s,;]+/).filter(Boolean).forEach((m) => { byMail[m] = s; }));
+  const byFirst = {}; studs.forEach((s) => { const f = first(s.name); byFirst[f] = byFirst[f] ? "dup" : s; });
+  const found = [];
+  for (const x of inst) {
+    if (!/·\s*Noa\s*$/i.test(x.title) && !x.at.some((m) => byMail[m])) continue;
+    let s = x.at.map((m) => byMail[m]).find(Boolean); if (!s) { const t = (x.title.match(/^(.+?)\s*·\s*Noa/i) || [])[1]; const c = t && byFirst[first(t)]; if (c && c !== "dup") s = c; }
+    if (!s) continue;
+    const z = (x.loc.match(/https:\/\/[\w.-]*zoom\.us\/[^\s,]+/) || [])[0] || "";
+    found.push({ start: new Date(x.ms).toISOString().replace(".000Z", "Z"), student: s.id, name: s.name, ...(z ? { zoom: z } : {}) });
+  }
+  const hidden = new Set(Array.isArray(meta.upHidden) ? meta.upHidden : []);
+  const key = (u) => Date.parse(u.start) + "|" + u.student, dayOf = (ms) => new Date(ms + tzOff(ms, CAL_TZ) * 60000).toISOString().slice(0, 10);
+  const old = Array.isArray(meta.upcoming) ? meta.upcoming : [], inWin = (u) => { const t = Date.parse(u.start); return t >= from && t <= to; };
+  const known = new Set(studs.map((s) => s.id)), keep = old.filter((u) => !inWin(u) || !u.student || !known.has(u.student)), mine = old.filter((u) => inWin(u) && u.student && known.has(u.student));
+  const used = new Set(), next = [];
+  for (const f of found) {
+    if (hidden.has(key(f))) continue;
+    let o = mine.find((u) => !used.has(u) && u.student === f.student && Date.parse(u.start) === Date.parse(f.start));
+    if (!o) o = mine.find((u) => !used.has(u) && u.student === f.student && dayOf(Date.parse(u.start)) === dayOf(Date.parse(f.start)) && !found.some((g) => g !== f && g.student === u.student && Date.parse(g.start) === Date.parse(u.start)));
+    if (o) used.add(o); next.push(o ? { ...o, start: f.start, ...(f.zoom && !o.zoom ? { zoom: f.zoom } : {}) } : f);
+  }
+  const added = next.filter((u) => !mine.includes(u) && !old.some((o) => key(o) === key(u))).length, dropped = mine.filter((u) => !used.has(u)).length;
+  const upcoming = keep.concat(next).sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+  const changed = JSON.stringify(upcoming) !== JSON.stringify(old.slice().sort((a, b) => Date.parse(a.start) - Date.parse(b.start)));
+  if (changed) { const fresh = (await getJ(env, TEACHER, "t-hubmeta")) || {}; fresh.upcoming = upcoming; fresh.calAt = new Date().toISOString(); if (Array.isArray(fresh.upHidden)) fresh.upHidden = fresh.upHidden.filter((k) => +k.split("|")[0] > now - 864e5); await setJ(env, TEACHER, "t-hubmeta", fresh); }
+  return { ok: true, classes: found.length, added, dropped, changed };
+}
 async function health(env) {
   const r = { ok: true, flow: env.FLOW_ENV === "live" ? "live" : "sandbox", flowKeys: !!(env.FLOW_API_KEY && env.FLOW_SECRET_KEY), firebaseKey: !!env.FIREBASE_SERVICE_ACCOUNT };
   try { await flow(env, "GET", "/plans/get", { planId: "hibi-health-check" }); r.flowApi = "ok"; } catch (e) { if (/not found/i.test(e.message)) r.flowApi = "ok"; else { r.flowApi = "problem"; r.flowSays = String((e.flow && (e.flow.code + " " + e.flow.message)) || e.message).slice(0, 120); r.ok = false; } }
@@ -989,6 +1087,11 @@ export default {
           const cur = (await getJ(env, TEACHER, "t-mailsent")) || []; await setJ(env, TEACHER, "t-mailsent", [{ uid: TEACHER, name: "Noa (test)", from: "Hibi", at: Date.now(), why: "test email" }].concat(cur).slice(0, 100));
           return json({ ok: true, sent: true }, 200, req);
         }
+        case "/api/cal-sync": {   // runs the calendar check (at most once every 5 minutes); answers with counts only
+          const st = plain(await fs(env, "GET", "billingConfig/calsync")) || {};
+          if (Date.now() - (+st.at || 0) < 300e3) return json({ ok: true, skipped: "ran less than 5 minutes ago", last: st.res ? JSON.parse(st.res) : null }, 200, req);
+          const res = await calSync(env); await patch(env, "billingConfig/calsync", { at: String(Date.now()), res: JSON.stringify(res) }); return json(res, 200, req);
+        }
         case "/api/err": return await pageError(env, req);
         case "/api/paypal-return": return await ppReturn(env, req, url);
         case "/api/mp-return": return await mpReturn(env, req, url);
@@ -1013,5 +1116,5 @@ export default {
       return json({ error: "Something went wrong with the payment helper. Please try again, or message Noa." , detail: String(e.message).slice(0, 200) }, 500, req);
     }
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env).catch((e) => console.log("unread mail", e.message)).then(() => pendingSweep(env)).catch((e) => console.log("pending sweep", e.message)).then(() => skoolMoveNotify(env)).catch((e) => console.log("move notify", e.message))), ytFeed(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(Promise.all([manualTrials(env).catch((e) => console.log("manual trials", e.message)).then(() => event.cron === "0 9 * * *" ? nightly(env) : unreadMail(env).catch((e) => console.log("unread mail", e.message)).then(() => pendingSweep(env)).catch((e) => console.log("pending sweep", e.message)).then(() => skoolMoveNotify(env)).catch((e) => console.log("move notify", e.message)).then(() => calSync(env)).catch((e) => console.log("calendar", e.message))), ytFeed(env)])); },
 };

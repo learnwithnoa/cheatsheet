@@ -1257,7 +1257,8 @@ document.addEventListener("click", e => {
     saveMeta(); renderAlerts(); undoBar("Heads-up dismissed", () => { delete meta.dismissed[k]; saveMeta(); renderAlerts(); }); return; }
   const nx = t.closest("[data-nxdel]"); if (nx) { e.stopPropagation(); const [st, who] = nx.dataset.nxdel.split("|");
     if (!nx.dataset.sure) { nx.dataset.sure = "1"; nx.textContent = "Remove?"; nx.style.opacity = 1; setTimeout(() => { if (nx.isConnected) { delete nx.dataset.sure; nx.textContent = "✕"; nx.style.opacity = ""; } }, 4000); return; }
-    meta.upcoming = (meta.upcoming || []).filter(u => !(u.start === st && (u.student || u.name || "") === who)); saveMeta(); renderNext(); renderRecent(); toast("Removed from Coming up"); return; }
+    meta.upcoming = (meta.upcoming || []).filter(u => !(u.start === st && (u.student || u.name || "") === who));
+    /* the hourly calendar check never puts back a class Noa removed */ meta.upHidden = (Array.isArray(meta.upHidden) ? meta.upHidden : []).concat(Date.parse(st) + "|" + who).slice(-60); saveMeta(); renderNext(); renderRecent(); toast("Removed from Coming up"); return; }
   const op = t.closest("[data-open]"); if (op) { tab = "classes"; openStu(op.dataset.open); return; }
   const nd = t.closest("[data-nday]"); if (nd) { const all = (meta.upcoming || []).filter(u => Date.parse(u.start) > Date.now() - 45 * 60e3).sort((a, b) => Date.parse(a.start) - Date.parse(b.start)); const days = [...new Set(all.map(u => dkey(new Date(u.start))))]; const i = days.indexOf(nextDay) + +nd.dataset.nday; if (days[i]) { nextDay = days[i]; renderNext(); } return; }
   const vw = t.closest("[data-view]"); if (vw) { go(vw.dataset.view); return; }
