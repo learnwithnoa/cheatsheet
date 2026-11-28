@@ -949,7 +949,7 @@ async function ytFeed(env) {
 }
 // ---------- Noa's calendar → "Coming up" on his Private students page (every hour) ----------
 // Reads the calendar's secret iCal address (secret CAL_ICS), finds the private classes of the next 8 days
-// (by the student's email among the guests, or a "<First name> · Noa" title) and merges them into t-hubmeta.upcoming:
+// (events titled "<First name> · Noa": the student by their email among the guests, else by the first name) and merges them into t-hubmeta.upcoming:
 // keeps the nightly's notes, moves a class that moved, drops one that's gone, never re-adds one Noa removed (upHidden).
 const CAL_TZ = "America/Santiago";
 function tzOff(ms, tz) {   // minutes the zone is ahead of UTC at that moment
@@ -1022,7 +1022,7 @@ async function calSync(env) {
   const byFirst = {}; studs.forEach((s) => { const f = first(s.name); byFirst[f] = byFirst[f] ? "dup" : s; });
   const found = [];
   for (const x of inst) {
-    if (!/·\s*Noa\s*$/i.test(x.title) && !x.at.some((m) => byMail[m])) continue;
+    if (!/·\s*Noa\s*$/i.test(x.title)) continue;   // only private classes ("<First name> · Noa"), never club events with students as guests
     let s = x.at.map((m) => byMail[m]).find(Boolean); if (!s) { const t = (x.title.match(/^(.+?)\s*·\s*Noa/i) || [])[1]; const c = t && byFirst[first(t)]; if (c && c !== "dup") s = c; }
     if (!s) continue;
     const z = (x.loc.match(/https:\/\/[\w.-]*zoom\.us\/[^\s,]+/) || [])[0] || "";
