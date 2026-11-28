@@ -1,4 +1,4 @@
-Deploy 2026-11-28T14:21:49Z
+Deploy 2026-11-28T14:28:49Z
 CLOUDFLARE_API_TOKEN: set
 CLOUDFLARE_ACCOUNT_ID: set
 FLOW_API_KEY: set
@@ -10,12 +10,12 @@ PAYPAL_SECRET: set
 MP_ACCESS_TOKEN: set
 RESEND_API_KEY: set
 YT_API_KEY: set
-CAL_ICS: MISSING
+CAL_ICS: set
 Firebase key: valid, project learnwithnoa-cheatsheet
 deploy exit: 0
 secrets exit: 0
-Uploaded hibi-pay (1.65 sec)
-Deployed hibi-pay triggers (1.36 sec)
+Uploaded hibi-pay (1.50 sec)
+Deployed hibi-pay triggers (1.01 sec)
   https://hibi-pay.learnwithnoa.workers.dev
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
 ✨ Successfully created secret for key: FLOW_API_KEY
@@ -27,11 +27,12 @@ Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more
 ✨ Successfully created secret for key: MP_ACCESS_TOKEN
 ✨ Successfully created secret for key: RESEND_API_KEY
 ✨ Successfully created secret for key: YT_API_KEY
-✨ 9 secrets successfully uploaded
+✨ Successfully created secret for key: CAL_ICS
+✨ 10 secrets successfully uploaded
 health: {"ok":true,"flow":"live","flowKeys":true,"firebaseKey":true,"flowApi":"ok","mercadopago":"live","mercadopagoApi":"ok","paypal":"live","paypalApi":"ok","notion":"ok","recentErrors":[{"at":"2026-11-24T16:00:25.106Z","where":"/api/mp-return","msg":"Mercado Pago /preapproval/…: local_rate_limited"},{"at":"2026-11-19T18:24:44.804Z","where":"/api/subscribe","msg":"Mercado Pago /preapproval: Payer is associated with a different site"},{"at":"2026-11-16T12:51:44.411Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:23:39.126Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"},{"at":"2026-11-16T12:19:58.699Z","where":"/api/subscribe","msg":"Flow /customer/register: Commerce has not automatic charge contract"}],"email":"set up","database":"ok"}
 check: ok
 youtube: {"ok":true,"via":"api","videos":18,"newest":"free talk friday nov 27"}
 pending sign-ups: {"saved":2,"waiting":1,"states":{"mp:pending/none":1,"fixedOther":2,"pp/active":1,"mp:pending/trial":1}}
 manual trials: {"applied":0,"skipped":3,"noAccount":0}
 skool move reminders: {"sent":0,"errors":0,"skipped":{"not in the club on Hibi":1,"already sent":2,"leaving the club":7,"switched: active":1,"not on Hibi":1},"pausedSent":0}
-calendar (Coming up): {"ok":false,"why":"no calendar address (secret CAL_ICS)"}
+calendar (Coming up): {"ok":true,"classes":16,"added":1,"dropped":0,"changed":true}
